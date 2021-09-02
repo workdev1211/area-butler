@@ -1,4 +1,4 @@
-import { ApiOsmEntity, MeansOfTransportation } from "../types/types";
+import { ApiOsmEntity, MeansOfTransportation, OsmName, OsmType } from "../types/types";
 
 export const meansOfTransportations = [
     { label: 'Zu Fuß', type: MeansOfTransportation.WALK },
@@ -8,65 +8,65 @@ export const meansOfTransportations = [
 
 export const osmEntityTypes: ApiOsmEntity[] = [
     {
-        type: 'leisure',
-        name: 'playground',
+        type: OsmType.leisure,
+        name: OsmName.playground,
         label: 'Spielplatz'
     },
     {
-        type: 'amenity',
-        name: 'school',
+        type: OsmType.amenity,
+        name: OsmName.school,
         label: 'Schule'
     }, {
-        type: 'amenity',
-        name: 'bar',
+        type: OsmType.amenity,
+        name: OsmName.bar,
         label: 'Bar'
     }, {
-        type: 'amenity',
-        name: 'restaurant',
+        type: OsmType.amenity,
+        name: OsmName.restaurant,
         label: 'Restaurant'
     }, {
-        type: 'leisure',
-        name: 'park',
+        type: OsmType.leisure,
+        name: OsmName.park,
         label: 'Park'
     }, {
-        type: 'shop',
-        name: 'chemist',
+        type: OsmType.shop,
+        name: OsmName.chemist,
         label: 'Drogerie'
     }, {
-        type: 'shop',
-        name: 'supermarket',
+        type: OsmType.shop,
+        name: OsmName.supermarket,
         label: 'Supermarkt'
     }, {
-        type: 'amenity',
-        name: 'doctors',
+        type: OsmType.amenity,
+        name: OsmName.doctors,
         label: 'Arzt'
     }, {
-        type: 'amenity',
-        name: 'dentist',
+        type: OsmType.amenity,
+        name: OsmName.dentist,
         label: 'Zahnarzt'
     }, {
-        type: 'amenity',
-        name: 'clinic',
+        type: OsmType.amenity,
+        name: OsmName.clinic,
         label: 'Klinik'
     }, {
-        type: 'amenity',
-        name: 'kiosk',
+        type: OsmType.amenity,
+        name: OsmName.kiosk,
         label: 'Kiosk/Paketshop'
     }, {
-        type: 'amenity',
-        name: 'post office',
+        type: OsmType.amenity,
+        name: OsmName.post_office,
         label: 'Kiosk/Paketshop'
     }, {
-        type: 'amenity',
-        name: 'fuel',
+        type: OsmType.amenity,
+        name: OsmName.fuel,
         label: 'Tankstelle'
     }, {
-        type: 'public_transport',
-        name: 'station',
+        type: OsmType.public_transport,
+        name: OsmName.station,
         label: 'ÖPNV Haltestelle'
     }, {
-        type: 'highway',
-        name: 'motorway_link',
+        type: OsmType.highway,
+        name: OsmName.motorway_link,
         label: 'Autobahnauffahrt'
     },
 ]
