@@ -8,7 +8,16 @@ export interface ApiSearch {
 }
 
 export interface ApiSearchResponse {
-    
+    centerOfInterest: ApiOsmEntity;
+    entities: ApiOsmEntity[];
+}
+
+export interface ApiOsmEntity {
+    label: string;
+    type: string;
+    name: string;
+    address?: ApiAddress;
+    coordinates: ApiCoordinates;
 }
 
 export interface ApiAddress {
@@ -20,12 +29,6 @@ export interface ApiAddress {
 export interface ApiCoordinates {
     lat: string;
     lng: string;
-}
-
-export interface ApiOsmEntity {
-    type: string;
-    name: string;
-    label: string;
 }
 
 export enum MeansOfTransportation {
