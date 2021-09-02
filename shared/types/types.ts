@@ -8,16 +8,21 @@ export interface ApiSearch {
 }
 
 export interface ApiSearchResponse {
-    centerOfInterest: ApiOsmEntity;
-    entities: ApiOsmEntity[];
+    centerOfInterest: ApiOsmLocation;
+    locationsOfInterest: ApiOsmLocation[];
+}
+
+export interface ApiOsmLocation {
+    entity: ApiOsmEntity;
+    coordinates: ApiCoordinates;
+    distanceInMeters: number;
+    address: ApiAddress;
 }
 
 export interface ApiOsmEntity {
-    label: string;
     type: string;
+    label: string;
     name: string;
-    address?: ApiAddress;
-    coordinates: ApiCoordinates;
 }
 
 export interface ApiAddress {

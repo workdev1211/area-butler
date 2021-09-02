@@ -1,4 +1,10 @@
-import { ApiOsmEntity } from "../types/types";
+import { ApiOsmEntity, MeansOfTransportation } from "../types/types";
+
+export const meansOfTransportations = [
+    { label: 'Zu Fuß', type: MeansOfTransportation.WALK },
+    { label: 'Fahrrad', type: MeansOfTransportation.BICYCLE },
+    { label: 'Auto', type: MeansOfTransportation.CAR },
+];
 
 export const osmEntityTypes: ApiOsmEntity[] = [
     {
