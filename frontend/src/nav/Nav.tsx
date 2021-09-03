@@ -26,7 +26,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
 
     return (
         <nav>
-            <div className="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+            <div className="container mx-auto px-2 sm:px-0">
                 <div className="relative flex items-center justify-between h-16">
                     <div className="absolute inset-y-0 left-0 flex items-center sm:hidden">
                         <button type="button"
@@ -53,7 +53,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                         <div className="flex-shrink-0 flex items-center">
                             <img className="block lg:hidden h-12 w-auto"
                                  src={Logo} alt="Logo"/>
-                            <img className="hidden lg:block h-16 w-auto"
+                            <img className="hidden lg:block h-14 w-auto"
                                  src={Logo} alt="Logo"/>
                         </div>
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
