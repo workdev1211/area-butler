@@ -45,7 +45,6 @@ export class OverpassService {
     }
 
     return elements.map(element => {
-      console.log(element);
       const elementTags: Record<string, any> = element.tags;
 
       const entityType = osmEntityTypes.find(
