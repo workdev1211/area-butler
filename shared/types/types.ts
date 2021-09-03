@@ -1,9 +1,7 @@
 export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
   coordinates?: ApiCoordinates;
-  timeInMinutes?: number; // One of this or the next
-  distanceInMeters?: number;
-  preferredMeansOfTransportation: MeansOfTransportation;
+  meansOfTransportation: TransportationParam[];
   preferredAmenities: Record<OsmName, boolean> | {};
 }
 
