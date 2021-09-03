@@ -20,6 +20,7 @@ export interface ApiOsmLocation {
 }
 
 export interface ApiOsmEntity {
+  id?: string;
   type: OsmType;
   name: OsmName;
   label: string;
