@@ -1,4 +1,9 @@
-import { ApiOsmEntity, MeansOfTransportation, OsmName, OsmType } from "../types/types";
+import {ApiOsmEntity, MeansOfTransportation, OsmName, OsmType, UnitsOfTransportation} from "../types/types";
+
+export const unitsOfTransportation = [
+    { label: 'Minuten', type: UnitsOfTransportation.MINUTES },
+    { label: 'Metern', type: UnitsOfTransportation.METERS }
+]
 
 export const meansOfTransportations = [
   { label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking" },

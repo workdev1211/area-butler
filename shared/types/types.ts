@@ -37,6 +37,17 @@ export interface ApiCoordinates {
   lng: number;
 }
 
+export interface TransportationParam {
+    type: MeansOfTransportation;
+    amount: number;
+    unit: UnitsOfTransportation;
+}
+
+export enum UnitsOfTransportation {
+    MINUTES,
+    METERS
+}
+
 export enum MeansOfTransportation {
   WALK,
   CAR,

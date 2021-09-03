@@ -46,6 +46,7 @@
     "@types/react-router-dom": "^5.1.8",
     "autoprefixer": "^9",
     "postcss": "^7",
-    "tailwindcss": "npm:@tailwindcss/postcss7-compat"
+    "tailwindcss": "npm:@tailwindcss/postcss7-compat",
+    "ts-loader": "8.2.0"
   }
 }
