@@ -1,11 +1,8 @@
 import {
-  ApiCoordinates,
-  ApiSearch,
-  MeansOfTransportation,
+  ApiCoordinates, MeansOfTransportation
 } from '@area-butler-types/types';
 import { HttpService, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { defaultCoreCipherList } from 'constants';
+import { configService } from 'src/config/config.service';
 import { meansOfTransportations } from '../../../../shared/constants/constants';
 
 @Injectable()
@@ -13,8 +10,7 @@ export class IsochroneService {
   private baseUrl = 'https://api.mapbox.com/isochrone/v1/mapbox';
 
   constructor(
-    private http: HttpService,
-    private configService: ConfigService,
+    private http: HttpService
   ) {}
 
   async fetchIsochrone(
@@ -33,7 +29,7 @@ export class IsochroneService {
     const params = {
       [contour]: `${limit / 2},${limit}`,
       polygons: true,
-      access_token: this.configService.get('MAPBOX_ACCESS_TOKEN'),
+      access_token: configService.getMapBoxAccessToken(),
     };
 
     const result = await this.http

@@ -1,13 +1,12 @@
 import { ApiAddress, ApiCoordinates } from '@area-butler-types/types';
 import { Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import * as NodeGeocoder from 'node-geocoder';
 
 @Injectable()
 export class GeocodingService {
   private readonly client;
 
-  constructor(private configService: ConfigService) {
+  constructor() {
     this.client = NodeGeocoder({
       provider: 'openstreetmap',
     });

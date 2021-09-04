@@ -1,0 +1,40 @@
+FROM node:15-alpine
+
+RUN apk --no-cache --virtual build-dependencies add python make g++
+
+USER node
+
+RUN mkdir -p /home/node/app/frontend && mkdir -p /home/node/app/backend && chown -R node:node /home/node/app
+
+WORKDIR /home/node/app
+
+COPY --chown=node:node backend/package*.json ./backend/
+
+COPY --chown=node:node frontend/package*.json ./frontend/
+
+WORKDIR /home/node/app/frontend
+
+RUN npm i
+
+WORKDIR /home/node/app/backend
+
+RUN npm ci
+
+WORKDIR /home/node/app
+
+# Copy local code to the container image.
+COPY --chown=node:node . .
+
+WORKDIR /home/node/app/frontend
+
+RUN npm run build
+
+WORKDIR /home/node/app/backend
+
+RUN npm run build
+
+RUN rm -rf ../frontend
+
+EXPOSE 3000
+# Run the web service on container startup.
+CMD [ "node", "dist/backend/src/main"]
