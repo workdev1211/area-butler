@@ -36,6 +36,10 @@ class ConfigService {
       audience: this.getValue('AUTH0_AUDIENCE'),
     };
   }
+
+  public getMongoConnectionUri() : string {
+    return this.getValue('MONGO_CONNECTION_URI');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([

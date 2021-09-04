@@ -1,15 +1,18 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
-import { ClientModule } from './client/client.module';
-import { LocationModule } from './location/location.module';
 import { AuthModule } from './auth/auth.module';
+import { ClientModule } from './client/client.module';
+import { configService } from './config/config.service';
+import { LocationModule } from './location/location.module';
 
 @Module({
   imports: [ClientModule, 
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'static'),
     }),
+    MongooseModule.forRoot(configService.getMongoConnectionUri()),
     HttpModule,
     LocationModule,
     AuthModule],

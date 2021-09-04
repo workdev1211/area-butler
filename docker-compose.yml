@@ -30,6 +30,7 @@ services:
       - MAPBOX_ACCESS_TOKEN
       - AUTH0_DOMAIN
       - AUTH0_AUDIENCE
+      - MONGO_CONNECTION_URI
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'

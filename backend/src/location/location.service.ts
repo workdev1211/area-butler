@@ -5,9 +5,12 @@ import {
   OsmType,
 } from '@area-butler-types/types';
 import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import { GeocodingService } from 'src/client/geocoding/geocoding.service';
 import { IsochroneService } from 'src/client/isochrone/isochrone.service';
 import { OverpassService } from 'src/client/overpass/overpass.service';
+import { LocationSearch, LocationSearchDocument } from './schema/location-search.schema';
 
 @Injectable()
 export class LocationService {
@@ -15,6 +18,7 @@ export class LocationService {
     private geocodingService: GeocodingService,
     private overpassService: OverpassService,
     private isochroneService: IsochroneService,
+    @InjectModel(LocationSearch.name) private locationModel: Model<LocationSearchDocument>
   ) {}
 
   async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
@@ -39,6 +43,8 @@ export class LocationService {
       routingProfile.amount,
       routingProfile.unit,
     );
+
+    await new this.locationModel({locationSearch: search}).save();
 
     return {
       centerOfInterest: {
