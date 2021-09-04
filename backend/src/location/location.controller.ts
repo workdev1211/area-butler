@@ -1,11 +1,14 @@
 import { ApiSearch, ApiSearchResponse } from '@area-butler-types/types';
 import { Body, Controller, Post } from '@nestjs/common';
+import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { LocationService } from './location.service';
 
 @Controller('api/location')
-export class LocationController {
+export class LocationController extends AuthenticatedController {
 
-    constructor(private locationService: LocationService) {}
+    constructor(private locationService: LocationService) {
+        super();
+    }
 
     @Post('search')
     async searchLocation(@Body() search: ApiSearch) : Promise<ApiSearchResponse> {

@@ -3,6 +3,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ClientModule } from './client/client.module';
 import { LocationModule } from './location/location.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [ClientModule, 
@@ -10,6 +11,7 @@ import { LocationModule } from './location/location.module';
       rootPath: join(__dirname, '..', '..', 'static'),
     }),
     HttpModule,
-    LocationModule],
+    LocationModule,
+    AuthModule],
 })
 export class AppModule {}

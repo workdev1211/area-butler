@@ -28,6 +28,7 @@ services:
     environment:
       - PORT=3000
       - MAPBOX_ACCESS_TOKEN
+      - AUTH0_DOMAIN
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'

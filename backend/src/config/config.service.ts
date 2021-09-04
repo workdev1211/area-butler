@@ -13,7 +13,7 @@ class ConfigService {
   }
 
   public ensureValues(keys: string[]) {
-    keys.forEach((k) => this.getValue(k, true));
+    keys.forEach(k => this.getValue(k, true));
     return this;
   }
 
@@ -29,8 +29,17 @@ class ConfigService {
   public getMapBoxAccessToken(): string {
     return this.getValue('MAPBOX_ACCESS_TOKEN');
   }
+
+  public getAuthConfig(): { domain: string; audience: string } {
+    return {
+      domain: this.getValue('AUTH0_DOMAIN'),
+      audience: this.getValue('AUTH0_AUDIENCE'),
+    };
+  }
 }
 
-const configService = new ConfigService(process.env).ensureValues(['MAPBOX_ACCESS_TOKEN']);
+const configService = new ConfigService(process.env).ensureValues([
+  'MAPBOX_ACCESS_TOKEN',
+]);
 
 export { configService };
