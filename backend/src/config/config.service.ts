@@ -31,12 +31,6 @@ class ConfigService {
   }
 }
 
-const configService = new ConfigService(process.env).ensureValues([
-  'DATABASE_HOST',
-  'DATABASE_PORT',
-  'DATABASE_USER',
-  'DATABASE_PASSWORD',
-  'DATABASE_NAME',
-]);
+const configService = new ConfigService(process.env).ensureValues(['MAPBOX_ACCESS_TOKEN']);
 
 export { configService };

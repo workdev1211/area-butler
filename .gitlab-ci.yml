@@ -1,0 +1,49 @@
+variables:
+  PROJECT_NAME: 'kudiba/area-butler'
+
+default:
+  image: docker:20.10.6
+  tags:
+    - strato
+
+build:
+  stage: build
+  tags:
+    - strato
+  script:
+    - apk add --no-cache docker-compose
+    - docker-compose build
+    - docker tag ${PROJECT_NAME} ${PROJECT_NAME}-${CI_BUILD_REF_SLUG}:${CI_COMMIT_SHORT_SHA}
+
+deploy:
+  stage: deploy
+  tags:
+    - strato
+  environment:
+    name: production
+    url: 'https://${PROJECT_NAME}-${CI_BUILD_REF_SLUG}.x.syndicats.co/'
+    on_stop: undeploy
+  script:
+    - export MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
+    - docker-compose -p 'area-butler' down || true
+    - docker-compose -p 'area-butler' up -d
+  only:
+    - main
+
+undeploy:
+  stage: deploy
+  tags:
+    - strato
+  variables:
+    GIT_STRATEGY: none # requiring a deleted branch is not possible
+  environment:
+    name: production
+    action: stop
+  when: manual
+  script:
+    - apk add --no-cache docker-compose
+    - docker-compose -p 'area-butler' down || true
+    - docker-compose -p 'area-butler' rm --force
+    - echo "Image deleted"
+  only:
+    - main
