@@ -2,12 +2,27 @@ export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
   coordinates?: ApiCoordinates;
   meansOfTransportation: TransportationParam[];
-  preferredAmenities: Record<OsmName, boolean> | {};
+  preferredAmenities: OsmName[];
 }
 
 export interface ApiSearchResponse {
   centerOfInterest: ApiOsmLocation;
   locationsOfInterest: ApiOsmLocation[];
+  isochrone: ApiIsochrone;
+}
+
+export interface ApiIsochrone {
+  features: ApiIsochroneFeature[],
+  type: string;
+}
+
+export interface ApiIsochroneFeature {
+  properties: Record<string, any>;
+  geometry: {
+    coordinates: any[];
+    type: string;
+  },
+  type: string;
 }
 
 export interface ApiOsmLocation {
@@ -42,14 +57,14 @@ export interface TransportationParam {
 }
 
 export enum UnitsOfTransportation {
-    MINUTES,
-    METERS
+    MINUTES = "MINUTES",
+    METERS = "METERS"
 }
 
 export enum MeansOfTransportation {
-  WALK,
-  CAR,
-  BICYCLE,
+  WALK = "WALK",
+  CAR = "CAR",
+  BICYCLE = "BICYCLE",
 }
 
 export enum OsmType {

@@ -1,5 +1,5 @@
 import {
-  ApiCoordinates, MeansOfTransportation
+  ApiCoordinates, ApiIsochrone, MeansOfTransportation, UnitsOfTransportation
 } from '@area-butler-types/types';
 import { HttpService, Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';
@@ -16,11 +16,10 @@ export class IsochroneService {
   async fetchIsochrone(
     preferredMeansOfTransportation: MeansOfTransportation,
     coordinates: ApiCoordinates,
-    distanceInMeters?: number,
-    timeInMinutes?: number,
-  ) {
-    const contour = !!distanceInMeters ? 'contours_meters' : 'contours_minutes';
-    const limit = distanceInMeters || timeInMinutes;
+    limit: number,
+    unit: UnitsOfTransportation,
+  ) : Promise<ApiIsochrone> {
+    const contour = unit === UnitsOfTransportation.METERS ? 'contours_meters' : 'contours_minutes';
     const routingProfile =
       meansOfTransportations.find(
         mot => mot.type === preferredMeansOfTransportation,
