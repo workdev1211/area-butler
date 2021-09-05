@@ -1,6 +1,9 @@
 import {
+  ApiIsochrone,
+  ApiOsmLocation,
   ApiSearch,
   ApiSearchResponse,
+  MeansOfTransportation,
   OsmName,
   OsmType,
 } from '@area-butler-types/types';
@@ -22,27 +25,37 @@ export class LocationService {
   ) {}
 
   async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
-    const coordinates = !!search.coordinates
+    const coordinates = !!search?.coordinates
       ? search.coordinates
-      : await this.geocodingService.geocode(search.address);
-    const address = search.address
+      : (await this.geocodingService.geocode(search.address));
+    const address = !!search?.address
       ? search.address
-      : await this.geocodingService.reverse(search.coordinates);
-    const routingProfile = search.meansOfTransportation[0];
+      : (await this.geocodingService.reverse(search.coordinates));
     const preferredAmenities = search.preferredAmenities;
 
-    const locationsOfInterest = await this.overpassService.fetchEntites(
-      coordinates,
-      routingProfile.amount,
-      preferredAmenities,
-    );
+  
+    const routingProfiles = {};
+    for (const routingProfile of search.meansOfTransportation) {
+      const locationsOfInterest = await this.overpassService.fetchEntites(
+        coordinates,
+        routingProfile.amount,
+        preferredAmenities,
+      );
+      
+      const isochrone = await this.isochroneService.fetchIsochrone(
+        routingProfile.type,
+        coordinates,
+        routingProfile.amount,
+        routingProfile.unit,
+      );
+      
+      routingProfiles[routingProfile.type] = {
+        locationsOfInterest,
+        isochrone
+      }
+    }
+
     
-    const isochrone = await this.isochroneService.fetchIsochrone(
-      routingProfile.type,
-      coordinates,
-      routingProfile.amount,
-      routingProfile.unit,
-    );
 
     await new this.locationModel({locationSearch: search}).save();
 
@@ -57,8 +70,7 @@ export class LocationService {
         distanceInMeters: 0,
         address
       },
-      locationsOfInterest,
-      isochrone
+      routingProfiles: routingProfiles as Record<MeansOfTransportation, {locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone}>
     };
   }
 }

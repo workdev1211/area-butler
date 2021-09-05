@@ -14,8 +14,7 @@ export interface ApiSearch {
 
 export interface ApiSearchResponse {
   centerOfInterest: ApiOsmLocation;
-  locationsOfInterest: ApiOsmLocation[];
-  isochrone: ApiIsochrone;
+  routingProfiles: Record<MeansOfTransportation, {locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone}>;
 }
 
 export interface ApiIsochrone {
