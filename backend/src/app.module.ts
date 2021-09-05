@@ -4,6 +4,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
+import { ConfigController } from './config/config.controller';
 import { configService } from './config/config.service';
 import { LocationModule } from './location/location.module';
 
@@ -16,5 +17,6 @@ import { LocationModule } from './location/location.module';
     HttpModule,
     LocationModule,
     AuthModule],
+    controllers: [ConfigController]
 })
 export class AppModule {}

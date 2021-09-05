@@ -1,3 +1,4 @@
+import Authenticated from 'auth/authenticated';
 import React from 'react';
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import './App.css';
@@ -11,7 +12,9 @@ function App() {
                 <Nav/>
                 <Switch>
                     <Route path="/">
+                    <Authenticated>
                         <Start />
+                    </Authenticated>
                     </Route>
                 </Switch>
             </div>

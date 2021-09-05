@@ -2,6 +2,8 @@ import React, {FunctionComponent, useRef, useState} from 'react';
 import Logo from 'assets/img/logo.png';
 import useOnClickOutside from "../hooks/onclickoutside";
 import { Link } from 'react-router-dom';
+import LoginButton from '../auth/login-button';
+import LogoutButton from '../auth/logout-button';
 
 type NavProps = {
 
@@ -60,6 +62,8 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                             <div className="flex space-x-4">
                                 <Link to="/" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
                                    aria-current="page">Start</Link>
+                                <LoginButton></LoginButton>
+                                <LogoutButton></LogoutButton>
                             </div>
                         </div>
                     </div>

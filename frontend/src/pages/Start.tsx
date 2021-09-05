@@ -1,7 +1,7 @@
-import React, {FunctionComponent, useState} from 'react';
-import {TransportationParam, UnitsOfTransportation} from "../../../shared/types/types";
-import {meansOfTransportations, unitsOfTransportation} from "../../../shared/constants/constants";
-import './Start.css'
+import React, { FunctionComponent, useState } from 'react';
+import { meansOfTransportations, unitsOfTransportation } from "../../../shared/constants/constants";
+import { TransportationParam, UnitsOfTransportation } from "../../../shared/types/types";
+import './Start.css';
 
 type GeoLocation = {
     latitude?: number | null,

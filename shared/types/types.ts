@@ -1,3 +1,10 @@
+export interface ApiConfig {
+  auth: {
+    clientId: string;
+    domain: string;
+  }
+}
+
 export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
   coordinates?: ApiCoordinates;
