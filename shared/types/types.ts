@@ -5,7 +5,10 @@ export interface ApiConfig {
   },
   googleApiKey: string;
 }
-
+export interface ApiUser {
+  fullname: string;
+  email: string;
+}
 export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
   coordinates?: ApiCoordinates;

@@ -7,6 +7,7 @@ import { ClientModule } from './client/client.module';
 import { ConfigController } from './config/config.controller';
 import { configService } from './config/config.service';
 import { LocationModule } from './location/location.module';
+import { UserModule } from './user/user.module';
 
 @Module({
   imports: [ClientModule, 
@@ -16,7 +17,8 @@ import { LocationModule } from './location/location.module';
     MongooseModule.forRoot(configService.getMongoConnectionUri()),
     HttpModule,
     LocationModule,
-    AuthModule],
+    AuthModule,
+    UserModule],
     controllers: [ConfigController]
 })
 export class AppModule {}
