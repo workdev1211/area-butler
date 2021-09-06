@@ -2,6 +2,8 @@ FROM node:15-alpine
 
 RUN apk --no-cache --virtual build-dependencies add python make g++
 
+RUN npm i -g yarn
+
 USER node
 
 RUN mkdir -p /home/node/app/frontend && mkdir -p /home/node/app/backend && chown -R node:node /home/node/app
@@ -13,8 +15,6 @@ COPY --chown=node:node backend/package*.json ./backend/
 COPY --chown=node:node frontend/package*.json ./frontend/
 
 WORKDIR /home/node/app/frontend
-
-RUN npm i -g yarn
 
 RUN yarn install
 
