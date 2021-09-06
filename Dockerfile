@@ -14,7 +14,9 @@ COPY --chown=node:node frontend/package*.json ./frontend/
 
 WORKDIR /home/node/app/frontend
 
-RUN npm i
+RUN npm i -g yarn
+
+RUN yarn install
 
 WORKDIR /home/node/app/backend
 
