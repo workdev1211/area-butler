@@ -225,7 +225,7 @@ const Start: FunctionComponent = () => {
     return await getLatLng(latlngResults[0]);
   }
 
-  const [localityOptions, setLocalityOptions] = useState<OsmName[]>([]);
+  const [localityOptions, setLocalityOptions] = useState<OsmName[]>(osmEntityTypes.map(entity => entity.name));
   const localities = osmEntityTypes.map(entity => {
     return (
         <label
