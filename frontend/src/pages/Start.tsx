@@ -1,18 +1,16 @@
-import { useAuth0 } from "@auth0/auth0-react";
-import React, { FunctionComponent, useState } from "react";
-import {
-  meansOfTransportations,
-  unitsOfTransportation,
-} from "../../../shared/constants/constants";
+import {useAuth0} from "@auth0/auth0-react";
+import React, {FunctionComponent, useContext, useState} from "react";
+import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {
   ApiSearch,
   ApiSearchResponse,
-  MeansOfTransportation,
   OsmName,
   TransportationParam,
   UnitsOfTransportation,
 } from "../../../shared/types/types";
 import "./Start.css";
+import {ConfigContext} from "../context/ConfigContext";
 
 type GeoLocation = {
   latitude?: number | null;
@@ -20,6 +18,8 @@ type GeoLocation = {
 };
 
 const Start: FunctionComponent = () => {
+  const { googleApiKey }= useContext(ConfigContext);
+
   const [locationBusy, setLocationBusy] = useState(false);
   const [location, setLocation] = useState<GeoLocation>({});
 
@@ -210,6 +210,21 @@ const Start: FunctionComponent = () => {
     );
   });
 
+  const [value, setValue] = useState(null);
+  const deriveLangLat = async (value: any) => {
+    const result = await deriveGeocodeByAddress(value.label);
+    setLocation({
+      longitude: result.lng,
+      latitude: result.lat
+    });
+    setValue(value);
+  }
+
+  const deriveGeocodeByAddress = async (address: string) => {
+    const latlngResults = await geocodeByAddress(address);
+    return await getLatLng(latlngResults[0]);
+  }
+
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
@@ -217,11 +232,21 @@ const Start: FunctionComponent = () => {
         <div className="grid grid-cols-2 gap-6 mt-5">
           <label className="col-span-2">
             <span className="text-gray-500">Adresse</span>
-            <input
-              type="text"
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-300 focus:ring focus:ring-indigo-200 focus:ring-opacity-50"
-              placeholder="Suchen..."
-            />
+            <GooglePlacesAutocomplete
+                apiOptions={{
+                  language: 'de', region: 'de'
+                }}
+                autocompletionRequest={{
+                  componentRestrictions: {
+                    country: ['de']
+                  }
+                }}
+                minLengthAutocomplete={5}
+                selectProps={{
+                  value,
+                  onChange: deriveLangLat,
+                }}
+                apiKey={googleApiKey}/>
           </label>
           <div className="flex gap-6">
             <label className="flex-1">

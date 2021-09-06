@@ -7,11 +7,13 @@ export class ConfigController {
   @Get()
   public fetchConfig(): ApiConfig {
     const { domain, audience } = configService.getAuthConfig();
+    const googleApiKey = configService.getGoogleApiKey();
     return {
       auth: {
         domain,
         clientId: audience,
       },
+      googleApiKey
     };
   }
 }

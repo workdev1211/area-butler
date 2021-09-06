@@ -2,7 +2,8 @@ export interface ApiConfig {
   auth: {
     clientId: string;
     domain: string;
-  }
+  },
+  googleApiKey: string;
 }
 
 export interface ApiSearch {

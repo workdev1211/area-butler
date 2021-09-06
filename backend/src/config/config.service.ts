@@ -40,6 +40,10 @@ class ConfigService {
   public getMongoConnectionUri() : string {
     return this.getValue('MONGO_CONNECTION_URI');
   }
+
+  public getGoogleApiKey(): string {
+    return this.getValue('GOOGLE_API_KEY');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
