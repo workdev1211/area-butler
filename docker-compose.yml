@@ -31,6 +31,7 @@ services:
       - AUTH0_DOMAIN
       - AUTH0_AUDIENCE
       - MONGO_CONNECTION_URI
+      - GOOGLE_API_KEY
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
