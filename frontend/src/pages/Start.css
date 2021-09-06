@@ -1,3 +1,8 @@
 input:checked ~ .dot {
     transform: translateX(100%);
 }
+
+input.checkbox:checked ~ .dot {
+    transform: translateX(100%);
+    @apply bg-red-500
+}

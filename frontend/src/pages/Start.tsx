@@ -1,7 +1,7 @@
 import {useAuth0} from "@auth0/auth0-react";
 import React, {FunctionComponent, useContext, useState} from "react";
 import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
-import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
+import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {
   ApiSearch,
   ApiSearchResponse,
@@ -55,7 +55,7 @@ const Start: FunctionComponent = () => {
         lng: location.longitude!,
       },
       meansOfTransportation: transportation,
-      preferredAmenities: [OsmName.bar], // TODO add right amenities
+      preferredAmenities: [...localityOptions],
     };
 
     const response = await fetch(
@@ -225,6 +225,45 @@ const Start: FunctionComponent = () => {
     return await getLatLng(latlngResults[0]);
   }
 
+  const [localityOptions, setLocalityOptions] = useState<OsmName[]>([]);
+  const localities = osmEntityTypes.map(entity => {
+    return (
+        <label
+            htmlFor={"toggle-" + entity.label}
+            className="flex items-end mb-2.5 cursor-pointer"
+        >
+          <div className="relative mb-1">
+            <input
+                id={"toggle-" + entity.label}
+                type="checkbox"
+                className="checkbox sr-only"
+                checked={localityOptions.some(
+                    (option) =>
+                        option === entity.name
+                )}
+                onChange={(e) => {
+                  if (e.target.checked) {
+                    setLocalityOptions([
+                        ...localityOptions,
+                        entity.name
+                    ])
+                  } else {
+                    setLocalityOptions(
+                        localityOptions.filter(option => option !== entity.name)
+                    )
+                  }
+                }}
+            />
+            <div className="w-10 h-4 bg-gray-200 rounded-full shadow-inner"></div>
+            <div className="dot absolute w-6 h-6 bg-white rounded-full shadow border -left-1 -top-1 transition"></div>
+          </div>
+          <div className="ml-3 text-gray-700 font-medium">
+            { entity.label }
+          </div>
+        </label>
+    )
+  })
+
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
@@ -309,6 +348,10 @@ const Start: FunctionComponent = () => {
         </div>
         <h2 className="text-xl mt-10">Fortbewegungsmittel</h2>
         <div className="flex-col gap-6 mt-5">{transportationItems}</div>
+        <h2 className="text-xl mt-10">Lokalitäten</h2>
+        <div className="grid grid-cols-3 gap-6 mt-5">
+          {localities}
+        </div>
         <div className="flex-col gap-6 mt-5">
           <button
             type="button"
