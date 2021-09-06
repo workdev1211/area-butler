@@ -1,6 +1,6 @@
 import {useAuth0} from "@auth0/auth0-react";
 import React, {FunctionComponent, useContext, useState} from "react";
-import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
 import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {
   ApiSearch,
@@ -118,7 +118,7 @@ const Start: FunctionComponent = () => {
                   : "Im Umkreis von"}{" "}
               </span>
               <input
-                type="text"
+                type="number"
                 value={
                   transportation.find((tr) => tr.type === t.type)?.amount || ""
                 }
@@ -128,7 +128,7 @@ const Start: FunctionComponent = () => {
                       tr.type === t.type
                         ? {
                             ...tr,
-                            amount: parseInt(event.target.value),
+                            amount: transportation.find((tr) => tr.type === t.type)?.unit === UnitsOfTransportation.MINUTES ? parseInt(event.target.value) > 60 ? 60 : parseInt(event.target.value) : parseInt(event.target.value),
                           }
                         : tr
                     )
