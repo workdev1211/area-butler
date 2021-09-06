@@ -1,15 +1,17 @@
 import React, {FunctionComponent, useRef, useState} from 'react';
 import Logo from 'assets/img/logo.png';
 import useOnClickOutside from "../hooks/onclickoutside";
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 import LoginButton from '../auth/login-button';
-import LogoutButton from '../auth/logout-button';
+import {useAuth0} from "@auth0/auth0-react";
 
 type NavProps = {
 
 }
 
 const Nav: FunctionComponent<NavProps> = (props) => {
+
+    const { logout, user, isAuthenticated } = useAuth0();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
     const [userMenuOpen, setUserMenuOpen] = useState(false);
@@ -62,8 +64,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                             <div className="flex space-x-4">
                                 <Link to="/" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
                                    aria-current="page">Start</Link>
-                                <LoginButton></LoginButton>
-                                <LogoutButton></LogoutButton>
+                                { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>
                         </div>
                     </div>
@@ -79,14 +80,14 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                         {/*    </svg>*/}
                         {/*</button>*/}
 
-                        <div className="ml-3 relative">
+                        { isAuthenticated && <div className="ml-3 relative">
                             <div>
                                 <button type="button"
                                         className="bg-gray-800 flex text-sm rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white"
                                         id="user-menu-button" aria-expanded="false" aria-haspopup="true" onClick={() => setUserMenuOpen(!userMenuOpen)}>
                                     <span className="sr-only">Benutzer Menü</span>
                                     <img className="h-8 w-8 rounded-full"
-                                         src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                                         src={user?.picture}
                                          alt=""/>
                                 </button>
                             </div>
@@ -99,10 +100,12 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                                       id="user-menu-item-0">Profil</Link>
                                 <Link to="/" className="block px-4 py-2 text-sm text-gray-700" role="menuitem"
                                       id="user-menu-item-1">Einstellungen</Link>
-                                <Link to="/" className="block px-4 py-2 text-sm text-gray-700" role="menuitem"
-                                      id="user-menu-item-2">Abmelden</Link>
+                                <button onClick={() => logout({
+                                    returnTo: window.location.origin
+                                })} className="block px-4 py-2 text-sm text-gray-700" role="menuitem"
+                                      id="user-menu-item-2">Abmelden</button>
                             </div>
-                        </div>
+                        </div> }
                     </div>
                 </div>
             </div>

@@ -231,6 +231,7 @@ const Start: FunctionComponent = () => {
         <label
             htmlFor={"toggle-" + entity.label}
             className="flex items-end mb-2.5 cursor-pointer"
+            key={entity.name}
         >
           <div className="relative mb-1">
             <input
