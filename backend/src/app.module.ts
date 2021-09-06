@@ -8,6 +8,7 @@ import { ConfigController } from './config/config.controller';
 import { configService } from './config/config.service';
 import { LocationModule } from './location/location.module';
 import { UserModule } from './user/user.module';
+import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 
 @Module({
   imports: [ClientModule, 
@@ -18,7 +19,8 @@ import { UserModule } from './user/user.module';
     HttpModule,
     LocationModule,
     AuthModule,
-    UserModule],
+    UserModule,
+    RealEstateListingModule],
     controllers: [ConfigController]
 })
 export class AppModule {}

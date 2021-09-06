@@ -9,6 +9,19 @@ export interface ApiUser {
   fullname: string;
   email: string;
 }
+
+export interface ApiRealEstateListing {
+  id: string;
+  name: string;
+  address: ApiAddress;
+  coordinates: ApiCoordinates;
+}
+
+export interface ApiUpsertRealEstateListing {
+  name: string;
+  address: ApiAddress;
+  coordinates: ApiCoordinates;
+}
 export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
   coordinates?: ApiCoordinates;
