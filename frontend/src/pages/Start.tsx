@@ -22,7 +22,6 @@ const Start: FunctionComponent = () => {
     const {getIdTokenClaims} = useAuth0();
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [locationSearchResult, setLocationSearchResult] =
         useState<ApiSearchResponse | null>(null);
     const performLocationSearch = async () => {
@@ -41,7 +40,6 @@ const Start: FunctionComponent = () => {
 
         const response = await fetch(
             `${baseUrl}/api/location/search`,
-
             {
                 method: "POST",
                 headers: {
@@ -55,7 +53,7 @@ const Start: FunctionComponent = () => {
         setLocationSearchResult(await response.json());
         setLocationSearchBusy(false);
     };
-    const locationAutoComplete = () => {
+    const LocationAutoComplete = () => {
         return (
             <label className="col-span-2">
                 <span className="text-gray-500">Adresse</span>
@@ -109,7 +107,7 @@ const Start: FunctionComponent = () => {
         const latlngResults = await geocodeByAddress(address);
         return await getLatLng(latlngResults[0]);
     }
-    const locationLatLng = () => {
+    const LocationLatLng = () => {
         return (
             <>
                 <div className="flex gap-6">
@@ -339,7 +337,7 @@ const Start: FunctionComponent = () => {
         )
     })
 
-    const searchButton = () => {
+    const SearchButton = () => {
         return (
             <button
                 type="button"
@@ -379,8 +377,8 @@ const Start: FunctionComponent = () => {
             <h1 className="flex text-2xl">Umgebungsanalyse</h1>
             <form>
                 <div className="grid grid-cols-2 gap-6 mt-5">
-                    {locationAutoComplete()}
-                    {locationLatLng()}
+                    <LocationAutoComplete />
+                    <LocationLatLng />
                 </div>
                 <h2 className="text-xl mt-10">Fortbewegungsmittel</h2>
                 <div className="flex-col gap-6 mt-5">
@@ -391,7 +389,7 @@ const Start: FunctionComponent = () => {
                     {localities}
                 </div>
                 <div className="flex-col gap-6 mt-5">
-                    { searchButton() }
+                    <SearchButton />
                 </div>
             </form>
         </div>
