@@ -8,7 +8,7 @@ import Start from "./pages/Start";
 function App() {
     return (
         <Router>
-            <div className="App">
+            <div className="App px-4">
                 <Nav/>
                 <Switch>
                     <Route path="/">

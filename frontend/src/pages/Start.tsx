@@ -387,7 +387,7 @@ const Start: FunctionComponent = () => {
                     {transportationItems}
                 </div>
                 <h2 className="text-xl mt-10">Lokalitäten</h2>
-                <div className="grid grid-cols-3 gap-6 mt-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
                     {localities}
                 </div>
                 <div className="flex-col gap-6 mt-5">
