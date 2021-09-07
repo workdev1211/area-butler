@@ -16,6 +16,7 @@ import {GeocodingService} from 'src/client/geocoding/geocoding.service';
 import {IsochroneService} from 'src/client/isochrone/isochrone.service';
 import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument} from './schema/location-search.schema';
+import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 
 @Injectable()
 export class LocationService {
@@ -45,11 +46,11 @@ export class LocationService {
       }
       switch (routingProfile.type) {
         case MeansOfTransportation.BICYCLE:
-          return amount * 233;
+          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.BICYCLE)?.multiplicator;
         case MeansOfTransportation.CAR:
-          return amount * 338;
+          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.CAR)?.multiplicator;
         case MeansOfTransportation.WALK:
-          return amount * 83;
+          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.WALK)?.multiplicator;
         default:
           return 0;
       }

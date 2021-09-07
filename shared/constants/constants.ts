@@ -1,14 +1,20 @@
 import {ApiOsmEntity, MeansOfTransportation, OsmName, OsmType, UnitsOfTransportation} from "../types/types";
 
+export const calculateMinutesToMeters = [
+    {mean: MeansOfTransportation.WALK, multiplicator: 83},
+    {mean: MeansOfTransportation.BICYCLE, multiplicator: 233},
+    {mean: MeansOfTransportation.CAR, multiplicator: 338},
+]
+
 export const unitsOfTransportation = [
-    { label: 'Minuten', type: UnitsOfTransportation.MINUTES },
-    { label: 'Metern', type: UnitsOfTransportation.METERS }
+    {label: 'Minuten', type: UnitsOfTransportation.MINUTES},
+    {label: 'Metern', type: UnitsOfTransportation.METERS}
 ]
 
 export const meansOfTransportations = [
-  { label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking" },
-  { label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling" },
-  { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" },
+    {label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking"},
+    {label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling"},
+    {label: "Auto", type: MeansOfTransportation.CAR, mode: "driving"},
 ];
 
 export const osmEntityTypes: ApiOsmEntity[] = [

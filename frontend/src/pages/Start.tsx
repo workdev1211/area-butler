@@ -3,7 +3,6 @@ import React, {FunctionComponent, useContext, useState} from "react";
 import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
 import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {
-    ApiOsmLocation,
     ApiSearch,
     ApiSearchResponse,
     OsmName,
@@ -376,9 +375,27 @@ const Start: FunctionComponent = () => {
 
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 
-    const getTopGroupedResults = (locations: ApiOsmLocation[]): Record<string, ApiOsmLocation[]> => {
-        const sortedByDistanceAsc = locations.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
-        return groupBy(sortedByDistanceAsc, (item: ApiOsmLocation) => item.entity.label);
+    const deriveTableData = () => {
+        if (!locationSearchResult) {
+            return {};
+        }
+        const allLocations = Object.values(locationSearchResult.routingProfiles).map((a) => a.locationsOfInterest.sort((a, b) => a.distanceInMeters - b.distanceInMeters)).flat();
+        const allLocationIds = new Set(allLocations.map(location => location.entity.id));
+        const data = Array.from(allLocationIds).map(locationId => {
+            const location = allLocations.find(l => l.entity.id === locationId)!;
+            return {
+                id: locationId,
+                name: location.entity.name,
+                label: location.entity.label,
+                type: location.entity.type,
+                distanceInMeters: location.distanceInMeters,
+                byFoot: locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
+                byBike: locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
+                byCar: locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false
+            }
+        });
+        const result = groupBy(data, (item: Record<string, any>) => item.label);
+        return result;
     }
 
     return (
@@ -400,24 +417,14 @@ const Start: FunctionComponent = () => {
                 <div className="flex-col gap-6 mt-5">
                     <SearchButton/>
                 </div>
-                <div className="grid grid-cols-2 gap-6 mt-5">
-                    {locationSearchResult && Object.entries(locationSearchResult.routingProfiles)
-                        .map(([name, data]) => {
-                            return (
-                                <div className="mt-20" key={'result-' + name}>
-                                    <h4 className="text-xl">{meansOfTransportations.find(mot => mot.type === name)?.label}</h4>
-                                    {Object.entries(getTopGroupedResults(data.locationsOfInterest)).map(([locationName, items]) =>
-                                        <div className="mt-5" key={name + '-' + locationName}>
-                                        <ResultTable title={locationName} data={items.map(item => ({
-                                            name: item.entity.name,
-                                            distance: item.distanceInMeters
-                                        }))
-                                        }/>
-                                        </div>
-                                    )}
-                                </div>
-                            )
-                        })}
+                <div className="flex-col gap-6 mt-5">
+                    {locationSearchResult && Object.entries(deriveTableData()).map(([label, data]) => {
+                        return (
+                            <div className="mt-10" key={'result-' + label}>
+                                <ResultTable title={label} data={data} />
+                            </div>
+                        )
+                    })}
                 </div>
             </form>
         </div>
