@@ -1,7 +1,7 @@
 import {
   ApiRealEstateListing,
   ApiUpsertRealEstateListing,
-} from '@area-butler-types/types';
+} from '@area-butler-types/real-estate';
 import {
   Body,
   Controller,

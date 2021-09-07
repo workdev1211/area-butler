@@ -1,4 +1,4 @@
-import { ApiUpsertRealEstateListing } from '@area-butler-types/types';
+import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';

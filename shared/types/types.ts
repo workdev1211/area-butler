@@ -2,7 +2,7 @@ export interface ApiConfig {
   auth: {
     clientId: string;
     domain: string;
-  },
+  };
   googleApiKey: string;
 }
 export interface ApiUser {
@@ -10,17 +10,9 @@ export interface ApiUser {
   email: string;
 }
 
-export interface ApiRealEstateListing {
-  id: string;
-  name: string;
-  address: ApiAddress;
-  coordinates: ApiCoordinates;
-}
-
-export interface ApiUpsertRealEstateListing {
-  name: string;
-  address: ApiAddress;
-  coordinates: ApiCoordinates;
+export interface ApiMoneyAmount {
+  amount: number;
+  currency: string;
 }
 export interface ApiSearch {
   address?: ApiAddress; // One of this or the next
@@ -31,11 +23,14 @@ export interface ApiSearch {
 
 export interface ApiSearchResponse {
   centerOfInterest: ApiOsmLocation;
-  routingProfiles: Record<MeansOfTransportation, {locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone}>;
+  routingProfiles: Record<
+    MeansOfTransportation,
+    { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }
+  >;
 }
 
 export interface ApiIsochrone {
-  features: ApiIsochroneFeature[],
+  features: ApiIsochroneFeature[];
   type: string;
 }
 
@@ -44,7 +39,7 @@ export interface ApiIsochroneFeature {
   geometry: {
     coordinates: any[];
     type: string;
-  },
+  };
   type: string;
 }
 
@@ -74,14 +69,14 @@ export interface ApiCoordinates {
 }
 
 export interface TransportationParam {
-    type: MeansOfTransportation;
-    amount: number;
-    unit: UnitsOfTransportation;
+  type: MeansOfTransportation;
+  amount: number;
+  unit: UnitsOfTransportation;
 }
 
 export enum UnitsOfTransportation {
-    MINUTES = "MINUTES",
-    METERS = "METERS"
+  MINUTES = "MINUTES",
+  METERS = "METERS",
 }
 
 export enum MeansOfTransportation {
