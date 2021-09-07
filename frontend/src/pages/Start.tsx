@@ -3,6 +3,7 @@ import React, {FunctionComponent, useContext, useState} from "react";
 import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
 import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {
+    ApiOsmLocation,
     ApiSearch,
     ApiSearchResponse,
     OsmName,
@@ -11,6 +12,7 @@ import {
 } from "../../../shared/types/types";
 import "./Start.css";
 import {ConfigContext} from "../context/ConfigContext";
+import ResultTable from "../search/ResultTable";
 
 type GeoLocation = {
     latitude?: number | null;
@@ -372,13 +374,20 @@ const Start: FunctionComponent = () => {
         )
     }
 
+    const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+
+    const getTopGroupedResults = (locations: ApiOsmLocation[]): Record<string, ApiOsmLocation[]> => {
+        const sortedByDistanceAsc = locations.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+        return groupBy(sortedByDistanceAsc, (item: ApiOsmLocation) => item.entity.label);
+    }
+
     return (
         <div className="container mx-auto mt-10">
             <h1 className="flex text-2xl">Umgebungsanalyse</h1>
             <form>
                 <div className="grid grid-cols-2 gap-6 mt-5">
-                    <LocationAutoComplete />
-                    <LocationLatLng />
+                    <LocationAutoComplete/>
+                    <LocationLatLng/>
                 </div>
                 <h2 className="text-xl mt-10">Fortbewegungsmittel</h2>
                 <div className="flex-col gap-6 mt-5">
@@ -389,7 +398,26 @@ const Start: FunctionComponent = () => {
                     {localities}
                 </div>
                 <div className="flex-col gap-6 mt-5">
-                    <SearchButton />
+                    <SearchButton/>
+                </div>
+                <div className="grid grid-cols-2 gap-6 mt-5">
+                    {locationSearchResult && Object.entries(locationSearchResult.routingProfiles)
+                        .map(([name, data]) => {
+                            return (
+                                <div className="mt-20" key={'result-' + name}>
+                                    <h4 className="text-xl">{meansOfTransportations.find(mot => mot.type === name)?.label}</h4>
+                                    {Object.entries(getTopGroupedResults(data.locationsOfInterest)).map(([locationName, items]) =>
+                                        <div className="mt-5" key={name + '-' + locationName}>
+                                        <ResultTable title={locationName} data={items.map(item => ({
+                                            name: item.entity.name,
+                                            distance: item.distanceInMeters
+                                        }))
+                                        }/>
+                                        </div>
+                                    )}
+                                </div>
+                            )
+                        })}
                 </div>
             </form>
         </div>
