@@ -1,17 +1,17 @@
-import {useAuth0} from "@auth0/auth0-react";
-import React, {FunctionComponent, useContext, useState} from "react";
-import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
-import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
+import React, { FunctionComponent, useContext, useState } from "react";
+import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
+import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
 import {
     ApiSearch,
     ApiSearchResponse,
     OsmName,
     TransportationParam,
-    UnitsOfTransportation,
+    UnitsOfTransportation
 } from "../../../shared/types/types";
-import "./Start.css";
-import {ConfigContext} from "../context/ConfigContext";
+import { ConfigContext } from "../context/ConfigContext";
+import { useHttp } from "../hooks/http";
 import ResultTable from "../search/ResultTable";
+import "./Start.css";
 
 type GeoLocation = {
     latitude?: number | null;
@@ -20,16 +20,13 @@ type GeoLocation = {
 
 const Start: FunctionComponent = () => {
     const {googleApiKey} = useContext(ConfigContext);
-    const {getIdTokenClaims} = useAuth0();
+    const {post} = useHttp();
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);
     const [locationSearchResult, setLocationSearchResult] =
         useState<ApiSearchResponse | null>(null);
     const performLocationSearch = async () => {
         setLocationSearchBusy(true);
-        const {__raw} = await getIdTokenClaims();
-        const authorization = `Bearer ${__raw}`;
-        const baseUrl = process.env.REACT_APP_BASE_URL || "";
         const search: ApiSearch = {
             coordinates: {
                 lat: location.latitude!,
@@ -38,20 +35,8 @@ const Start: FunctionComponent = () => {
             meansOfTransportation: transportation,
             preferredAmenities: [...localityOptions],
         };
-
-        const response = await fetch(
-            `${baseUrl}/api/location/search`,
-            {
-                method: "POST",
-                headers: {
-                    Accept: "application/json",
-                    "Content-Type": "application/json",
-                    Authorization: authorization,
-                },
-                body: JSON.stringify(search),
-            }
-        );
-        setLocationSearchResult(await response.json());
+        const result = await post<ApiSearchResponse>('/api/location/search', search);
+        setLocationSearchResult(result);
         setLocationSearchBusy(false);
     };
     const LocationAutoComplete = () => {
