@@ -108,5 +108,6 @@ export enum OsmName {
   post_office = "post office",
   fuel = "fuel",
   station = "station",
+  bus_stop = "bus_stop",
   motorway_link = "motorway_link",
 }

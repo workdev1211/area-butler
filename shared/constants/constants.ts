@@ -80,7 +80,12 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.public_transport,
     name: OsmName.station,
-    label: "ÖPNV Haltestelle",
+    label: "U-Bahn Haltestelle",
+  },
+  {
+    type: OsmType.highway,
+    name: OsmName.bus_stop,
+    label: "Bushaltestelle",
   },
   {
     type: OsmType.highway,
