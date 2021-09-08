@@ -4,6 +4,7 @@ import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../
 import {
     ApiSearch,
     ApiSearchResponse,
+    MeansOfTransportation,
     OsmName,
     TransportationParam,
     UnitsOfTransportation
@@ -159,7 +160,23 @@ const Start: FunctionComponent = () => {
     }
 
     const [transportation, setTransportation] = useState<TransportationParam[]>(
-        []
+        [
+            {
+                type: MeansOfTransportation.WALK,
+                amount: 5,
+                unit: UnitsOfTransportation.MINUTES
+            },
+            {
+                type: MeansOfTransportation.BICYCLE,
+                amount: 15,
+                unit: UnitsOfTransportation.MINUTES
+            },
+            {
+                type: MeansOfTransportation.CAR,
+                amount: 30,
+                unit: UnitsOfTransportation.MINUTES
+            }
+        ]
     );
     const transportationItems = meansOfTransportations.map((t) => {
         return (
@@ -168,6 +185,7 @@ const Start: FunctionComponent = () => {
                     <input
                         type="checkbox"
                         className="form-checkbox text-red-500"
+                        checked={transportation.some(tr => tr.type === t.type)}
                         onChange={(e) => {
                             if (e.target.checked) {
                                 setTransportation([
@@ -359,7 +377,6 @@ const Start: FunctionComponent = () => {
     }
 
 
-
     return (
         <div className="container mx-auto mt-10">
             <h1 className="flex text-2xl">Umgebungsanalyse</h1>
@@ -381,9 +398,9 @@ const Start: FunctionComponent = () => {
                 </div>
             </form>
             {locationSearchResult &&
-                <div className="mt-5">
-                    {locationSearchResult && <SearchResult searchResponse={locationSearchResult}/>}
-                </div>
+            <div className="mt-5">
+                {locationSearchResult && <SearchResult searchResponse={locationSearchResult}/>}
+            </div>
             }
         </div>
     );
