@@ -141,7 +141,7 @@ const Start: FunctionComponent = () => {
             />
           </div>
         </div>
-        <div className="flex items-end justify-start m-0.5">
+        <div className="flex items-end justify-start mb-2">
           <button
             type="button"
             disabled={locationBusy}
@@ -400,31 +400,67 @@ const Start: FunctionComponent = () => {
     );
   };
 
+  const collapseBaseClasses = 'collapse w-full border rounded-box border-base-300 collapse-arrow mt-10';
+  const [collapseSearchOpen, setCollapseSearchOpen] = useState(true);
+  const [collapseTransportationOpen, setCollapseTransportationOpen] = useState(false);
+  const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
+
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
       <form>
-        <div className="flex-col gap-6 mt-5">
-          <LocationAutoComplete />
-          <LocationLatLng />
+        <div className={collapseSearchOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
+          <input type="checkbox" />
+            <div className="collapse-title text-xl font-medium" onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}>
+              1. Standort ermitteln
+            </div>
+            <div className="collapse-content">
+              <div className="flex-col gap-6 mt-5">
+                <LocationAutoComplete />
+                <LocationLatLng />
+              </div>
+            </div>
         </div>
-        <h2 className="text-xl mt-10">Fortbewegungsmittel</h2>
-        <div className="flex-col gap-6 mt-5">{transportationItems}</div>
-        <h2 className="text-xl mt-10">Lokalitäten</h2>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-          {localities}
+        <div className={collapseTransportationOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
+          <input type="checkbox" />
+          <div className="collapse-title text-xl font-medium" onClick={() => setCollapseTransportationOpen(!collapseTransportationOpen)}>
+            2. Fortbewegungsmittel angeben
+          </div>
+          <div className="collapse-content">
+            <div className="flex-col gap-6 mt-5">{transportationItems}</div>
+          </div>
         </div>
-        <div className="flex-col gap-6 mt-5">
-          <SearchButton />
+        <div className={collapseLocalitiesOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
+          <input type="checkbox" />
+          <div className="collapse-title text-xl font-medium" onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)}>
+            3. Lokalitäten auswählen
+          </div>
+          <div className="collapse-content">
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
+              {localities}
+            </div>
+            <div className="flex-col gap-6 mt-5">
+              <SearchButton />
+            </div>
+          </div>
         </div>
       </form>
-      {locationSearchResult && (
-        <div className="mt-5">
-          {locationSearchResult && (
-            <SearchResult searchResponse={locationSearchResult} />
-          )}
+      {locationSearchResult &&
+      <div className={collapseBaseClasses + ' collapse-open'}>
+        <input type="checkbox" />
+        <div className="collapse-title text-xl font-medium">
+          4. Ergebnisse
         </div>
-      )}
+        <div className="collapse-content">
+          <div className="mt-5">
+            {locationSearchResult && (
+                <SearchResult searchResponse={locationSearchResult} />
+            )}
+          </div>
+        </div>
+      </div>
+
+      }
     </div>
   );
 };

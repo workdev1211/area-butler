@@ -6,3 +6,7 @@ input.checkbox:checked ~ .dot {
     transform: translateX(100%);
     @apply bg-red-500
 }
+
+.collapse-title, .collapse-content {
+    background-color: white !important;
+}
