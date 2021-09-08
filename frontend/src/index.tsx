@@ -10,7 +10,7 @@ import {ConfigContext} from "./context/ConfigContext";
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 
 fetch(`${baseUrl}/api/config`).then(async result => {
-    const {auth, googleApiKey} = await result.json() as ApiConfig;
+    const {auth, googleApiKey, mapBoxAccessToken} = await result.json() as ApiConfig;
     ReactDOM.render(
         <React.StrictMode>
             <Auth0Provider
@@ -20,7 +20,8 @@ fetch(`${baseUrl}/api/config`).then(async result => {
             >
                 <ConfigContext.Provider value={{
                     auth,
-                    googleApiKey
+                    googleApiKey,
+                    mapBoxAccessToken
                 }}>
                     <App/>
                 </ConfigContext.Provider>

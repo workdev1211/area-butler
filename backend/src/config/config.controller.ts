@@ -8,12 +8,14 @@ export class ConfigController {
   public fetchConfig(): ApiConfig {
     const { domain, audience } = configService.getAuthConfig();
     const googleApiKey = configService.getGoogleApiKey();
+    const mapBoxAccessToken = configService.getMapBoxAccessToken();
     return {
       auth: {
         domain,
         clientId: audience,
       },
-      googleApiKey
+      googleApiKey,
+      mapBoxAccessToken
     };
   }
 }
