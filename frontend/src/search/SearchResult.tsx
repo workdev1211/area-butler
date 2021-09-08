@@ -85,7 +85,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
                     <input
                         type="checkbox"
                         checked={byBike}
-                        className="checkbox checkbox-xs checkbox-primary"
+                        className="checkbox checkbox-xs checkbox-accent"
                         onChange={(e) => {
                             setByBike(e.target.checked);
                         }}
@@ -95,7 +95,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
                 { byCarAvailable && <label className="flex items-center">
                     <input
                         type="checkbox"
-                        className="checkbox checkbox-xs checkbox-primary"
+                        className="checkbox checkbox-xs"
                         checked={byCar}
                         onChange={(e) => {
                             setByCar(e.target.checked);
