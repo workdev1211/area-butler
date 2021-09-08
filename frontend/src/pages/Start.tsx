@@ -4,15 +4,15 @@ import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../
 import {
     ApiSearch,
     ApiSearchResponse,
+    MeansOfTransportation,
     OsmName,
     TransportationParam,
     UnitsOfTransportation
 } from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {useHttp} from "../hooks/http";
-import ResultTable from "../search/ResultTable";
-import Map from "map/Map"
 import "./Start.css";
+import SearchResult from "../search/SearchResult";
 
 type GeoLocation = {
     latitude?: number | null;
@@ -359,30 +359,7 @@ const Start: FunctionComponent = () => {
         )
     }
 
-    const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
 
-    const deriveTableData = () => {
-        if (!locationSearchResult) {
-            return {};
-        }
-        const allLocations = Object.values(locationSearchResult.routingProfiles).map((a) => a.locationsOfInterest.sort((a, b) => a.distanceInMeters - b.distanceInMeters)).flat();
-        const allLocationIds = new Set(allLocations.map(location => location.entity.id));
-        const data = Array.from(allLocationIds).map(locationId => {
-            const location = allLocations.find(l => l.entity.id === locationId)!;
-            return {
-                id: locationId,
-                name: location.entity.name,
-                label: location.entity.label,
-                type: location.entity.type,
-                distanceInMeters: location.distanceInMeters,
-                byFoot: locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
-                byBike: locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
-                byCar: locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false
-            }
-        });
-        const result = groupBy(data, (item: Record<string, any>) => item.label);
-        return result;
-    }
 
     return (
         <div className="container mx-auto mt-10">
@@ -406,17 +383,22 @@ const Start: FunctionComponent = () => {
             </form>
             {locationSearchResult && <>
                 <div className="mt-5">
-                    {locationSearchResult && <Map searchResponse={locationSearchResult}/>}
+                    {locationSearchResult && <SearchResult searchResponse={locationSearchResult} availableMeans={{
+                    byFoot: transportation.some(t => t.type === MeansOfTransportation.WALK),
+                    byBike: transportation.some(t => t.type === MeansOfTransportation.BICYCLE),
+                    byCar: transportation.some(t => t.type === MeansOfTransportation.CAR),
+                    }}
+                    />}
                 </div>
-                <div className="flex-col gap-6 mt-5">
-                    {Object.entries(deriveTableData()).map(([label, data]) => {
-                        return (
-                            <div className="mt-10" key={'result-' + label}>
-                                <ResultTable title={label} data={data}/>
-                            </div>
-                        )
-                    })}
-                </div>
+                {/*<div className="flex-col gap-6 mt-5">*/}
+                {/*    {Object.entries(deriveTableData()).map(([label, data]) => {*/}
+                {/*        return (*/}
+                {/*            <div className="mt-10" key={'result-' + label}>*/}
+                {/*                <ResultTable title={label} data={data}/>*/}
+                {/*            </div>*/}
+                {/*        )*/}
+                {/*    })}*/}
+                {/*</div>*/}
             </>}
         </div>
     );

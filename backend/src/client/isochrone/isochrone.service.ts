@@ -28,9 +28,8 @@ export class IsochroneService {
       meansOfTransportations.find(
         mot => mot.type === preferredMeansOfTransportation,
       )?.mode || '';
-    const evenLimit = limit % 2 === 0 ? limit : limit + 1;  
     const params = {
-      [contour]: `${evenLimit / 2},${evenLimit}`,
+      [contour]: `${limit}`,
       polygons: true,
       access_token: configService.getMapBoxAccessToken(),
     };

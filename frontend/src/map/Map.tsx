@@ -1,15 +1,22 @@
 import {FunctionComponent, useContext, useState} from "react";
-import {MapContainer, TileLayer, Marker, Popup, CircleMarker, useMapEvents, Polygon, Rectangle} from 'react-leaflet';
-import {LatLngBoundsExpression, LatLngExpression} from "leaflet";
+import {CircleMarker, MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
+import {LatLngExpression} from "leaflet";
 import "./Map.css";
-import {ApiOsmLocation, ApiSearchResponse} from "../../../shared/types/types";
+import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
+import {ResultEntity} from "../search/SearchResult";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
+    entities: ResultEntity[] | null;
+    means: {
+        byFoot: boolean;
+        byBike: boolean;
+        byCar: boolean;
+    }
 };
 
-const Map: FunctionComponent<MapProps> = ({searchResponse}) => {
+const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
@@ -20,33 +27,32 @@ const Map: FunctionComponent<MapProps> = ({searchResponse}) => {
     const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
     const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
-    const LocationMarker = ({ location } : { location: ApiOsmLocation}) => {
+    const LocationMarker = ({ entity } : { entity: ResultEntity }) => {
         const [radius, setRadius] = useState(2);
         const map = useMapEvents({
             zoomend() {
                 setRadius(map.getZoom() > 16 ? 10 : map.getZoom() > 14 ? 6 : 4);
             }
         })
-        const { lat, lng} = location.coordinates;
+        const { lat, lng} = entity.coordinates;
         const locationPosition: LatLngExpression = [lat, lng];
 
         return (
             <CircleMarker center={locationPosition} radius={radius} pathOptions={{color: 'black'}}>
                 <Popup>
-                    <b>{ location.entity.name }</b><br />
-                    <span>{ location.entity.label}</span><br />
-                    <span>{ location.address ? JSON.stringify(location.address) : '' }</span>
+                    <b>{ entity.name }</b><br />
+                    <span>{ entity.label}</span><br />
+                    <span>{ entity.address ? JSON.stringify(entity.address) : '' }</span>
                 </Popup>
             </CircleMarker>
         )
     }
 
-    const inTimePositions = searchResponse.routingProfiles.BICYCLE.isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
-        return [item[1], item[0]];
-    });
-    const inHalfTimePositions = searchResponse.routingProfiles.BICYCLE.isochrone.features[1].geometry.coordinates[0].map((item: number[]) => {
-        return [item[1], item[0]];
-    });
+    const derivePositionForTransportationMean = (profile: MeansOfTransportation) => {
+        return searchResponse.routingProfiles[profile].isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
+            return [item[1], item[0]];
+        });
+    }
 
     return (
         <MapContainer center={position} zoom={zoom} scrollWheelZoom={true}>
@@ -59,15 +65,17 @@ const Map: FunctionComponent<MapProps> = ({searchResponse}) => {
                 tileSize={512}
                 accessToken={mapBoxAccessToken}
             />
-            <Polygon pathOptions={{ color: 'green' }} positions={inTimePositions} />
-            <Polygon pathOptions={{ color: 'blue' }} positions={inHalfTimePositions} />
+            { means.byFoot && <Polygon pathOptions={{ color: 'blue' }} positions={derivePositionForTransportationMean(MeansOfTransportation.WALK)} /> }
+            { means.byBike && <Polygon pathOptions={{ color: 'green' }} positions={derivePositionForTransportationMean(MeansOfTransportation.BICYCLE)} /> }
+            { means.byCar && <Polygon pathOptions={{ color: 'gray' }} positions={derivePositionForTransportationMean(MeansOfTransportation.CAR)} /> }
             <Marker position={position}>
                 <Popup>
                     Mein Standort
                 </Popup>
             </Marker>
-            {searchResponse.routingProfiles.BICYCLE.locationsOfInterest.map(location =>
-                <LocationMarker location={location} key={location.entity.id} />
+            {entities?.map(entity => {
+                   return <LocationMarker entity={entity} key={entity.id}/>
+                }
             )}
         </MapContainer>
     )
