@@ -4,7 +4,7 @@ export interface ApiConfig {
     domain: string;
   };
   googleApiKey: string;
-  mapBoxAccessToken: String;
+  mapBoxAccessToken: string;
 }
 export interface ApiUser {
   fullname: string;

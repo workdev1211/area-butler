@@ -1,6 +1,6 @@
-import React, { FunctionComponent, useContext, useState } from "react";
-import GooglePlacesAutocomplete, { geocodeByAddress, getLatLng } from 'react-google-places-autocomplete';
-import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
+import React, {FunctionComponent, useContext, useState} from "react";
+import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng} from 'react-google-places-autocomplete';
+import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../../../shared/constants/constants";
 import {
     ApiSearch,
     ApiSearchResponse,
@@ -8,9 +8,10 @@ import {
     TransportationParam,
     UnitsOfTransportation
 } from "../../../shared/types/types";
-import { ConfigContext } from "../context/ConfigContext";
-import { useHttp } from "../hooks/http";
+import {ConfigContext} from "../context/ConfigContext";
+import {useHttp} from "../hooks/http";
 import ResultTable from "../search/ResultTable";
+import Map from "map/Map"
 import "./Start.css";
 
 type GeoLocation = {
@@ -402,16 +403,21 @@ const Start: FunctionComponent = () => {
                 <div className="flex-col gap-6 mt-5">
                     <SearchButton/>
                 </div>
+            </form>
+            {locationSearchResult && <>
+                <div className="mt-5">
+                    {locationSearchResult && <Map searchResponse={locationSearchResult}/>}
+                </div>
                 <div className="flex-col gap-6 mt-5">
-                    {locationSearchResult && Object.entries(deriveTableData()).map(([label, data]) => {
+                    {Object.entries(deriveTableData()).map(([label, data]) => {
                         return (
                             <div className="mt-10" key={'result-' + label}>
-                                <ResultTable title={label} data={data} />
+                                <ResultTable title={label} data={data}/>
                             </div>
                         )
                     })}
                 </div>
-            </form>
+            </>}
         </div>
     );
 };
