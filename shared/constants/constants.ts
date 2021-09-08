@@ -71,7 +71,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.amenity,
     name: OsmName.kiosk,
-    label: "Kiosk/Paketshop",
+    label: "Kiosk",
   },
   {
     type: OsmType.amenity,
