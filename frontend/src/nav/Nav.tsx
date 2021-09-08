@@ -62,7 +62,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                         </div>
                         <div className="hidden sm:flex sm:items-center sm:ml-6">
                             <div className="flex space-x-4">
-                                <Link to="/" className="bg-gray-900 text-white px-3 py-2 rounded-md text-sm font-medium"
+                                <Link to="/" className="btn"
                                    aria-current="page">Start</Link>
                                 { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>

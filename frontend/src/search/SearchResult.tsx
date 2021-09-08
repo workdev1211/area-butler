@@ -70,10 +70,10 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
     return (
         <>
             <div className="flex gap-6 mt-10">
-                { byFootAvailable && <label className="flex items-center">
+                { byFootAvailable && <label className="flex items-center cursor-pointer">
                     <input
                         type="checkbox"
-                        className="form-checkbox text-blue-500"
+                        className="checkbox checkbox-xs checkbox-primary"
                         checked={byFoot}
                         onChange={(e) => {
                             setByFoot(e.target.checked);
@@ -85,7 +85,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
                     <input
                         type="checkbox"
                         checked={byBike}
-                        className="form-checkbox text-green-500"
+                        className="checkbox checkbox-xs checkbox-primary"
                         onChange={(e) => {
                             setByBike(e.target.checked);
                         }}
@@ -95,7 +95,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
                 { byCarAvailable && <label className="flex items-center">
                     <input
                         type="checkbox"
-                        className="form-checkbox text-gray-500"
+                        className="checkbox checkbox-xs checkbox-primary"
                         checked={byCar}
                         onChange={(e) => {
                             setByCar(e.target.checked);
