@@ -1,14 +1,9 @@
 import React, {FunctionComponent, useState} from "react";
-import {ApiAddress, ApiCoordinates, ApiSearchResponse, UnitsOfTransportation} from "../../../shared/types/types";
+import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, UnitsOfTransportation} from "../../../shared/types/types";
 import Map from "../map/Map";
 
 export interface SearchResultProps {
     searchResponse: ApiSearchResponse,
-    availableMeans: {
-        byFoot: boolean;
-        byBike: boolean;
-        byCar: boolean;
-    }
 }
 
 export interface ResultEntity {
@@ -49,10 +44,16 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
     });
 }
 
-const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse, availableMeans}) => {
-    const [byFoot, setByFoot] = useState(availableMeans.byFoot);
-    const [byBike, setByBike] = useState(availableMeans.byBike);
-    const [byCar, setByCar] = useState(availableMeans.byCar);
+const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) => {
+
+    const routingKeys = Object.keys(searchResponse.routingProfiles);
+    const byFootAvailable = routingKeys.includes(MeansOfTransportation.WALK);
+    const byBikeAvailable = routingKeys.includes(MeansOfTransportation.BICYCLE);
+    const byCarAvailable = routingKeys.includes(MeansOfTransportation.CAR);
+
+    const [byFoot, setByFoot] = useState(byFootAvailable);
+    const [byBike, setByBike] = useState(byBikeAvailable);
+    const [byCar, setByCar] = useState(byCarAvailable);
     const entities = buildEntityData(searchResponse);
     const mapMeans = {
         byFoot,
@@ -67,7 +68,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse, ava
     return (
         <>
             <div className="flex gap-6 mt-10">
-                { availableMeans.byFoot && <label className="flex items-center">
+                { byFootAvailable && <label className="flex items-center">
                     <input
                         type="checkbox"
                         className="form-checkbox text-blue-500"
@@ -78,7 +79,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse, ava
                     />
                     <span className="ml-2">zu Fuß</span>
                 </label> }
-                { availableMeans.byBike && <label className="flex items-center">
+                { byBikeAvailable && <label className="flex items-center">
                     <input
                         type="checkbox"
                         checked={byBike}
@@ -89,7 +90,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse, ava
                     />
                     <span className="ml-2">Fahrrad</span>
                 </label> }
-                { availableMeans.byCar && <label className="flex items-center">
+                { byCarAvailable && <label className="flex items-center">
                     <input
                         type="checkbox"
                         className="form-checkbox text-gray-500"

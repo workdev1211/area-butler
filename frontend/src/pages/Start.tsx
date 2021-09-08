@@ -383,12 +383,7 @@ const Start: FunctionComponent = () => {
             </form>
             {locationSearchResult && <>
                 <div className="mt-5">
-                    {locationSearchResult && <SearchResult searchResponse={locationSearchResult} availableMeans={{
-                    byFoot: transportation.some(t => t.type === MeansOfTransportation.WALK),
-                    byBike: transportation.some(t => t.type === MeansOfTransportation.BICYCLE),
-                    byCar: transportation.some(t => t.type === MeansOfTransportation.CAR),
-                    }}
-                    />}
+                    {locationSearchResult && <SearchResult searchResponse={locationSearchResult}/>}
                 </div>
                 {/*<div className="flex-col gap-6 mt-5">*/}
                 {/*    {Object.entries(deriveTableData()).map(([label, data]) => {*/}
