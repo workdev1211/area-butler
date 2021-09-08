@@ -1,21 +1,11 @@
 import React from "react";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 import {MeansOfTransportation} from "../../../shared/types/types";
+import {ResultEntity} from "./SearchResult";
 
 export interface ResultTableProps {
     title: string;
-    data: ResultTableRow[];
-}
-
-export interface ResultTableRow {
-    name?: string;
-    type: string;
-    label: string;
-    id: number;
-    byFoot: boolean;
-    byBike: boolean;
-    byCar: boolean;
-    distanceInMeters: number;
+    data: ResultEntity[];
 }
 
 const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
@@ -38,7 +28,7 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
                 </tr>
                 </thead>
                 <tbody>
-                {data.map((row: ResultTableRow) => <tr
+                {data.map((row: ResultEntity) => <tr
                     key={'result-table-' + props.title + '-' + row.name + row.distanceInMeters}>
                     {hasNames && <td className="pr-4 py-1">{row.name || '-'}</td>}
                     <td className={hasNames ? 'px-4 py-1' : 'py-1'}>{row.distanceInMeters ? Math.trunc(row.distanceInMeters) + ' m' : 'unbekannt'}</td>

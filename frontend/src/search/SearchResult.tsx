@@ -1,6 +1,7 @@
 import React, {FunctionComponent, useState} from "react";
-import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, UnitsOfTransportation} from "../../../shared/types/types";
+import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import Map from "../map/Map";
+import ResultTable from "./ResultTable";
 
 export interface SearchResultProps {
     searchResponse: ApiSearchResponse,
@@ -65,6 +66,7 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
             return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
         })
     }
+    const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
     return (
         <>
             <div className="flex gap-6 mt-10">
@@ -103,6 +105,15 @@ const SearchResult: FunctionComponent<SearchResultProps> = ({searchResponse}) =>
                 </label> }
             </div>
             <Map searchResponse={searchResponse} entities={filterEntities()} means={mapMeans}/>
+            <div className="flex-col gap-6 mt-5">
+                {Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label)).map(([label, data]) => {
+                    return (
+                        <div className="mt-10" key={'result-' + label}>
+                            <ResultTable title={label} data={data}/>
+                        </div>
+                    )
+                })}
+            </div>
         </>
     )
 }

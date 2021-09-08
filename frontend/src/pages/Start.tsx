@@ -4,7 +4,6 @@ import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../
 import {
     ApiSearch,
     ApiSearchResponse,
-    MeansOfTransportation,
     OsmName,
     TransportationParam,
     UnitsOfTransportation
@@ -381,20 +380,11 @@ const Start: FunctionComponent = () => {
                     <SearchButton/>
                 </div>
             </form>
-            {locationSearchResult && <>
+            {locationSearchResult &&
                 <div className="mt-5">
                     {locationSearchResult && <SearchResult searchResponse={locationSearchResult}/>}
                 </div>
-                {/*<div className="flex-col gap-6 mt-5">*/}
-                {/*    {Object.entries(deriveTableData()).map(([label, data]) => {*/}
-                {/*        return (*/}
-                {/*            <div className="mt-10" key={'result-' + label}>*/}
-                {/*                <ResultTable title={label} data={data}/>*/}
-                {/*            </div>*/}
-                {/*        )*/}
-                {/*    })}*/}
-                {/*</div>*/}
-            </>}
+            }
         </div>
     );
 };

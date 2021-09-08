@@ -14,7 +14,7 @@ export interface MapProps {
         byBike: boolean;
         byCar: boolean;
     }
-};
+}
 
 const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
