@@ -4,7 +4,7 @@ export interface ApiRealEstateListing {
     id: string;
     name: string;
     address: ApiAddress;
-    coordinates: ApiCoordinates;
+    coordinates?: ApiCoordinates;
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
   }

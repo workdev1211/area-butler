@@ -16,7 +16,7 @@ export class RealEstateListing {
   @Prop({ type: Map, required: true })
   address: ApiAddress;
 
-  @Prop({ type: Map, required: true })
+  @Prop({ type: Map })
   coordinates: ApiCoordinates;
   
   @Prop({ type: Date, default: Date.now })

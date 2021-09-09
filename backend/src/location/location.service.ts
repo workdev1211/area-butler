@@ -28,14 +28,9 @@ export class LocationService {
   ) {}
 
   async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
-    const coordinates = !!search?.coordinates
-      ? search.coordinates
-      : (await this.geocodingService.geocode(search.address));
-    const address = !!search?.address
-      ? search.address
-      : (await this.geocodingService.reverse(search.coordinates));
+    const coordinates = search.coordinates;
+    const address = await this.geocodingService.reverse(search.coordinates);
     const preferredAmenities = search.preferredAmenities;
-
   
     const routingProfiles = {};
 
