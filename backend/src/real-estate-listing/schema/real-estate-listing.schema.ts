@@ -1,5 +1,5 @@
 import { ApiRealEstateCharacteristics, ApiRealEstateCost } from '@area-butler-types/real-estate';
-import { ApiAddress, ApiCoordinates, ApiMoneyAmount } from '@area-butler-types/types';
+import { ApiCoordinates } from '@area-butler-types/types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -7,14 +7,15 @@ export type RealEstateListingDocument = RealEstateListing & Document;
 
 @Schema()
 export class RealEstateListing {
+
   @Prop({ required: true })
   userId: string;
 
   @Prop({ required: true })
   name: string;
 
-  @Prop({ type: Map, required: true })
-  address: ApiAddress;
+  @Prop({ required: true })
+  address: string;
 
   @Prop({ type: Map })
   coordinates: ApiCoordinates;

@@ -1,7 +1,7 @@
 import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { UserDocument } from 'src/user/schema/user.schema';
 import {
   RealEstateListing,
@@ -37,8 +37,8 @@ export class RealEstateListingService {
     id: string,
     updateRealEstateListing: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
-    const existingListing = await this.realEstateListingModel.findOne({ id });
-
+    const oid = new Types.ObjectId(id);
+    const existingListing = await this.realEstateListingModel.findById({_id: oid});
     if (!existingListing) {
       throw 'Entity not found';
     }
@@ -47,12 +47,13 @@ export class RealEstateListingService {
       throw 'Unallowed change';
     }
 
-    await existingListing.update(updateRealEstateListing);
+    await existingListing.updateOne(updateRealEstateListing);
     return existingListing;
   }
 
   async deleteRealEstateListing(user: UserDocument, id: string) {
-    const existingListing = await this.realEstateListingModel.findOne({ id });
+    const oid = new Types.ObjectId(id);
+    const existingListing = await this.realEstateListingModel.findById({_id: oid});
 
     if (!existingListing) {
       throw 'Entity not found';

@@ -3,7 +3,7 @@ import { ApiAddress, ApiCoordinates, ApiMoneyAmount } from "./types";
 export interface ApiRealEstateListing {
     id: string;
     name: string;
-    address: ApiAddress;
+    address: string;
     coordinates?: ApiCoordinates;
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
@@ -11,7 +11,7 @@ export interface ApiRealEstateListing {
 
   export interface ApiUpsertRealEstateListing {
     name: string;
-    address: ApiAddress;
+    address: string;
     coordinates?: ApiCoordinates;
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
