@@ -410,8 +410,8 @@ const Start: FunctionComponent = () => {
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
       <form>
         <div className={collapseSearchOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" />
-            <div className="collapse-title text-xl font-medium" onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}>
+          <input type="checkbox" onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}/>
+            <div className="collapse-title text-xl font-medium">
               1. Standort ermitteln
             </div>
             <div className="collapse-content">
@@ -422,8 +422,8 @@ const Start: FunctionComponent = () => {
             </div>
         </div>
         <div className={collapseTransportationOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" />
-          <div className="collapse-title text-xl font-medium" onClick={() => setCollapseTransportationOpen(!collapseTransportationOpen)}>
+          <input type="checkbox" onClick={() => setCollapseTransportationOpen(!collapseTransportationOpen)} />
+          <div className="collapse-title text-xl font-medium">
             2. Fortbewegungsmittel angeben
           </div>
           <div className="collapse-content">
@@ -431,8 +431,8 @@ const Start: FunctionComponent = () => {
           </div>
         </div>
         <div className={collapseLocalitiesOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" />
-          <div className="collapse-title text-xl font-medium" onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)}>
+          <input type="checkbox" onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)} />
+          <div className="collapse-title text-xl font-medium" >
             3. Lokalitäten auswählen
           </div>
           <div className="collapse-content">
