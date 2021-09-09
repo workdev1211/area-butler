@@ -12,7 +12,7 @@ export interface ApiRealEstateListing {
   export interface ApiUpsertRealEstateListing {
     name: string;
     address: ApiAddress;
-    coordinates: ApiCoordinates;
+    coordinates?: ApiCoordinates;
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
   }

@@ -1,8 +1,10 @@
+import FormModal, { ModalConfig } from "components/FormModal";
 import React, { FunctionComponent, useContext, useState } from "react";
 import GooglePlacesAutocomplete, {
   geocodeByAddress,
   getLatLng,
 } from "react-google-places-autocomplete";
+import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import {
   meansOfTransportations,
   osmEntityTypes,
@@ -18,8 +20,8 @@ import {
 } from "../../../shared/types/types";
 import { ConfigContext } from "../context/ConfigContext";
 import { useHttp } from "../hooks/http";
-import "./Start.css";
 import SearchResult from "../search/SearchResult";
+import "./Start.css";
 
 type GeoLocation = {
   latitude?: number | null;
@@ -47,7 +49,7 @@ const Start: FunctionComponent = () => {
       "/api/location/search",
       search
     );
-    setLocationSearchResult(result);
+    setLocationSearchResult(result.data);
     setLocationSearchBusy(false);
   };
   const LocationAutoComplete = () => {
@@ -108,6 +110,13 @@ const Start: FunctionComponent = () => {
     const latlngResults = await geocodeByAddress(address);
     return await getLatLng(latlngResults[0]);
   };
+
+  const modalConfig: ModalConfig = {
+    buttonTitle: "Neues Objekt",
+    buttonStyle: "btn btn-primary btn-sm",
+    modalTitle: "Neues Objekt erstellen",
+  };
+
   const LocationLatLng = () => {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -141,7 +150,7 @@ const Start: FunctionComponent = () => {
             />
           </div>
         </div>
-        <div className="flex items-end justify-start mb-2">
+        <div className="flex items-end justify-start mb-2 gap-6">
           <button
             type="button"
             disabled={locationBusy}
@@ -172,6 +181,16 @@ const Start: FunctionComponent = () => {
             )}
             Mein Standort
           </button>
+          {value && (
+            <FormModal modalConfig={modalConfig}>
+              <RealEstateListingFormHandler
+                realEstateListing={{
+                  name: (value as any)!.label,
+                  address: (value as any)!.label,
+                }}
+              ></RealEstateListingFormHandler>
+            </FormModal>
+          )}
         </div>
       </div>
     );
@@ -400,29 +419,51 @@ const Start: FunctionComponent = () => {
     );
   };
 
-  const collapseBaseClasses = 'collapse w-full border rounded-box border-base-300 collapse-arrow mt-10';
+  const collapseBaseClasses =
+    "collapse w-full border rounded-box border-base-300 collapse-arrow mt-10";
   const [collapseSearchOpen, setCollapseSearchOpen] = useState(true);
-  const [collapseTransportationOpen, setCollapseTransportationOpen] = useState(false);
+  const [collapseTransportationOpen, setCollapseTransportationOpen] =
+    useState(false);
   const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
 
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
-      <form>
-        <div className={collapseSearchOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}/>
-            <div className="collapse-title text-xl font-medium">
-              1. Standort ermitteln
+      <div>
+        <div
+          className={
+            collapseSearchOpen
+              ? collapseBaseClasses + " collapse-open"
+              : collapseBaseClasses
+          }
+        >
+          <input
+            type="checkbox"
+            onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}
+          />
+          <div className="collapse-title text-xl font-medium">
+            1. Standort ermitteln
+          </div>
+          <div className="collapse-content">
+            <div className="flex-col gap-6 mt-5">
+              <LocationAutoComplete />
+              <LocationLatLng />
             </div>
-            <div className="collapse-content">
-              <div className="flex-col gap-6 mt-5">
-                <LocationAutoComplete />
-                <LocationLatLng />
-              </div>
-            </div>
+          </div>
         </div>
-        <div className={collapseTransportationOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" onClick={() => setCollapseTransportationOpen(!collapseTransportationOpen)} />
+        <div
+          className={
+            collapseTransportationOpen
+              ? collapseBaseClasses + " collapse-open"
+              : collapseBaseClasses
+          }
+        >
+          <input
+            type="checkbox"
+            onClick={() =>
+              setCollapseTransportationOpen(!collapseTransportationOpen)
+            }
+          />
           <div className="collapse-title text-xl font-medium">
             2. Fortbewegungsmittel angeben
           </div>
@@ -430,9 +471,18 @@ const Start: FunctionComponent = () => {
             <div className="flex-col gap-6 mt-5">{transportationItems}</div>
           </div>
         </div>
-        <div className={collapseLocalitiesOpen ? collapseBaseClasses + ' collapse-open' : collapseBaseClasses}>
-          <input type="checkbox" onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)} />
-          <div className="collapse-title text-xl font-medium" >
+        <div
+          className={
+            collapseLocalitiesOpen
+              ? collapseBaseClasses + " collapse-open"
+              : collapseBaseClasses
+          }
+        >
+          <input
+            type="checkbox"
+            onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)}
+          />
+          <div className="collapse-title text-xl font-medium">
             3. Lokalitäten auswählen
           </div>
           <div className="collapse-content">
@@ -444,23 +494,22 @@ const Start: FunctionComponent = () => {
             </div>
           </div>
         </div>
-      </form>
-      {locationSearchResult &&
-      <div className={collapseBaseClasses + ' collapse-open'}>
-        <input type="checkbox" />
-        <div className="collapse-title text-xl font-medium">
-          4. Ergebnisse
-        </div>
-        <div className="collapse-content">
-          <div className="mt-5">
-            {locationSearchResult && (
+      </div>
+      {locationSearchResult && (
+        <div className={collapseBaseClasses + " collapse-open"}>
+          <input type="checkbox" />
+          <div className="collapse-title text-xl font-medium">
+            4. Ergebnisse
+          </div>
+          <div className="collapse-content">
+            <div className="mt-5">
+              {locationSearchResult && (
                 <SearchResult searchResponse={locationSearchResult} />
-            )}
+              )}
+            </div>
           </div>
         </div>
-      </div>
-
-      }
+      )}
     </div>
   );
 };

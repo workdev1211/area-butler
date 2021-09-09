@@ -1,4 +1,6 @@
 import { useAuth0 } from "@auth0/auth0-react";
+import { AxiosResponse } from "axios";
+import axios from "axios";
 
 const headers = {
   Accept: "application/json",
@@ -9,59 +11,50 @@ export const useHttp = () => {
   const { getIdTokenClaims } = useAuth0();
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
-  const get = async <T>(url: string, body: any): Promise<T> => {
+  const get = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
     const { __raw } = await getIdTokenClaims();
     const authorization = `Bearer ${__raw}`;
-    const response = await fetch(`${baseUrl}${url}`, {
-      method: "GET",
-      headers: {
-        ...headers,
-        Authorization: authorization,
-      }
-    });
-    return await response.json();
-  };
 
-  const post = async <T>(url: string, body: any): Promise<T> => {
-    const { __raw } = await getIdTokenClaims();
-    const authorization = `Bearer ${__raw}`;
-    const response = await fetch(`${baseUrl}${url}`, {
-      method: "POST",
+    return axios.get<T>(`${baseUrl}${url}`, {
       headers: {
         ...headers,
         Authorization: authorization,
       },
-      body: JSON.stringify(body),
     });
-    return await response.json();
   };
 
-  const put = async <T>(url: string, body: any): Promise<T> => {
+  const post = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
     const { __raw } = await getIdTokenClaims();
     const authorization = `Bearer ${__raw}`;
-    const response = await fetch(`${baseUrl}${url}`, {
-      method: "PUT",
+
+    return axios.post(`${baseUrl}${url}`, body, {
       headers: {
         ...headers,
         Authorization: authorization,
       },
-      body: JSON.stringify(body),
     });
-    return await response.json();
   };
 
-  const deleteRequest = async <T>(url: string, body: any): Promise<T> => {
+  const put = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
     const { __raw } = await getIdTokenClaims();
     const authorization = `Bearer ${__raw}`;
-    const response = await fetch(`${baseUrl}${url}`, {
-      method: "DELETE",
+    return axios.put(`${baseUrl}${url}`, body, {
       headers: {
         ...headers,
         Authorization: authorization,
       },
-      body: JSON.stringify(body),
     });
-    return await response.json();
+  };
+
+  const deleteRequest = async <T>(url: string): Promise<AxiosResponse<T>> => {
+    const { __raw } = await getIdTokenClaims();
+    const authorization = `Bearer ${__raw}`;
+    return axios.delete(`${baseUrl}${url}`, {
+      headers: {
+        ...headers,
+        Authorization: authorization,
+      },
+    });
   };
 
   return { get, post, put, deleteRequest };
