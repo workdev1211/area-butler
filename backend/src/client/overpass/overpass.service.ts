@@ -27,11 +27,16 @@ export class OverpassService {
       preferredAmenities,
     );
 
-    const response = await this.http
-      .get(this.baseUrl, { params: { data: requestParams } })
-      .toPromise();
+    try {
+      const response = await this.http
+        .get(this.baseUrl, { params: { data: requestParams } })
+        .toPromise();
 
-    return this.mapResponse(response, coordinates);
+      return this.mapResponse(response, coordinates);
+    } catch (e) {
+      console.error('Error while fetching data from overpass', e);
+      throw e;
+    }
   }
 
   private async mapResponse(
