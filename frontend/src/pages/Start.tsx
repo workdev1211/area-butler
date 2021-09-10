@@ -3,15 +3,15 @@ import React, {FunctionComponent, useContext, useState} from "react";
 import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng,} from "react-google-places-autocomplete";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
-import {osmEntityTypes,} from "../../../shared/constants/constants";
+import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {
-  ApiSearch,
-  ApiSearchResponse,
-  MeansOfTransportation,
-  OsmName,
-  TransportationParam,
-  UnitsOfTransportation,
+    ApiSearch,
+    ApiSearchResponse,
+    MeansOfTransportation,
+    OsmName,
+    TransportationParam,
+    UnitsOfTransportation,
 } from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {useHttp} from "../hooks/http";
@@ -21,302 +21,337 @@ import TransportationParams from "../search/TransportationParams";
 import LocalityOptions, {localityOptionsDefaults} from "../search/Localitites";
 
 type GeoLocation = {
-  latitude?: number | null;
-  longitude?: number | null;
+    latitude?: number | null;
+    longitude?: number | null;
 };
 
 const Start: FunctionComponent = () => {
-  const { googleApiKey } = useContext(ConfigContext);
-  const { post } = useHttp();
+    const {googleApiKey} = useContext(ConfigContext);
+    const {post} = useHttp();
 
-  const [locationSearchBusy, setLocationSearchBusy] = useState(false);
-  const [locationSearchResult, setLocationSearchResult] =
-    useState<ApiSearchResponse | null>(null);
-  const performLocationSearch = async () => {
-    setLocationSearchBusy(true);
-    const search: ApiSearch = {
-      coordinates: {
-        lat: location.latitude!,
-        lng: location.longitude!,
-      },
-      meansOfTransportation: transportation,
-      preferredAmenities: [...localityOptions],
+    const [locationSearchBusy, setLocationSearchBusy] = useState(false);
+    const [locationSearchResult, setLocationSearchResult] =
+        useState<ApiSearchResponse | null>(null);
+    const performLocationSearch = async () => {
+        try {
+            setLocationSearchBusy(true);
+            const search: ApiSearch = {
+                coordinates: {
+                    lat: location.latitude!,
+                    lng: location.longitude!,
+                },
+                meansOfTransportation: transportation,
+                preferredAmenities: [...localityOptions],
+            };
+            const result = await post<ApiSearchResponse>(
+                "/api/location/search",
+                search
+            );
+            setLocationSearchResult(result.data);
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLocationSearchBusy(false);
+        }
     };
-    const result = await post<ApiSearchResponse>(
-      "/api/location/search",
-      search
-    );
-    setLocationSearchResult(result.data);
-    setLocationSearchBusy(false);
-  };
-  const LocationAutoComplete = () => {
-    return (
-      <div className="col-span-2">
-        <label className="label">
-          <span>Adresse</span>
-        </label>
-        <GooglePlacesAutocomplete
-          apiOptions={{
-            language: "de",
-            region: "de",
-          }}
-          autocompletionRequest={{
-            componentRestrictions: {
-              country: ["de"],
-            },
-          }}
-          minLengthAutocomplete={5}
-          selectProps={{
-            value,
-            onChange: deriveLangLat,
-          }}
-          apiKey={googleApiKey}
-        />
-      </div>
-    );
-  };
+    const LocationAutoComplete = () => {
+        return (
+            <div className="col-span-2">
+                <label className="label">
+                    <span>Adresse</span>
+                </label>
+                <GooglePlacesAutocomplete
+                    apiOptions={{
+                        language: "de",
+                        region: "de",
+                    }}
+                    autocompletionRequest={{
+                        componentRestrictions: {
+                            country: ["de"],
+                        },
+                    }}
+                    minLengthAutocomplete={5}
+                    selectProps={{
+                        value,
+                        onChange: deriveLangLat,
+                    }}
+                    apiKey={googleApiKey}
+                />
+            </div>
+        );
+    };
 
-  const [location, setLocation] = useState<GeoLocation>({});
-  const [locationBusy, setLocationBusy] = useState(false);
-  const locateUser = () => {
-    if (window.navigator.geolocation) {
-      setLocationBusy(true);
-      setLocation({});
-      window.navigator.geolocation.getCurrentPosition(
-        (res: GeolocationPosition) => {
-          setLocation({
-            longitude: res.coords.longitude,
-            latitude: res.coords.latitude,
-          });
-          setLocationBusy(false);
+    const [location, setLocation] = useState<GeoLocation>({});
+    const [locationBusy, setLocationBusy] = useState(false);
+    const locateUser = () => {
+        if (window.navigator.geolocation) {
+            setLocationBusy(true);
+            setLocation({});
+            window.navigator.geolocation.getCurrentPosition(
+                (res: GeolocationPosition) => {
+                    setLocation({
+                        longitude: res.coords.longitude,
+                        latitude: res.coords.latitude,
+                    });
+                    setValue(null);
+                    setLocationBusy(false);
+                    setCollapseSearchOpen(false);
+                    setCollapseTransportationOpen(true);
+                },
+                (error: any) => setLocationBusy(false)
+            );
+        }
+    };
+    const [value, setValue] = useState(null);
+    const deriveLangLat = async (value: any) => {
+        const result = await deriveGeocodeByAddress(value.label);
+        setLocation({
+            longitude: result.lng,
+            latitude: result.lat,
+        });
+        setValue(value);
+        setCollapseSearchOpen(false);
+        setCollapseTransportationOpen(true);
+    };
+    const deriveGeocodeByAddress = async (address: string) => {
+        const latlngResults = await geocodeByAddress(address);
+        return await getLatLng(latlngResults[0]);
+    };
+
+    const modalConfig: ModalConfig = {
+        buttonTitle: "Neues Objekt",
+        buttonStyle: "btn btn-primary btn-sm",
+        modalTitle: "Neues Objekt erstellen",
+    };
+
+    const LocationLatLng = () => {
+        return (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="flex gap-6">
+                    <div className="flex-1">
+                        <label className="label">
+                            <span>Lat</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={location.latitude || ""}
+                            onChange={(event: any) =>
+                                setLocation({...location, latitude: event.target.value})
+                            }
+                            className="input input-bordered w-full"
+                            placeholder="Latitude"
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <label className="label">
+                            <span>Long</span>
+                        </label>
+                        <input
+                            type="text"
+                            value={location.longitude || ""}
+                            onChange={(event: any) =>
+                                setLocation({...location, longitude: event.target.value})
+                            }
+                            className="input input-bordered w-full"
+                            placeholder="Longitude"
+                        />
+                    </div>
+                </div>
+                <div className="flex items-end justify-start mb-2 gap-6">
+                    <button
+                        type="button"
+                        disabled={locationBusy}
+                        onClick={locateUser}
+                        className={locationBusy ? 'btn btn-sm btn-primary loading' : 'btn btn-sm btn-primary'}
+                    >
+                        Mein Standort
+                    </button>
+                </div>
+            </div>
+        );
+    };
+
+    const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
+        const result = await deriveGeocodeByAddress(listing.address);
+        setLocation({
+            longitude: result.lng,
+            latitude: result.lat,
+        });
+    };
+
+    const [localityOptions, setLocalityOptions] = useState<OsmName[]>(
+        localityOptionsDefaults
+    );
+
+    const [transportation, setTransportation] = useState<TransportationParam[]>([
+        {
+            type: MeansOfTransportation.WALK,
+            amount: 5,
+            unit: UnitsOfTransportation.MINUTES,
         },
-        (error: any) => setLocationBusy(false)
-      );
-    }
-  };
-  const [value, setValue] = useState(null);
-  const deriveLangLat = async (value: any) => {
-    const result = await deriveGeocodeByAddress(value.label);
-    setLocation({
-      longitude: result.lng,
-      latitude: result.lat,
-    });
-    setValue(value);
-  };
-  const deriveGeocodeByAddress = async (address: string) => {
-    const latlngResults = await geocodeByAddress(address);
-    return await getLatLng(latlngResults[0]);
-  };
+        {
+            type: MeansOfTransportation.BICYCLE,
+            amount: 15,
+            unit: UnitsOfTransportation.MINUTES,
+        },
+        {
+            type: MeansOfTransportation.CAR,
+            amount: 30,
+            unit: UnitsOfTransportation.MINUTES,
+        },
+    ]);
 
-  const modalConfig: ModalConfig = {
-    buttonTitle: "Neues Objekt",
-    buttonStyle: "btn btn-primary btn-sm",
-    modalTitle: "Neues Objekt erstellen",
-  };
+    const SearchButton = () => {
+        return (
+            <button
+                type="button"
+                disabled={
+                    locationSearchBusy ||
+                    !location.latitude ||
+                    !location.longitude ||
+                    transportation.length === 0
+                }
+                onClick={performLocationSearch}
+                className={locationSearchBusy ? 'btn btn-primary btn-sm loading' : 'btn btn-primary btn-sm'}
+            >
+                Suchen
+            </button>
+        );
+    };
 
-  const LocationLatLng = () => {
+    const collapseBaseClasses =
+        "collapse w-full border rounded-box border-base-300 collapse-arrow mt-10";
+    const [collapseSearchOpen, setCollapseSearchOpen] = useState(true);
+    const [collapseTransportationOpen, setCollapseTransportationOpen] =
+        useState(false);
+    const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
+
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="flex gap-6">
-          <div className="flex-1">
-            <label className="label">
-              <span>Lat</span>
-            </label>
-            <input
-              type="text"
-              value={location.latitude || ""}
-              onChange={(event: any) =>
-                setLocation({ ...location, latitude: event.target.value })
-              }
-              className="input input-bordered w-full"
-              placeholder="Latitude"
-            />
-          </div>
-          <div className="flex-1">
-            <label className="label">
-              <span>Long</span>
-            </label>
-            <input
-              type="text"
-              value={location.longitude || ""}
-              onChange={(event: any) =>
-                setLocation({ ...location, longitude: event.target.value })
-              }
-              className="input input-bordered w-full"
-              placeholder="Longitude"
-            />
-          </div>
+        <div className="container mx-auto mt-10">
+            <h1 className="flex text-2xl">Umgebungsanalyse</h1>
+            <RealEstateMenuList
+                fillAdressFromListing={fillAddressFromListing}
+            ></RealEstateMenuList>
+            <div>
+                <div
+                    className={
+                        collapseSearchOpen
+                            ? collapseBaseClasses + ' collapse-open'
+                            : collapseBaseClasses + ' collapse-close'
+                    }
+                >
+                    <input
+                        type="checkbox"
+                        onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}
+                    />
+                    <div className="collapse-title text-xl font-medium">
+                        1. Standort ermitteln <span className='float-right mr-20 text-base'>
+            {value && (value as any).label}
+                        {location.latitude && !value ? 'Mein Standort' : ''}
+          </span>
+                    </div>
+                    <div className="collapse-content">
+                        <div className="flex-col gap-6 mt-5">
+                            <LocationAutoComplete/>
+                            <LocationLatLng/>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    className={
+                        collapseTransportationOpen
+                            ? collapseBaseClasses + ' collapse-open'
+                            : collapseBaseClasses + ' collapse-close'
+                    }
+                >
+                    <input
+                        type="checkbox"
+                        onClick={() =>
+                            setCollapseTransportationOpen(!collapseTransportationOpen)
+                        }
+                    />
+                    <div className="collapse-title text-xl font-medium">
+                        2. Fortbewegungsmittel angeben
+                        {!collapseTransportationOpen && <div className='float-right mr-20 text-base'>
+                            <div className='flex gap-6'>
+                                {transportation.map(mean => {
+                                    return <div key={mean.type}>
+                                        <b>{meansOfTransportations.find(m => m.type === mean.type)?.label}:</b> <span
+                                        className='font-base'>{mean.amount} {unitsOfTransportation.find(uot => uot.type === mean.unit)?.label}</span>
+
+                                    </div>
+                                })}
+                            </div>
+                        </div>}
+                    </div>
+                    <div className="collapse-content">
+                        <div className="flex-col gap-6 mt-5">
+                            <TransportationParams onChange={(value) => setTransportation([...value])}/>
+                            <button type='button' className='btn btn-primary btn-sm' onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                setCollapseTransportationOpen(false);
+                                setCollapseLocalitiesOpen(true);
+                            }
+                            }>Weiter
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div
+                    className={
+                        collapseLocalitiesOpen
+                            ? collapseBaseClasses + ' collapse-open'
+                            : collapseBaseClasses + ' collapse-close'
+                    }
+                >
+                    <input
+                        type="checkbox"
+                        onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)}
+                    />
+                    <div className="collapse-title text-xl font-medium">
+                        3. Lokalitäten auswählen
+                    </div>
+                    <div className="collapse-content">
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
+                            <LocalityOptions defaults={localityOptions}
+                                             onChange={(value) => setLocalityOptions(value)}/>
+                        </div>
+                        <div className="flex gap-6 mt-5">
+                            <SearchButton/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {locationSearchResult && (
+                <div className={collapseBaseClasses + " collapse-open"}>
+                    <input type="checkbox"/>
+                    <div className="collapse-title text-xl font-medium">
+                        4. Ergebnisse
+                    </div>
+                    <div className="collapse-content">
+                        <div className='mt-5'>
+                            {value && (
+                                <FormModal modalConfig={modalConfig}>
+                                    <RealEstateListingFormHandler
+                                        realEstateListing={{
+                                            name: (value as any)!.label,
+                                            address: (value as any)!.label,
+                                        }}
+                                    ></RealEstateListingFormHandler>
+                                </FormModal>
+                            )}
+                        </div>
+                        <div className="mt-5">
+                            {locationSearchResult && (
+                                <SearchResult searchResponse={locationSearchResult}/>
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
-        <div className="flex items-end justify-start mb-2 gap-6">
-          <button
-            type="button"
-            disabled={locationBusy}
-            onClick={locateUser}
-            className={locationBusy ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-primary loading'}
-          >
-            Mein Standort
-          </button>
-          {value && (
-            <FormModal modalConfig={modalConfig}>
-              <RealEstateListingFormHandler
-                realEstateListing={{
-                  name: (value as any)!.label,
-                  address: (value as any)!.label,
-                }}
-              ></RealEstateListingFormHandler>
-            </FormModal>
-          )}
-        </div>
-      </div>
     );
-  };
-
-  const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
-    const result = await deriveGeocodeByAddress(listing.address);
-    setLocation({
-      longitude: result.lng,
-      latitude: result.lat,
-    });
-  };
-
-  const [localityOptions, setLocalityOptions] = useState<OsmName[]>(
-      localityOptionsDefaults
-  );
-
-  const [transportation, setTransportation] = useState<TransportationParam[]>([
-    {
-      type: MeansOfTransportation.WALK,
-      amount: 5,
-      unit: UnitsOfTransportation.MINUTES,
-    },
-    {
-      type: MeansOfTransportation.BICYCLE,
-      amount: 15,
-      unit: UnitsOfTransportation.MINUTES,
-    },
-    {
-      type: MeansOfTransportation.CAR,
-      amount: 30,
-      unit: UnitsOfTransportation.MINUTES,
-    },
-  ]);
-
-  const SearchButton = () => {
-    return (
-        <button
-            type="button"
-            disabled={
-              locationSearchBusy ||
-              !location.latitude ||
-              !location.longitude ||
-              transportation.length === 0
-            }
-            onClick={performLocationSearch}
-            className={locationSearchBusy ? 'btn btn-primary loading' : 'btn btn-primary'}
-        >
-          Suchen
-        </button>
-    );
-  };
-
-  const collapseBaseClasses =
-      "collapse w-full border rounded-box border-base-300 collapse-arrow mt-10";
-  const [collapseSearchOpen, setCollapseSearchOpen] = useState(true);
-  const [collapseTransportationOpen, setCollapseTransportationOpen] =
-      useState(false);
-  const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
-
-  return (
-    <div className="container mx-auto mt-10">
-      <h1 className="flex text-2xl">Umgebungsanalyse</h1>
-      <RealEstateMenuList
-        fillAdressFromListing={fillAddressFromListing}
-      ></RealEstateMenuList>
-      <div>
-        <div
-          className={
-            collapseSearchOpen
-              ? collapseBaseClasses + " collapse-open"
-              : collapseBaseClasses
-          }
-        >
-          <input
-            type="checkbox"
-            onClick={() => setCollapseSearchOpen(!collapseSearchOpen)}
-          />
-          <div className="collapse-title text-xl font-medium">
-            1. Standort ermitteln
-          </div>
-          <div className="collapse-content">
-            <div className="flex-col gap-6 mt-5">
-              <LocationAutoComplete />
-              <LocationLatLng />
-            </div>
-          </div>
-        </div>
-        <div
-          className={
-            collapseTransportationOpen
-              ? collapseBaseClasses + " collapse-open"
-              : collapseBaseClasses
-          }
-        >
-          <input
-            type="checkbox"
-            onClick={() =>
-              setCollapseTransportationOpen(!collapseTransportationOpen)
-            }
-          />
-          <div className="collapse-title text-xl font-medium">
-            2. Fortbewegungsmittel angeben
-          </div>
-          <div className="collapse-content">
-            <div className="flex-col gap-6 mt-5">
-              <TransportationParams onChange={(value) => setTransportation([...value])} />
-            </div>
-          </div>
-        </div>
-        <div
-          className={
-            collapseLocalitiesOpen
-              ? collapseBaseClasses + " collapse-open"
-              : collapseBaseClasses
-          }
-        >
-          <input
-            type="checkbox"
-            onClick={() => setCollapseLocalitiesOpen(!collapseLocalitiesOpen)}
-          />
-          <div className="collapse-title text-xl font-medium">
-            3. Lokalitäten auswählen
-          </div>
-          <div className="collapse-content">
-            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-              <LocalityOptions defaults={localityOptions} onChange={(value) => setLocalityOptions(value)} />
-            </div>
-          </div>
-        </div>
-        <div className="flex-col gap-6 mt-5">
-          <SearchButton />
-        </div>
-      </div>
-      {locationSearchResult && (
-        <div className={collapseBaseClasses + " collapse-open"}>
-          <input type="checkbox" />
-          <div className="collapse-title text-xl font-medium">
-            4. Ergebnisse
-          </div>
-          <div className="collapse-content">
-            <div className="mt-5">
-              {locationSearchResult && (
-                <SearchResult searchResponse={locationSearchResult} />
-              )}
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
 };
 
 export default Start;

@@ -1,10 +1,6 @@
-import { FormModalData } from "components/FormModal";
-import { useHttp } from "hooks/http";
-import { useState } from "react";
-import {
-    ApiFurnishing,
-    ApiRealEstateListing, ApiUpsertRealEstateListing
-} from "../../../shared/types/real-estate";
+import {FormModalData} from "components/FormModal";
+import {useHttp} from "hooks/http";
+import {ApiFurnishing, ApiRealEstateListing, ApiUpsertRealEstateListing} from "../../../shared/types/real-estate";
 import RealEstateListingForm from "./RealEstateListingForm";
 
 const mapFormToApiUpsertRealEstateListing = (
