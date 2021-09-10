@@ -72,7 +72,9 @@ export class RealEstateListingService {
     }
 
     await existingListing.updateOne(documentData);
-    return existingListing;
+    return await this.realEstateListingModel.findById({
+      _id: oid,
+    });
   }
 
   async deleteRealEstateListing(user: UserDocument, id: string) {

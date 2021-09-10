@@ -1,6 +1,7 @@
 import { FormModalData } from "components/FormModal";
 import { useHttp } from "hooks/http";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
+import useRealEstateListingState from "state/real-estate-listing";
 import {
   ApiFurnishing,
   ApiRealEstateListing,
@@ -55,21 +56,24 @@ export const RealEstateListingFormHandler: React.FunctionComponent<RealEstateLis
     realEstateListing,
   }) => {
     const { post, put } = useHttp();
+    const { putRealEstateListing } = useRealEstateListingState();
 
     const onSubmit = async (values: any) => {
       const mappedRealEstateListing: ApiUpsertRealEstateListing =
         await mapFormToApiUpsertRealEstateListing(values);
 
       try {
+        let listing = null;
         beforeSubmit();
         if (realEstateListing.id) {
-          await put(
+          listing =  await put(
             `/api/real-estate-listings/${realEstateListing.id}`,
             mappedRealEstateListing
           );
         } else {
-          await post("/api/real-estate-listings", mappedRealEstateListing);
+          listing = await post("/api/real-estate-listings", mappedRealEstateListing);
         }
+        putRealEstateListing(listing.data as ApiRealEstateListing);
         postSubmit(true);
       } catch (err) {
         console.log(err);
