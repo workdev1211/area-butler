@@ -23,11 +23,22 @@ export class RealEstateListingService {
 
   async insertRealEstateListing(
     user: UserDocument,
-    realEstateListing: ApiUpsertRealEstateListing,
+    { coordinates, ...upsertData }: ApiUpsertRealEstateListing,
   ): Promise<RealEstateListingDocument> {
+    const documentData: any = {
+      ...upsertData,
+    };
+
+    if (coordinates) {
+      documentData['location'] = {
+        type: 'Point',
+        coordinates: [coordinates.lat, coordinates.lng],
+      };
+    }
+
     const document = {
       userId: user.id,
-      ...realEstateListing,
+      ...documentData,
     };
     return await new this.realEstateListingModel(document).save();
   }
@@ -35,10 +46,12 @@ export class RealEstateListingService {
   async updateRealEstateListing(
     user: UserDocument,
     id: string,
-    updateRealEstateListing: Partial<ApiUpsertRealEstateListing>,
+    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
     const oid = new Types.ObjectId(id);
-    const existingListing = await this.realEstateListingModel.findById({_id: oid});
+    const existingListing = await this.realEstateListingModel.findById({
+      _id: oid,
+    });
     if (!existingListing) {
       throw 'Entity not found';
     }
@@ -47,13 +60,26 @@ export class RealEstateListingService {
       throw 'Unallowed change';
     }
 
-    await existingListing.updateOne(updateRealEstateListing);
+    const documentData: any = {
+      ...upsertData,
+    };
+
+    if (coordinates) {
+      documentData['location'] = {
+        type: 'Point',
+        coordinates: [coordinates.lat, coordinates.lng],
+      };
+    }
+
+    await existingListing.updateOne(documentData);
     return existingListing;
   }
 
   async deleteRealEstateListing(user: UserDocument, id: string) {
     const oid = new Types.ObjectId(id);
-    const existingListing = await this.realEstateListingModel.findById({_id: oid});
+    const existingListing = await this.realEstateListingModel.findById({
+      _id: oid,
+    });
 
     if (!existingListing) {
       throw 'Entity not found';

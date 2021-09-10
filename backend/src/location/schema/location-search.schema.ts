@@ -7,7 +7,7 @@ export type LocationSearchDocument  = LocationSearch  & Document;
 @Schema()
 export class LocationSearch {
 
-  @Prop({type: Map})
+  @Prop({type: Object})
   locationSearch: ApiSearch;
 
   @Prop({type: Date, default: Date.now})

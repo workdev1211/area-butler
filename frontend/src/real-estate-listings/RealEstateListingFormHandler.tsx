@@ -1,21 +1,31 @@
-import {FormModalData} from "components/FormModal";
-import {useHttp} from "hooks/http";
-import {ApiFurnishing, ApiRealEstateListing, ApiUpsertRealEstateListing} from "../../../shared/types/real-estate";
+import { FormModalData } from "components/FormModal";
+import { useHttp } from "hooks/http";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
+import {
+  ApiFurnishing,
+  ApiRealEstateListing,
+  ApiUpsertRealEstateListing,
+} from "../../../shared/types/real-estate";
 import RealEstateListingForm from "./RealEstateListingForm";
 
-const mapFormToApiUpsertRealEstateListing = (
+const mapFormToApiUpsertRealEstateListing = async (
   values: any
-): ApiUpsertRealEstateListing => {
+): Promise<ApiUpsertRealEstateListing> => {
   const availableFurnishing = Object.keys(ApiFurnishing);
   const furnishing = Object.entries(values)
     .filter(([k, v]) => Boolean(v))
     .filter(([k, v]) => availableFurnishing.includes(k))
     .map(([k, v]) => k) as ApiFurnishing[];
 
+  const { lat, lng } = await deriveGeocodeByAddress(values.address);
+
   return {
     name: values.name,
     address: values.address,
-    coordinates: values.coordinates,
+    coordinates: {
+      lat,
+      lng,
+    },
     costStructure: {
       price: {
         amount: values.price,
@@ -38,27 +48,33 @@ export interface RealEstateListingFormHandlerData extends FormModalData {
 }
 
 export const RealEstateListingFormHandler: React.FunctionComponent<RealEstateListingFormHandlerData> =
-  ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, realEstateListing }) => {
-    const {post, put} = useHttp();
+  ({
+    formId,
+    beforeSubmit = () => {},
+    postSubmit = () => {},
+    realEstateListing,
+  }) => {
+    const { post, put } = useHttp();
 
     const onSubmit = async (values: any) => {
       const mappedRealEstateListing: ApiUpsertRealEstateListing =
-        mapFormToApiUpsertRealEstateListing(values);
-
+        await mapFormToApiUpsertRealEstateListing(values);
 
       try {
         beforeSubmit();
         if (realEstateListing.id) {
-          await put(`/api/real-estate-listings/${realEstateListing.id}`, mappedRealEstateListing);
+          await put(
+            `/api/real-estate-listings/${realEstateListing.id}`,
+            mappedRealEstateListing
+          );
         } else {
-          await post('/api/real-estate-listings', mappedRealEstateListing);
+          await post("/api/real-estate-listings", mappedRealEstateListing);
         }
         postSubmit(true);
       } catch (err) {
         console.log(err);
         postSubmit(false);
       }
-
     };
 
     return (

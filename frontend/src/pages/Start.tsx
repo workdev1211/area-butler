@@ -19,6 +19,7 @@ import SearchResult from "../search/SearchResult";
 import "./Start.css";
 import TransportationParams from "../search/TransportationParams";
 import LocalityOptions, {localityOptionsDefaults} from "../search/Localitites";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
 
 type GeoLocation = {
     latitude?: number | null;
@@ -113,10 +114,6 @@ const Start: FunctionComponent = () => {
         setValue(value);
         setCollapseSearchOpen(false);
         setCollapseTransportationOpen(true);
-    };
-    const deriveGeocodeByAddress = async (address: string) => {
-        const latlngResults = await geocodeByAddress(address);
-        return await getLatLng(latlngResults[0]);
     };
 
     const modalConfig: ModalConfig = {
