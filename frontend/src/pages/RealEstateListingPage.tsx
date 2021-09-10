@@ -28,7 +28,7 @@ export const RealEstateListingPage = () => {
           </thead>
           <tbody>
             {realEstateListingsState.listings.map((listing) => (
-              <tr>
+              <tr key={listing.id}>
                 <th>{listing.name}</th>
                 <td>{listing.address}</td>
                 <td>
