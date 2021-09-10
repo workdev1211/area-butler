@@ -3,7 +3,7 @@ import React, {FunctionComponent, useContext, useState} from "react";
 import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng,} from "react-google-places-autocomplete";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
-import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
+import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {
     ApiSearch,
@@ -48,6 +48,7 @@ const Start: FunctionComponent = () => {
                 search
             );
             setLocationSearchResult(result.data);
+            setCollapseLocalitiesOpen(false);
         } catch (error) {
             console.error(error);
         } finally {
@@ -311,6 +312,16 @@ const Start: FunctionComponent = () => {
                     />
                     <div className="collapse-title text-xl font-medium">
                         3. Lokalitäten auswählen
+                        { !collapseLocalitiesOpen && <div className='float-right mr-20 text-base'>
+                            <div className='flex gap-6'>
+                                {localityOptions.map(locality => <span key={locality}>
+                                    &#10003; {osmEntityTypes.find(oet => oet.name === locality)?.label}
+                                </span> )
+                                }
+                            </div>
+                        </div>
+
+                        }
                     </div>
                     <div className="collapse-content">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
