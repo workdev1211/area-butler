@@ -1,25 +1,26 @@
-import FormModal, {ModalConfig} from "components/FormModal";
-import React, {FunctionComponent, useContext, useState} from "react";
-import GooglePlacesAutocomplete, {geocodeByAddress, getLatLng,} from "react-google-places-autocomplete";
+import FormModal, { ModalConfig } from "components/FormModal";
+import React, { FunctionComponent, MutableRefObject, Ref, useContext, useRef, useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { GooglePlacesAutocompleteHandle } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
-import {meansOfTransportations, osmEntityTypes, unitsOfTransportation,} from "../../../shared/constants/constants";
-import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
+import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
     ApiSearch,
     ApiSearchResponse,
     MeansOfTransportation,
     OsmName,
     TransportationParam,
-    UnitsOfTransportation,
+    UnitsOfTransportation
 } from "../../../shared/types/types";
-import {ConfigContext} from "../context/ConfigContext";
-import {useHttp} from "../hooks/http";
+import { ConfigContext } from "../context/ConfigContext";
+import { useHttp } from "../hooks/http";
+import LocalityOptions, { localityOptionsDefaults } from "../search/Localitites";
 import SearchResult from "../search/SearchResult";
-import "./Start.css";
 import TransportationParams from "../search/TransportationParams";
-import LocalityOptions, {localityOptionsDefaults} from "../search/Localitites";
-import { deriveGeocodeByAddress } from "shared/shared.functions";
+import "./Start.css";
 
 type GeoLocation = {
     latitude?: number | null;
@@ -56,13 +57,16 @@ const Start: FunctionComponent = () => {
             setLocationSearchBusy(false);
         }
     };
+
     const LocationAutoComplete = () => {
+
         return (
             <div className="col-span-2">
                 <label className="label">
                     <span>Adresse</span>
                 </label>
                 <GooglePlacesAutocomplete
+                
                     apiOptions={{
                         language: "de",
                         region: "de",

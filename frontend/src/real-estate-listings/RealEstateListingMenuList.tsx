@@ -3,42 +3,53 @@ import { useEffect, useState } from "react";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface RealEstateMenuListData {
-    fillAdressFromListing: (listing: ApiRealEstateListing) => void;
+  fillAdressFromListing: (listing: ApiRealEstateListing) => void;
 }
 
-export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData> = ({fillAdressFromListing}) => {
-  const { get } = useHttp();
+export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData> =
+  ({ fillAdressFromListing }) => {
+    const { get } = useHttp();
 
-  const [realEstateListings, setRealEstateListings] = useState<
-    ApiRealEstateListing[]
-  >([]);
+    const [realEstateListings, setRealEstateListings] = useState<
+      ApiRealEstateListing[]
+    >([]);
 
-  useEffect(() => {
-    const fetchListings = async () => {
-      setRealEstateListings(
-        (await get<ApiRealEstateListing[]>("/api/real-estate-listings")).data
-      );
-    };
-    fetchListings();
-  }, [true]);
+    useEffect(() => {
+      const fetchListings = async () => {
+        setRealEstateListings(
+          (await get<ApiRealEstateListing[]>("/api/real-estate-listings")).data
+        );
+      };
+      fetchListings();
+    }, [true]);
 
-  return (
-    <div className="dropdown">
-      <div tabIndex={0} className="m-1 btn btn-sm">
-        Meine Objekte
+    return (
+      <div className="dropdown">
+        <div tabIndex={0} className="m-1 btn btn-sm">
+          Meine Objekte
+        </div>
+        <ul
+          tabIndex={0}
+          className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
+        >
+          {realEstateListings.map((realEstateListing) => (
+            <li>
+              <a
+                onClick={() => fillAdressFromListing(realEstateListing)}
+                className="whitespace-nowrap w-full"
+              >
+                <div className="flex flex-col items-start">
+                  <span>{realEstateListing.name}</span>
+                  <span className="text-gray-500 text-xs">
+                    {realEstateListing.address}
+                  </span>
+                </div>
+              </a>
+            </li>
+          ))}
+        </ul>
       </div>
-      <ul
-        tabIndex={0}
-        className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
-      >
-        {realEstateListings.map((realEstateListing) => (
-          <li>
-            <a onClick={() => fillAdressFromListing(realEstateListing)}>{realEstateListing.name}</a>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+    );
+  };
 
 export default RealEstateMenuList;
