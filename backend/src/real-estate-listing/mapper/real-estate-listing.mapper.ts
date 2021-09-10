@@ -9,5 +9,5 @@ export const mapRealEstateListingToApiRealEstateListing = (
   address: realEstateListing.address,
   coordinates: realEstateListing.coordinates,
   costStructure: realEstateListing.costStructure,
-  characteristics: realEstateListing.characterstics
+  characteristics: realEstateListing.characteristics
 });

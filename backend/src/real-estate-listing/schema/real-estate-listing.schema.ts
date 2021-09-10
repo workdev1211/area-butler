@@ -27,7 +27,7 @@ export class RealEstateListing {
   costStructure: ApiRealEstateCost;  
   
   @Prop({ type: Map})
-  characterstics: ApiRealEstateCharacteristics;
+  characteristics: ApiRealEstateCharacteristics;
   
 }
 

@@ -5,11 +5,13 @@ import GooglePlacesAutocomplete, {
   getLatLng,
 } from "react-google-places-autocomplete";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
+import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
 import {
   meansOfTransportations,
   osmEntityTypes,
   unitsOfTransportation,
 } from "../../../shared/constants/constants";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
   ApiSearch,
   ApiSearchResponse,
@@ -425,10 +427,20 @@ const Start: FunctionComponent = () => {
   const [collapseTransportationOpen, setCollapseTransportationOpen] =
     useState(false);
   const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
+  const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
+    const result = await deriveGeocodeByAddress(listing.address);
+    setLocation({
+      longitude: result.lng,
+      latitude: result.lat,
+    });
+  };
 
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Umgebungsanalyse</h1>
+      <RealEstateMenuList
+        fillAdressFromListing={fillAddressFromListing}
+      ></RealEstateMenuList>
       <div>
         <div
           className={

@@ -11,7 +11,7 @@ export const useHttp = () => {
   const { getIdTokenClaims } = useAuth0();
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
-  const get = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
+  const get = async <T>(url: string): Promise<AxiosResponse<T>> => {
     const { __raw } = await getIdTokenClaims();
     const authorization = `Bearer ${__raw}`;
 
