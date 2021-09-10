@@ -18,6 +18,7 @@ import {useHttp} from "../hooks/http";
 import SearchResult from "../search/SearchResult";
 import "./Start.css";
 import TransportationParams from "../search/TransportationParams";
+import LocalityOptions, {localityOptionsDefaults} from "../search/Localitites";
 
 type GeoLocation = {
   latitude?: number | null;
@@ -151,30 +152,8 @@ const Start: FunctionComponent = () => {
             type="button"
             disabled={locationBusy}
             onClick={locateUser}
-            className="btn btn-sm btn-primary"
+            className={locationBusy ? 'btn btn-sm btn-primary' : 'btn btn-sm btn-primary loading'}
           >
-            {locationBusy && (
-              <svg
-                className="animate-spin -ml-1 mr-1 h-5 w-5 text-white"
-                xmlns="http://www.w3.org/2000/svg"
-                fill="none"
-                viewBox="0 0 24 24"
-              >
-                <circle
-                  className="opacity-25"
-                  cx="12"
-                  cy="12"
-                  r="10"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                ></circle>
-                <path
-                  className="opacity-75"
-                  fill="currentColor"
-                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                ></path>
-              </svg>
-            )}
             Mein Standort
           </button>
           {value && (
@@ -192,32 +171,17 @@ const Start: FunctionComponent = () => {
     );
   };
 
-
+  const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
+    const result = await deriveGeocodeByAddress(listing.address);
+    setLocation({
+      longitude: result.lng,
+      latitude: result.lat,
+    });
+  };
 
   const [localityOptions, setLocalityOptions] = useState<OsmName[]>(
-    osmEntityTypes.map((entity) => entity.name)
+      localityOptionsDefaults
   );
-  const localities = osmEntityTypes.map((entity) => {
-    return (
-      <label className="flex items-center" key={entity.name}>
-        <input
-          type="checkbox"
-          className="checkbox checkbox-xs checkbox-primary"
-          checked={localityOptions.some((option) => option === entity.name)}
-          onChange={(e) => {
-            if (e.target.checked) {
-              setLocalityOptions([...localityOptions, entity.name]);
-            } else {
-              setLocalityOptions(
-                localityOptions.filter((option) => option !== entity.name)
-              );
-            }
-          }}
-        />
-        <span className="ml-2">{entity.label}</span>
-      </label>
-    );
-  });
 
   const [transportation, setTransportation] = useState<TransportationParam[]>([
     {
@@ -239,57 +203,28 @@ const Start: FunctionComponent = () => {
 
   const SearchButton = () => {
     return (
-      <button
-        type="button"
-        disabled={
-          locationSearchBusy ||
-          !location.latitude ||
-          !location.longitude ||
-          transportation.length === 0
-        }
-        onClick={performLocationSearch}
-        className="btn btn-primary"
-      >
-        {locationSearchBusy && (
-          <svg
-            className="animate-spin -ml-1 mr-1 h-5 w-5 text-white"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-          >
-            <circle
-              className="opacity-25"
-              cx="12"
-              cy="12"
-              r="10"
-              stroke="currentColor"
-              strokeWidth="4"
-            ></circle>
-            <path
-              className="opacity-75"
-              fill="currentColor"
-              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-            ></path>
-          </svg>
-        )}
-        Suchen
-      </button>
+        <button
+            type="button"
+            disabled={
+              locationSearchBusy ||
+              !location.latitude ||
+              !location.longitude ||
+              transportation.length === 0
+            }
+            onClick={performLocationSearch}
+            className={locationSearchBusy ? 'btn btn-primary loading' : 'btn btn-primary'}
+        >
+          Suchen
+        </button>
     );
   };
 
   const collapseBaseClasses =
-    "collapse w-full border rounded-box border-base-300 collapse-arrow mt-10";
+      "collapse w-full border rounded-box border-base-300 collapse-arrow mt-10";
   const [collapseSearchOpen, setCollapseSearchOpen] = useState(true);
   const [collapseTransportationOpen, setCollapseTransportationOpen] =
-    useState(false);
+      useState(false);
   const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
-  const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
-    const result = await deriveGeocodeByAddress(listing.address);
-    setLocation({
-      longitude: result.lng,
-      latitude: result.lat,
-    });
-  };
 
   return (
     <div className="container mx-auto mt-10">
@@ -357,12 +292,12 @@ const Start: FunctionComponent = () => {
           </div>
           <div className="collapse-content">
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-              {localities}
-            </div>
-            <div className="flex-col gap-6 mt-5">
-              <SearchButton />
+              <LocalityOptions defaults={localityOptions} onChange={(value) => setLocalityOptions(value)} />
             </div>
           </div>
+        </div>
+        <div className="flex-col gap-6 mt-5">
+          <SearchButton />
         </div>
       </div>
       {locationSearchResult && (
