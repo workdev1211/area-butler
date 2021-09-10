@@ -1,7 +1,6 @@
 import FormModal, { ModalConfig } from "components/FormModal";
-import React, { FunctionComponent, MutableRefObject, Ref, useContext, useEffect, useRef, useState } from "react";
+import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { GooglePlacesAutocompleteHandle } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
 import { deriveGeocodeByAddress } from "shared/shared.functions";

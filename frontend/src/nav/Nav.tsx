@@ -64,6 +64,8 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                             <div className="flex space-x-4">
                                 <Link to="/" className="btn"
                                    aria-current="page">Start</Link>
+                                <Link to="/listings" className="btn"
+                                   aria-current="page">Meine Objekte</Link>
                                    
                                 { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>
