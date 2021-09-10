@@ -1,0 +1,38 @@
+version: '3'
+
+services:
+  overpass:
+    image: wiktorn/overpass-api
+    container_name: overpass
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8074:80
+    volumes:
+      - overpass-db:/db
+    environment:
+      - OVERPASS_META=yes
+      - OVERPASS_MODE=init
+      - OVERPASS_PLANET_URL=http://download.geofabrik.de/europe/germany-latest.osm.bz2
+      - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/germany/minute/
+      - OVERPASS_RULES_LOAD=10
+    labels:
+      - 'traefik.docker.network=web'
+      - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.overpass-http.entrypoints=web'
+      - 'traefik.http.routers.overpass-http.middlewares=redirect'
+      - 'traefik.http.routers.overpass-http.rule=Host(`overpass.x.syndicats.co`)'
+      - 'traefik.http.routers.overpass.entrypoints=websecure'
+      - 'traefik.http.routers.overpass.rule=Host(`overpass.x.syndicats.co`)'
+      - 'traefik.http.routers.overpass.tls=true'
+      - 'traefik.http.routers.overpass.tls.certresolver=le'
+      - 'traefik.port=8074'
+
+volumes:
+  overpass-db:
+    external: true
+
+networks:
+  web:
+    external: true

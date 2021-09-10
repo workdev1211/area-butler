@@ -1,18 +1,11 @@
-import {
-  ApiAddress,
-  ApiCoordinates,
-  ApiOsmEntity,
-  ApiOsmLocation,
-  ApiSearch,
-  OsmName,
-} from '@area-butler-types/types';
-import { HttpService, Injectable } from '@nestjs/common';
-import { osmEntityTypes } from '../../../../shared/constants/constants';
+import {ApiAddress, ApiCoordinates, ApiOsmLocation, OsmName,} from '@area-butler-types/types';
+import {HttpService, Injectable} from '@nestjs/common';
+import {osmEntityTypes} from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 
 @Injectable()
 export class OverpassService {
-  private baseUrl = 'http://overpass-api.de/api/interpreter';
+  private baseUrl = 'https://overpass.x.syndicats.co/api/interpreter';
 
   constructor(private http: HttpService) {}
 
