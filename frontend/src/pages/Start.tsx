@@ -1,10 +1,11 @@
 import FormModal, { ModalConfig } from "components/FormModal";
-import React, { FunctionComponent, MutableRefObject, Ref, useContext, useRef, useState } from "react";
+import React, { FunctionComponent, MutableRefObject, Ref, useContext, useEffect, useRef, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { GooglePlacesAutocompleteHandle } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
+import useRealEstateListingState from "state/real-estate-listing";
 import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
@@ -29,11 +30,24 @@ type GeoLocation = {
 
 const Start: FunctionComponent = () => {
     const {googleApiKey} = useContext(ConfigContext);
-    const {post} = useHttp();
+    const {get, post} = useHttp();
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);
     const [locationSearchResult, setLocationSearchResult] =
         useState<ApiSearchResponse | null>(null);
+
+    const { setRealEstateListings } = useRealEstateListingState();
+
+    useEffect(() => {
+      const fetchListings = async () => {
+        setRealEstateListings(
+          (await get<ApiRealEstateListing[]>("/api/real-estate-listings")).data
+        );
+      };
+      fetchListings();
+    }, [true]);
+
+
     const performLocationSearch = async () => {
         try {
             setLocationSearchBusy(true);

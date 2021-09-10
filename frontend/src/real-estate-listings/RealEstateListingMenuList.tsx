@@ -1,5 +1,4 @@
-import { useHttp } from "hooks/http";
-import { useEffect, useState } from "react";
+import useRealEstateListingState from "state/real-estate-listing";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface RealEstateMenuListData {
@@ -8,20 +7,7 @@ export interface RealEstateMenuListData {
 
 export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData> =
   ({ fillAdressFromListing }) => {
-    const { get } = useHttp();
-
-    const [realEstateListings, setRealEstateListings] = useState<
-      ApiRealEstateListing[]
-    >([]);
-
-    useEffect(() => {
-      const fetchListings = async () => {
-        setRealEstateListings(
-          (await get<ApiRealEstateListing[]>("/api/real-estate-listings")).data
-        );
-      };
-      fetchListings();
-    }, [true]);
+    const { realEstateListingsState } = useRealEstateListingState();
 
     return (
       <div className="dropdown">
@@ -32,8 +18,8 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
           tabIndex={0}
           className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
         >
-          {realEstateListings.map((realEstateListing) => (
-            <li>
+          {realEstateListingsState.listings.map((realEstateListing) => (
+            <li key={realEstateListing.id}>
               <a
                 onClick={() => fillAdressFromListing(realEstateListing)}
                 className="whitespace-nowrap w-full"
