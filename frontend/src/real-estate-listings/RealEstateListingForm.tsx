@@ -7,7 +7,7 @@ import {
   allFurnishing, allRealEstateCostTypes
 } from "../../../shared/constants/real-estate";
 import {
-  ApiEnergyEfficiency, ApiRealEstateListing
+  ApiEnergyEfficiency, ApiRealEstateCostType, ApiRealEstateListing
 } from "../../../shared/types/real-estate";
 
 export interface RealEstateListingFormData {
@@ -19,16 +19,21 @@ export interface RealEstateListingFormData {
 export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFormData> =
   ({ realEstateListing, onSubmit, formId}) => {
 
+
+    const furnishing =  {} as any;
+    (realEstateListing?.characteristics?.furnishing || []).map(f => furnishing[f] = true);
+
     return (
       <Formik
         initialValues={{
           name: realEstateListing?.name,
           address: realEstateListing?.address,
-          price: 0,
-          type: "",
-          realEstateSizeInSquareMeters: 0,
-          propertySizeInSquareMeters: 0,
-          energyEfficiency: "A",
+          price: realEstateListing?.costStructure?.price?.amount || 0,
+          type: realEstateListing?.costStructure?.type ||  ApiRealEstateCostType.RENT_MONTHLY_COLD  ,
+          realEstateSizeInSquareMeters: realEstateListing.characteristics?.realEstateSizeInSquareMeters || 0,
+          propertySizeInSquareMeters: realEstateListing.characteristics?.propertySizeInSquareMeters || 0,
+          energyEfficiency: realEstateListing.characteristics?.energyEfficiency || "A",
+          ...furnishing
         }}
         validationSchema={Yup.object({
           name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),

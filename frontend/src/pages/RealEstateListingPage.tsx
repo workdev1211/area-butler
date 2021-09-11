@@ -1,7 +1,10 @@
 import FormModal, { ModalConfig } from "components/FormModal";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import useRealEstateListingState from "state/real-estate-listing";
-import { allRealEstateCostTypes } from "../../../shared/constants/real-estate";
+import {
+  allRealEstateCostTypes,
+  allFurnishing,
+} from "../../../shared/constants/real-estate";
 
 export const RealEstateListingPage = () => {
   const { realEstateListingsState } = useRealEstateListingState();
@@ -41,7 +44,16 @@ export const RealEstateListingPage = () => {
                       } ${listing.costStructure.price.amount} €`
                     : ""}
                 </td>
-                <td></td>
+                <td>
+                  {" "}
+                  {listing.characteristics?.furnishing &&
+                    allFurnishing
+                      .filter((f) =>
+                        listing.characteristics?.furnishing.includes(f.type)
+                      )
+                      .map((f) => f.label)
+                      .join(", ")}
+                </td>
                 <td>
                   <FormModal modalConfig={editRealEstateListingModalConfig}>
                     <RealEstateListingFormHandler
