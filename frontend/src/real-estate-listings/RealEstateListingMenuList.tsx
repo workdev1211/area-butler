@@ -9,7 +9,7 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
   ({ fillAdressFromListing }) => {
     const { realEstateListingsState } = useRealEstateListingState();
 
-    return (
+    return realEstateListingsState.listings?.length > 0 ? (
       <div className="dropdown">
         <div tabIndex={0} className="m-1 btn btn-sm">
           Meine Objekte
@@ -35,7 +35,7 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
           ))}
         </ul>
       </div>
-    );
+    ) : null;
   };
 
 export default RealEstateMenuList;
