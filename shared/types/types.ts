@@ -11,6 +11,13 @@ export interface ApiUser {
   email: string;
 }
 
+export interface ApiInsertFeedback {
+  description: string;
+  type: FeedbackType;
+}
+
+export type FeedbackType = 'ERROR' | 'IMPROVEMENT' | 'OTHER';
+
 export interface ApiMoneyAmount {
   amount: number;
   currency: string;

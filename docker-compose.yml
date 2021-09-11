@@ -32,6 +32,7 @@ services:
       - AUTH0_AUDIENCE
       - MONGO_CONNECTION_URI
       - GOOGLE_API_KEY
+      - FEEDBACK_SLACK_WEBHOOK
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'

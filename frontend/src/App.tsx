@@ -1,5 +1,7 @@
 import AppStateWrapper from "@laststance/use-app-state";
 import Authenticated from "auth/authenticated";
+import FormModal, { ModalConfig } from "components/FormModal";
+import { FeedbackFormHandler } from "feedback/FeedbackFormHandler";
 import { RealEstateListingPage } from "pages/RealEstateListingPage";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -9,9 +11,20 @@ import Nav from "./nav/Nav";
 import Start from "./pages/Start";
 
 function App() {
+  const feedbackModalConfig: ModalConfig = {
+    buttonTitle: "Feedback",
+    buttonStyle: "fixed -bottom-60 right-0 mb-96 z-20 rotate-90 bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold h-8 px-2 rounded",
+    modalTitle: "Feedback abgeben",
+  };
+
   return (
     <AppStateWrapper initialState={initialState}>
       <Router>
+        <Authenticated>
+          <FormModal modalConfig={feedbackModalConfig}>
+            <FeedbackFormHandler></FeedbackFormHandler>
+          </FormModal>
+        </Authenticated>
         <div className="App px-4">
           <Nav />
           <Switch>

@@ -1,8 +1,7 @@
 import {
   ApiRealEstateCharacteristics,
-  ApiRealEstateCost,
+  ApiRealEstateCost
 } from '@area-butler-types/real-estate';
-import { ApiCoordinates } from '@area-butler-types/types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { GeoJsonPoint } from 'src/shared/geo-json.types';
