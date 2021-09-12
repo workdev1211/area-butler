@@ -2,6 +2,7 @@ import AppStateWrapper from "@laststance/use-app-state";
 import Authenticated from "auth/authenticated";
 import FormModal, { ModalConfig } from "components/FormModal";
 import { FeedbackFormHandler } from "feedback/FeedbackFormHandler";
+import { PotentialCustomersPage } from "pages/PotentialCustomersPage";
 import { RealEstateListingPage } from "pages/RealEstateListingPage";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
@@ -31,6 +32,11 @@ function App() {
             <Route path="/listings">
               <Authenticated>
                 <RealEstateListingPage />
+              </Authenticated>
+            </Route>
+            <Route path="/potential-customers">
+              <Authenticated>
+                <PotentialCustomersPage />
               </Authenticated>
             </Route>
             <Route path="/">

@@ -12,6 +12,9 @@ export class PotentialCustomer {
   @Prop({ required: true })
   name: string;
 
+  @Prop({ required: true })
+  email: string;
+
   @Prop({ type: Array })
   routingProfiles: TransportationParam[];
 

@@ -11,7 +11,7 @@ export const RealEstateListingPage = () => {
 
   const editRealEstateListingModalConfig: ModalConfig = {
     modalTitle: "Objekt bearbeiten",
-    buttonTitle: "bearbeiten",
+    buttonTitle: "Bearbeiten",
     buttonStyle: "btn btn-xs",
   };
 

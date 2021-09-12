@@ -66,6 +66,8 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                                    aria-current="page">Start</Link>
                                 <Link to="/listings" className="btn"
                                    aria-current="page">Meine Objekte</Link>
+                                <Link to="/potential-customers" className="btn"
+                                   aria-current="page">Meine Interessenten</Link>   
                                    
                                 { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>
@@ -119,6 +121,8 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                           aria-current="page">Start</Link>
                     <Link to="/listings" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
                           aria-current="page">Meine Objekte</Link>      
+                    <Link to="/potential-customers" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                          aria-current="page">Meine Interessenten</Link>      
                     { !isAuthenticated && <LoginButton></LoginButton> }
                 </div>
             </div>
