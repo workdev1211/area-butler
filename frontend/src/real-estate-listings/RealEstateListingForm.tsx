@@ -63,8 +63,8 @@ export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFor
               placeholder="Adresse eingeben"
             />
           </div>
-          <div className="flex items-end gap-6">
-            <div className="form-control">
+          <div className="flex flex-wrap items-end gap-6">
+            <div className="form-control flex-1">
               <Input
                 label="Preis (€)"
                 name="price"
@@ -72,7 +72,7 @@ export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFor
                 placeholder="Preis eingeben"
               />
             </div>
-            <div className="form-control">
+            <div className="form-control flex-1">
               <Select
                 label="Kostenart"
                 name="type"
@@ -85,8 +85,8 @@ export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFor
               </Select>
             </div>
           </div>
-          <div className="flex items-end gap-6">
-            <div className="form-control">
+          <div className="flex flex-wrap items-end gap-6">
+            <div className="form-control flex-1">
               <Input
                 label="Größe in Quadratmeer"
                 name="realEstateSizeInSquareMeters"
@@ -94,7 +94,7 @@ export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFor
                 placeholder="Größe in Quadrameter"
               />
             </div>
-            <div className="form-control">
+            <div className="form-control flex-1">
               <Input
                 label="Grundstück in Quadratmeer"
                 name="propertySizeInSquareMeters"
