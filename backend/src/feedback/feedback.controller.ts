@@ -7,10 +7,10 @@ import { FeedbackService } from './feedback.service';
 
 @Controller('api/feedback')
 export class FeedbackController extends AuthenticatedController{
+    
     constructor(private feedbackService: FeedbackService) {
         super();
     }
-
 
     @Post()
     public async postFeedback(@InjectUser() user: UserDocument, @Body() feedback: ApiInsertFeedback) {

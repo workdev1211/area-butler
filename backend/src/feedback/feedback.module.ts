@@ -1,8 +1,8 @@
 import { HttpModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from 'src/user/user.module';
-import { FeedbackController } from './feedback/feedback.controller';
-import { FeedbackService } from './feedback/feedback.service';
+import { FeedbackController } from './feedback.controller';
+import { FeedbackService } from './feedback.service';
 import { Feedback, FeedbackSchema } from './schema/feedback.schema';
 
 @Module({

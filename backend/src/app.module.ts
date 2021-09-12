@@ -10,6 +10,7 @@ import { LocationModule } from './location/location.module';
 import { UserModule } from './user/user.module';
 import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
 
 @Module({
   imports: [ClientModule, 
@@ -22,7 +23,8 @@ import { FeedbackModule } from './feedback/feedback.module';
     AuthModule,
     UserModule,
     RealEstateListingModule,
-    FeedbackModule],
+    FeedbackModule,
+    PotentialCustomerModule],
     controllers: [ConfigController]
 })
 export class AppModule {}

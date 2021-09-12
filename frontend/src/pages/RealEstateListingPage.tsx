@@ -37,11 +37,11 @@ export const RealEstateListingPage = () => {
                 <td>
                   {!!listing?.costStructure?.type &&
                   !!listing?.costStructure?.price
-                    ? `${
-                        allRealEstateCostTypes.find(
-                          (t) => listing.costStructure?.type
-                        )?.label
-                      } ${listing.costStructure.price.amount} €`
+                    ? `${listing.costStructure.price.amount} € (${
+                      allRealEstateCostTypes.find(
+                        (t) => t.type === listing.costStructure?.type
+                      )?.label
+                    })`
                     : ""}
                 </td>
                 <td>
