@@ -1,3 +1,4 @@
+import { useState } from "react";
 import useRealEstateListingState from "state/real-estate-listing";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
@@ -9,19 +10,22 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
   ({ fillAdressFromListing }) => {
     const { realEstateListingsState } = useRealEstateListingState();
 
+    const [showMenu, setShowMenu] = useState(false);
+
+    const dropdownClasses = showMenu ? "dropdown dropdown-open" : "dropdown"
+
     return realEstateListingsState.listings?.length > 0 ? (
-      <div className="dropdown">
-        <div tabIndex={0} className="m-1 btn btn-sm">
+      <div className={dropdownClasses}>
+        <div className="m-1 btn btn-sm" onClick={() => setShowMenu(true)}>
           Meine Objekte
         </div>
         <ul
-          tabIndex={0}
           className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
         >
           {realEstateListingsState.listings.map((realEstateListing) => (
             <li key={realEstateListing.id}>
               <a
-                onClick={() => fillAdressFromListing(realEstateListing)}
+                onClick={(e) => {fillAdressFromListing(realEstateListing); setShowMenu(false)}}
                 className="whitespace-nowrap w-full"
               >
                 <div className="flex flex-col items-start">
