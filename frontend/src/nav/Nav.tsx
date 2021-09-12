@@ -4,6 +4,7 @@ import useOnClickOutside from "../hooks/onclickoutside";
 import {Link} from 'react-router-dom';
 import LoginButton from '../auth/login-button';
 import {useAuth0} from "@auth0/auth0-react";
+import Authenticated from 'auth/authenticated';
 
 type NavProps = {
 
@@ -64,10 +65,12 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                             <div className="flex space-x-4">
                                 <Link to="/" className="btn"
                                    aria-current="page">Start</Link>
-                                <Link to="/listings" className="btn"
-                                   aria-current="page">Meine Objekte</Link>
-                                <Link to="/potential-customers" className="btn"
-                                   aria-current="page">Meine Interessenten</Link>   
+                                <Authenticated>
+                                    <Link to="/listings" className="btn"
+                                    aria-current="page">Meine Objekte</Link>
+                                    <Link to="/potential-customers" className="btn"
+                                    aria-current="page">Meine Interessenten</Link>   
+                                </Authenticated>   
                                    
                                 { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>
@@ -119,10 +122,12 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                 <div className="px-2 pt-2 pb-3 space-y-1">
                     <Link to="/" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
                           aria-current="page">Start</Link>
-                    <Link to="/listings" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                          aria-current="page">Meine Objekte</Link>      
-                    <Link to="/potential-customers" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
-                          aria-current="page">Meine Interessenten</Link>      
+                    <Authenticated>
+                        <Link to="/listings" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                            aria-current="page">Meine Objekte</Link>      
+                        <Link to="/potential-customers" className="bg-gray-900 text-white block px-3 py-2 rounded-md text-base font-medium"
+                            aria-current="page">Meine Interessenten</Link>      
+                    </Authenticated>      
                     { !isAuthenticated && <LoginButton></LoginButton> }
                 </div>
             </div>
