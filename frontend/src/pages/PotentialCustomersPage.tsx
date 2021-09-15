@@ -71,7 +71,7 @@ export const PotentialCustomersPage = () => {
                             (means) => means.type === routingProfile.type
                           )?.label
                         }{" "}
-                        ({routingProfile.amount}
+                        ({routingProfile.amount}{" "}
                         {
                           unitsOfTransportation.find(
                             (unit) => unit.type === routingProfile.unit
@@ -83,7 +83,7 @@ export const PotentialCustomersPage = () => {
                     </>
                   ))}
                 </td>
-                <td className="break-normal whitespace-pre-line w-2">
+                <td style={{width: '25%', whiteSpace: 'pre-wrap'}}>
                   {(customer.preferredAmenities ?? [])
                     .map(
                       (amenity) =>
