@@ -1,6 +1,10 @@
 import { FormModalData } from "components/FormModal";
+import {
+  PotentialCustomerActions,
+  PotentialCustomerContext,
+} from "context/PotentialCustomerContext";
 import { useHttp } from "hooks/http";
-import usePotentialCustomerState from "state/potential-customer";
+import React from "react";
 import {
   ApiPotentialCustomer,
   ApiUpsertPotentialCustomer,
@@ -14,7 +18,7 @@ const mapFormToApiUpsertRealEstateListing = async (
     name: values.name,
     email: values.email,
     preferredAmenities: values.preferredAmenities,
-    routingProfiles: values.routingProfiles
+    routingProfiles: values.routingProfiles,
   };
 };
 
@@ -25,7 +29,9 @@ export interface PotentialCustomerFormHandlerData extends FormModalData {
 export const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFormHandlerData> =
   ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
     const { post, put } = useHttp();
-    const { putPotentialCustomer } = usePotentialCustomerState();
+    const { potentialCustomerDispatch } = React.useContext(
+      PotentialCustomerContext
+    );
 
     const onSubmit = async (values: any) => {
       const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
@@ -45,7 +51,10 @@ export const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCust
             mappedPotentialCustomer
           );
         }
-        putPotentialCustomer(storedCustomer.data as ApiPotentialCustomer);
+        potentialCustomerDispatch({
+          type: PotentialCustomerActions.PUT_POTENTIAL_CUSTOMER,
+          payload: storedCustomer.data as ApiPotentialCustomer,
+        });
         postSubmit(true);
       } catch (err) {
         console.log(err);

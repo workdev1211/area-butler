@@ -1,10 +1,11 @@
+import { PotentialCustomerContext } from "context/PotentialCustomerContext";
+import React from "react";
 import { useState } from "react";
-import usePotentialCustomerState from "state/potential-customer";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 
   export const PotentialCustomerDropDown: React.FunctionComponent =
     () => {
-      const { potentialCustomersState } = usePotentialCustomerState();
+      const { potentialCustomerState } = React.useContext(PotentialCustomerContext);
   
       const [showMenu, setShowMenu] = useState(false);
 
@@ -14,7 +15,7 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
   
       const dropdownClasses = showMenu ? "dropdown dropdown-open" : "dropdown"
   
-      return potentialCustomersState.customers?.length > 0 ? (
+      return potentialCustomerState.customers?.length > 0 ? (
         <div className={dropdownClasses}>
           <div className="m-1 btn btn-sm" onClick={() => setShowMenu(true)}>
             Meine Interessenten
@@ -22,7 +23,7 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
           <ul
             className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
           >
-            {potentialCustomersState.customers.map((customer) => (
+            {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
               <li key={customer.id}>
                 <a
                   onClick={(e) => {fillDataFromCustomer(customer); setShowMenu(false)}}

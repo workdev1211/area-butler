@@ -1,6 +1,10 @@
 import AppStateWrapper from "@laststance/use-app-state";
 import Authenticated from "auth/authenticated";
 import FormModal, { ModalConfig } from "components/FormModal";
+import {
+  PotentialCustomerContext,
+  PotentialCustomerContextProvider,
+} from "context/PotentialCustomerContext";
 import { RealEstateListingContextProvider } from "context/RealEstateListingContext";
 import { FeedbackFormHandler } from "feedback/FeedbackFormHandler";
 import { PotentialCustomersPage } from "pages/PotentialCustomersPage";
@@ -23,33 +27,35 @@ function App() {
   return (
     <AppStateWrapper initialState={initialState}>
       <RealEstateListingContextProvider>
-        <Router>
-          <Authenticated>
-            <FormModal modalConfig={feedbackModalConfig}>
-              <FeedbackFormHandler></FeedbackFormHandler>
-            </FormModal>
-          </Authenticated>
-          <div className="App px-4">
-            <Nav />
-            <Switch>
-              <Route path="/listings">
-                <Authenticated>
-                  <RealEstateListingPage />
-                </Authenticated>
-              </Route>
-              <Route path="/potential-customers">
-                <Authenticated>
-                  <PotentialCustomersPage />
-                </Authenticated>
-              </Route>
-              <Route path="/">
-                <Authenticated>
-                  <Start />
-                </Authenticated>
-              </Route>
-            </Switch>
-          </div>
-        </Router>
+        <PotentialCustomerContextProvider>
+          <Router>
+            <Authenticated>
+              <FormModal modalConfig={feedbackModalConfig}>
+                <FeedbackFormHandler></FeedbackFormHandler>
+              </FormModal>
+            </Authenticated>
+            <div className="App px-4">
+              <Nav />
+              <Switch>
+                <Route path="/listings">
+                  <Authenticated>
+                    <RealEstateListingPage />
+                  </Authenticated>
+                </Route>
+                <Route path="/potential-customers">
+                  <Authenticated>
+                    <PotentialCustomersPage />
+                  </Authenticated>
+                </Route>
+                <Route path="/">
+                  <Authenticated>
+                    <Start />
+                  </Authenticated>
+                </Route>
+              </Switch>
+            </div>
+          </Router>
+        </PotentialCustomerContextProvider>
       </RealEstateListingContextProvider>
     </AppStateWrapper>
   );

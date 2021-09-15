@@ -2,18 +2,19 @@ import FormModal from "components/FormModal";
 import { useHttp } from "hooks/http";
 import { PotentialCustomerFormHandler } from "potential-customer/PotentialCustomerFormHandler";
 import { useEffect } from "react";
-import usePotentialCustomerState from "state/potential-customer";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import {
   meansOfTransportations,
   unitsOfTransportation,
 } from "../../../shared/constants/constants";
+import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import React from "react";
 
 export const PotentialCustomersPage = () => {
   const { get } = useHttp();
-  const { potentialCustomersState, setPotentialCustomers } =
-    usePotentialCustomerState();
+  const { potentialCustomerState, potentialCustomerDispatch } =
+    React.useContext(PotentialCustomerContext)
 
   const createCustomerModalConfig = {
     modalTitle: "Interessent erstellen",
@@ -29,9 +30,10 @@ export const PotentialCustomersPage = () => {
 
   useEffect(() => {
     const fetchCustomers = async () => {
-      setPotentialCustomers(
-        (await get<ApiPotentialCustomer[]>("/api/potential-customers")).data
-      );
+      potentialCustomerDispatch({
+        type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+        payload: (await get<ApiPotentialCustomer[]>("/api/potential-customers")).data
+      })
     };
     fetchCustomers();
   }, [true]);
@@ -58,7 +60,7 @@ export const PotentialCustomersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {potentialCustomersState.customers.map((customer) => (
+            {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
               <tr key={customer.id}>
                 <th>{customer.name}</th>
                 <td>{customer.email}</td>
