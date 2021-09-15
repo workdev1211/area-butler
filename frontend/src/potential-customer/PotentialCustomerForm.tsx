@@ -55,7 +55,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             />
           </div>
           <div className="my-6">
-            <strong>Bevorzugte Transportmittel</strong>
+            <strong>Bevorzugte Fortbewegungsarten</strong>
             <TransportationParams
               defaults={customer.routingProfiles ?? []}
               onChange={(values) => setRoutingProfiles(values)}
