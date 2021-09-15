@@ -4,6 +4,7 @@ import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
+import { useAreaSearchState } from "state/area-search";
 import useRealEstateListingState from "state/real-estate-listing";
 import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -29,11 +30,10 @@ type GeoLocation = {
 
 const Start: FunctionComponent = () => {
     const {googleApiKey} = useContext(ConfigContext);
+    const {areaSearchState, setLocation, setPreferredAmenities, setRoutingProfiles, setSearchResponse} = useAreaSearchState();
     const {get, post} = useHttp();
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);
-    const [locationSearchResult, setLocationSearchResult] =
-        useState<ApiSearchResponse | null>(null);
 
     const { setRealEstateListings } = useRealEstateListingState();
 
@@ -51,10 +51,7 @@ const Start: FunctionComponent = () => {
         try {
             setLocationSearchBusy(true);
             const search: ApiSearch = {
-                coordinates: {
-                    lat: location.latitude!,
-                    lng: location.longitude!,
-                },
+                coordinates: areaSearchState.location!,
                 meansOfTransportation: transportation,
                 preferredAmenities: [...localityOptions],
             };
@@ -62,7 +59,7 @@ const Start: FunctionComponent = () => {
                 "/api/location/search",
                 search
             );
-            setLocationSearchResult(result.data);
+            setSearchResponse(result.data);
             setCollapseLocalitiesOpen(false);
         } catch (error) {
             console.error(error);
@@ -100,17 +97,15 @@ const Start: FunctionComponent = () => {
         );
     };
 
-    const [location, setLocation] = useState<GeoLocation>({});
     const [locationBusy, setLocationBusy] = useState(false);
     const locateUser = () => {
         if (window.navigator.geolocation) {
             setLocationBusy(true);
-            setLocation({});
             window.navigator.geolocation.getCurrentPosition(
                 (res: GeolocationPosition) => {
                     setLocation({
-                        longitude: res.coords.longitude,
-                        latitude: res.coords.latitude,
+                        lng: res.coords.longitude,
+                        lat: res.coords.latitude,
                     });
                     setValue(null);
                     setLocationBusy(false);
@@ -123,11 +118,8 @@ const Start: FunctionComponent = () => {
     };
     const [value, setValue] = useState(null);
     const deriveLangLat = async (value: any) => {
-        const result = await deriveGeocodeByAddress(value.label);
-        setLocation({
-            longitude: result.lng,
-            latitude: result.lat,
-        });
+        const coordinates = await deriveGeocodeByAddress(value.label);
+        setLocation(coordinates);
         setValue(value);
         setCollapseSearchOpen(false);
         setCollapseTransportationOpen(true);
@@ -149,10 +141,8 @@ const Start: FunctionComponent = () => {
                         </label>
                         <input
                             type="text"
-                            value={location.latitude || ""}
-                            onChange={(event: any) =>
-                                setLocation({...location, latitude: event.target.value})
-                            }
+                            disabled
+                            value={areaSearchState.location?.lat || ""}
                             className="input input-bordered w-full"
                             placeholder="Latitude"
                         />
@@ -163,10 +153,8 @@ const Start: FunctionComponent = () => {
                         </label>
                         <input
                             type="text"
-                            value={location.longitude || ""}
-                            onChange={(event: any) =>
-                                setLocation({...location, longitude: event.target.value})
-                            }
+                            value={areaSearchState.location?.lng || ""}
+                            disabled
                             className="input input-bordered w-full"
                             placeholder="Longitude"
                         />
@@ -189,8 +177,8 @@ const Start: FunctionComponent = () => {
     const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
         const result = await deriveGeocodeByAddress(listing.address);
         setLocation({
-            longitude: result.lng,
-            latitude: result.lat,
+            lng: result.lng,
+            lat: result.lat,
         });
     };
 
@@ -222,8 +210,8 @@ const Start: FunctionComponent = () => {
                 type="button"
                 disabled={
                     locationSearchBusy ||
-                    !location.latitude ||
-                    !location.longitude ||
+                    !areaSearchState.location?.lat ||
+                    !areaSearchState.location?.lng ||
                     transportation.length === 0
                 }
                 onClick={performLocationSearch}
@@ -262,7 +250,7 @@ const Start: FunctionComponent = () => {
                     <div className="collapse-title text-xl font-medium">
                         1. Standort ermitteln <span className='float-right mr-20 text-base'>
             {value && (value as any).label}
-                        {location.latitude && !value ? 'Mein Standort' : ''}
+                        {areaSearchState.location?.lat && !value ? 'Mein Standort' : ''}
           </span>
                     </div>
                     <div className="collapse-content">
@@ -348,7 +336,7 @@ const Start: FunctionComponent = () => {
                     </div>
                 </div>
             </div>
-            {locationSearchResult && (
+            {areaSearchState.response && (
                 <div className={collapseBaseClasses + " collapse-open"}>
                     <input type="checkbox"/>
                     <div className="collapse-title text-xl font-medium">
@@ -368,9 +356,7 @@ const Start: FunctionComponent = () => {
                             )}
                         </div>
                         <div className="mt-5">
-                            {locationSearchResult && (
-                                <SearchResult searchResponse={locationSearchResult}/>
-                            )}
+                            <SearchResult/>
                         </div>
                     </div>
                 </div>

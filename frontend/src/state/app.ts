@@ -1,3 +1,4 @@
+import { AreaSearchState, initialState as areaSearchInitialState } from "./area-search";
 import {
   PotentialCustomerState,
   initialState as potentialCustomersInitialState,
@@ -10,9 +11,11 @@ import {
 export interface AppState {
   listings: RealEstateListingState;
   potentialCustomers: PotentialCustomerState;
+  areaSearch: AreaSearchState;
 }
 
 export const initialState: AppState = {
   listings: realEstateListingsInitialState,
   potentialCustomers: potentialCustomersInitialState,
+  areaSearch: areaSearchInitialState
 };
