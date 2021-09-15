@@ -1,13 +1,16 @@
 import FormModal, { ModalConfig } from "components/FormModal";
+import { RealEstateListingContext } from "context/RealEstateListingContext";
+import React from "react";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
-import useRealEstateListingState from "state/real-estate-listing";
 import {
-  allRealEstateCostTypes,
-  allFurnishing,
+  allFurnishing, allRealEstateCostTypes
 } from "../../../shared/constants/real-estate";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export const RealEstateListingPage = () => {
-  const { realEstateListingsState } = useRealEstateListingState();
+  const { realEstateListingState } = React.useContext(
+    RealEstateListingContext
+  );;
 
   const editRealEstateListingModalConfig: ModalConfig = {
     modalTitle: "Objekt bearbeiten",
@@ -30,7 +33,7 @@ export const RealEstateListingPage = () => {
             </tr>
           </thead>
           <tbody>
-            {realEstateListingsState.listings.map((listing) => (
+            {realEstateListingState.listings.map((listing: ApiRealEstateListing) => (
               <tr key={listing.id}>
                 <th>{listing.name}</th>
                 <td>{listing.address}</td>

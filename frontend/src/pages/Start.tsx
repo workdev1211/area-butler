@@ -1,4 +1,5 @@
 import FormModal, { ModalConfig } from "components/FormModal";
+import { RealEstateListingActions, RealEstateListingContext } from "context/RealEstateListingContext";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
@@ -6,7 +7,6 @@ import RealEstateListingFormHandler from "real-estate-listings/RealEstateListing
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { useAreaSearchState } from "state/area-search";
-import useRealEstateListingState from "state/real-estate-listing";
 import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
@@ -36,13 +36,18 @@ const Start: FunctionComponent = () => {
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);
 
-    const { setRealEstateListings } = useRealEstateListingState();
+    const { realEstateDispatch } = React.useContext(
+        RealEstateListingContext
+      );;
 
     useEffect(() => {
       const fetchListings = async () => {
-        setRealEstateListings(
-          (await get<ApiRealEstateListing[]>("/api/real-estate-listings")).data
-        );
+        realEstateDispatch({
+          type: RealEstateListingActions.SET_REAL_ESTATE_LISTINGS,
+          payload: (
+            await get<ApiRealEstateListing[]>("/api/real-estate-listings")
+          ).data,
+        });
       };
       fetchListings();
     }, [true]);

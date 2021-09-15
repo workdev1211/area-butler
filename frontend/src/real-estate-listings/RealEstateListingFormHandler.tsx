@@ -1,15 +1,17 @@
 import { FormModalData } from "components/FormModal";
+import {
+  RealEstateListingActions,
+  RealEstateListingContext
+} from "context/RealEstateListingContext";
 import { useHttp } from "hooks/http";
+import React from "react";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
-import useRealEstateListingState from "state/real-estate-listing";
 import {
   ApiFurnishing,
   ApiRealEstateListing,
   ApiUpsertRealEstateListing,
 } from "../../../shared/types/real-estate";
 import RealEstateListingForm from "./RealEstateListingForm";
-
-
 
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
@@ -58,7 +60,9 @@ export const RealEstateListingFormHandler: React.FunctionComponent<RealEstateLis
     realEstateListing,
   }) => {
     const { post, put } = useHttp();
-    const { putRealEstateListing } = useRealEstateListingState();
+    const { realEstateDispatch } = React.useContext(
+      RealEstateListingContext
+    );;
 
     const onSubmit = async (values: any) => {
       const mappedRealEstateListing: ApiUpsertRealEstateListing =
@@ -68,14 +72,20 @@ export const RealEstateListingFormHandler: React.FunctionComponent<RealEstateLis
         let listing = null;
         beforeSubmit();
         if (realEstateListing.id) {
-          listing =  await put(
+          listing = await put(
             `/api/real-estate-listings/${realEstateListing.id}`,
             mappedRealEstateListing
           );
         } else {
-          listing = await post("/api/real-estate-listings", mappedRealEstateListing);
+          listing = await post(
+            "/api/real-estate-listings",
+            mappedRealEstateListing
+          );
         }
-        putRealEstateListing(listing.data as ApiRealEstateListing);
+        realEstateDispatch({
+          type: RealEstateListingActions.PUT_REAL_ESTATE_LISTING,
+          payload: listing.data as ApiRealEstateListing,
+        });
         postSubmit(true);
       } catch (err) {
         console.log(err);
