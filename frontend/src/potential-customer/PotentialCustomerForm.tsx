@@ -1,19 +1,21 @@
 import { Input } from "components/Input";
 import { Form, Formik } from "formik";
+import { useState } from "react";
+import LocalityOptions from "search/Localitites";
 import * as Yup from "yup";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { OsmName } from "../../../shared/types/types";
 
 export interface PotentialCustomerFormData {
-    formId: string;
-    onSubmit: (values: any) => any;
-    customer: Partial<ApiPotentialCustomer>;
+  formId: string;
+  onSubmit: (values: any) => any;
+  customer: Partial<ApiPotentialCustomer>;
 }
 
-export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> = ({
-    formId,
-    onSubmit,
-    customer
-  }) => {
+export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> =
+  ({ formId, onSubmit, customer }) => {
+    const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>([]);
+
     return (
       <Formik
         initialValues={{
@@ -22,9 +24,14 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
         }}
         validationSchema={Yup.object({
           name: Yup.string().required("Bitte geben den Namen ein"),
-          email: Yup.string().email().required("Bitte geben Sie eine gültige Email-Adresse ein"),
+          email: Yup.string()
+            .email()
+            .required("Bitte geben Sie eine gültige Email-Adresse ein"),
         })}
-        onSubmit={onSubmit}
+        onSubmit={(values) => {
+          const formValues = { ...values, preferredAmenities };
+          onSubmit(formValues);
+        }}
       >
         <Form id={formId}>
           <div className="form-control">
@@ -43,10 +50,18 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
               placeholder="Email"
             />
           </div>
+          <div className="my-6">
+            <strong>Bevorzugte Lokalitäten</strong>
+            <div className="grid grid-cols-2 gap-6 mt-5">
+              <LocalityOptions
+                defaults={customer.preferredAmenities ?? []}
+                onChange={(values) => setPreferredAmenities(values)}
+              ></LocalityOptions>
+            </div>
+          </div>
         </Form>
       </Formik>
     );
   };
-  
-  export default PotentialCustomerForm;
-  
+
+export default PotentialCustomerForm;

@@ -3,11 +3,13 @@ import { useHttp } from "hooks/http";
 import { PotentialCustomerFormHandler } from "potential-customer/PotentialCustomerFormHandler";
 import { useEffect } from "react";
 import usePotentialCustomerState from "state/potential-customer";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 
 export const PotentialCustomersPage = () => {
-  const {get} = useHttp();
-  const { potentialCustomersState, setPotentialCustomers } = usePotentialCustomerState();
+  const { get } = useHttp();
+  const { potentialCustomersState, setPotentialCustomers } =
+    usePotentialCustomerState();
 
   const createCustomerModalConfig = {
     modalTitle: "Interessent erstellen",
@@ -34,11 +36,11 @@ export const PotentialCustomersPage = () => {
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Meine Interessenten</h1>
       <div className="my-4">
-      <FormModal modalConfig={createCustomerModalConfig}>
-                    <PotentialCustomerFormHandler
-                      customer={{}}
-                    ></PotentialCustomerFormHandler>
-                  </FormModal>
+        <FormModal modalConfig={createCustomerModalConfig}>
+          <PotentialCustomerFormHandler
+            customer={{}}
+          ></PotentialCustomerFormHandler>
+        </FormModal>
       </div>
       <div className="overflow-x-auto">
         <table className="table w-full">
@@ -57,7 +59,15 @@ export const PotentialCustomersPage = () => {
                 <th>{customer.name}</th>
                 <td>{customer.email}</td>
                 <td></td>
-                <td></td>
+                <td>
+                  {(customer.preferredAmenities ?? [])
+                    .map(
+                      (amenity) =>
+                        osmEntityTypes.find((t) => t.name === amenity)?.label ||
+                        ""
+                    )
+                    .join(", ")}
+                </td>
                 <td>
                   <FormModal modalConfig={editCustomerModalConfig}>
                     <PotentialCustomerFormHandler
