@@ -35,7 +35,7 @@ export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = 
         {modalConfig.buttonTitle}
       </button>
       {modalOpen && <div id="my-modal" className='modal modal-open'>
-        <div className="modal-box">
+        <div className="modal-box h-screen overflow-y-auto">
           <h1>{modalConfig.modalTitle}</h1>
           {React.cloneElement(props.children as ReactElement<any, string | JSXElementConstructor<any>>, {formId, beforeSubmit, postSubmit})}
           <div className="modal-action">
