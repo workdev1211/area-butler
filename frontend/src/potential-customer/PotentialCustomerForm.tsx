@@ -2,9 +2,10 @@ import { Input } from "components/Input";
 import { Form, Formik } from "formik";
 import { useState } from "react";
 import LocalityOptions from "search/Localitites";
+import TransportationParams from "search/TransportationParams";
 import * as Yup from "yup";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { OsmName } from "../../../shared/types/types";
+import { OsmName, TransportationParam } from "../../../shared/types/types";
 
 export interface PotentialCustomerFormData {
   formId: string;
@@ -15,6 +16,9 @@ export interface PotentialCustomerFormData {
 export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> =
   ({ formId, onSubmit, customer }) => {
     const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>([]);
+    const [routingProfiles, setRoutingProfiles] = useState<
+      TransportationParam[]
+    >([]);
 
     return (
       <Formik
@@ -29,7 +33,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             .required("Bitte geben Sie eine gültige Email-Adresse ein"),
         })}
         onSubmit={(values) => {
-          const formValues = { ...values, preferredAmenities };
+          const formValues = { ...values, preferredAmenities, routingProfiles };
           onSubmit(formValues);
         }}
       >
@@ -49,6 +53,13 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
               type="text"
               placeholder="Email"
             />
+          </div>
+          <div className="my-6">
+            <strong>Bevorzugte Transportmittel</strong>
+            <TransportationParams
+              defaults={customer.routingProfiles ?? []}
+              onChange={(values) => setRoutingProfiles(values)}
+            ></TransportationParams>
           </div>
           <div className="my-6">
             <strong>Bevorzugte Lokalitäten</strong>

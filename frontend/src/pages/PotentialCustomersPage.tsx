@@ -5,6 +5,10 @@ import { useEffect } from "react";
 import usePotentialCustomerState from "state/potential-customer";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import {
+  meansOfTransportations,
+  unitsOfTransportation,
+} from "../../../shared/constants/constants";
 
 export const PotentialCustomersPage = () => {
   const { get } = useHttp();
@@ -58,8 +62,28 @@ export const PotentialCustomersPage = () => {
               <tr key={customer.id}>
                 <th>{customer.name}</th>
                 <td>{customer.email}</td>
-                <td></td>
                 <td>
+                  {(customer.routingProfiles ?? []).map((routingProfile) => (
+                    <>
+                      <span>
+                        {
+                          meansOfTransportations.find(
+                            (means) => means.type === routingProfile.type
+                          )?.label
+                        }{" "}
+                        ({routingProfile.amount}
+                        {
+                          unitsOfTransportation.find(
+                            (unit) => unit.type === routingProfile.unit
+                          )?.label
+                        }
+                        )
+                      </span>
+                      <br />
+                    </>
+                  ))}
+                </td>
+                <td className="break-normal whitespace-pre-line w-2">
                   {(customer.preferredAmenities ?? [])
                     .map(
                       (amenity) =>
