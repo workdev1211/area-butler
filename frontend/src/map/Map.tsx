@@ -1,4 +1,4 @@
-import {FunctionComponent, useContext, useState} from "react";
+import React, {useContext, useState} from "react";
 import {MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
 import {Icon, LatLngExpression, Point} from "leaflet";
 import "./Map.css";
@@ -18,7 +18,7 @@ export interface MapProps {
     }
 }
 
-const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
 
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
@@ -64,7 +64,7 @@ const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => 
     }
 
     return (
-        <MapContainer center={position} zoom={zoom} scrollWheelZoom={true}>
+        <MapContainer center={position} zoom={zoom} scrollWheelZoom={true} tap={false}>
             <TileLayer
                 attribution={attribution}
                 url={url}
@@ -91,6 +91,6 @@ const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => 
             )}
         </MapContainer>
     )
-}
+});
 
 export default Map;
