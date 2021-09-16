@@ -1,8 +1,6 @@
-import AppStateWrapper from "@laststance/use-app-state";
 import Authenticated from "auth/authenticated";
 import FormModal, { ModalConfig } from "components/FormModal";
 import {
-  PotentialCustomerContext,
   PotentialCustomerContextProvider,
 } from "context/PotentialCustomerContext";
 import { RealEstateListingContextProvider } from "context/RealEstateListingContext";
@@ -11,10 +9,10 @@ import { PotentialCustomersPage } from "pages/PotentialCustomersPage";
 import { RealEstateListingPage } from "pages/RealEstateListingPage";
 import React from "react";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
-import { initialState } from "state/app";
 import "./App.css";
 import Nav from "./nav/Nav";
 import Start from "./pages/Start";
+import {SearchContextProvider} from "./context/SearchContext";
 
 function App() {
   const feedbackModalConfig: ModalConfig = {
@@ -25,7 +23,6 @@ function App() {
   };
 
   return (
-    <AppStateWrapper initialState={initialState}>
       <RealEstateListingContextProvider>
         <PotentialCustomerContextProvider>
           <Router>
@@ -49,7 +46,9 @@ function App() {
                 </Route>
                 <Route path="/">
                   <Authenticated>
-                    <Start />
+                    <SearchContextProvider>
+                      <Start />
+                    </SearchContextProvider>
                   </Authenticated>
                 </Route>
               </Switch>
@@ -57,7 +56,6 @@ function App() {
           </Router>
         </PotentialCustomerContextProvider>
       </RealEstateListingContextProvider>
-    </AppStateWrapper>
   );
 }
 

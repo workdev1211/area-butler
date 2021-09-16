@@ -1,8 +1,8 @@
-import React, {FunctionComponent, useState} from "react";
-import { useAreaSearchState } from "state/area-search";
+import React, {FunctionComponent, useContext, useState} from "react";
 import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import Map from "../map/Map";
 import ResultTable from "./ResultTable";
+import {SearchContext} from "../context/SearchContext";
 
 export interface ResultEntity {
     name?: string;
@@ -44,9 +44,9 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 
 const SearchResult: FunctionComponent = () => {
 
-    const {areaSearchState} = useAreaSearchState();
+    const {searchContextState} = useContext(SearchContext);
 
-    const routingKeys = Object.keys(areaSearchState.response!.routingProfiles);
+    const routingKeys = Object.keys(searchContextState.searchResponse!.routingProfiles);
     const byFootAvailable = routingKeys.includes(MeansOfTransportation.WALK);
     const byBikeAvailable = routingKeys.includes(MeansOfTransportation.BICYCLE);
     const byCarAvailable = routingKeys.includes(MeansOfTransportation.CAR);
@@ -54,7 +54,7 @@ const SearchResult: FunctionComponent = () => {
     const [byFoot, setByFoot] = useState(byFootAvailable);
     const [byBike, setByBike] = useState(byBikeAvailable);
     const [byCar, setByCar] = useState(byCarAvailable);
-    const entities = buildEntityData(areaSearchState.response!);
+    const entities = buildEntityData(searchContextState.searchResponse!);
     const mapMeans = {
         byFoot,
         byBike,
@@ -103,7 +103,7 @@ const SearchResult: FunctionComponent = () => {
                     <span className="ml-2">Auto</span>
                 </label> }
             </div>
-            <Map searchResponse={areaSearchState.response!} entities={filterEntities()} means={mapMeans}/>
+            <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans}/>
             <div className="flex-col gap-6 mt-5">
                 {Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label)).map(([label, data]) => {
                     return (

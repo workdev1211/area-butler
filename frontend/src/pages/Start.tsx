@@ -1,45 +1,54 @@
-import FormModal, { ModalConfig } from "components/FormModal";
-import { RealEstateListingActions, RealEstateListingContext } from "context/RealEstateListingContext";
+import FormModal, {ModalConfig} from "components/FormModal";
+import {RealEstateListingActions, RealEstateListingContext} from "context/RealEstateListingContext";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
-import React, { FunctionComponent, useContext, useEffect, useState } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import React, {FunctionComponent, useContext, useEffect, useState} from "react";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
-import { deriveGeocodeByAddress } from "shared/shared.functions";
-import { useAreaSearchState } from "state/area-search";
-import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import {
-    ApiSearch,
-    ApiSearchResponse,
-    MeansOfTransportation,
-    OsmName,
-    TransportationParam,
-    UnitsOfTransportation
-} from "../../../shared/types/types";
-import { ConfigContext } from "../context/ConfigContext";
-import { useHttp } from "../hooks/http";
-import LocalityOptions, { localityOptionsDefaults } from "../search/Localitites";
+import {deriveGeocodeByAddress} from "shared/shared.functions";
+import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../../../shared/constants/constants";
+import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import {ApiSearch, ApiSearchResponse, OsmName, TransportationParam} from "../../../shared/types/types";
+import {useHttp} from "../hooks/http";
+import LocalityOptions from "../search/Localitites";
 import SearchResult from "../search/SearchResult";
 import TransportationParams from "../search/TransportationParams";
 import "./Start.css";
-
-type GeoLocation = {
-    latitude?: number | null;
-    longitude?: number | null;
-};
+import LocationAutocomplete from "../search/LocationAutocomplete";
+import {SearchContext, SearchContextActions} from "../context/SearchContext";
 
 const Start: FunctionComponent = () => {
-    const {googleApiKey} = useContext(ConfigContext);
-    const {areaSearchState, setLocation, setPreferredAmenities, setRoutingProfiles, setSearchResponse} = useAreaSearchState();
     const {get, post} = useHttp();
+    const {searchContextState, searchContextDispatch} = useContext(SearchContext);
 
-    const [locationSearchBusy, setLocationSearchBusy] = useState(false);
+    const [locationBusy, setLocationBusy] = useState(false);
+    const locateUser = () => {
+        if (window.navigator.geolocation) {
+            setLocationBusy(true);
+            window.navigator.geolocation.getCurrentPosition(
+                (res: GeolocationPosition) => {
+                    searchContextDispatch({
+                        type: SearchContextActions.SET_LOCATION,
+                        payload: {
+                            lng: res.coords.longitude,
+                            lat: res.coords.latitude
+                        }
+                    });
+                    searchContextDispatch({
+                        type: SearchContextActions.SET_PLACES_LOCATION
+                    })
+                    setLocationBusy(false);
+                    setCollapseSearchOpen(false);
+                    setCollapseTransportationOpen(true);
+                },
+                (error: any) => setLocationBusy(false)
+            );
+        }
+    };
+
 
     const { realEstateDispatch } = React.useContext(
         RealEstateListingContext
-      );;
-
+      );
     useEffect(() => {
       const fetchListings = async () => {
         realEstateDispatch({
@@ -53,19 +62,23 @@ const Start: FunctionComponent = () => {
     }, [true]);
 
 
+    const [locationSearchBusy, setLocationSearchBusy] = useState(false);
     const performLocationSearch = async () => {
         try {
             setLocationSearchBusy(true);
             const search: ApiSearch = {
-                coordinates: areaSearchState.location!,
-                meansOfTransportation: transportation,
-                preferredAmenities: [...localityOptions],
+                coordinates: searchContextState.location!,
+                meansOfTransportation: searchContextState.transportationParams,
+                preferredAmenities: [...searchContextState.localityOptions],
             };
             const result = await post<ApiSearchResponse>(
                 "/api/location/search",
                 search
             );
-            setSearchResponse(result.data);
+            searchContextDispatch({
+                type: SearchContextActions.SET_SEARCH_RESPONSE,
+                payload: result.data
+            })
             setCollapseLocalitiesOpen(false);
         } catch (error) {
             console.error(error);
@@ -74,62 +87,6 @@ const Start: FunctionComponent = () => {
         }
     };
 
-    const LocationAutoComplete = () => {
-
-        return (
-            <div className="col-span-2">
-                <label className="label">
-                    <span>Adresse</span>
-                </label>
-                <GooglePlacesAutocomplete
-                
-                    apiOptions={{
-                        language: "de",
-                        region: "de",
-                    }}
-                    autocompletionRequest={{
-                        componentRestrictions: {
-                            country: ["de"],
-                        },
-                    }}
-                    minLengthAutocomplete={5}
-                    selectProps={{
-                        value,
-                        onChange: deriveLangLat,
-                    }}
-                    apiKey={googleApiKey}
-                />
-            </div>
-        );
-    };
-
-    const [locationBusy, setLocationBusy] = useState(false);
-    const locateUser = () => {
-        if (window.navigator.geolocation) {
-            setLocationBusy(true);
-            window.navigator.geolocation.getCurrentPosition(
-                (res: GeolocationPosition) => {
-                    setLocation({
-                        lng: res.coords.longitude,
-                        lat: res.coords.latitude,
-                    });
-                    setValue(null);
-                    setLocationBusy(false);
-                    setCollapseSearchOpen(false);
-                    setCollapseTransportationOpen(true);
-                },
-                (error: any) => setLocationBusy(false)
-            );
-        }
-    };
-    const [value, setValue] = useState(null);
-    const deriveLangLat = async (value: any) => {
-        const coordinates = await deriveGeocodeByAddress(value.label);
-        setLocation(coordinates);
-        setValue(value);
-        setCollapseSearchOpen(false);
-        setCollapseTransportationOpen(true);
-    };
 
     const modalConfig: ModalConfig = {
         buttonTitle: "Neues Objekt",
@@ -148,7 +105,7 @@ const Start: FunctionComponent = () => {
                         <input
                             type="text"
                             disabled
-                            value={areaSearchState.location?.lat || ""}
+                            value={searchContextState.location?.lat || ""}
                             className="input input-bordered w-full"
                             placeholder="Latitude"
                         />
@@ -159,7 +116,7 @@ const Start: FunctionComponent = () => {
                         </label>
                         <input
                             type="text"
-                            value={areaSearchState.location?.lng || ""}
+                            value={searchContextState.location?.lng || ""}
                             disabled
                             className="input input-bordered w-full"
                             placeholder="Longitude"
@@ -182,33 +139,15 @@ const Start: FunctionComponent = () => {
 
     const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
         const result = await deriveGeocodeByAddress(listing.address);
-        setLocation({
-            lng: result.lng,
-            lat: result.lat,
-        });
+        const { lat, lng } = result;
+        searchContextDispatch({
+            type: SearchContextActions.SET_LOCATION,
+            payload: {
+                lat,
+                lng
+            }
+        })
     };
-
-    const [localityOptions, setLocalityOptions] = useState<OsmName[]>(
-        localityOptionsDefaults
-    );
-
-    const [transportation, setTransportation] = useState<TransportationParam[]>([
-        {
-            type: MeansOfTransportation.WALK,
-            amount: 5,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-        {
-            type: MeansOfTransportation.BICYCLE,
-            amount: 15,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-        {
-            type: MeansOfTransportation.CAR,
-            amount: 30,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-    ]);
 
     const SearchButton = () => {
         return (
@@ -216,9 +155,9 @@ const Start: FunctionComponent = () => {
                 type="button"
                 disabled={
                     locationSearchBusy ||
-                    !areaSearchState.location?.lat ||
-                    !areaSearchState.location?.lng ||
-                    transportation.length === 0
+                    !searchContextState.location?.lat ||
+                    !searchContextState.location?.lng ||
+                    searchContextState.transportationParams.length === 0
                 }
                 onClick={performLocationSearch}
                 className={locationSearchBusy ? 'btn btn-primary btn-sm loading' : 'btn btn-primary btn-sm'}
@@ -256,13 +195,13 @@ const Start: FunctionComponent = () => {
                     />
                     <div className="collapse-title text-xl font-medium">
                         1. Standort ermitteln <span className='float-right mr-20 text-base'>
-            {value && (value as any).label}
-                        {areaSearchState.location?.lat && !value ? 'Mein Standort' : ''}
+            {searchContextState.placesLocation && (searchContextState.placesLocation as any).label}
+                        {searchContextState.location?.lat && !searchContextState.placesLocation?.label ? 'Mein Standort' : ''}
           </span>
                     </div>
                     <div className="collapse-content">
                         <div className="flex-col gap-6 mt-5">
-                            <LocationAutoComplete/>
+                            <LocationAutocomplete afterChange={() => { setCollapseSearchOpen(false); setCollapseTransportationOpen(true)}}/>
                             <LocationLatLng/>
                         </div>
                     </div>
@@ -284,7 +223,7 @@ const Start: FunctionComponent = () => {
                         2. Fortbewegungsmittel angeben
                         {!collapseTransportationOpen && <div className='float-right mr-20 text-base'>
                             <div className='flex gap-6'>
-                                {transportation.map(mean => {
+                                {searchContextState.transportationParams.map((mean: TransportationParam) => {
                                     return <div key={mean.type}>
                                         <b>{meansOfTransportations.find(m => m.type === mean.type)?.label}:</b> <span
                                         className='font-base'>{mean.amount} {unitsOfTransportation.find(uot => uot.type === mean.unit)?.label}</span>
@@ -296,7 +235,7 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className="flex-col gap-6 mt-5">
-                            <TransportationParams onChange={(value) => setTransportation([...value])}/>
+                            <TransportationParams onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: [...value]})}/>
                             <button type='button' className='btn btn-primary btn-sm' onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -323,7 +262,7 @@ const Start: FunctionComponent = () => {
                         3. Lokalitäten auswählen
                         { !collapseLocalitiesOpen && <div className='float-right mr-20 text-base'>
                             <div className='flex gap-6'>
-                                {localityOptions.map(locality => <span key={locality}>
+                                {searchContextState.localityOptions.map((locality: OsmName) => <span key={locality}>
                                     &#10003; {osmEntityTypes.find(oet => oet.name === locality)?.label}
                                 </span> )
                                 }
@@ -334,8 +273,8 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-                            <LocalityOptions defaults={localityOptions}
-                                             onChange={(value) => setLocalityOptions(value)}/>
+                            <LocalityOptions defaults={searchContextState.localityOptions}
+                                             onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: value})}/>
                         </div>
                         <div className="flex gap-6 mt-5">
                             <SearchButton/>
@@ -343,7 +282,7 @@ const Start: FunctionComponent = () => {
                     </div>
                 </div>
             </div>
-            {areaSearchState.response && (
+            {searchContextState.searchResponse && (
                 <div className={collapseBaseClasses + " collapse-open"}>
                     <input type="checkbox"/>
                     <div className="collapse-title text-xl font-medium">
@@ -351,14 +290,14 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className='mt-5'>
-                            {value && (
+                            {searchContextState.placesLocation && (
                                 <FormModal modalConfig={modalConfig}>
                                     <RealEstateListingFormHandler
                                         realEstateListing={{
-                                            name: (value as any)!.label,
-                                            address: (value as any)!.label,
+                                            name: (searchContextState.placesLocation as any)!.label,
+                                            address: (searchContextState.placesLocation as any)!.label,
                                         }}
-                                    ></RealEstateListingFormHandler>
+                                    />
                                 </FormModal>
                             )}
                         </div>
