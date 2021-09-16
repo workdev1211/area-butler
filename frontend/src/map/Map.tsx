@@ -2,6 +2,7 @@ import {FunctionComponent, useContext, useState} from "react";
 import {MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
 import {Icon, LatLngExpression, Point} from "leaflet";
 import "./Map.css";
+import "./makiIcons.css";
 import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
@@ -39,7 +40,7 @@ const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => 
         const iconPerson = new Icon({
             iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
             iconSize: new Point(size, size),
-            className: 'leaflet-div-icon-custom'
+            className: entity.type
         });
 
         return (

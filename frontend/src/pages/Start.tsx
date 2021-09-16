@@ -13,8 +13,10 @@ import LocalityOptions from "../search/Localitites";
 import SearchResult from "../search/SearchResult";
 import TransportationParams from "../search/TransportationParams";
 import "./Start.css";
+import "../map/makiIcons.css";
 import LocationAutocomplete from "../search/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
+import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -263,7 +265,7 @@ const Start: FunctionComponent = () => {
                         { !collapseLocalitiesOpen && <div className='float-right mr-20 text-base'>
                             <div className='flex gap-6'>
                                 {searchContextState.localityOptions.map((locality: OsmName) => <span key={locality}>
-                                    &#10003; {osmEntityTypes.find(oet => oet.name === locality)?.label}
+                                    <img src={osmNameToIcons.find(entry => entry.name === locality)?.icon || fallbackIcon} className={locality}/> {osmEntityTypes.find(oet => oet.name === locality)?.label}
                                 </span> )
                                 }
                             </div>

@@ -2,6 +2,7 @@ import React from "react";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 import {MeansOfTransportation} from "../../../shared/types/types";
 import {ResultEntity} from "./SearchResult";
+import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 
 export interface ResultTableProps {
     title: string;
@@ -14,9 +15,14 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
     const deriveMinutesFromMeters = (distanceInMeters: number, mean: MeansOfTransportation) => {
         return distanceInMeters / (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator || 1);
     }
+    const type = data[0].type;
     return (
         <>
-            <h3 className="text-bold underline">{props.title} ({data.length})</h3>
+            <div className="flex">
+                <img src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
+                <h3 className="text-xl ml-2">
+                {props.title} ({data.length})</h3>
+            </div>
             <table className="table-auto">
                 <thead>
                 <tr>
