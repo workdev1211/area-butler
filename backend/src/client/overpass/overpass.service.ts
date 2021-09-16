@@ -85,7 +85,7 @@ export class OverpassService {
         entity: {
           id: element.id,
           label: entityType.label,
-          type: entityType.type,
+          type: entityType.name,
           name: elementTags.name,
         },
         coordinates,

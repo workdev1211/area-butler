@@ -1,10 +1,11 @@
 import {FunctionComponent, useContext, useState} from "react";
-import {CircleMarker, MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
-import {LatLngExpression} from "leaflet";
+import {MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
+import {Icon, LatLngExpression, Point} from "leaflet";
 import "./Map.css";
 import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
+import {fallbackIcon, osmNameToIcons} from "./makiIcons";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -19,32 +20,39 @@ export interface MapProps {
 const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
 
-    const { lat, lng } = searchResponse.centerOfInterest.coordinates;
-    const position : LatLngExpression = [lat, lng];
+    const {lat, lng} = searchResponse.centerOfInterest.coordinates;
+    const position: LatLngExpression = [lat, lng];
 
-    const zoom : number = 15;
+    const zoom: number = 15;
 
     const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
     const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
-    const LocationMarker = ({ entity } : { entity: ResultEntity }) => {
-        const [radius, setRadius] = useState(2);
+    const LocationMarker = ({entity}: { entity: ResultEntity }) => {
+
+        const [size, setSize] = useState(25);
         const map = useMapEvents({
             zoomend() {
-                setRadius(map.getZoom() > 16 ? 10 : map.getZoom() > 14 ? 6 : 4);
+                setSize(map.getZoom() > 16 ? 25 : map.getZoom() > 14 ? 10 : 10);
             }
         })
-        const { lat, lng} = entity.coordinates;
-        const locationPosition: LatLngExpression = [lat, lng];
+        const iconPerson = new Icon({
+            iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
+            iconSize: new Point(size, size),
+            className: 'leaflet-div-icon-custom'
+        });
 
         return (
-            <CircleMarker center={locationPosition} radius={radius} pathOptions={{color: 'black'}}>
+            <Marker
+                position={entity.coordinates}
+                icon={iconPerson}
+            >
                 <Popup>
-                    <b>{ entity.name }</b><br />
-                    <span>{ entity.label}</span><br />
-                    <span>{ entity.address ? JSON.stringify(entity.address) : '' }</span>
+                    <b>{entity.name}</b><br/>
+                    <span>{entity.label}</span><br/>
+                    {/*<span>{entity.address ? JSON.stringify(entity.address) : ''}</span>*/}
                 </Popup>
-            </CircleMarker>
+            </Marker>
         )
     }
 
@@ -65,16 +73,19 @@ const Map: FunctionComponent<MapProps> = ({searchResponse, entities, means}) => 
                 tileSize={512}
                 accessToken={mapBoxAccessToken}
             />
-            { means.byFoot && <Polygon pathOptions={{ color: 'blue' }} positions={derivePositionForTransportationMean(MeansOfTransportation.WALK)} /> }
-            { means.byBike && <Polygon pathOptions={{ color: 'green' }} positions={derivePositionForTransportationMean(MeansOfTransportation.BICYCLE)} /> }
-            { means.byCar && <Polygon pathOptions={{ color: 'gray' }} positions={derivePositionForTransportationMean(MeansOfTransportation.CAR)} /> }
+            {means.byFoot && <Polygon pathOptions={{color: 'blue'}}
+                                      positions={derivePositionForTransportationMean(MeansOfTransportation.WALK)}/>}
+            {means.byBike && <Polygon pathOptions={{color: 'green'}}
+                                      positions={derivePositionForTransportationMean(MeansOfTransportation.BICYCLE)}/>}
+            {means.byCar && <Polygon pathOptions={{color: 'gray'}}
+                                     positions={derivePositionForTransportationMean(MeansOfTransportation.CAR)}/>}
             <Marker position={position}>
                 <Popup>
                     Mein Standort
                 </Popup>
             </Marker>
             {entities?.map(entity => {
-                   return <LocationMarker entity={entity} key={entity.id}/>
+                    return <LocationMarker entity={entity} key={entity.id}/>
                 }
             )}
         </MapContainer>
