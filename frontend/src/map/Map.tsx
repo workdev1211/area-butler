@@ -91,8 +91,12 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
                 className: entity.type
             });
             L.marker(entity.coordinates, {
-                icon
-            }).bindPopup(`${entity.name || 'Name nicht bekannt'}`).addTo(localMap);
+                icon,
+            }).on('click', function(e) {
+                const marker = e.target;
+                marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
+                marker.openPopup();
+            }).addTo(localMap);
         });
 
         setMap(localMap);
