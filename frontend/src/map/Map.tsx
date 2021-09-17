@@ -1,8 +1,10 @@
-import React, {useContext, useState} from "react";
-import {MapContainer, Marker, Polygon, Popup, TileLayer, useMapEvents} from 'react-leaflet';
-import {Icon, LatLngExpression, Point} from "leaflet";
+import React, {useContext, useEffect, useState} from "react";
+import L from "leaflet";
 import "./Map.css";
 import "./makiIcons.css";
+import "leaflet/dist/leaflet.css";
+import leafletIcon from "leaflet/dist/images/marker-icon.png";
+import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
@@ -22,40 +24,10 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
 
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-    const position: LatLngExpression = [lat, lng];
-
+    const position: L.LatLngExpression = [lat, lng];
     const zoom: number = 15;
-
     const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
     const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
-
-    const LocationMarker = ({entity}: { entity: ResultEntity }) => {
-
-        const [size, setSize] = useState(25);
-        const map = useMapEvents({
-            zoomend() {
-                setSize(map.getZoom() > 16 ? 25 : map.getZoom() > 14 ? 10 : 10);
-            }
-        })
-        const iconPerson = new Icon({
-            iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
-            iconSize: new Point(size, size),
-            className: entity.type
-        });
-
-        return (
-            <Marker
-                position={entity.coordinates}
-                icon={iconPerson}
-            >
-                <Popup>
-                    <b>{entity.name}</b><br/>
-                    <span>{entity.label}</span><br/>
-                    {/*<span>{entity.address ? JSON.stringify(entity.address) : ''}</span>*/}
-                </Popup>
-            </Marker>
-        )
-    }
 
     const derivePositionForTransportationMean = (profile: MeansOfTransportation) => {
         return searchResponse.routingProfiles[profile].isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
@@ -63,33 +35,72 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
         });
     }
 
+    const [map, setMap]  = useState<L.Map>();
+
+    useEffect(() => {
+        if (map !== undefined) {
+            map.off();
+            map.remove();
+        }
+        const localMap = L.map('mymap', {
+            scrollWheelZoom: false,
+            preferCanvas: true,
+            renderer: new L.Canvas(),
+            tap: false
+        }).setView(position, zoom);
+
+        L.tileLayer(url, {
+                attribution,
+                id: "mapbox/light-v10",
+                zoomOffset: -1,
+                accessToken: mapBoxAccessToken,
+                tileSize: 512,
+                maxZoom: 18
+            }
+        ).addTo(localMap);
+
+        if (means.byFoot) {
+            L.polygon(derivePositionForTransportationMean(MeansOfTransportation.WALK), {
+                color: 'blue'
+            }).addTo(localMap);
+        }
+        if (means.byBike) {
+            L.polygon(derivePositionForTransportationMean(MeansOfTransportation.BICYCLE), {
+                color: 'green'
+            }).addTo(localMap);
+        }
+        if (means.byCar) {
+            L.polygon(derivePositionForTransportationMean(MeansOfTransportation.CAR), {
+                color: 'gray'
+            }).addTo(localMap);
+        }
+        const positionIcon = L.Icon.extend({options: {
+            iconUrl: leafletIcon,
+            shadowUrl: leafletShadow
+        }});
+        L.marker(position, {
+            icon: new positionIcon()
+        }).bindPopup('Mein Standort').addTo(localMap);
+
+        entities?.forEach(entity => {
+            const icon = new L.Icon({
+                iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
+                shadowUrl: leafletShadow,
+                shadowSize: [0,0],
+                iconSize: new L.Point(25, 25),
+                className: entity.type
+            });
+            L.marker(entity.coordinates, {
+                icon
+            }).bindPopup(`${entity.name || 'Name nicht bekannt'}`).addTo(localMap);
+        });
+
+        setMap(localMap);
+    }, [searchResponse, entities, means]);
+
     return (
-        <MapContainer center={position} zoom={zoom} scrollWheelZoom={true} tap={false}>
-            <TileLayer
-                attribution={attribution}
-                url={url}
-                zoomOffset={-1}
-                maxZoom={18}
-                id="mapbox/light-v10"
-                tileSize={512}
-                accessToken={mapBoxAccessToken}
-            />
-            {means.byFoot && <Polygon pathOptions={{color: 'blue'}}
-                                      positions={derivePositionForTransportationMean(MeansOfTransportation.WALK)}/>}
-            {means.byBike && <Polygon pathOptions={{color: 'green'}}
-                                      positions={derivePositionForTransportationMean(MeansOfTransportation.BICYCLE)}/>}
-            {means.byCar && <Polygon pathOptions={{color: 'gray'}}
-                                     positions={derivePositionForTransportationMean(MeansOfTransportation.CAR)}/>}
-            <Marker position={position}>
-                <Popup>
-                    Mein Standort
-                </Popup>
-            </Marker>
-            {entities?.map(entity => {
-                    return <LocationMarker entity={entity} key={entity.id}/>
-                }
-            )}
-        </MapContainer>
+        <div className="leaflet-container" id="mymap">
+        </div>
     )
 });
 
