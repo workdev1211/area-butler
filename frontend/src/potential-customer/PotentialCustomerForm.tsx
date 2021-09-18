@@ -15,10 +15,10 @@ export interface PotentialCustomerFormData {
 
 export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> =
   ({ formId, onSubmit, customer }) => {
-    const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>([]);
+    const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>(customer.preferredAmenities ?? []);
     const [routingProfiles, setRoutingProfiles] = useState<
       TransportationParam[]
-    >([]);
+    >(customer.routingProfiles ?? []);
 
     return (
       <Formik
