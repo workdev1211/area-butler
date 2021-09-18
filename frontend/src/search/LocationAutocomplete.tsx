@@ -5,16 +5,19 @@ import {deriveGeocodeByAddress} from "../shared/shared.functions";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 
 export interface LocationAutocompleteProps {
-    afterChange?: () => void
+    afterChange?: () => void;
+    value: any;
+    setValue: any;
 }
 
 const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                                 afterChange = () => {
-                                                                                }
+                                                                                },
+                                                                                value = null,
+                                                                                setValue = () => {}
                                                                             }) => {
 
     const {googleApiKey} = useContext(ConfigContext);
-    const [value, setValue] = useState(null);
     const {searchContextDispatch} = useContext(SearchContext);
 
     const deriveLangLat = async (value: any) => {

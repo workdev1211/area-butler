@@ -21,6 +21,7 @@ import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+    const [placesValue, setPlacesValues] = useState<{label:string, value: any} | null>(null);
 
     const [locationBusy, setLocationBusy] = useState(false);
     const locateUser = () => {
@@ -142,6 +143,12 @@ const Start: FunctionComponent = () => {
     const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
         const result = await deriveGeocodeByAddress(listing.address);
         const { lat, lng } = result;
+        const placesLocation = {label: listing.address, value: {place_id: null, description: listing.address}};
+        setPlacesValues(placesLocation);
+        searchContextDispatch({
+            type: SearchContextActions.SET_PLACES_LOCATION,
+            payload: placesLocation
+        })
         searchContextDispatch({
             type: SearchContextActions.SET_LOCATION,
             payload: {
@@ -149,6 +156,8 @@ const Start: FunctionComponent = () => {
                 lng
             }
         })
+        setCollapseSearchOpen(false);
+        setCollapseTransportationOpen(true);
     };
 
     const SearchButton = () => {
@@ -203,7 +212,10 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className="flex-col gap-6 mt-5">
-                            <LocationAutocomplete afterChange={() => { setCollapseSearchOpen(false); setCollapseTransportationOpen(true)}}/>
+                            <LocationAutocomplete 
+                            afterChange={() => { setCollapseSearchOpen(false); setCollapseTransportationOpen(true)}}
+                            value={placesValue}
+                            setValue={setPlacesValues}/>
                             <LocationLatLng/>
                         </div>
                     </div>
