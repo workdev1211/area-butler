@@ -1,16 +1,20 @@
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
 import React from "react";
 import { useState } from "react";
+import { meansOfTransportations, unitsOfTransportation } from "../../../shared/constants/constants";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 
   export const PotentialCustomerDropDown: React.FunctionComponent =
     () => {
       const { potentialCustomerState } = React.useContext(PotentialCustomerContext);
+      const { searchContextDispatch } = React.useContext(SearchContext);
   
       const [showMenu, setShowMenu] = useState(false);
 
       const fillDataFromCustomer = (customer: ApiPotentialCustomer) => {
-
+        searchContextDispatch({type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: customer.preferredAmenities});
+        searchContextDispatch({type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: customer.routingProfiles});
       }
   
       const dropdownClasses = showMenu ? "dropdown dropdown-open" : "dropdown"
@@ -33,6 +37,27 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
                     <span>{customer.name}</span>
                     <span className="text-gray-500 text-xs">
                       {customer.email}
+                      
+                      {(customer.routingProfiles ?? []).map((routingProfile) => (
+                    <>
+                      <br />
+                      <span>
+                        {
+                          meansOfTransportations.find(
+                            (means) => means.type === routingProfile.type
+                          )?.label
+                        }{" "}
+                        ({routingProfile.amount}{" "}
+                        {
+                          unitsOfTransportation.find(
+                            (unit) => unit.type === routingProfile.unit
+                          )?.label
+                        }
+                        )
+                      </span>
+                      <br />
+                    </>
+                  ))}
                     </span>
                   </div>
                 </a>

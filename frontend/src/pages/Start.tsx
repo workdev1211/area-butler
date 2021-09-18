@@ -157,7 +157,6 @@ const Start: FunctionComponent = () => {
             }
         })
         setCollapseSearchOpen(false);
-        setCollapseTransportationOpen(true);
     };
 
     const SearchButton = () => {
@@ -290,11 +289,12 @@ const Start: FunctionComponent = () => {
                             <LocalityOptions defaults={searchContextState.localityOptions}
                                              onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: value})}/>
                         </div>
-                        <div className="flex gap-6 mt-5">
-                            <SearchButton/>
-                        </div>
+
                     </div>
                 </div>
+            </div>
+            <div className="flex gap-6 mt-5">
+                            <SearchButton/>
             </div>
             {searchContextState.searchResponse && (
                 <div className={collapseBaseClasses + " collapse-open"}>
