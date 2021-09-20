@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from "react";
+import React, {FunctionComponent, useEffect, useState} from "react";
 import {MeansOfTransportation, TransportationParam, UnitsOfTransportation} from "../../../shared/types/types";
 import {meansOfTransportations, unitsOfTransportation} from "../../../shared/constants/constants";
 
@@ -21,21 +21,25 @@ export const defaultTransportationParams = [
 ];
 
 export interface TransportationParamsProps {
-    defaults?: TransportationParam[];
+    inputValues?: TransportationParam[];
     onChange?: (value: TransportationParam[]) => void;
 }
 
 const TransportationParams: FunctionComponent<TransportationParamsProps> = ({
-                                                                                defaults = defaultTransportationParams,
+                                                                                inputValues = defaultTransportationParams,
                                                                                 onChange = () => {
                                                                                 }
                                                                             }) => {
-    const [transportation, setTransportation] = useState<TransportationParam[]>([...defaults]);
+    const [transportation, setTransportation] = useState<TransportationParam[]>([...inputValues]);
 
     const handleOnChange = (newValue: TransportationParam[]) => {
         setTransportation([...newValue]);
         onChange(newValue);
     }
+
+    useEffect(() => {
+        setTransportation([...inputValues]);
+    }, [inputValues])
 
     return (
         <>

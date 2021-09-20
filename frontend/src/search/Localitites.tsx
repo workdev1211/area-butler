@@ -1,4 +1,4 @@
-import React, {FunctionComponent, useState} from "react";
+import React, {FunctionComponent, useEffect, useState} from "react";
 import {OsmName} from "../../../shared/types/types";
 import {osmEntityTypes} from "../../../shared/constants/constants";
 
@@ -8,23 +8,25 @@ export const localityOptionsDefaults = osmEntityTypes.filter(entity =>
     ].includes(entity.name)).map((entity) => entity.name);
 
 export interface LocalityOptionsProps {
-    defaults?: OsmName[]
+    inputValues?: OsmName[]
     onChange?: (value: OsmName[]) => void
 }
 
 const LocalityOptions: FunctionComponent<LocalityOptionsProps> = ({
-                                                                      defaults = localityOptionsDefaults,
+                                                                      inputValues = localityOptionsDefaults,
                                                                       onChange = () => {
                                                                       }
                                                                   }) => {
-    const [localityOptions, setLocalityOptions] = useState<OsmName[]>(
-        defaults
-    );
+    const [localityOptions, setLocalityOptions] = useState<OsmName[]>(inputValues);
 
     const handleOnChange = (value: OsmName[]) => {
         setLocalityOptions([...value]);
         onChange([...value]);
     }
+
+    useEffect( () => {
+    setLocalityOptions([...inputValues]);
+    }, [inputValues])
 
     return <>
         {

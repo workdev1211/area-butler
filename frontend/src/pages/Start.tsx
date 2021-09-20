@@ -248,7 +248,7 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className="flex-col gap-6 mt-5">
-                            <TransportationParams onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: [...value]})}/>
+                            <TransportationParams inputValues={searchContextState.transportationParams} onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: [...value]})}/>
                             <button type='button' className='btn btn-primary btn-sm' onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
@@ -286,7 +286,7 @@ const Start: FunctionComponent = () => {
                     </div>
                     <div className="collapse-content">
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
-                            <LocalityOptions defaults={searchContextState.localityOptions}
+                            <LocalityOptions inputValues={searchContextState.localityOptions}
                                              onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: value})}/>
                         </div>
 
