@@ -17,6 +17,8 @@ import "../map/makiIcons.css";
 import LocationAutocomplete from "../search/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
+import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -63,6 +65,17 @@ const Start: FunctionComponent = () => {
       };
       fetchListings();
     }, [true]);
+
+    const { potentialCustomerDispatch } = React.useContext(PotentialCustomerContext)
+    useEffect(() => {
+        const fetchCustomers = async () => {
+          potentialCustomerDispatch({
+            type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+            payload: (await get<ApiPotentialCustomer[]>("/api/potential-customers")).data
+          })
+        };
+        fetchCustomers();
+      }, [true]);
 
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);

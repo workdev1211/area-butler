@@ -1,6 +1,7 @@
 import FormModal, { ModalConfig } from "components/FormModal";
-import { RealEstateListingContext } from "context/RealEstateListingContext";
-import React from "react";
+import { RealEstateListingActions, RealEstateListingContext } from "context/RealEstateListingContext";
+import { useHttp } from "hooks/http";
+import React, { useEffect } from "react";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import {
   allFurnishing, allRealEstateCostTypes
@@ -8,9 +9,24 @@ import {
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export const RealEstateListingPage = () => {
-  const { realEstateListingState } = React.useContext(
+
+  const { get } = useHttp();
+
+  const { realEstateDispatch, realEstateListingState } = React.useContext(
     RealEstateListingContext
   );;
+
+  useEffect(() => {
+    const fetchListings = async () => {
+      realEstateDispatch({
+        type: RealEstateListingActions.SET_REAL_ESTATE_LISTINGS,
+        payload: (
+          await get<ApiRealEstateListing[]>("/api/real-estate-listings")
+        ).data,
+      });
+    };
+    fetchListings();
+  }, [true]);
 
   const editRealEstateListingModalConfig: ModalConfig = {
     modalTitle: "Objekt bearbeiten",
@@ -72,3 +88,7 @@ export const RealEstateListingPage = () => {
     </div>
   );
 };
+function realEstateDispatch(arg0: { type: any; payload: any; }) {
+  throw new Error("Function not implemented.");
+}
+
