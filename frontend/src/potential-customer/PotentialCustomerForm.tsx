@@ -57,7 +57,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
           <div className="my-6">
             <strong>Bevorzugte Fortbewegungsarten</strong>
             <TransportationParams
-              inputValues={customer.routingProfiles ?? []}
+              inputValues={routingProfiles}
               onChange={(values) => setRoutingProfiles(values)}
             ></TransportationParams>
           </div>
@@ -65,7 +65,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             <strong>Bevorzugte Lokalitäten</strong>
             <div className="grid grid-cols-2 gap-6 mt-5">
               <LocalityOptions
-                inputValues={customer.preferredAmenities ?? []}
+                inputValues={preferredAmenities}
                 onChange={(values) => setPreferredAmenities(values)}
               ></LocalityOptions>
             </div>
