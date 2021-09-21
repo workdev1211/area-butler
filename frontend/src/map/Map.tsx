@@ -22,10 +22,10 @@ export interface MapProps {
 
 const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
-
+    const [zoom, setZoom] = useState(15);
+    
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-    const position: L.LatLngExpression = [lat, lng];
-    const zoom: number = 15;
+    const [position, setPosition] = useState<L.LatLngExpression>([lat, lng]);
     const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
     const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
@@ -48,6 +48,12 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
             renderer: new L.Canvas(),
             tap: false
         }).setView(position, zoom);
+        localMap.addEventListener("zoom", (value) => {
+            setZoom(value.target._zoom)
+        });
+        localMap.addEventListener("dragend", (value) => {
+            setPosition(value.target.getCenter());
+        })
 
         L.tileLayer(url, {
                 attribution,
@@ -78,7 +84,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
             iconUrl: leafletIcon,
             shadowUrl: leafletShadow
         }});
-        L.marker(position, {
+        L.marker([lat, lng], {
             icon: new positionIcon()
         }).bindPopup('Mein Standort').addTo(localMap);
 
