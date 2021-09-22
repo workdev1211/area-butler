@@ -64,7 +64,7 @@ const Start: FunctionComponent = () => {
         });
       };
       fetchListings();
-    }, [true]);
+    }, []);
 
     const { potentialCustomerDispatch } = React.useContext(PotentialCustomerContext)
     useEffect(() => {
@@ -75,7 +75,7 @@ const Start: FunctionComponent = () => {
           })
         };
         fetchCustomers();
-      }, [true]);
+      }, []);
 
 
     const [locationSearchBusy, setLocationSearchBusy] = useState(false);

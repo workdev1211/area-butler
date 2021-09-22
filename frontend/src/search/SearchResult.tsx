@@ -66,6 +66,7 @@ const SearchResult: FunctionComponent = () => {
             return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
         })
     }
+    // eslint-disable-next-line no-sequences
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
     const [activeTab, setActiveTab] = useState(0);
     const groupedEntries = Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label));
@@ -113,8 +114,8 @@ const SearchResult: FunctionComponent = () => {
                     const type = data[0].type;
                     const classes = (index === activeTab) ? 'tab tab-lifted tab-active' : 'tab tab-lifted';
                     return (
-                            <button type="button" onClick={() => setActiveTab(index)} className={classes}>
-                                <img style={{marginRight: '4px'}} src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
+                            <button type="button" onClick={() => setActiveTab(index)} className={classes} key={'tab-' + label}>
+                                <img alt="icon" style={{marginRight: '4px'}} src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
                                 {label} ({data.slice(0, 10).length})
                             </button>
                         );
@@ -123,12 +124,12 @@ const SearchResult: FunctionComponent = () => {
                 {groupedEntries.map(([label, data], index) => {
                     if (index === activeTab) {
                         return (
-                            <div className="mt-5">
+                            <div className="mt-5" key={'tab-content-' + label}>
                                 <ResultTable title={label} data={data} />
                             </div>
                         );
                     }
-                    return (<></>);
+                    return (<div key={'tab-content-' + label}></div>);
                 })}
             </div>
         </>

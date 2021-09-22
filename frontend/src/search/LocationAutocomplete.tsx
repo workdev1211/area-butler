@@ -1,5 +1,5 @@
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import React, {FunctionComponent, useContext, useState} from "react";
+import React, {FunctionComponent, useContext} from "react";
 import {ConfigContext} from "../context/ConfigContext";
 import {deriveGeocodeByAddress} from "../shared/shared.functions";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";

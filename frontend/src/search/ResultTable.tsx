@@ -19,7 +19,7 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
     return (
         <>
             <div className="flex ml-2">
-                <img src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
+                <img alt="icon" src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
                 <h3 className="text-xl ml-2">
                 {props.title} ({data.length})</h3>
             </div>

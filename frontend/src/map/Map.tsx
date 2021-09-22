@@ -124,7 +124,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
                 });
             },
             maxClusterRadius: 140,
-            disableClusteringAtZoom: 18,
+            disableClusteringAtZoom: 16,
             spiderfyOnMaxZoom: false
         });
         entities?.forEach(entity => {
