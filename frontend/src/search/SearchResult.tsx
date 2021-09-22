@@ -76,7 +76,6 @@ const SearchResult: FunctionComponent = () => {
     const [byCar, setByCar] = useState(byCarAvailable);
     const entities = buildEntityData(searchContextState.searchResponse!);
 
-    console.log(searchContextState);
     if(!!searchContextState.preferredLocations) {
         entities?.push(...buildEntityDataFromPreferredLocations(searchContextState.searchResponse.centerOfInterest.coordinates, searchContextState.preferredLocations));
     }
@@ -137,7 +136,7 @@ const SearchResult: FunctionComponent = () => {
                     <span className="ml-2">Auto</span>
                 </label> }
             </div>
-            <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans}/>
+            <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans} selectedCenter={searchContextState.selectedCenter!}/>
             <div className="flex-col gap-6 mt-5">
                 <div className="tabs">
                 {groupedEntries.map(([label, data], index) => {

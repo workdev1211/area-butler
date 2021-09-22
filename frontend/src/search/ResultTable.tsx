@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useContext } from "react";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 import {MeansOfTransportation} from "../../../shared/types/types";
 import {ResultEntity} from "./SearchResult";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
 
 export interface ResultTableProps {
     title: string;
@@ -10,6 +11,7 @@ export interface ResultTableProps {
 }
 
 const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
+    const {searchContextDispatch} = useContext(SearchContext);
     const data = props.data.slice(0, 10);
     const hasNames = data.some(sd => sd.name && sd.name.length);
     const deriveMinutesFromMeters = (distanceInMeters: number, mean: MeansOfTransportation) => {
@@ -35,6 +37,8 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
                 </thead>
                 <tbody>
                 {data.map((row: ResultEntity) => <tr
+                    className="hover cursor-pointer"
+                    onClick={()=>  searchContextDispatch({type: SearchContextActions.SET_SELECTED_CENTER, payload: row.coordinates})}
                     key={'result-table-' + props.title + '-' + row.name + row.distanceInMeters}>
                     {hasNames && <td className="pr-4 py-1">{row.name || '-'}</td>}
                     <td className={hasNames ? 'px-4 py-1' : 'py-1'}>{row.distanceInMeters ? Math.trunc(row.distanceInMeters) + ' m' : 'unbekannt'}</td>

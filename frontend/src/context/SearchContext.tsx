@@ -11,6 +11,7 @@ import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
+    selectedCenter?: ApiCoordinates;
     transportationParams: TransportationParam[];
     localityOptions: OsmName[];
     searchResponse?: ApiSearchResponse;
@@ -44,6 +45,7 @@ export const initialState: SearchContextState = {
 export enum SearchContextActions {
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
+    SET_SELECTED_CENTER = 'SET_SELECTED_CENTER',
     SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
@@ -60,6 +62,10 @@ const reducer: (
         }
         case SearchContextActions.SET_LOCATION: {
             return { ...state, location: {...action.payload }};
+ 
+        }
+        case SearchContextActions.SET_SELECTED_CENTER: {
+            return { ...state, selectedCenter: {...action.payload }};
         }
         case SearchContextActions.SET_PREFERRED_LOCATIONS: {
             return { ...state, preferredLocations: [...action.payload ]};

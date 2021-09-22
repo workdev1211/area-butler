@@ -8,14 +8,16 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
-import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
+import { off } from "process";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     entities: ResultEntity[] | null;
+    selectedCenter?: ApiCoordinates;
     means: {
         byFoot: boolean;
         byBike: boolean;
@@ -23,7 +25,7 @@ export interface MapProps {
     }
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const [zoom, setZoom] = useState(15);
     let amenityMarkerGroup = L.markerClusterGroup();
@@ -41,17 +43,26 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
 
     const [map, setMap]  = useState<L.Map>();
 
+    let setCenter : (coordinates: ApiCoordinates) => void;
+
     useEffect(() => {
         if (map !== undefined) {
             map.off();
             map.remove();
         }
+
+        
         const localMap = L.map('mymap', {
             scrollWheelZoom: false,
             preferCanvas: true,
             renderer: new L.Canvas(),
             tap: false
         }).setView(position, zoom);
+
+        setCenter = (coordinates) => {
+            localMap.setView([coordinates.lat, coordinates.lng], zoom);
+        }
+
         localMap.addEventListener("zoom", (value) => {
             setZoom(value.target._zoom);
             if (localMap) {
@@ -98,7 +109,15 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
         }).bindPopup('Mein Standort').addTo(localMap);
 
         drawAmenityMarkers(localMap, zoom);
+
+
     }, [searchResponse, entities, means]);
+
+    useEffect(() => {
+        if(!!map) {
+            setCenter(selectedCenter!);
+        }
+    }, [selectedCenter]);
 
     const groupBy = (xs: any, key: any) => {
         return xs.reduce(function(rv: any, x: any) {
