@@ -66,7 +66,7 @@ export const PotentialCustomersPage = () => {
                 <td>{customer.email}</td>
                 <td>
                   {(customer.routingProfiles ?? []).map((routingProfile) => (
-                    <>
+                    <div key={`customer-${customer.id}-routing-profile-${routingProfile.type}`}>
                       <span>
                         {
                           meansOfTransportations.find(
@@ -82,7 +82,7 @@ export const PotentialCustomersPage = () => {
                         )
                       </span>
                       <br />
-                    </>
+                    </div>
                   ))}
                 </td>
                 <td style={{width: '25%', whiteSpace: 'pre-wrap'}}>

@@ -19,6 +19,7 @@ const mapFormToApiUpsertRealEstateListing = async (
     email: values.email,
     preferredAmenities: values.preferredAmenities,
     routingProfiles: values.routingProfiles,
+    preferredLocations: values.preferredLocations
   };
 };
 

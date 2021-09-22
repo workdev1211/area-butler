@@ -6,5 +6,6 @@ export const mapPotentialCustomerToApiPotentialCustomer = (potentialCustomer: Po
     name: potentialCustomer.name,
     email: potentialCustomer.email,
     routingProfiles: potentialCustomer.routingProfiles,
-    preferredAmenities: potentialCustomer.preferredAmenities
+    preferredAmenities: potentialCustomer.preferredAmenities,
+    preferredLocations: potentialCustomer.preferredLocations
 });
