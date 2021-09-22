@@ -10,3 +10,9 @@ input.checkbox:checked ~ .dot {
 .collapse-title, .collapse-content {
     background-color: white !important;
 }
+
+.collapse-locality-item {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+}
