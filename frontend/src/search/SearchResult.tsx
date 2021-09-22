@@ -1,9 +1,13 @@
 import React, {FunctionComponent, useContext, useState} from "react";
-import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import Map from "../map/Map";
 import ResultTable from "./ResultTable";
 import {SearchContext} from "../context/SearchContext";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { distanceInMeters } from "shared/shared.functions";
+
+const preferredLocationsTitle = 'Wichtige Adressen';
 
 export interface ResultEntity {
     name?: string;
@@ -16,6 +20,21 @@ export interface ResultEntity {
     byBike: boolean;
     byCar: boolean;
     distanceInMeters: number;
+}
+
+const buildEntityDataFromPreferredLocations = (centerCoordinates: ApiCoordinates, preferredLocations: ApiPreferredLocation[]): ResultEntity[] => {
+    return preferredLocations.map(preferredLocation => ({
+        id: parseInt(preferredLocation.title, 10),
+        name: `${preferredLocation.title} (${preferredLocation.address})`,
+        label: preferredLocationsTitle,
+        type: OsmName.favorite,
+        distanceInMeters: distanceInMeters(centerCoordinates, preferredLocation.coordinates!), // Calc distance
+        coordinates: preferredLocation.coordinates!,
+        address: {street: preferredLocation.address},
+        byFoot: true,
+        byBike: true,
+        byCar: true        
+    }));
 }
 
 const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[] | null => {
@@ -56,6 +75,12 @@ const SearchResult: FunctionComponent = () => {
     const [byBike, setByBike] = useState(byBikeAvailable);
     const [byCar, setByCar] = useState(byCarAvailable);
     const entities = buildEntityData(searchContextState.searchResponse!);
+
+    console.log(searchContextState);
+    if(!!searchContextState.preferredLocations) {
+        entities?.push(...buildEntityDataFromPreferredLocations(searchContextState.searchResponse.centerOfInterest.coordinates, searchContextState.preferredLocations));
+    }
+
     const mapMeans = {
         byFoot,
         byBike,
@@ -69,7 +94,12 @@ const SearchResult: FunctionComponent = () => {
     // eslint-disable-next-line no-sequences
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
     const [activeTab, setActiveTab] = useState(0);
-    const groupedEntries = Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label));
+    let groupedEntries = Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label));
+
+    groupedEntries = [
+        ...groupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
+        ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle)
+    ];
     return (
         <>
             <div className="flex gap-6 mt-10">

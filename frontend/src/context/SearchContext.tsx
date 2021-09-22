@@ -6,6 +6,7 @@ import {
     UnitsOfTransportation
 } from "../../../shared/types/types";
 import {osmEntityTypes} from "../../../shared/constants/constants";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 
 export interface SearchContextState {
     placesLocation?: any;
@@ -13,6 +14,7 @@ export interface SearchContextState {
     transportationParams: TransportationParam[];
     localityOptions: OsmName[];
     searchResponse?: ApiSearchResponse;
+    preferredLocations?: ApiPreferredLocation[];
 }
 
 export const initialState: SearchContextState = {
@@ -42,6 +44,7 @@ export const initialState: SearchContextState = {
 export enum SearchContextActions {
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
+    SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
@@ -57,6 +60,9 @@ const reducer: (
         }
         case SearchContextActions.SET_LOCATION: {
             return { ...state, location: {...action.payload }};
+        }
+        case SearchContextActions.SET_PREFERRED_LOCATIONS: {
+            return { ...state, preferredLocations: [...action.payload ]};
         }
         case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
             return { ...state, transportationParams: [...action.payload]}

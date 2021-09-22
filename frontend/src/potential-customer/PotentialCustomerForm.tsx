@@ -38,7 +38,6 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
         })}
         onSubmit={(values) => {
           const formValues = { ...values, preferredAmenities, routingProfiles };
-          console.log(formValues);
           onSubmit(formValues);
         }}
         render={({ values }) => (
@@ -93,7 +92,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
                               placeholder="Name"
                             />
                           </div>
-                          <div className="form-control">
+                          <div className="form-control flex-grow">
                             <Input
                               label="Adresse"
                               name={`preferredLocations.${index}.address`}

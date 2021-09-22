@@ -15,6 +15,7 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
       const fillDataFromCustomer = (customer: ApiPotentialCustomer) => {
         searchContextDispatch({type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: customer.preferredAmenities});
         searchContextDispatch({type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: customer.routingProfiles});
+        searchContextDispatch({type: SearchContextActions.SET_PREFERRED_LOCATIONS, payload: customer.preferredLocations});
       }
   
       const dropdownClasses = showMenu ? "dropdown dropdown-open" : "dropdown"

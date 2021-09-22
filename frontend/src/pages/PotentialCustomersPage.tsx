@@ -56,6 +56,7 @@ export const PotentialCustomersPage = () => {
               <th>Kontaktdaten</th>
               <th>Bewegungsprofile</th>
               <th>Bevorzugte Umgebung</th>
+              <th>Wichtige Adressen</th>
               <th></th>
             </tr>
           </thead>
@@ -90,6 +91,15 @@ export const PotentialCustomersPage = () => {
                     .map(
                       (amenity) =>
                         osmEntityTypes.find((t) => t.name === amenity)?.label ||
+                        ""
+                    )
+                    .join(", ")}
+                </td>
+                <td style={{width: '25%', whiteSpace: 'pre-wrap'}}>
+                  {(customer.preferredLocations ?? [])
+                    .map(
+                      (location) =>
+                        location.title ||
                         ""
                     )
                     .join(", ")}

@@ -1,25 +1,35 @@
 import { FormModalData } from "components/FormModal";
 import {
   PotentialCustomerActions,
-  PotentialCustomerContext,
+  PotentialCustomerContext
 } from "context/PotentialCustomerContext";
 import { useHttp } from "hooks/http";
 import React from "react";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
 import {
   ApiPotentialCustomer,
-  ApiUpsertPotentialCustomer,
+  ApiUpsertPotentialCustomer
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
 
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
+  const locationsWithCoords = [];
+  for (const location of values.preferredLocations) {
+    const { lat, lng } = await deriveGeocodeByAddress(location.address);
+    locationsWithCoords.push({
+      ...location,
+      coordinates: { lat, lng },
+    });
+  }
+
   return {
     name: values.name,
     email: values.email,
     preferredAmenities: values.preferredAmenities,
     routingProfiles: values.routingProfiles,
-    preferredLocations: values.preferredLocations
+    preferredLocations: locationsWithCoords,
   };
 };
 

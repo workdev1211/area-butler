@@ -16,6 +16,7 @@ import railMetro from '../assets/icons/rail-metro.svg';
 import bus from '../assets/icons/bus.svg';
 import car from '../assets/icons/car.svg';
 import triangle from '../assets/icons/triangle.svg';
+import star from '../assets/icons/star.svg'
 
 export const osmNameToIcons = [
     {
@@ -81,6 +82,10 @@ export const osmNameToIcons = [
     {
         name: OsmName.motorway_link,
         icon: car
+    },
+    {
+        name: OsmName.favorite,
+        icon: star
     }
 ]
 
