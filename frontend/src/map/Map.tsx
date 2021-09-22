@@ -23,6 +23,7 @@ export interface MapProps {
 const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const [zoom, setZoom] = useState(15);
+    const amenityMarkers: L.Marker[] = [];
     
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
     const [position, setPosition] = useState<L.LatLngExpression>([lat, lng]);
@@ -49,11 +50,16 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
             tap: false
         }).setView(position, zoom);
         localMap.addEventListener("zoom", (value) => {
-            setZoom(value.target._zoom)
+            setZoom(value.target._zoom);
+            if (localMap) {
+                drawAmenityMarkers(localMap, value.target._zoom);
+            }
         });
         localMap.addEventListener("dragend", (value) => {
             setPosition(value.target.getCenter());
-        })
+        });
+        setMap(localMap);
+
 
         L.tileLayer(url, {
                 attribution,
@@ -88,25 +94,33 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
             icon: new positionIcon()
         }).bindPopup('Mein Standort').addTo(localMap);
 
+        drawAmenityMarkers(localMap, zoom);
+    }, [searchResponse, entities, means]);
+
+    const drawAmenityMarkers = (localMap: L.Map, localZoom: number) => {
+        if (amenityMarkers) {
+            amenityMarkers.forEach(marker => {
+                localMap.removeLayer(marker);
+            });
+        }
         entities?.forEach(entity => {
             const icon = new L.Icon({
                 iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
                 shadowUrl: leafletShadow,
                 shadowSize: [0,0],
-                iconSize: new L.Point(25, 25),
+                iconSize: localZoom >= 16 ? new L.Point(35, 35) : new L.Point(20, 20),
                 className: entity.type
             });
-            L.marker(entity.coordinates, {
+            const marker = L.marker(entity.coordinates, {
                 icon,
             }).on('click', function(e) {
                 const marker = e.target;
                 marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
                 marker.openPopup();
             }).addTo(localMap);
+            amenityMarkers.push(marker);
         });
-
-        setMap(localMap);
-    }, [searchResponse, entities, means]);
+    }
 
     return (
         <div className="leaflet-container" id="mymap">
