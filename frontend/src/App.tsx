@@ -18,7 +18,7 @@ function App() {
   const feedbackModalConfig: ModalConfig = {
     buttonTitle: "Feedback",
     buttonStyle:
-      "fixed -bottom-60 right-0 mb-96 z-20 rotate-90 bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold h-8 px-2 rounded",
+      "fixed -bottom-60 -right-5 mb-96 z-20 rotate-90 bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold h-8 px-2 rounded",
     modalTitle: "Feedback abgeben",
   };
 
