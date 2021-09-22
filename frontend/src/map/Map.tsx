@@ -1,8 +1,11 @@
 import React, {useContext, useEffect, useState} from "react";
-import L from "leaflet";
+import * as L from "leaflet";
+import "leaflet.markercluster";
 import "./Map.css";
 import "./makiIcons.css";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import {ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
@@ -23,7 +26,7 @@ export interface MapProps {
 const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const [zoom, setZoom] = useState(15);
-    const amenityMarkers: L.Marker[] = [];
+    let amenityMarkerGroup = L.markerClusterGroup();
     
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
     const [position, setPosition] = useState<L.LatLngExpression>([lat, lng]);
@@ -97,12 +100,33 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
         drawAmenityMarkers(localMap, zoom);
     }, [searchResponse, entities, means]);
 
+    const groupBy = (xs: any, key: any) => {
+        return xs.reduce(function(rv: any, x: any) {
+            (rv[x[key]] = rv[x[key]] || []).push(x);
+            return rv;
+        }, {});
+    };
+
     const drawAmenityMarkers = (localMap: L.Map, localZoom: number) => {
-        if (amenityMarkers) {
-            amenityMarkers.forEach(marker => {
-                localMap.removeLayer(marker);
-            });
-        }
+        localMap.removeLayer(amenityMarkerGroup);
+        amenityMarkerGroup = L.markerClusterGroup({
+            iconCreateFunction: function(cluster) {
+                const groupedMarkers = groupBy(cluster.getAllChildMarkers().map(m => m.getIcon().options), 'className');
+                const countedMarkers = Object.entries(groupedMarkers).map(([key, value]) => ({
+                    key,
+                    icon: (value as any)[0].iconUrl,
+                    count: (value as any).length
+                })).sort((a, b) => b.count - a.count);
+                const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
+                return L.divIcon({
+                    html: '<div class="cluster-icon-wrapper">' + markerIcons.join('') + '</div>',
+                    className: 'cluster-icon'
+                });
+            },
+            maxClusterRadius: 140,
+            disableClusteringAtZoom: 18,
+            spiderfyOnMaxZoom: false
+        });
         entities?.forEach(entity => {
             const icon = new L.Icon({
                 iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
@@ -117,9 +141,10 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
                 const marker = e.target;
                 marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
                 marker.openPopup();
-            }).addTo(localMap);
-            amenityMarkers.push(marker);
+            });
+            amenityMarkerGroup.addLayer(marker);
         });
+        localMap.addLayer(amenityMarkerGroup);
     }
 
     return (
