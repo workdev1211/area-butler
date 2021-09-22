@@ -198,7 +198,7 @@ const Start: FunctionComponent = () => {
     const [collapseLocalitiesOpen, setCollapseLocalitiesOpen] = useState(false);
 
     return (
-        <div className="container mx-auto mt-10">
+        <div className="container mx-auto mt-10 pb-10">
             <h1 className="flex text-2xl">Umgebungsanalyse</h1>
             <RealEstateMenuList
                 fillAdressFromListing={fillAddressFromListing}

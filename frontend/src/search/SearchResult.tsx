@@ -3,6 +3,7 @@ import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation} fr
 import Map from "../map/Map";
 import ResultTable from "./ResultTable";
 import {SearchContext} from "../context/SearchContext";
+import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 
 export interface ResultEntity {
     name?: string;
@@ -66,6 +67,8 @@ const SearchResult: FunctionComponent = () => {
         })
     }
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+    const [activeTab, setActiveTab] = useState(0);
+    const groupedEntries = Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label));
     return (
         <>
             <div className="flex gap-6 mt-10">
@@ -105,12 +108,27 @@ const SearchResult: FunctionComponent = () => {
             </div>
             <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans}/>
             <div className="flex-col gap-6 mt-5">
-                {Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label)).map(([label, data]) => {
+                <div className="tabs">
+                {groupedEntries.map(([label, data], index) => {
+                    const type = data[0].type;
+                    const classes = (index === activeTab) ? 'tab tab-lifted tab-active' : 'tab tab-lifted';
                     return (
-                        <div className="mt-10" key={'result-' + label}>
-                            <ResultTable title={label} data={data}/>
-                        </div>
-                    )
+                            <button type="button" onClick={() => setActiveTab(index)} className={classes}>
+                                <img style={{marginRight: '4px'}} src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
+                                {label} ({data.slice(0, 10).length})
+                            </button>
+                        );
+                })}
+                </div>
+                {groupedEntries.map(([label, data], index) => {
+                    if (index === activeTab) {
+                        return (
+                            <div className="mt-5">
+                                <ResultTable title={label} data={data} />
+                            </div>
+                        );
+                    }
+                    return (<></>);
                 })}
             </div>
         </>

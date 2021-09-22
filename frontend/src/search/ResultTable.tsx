@@ -18,12 +18,12 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
     const type = data[0].type;
     return (
         <>
-            <div className="flex">
+            <div className="flex ml-2">
                 <img src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
                 <h3 className="text-xl ml-2">
                 {props.title} ({data.length})</h3>
             </div>
-            <table className="table-auto">
+            <table className="table w-full mt-5">
                 <thead>
                 <tr>
                     {hasNames && <th className="pr-4 py-1 text-left">Name</th>}
