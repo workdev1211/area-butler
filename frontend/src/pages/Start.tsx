@@ -289,7 +289,7 @@ const Start: FunctionComponent = () => {
                         { !collapseLocalitiesOpen && <div className='float-right mr-20 text-base'>
                             <div className='flex gap-6'>
                                 {searchContextState.localityOptions.map((locality: OsmName) => <span key={locality} className="collapse-locality-item">
-                                    <img src={osmNameToIcons.find(entry => entry.name === locality)?.icon || fallbackIcon} className={locality}/> {osmEntityTypes.find(oet => oet.name === locality)?.label}
+                                    <img alt="icon" src={osmNameToIcons.find(entry => entry.name === locality)?.icon || fallbackIcon} className={locality}/> {osmEntityTypes.find(oet => oet.name === locality)?.label}
                                 </span> )
                                 }
                             </div>

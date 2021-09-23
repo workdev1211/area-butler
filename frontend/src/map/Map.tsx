@@ -25,56 +25,99 @@ export interface MapProps {
     }
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter}) => {
-    const {mapBoxAccessToken} = useContext(ConfigContext);
-    const [zoom, setZoom] = useState(15);
-    let amenityMarkerGroup = L.markerClusterGroup();
-    
+let currentMap: L.Map | undefined;
+let zoom = 15;
+let amenityMarkerGroup = L.markerClusterGroup();
+
+const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
+    const responseEqual = JSON.stringify(prevProps.searchResponse) === JSON.stringify(nextProps.searchResponse);
+    const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
+    const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
+    return responseEqual && entitiesEqual && meansEqual;
+}
+
+const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-    const [position, setPosition] = useState<L.LatLngExpression>([lat, lng]);
-    const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
-    const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
-    const derivePositionForTransportationMean = (profile: MeansOfTransportation) => {
-        return searchResponse.routingProfiles[profile].isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
-            return [item[1], item[0]];
-        });
-    }
+    const {mapBoxAccessToken} = useContext(ConfigContext);
 
-    const [map, setMap]  = useState<L.Map>();
-
-    let setCenter : (coordinates: ApiCoordinates) => void;
 
     useEffect(() => {
-        if (map !== undefined) {
-            map.off();
-            map.remove();
+
+        const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+        const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
+        const initialPosition: L.LatLngExpression = [lat, lng];
+
+        const derivePositionForTransportationMean = (profile: MeansOfTransportation) => {
+            return searchResponse.routingProfiles[profile].isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
+                return [item[1], item[0]];
+            });
         }
 
-        
+        const groupBy = (xs: any, key: any) => {
+            return xs.reduce(function(rv: any, x: any) {
+                (rv[x[key]] = rv[x[key]] || []).push(x);
+                return rv;
+            }, {});
+        };
+
+        const drawAmenityMarkers = (localZoom: number) => {
+            if (currentMap) {
+                currentMap.removeLayer(amenityMarkerGroup);
+                amenityMarkerGroup = L.markerClusterGroup({
+                    iconCreateFunction: function (cluster) {
+                        const groupedMarkers = groupBy(cluster.getAllChildMarkers().map(m => m.getIcon().options), 'className');
+                        const countedMarkers = Object.entries(groupedMarkers).map(([key, value]) => ({
+                            key,
+                            icon: (value as any)[0].iconUrl,
+                            count: (value as any).length
+                        })).sort((a, b) => b.count - a.count);
+                        const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
+                        return L.divIcon({
+                            html: '<div class="cluster-icon-wrapper">' + markerIcons.join('') + '</div>',
+                            className: 'cluster-icon'
+                        });
+                    },
+                    maxClusterRadius: 140,
+                    disableClusteringAtZoom: 16,
+                    spiderfyOnMaxZoom: false
+                });
+                entities?.forEach(entity => {
+                    const icon = new L.Icon({
+                        iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
+                        shadowUrl: leafletShadow,
+                        shadowSize: [0, 0],
+                        iconSize: localZoom >= 16 ? new L.Point(35, 35) : new L.Point(20, 20),
+                        className: entity.type
+                    });
+                    const marker = L.marker(entity.coordinates, {
+                        icon,
+                    }).on('click', function (e) {
+                        const marker = e.target;
+                        marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
+                        marker.openPopup();
+                    });
+                    amenityMarkerGroup.addLayer(marker);
+                });
+                currentMap.addLayer(amenityMarkerGroup);
+            }
+        }
+
+        if (currentMap !== undefined) {
+            currentMap.off();
+            currentMap.remove();
+        }
         const localMap = L.map('mymap', {
             scrollWheelZoom: false,
             preferCanvas: true,
             renderer: new L.Canvas(),
-            tap: false
-        }).setView(position, zoom);
-
-        setCenter = (coordinates) => {
-            localMap.setView([coordinates.lat, coordinates.lng], zoom);
-        }
-
+            tap: false,
+            maxZoom: 18
+        }).setView(initialPosition, zoom);
         localMap.addEventListener("zoom", (value) => {
-            setZoom(value.target._zoom);
-            if (localMap) {
-                drawAmenityMarkers(localMap, value.target._zoom);
-            }
+           zoom = value.target._zoom;
+            drawAmenityMarkers(value.target._zoom);
         });
-        localMap.addEventListener("dragend", (value) => {
-            setPosition(value.target.getCenter());
-        });
-        setMap(localMap);
-
-
         L.tileLayer(url, {
                 attribution,
                 id: "mapbox/light-v10",
@@ -108,68 +151,16 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
             icon: new positionIcon()
         }).bindPopup('Mein Standort').addTo(localMap);
 
-        drawAmenityMarkers(localMap, zoom);
+        currentMap = localMap;
+        drawAmenityMarkers(zoom);
+    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng]);
 
 
-    }, [searchResponse, entities, means]);
-
-    useEffect(() => {
-        if(!!map) {
-            setCenter(selectedCenter!);
-        }
-    }, [selectedCenter]);
-
-    const groupBy = (xs: any, key: any) => {
-        return xs.reduce(function(rv: any, x: any) {
-            (rv[x[key]] = rv[x[key]] || []).push(x);
-            return rv;
-        }, {});
-    };
-
-    const drawAmenityMarkers = (localMap: L.Map, localZoom: number) => {
-        localMap.removeLayer(amenityMarkerGroup);
-        amenityMarkerGroup = L.markerClusterGroup({
-            iconCreateFunction: function(cluster) {
-                const groupedMarkers = groupBy(cluster.getAllChildMarkers().map(m => m.getIcon().options), 'className');
-                const countedMarkers = Object.entries(groupedMarkers).map(([key, value]) => ({
-                    key,
-                    icon: (value as any)[0].iconUrl,
-                    count: (value as any).length
-                })).sort((a, b) => b.count - a.count);
-                const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
-                return L.divIcon({
-                    html: '<div class="cluster-icon-wrapper">' + markerIcons.join('') + '</div>',
-                    className: 'cluster-icon'
-                });
-            },
-            maxClusterRadius: 140,
-            disableClusteringAtZoom: 16,
-            spiderfyOnMaxZoom: false
-        });
-        entities?.forEach(entity => {
-            const icon = new L.Icon({
-                iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
-                shadowUrl: leafletShadow,
-                shadowSize: [0,0],
-                iconSize: localZoom >= 16 ? new L.Point(35, 35) : new L.Point(20, 20),
-                className: entity.type
-            });
-            const marker = L.marker(entity.coordinates, {
-                icon,
-            }).on('click', function(e) {
-                const marker = e.target;
-                marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
-                marker.openPopup();
-            });
-            amenityMarkerGroup.addLayer(marker);
-        });
-        localMap.addLayer(amenityMarkerGroup);
-    }
 
     return (
         <div className="leaflet-container" id="mymap">
         </div>
     )
-});
+}, areMapPropsEqual);
 
 export default Map;
