@@ -33,13 +33,20 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const responseEqual = JSON.stringify(prevProps.searchResponse) === JSON.stringify(nextProps.searchResponse);
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
-    return responseEqual && entitiesEqual && meansEqual;
+    const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
+    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual;
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
+
+    useEffect(() => {
+        if(!!currentMap && selectedCenter) {
+            currentMap.setView(selectedCenter);
+        }
+    }, [selectedCenter]);
 
 
     useEffect(() => {
