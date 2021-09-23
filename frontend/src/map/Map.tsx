@@ -41,15 +41,8 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
 
-    useEffect(() => {
-        if(!!currentMap && selectedCenter) {
-            currentMap.setView(selectedCenter);
-        }
-    }, [selectedCenter]);
-
 
     useEffect(() => {
-
         const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
         const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
         const initialPosition: L.LatLngExpression = [lat, lng];
@@ -119,7 +112,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
             renderer: new L.Canvas(),
             tap: false,
             maxZoom: 18
-        }).setView(initialPosition, zoom);
+        }).setView(selectedCenter || initialPosition, zoom);
         localMap.addEventListener("zoom", (value) => {
            zoom = value.target._zoom;
             drawAmenityMarkers(value.target._zoom);
