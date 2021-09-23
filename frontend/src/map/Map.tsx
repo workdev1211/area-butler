@@ -12,7 +12,6 @@ import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../..
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
-import { off } from "process";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
