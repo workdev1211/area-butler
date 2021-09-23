@@ -1,11 +1,16 @@
 import { Input } from "components/Input";
+import { ConfigContext } from "context/ConfigContext";
 import { Form, Formik, FieldArray } from "formik";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import LocalityOptions from "search/Localitites";
 import TransportationParams from "search/TransportationParams";
 import * as Yup from "yup";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import {
+  ApiPotentialCustomer,
+  ApiPreferredLocation,
+} from "../../../shared/types/potential-customer";
 import { OsmName, TransportationParam } from "../../../shared/types/types";
+import { PreferredLocationsControl } from "./PreferredLocationsControl";
 
 export interface PotentialCustomerFormData {
   formId: string;
@@ -22,6 +27,10 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
       TransportationParam[]
     >(customer.routingProfiles ?? []);
 
+    const [preferredLocations, setPreferredLocations] = useState<
+      ApiPreferredLocation[]
+    >(customer.preferredLocations ?? []);
+
     return (
       <Formik
         initialValues={{
@@ -34,10 +43,15 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
           email: Yup.string()
             .email()
             .required("Bitte geben Sie eine gültige Email-Adresse ein"),
-          preferredLocations: Yup.array()
+          preferredLocations: Yup.array(),
         })}
         onSubmit={(values) => {
-          const formValues = { ...values, preferredAmenities, routingProfiles };
+          const formValues = {
+            ...values,
+            preferredAmenities,
+            routingProfiles,
+            preferredLocations,
+          };
           onSubmit(formValues);
         }}
         render={({ values }) => (
@@ -76,61 +90,11 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             </div>
             <div className="my-6">
               <strong>Wichtige Adressen</strong>
-              <div className="grid grid-cols-2 gap-6 mt-5">
-                <FieldArray
-                  name="preferredLocations"
-                  render={(arrayHelpers) => (
-                    <div>
-                      {values.preferredLocations.map((location, index) => (
-                        <div className="flex gap-4 items-end" key={`location-${index}`}>
-                          <div className="form-control">
-                            <Input
-                              label="Bezeichnung"
-                              name={`preferredLocations.${index}.title`}
-                              type="text"
-                              list="preferredLocationTitles"
-                              placeholder="Name"
-                            />
-                          </div>
-                          <div className="form-control flex-grow">
-                            <Input
-                              label="Adresse"
-                              name={`preferredLocations.${index}.address`}
-                              type="text"
-                              placeholder="Name"
-                            />
-                          </div>
-                          <button
-                            type="button"
-                            className="btn btn-xs my-3 rounded-full"
-                            onClick={() => arrayHelpers.remove(index)}
-                          >
-                            -
-                          </button>
-                        </div>
-                      ))}
-                      <datalist id="preferredLocationTitles">
-                        <option value="Arbeitsort">Arbeitsort</option>
-                        <option value="Eltern">Eltern</option>
-                        <option value="Kita">Kita</option>
-                        <option value="Schule">Schule</option>
-                        <option value="Schwiegereltern">Schwiegereltern</option>
-                      </datalist>  
-
-                      {values.preferredLocations.length < 4 && <button
-                        className="btn btn-xs my-4"
-                        type="button"
-                        onClick={() =>
-                          arrayHelpers.push({ title: "", address: "" })
-                        }
-                      >
-                        Neue Adresse
-                      </button>}
-                    </div>
-                  )}
-                />
-              </div>
             </div>
+            <PreferredLocationsControl
+              inputValues={preferredLocations}
+              onChange={(values) => setPreferredLocations(values)}
+            />
           </Form>
         )}
       ></Formik>
