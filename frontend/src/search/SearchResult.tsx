@@ -22,20 +22,28 @@ export interface ResultEntity {
     distanceInMeters: number;
 }
 
-const buildEntityDataFromPreferredLocations = (centerCoordinates: ApiCoordinates, preferredLocations: ApiPreferredLocation[]): ResultEntity[] => {
-    return preferredLocations.map(preferredLocation => ({
-        id: parseInt(preferredLocation.title, 10),
-        name: `${preferredLocation.title} (${preferredLocation.address})`,
-        label: preferredLocationsTitle,
-        type: OsmName.favorite,
-        distanceInMeters: distanceInMeters(centerCoordinates, preferredLocation.coordinates!), // Calc distance
-        coordinates: preferredLocation.coordinates!,
-        address: {street: preferredLocation.address},
-        byFoot: true,
-        byBike: true,
-        byCar: true        
+const buildEntityDataFromPreferredLocations = (
+  centerCoordinates: ApiCoordinates,
+  preferredLocations: ApiPreferredLocation[]
+): ResultEntity[] => {
+  return preferredLocations
+    .filter((preferredLocation) => !!preferredLocation.coordinates)
+    .map((preferredLocation) => ({
+      id: parseInt(preferredLocation.title, 10),
+      name: `${preferredLocation.title} (${preferredLocation.address})`,
+      label: preferredLocationsTitle,
+      type: OsmName.favorite,
+      distanceInMeters: distanceInMeters(
+        centerCoordinates,
+        preferredLocation.coordinates!
+      ), // Calc distance
+      coordinates: preferredLocation.coordinates!,
+      address: { street: preferredLocation.address },
+      byFoot: true,
+      byBike: true,
+      byCar: true,
     }));
-}
+};
 
 const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[] | null => {
     if (!locationSearchResult) {
