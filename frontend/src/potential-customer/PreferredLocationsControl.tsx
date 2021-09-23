@@ -1,6 +1,7 @@
 import { ConfigContext } from "context/ConfigContext";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 
 export interface PreferredLocationsProps {
@@ -11,6 +12,10 @@ export interface PreferredLocationsProps {
 export const PreferredLocationsControl: React.FunctionComponent<PreferredLocationsProps> =
   ({ inputValues = [], onChange = () => {} }) => {
     const [preferredLocations, setPreferredLocations] = useState(inputValues);
+
+    useEffect(() => {
+        setPreferredLocations([...inputValues]);
+    }, [JSON.stringify(inputValues)])
 
     const { googleApiKey } = useContext(ConfigContext);
 
@@ -56,9 +61,11 @@ export const PreferredLocationsControl: React.FunctionComponent<PreferredLocatio
                         description: preferredLocation.address,
                       },
                     },
-                    onChange: (value: any) => {
+                    onChange: async (value: any) => {
                       const newLocations = [...preferredLocations];
+                      const { lat, lng } = await deriveGeocodeByAddress(value.label);
                       newLocations[index].address = value.label;
+                      newLocations[index].coordinates = {lat, lng};
                       setPreferredLocations(newLocations);
                       onChange(newLocations);
                     },
@@ -93,16 +100,18 @@ export const PreferredLocationsControl: React.FunctionComponent<PreferredLocatio
 
         {preferredLocations.length < 4 && (
           <button
-            className="btn btn-xs my-4 w-32"
+            className="btn btn-xs my-4 w-40"
             type="button"
-            onClick={() =>
-              setPreferredLocations([
+            onClick={() => {
+              const locations = [
                 ...preferredLocations,
                 { title: "", address: "" },
-              ])
-            }
+              ];
+              setPreferredLocations(locations);
+              onChange(locations);
+            }}
           >
-            Neue Adresse
+            Weitere Adresse
           </button>
         )}
       </div>

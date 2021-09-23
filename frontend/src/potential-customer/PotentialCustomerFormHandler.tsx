@@ -15,21 +15,13 @@ import PotentialCustomerForm from "./PotentialCustomerForm";
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
-  const locationsWithCoords = [];
-  for (const location of values.preferredLocations) {
-    const { lat, lng } = await deriveGeocodeByAddress(location.address);
-    locationsWithCoords.push({
-      ...location,
-      coordinates: { lat, lng },
-    });
-  }
 
   return {
     name: values.name,
     email: values.email,
     preferredAmenities: values.preferredAmenities,
     routingProfiles: values.routingProfiles,
-    preferredLocations: locationsWithCoords,
+    preferredLocations: values.preferredLocations,
   };
 };
 

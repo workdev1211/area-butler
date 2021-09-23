@@ -19,6 +19,7 @@ import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { PreferredLocationsControl } from "potential-customer/PreferredLocationsControl";
 
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -246,7 +247,7 @@ const Start: FunctionComponent = () => {
                         }
                     />
                     <div className="collapse-title text-xl font-medium">
-                        2. Fortbewegungsmittel angeben
+                        2. Mobilität angeben
                         {!collapseTransportationOpen && <div className='float-right mr-20 text-base'>
                             <div className='flex gap-6'>
                                 {searchContextState.transportationParams.map((mean: TransportationParam) => {
@@ -262,6 +263,11 @@ const Start: FunctionComponent = () => {
                     <div className="collapse-content">
                         <div className="flex-col gap-6 mt-5">
                             <TransportationParams inputValues={searchContextState.transportationParams} onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: [...value]})}/>
+                            <h3 className="my-3">Wichtige Adressen</h3>
+                            <PreferredLocationsControl inputValues={searchContextState.preferredLocations}
+                            onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_PREFERRED_LOCATIONS, payload: [...value]})}
+                            >
+                            </PreferredLocationsControl>
                             <button type='button' className='btn btn-primary btn-sm' onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
