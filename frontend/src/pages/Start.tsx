@@ -268,7 +268,7 @@ const Start: FunctionComponent = () => {
                             onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_PREFERRED_LOCATIONS, payload: [...value]})}
                             >
                             </PreferredLocationsControl>
-                            <button type='button' className='btn btn-primary btn-sm' onClick={(e) => {
+                            <button type='button' className='btn btn-primary btn-sm mt-2' onClick={(e) => {
                                 e.preventDefault();
                                 e.stopPropagation();
                                 setCollapseTransportationOpen(false);
