@@ -6,8 +6,11 @@ import {SearchContext} from "../context/SearchContext";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { distanceInMeters } from "shared/shared.functions";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { RealEstateListingContext } from "context/RealEstateListingContext";
 
 const preferredLocationsTitle = 'Wichtige Adressen';
+const realEstateListingsTitle = 'Meine Objekte';
 
 export interface ResultEntity {
     name?: string;
@@ -45,6 +48,29 @@ const buildEntityDataFromPreferredLocations = (
     }));
 };
 
+const buildEntityDataFromRealEstateListings = (
+    centerCoordinates: ApiCoordinates,
+    realEstateListings: ApiRealEstateListing[]
+  ): ResultEntity[] => {
+    return realEstateListings
+      .filter((realEstateListing) => !!realEstateListing.coordinates)
+      .map((realEstateListing) => ({
+        id: parseInt(realEstateListing.name, 10),
+        name: `${realEstateListing.name} (${realEstateListing.address})`,
+        label: realEstateListingsTitle,
+        type: OsmName.property,
+        distanceInMeters: distanceInMeters(
+          centerCoordinates,
+          realEstateListing.coordinates!
+        ), // Calc distance
+        coordinates: realEstateListing.coordinates!,
+        address: { street: realEstateListing.address },
+        byFoot: true,
+        byBike: true,
+        byCar: true,
+      }));
+  };
+
 const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[] | null => {
     if (!locationSearchResult) {
         return null;
@@ -73,6 +99,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 const SearchResult: FunctionComponent = () => {
 
     const {searchContextState} = useContext(SearchContext);
+    const { realEstateListingState } = useContext(RealEstateListingContext);
 
     const routingKeys = Object.keys(searchContextState.searchResponse!.routingProfiles);
     const byFootAvailable = routingKeys.includes(MeansOfTransportation.WALK);
@@ -82,10 +109,17 @@ const SearchResult: FunctionComponent = () => {
     const [byFoot, setByFoot] = useState(byFootAvailable);
     const [byBike, setByBike] = useState(byBikeAvailable);
     const [byCar, setByCar] = useState(byCarAvailable);
+    const [myListings, setMyListings] = useState(false);
     const entities = buildEntityData(searchContextState.searchResponse!);
 
-    if(!!searchContextState.preferredLocations) {
-        entities?.push(...buildEntityDataFromPreferredLocations(searchContextState.searchResponse.centerOfInterest.coordinates, searchContextState.preferredLocations));
+    const centerCoordinates = searchContextState.searchResponse.centerOfInterest.coordinates;
+
+    if (!!searchContextState.preferredLocations) {
+        entities?.push(...buildEntityDataFromPreferredLocations(centerCoordinates, searchContextState.preferredLocations));
+    }
+
+    if (!!realEstateListingState.listings && myListings) {
+        entities?.push(...buildEntityDataFromRealEstateListings(centerCoordinates, realEstateListingState.listings));
     }
 
     const mapMeans = {
@@ -98,6 +132,7 @@ const SearchResult: FunctionComponent = () => {
             return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
         })
     }
+
     // eslint-disable-next-line no-sequences
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
     const [activeTab, setActiveTab] = useState(0);
@@ -105,8 +140,10 @@ const SearchResult: FunctionComponent = () => {
 
     groupedEntries = [
         ...groupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
-        ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle)
+        ...groupedEntries.filter(([label, _]) => label === realEstateListingsTitle),
+        ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
     ];
+
     return (
         <>
             <div className="flex gap-6 mt-10">
@@ -142,6 +179,17 @@ const SearchResult: FunctionComponent = () => {
                         }}
                     />
                     <span className="ml-2">Auto</span>
+                </label> }
+                { <label className="flex items-center">
+                    <input
+                        type="checkbox"
+                        className="checkbox checkbox-xs"
+                        checked={myListings}
+                        onChange={(e) => {
+                            setMyListings(e.target.checked);
+                        }}
+                    />
+                    <span className="ml-2">Meine Objekte</span>
                 </label> }
             </div>
             <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans} selectedCenter={searchContextState.selectedCenter!}/>

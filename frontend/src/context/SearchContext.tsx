@@ -7,6 +7,7 @@ import {
 } from "../../../shared/types/types";
 import {osmEntityTypes} from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface SearchContextState {
     placesLocation?: any;
@@ -15,6 +16,7 @@ export interface SearchContextState {
     transportationParams: TransportationParam[];
     localityOptions: OsmName[];
     searchResponse?: ApiSearchResponse;
+    realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
 }
 
@@ -62,7 +64,6 @@ const reducer: (
         }
         case SearchContextActions.SET_LOCATION: {
             return { ...state, location: {...action.payload }};
- 
         }
         case SearchContextActions.SET_SELECTED_CENTER: {
             return { ...state, selectedCenter: {...action.payload }};

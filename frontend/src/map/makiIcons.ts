@@ -17,6 +17,7 @@ import bus from '../assets/icons/bus.svg';
 import car from '../assets/icons/car.svg';
 import triangle from '../assets/icons/triangle.svg';
 import star from '../assets/icons/star.svg'
+import house from '../assets/icons/home.svg';
 
 export const osmNameToIcons = [
     {
@@ -86,7 +87,11 @@ export const osmNameToIcons = [
     {
         name: OsmName.favorite,
         icon: star
-    }
+    },
+    {
+        name: OsmName.property,
+        icon: house
+    },
 ]
 
 export const fallbackIcon = triangle;

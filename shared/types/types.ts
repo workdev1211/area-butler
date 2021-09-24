@@ -117,5 +117,6 @@ export enum OsmName {
   station = "station",
   bus_stop = "bus_stop",
   motorway_link = "motorway_link",
-  favorite = "favorite"
+  favorite = "favorite",
+  property = "property",
 }
