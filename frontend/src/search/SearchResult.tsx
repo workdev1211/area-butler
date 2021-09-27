@@ -1,13 +1,14 @@
-import React, {FunctionComponent, useContext, useState} from "react";
-import {ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName} from "../../../shared/types/types";
+import { RealEstateListingContext } from "context/RealEstateListingContext";
+import Example from "pdf-export/ExposeDownloadButton";
+import React, { FunctionComponent, useContext, useState } from "react";
+import { distanceInMeters } from "shared/shared.functions";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName } from "../../../shared/types/types";
+import { SearchContext } from "../context/SearchContext";
+import { fallbackIcon, osmNameToIcons } from "../map/makiIcons";
 import Map from "../map/Map";
 import ResultTable from "./ResultTable";
-import {SearchContext} from "../context/SearchContext";
-import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { distanceInMeters } from "shared/shared.functions";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { RealEstateListingContext } from "context/RealEstateListingContext";
 
 const preferredLocationsTitle = 'Wichtige Adressen';
 const realEstateListingsTitle = 'Meine Objekte';
@@ -146,6 +147,7 @@ const SearchResult: FunctionComponent = () => {
 
     return (
         <>
+            <Example groupedEntries={groupedEntries!} transportationParams={searchContextState.transportationParams} listingAddress={searchContextState.placesLocation.label}></Example>
             <div className="flex gap-6 mt-10">
                 { byFootAvailable && <label className="flex items-center cursor-pointer">
                     <input

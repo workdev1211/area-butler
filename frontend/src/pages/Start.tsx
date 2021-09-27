@@ -1,25 +1,25 @@
-import FormModal, {ModalConfig} from "components/FormModal";
-import {RealEstateListingActions, RealEstateListingContext} from "context/RealEstateListingContext";
+import FormModal, { ModalConfig } from "components/FormModal";
+import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import { RealEstateListingActions, RealEstateListingContext } from "context/RealEstateListingContext";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
-import React, {FunctionComponent, useContext, useEffect, useState} from "react";
+import { PreferredLocationsControl } from "potential-customer/PreferredLocationsControl";
+import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import RealEstateMenuList from "real-estate-listings/RealEstateListingMenuList";
-import {deriveGeocodeByAddress} from "shared/shared.functions";
-import {meansOfTransportations, osmEntityTypes, unitsOfTransportation} from "../../../shared/constants/constants";
-import {ApiRealEstateListing} from "../../../shared/types/real-estate";
-import {ApiSearch, ApiSearchResponse, OsmName, TransportationParam} from "../../../shared/types/types";
-import {useHttp} from "../hooks/http";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
+import { meansOfTransportations, osmEntityTypes, unitsOfTransportation } from "../../../shared/constants/constants";
+import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { ApiSearch, ApiSearchResponse, OsmName, TransportationParam } from "../../../shared/types/types";
+import { SearchContext, SearchContextActions } from "../context/SearchContext";
+import { useHttp } from "../hooks/http";
+import { fallbackIcon, osmNameToIcons } from "../map/makiIcons";
+import "../map/makiIcons.css";
 import LocalityOptions from "../search/Localitites";
+import LocationAutocomplete from "../search/LocationAutocomplete";
 import SearchResult from "../search/SearchResult";
 import TransportationParams from "../search/TransportationParams";
 import "./Start.css";
-import "../map/makiIcons.css";
-import LocationAutocomplete from "../search/LocationAutocomplete";
-import {SearchContext, SearchContextActions} from "../context/SearchContext";
-import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
-import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { PreferredLocationsControl } from "potential-customer/PreferredLocationsControl";
 
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -322,7 +322,7 @@ const Start: FunctionComponent = () => {
                         4. Ergebnisse
                     </div>
                     <div className="collapse-content">
-                        <div className='mt-5'>
+                        <div className='flex justify-between mt-5'>
                             {searchContextState.placesLocation && (
                                 <FormModal modalConfig={modalConfig}>
                                     <RealEstateListingFormHandler
