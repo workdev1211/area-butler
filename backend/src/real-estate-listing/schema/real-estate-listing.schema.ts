@@ -1,6 +1,6 @@
 import {
   ApiRealEstateCharacteristics,
-  ApiRealEstateCost
+  ApiRealEstateCost,
 } from '@area-butler-types/real-estate';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';

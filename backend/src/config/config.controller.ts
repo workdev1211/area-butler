@@ -15,7 +15,7 @@ export class ConfigController {
         clientId: audience,
       },
       googleApiKey,
-      mapBoxAccessToken
+      mapBoxAccessToken,
     };
   }
 }

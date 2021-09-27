@@ -4,7 +4,6 @@ import { RealEstateListingDocument } from '../schema/real-estate-listing.schema'
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
 ): ApiRealEstateListing => {
-  console.log();
   return {
     id: realEstateListing.id,
     name: realEstateListing.name,

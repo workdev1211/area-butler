@@ -37,7 +37,7 @@ class ConfigService {
     };
   }
 
-  public getMongoConnectionUri() : string {
+  public getMongoConnectionUri(): string {
     return this.getValue('MONGO_CONNECTION_URI');
   }
 

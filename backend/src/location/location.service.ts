@@ -9,14 +9,17 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import {Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {Model} from 'mongoose';
-import {GeocodingService} from 'src/client/geocoding/geocoding.service';
-import {IsochroneService} from 'src/client/isochrone/isochrone.service';
-import {OverpassService} from 'src/client/overpass/overpass.service';
-import {LocationSearch, LocationSearchDocument} from './schema/location-search.schema';
-import {calculateMinutesToMeters} from "../../../shared/constants/constants";
+import { Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { GeocodingService } from 'src/client/geocoding/geocoding.service';
+import { IsochroneService } from 'src/client/isochrone/isochrone.service';
+import { OverpassService } from 'src/client/overpass/overpass.service';
+import {
+  LocationSearch,
+  LocationSearchDocument,
+} from './schema/location-search.schema';
+import { calculateMinutesToMeters } from '../../../shared/constants/constants';
 
 @Injectable()
 export class LocationService {
@@ -24,28 +27,44 @@ export class LocationService {
     private geocodingService: GeocodingService,
     private overpassService: OverpassService,
     private isochroneService: IsochroneService,
-    @InjectModel(LocationSearch.name) private locationModel: Model<LocationSearchDocument>
+    @InjectModel(LocationSearch.name)
+    private locationModel: Model<LocationSearchDocument>,
   ) {}
 
   async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
     const coordinates = search.coordinates;
     const address = await this.geocodingService.reverse(search.coordinates);
     const preferredAmenities = search.preferredAmenities;
-  
+
     const routingProfiles = {};
 
     function deriveMeterEquivalent(routingProfile: TransportationParam) {
-      const {amount} = routingProfile;
+      const { amount } = routingProfile;
       if (routingProfile.unit === UnitsOfTransportation.METERS) {
-        return amount
+        return amount;
       }
       switch (routingProfile.type) {
         case MeansOfTransportation.BICYCLE:
-          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.BICYCLE)?.multiplicator;
+          return (
+            amount *
+            calculateMinutesToMeters.find(
+              mtm => mtm.mean === MeansOfTransportation.BICYCLE,
+            )?.multiplicator
+          );
         case MeansOfTransportation.CAR:
-          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.CAR)?.multiplicator;
+          return (
+            amount *
+            calculateMinutesToMeters.find(
+              mtm => mtm.mean === MeansOfTransportation.CAR,
+            )?.multiplicator
+          );
         case MeansOfTransportation.WALK:
-          return amount * calculateMinutesToMeters.find(mtm => mtm.mean === MeansOfTransportation.WALK)?.multiplicator;
+          return (
+            amount *
+            calculateMinutesToMeters.find(
+              mtm => mtm.mean === MeansOfTransportation.WALK,
+            )?.multiplicator
+          );
         default:
           return 0;
       }
@@ -67,13 +86,11 @@ export class LocationService {
 
       routingProfiles[routingProfile.type] = {
         locationsOfInterest,
-        isochrone
-      }
+        isochrone,
+      };
     }
 
-    
-
-    await new this.locationModel({locationSearch: search}).save();
+    await new this.locationModel({ locationSearch: search }).save();
 
     return {
       centerOfInterest: {
@@ -84,9 +101,12 @@ export class LocationService {
         },
         coordinates,
         distanceInMeters: 0,
-        address
+        address,
       },
-      routingProfiles: routingProfiles as Record<MeansOfTransportation, {locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone}>
+      routingProfiles: routingProfiles as Record<
+        MeansOfTransportation,
+        { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }
+      >,
     };
   }
 }

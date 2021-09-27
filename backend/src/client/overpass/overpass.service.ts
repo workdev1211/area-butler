@@ -1,6 +1,11 @@
-import {ApiAddress, ApiCoordinates, ApiOsmLocation, OsmName,} from '@area-butler-types/types';
-import {HttpService, Injectable} from '@nestjs/common';
-import {osmEntityTypes} from '../../../../shared/constants/constants';
+import {
+  ApiAddress,
+  ApiCoordinates,
+  ApiOsmLocation,
+  OsmName,
+} from '@area-butler-types/types';
+import { HttpService, Injectable } from '@nestjs/common';
+import { osmEntityTypes } from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 
 @Injectable()

@@ -8,18 +8,18 @@ import { configService } from 'src/config/config.service';
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy) {
   constructor() {
-    const {domain, audience} = configService.getAuthConfig();
+    const { domain, audience } = configService.getAuthConfig();
     super({
       secretOrKeyProvider: passportJwtSecret({
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
-        jwksUri: `https://${domain}/.well-known/jwks.json`
+        jwksUri: `https://${domain}/.well-known/jwks.json`,
       }),
 
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(), // 1
       audience: audience,
-      issuer: `https://${domain}/`
+      issuer: `https://${domain}/`,
     });
   }
 
