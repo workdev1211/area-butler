@@ -7,14 +7,15 @@ import { LocationService } from './location.service';
 
 @Controller('api/location')
 export class LocationController extends AuthenticatedController {
+  constructor(private locationService: LocationService) {
+    super();
+  }
 
-    constructor(private locationService: LocationService) {
-        super();
-    }
-
-    @Post('search')
-    async searchLocation(@InjectUser() user: UserDocument,  @Body() search: ApiSearch) : Promise<ApiSearchResponse> {
-        return this.locationService.searchLocation(search);
-    } 
-
+  @Post('search')
+  async searchLocation(
+    @InjectUser() user: UserDocument,
+    @Body() search: ApiSearch,
+  ): Promise<ApiSearchResponse> {
+    return this.locationService.searchLocation(search);
+  }
 }

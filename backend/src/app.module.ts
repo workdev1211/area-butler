@@ -11,9 +11,11 @@ import { UserModule } from './user/user.module';
 import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { FeedbackModule } from './feedback/feedback.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
+import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 
 @Module({
-  imports: [ClientModule, 
+  imports: [
+    ClientModule,
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'static'),
     }),
@@ -24,7 +26,9 @@ import { PotentialCustomerModule } from './potential-customer/potential-customer
     UserModule,
     RealEstateListingModule,
     FeedbackModule,
-    PotentialCustomerModule],
-    controllers: [ConfigController]
+    PotentialCustomerModule,
+    ZensusAtlasModule,
+  ],
+  controllers: [ConfigController],
 })
 export class AppModule {}

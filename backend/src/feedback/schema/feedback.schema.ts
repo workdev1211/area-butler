@@ -1,6 +1,6 @@
 import { FeedbackType } from '@area-butler-types/types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose'
+import { Document } from 'mongoose';
 
 export type FeedbackDocument = Feedback & Document;
 
@@ -17,7 +17,6 @@ export class Feedback {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
-
 }
 
 export const FeedbackSchema = SchemaFactory.createForClass(Feedback);

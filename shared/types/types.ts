@@ -75,6 +75,17 @@ export interface ApiCoordinates {
   lng: number;
 }
 
+export interface ApiGeometry {
+  type: string;
+  coordinates: any[];
+}
+
+export interface ApiGeojsonFeature {
+  type: string;
+  properties: object;
+  geometry: ApiGeometry
+}
+
 export interface TransportationParam {
   type: MeansOfTransportation;
   amount: number;

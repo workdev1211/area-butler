@@ -3,7 +3,7 @@ import { HttpService, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { configService } from 'src/config/config.service';
-import { User, UserDocument } from 'src/user/schema/user.schema';
+import { UserDocument } from 'src/user/schema/user.schema';
 import { Feedback, FeedbackDocument } from './schema/feedback.schema';
 
 @Injectable()
@@ -60,11 +60,13 @@ export class FeedbackService {
       ],
     };
 
-    return this.http.post(this.slackWebhookUrl, body, {
-      headers: {
-        'Content-type': 'application/json',
-      },
-    }).toPromise();
+    return this.http
+      .post(this.slackWebhookUrl, body, {
+        headers: {
+          'Content-type': 'application/json',
+        },
+      })
+      .toPromise();
   }
 
   private deriveType(type: FeedbackType) {

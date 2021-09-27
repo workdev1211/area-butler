@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  area-butler-db:
+    image: mongo:5.0.2
+    container_name: area-butler-db
+    restart: always
+    command: mongod --logpath /dev/null --oplogSize 128 --quiet
+    networks:
+      - main
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+
+networks:
+  main:
