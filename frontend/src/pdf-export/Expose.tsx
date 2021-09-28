@@ -6,6 +6,10 @@ import {
   meansOfTransportations,
   unitsOfTransportation,
 } from "../../../shared/constants/constants";
+import {
+  allFurnishing,
+  allRealEstateCostTypes,
+} from "../../../shared/constants/real-estate";
 import { TransportationParam } from "../../../shared/types/types";
 import AreaButlerLogo from "../assets/img/areabutler-logo.jpg";
 import EntityGridSummary from "./EntityGridSummary";
@@ -25,7 +29,7 @@ export const Expose = React.forwardRef(
     return (
       <div className="hidden print:block" ref={ref as any}>
         <PdfPage>
-          <div className="flex justify-center items-center flex-col mt-36">
+          <div className="flex justify-center items-center flex-col mt-32">
             <div className="bg-primary w-96 h-24">
               <img src={AreaButlerLogo} alt="Logo" />
             </div>
@@ -44,7 +48,7 @@ export const Expose = React.forwardRef(
             <p className="mx-10 my-5">
               Machen Sie sich auf den nächsten Seite ein eigenes Bild
             </p>
-            <div className="flex flex-col gap-6 m-10">
+            <div className="flex flex-col gap-2 m-10">
               {!props.realEstateListing && (
                 <>
                   <h3 className="text-xl w-56 font-bold">Ihr Umfeld</h3>
@@ -57,6 +61,36 @@ export const Expose = React.forwardRef(
                   <div className="font-bold">
                     {props.realEstateListing.address}
                   </div>
+
+                  {!!props.realEstateListing?.costStructure?.type &&
+                    !!props.realEstateListing?.costStructure?.price && (
+                      <div>
+                        <strong>Kosten:</strong>
+                        {' '}
+                        {props.realEstateListing.costStructure.price.amount} € {' '}
+                        ({
+                          allRealEstateCostTypes.find(
+                            (t) =>
+                              t.type ===
+                              props.realEstateListing.costStructure?.type
+                          )?.label
+                        })
+                      </div>
+                    )}
+                  {props.realEstateListing.characteristics?.furnishing && (
+                    <div>
+                      <strong>Austattung:</strong>
+                      {' '}
+                      {allFurnishing
+                        .filter((f) =>
+                          props.realEstateListing.characteristics?.furnishing.includes(
+                            f.type
+                          )
+                        )
+                        .map((f) => f.label)
+                        .join(", ")}
+                    </div>
+                  )}
                 </>
               )}
             </div>

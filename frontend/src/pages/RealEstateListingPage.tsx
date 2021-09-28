@@ -64,7 +64,6 @@ export const RealEstateListingPage = () => {
                     : ""}
                 </td>
                 <td>
-                  {" "}
                   {listing.characteristics?.furnishing &&
                     allFurnishing
                       .filter((f) =>
