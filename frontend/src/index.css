@@ -1,3 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+html {
+    --color-black: black;
+    --color-white: white;
+    --color-anthrazite: #3d3641;
+    --color-kudiba-red: #cd1f45;
+    --color-kudiba-red-muted: #aa2158;
+}
