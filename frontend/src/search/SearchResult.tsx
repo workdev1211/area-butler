@@ -1,5 +1,5 @@
 import { RealEstateListingContext } from "context/RealEstateListingContext";
-import Example from "pdf-export/ExposeDownloadButton";
+import ExposeDownloadButton from "pdf-export/ExposeDownloadButton";
 import React, { FunctionComponent, useContext, useState } from "react";
 import { distanceInMeters } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -147,12 +147,12 @@ const SearchResult: FunctionComponent = () => {
 
     return (
       <>
-        <Example
+        <ExposeDownloadButton
           groupedEntries={groupedEntries!}
           transportationParams={searchContextState.transportationParams}
           listingAddress={searchContextState.placesLocation.label}
           realEstateListing={searchContextState.realEstateListing}
-        ></Example>
+        ></ExposeDownloadButton>
         <div className="flex gap-6 mt-10">
           {byFootAvailable && (
             <label className="flex items-center cursor-pointer">

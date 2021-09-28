@@ -23,7 +23,7 @@ export const Expose = React.forwardRef(
     const transportationParams = props.transportationParams;
 
     return (
-      <div className="print:block" ref={ref as any}>
+      <div className="hidden print:block" ref={ref as any}>
         <PdfPage>
           <div className="flex justify-center items-center flex-col mt-36">
             <div className="bg-primary w-96 h-24">

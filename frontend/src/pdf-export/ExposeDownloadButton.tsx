@@ -11,7 +11,7 @@ export interface ExposeDownloadButtonProps {
   realEstateListing: ApiRealEstateListing;
 }
 
-export const Example: React.FunctionComponent<ExposeDownloadButtonProps> = ({
+export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonProps> = ({
   groupedEntries,
   transportationParams,
   listingAddress,
@@ -40,4 +40,4 @@ export const Example: React.FunctionComponent<ExposeDownloadButtonProps> = ({
   );
 };
 
-export default Example;
+export default ExposeDownloadButton;
