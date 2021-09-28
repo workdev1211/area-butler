@@ -12,6 +12,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
+    realEstateListing?: ApiRealEstateListing;
     selectedCenter?: ApiCoordinates;
     transportationParams: TransportationParam[];
     localityOptions: OsmName[];
@@ -45,6 +46,7 @@ export const initialState: SearchContextState = {
 };
 
 export enum SearchContextActions {
+    SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
     SET_SELECTED_CENTER = 'SET_SELECTED_CENTER',
@@ -59,6 +61,9 @@ const reducer: (
     action: { type: SearchContextActions; payload?: any }
 ) => SearchContextState = (state, action) => {
     switch (action.type) {
+        case SearchContextActions.SET_REAL_ESTATE_LISTING: {
+            return {...state, realEstateListing: {...action.payload} };
+        }
         case SearchContextActions.SET_PLACES_LOCATION: {
             return {...state, placesLocation: {...action.payload} };
         }

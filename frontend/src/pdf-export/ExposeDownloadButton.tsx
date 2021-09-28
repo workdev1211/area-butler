@@ -1,5 +1,6 @@
 import React, { useRef } from "react";
 import ReactToPrint from "react-to-print";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { TransportationParam } from "../../../shared/types/types";
 import Expose from "./Expose";
 
@@ -7,12 +8,14 @@ export interface ExposeDownloadButtonProps {
   groupedEntries: any;
   transportationParams: TransportationParam[];
   listingAddress: string;
+  realEstateListing: ApiRealEstateListing;
 }
 
 export const Example: React.FunctionComponent<ExposeDownloadButtonProps> = ({
   groupedEntries,
   transportationParams,
-  listingAddress
+  listingAddress,
+  realEstateListing
 }) => {
   const componentRef = useRef();
   return (
@@ -31,6 +34,7 @@ export const Example: React.FunctionComponent<ExposeDownloadButtonProps> = ({
         groupedEntries={groupedEntries}
         transportationParams={transportationParams}
         listingAddress={listingAddress}
+        realEstateListing={realEstateListing}
       />
     </div>
   );

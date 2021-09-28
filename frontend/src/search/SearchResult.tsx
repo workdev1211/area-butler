@@ -146,81 +146,115 @@ const SearchResult: FunctionComponent = () => {
     ];
 
     return (
-        <>
-            <Example groupedEntries={groupedEntries!} transportationParams={searchContextState.transportationParams} listingAddress={searchContextState.placesLocation.label}></Example>
-            <div className="flex gap-6 mt-10">
-                { byFootAvailable && <label className="flex items-center cursor-pointer">
-                    <input
-                        type="checkbox"
-                        className="checkbox checkbox-xs checkbox-primary"
-                        checked={byFoot}
-                        onChange={(e) => {
-                            setByFoot(e.target.checked);
-                        }}
-                    />
-                    <span className="ml-2">zu Fuß</span>
-                </label> }
-                { byBikeAvailable && <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        checked={byBike}
-                        className="checkbox checkbox-xs checkbox-accent"
-                        onChange={(e) => {
-                            setByBike(e.target.checked);
-                        }}
-                    />
-                    <span className="ml-2">Fahrrad</span>
-                </label> }
-                { byCarAvailable && <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        className="checkbox checkbox-xs"
-                        checked={byCar}
-                        onChange={(e) => {
-                            setByCar(e.target.checked);
-                        }}
-                    />
-                    <span className="ml-2">Auto</span>
-                </label> }
-                { <label className="flex items-center">
-                    <input
-                        type="checkbox"
-                        className="checkbox checkbox-xs"
-                        checked={myListings}
-                        onChange={(e) => {
-                            setMyListings(e.target.checked);
-                        }}
-                    />
-                    <span className="ml-2">Meine Objekte</span>
-                </label> }
-            </div>
-            <Map searchResponse={searchContextState.searchResponse!} entities={filterEntities()} means={mapMeans} selectedCenter={searchContextState.selectedCenter!}/>
-            <div className="flex-col gap-6 mt-5">
-                <div className="tabs">
-                {groupedEntries.map(([label, data], index) => {
-                    const type = data[0].type;
-                    const classes = (index === activeTab) ? 'tab tab-lifted tab-active' : 'tab tab-lifted';
-                    return (
-                            <button type="button" onClick={() => setActiveTab(index)} className={classes} key={'tab-' + label}>
-                                <img alt="icon" style={{marginRight: '4px'}} src={osmNameToIcons.find(entry => entry.name === type)?.icon || fallbackIcon} className={type}/>
-                                {label} ({data.slice(0, 10).length})
-                            </button>
-                        );
-                })}
-                </div>
-                {groupedEntries.map(([label, data], index) => {
-                    if (index === activeTab) {
-                        return (
-                            <div className="mt-5" key={'tab-content-' + label}>
-                                <ResultTable title={label} data={data} />
-                            </div>
-                        );
+      <>
+        <Example
+          groupedEntries={groupedEntries!}
+          transportationParams={searchContextState.transportationParams}
+          listingAddress={searchContextState.placesLocation.label}
+          realEstateListing={searchContextState.realEstateListing}
+        ></Example>
+        <div className="flex gap-6 mt-10">
+          {byFootAvailable && (
+            <label className="flex items-center cursor-pointer">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-xs checkbox-primary"
+                checked={byFoot}
+                onChange={(e) => {
+                  setByFoot(e.target.checked);
+                }}
+              />
+              <span className="ml-2">zu Fuß</span>
+            </label>
+          )}
+          {byBikeAvailable && (
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                checked={byBike}
+                className="checkbox checkbox-xs checkbox-accent"
+                onChange={(e) => {
+                  setByBike(e.target.checked);
+                }}
+              />
+              <span className="ml-2">Fahrrad</span>
+            </label>
+          )}
+          {byCarAvailable && (
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-xs"
+                checked={byCar}
+                onChange={(e) => {
+                  setByCar(e.target.checked);
+                }}
+              />
+              <span className="ml-2">Auto</span>
+            </label>
+          )}
+          {
+            <label className="flex items-center">
+              <input
+                type="checkbox"
+                className="checkbox checkbox-xs"
+                checked={myListings}
+                onChange={(e) => {
+                  setMyListings(e.target.checked);
+                }}
+              />
+              <span className="ml-2">Meine Objekte</span>
+            </label>
+          }
+        </div>
+        <Map
+          searchResponse={searchContextState.searchResponse!}
+          entities={filterEntities()}
+          means={mapMeans}
+          selectedCenter={searchContextState.selectedCenter!}
+        />
+        <div className="flex-col gap-6 mt-5">
+          <div className="tabs">
+            {groupedEntries.map(([label, data], index) => {
+              const type = data[0].type;
+              const classes =
+                index === activeTab
+                  ? "tab tab-lifted tab-active"
+                  : "tab tab-lifted";
+              return (
+                <button
+                  type="button"
+                  onClick={() => setActiveTab(index)}
+                  className={classes}
+                  key={"tab-" + label}
+                >
+                  <img
+                    alt="icon"
+                    style={{ marginRight: "4px" }}
+                    src={
+                      osmNameToIcons.find((entry) => entry.name === type)
+                        ?.icon || fallbackIcon
                     }
-                    return (<div key={'tab-content-' + label}></div>);
-                })}
-            </div>
-        </>
-    )
+                    className={type}
+                  />
+                  {label} ({data.slice(0, 10).length})
+                </button>
+              );
+            })}
+          </div>
+          {groupedEntries.map(([label, data], index) => {
+            if (index === activeTab) {
+              return (
+                <div className="mt-5" key={"tab-content-" + label}>
+                  <ResultTable title={label} data={data} />
+                </div>
+              );
+            }
+            return <div key={"tab-content-" + label}></div>;
+          })}
+        </div>
+      </>
+    );
 }
 
 export default SearchResult;

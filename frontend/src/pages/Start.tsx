@@ -160,6 +160,10 @@ const Start: FunctionComponent = () => {
         const placesLocation = {label: listing.address, value: {place_id: null, description: listing.address}};
         setPlacesValues(placesLocation);
         searchContextDispatch({
+            type: SearchContextActions.SET_REAL_ESTATE_LISTING,
+            payload: listing
+        });
+        searchContextDispatch({
             type: SearchContextActions.SET_PLACES_LOCATION,
             payload: placesLocation
         })
