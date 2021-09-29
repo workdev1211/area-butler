@@ -148,6 +148,8 @@ const SearchResult: FunctionComponent = () => {
     return (
       <>
         <ExposeDownloadButton
+          entities={filterEntities()}
+          searchResponse={searchContextState.searchResponse!}
           groupedEntries={groupedEntries!}
           transportationParams={searchContextState.transportationParams}
           listingAddress={searchContextState.placesLocation.label}

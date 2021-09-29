@@ -17,6 +17,7 @@ export interface MapProps {
     searchResponse: ApiSearchResponse;
     entities: ResultEntity[] | null;
     selectedCenter?: ApiCoordinates;
+    leafletMapId?: string
     means: {
         byFoot: boolean;
         byBike: boolean;
@@ -36,7 +37,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual;
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter, leafletMapId='mymap'}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
@@ -106,7 +107,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
             currentMap.off();
             currentMap.remove();
         }
-        const localMap = L.map('mymap', {
+        const localMap = L.map(leafletMapId, {
             scrollWheelZoom: false,
             preferCanvas: true,
             renderer: new L.Canvas(),
@@ -157,7 +158,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
 
 
     return (
-        <div className="leaflet-container" id="mymap">
+        <div className="leaflet-container" id={leafletMapId}>
         </div>
     )
 }, areMapPropsEqual);

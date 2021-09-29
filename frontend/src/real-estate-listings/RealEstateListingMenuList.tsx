@@ -25,8 +25,9 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
         <ul className="p-2 shadow menu dropdown-content bg-base-100 rounded-box">
           {realEstateListingState.listings.map(
             (realEstateListing: ApiRealEstateListing) => (
-              <li key={realEstateListing.id}>
+              <li key={'real-estate-listing-item-' + realEstateListing.id}>
                 <a
+                  key={'real-estate-listing-item-a-' + realEstateListing.id}
                   onClick={(e) => {
                     fillAdressFromListing(realEstateListing);
                     setShowMenu(false);

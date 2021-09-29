@@ -29,10 +29,11 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
             className="p-2 shadow menu dropdown-content bg-base-100 rounded-box"
           >
             {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
-              <li key={customer.id}>
+              <li key={'customer-drop-down-' + customer.id}>
                 <a
                   onClick={(e) => {fillDataFromCustomer(customer); setShowMenu(false)}}
                   className="whitespace-nowrap w-full"
+                  key={'customer-drop-down-a-' + customer.id}
                 >
                   <div className="flex flex-col items-start">
                     <span>{customer.name}</span>
@@ -40,7 +41,7 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
                       {customer.email}
                       
                       {(customer.routingProfiles ?? []).map((routingProfile) => (
-                    <>
+                    <span key={'customer-drop-down-' + customer.id + "-routing-profile-" + routingProfile.type}>
                       <br />
                       <span>
                         {
@@ -57,7 +58,7 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
                         )
                       </span>
                       <br />
-                    </>
+                    </span>
                   ))}
                     </span>
                   </div>
