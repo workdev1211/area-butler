@@ -20,10 +20,16 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
   }) => {
     const componentRef = useRef();
 
-    const documentTitle = !!realEstateListing
-      ? `${!!realEstateListing?.name ? realEstateListing.name.replace(/\s/g, "") : 'MeinStandort'}_AreaButler`
-      : `${listingAddress.replace(/\s/g, "").split(",")[0]}_AreaButler`;
+    let documentTitle = 'MeinStandort_AreaButler';
 
+    if (!!realEstateListing?.name) {
+      documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
+    }
+
+    if (!!listingAddress) {
+      documentTitle = `${listingAddress.replace(/\s/g, "").split(",")[0]}_AreaButler`;
+    }
+    
     return (
       <div>
         <ReactToPrint
