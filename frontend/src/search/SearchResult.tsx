@@ -1,5 +1,6 @@
 import { RealEstateListingContext } from "context/RealEstateListingContext";
 import ExposeDownloadButton from "pdf-export/ExposeDownloadButton";
+import { ExposeModal } from "pdf-export/ExposeModal";
 import React, { FunctionComponent, useContext, useState } from "react";
 import { distanceInMeters } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -133,11 +134,12 @@ const SearchResult: FunctionComponent = () => {
             return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
         })
     }
+    const filteredEntites = filterEntities();
 
     // eslint-disable-next-line no-sequences
     const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
     const [activeTab, setActiveTab] = useState(0);
-    let groupedEntries = Object.entries(groupBy(filterEntities(), (item: ResultEntity) => item.label));
+    let groupedEntries = Object.entries(groupBy(filteredEntites, (item: ResultEntity) => item.label));
 
     groupedEntries = [
         ...groupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
@@ -145,16 +147,13 @@ const SearchResult: FunctionComponent = () => {
         ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
     ];
 
+
     return (
       <>
-        <ExposeDownloadButton
-          entities={filterEntities()}
-          searchResponse={searchContextState.searchResponse!}
+        <ExposeModal
+          entities={filteredEntites}
           groupedEntries={groupedEntries!}
-          transportationParams={searchContextState.transportationParams}
-          listingAddress={searchContextState.placesLocation.label}
-          realEstateListing={searchContextState.realEstateListing}
-        ></ExposeDownloadButton>
+        ></ExposeModal>
         <div className="flex gap-6 mt-10">
           {byFootAvailable && (
             <label className="flex items-center cursor-pointer">
@@ -211,9 +210,11 @@ const SearchResult: FunctionComponent = () => {
         </div>
         <Map
           searchResponse={searchContextState.searchResponse!}
-          entities={filterEntities()}
+          entities={filteredEntites}
           means={mapMeans}
           selectedCenter={searchContextState.selectedCenter!}
+          selectedZoomLevel={searchContextState.selectedZoomLevel!}
+          printingActive={searchContextState.printingActive}
         />
         <div className="flex-col gap-6 mt-5">
           <div className="tabs">

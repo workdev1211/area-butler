@@ -9,16 +9,23 @@ import {osmEntityTypes} from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
+export interface MapClipping {
+    zoomLevel: number;
+    mapClippingDataUrl: string;
+}
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
     realEstateListing?: ApiRealEstateListing;
     selectedCenter?: ApiCoordinates;
+    selectedZoomLevel?: number;
+    printingActive?: boolean;
     transportationParams: TransportationParam[];
     localityOptions: OsmName[];
     searchResponse?: ApiSearchResponse;
     realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
+    mapClippings?: MapClipping[];
 }
 
 export const initialState: SearchContextState = {
@@ -39,6 +46,8 @@ export const initialState: SearchContextState = {
             unit: UnitsOfTransportation.MINUTES,
         },
     ],
+    printingActive: false,
+    mapClippings: [],
     localityOptions: osmEntityTypes.filter(entity =>
         [
             OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
@@ -50,10 +59,14 @@ export enum SearchContextActions {
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
     SET_SELECTED_CENTER = 'SET_SELECTED_CENTER',
+    SET_SELECTED_ZOOM_LEVEL = 'SET_SELECTED_ZOOM_LEVEL',
+    SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
     SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
+    ADD_MAP_CLIPPING =  'ADD_MAP_CLIPPING',
+    CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS'
 }
 
 const reducer: (
@@ -73,6 +86,13 @@ const reducer: (
         case SearchContextActions.SET_SELECTED_CENTER: {
             return { ...state, selectedCenter: {...action.payload }};
         }
+        case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
+            console.log(action.payload);
+            return { ...state, selectedZoomLevel: action.payload};
+        }
+        case SearchContextActions.SET_PRINTING_ACTIVE: {
+            return { ...state, printingActive: action.payload};
+        }
         case SearchContextActions.SET_PREFERRED_LOCATIONS: {
             return { ...state, preferredLocations: [...action.payload ]};
         }
@@ -84,6 +104,14 @@ const reducer: (
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
             return { ...state, searchResponse: {...action.payload}}
+        }
+        case SearchContextActions.ADD_MAP_CLIPPING: {
+            const newMapClippings = [...(state.mapClippings || [])];
+            newMapClippings.push(action.payload);
+            return { ...state, mapClippings: newMapClippings};
+        }
+        case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
+            return { ...state, mapClippings: []};
         }
         default:
             return state;

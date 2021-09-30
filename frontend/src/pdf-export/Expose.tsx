@@ -1,3 +1,4 @@
+import { MapClipping } from "context/SearchContext";
 import { fallbackIcon, osmNameToIcons } from "map/makiIcons";
 import Map from "map/Map";
 import React from "react";
@@ -30,6 +31,7 @@ export interface ExposeProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
+  mapClippings: MapClipping[];
 }
 
 export const Expose = React.forwardRef((props: ExposeProps, ref) => {
@@ -43,6 +45,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
   const activePrinting = props.activePrinting;
   const entites = props.entities;
   const searchResponse = props.searchResponse;
+  const mapClippings = props.mapClippings;
   const routingKeys = Object.keys(searchResponse!.routingProfiles);
 
   const mapMeans = {
@@ -199,7 +202,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
           </PdfPage>
           <PdfPage>
             <h1 className="m-10 text-xl font-bold">Kartenausschnitte</h1>
-            <MapClippings></MapClippings>
+            <MapClippings mapClippings={mapClippings}></MapClippings>
           </PdfPage>
           {groupedEntries.map(([label, data]: any, index: number) => {
             return (

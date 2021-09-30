@@ -12,12 +12,16 @@ import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../..
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
+import html2canvas from 'html2canvas';
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     entities: ResultEntity[] | null;
     selectedCenter?: ApiCoordinates;
-    leafletMapId?: string
+    selectedZoomLevel?: number;
+    leafletMapId?: string;
+    printingActive?: boolean;
     means: {
         byFoot: boolean;
         byBike: boolean;
@@ -34,16 +38,19 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
     const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual;
+    const selectedZoomLevelEqual = prevProps.selectedZoomLevel === nextProps.selectedZoomLevel;
+    const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
+    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual;
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter, leafletMapId='mymap'}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter, printingActive, selectedZoomLevel, leafletMapId='mymap'}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
-
+    const {searchContextDispatch} = useContext(SearchContext);
 
     useEffect(() => {
+
         const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
         const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
         const initialPosition: L.LatLngExpression = [lat, lng];
@@ -113,10 +120,11 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
             renderer: new L.Canvas(),
             tap: false,
             maxZoom: 18
-        }).setView(selectedCenter || initialPosition, zoom);
+        }).setView(selectedCenter || initialPosition, selectedZoomLevel || zoom);
         localMap.addEventListener("zoom", (value) => {
            zoom = value.target._zoom;
-            drawAmenityMarkers(value.target._zoom);
+           searchContextDispatch({type: SearchContextActions.SET_SELECTED_ZOOM_LEVEL, payload: zoom})
+           drawAmenityMarkers(value.target._zoom);
         });
         L.tileLayer(url, {
                 attribution,
@@ -153,7 +161,26 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
 
         currentMap = localMap;
         drawAmenityMarkers(zoom);
-    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng]);
+
+        if (printingActive) {
+          setTimeout(() => {
+            html2canvas(document.querySelector("#mymap")!, {
+              allowTaint: true,
+              useCORS: true,
+            }).then((canvas) => {
+              const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+              searchContextDispatch({
+                type: SearchContextActions.ADD_MAP_CLIPPING,
+                payload: {
+                  zoomLevel: selectedZoomLevel || zoom,
+                  mapClippingDataUrl,
+                },
+              });
+            });
+          }, 600);
+        }
+
+    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, selectedZoomLevel]);
 
 
 

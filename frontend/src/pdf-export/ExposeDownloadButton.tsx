@@ -5,6 +5,7 @@ import { ApiSearchResponse, TransportationParam } from "../../../shared/types/ty
 import Expose from "./Expose";
 import html2canvas from 'html2canvas';
 import { ResultEntity } from "search/SearchResult";
+import { MapClipping } from "context/SearchContext";
 
 export interface ExposeDownloadButtonProps {
   entities: ResultEntity[];
@@ -13,6 +14,9 @@ export interface ExposeDownloadButtonProps {
   transportationParams: TransportationParam[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
+  downloadButtonDisabled: boolean;
+  mapClippings: MapClipping[];
+  onAfterPrint: () => void;
 }
 
 export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonProps> =
@@ -22,7 +26,9 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
     listingAddress,
     realEstateListing,
     entities,
-    searchResponse
+    searchResponse,
+    downloadButtonDisabled,
+    mapClippings
   }) => {
     const componentRef = useRef();
 
@@ -37,24 +43,16 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
     if (!!listingAddress) {
       documentTitle = `${listingAddress.replace(/\s/g, "").split(",")[0]}_AreaButler`;
     }
-
-    const createMapClipping = async (zoom: number) => {
-      const canvas = await html2canvas(document.querySelector("#mymap")!, {
-        allowTaint: true,
-        useCORS: true,
-      });
-      document.querySelector('#mymap')!.appendChild(canvas);
-    };
     
     return (
       <div>
         <ReactToPrint
           documentTitle={documentTitle}
-          onBeforeGetContent={async () => {setActivePrinting(true); await createMapClipping(12);}}
+          onBeforeGetContent={async () => {setActivePrinting(true);}}
           onAfterPrint={async () => setActivePrinting(false)}
           trigger={() => (
-            <button className="btn btn-sm">
-              Umgebungsanalyse exportieren
+            <button className="btn btn-sm" disabled={downloadButtonDisabled}>
+              Exportieren
             </button>
           )}
           content={() => componentRef.current!}
@@ -68,6 +66,7 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
           transportationParams={transportationParams}
           listingAddress={listingAddress}
           realEstateListing={realEstateListing}
+          mapClippings={mapClippings}
         />
       </div>
     );
