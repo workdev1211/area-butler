@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    ApiCoordinates, ApiSearchResponse,
+    ApiCoordinates, ApiGeometry, ApiSearchResponse,
     MeansOfTransportation, OsmName,
     TransportationParam,
     UnitsOfTransportation
@@ -19,6 +19,7 @@ export interface SearchContextState {
     searchResponse?: ApiSearchResponse;
     realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
+    zensusData?: ApiGeometry[];
 }
 
 export const initialState: SearchContextState = {
@@ -54,6 +55,7 @@ export enum SearchContextActions {
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
+    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
 }
 
 const reducer: (
