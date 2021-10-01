@@ -20,9 +20,11 @@ import LocationAutocomplete from "../search/LocationAutocomplete";
 import SearchResult from "../search/SearchResult";
 import TransportationParams from "../search/TransportationParams";
 import "./Start.css";
+import {useCensusData} from "../hooks/censusdata";
 
 const Start: FunctionComponent = () => {
     const {get, post} = useHttp();
+    const {fetchNearData } = useCensusData();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const [placesValue, setPlacesValues] = useState<{label:string, value: any} | null>(null);
 
@@ -95,6 +97,11 @@ const Start: FunctionComponent = () => {
             searchContextDispatch({
                 type: SearchContextActions.SET_SEARCH_RESPONSE,
                 payload: result.data
+            })
+            const zensus = await fetchNearData(searchContextState.location)
+            searchContextDispatch({
+                type: SearchContextActions.SET_ZENSUS_DATA,
+                payload: zensus
             })
             setCollapseLocalitiesOpen(false);
         } catch (error) {
@@ -319,7 +326,7 @@ const Start: FunctionComponent = () => {
             <div className="flex gap-6 mt-5">
                             <SearchButton/>
             </div>
-            {searchContextState.searchResponse && (
+            {searchContextState.searchResponse && searchContextState.censusData && (
                 <div className={collapseBaseClasses + " collapse-open"}>
                     <input type="checkbox"/>
                     <div className="collapse-title text-xl font-medium">

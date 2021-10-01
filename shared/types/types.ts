@@ -81,7 +81,7 @@ export interface ApiGeometry {
 }
 
 export interface ApiGeojsonFeature {
-  type: string;
+  type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
   properties: object;
   geometry: ApiGeometry
 }
