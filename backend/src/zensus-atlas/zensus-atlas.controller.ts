@@ -21,10 +21,10 @@ interface ZensusDataGeojson {
     properties: object;
   };
   features: {
-    type: string;
+    type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
     properties: object;
     geometry: {
-      type: string;
+      type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
       coordinates: number[][][];
     };
   }[];

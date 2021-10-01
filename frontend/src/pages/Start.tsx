@@ -101,7 +101,7 @@ const Start: FunctionComponent = () => {
             const zensus = await fetchNearData(searchContextState.location)
             searchContextDispatch({
                 type: SearchContextActions.SET_ZENSUS_DATA,
-                payload: zensus.data
+                payload: zensus
             })
             setCollapseLocalitiesOpen(false);
         } catch (error) {
@@ -326,7 +326,7 @@ const Start: FunctionComponent = () => {
             <div className="flex gap-6 mt-5">
                             <SearchButton/>
             </div>
-            {searchContextState.searchResponse && (
+            {searchContextState.searchResponse && searchContextState.censusData && (
                 <div className={collapseBaseClasses + " collapse-open"}>
                     <input type="checkbox"/>
                     <div className="collapse-title text-xl font-medium">

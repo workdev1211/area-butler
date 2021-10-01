@@ -19,7 +19,7 @@ export interface SearchContextState {
     searchResponse?: ApiSearchResponse;
     realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
-    zensusData?: ApiGeometry[];
+    censusData?: ApiGeometry[];
 }
 
 export const initialState: SearchContextState = {
@@ -86,6 +86,9 @@ const reducer: (
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
             return { ...state, searchResponse: {...action.payload}}
+        }
+        case SearchContextActions.SET_ZENSUS_DATA: {
+            return { ...state, censusData: [...action.payload]}
         }
         default:
             return state;

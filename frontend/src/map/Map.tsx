@@ -8,13 +8,14 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
-import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {ApiCoordinates, ApiGeojsonFeature, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
+    censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
     selectedCenter?: ApiCoordinates;
     means: {
@@ -33,14 +34,13 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
     const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual;
+    const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
+    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && censusDataEqual;
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter}) => {
+const Map = React.memo<MapProps>(({searchResponse, censusData,entities, means, selectedCenter}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-
     const {mapBoxAccessToken} = useContext(ConfigContext);
-
 
     useEffect(() => {
         const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
@@ -142,6 +142,14 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
                 color: 'gray'
             }).addTo(localMap);
         }
+        if (censusData?.length) {
+
+            censusData.forEach((c: any) => {
+                const propertyTable = (p: {label: string, value: string, unit: string}) => `<tr><td>${p.label}</td><td>${p.value} ${p.unit}</td></tr>`;
+                const table = `<table><tbody>${c.properties.map(propertyTable).join("")}</tbody></table>`;
+                L.geoJSON(c).addTo(localMap).bindTooltip(table);
+            })
+        }
         const positionIcon = L.Icon.extend({options: {
             iconUrl: leafletIcon,
             shadowUrl: leafletShadow
@@ -152,7 +160,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
 
         currentMap = localMap;
         drawAmenityMarkers(zoom);
-    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng]);
+    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, censusData]);
 
 
 
