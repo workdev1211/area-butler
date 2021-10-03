@@ -2,6 +2,7 @@ import FormModal, { ModalConfig } from "components/FormModal";
 import { RealEstateListingActions, RealEstateListingContext } from "context/RealEstateListingContext";
 import { useHttp } from "hooks/http";
 import React, { useEffect } from "react";
+import { RealEstateListingFormDeleteHandler } from "real-estate-listings/RealEstateListingDeleteHandler";
 import RealEstateListingFormHandler from "real-estate-listings/RealEstateListingFormHandler";
 import {
   allFurnishing, allRealEstateCostTypes
@@ -31,6 +32,12 @@ export const RealEstateListingPage = () => {
   const editRealEstateListingModalConfig: ModalConfig = {
     modalTitle: "Objekt bearbeiten",
     buttonTitle: "Bearbeiten",
+    buttonStyle: "btn btn-xs",
+  };
+
+  const deleteRealEstateListingModalConfig: ModalConfig = {
+    modalTitle: "Objekt löschen",
+    buttonTitle: "Löschen",
     buttonStyle: "btn btn-xs",
   };
 
@@ -72,11 +79,15 @@ export const RealEstateListingPage = () => {
                       .map((f) => f.label)
                       .join(", ")}
                 </td>
-                <td>
+                <td className="flex gap-2">
                   <FormModal modalConfig={editRealEstateListingModalConfig}>
                     <RealEstateListingFormHandler
                       realEstateListing={listing}
                     ></RealEstateListingFormHandler>
+                  </FormModal>
+                  <FormModal modalConfig={deleteRealEstateListingModalConfig}>
+                    <RealEstateListingFormDeleteHandler realEstateListing={listing}>
+                    </RealEstateListingFormDeleteHandler>
                   </FormModal>
                 </td>
               </tr>

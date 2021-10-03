@@ -12,6 +12,7 @@ export const initialState: RealEstateListingState = {
 export enum RealEstateListingActions {
   SET_REAL_ESTATE_LISTINGS = "SET_REAL_ESTATE_LISTINGS",
   PUT_REAL_ESTATE_LISTING = "PUT_REAL_ESTATE_LISTING",
+  DELETE_REAL_ESTATE_LISTING = "DELETE_REAL_ESTATE_LISTING",
 }
 
 const reducer: (
@@ -20,18 +21,23 @@ const reducer: (
 ) => RealEstateListingState = (state, action) => {
   switch (action.type) {
     case RealEstateListingActions.SET_REAL_ESTATE_LISTINGS: {
-      return {...state, listings: action.payload};
+      return { ...state, listings: action.payload };
     }
     case RealEstateListingActions.PUT_REAL_ESTATE_LISTING: {
-        const listing = action.payload as ApiRealEstateListing;
-        const listings = [...state.listings];
-        const listingIndex = listings.map((l) => l.id).indexOf(listing.id);
-        if (listingIndex !== -1) {
-          listings[listingIndex] = listing;
-        } else {
-          listings.push(listing);
-        }
-      return {...state, listings};
+      const listing = action.payload as ApiRealEstateListing;
+      const listings = [...state.listings];
+      const listingIndex = listings.map((l) => l.id).indexOf(listing.id);
+      if (listingIndex !== -1) {
+        listings[listingIndex] = listing;
+      } else {
+        listings.push(listing);
+      }
+      return { ...state, listings };
+    }
+    case RealEstateListingActions.DELETE_REAL_ESTATE_LISTING: {
+      const listing = action.payload as ApiRealEstateListing;
+      const listings = [...state.listings].filter((l) => l.id !== listing.id);
+      return { ...state, listings };
     }
     default:
       return state;
@@ -40,7 +46,10 @@ const reducer: (
 
 export const RealEstateListingContext = React.createContext<{
   realEstateListingState: any;
-  realEstateDispatch: (action: {type: RealEstateListingActions, payload?: any}) => void;
+  realEstateDispatch: (action: {
+    type: RealEstateListingActions;
+    payload?: any;
+  }) => void;
 }>({ realEstateListingState: initialState, realEstateDispatch: () => {} });
 
 export const RealEstateListingContextProvider = ({
