@@ -156,6 +156,9 @@ const Start: FunctionComponent = () => {
                     >
                         Mein Standort
                     </button>
+                    <RealEstateMenuList
+                                fillAdressFromListing={fillAddressFromListing}
+                    ></RealEstateMenuList>
                 </div>
             </div>
         );
@@ -182,6 +185,7 @@ const Start: FunctionComponent = () => {
             }
         })
         setCollapseSearchOpen(false);
+        setCollapseTransportationOpen(true);
     };
 
     const SearchButton = () => {
@@ -212,10 +216,6 @@ const Start: FunctionComponent = () => {
     return (
         <div className="container mx-auto mt-10 pb-10">
             <h1 className="flex text-2xl">Umgebungsanalyse</h1>
-            <RealEstateMenuList
-                fillAdressFromListing={fillAddressFromListing}
-            ></RealEstateMenuList>
-            <PotentialCustomerDropDown></PotentialCustomerDropDown>
             <div>
                 <div
                     className={
@@ -276,6 +276,7 @@ const Start: FunctionComponent = () => {
                             <TransportationParams inputValues={searchContextState.transportationParams} onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_TRANSPORTATION_PARAMS, payload: [...value]})}/>
                             <h3 className="my-3">Wichtige Adressen</h3>
                             <PreferredLocationsControl inputValues={searchContextState.preferredLocations}
+                            showImportantLocations={true}
                             onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_PREFERRED_LOCATIONS, payload: [...value]})}
                             >
                             </PreferredLocationsControl>
@@ -315,6 +316,7 @@ const Start: FunctionComponent = () => {
                         }
                     </div>
                     <div className="collapse-content">
+                        <PotentialCustomerDropDown></PotentialCustomerDropDown>
                         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 mt-5">
                             <LocalityOptions inputValues={searchContextState.localityOptions}
                                              onChange={(value) => searchContextDispatch({ type: SearchContextActions.SET_LOCALITY_OPTIONS, payload: value})}/>

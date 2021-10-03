@@ -3,19 +3,25 @@ import { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { PotentialCustomerDropDown } from "./PotentialCustomerDropDown";
 
 export interface PreferredLocationsProps {
+  showImportantLocations?: boolean;
   inputValues?: ApiPreferredLocation[];
   onChange?: (preferredLocations: ApiPreferredLocation[]) => void;
 }
 
 export const PreferredLocationsControl: React.FunctionComponent<PreferredLocationsProps> =
-  ({ inputValues = [], onChange = () => {} }) => {
+  ({
+    showImportantLocations = false,
+    inputValues = [],
+    onChange = () => {},
+  }) => {
     const [preferredLocations, setPreferredLocations] = useState(inputValues);
 
     useEffect(() => {
-        setPreferredLocations([...inputValues]);
-    }, [JSON.stringify(inputValues)])
+      setPreferredLocations([...inputValues]);
+    }, [JSON.stringify(inputValues)]);
 
     const { googleApiKey } = useContext(ConfigContext);
 
@@ -63,9 +69,11 @@ export const PreferredLocationsControl: React.FunctionComponent<PreferredLocatio
                     },
                     onChange: async (value: any) => {
                       const newLocations = [...preferredLocations];
-                      const { lat, lng } = await deriveGeocodeByAddress(value.label);
+                      const { lat, lng } = await deriveGeocodeByAddress(
+                        value.label
+                      );
                       newLocations[index].address = value.label;
-                      newLocations[index].coordinates = {lat, lng};
+                      newLocations[index].coordinates = { lat, lng };
                       setPreferredLocations(newLocations);
                       onChange(newLocations);
                     },
@@ -98,22 +106,28 @@ export const PreferredLocationsControl: React.FunctionComponent<PreferredLocatio
           <option value="Eigene Bezeichnung"></option>
         </datalist>
 
-        {preferredLocations.length < 4 && (
-          <button
-            className="btn btn-xs my-4 w-40"
-            type="button"
-            onClick={() => {
-              const locations = [
-                ...preferredLocations,
-                { title: "", address: "" },
-              ];
-              setPreferredLocations(locations);
-              onChange(locations);
-            }}
-          >
-            Weitere Adresse
-          </button>
-        )}
+        <div className="flex gap-3 items-end">
+          {preferredLocations.length < 4 && (
+            <button
+              className="btn btn-xs w-40"
+              type="button"
+              onClick={() => {
+                const locations = [
+                  ...preferredLocations,
+                  { title: "", address: "" },
+                ];
+                setPreferredLocations(locations);
+                onChange(locations);
+              }}
+            >
+              Weitere Adresse
+            </button>
+          )}
+          {showImportantLocations && (
+            <PotentialCustomerDropDown buttonStyles="btn btn-xs" menuOrientation="dropdown-top"
+            ></PotentialCustomerDropDown>
+          )}
+        </div>
       </div>
     );
   };

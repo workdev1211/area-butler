@@ -15,11 +15,11 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
 
     const [showMenu, setShowMenu] = useState(false);
 
-    const dropdownClasses = showMenu ? "dropdown dropdown-open" : "dropdown";
+    const dropdownClasses = showMenu ? "dropdown dropdown-open dropdown-top dropdown-end z-2000 relative" : "dropdown";
 
     return realEstateListingState.listings?.length > 0 ? (
       <div className={dropdownClasses}>
-        <div className="m-1 btn btn-sm" onClick={() => setShowMenu(true)}>
+        <div className="btn btn-sm btn-primary" onClick={() => setShowMenu(!showMenu)}>
           Meine Objekte
         </div>
         <ul className="p-2 shadow menu dropdown-content bg-base-100 rounded-box">
