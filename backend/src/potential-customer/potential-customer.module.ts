@@ -8,6 +8,7 @@ import {
 } from './schema/potential-customer.schema';
 import { PotentialCustomerController } from './potential-customer.controller';
 import { PotentialCustomerService } from './potential-customer.service';
+import { PotentialCustomerListener } from './listener/potential-customer.listener';
 
 @Module({
   imports: [
@@ -18,6 +19,6 @@ import { PotentialCustomerService } from './potential-customer.service';
     ]),
   ],
   controllers: [PotentialCustomerController],
-  providers: [PotentialCustomerService],
+  providers: [PotentialCustomerService, PotentialCustomerListener],
 })
 export class PotentialCustomerModule {}

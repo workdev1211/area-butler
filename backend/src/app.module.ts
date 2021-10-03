@@ -12,6 +12,7 @@ import { RealEstateListingModule } from './real-estate-listing/real-estate-listi
 import { FeedbackModule } from './feedback/feedback.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
@@ -28,6 +29,15 @@ import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
     FeedbackModule,
     PotentialCustomerModule,
     ZensusAtlasModule,
+    EventEmitterModule.forRoot({
+      wildcard: true,
+      delimiter: '.',
+      newListener: false,
+      removeListener: false,
+      maxListeners: 10,
+      verboseMemoryLeak: false,
+      ignoreErrors: false,
+    }),
   ],
   controllers: [ConfigController],
 })
