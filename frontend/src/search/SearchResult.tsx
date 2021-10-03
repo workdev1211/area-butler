@@ -107,10 +107,12 @@ const SearchResult: FunctionComponent = () => {
     const byFootAvailable = routingKeys.includes(MeansOfTransportation.WALK);
     const byBikeAvailable = routingKeys.includes(MeansOfTransportation.BICYCLE);
     const byCarAvailable = routingKeys.includes(MeansOfTransportation.CAR);
+    const censusDataAvailable = !!searchContextState.censusData?.length;
 
     const [byFoot, setByFoot] = useState(byFootAvailable);
     const [byBike, setByBike] = useState(byBikeAvailable);
     const [byCar, setByCar] = useState(byCarAvailable);
+    const [showCensus, setShowCensus] = useState(false);
     const [myListings, setMyListings] = useState(false);
     const entities = buildEntityData(searchContextState.searchResponse!);
 
@@ -127,7 +129,7 @@ const SearchResult: FunctionComponent = () => {
     const mapMeans = {
         byFoot,
         byBike,
-        byCar
+        byCar,
     }
     const filterEntities = () => {
         return entities!.filter(entity => {
@@ -207,9 +209,23 @@ const SearchResult: FunctionComponent = () => {
               <span className="ml-2">Meine Objekte</span>
             </label>
           }
+          {censusDataAvailable && (
+                <label className="flex items-center">
+                    <input
+                        type="checkbox"
+                        className="checkbox checkbox-xs"
+                        checked={showCensus}
+                        onChange={(e) => {
+                            setShowCensus(e.target.checked);
+                        }}
+                    />
+                    <span className="ml-2">Zensus Atlas</span>
+                </label>
+            )}
         </div>
         <Map
           searchResponse={searchContextState.searchResponse!}
+          censusData={showCensus && searchContextState.censusData!}
           entities={filteredEntites}
           means={mapMeans}
           selectedCenter={searchContextState.selectedCenter!}

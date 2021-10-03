@@ -1,6 +1,6 @@
 import React from "react";
 import {
-    ApiCoordinates, ApiSearchResponse,
+    ApiCoordinates, ApiGeometry, ApiSearchResponse,
     MeansOfTransportation, OsmName,
     TransportationParam,
     UnitsOfTransportation
@@ -26,6 +26,7 @@ export interface SearchContextState {
     realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
     mapClippings?: MapClipping[];
+    censusData?: ApiGeometry[];
 }
 
 export const initialState: SearchContextState = {
@@ -66,7 +67,8 @@ export enum SearchContextActions {
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
     ADD_MAP_CLIPPING =  'ADD_MAP_CLIPPING',
-    CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS'
+    CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
+    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
 }
 
 const reducer: (
@@ -112,6 +114,9 @@ const reducer: (
         }
         case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
             return { ...state, mapClippings: []};
+        }
+        case SearchContextActions.SET_ZENSUS_DATA: {
+            return { ...state, censusData: [...action.payload]}
         }
         default:
             return state;

@@ -8,7 +8,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
-import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {ApiCoordinates, ApiGeojsonFeature, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
@@ -17,6 +17,7 @@ import html2canvas from 'html2canvas';
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
+    censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
     selectedCenter?: ApiCoordinates;
     selectedZoomLevel?: number;
@@ -40,12 +41,12 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
     const selectedZoomLevelEqual = prevProps.selectedZoomLevel === nextProps.selectedZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual;
+    const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
+    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual && censusDataEqual;
 }
 
-const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter, printingActive, selectedZoomLevel, leafletMapId='mymap'}) => {
+const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCenter, printingActive, selectedZoomLevel, leafletMapId='mymap', censusData}) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const {searchContextDispatch} = useContext(SearchContext);
 
@@ -151,6 +152,14 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
                 color: 'gray'
             }).addTo(localMap);
         }
+        if (censusData?.length) {
+
+            censusData.forEach((c: any) => {
+                const propertyTable = (p: {label: string, value: string, unit: string}) => `<tr><td>${p.label}</td><td>${p.value} ${p.unit}</td></tr>`;
+                const table = `<table><tbody>${c.properties.map(propertyTable).join("")}</tbody></table>`;
+                L.geoJSON(c).addTo(localMap).bindTooltip(table);
+            })
+        }
         const positionIcon = L.Icon.extend({options: {
             iconUrl: leafletIcon,
             shadowUrl: leafletShadow
@@ -180,7 +189,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
           }, 600);
         }
 
-    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, selectedZoomLevel]);
+    }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, selectedZoomLevel, censusData]);
 
 
 
