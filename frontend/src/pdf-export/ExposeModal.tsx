@@ -10,7 +10,7 @@ export interface ExposeModalProps {
   groupedEntries: any;
 }
 
-const waitingTime = 1200;
+const waitingTime = 1500;
 
 const zoomLevels = [birdsEye, nearby, city];
 
