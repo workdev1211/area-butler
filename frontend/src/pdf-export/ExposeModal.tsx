@@ -24,10 +24,7 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
   const [printingActive, setPrintingActive] = useState(false);
   const [currentPosition, setCurrentPosition] = useState();
 
-
   const currentZoomLevel = searchContextState.selectedZoomLevel;
-  
-
 
   const busy = searchContextState.mapClippings.length < 4;
 

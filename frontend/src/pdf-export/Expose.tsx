@@ -193,8 +193,9 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
             {!!importantEntites && (
               <div className="m-10" key={"tab-content-" + importantEntites[0]}>
                 <ResultTable
+                  dataSelectable={false}
                   title={importantEntites[0]}
-                  data={importantEntites[1]}
+                  data={importantEntites[1].filter((e: ResultEntity) => e.selected)}
                 />
               </div>
             )}
@@ -207,7 +208,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
             return (
               <PdfPage>
                 <div className="m-10" key={"tab-content-" + label}>
-                  <ResultTable title={label} data={data} />
+                  <ResultTable dataSelectable={false} title={label} data={data.filter((e: ResultEntity) => e.selected)} />
                 </div>
               </PdfPage>
             );

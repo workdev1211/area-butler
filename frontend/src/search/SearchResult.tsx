@@ -1,7 +1,7 @@
 import { RealEstateListingContext } from "context/RealEstateListingContext";
 import ExposeDownloadButton from "pdf-export/ExposeDownloadButton";
 import { ExposeModal } from "pdf-export/ExposeModal";
-import React, { FunctionComponent, useContext, useState } from "react";
+import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import { distanceInMeters } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -25,6 +25,7 @@ export interface ResultEntity {
     byBike: boolean;
     byCar: boolean;
     distanceInMeters: number;
+    selected: boolean;
 }
 
 const buildEntityDataFromPreferredLocations = (
@@ -47,6 +48,7 @@ const buildEntityDataFromPreferredLocations = (
       byFoot: true,
       byBike: true,
       byCar: true,
+      selected: true
     }));
 };
 
@@ -70,6 +72,7 @@ const buildEntityDataFromRealEstateListings = (
         byFoot: true,
         byBike: true,
         byCar: true,
+        selected: true
       }));
   };
 
@@ -93,7 +96,8 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
             address: location.address,
             byFoot: locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
             byBike: locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
-            byCar: locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false
+            byCar: locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
+            selected: true
         }
     });
 }
@@ -114,46 +118,63 @@ const SearchResult: FunctionComponent = () => {
     const [byCar, setByCar] = useState(byCarAvailable);
     const [showCensus, setShowCensus] = useState(false);
     const [myListings, setMyListings] = useState(false);
-    const entities = buildEntityData(searchContextState.searchResponse!);
-
-    const centerCoordinates = searchContextState.searchResponse.centerOfInterest.coordinates;
-
-    if (!!searchContextState.preferredLocations) {
-        entities?.push(...buildEntityDataFromPreferredLocations(centerCoordinates, searchContextState.preferredLocations));
-    }
-
-    if (!!realEstateListingState.listings && myListings) {
-        entities?.push(...buildEntityDataFromRealEstateListings(centerCoordinates, realEstateListingState.listings));
-    }
+    const [activeTab, setActiveTab] = useState(0);
+    const [groupedEntries, setGroupedEntries] = useState<any[]>([]);
+    const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
 
     const mapMeans = {
-        byFoot,
-        byBike,
-        byCar,
-    }
-    const filterEntities = () => {
-        return entities!.filter(entity => {
-            return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
-        })
-    }
-    const filteredEntites = filterEntities();
+      byFoot,
+      byBike,
+      byCar,
+  }
 
-    // eslint-disable-next-line no-sequences
-    const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
-    const [activeTab, setActiveTab] = useState(0);
-    let groupedEntries = Object.entries(groupBy(filteredEntites, (item: ResultEntity) => item.label));
+    useEffect(() => {
+      const entities = buildEntityData(searchContextState.searchResponse!);
+      const centerCoordinates = searchContextState.searchResponse.centerOfInterest.coordinates;
 
-    groupedEntries = [
-        ...groupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
-        ...groupedEntries.filter(([label, _]) => label === realEstateListingsTitle),
-        ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
-    ];
+      if (!!searchContextState.preferredLocations) {
+          entities?.push(...buildEntityDataFromPreferredLocations(centerCoordinates, searchContextState.preferredLocations));
+      }
+  
+      if (!!realEstateListingState.listings && myListings) {
+          entities?.push(...buildEntityDataFromRealEstateListings(centerCoordinates, realEstateListingState.listings));
+      }
+  
+
+      const filterEntities = () => {
+          return entities!.filter(entity => {
+              return (entity.byFoot && mapMeans.byFoot) || (entity.byBike && mapMeans.byBike) || (entity.byCar && mapMeans.byCar);
+          })
+      }
+      setFilteredEntities(filterEntities());
+  
+      // eslint-disable-next-line no-sequences
+      const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+      
+      const newGroupedEntries : any[] = Object.entries(groupBy(filteredEntites, (item: ResultEntity) => item.label));
+
+      setGroupedEntries([
+          ...newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
+          ...newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle),
+          ...newGroupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
+      ].map(([label, data] : any) => [label, data.slice(0, 10)]));
+
+    }, [JSON.stringify(searchContextState.searchResponse)]);
+
+
+    const changeEntitySelection = (title: string, row: ResultEntity) => {
+      const newGroupedEntries = [...groupedEntries];
+      const entityGroup = newGroupedEntries.find(([label, data]) => label === title);
+      const existingRow : ResultEntity  = entityGroup[1].find((e: ResultEntity) => e.id === row.id)!;
+      existingRow.selected = !existingRow.selected;
+      setGroupedEntries(newGroupedEntries);
+    }
 
     return (
       <>
         <ExposeModal
           entities={filteredEntites}
-          groupedEntries={groupedEntries!}
+          groupedEntries={groupedEntries}
         ></ExposeModal>
         <div className="flex gap-6 mt-10">
           {byFootAvailable && (
@@ -264,7 +285,7 @@ const SearchResult: FunctionComponent = () => {
             if (index === activeTab) {
               return (
                 <div className="mt-5" key={"tab-content-" + label}>
-                  <ResultTable title={label} data={data} />
+                  <ResultTable title={label} data={data} dataSelectable={true} changeEntitySelection={changeEntitySelection} />
                 </div>
               );
             }
