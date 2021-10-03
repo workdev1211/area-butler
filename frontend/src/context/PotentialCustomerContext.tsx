@@ -12,6 +12,7 @@ export interface PotentialCustomerState {
   export enum PotentialCustomerActions {
     SET_POTENTIAL_CUSTOMERS = "SET_POTENTIAL_CUSTOMERS",
     PUT_POTENTIAL_CUSTOMER = "PUT_POTENTIAL_CUSTOMER",
+    DELETE_POTENTIAL_CUSTOMER = "DELETE_POTENTIAL_CUSTOMER",
   }
   
   const reducer: (
@@ -33,6 +34,11 @@ export interface PotentialCustomerState {
           }
         return {...state, customers};
       }
+      case PotentialCustomerActions.DELETE_POTENTIAL_CUSTOMER: {
+        const customer = action.payload as ApiPotentialCustomer;
+        const customers = [...state.customers].filter(c => c.id !== customer.id);
+      return {...state, customers};
+    }
       default:
         return state;
     }

@@ -10,6 +10,7 @@ import {
 } from "../../../shared/constants/constants";
 import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
 import React from "react";
+import { PotentialCustomerFormDeleteHandler } from "potential-customer/PotentialCustomerDeleteHandler";
 
 export const PotentialCustomersPage = () => {
   const { get } = useHttp();
@@ -25,6 +26,12 @@ export const PotentialCustomersPage = () => {
   const editCustomerModalConfig = {
     modalTitle: "Interessent bearbeiten",
     buttonTitle: "Bearbeiten",
+    buttonStyle: "btn btn-xs",
+  };
+
+  const deleteCustomerModalConfig = {
+    modalTitle: "Interessent löschen",
+    buttonTitle: "Löschen",
     buttonStyle: "btn btn-xs",
   };
 
@@ -104,11 +111,15 @@ export const PotentialCustomersPage = () => {
                     )
                     .join(", ")}
                 </td>
-                <td>
+                <td className="flex gap-2">
                   <FormModal modalConfig={editCustomerModalConfig}>
                     <PotentialCustomerFormHandler
                       customer={customer}
                     ></PotentialCustomerFormHandler>
+                  </FormModal>
+                  <FormModal modalConfig={deleteCustomerModalConfig}>
+                    <PotentialCustomerFormDeleteHandler potentialCustomer={customer}>
+                    </PotentialCustomerFormDeleteHandler>
                   </FormModal>
                 </td>
               </tr>
