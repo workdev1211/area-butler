@@ -1,11 +1,10 @@
+import { MapClipping } from "context/SearchContext";
 import React, { useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
+import { ResultEntity } from "search/SearchResult";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiSearchResponse, TransportationParam } from "../../../shared/types/types";
 import Expose from "./Expose";
-import html2canvas from 'html2canvas';
-import { ResultEntity } from "search/SearchResult";
-import { MapClipping } from "context/SearchContext";
 
 export interface ExposeDownloadButtonProps {
   entities: ResultEntity[];

@@ -197,10 +197,8 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
 
     }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, selectedZoomLevel, censusData]);
 
-
-
     return (
-        <div className="leaflet-container" id={leafletMapId}>
+        <div className='leaflet-container' id={leafletMapId}>
         </div>
     )
 }, areMapPropsEqual);

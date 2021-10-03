@@ -1,22 +1,21 @@
 import { MapClipping } from "context/SearchContext";
 import { fallbackIcon, osmNameToIcons } from "map/makiIcons";
-import Map from "map/Map";
 import React from "react";
 import ResultTable from "search/ResultTable";
 import { ResultEntity } from "search/SearchResult";
 import {
   meansOfTransportations,
-  unitsOfTransportation,
+  unitsOfTransportation
 } from "../../../shared/constants/constants";
 import {
   allFurnishing,
-  allRealEstateCostTypes,
+  allRealEstateCostTypes
 } from "../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
   ApiSearchResponse,
   MeansOfTransportation,
-  TransportationParam,
+  TransportationParam
 } from "../../../shared/types/types";
 import AreaButlerLogo from "../assets/img/areabutler-logo.jpg";
 import EntityGridSummary from "./EntityGridSummary";

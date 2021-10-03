@@ -149,7 +149,6 @@ const SearchResult: FunctionComponent = () => {
         ...groupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
     ];
 
-
     return (
       <>
         <ExposeModal

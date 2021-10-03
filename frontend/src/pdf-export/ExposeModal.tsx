@@ -42,10 +42,12 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
     searchContextDispatch({
       type: SearchContextActions.CLEAR_MAP_CLIPPINGS,
     });
-    searchContextDispatch({
-      type: SearchContextActions.SET_SELECTED_CENTER,
-      payload: currentPosition,
-    });
+    if (!!currentPosition) {
+      searchContextDispatch({
+        type: SearchContextActions.SET_SELECTED_CENTER,
+        payload: currentPosition,
+      });
+    }
   };
 
   const setZoomLevel = (zoomLevel: number) => {
@@ -78,6 +80,7 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
     }
   }, [printingActive]);
 
+
   return (
     <>
       <button
@@ -91,7 +94,7 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
         Umgebungsanalyse exportieren
       </button>
       {modalOpen && (
-        <div id="expose-modal" className="modal modal-open">
+        <div id="expose-modal" className="modal modal-open backdrop-filter backdrop-contrast-0 z-2000">
           <div className="modal-box">
             <h1 className="text-xl text-bold">Umgebungsanalyse exportieren</h1>
 
