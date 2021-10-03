@@ -1,6 +1,7 @@
 import { SearchContext, SearchContextActions } from "context/SearchContext";
 import { useContext, useEffect, useState } from "react";
 import { ResultEntity } from "search/SearchResult";
+import { ApiCoordinates } from "../../../shared/types/types";
 import ExposeDownloadButton from "./ExposeDownloadButton";
 import { birdsEye, city, nearby } from "./MapClippings";
 
@@ -21,20 +22,29 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const [printingActive, setPrintingActive] = useState(false);
+  const [currentPosition, setCurrentPosition] = useState();
+
 
   const currentZoomLevel = searchContextState.selectedZoomLevel;
+  
+
 
   const busy = searchContextState.mapClippings.length < 4;
 
   const onClose = () => {
+    
     setPrintingActive(false);
     setModalOpen(false);
+    searchContextDispatch({
+      type: SearchContextActions.SET_PRINTING_ACTIVE,
+      payload: false,
+    });
     searchContextDispatch({
       type: SearchContextActions.CLEAR_MAP_CLIPPINGS,
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_PRINTING_ACTIVE,
-      payload: false,
+      type: SearchContextActions.SET_SELECTED_CENTER,
+      payload: currentPosition,
     });
   };
 
@@ -50,15 +60,22 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
   useEffect(() => {
     searchContextDispatch({
       type: SearchContextActions.SET_PRINTING_ACTIVE,
-      payload: true,
+      payload: printingActive,
     });
-    zoomLevels.map((level, index) =>
-      setTimeout(() => setZoomLevel(level), (index + 1) * waitingTime)
-    );
-    setTimeout(
-      () => setZoomLevel(currentZoomLevel),
-      (zoomLevels.length + 1) * waitingTime
-    );
+    if (printingActive) {
+      setCurrentPosition(searchContextState.selectedCenter);
+      searchContextDispatch({
+        type: SearchContextActions.SET_SELECTED_CENTER,
+        payload: searchContextState.searchResponse.centerOfInterest.coordinates,
+      });
+      zoomLevels.map((level, index) =>
+        setTimeout(() => setZoomLevel(level), (index + 1) * waitingTime)
+      );
+      setTimeout(
+        () => setZoomLevel(currentZoomLevel),
+        (zoomLevels.length + 1) * waitingTime
+      );
+    }
   }, [printingActive]);
 
   return (
@@ -76,10 +93,13 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
       {modalOpen && (
         <div id="expose-modal" className="modal modal-open">
           <div className="modal-box">
-            <h1>Umgebungsanalyse exportieren</h1>
+            <h1 className="text-xl text-bold">Umgebungsanalyse exportieren</h1>
 
             {busy && (
-              <div className="my-10">Stelle Daten für Export zusammen...</div>
+              <>
+                <progress className="my-10 progress" value={searchContextState.mapClippings.length} max={4}></progress> 
+                <div>Stelle Daten für Export zusammen...</div>
+              </>
             )}
 
             <div className="modal-action">

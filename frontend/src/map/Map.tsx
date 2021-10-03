@@ -127,6 +127,12 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
            searchContextDispatch({type: SearchContextActions.SET_SELECTED_ZOOM_LEVEL, payload: zoom})
            drawAmenityMarkers(value.target._zoom);
         });
+        localMap.on('moveend', (event) => {
+            if (!!event?.target?.getCenter()) {
+                const center = event.target.getCenter();
+                setTimeout(() => searchContextDispatch({type: SearchContextActions.SET_SELECTED_CENTER, payload: center}), 0);
+            }
+          });
         L.tileLayer(url, {
                 attribution,
                 id: "mapbox/light-v10",

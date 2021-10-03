@@ -8,6 +8,7 @@ import {
 import {osmEntityTypes} from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import MapClippings from "pdf-export/MapClippings";
 
 export interface MapClipping {
     zoomLevel: number;
@@ -89,7 +90,6 @@ const reducer: (
             return { ...state, selectedCenter: {...action.payload }};
         }
         case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
-            console.log(action.payload);
             return { ...state, selectedZoomLevel: action.payload};
         }
         case SearchContextActions.SET_PRINTING_ACTIVE: {
