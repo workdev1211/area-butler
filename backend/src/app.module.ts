@@ -13,6 +13,7 @@ import { FeedbackModule } from './feedback/feedback.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MailSenderService } from './client/mail/mail-sender.service';
 
 @Module({
   imports: [

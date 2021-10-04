@@ -17,6 +17,11 @@ import {
 } from './schema/questionnaire-request.schema';
 const crypto = require('crypto');
 import { UserService } from 'src/user/user.service';
+import {
+  MailProps,
+  MailSenderService,
+} from 'src/client/mail/mail-sender.service';
+import { configService } from 'src/config/config.service';
 
 @Injectable()
 export class PotentialCustomerService {
@@ -26,6 +31,7 @@ export class PotentialCustomerService {
     @InjectModel(QuestionnaireRequest.name)
     private questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
     private userService: UserService,
+    private mailSender: MailSenderService,
   ) {}
 
   async fetchPotentialCustomers({
@@ -106,7 +112,20 @@ export class PotentialCustomerService {
       token: crypto.randomBytes(60).toString('hex'),
       ...documentData,
     };
-    return await new this.questionnaireRequestModel(document).save();
+    const questionnaire = await new this.questionnaireRequestModel(
+      document,
+    ).save();
+
+    const mailProps: MailProps = {
+      to: [{ name: questionnaire.name, email: questionnaire.email }],
+      templateId: 1,
+      params: {
+        href: `${configService.getBaseAppUrl()}/questionnaire?token=${questionnaire.token}`,
+      },
+    };
+    await this.mailSender.sendMail(mailProps);
+
+    return questionnaire;
   }
 
   async upsertCustomerFromQuestionnaire({
@@ -133,7 +152,7 @@ export class PotentialCustomerService {
     const upsertData = {
       ...customer,
       name,
-      email
+      email,
     };
 
     // TODO update

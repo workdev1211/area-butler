@@ -48,6 +48,14 @@ class ConfigService {
   public getFeedbackSlackWebhook(): string {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK');
   }
+
+  public getMailProviderApiKey(): string {
+    return this.getValue('MAIL_PROVIDER_API_KEY');
+  }
+
+  public getBaseAppUrl(): string {
+    return this.getValue('BASE_APP_URL');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
