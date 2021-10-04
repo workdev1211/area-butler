@@ -86,7 +86,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.public_transport,
     name: OsmName.station,
-    label: "U-Bahn Haltestelle",
+    label: "Öffentlicher Schienenverkehr",
   },
   {
     type: OsmType.highway,
