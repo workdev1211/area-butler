@@ -124,7 +124,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
                 )}
               </div>
 
-              <div className="flex gap-6 justify-between m-10">
+              <div className="flex gap-4 justify-between m-10">
                 <div className="flex flex-col gap-6">
                   <h3 className="text-xl font-bold">Ihre Bevorzugten Orte</h3>
                   <div className="flex flex-wrap gap-2">
