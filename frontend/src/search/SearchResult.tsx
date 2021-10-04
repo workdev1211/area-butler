@@ -8,7 +8,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName } from "../../../shared/types/types";
 import { SearchContext } from "../context/SearchContext";
 import { fallbackIcon, osmNameToIcons } from "../map/makiIcons";
-import Map from "../map/Map";
+import Map, {defaultMapZoom} from "../map/Map";
 import ResultTable from "./ResultTable";
 
 const preferredLocationsTitle = 'Wichtige Adressen';
@@ -248,8 +248,8 @@ const SearchResult: FunctionComponent = () => {
           censusData={showCensus && searchContextState.censusData!}
           entities={filteredEntites}
           means={mapMeans}
-          selectedCenter={searchContextState.selectedCenter!}
-          selectedZoomLevel={searchContextState.selectedZoomLevel!}
+          selectedCenter={searchContextState.printingActive ? searchContextState.selectedCenter : searchContextState.searchResponse.centerOfInterest.coordinates}
+          selectedZoomLevel={searchContextState.printingActive ? searchContextState.selectedZoomLevel : defaultMapZoom}
           printingActive={searchContextState.printingActive}
         />
         <div className="flex-col gap-6 mt-5">

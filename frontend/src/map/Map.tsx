@@ -30,8 +30,10 @@ export interface MapProps {
     }
 }
 
+export const defaultMapZoom = 15;
+
 let currentMap: L.Map | undefined;
-let zoom = 15;
+let zoom = defaultMapZoom;
 let amenityMarkerGroup = L.markerClusterGroup();
 
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
@@ -125,7 +127,6 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
         localMap.addEventListener("zoom", (value) => {
            zoom = value.target._zoom;
            searchContextDispatch({type: SearchContextActions.SET_SELECTED_ZOOM_LEVEL, payload: zoom})
-           drawAmenityMarkers(value.target._zoom);
         });
         localMap.on('moveend', (event) => {
             if (!!event?.target?.getCenter()) {

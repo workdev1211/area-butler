@@ -30,12 +30,6 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
 
   const onClose = () => {
     
-    setPrintingActive(false);
-    setModalOpen(false);
-    searchContextDispatch({
-      type: SearchContextActions.SET_PRINTING_ACTIVE,
-      payload: false,
-    });
     searchContextDispatch({
       type: SearchContextActions.CLEAR_MAP_CLIPPINGS,
     });
@@ -45,6 +39,12 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
         payload: currentPosition,
       });
     }
+    searchContextDispatch({
+      type: SearchContextActions.SET_PRINTING_ACTIVE,
+      payload: false,
+    });
+    setPrintingActive(false);
+    setModalOpen(false);
   };
 
   const setZoomLevel = (zoomLevel: number) => {
