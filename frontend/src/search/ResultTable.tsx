@@ -14,7 +14,7 @@ export interface ResultTableProps {
 
 const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
     const {searchContextDispatch} = useContext(SearchContext);
-    const data = props.data;
+    const data = props.data.slice(0, 10);
     const dataSelectable = props.dataSelectable || false;
     const changeEntitySelection = props.changeEntitySelection;
 

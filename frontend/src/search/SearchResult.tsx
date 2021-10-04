@@ -48,7 +48,7 @@ const buildEntityDataFromPreferredLocations = (
       byFoot: true,
       byBike: true,
       byCar: true,
-      selected: true
+      selected: false
     }));
 };
 
@@ -72,7 +72,7 @@ const buildEntityDataFromRealEstateListings = (
         byFoot: true,
         byBike: true,
         byCar: true,
-        selected: true
+        selected: false
       }));
   };
 
@@ -97,7 +97,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
             byFoot: locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
             byBike: locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
             byCar: locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(l => l.entity.id === locationId) ?? false,
-            selected: true
+            selected: false
         }
     });
 }
@@ -153,11 +153,19 @@ const SearchResult: FunctionComponent = () => {
       
       const newGroupedEntries : any[] = Object.entries(groupBy(filteredEntites, (item: ResultEntity) => item.label));
 
-      setGroupedEntries([
-          ...newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
-          ...newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle),
-          ...newGroupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
-      ].map(([label, data] : any) => [label, data.slice(0, 10)]));
+      const combinedGroupEntries = [
+        ...newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle),
+        ...newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle),
+        ...newGroupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle)
+      ];
+
+      combinedGroupEntries.forEach(([label, data]) : [string, ResultEntity[]] => (data || []).forEach((element: ResultEntity, index: number) => {
+        if(index < 10) {
+          element.selected = true
+        }
+      }));
+
+      setGroupedEntries(combinedGroupEntries);
 
     }, [JSON.stringify(searchContextState.searchResponse)]);
 

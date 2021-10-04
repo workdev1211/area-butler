@@ -92,7 +92,7 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
       {modalOpen && (
         <div id="expose-modal" className="modal modal-open backdrop-filter backdrop-contrast-0 z-2000">
           <div className="modal-box">
-            <h1 className="text-xl text-bold">Umgebungsanalyse exportieren</h1>
+            <h1 className="text-xl text-bold">{busy ? 'Umgebungsanalyse exportieren' : 'Ihre Umgebungsanalyse ist aufbereitet!'}</h1>
 
             {busy && (
               <>

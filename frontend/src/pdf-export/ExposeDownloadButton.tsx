@@ -50,7 +50,7 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
           onBeforeGetContent={async () => {setActivePrinting(true);}}
           onAfterPrint={async () => setActivePrinting(false)}
           trigger={() => (
-            <button className="btn btn-sm" disabled={downloadButtonDisabled}>
+            <button className="btn btn-primary btn-sm" disabled={downloadButtonDisabled}>
               Exportieren
             </button>
           )}
