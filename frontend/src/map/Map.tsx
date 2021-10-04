@@ -193,7 +193,7 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
                 },
               });
             });
-          }, 1000);
+          }, 2000);
         }
 
     }, [searchResponse, means, mapBoxAccessToken, entities, lat, lng, selectedZoomLevel, censusData]);

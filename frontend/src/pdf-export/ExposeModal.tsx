@@ -1,16 +1,15 @@
-import { SearchContext, SearchContextActions } from "context/SearchContext";
-import { useContext, useEffect, useState } from "react";
-import { ResultEntity } from "search/SearchResult";
-import { ApiCoordinates } from "../../../shared/types/types";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
+import {useContext, useEffect, useState} from "react";
+import {ResultEntity} from "search/SearchResult";
 import ExposeDownloadButton from "./ExposeDownloadButton";
-import { birdsEye, city, nearby } from "./MapClippings";
+import {birdsEye, city, nearby} from "./MapClippings";
 
 export interface ExposeModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
 }
 
-const waitingTime = 1500;
+const waitingTime = 2500;
 
 const zoomLevels = [birdsEye, nearby, city];
 
