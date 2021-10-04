@@ -4,7 +4,7 @@ input:checked ~ .dot {
 
 input.checkbox:checked ~ .dot {
     transform: translateX(100%);
-    @apply bg-red-500
+    background: var(--color-kudiba-red);
 }
 
 .collapse-title, .collapse-content {
