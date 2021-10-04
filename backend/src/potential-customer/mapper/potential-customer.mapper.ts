@@ -1,5 +1,6 @@
-import { ApiPotentialCustomer } from '@area-butler-types/potential-customer';
+import { ApiPotentialCustomer, ApiQuestionnaireRequest } from '@area-butler-types/potential-customer';
 import { PotentialCustomerDocument } from '../schema/potential-customer.schema';
+import { QuestionnaireRequestDocument } from '../schema/questionnaire-request.schema';
 
 export const mapPotentialCustomerToApiPotentialCustomer = (
   potentialCustomer: PotentialCustomerDocument,
@@ -11,3 +12,12 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   preferredAmenities: potentialCustomer.preferredAmenities,
   preferredLocations: potentialCustomer.preferredLocations,
 });
+
+export const mapQuestionnaireRequestToApiQuestionnaireRequest = (
+  potentialCustomer: QuestionnaireRequestDocument,
+): ApiQuestionnaireRequest => ({
+  id: potentialCustomer.id,
+  name: potentialCustomer.name,
+  email: potentialCustomer.email,
+});
+

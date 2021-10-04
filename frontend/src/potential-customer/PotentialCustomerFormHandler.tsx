@@ -12,7 +12,7 @@ import {
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
 
-const mapFormToApiUpsertRealEstateListing = async (
+export const mapFormToApiUpsertPotentialCustomer = async (
   values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
 
@@ -38,7 +38,7 @@ export const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCust
 
     const onSubmit = async (values: any) => {
       const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
-        await mapFormToApiUpsertRealEstateListing(values);
+        await mapFormToApiUpsertPotentialCustomer(values);
 
       try {
         let storedCustomer = null;

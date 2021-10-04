@@ -16,10 +16,11 @@ export interface PotentialCustomerFormData {
   formId: string;
   onSubmit: (values: any) => any;
   customer: Partial<ApiPotentialCustomer>;
+  questionnaire?: boolean;
 }
 
 export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> =
-  ({ formId, onSubmit, customer }) => {
+  ({ formId, onSubmit, customer, questionnaire = false }) => {
     const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>(
       customer.preferredAmenities ?? []
     );
@@ -39,10 +40,14 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
           preferredLocations: customer.preferredLocations || [],
         }}
         validationSchema={Yup.object({
-          name: Yup.string().required("Bitte geben den Namen ein"),
-          email: Yup.string()
-            .email()
-            .required("Bitte geben Sie eine gültige Email-Adresse ein"),
+          name: questionnaire
+            ? Yup.string()
+            : Yup.string().required("Bitte geben den Namen ein"),
+          email: questionnaire
+            ? Yup.string()
+            : Yup.string()
+                .email()
+                .required("Bitte geben Sie eine gültige Email-Adresse ein"),
           preferredLocations: Yup.array(),
         })}
         onSubmit={(values) => {
@@ -56,22 +61,27 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
         }}
         render={({ values }) => (
           <Form id={formId}>
-            <div className="form-control">
-              <Input
-                label="Name des Interessenten"
-                name="name"
-                type="text"
-                placeholder="Name"
-              />
-            </div>
-            <div className="form-control">
-              <Input
-                label="Email des Interessenten"
-                name="email"
-                type="text"
-                placeholder="Email"
-              />
-            </div>
+            {!questionnaire && (
+              <div className="form-control">
+                <Input
+                  label="Name des Interessenten"
+                  name="name"
+                  type="text"
+                  placeholder="Name"
+                />
+              </div>
+            )}
+
+            {!questionnaire && (
+              <div className="form-control">
+                <Input
+                  label="Email des Interessenten"
+                  name="email"
+                  type="text"
+                  placeholder="Email"
+                />
+              </div>
+            )}
             <div className="my-6">
               <strong>Bevorzugte Fortbewegungsarten</strong>
               <TransportationParams

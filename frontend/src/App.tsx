@@ -1,8 +1,6 @@
 import Authenticated from "auth/authenticated";
 import FormModal, { ModalConfig } from "components/FormModal";
-import {
-  PotentialCustomerContextProvider,
-} from "context/PotentialCustomerContext";
+import { PotentialCustomerContextProvider } from "context/PotentialCustomerContext";
 import { RealEstateListingContextProvider } from "context/RealEstateListingContext";
 import { FeedbackFormHandler } from "feedback/FeedbackFormHandler";
 import { PotentialCustomersPage } from "pages/PotentialCustomersPage";
@@ -12,7 +10,8 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import "./App.css";
 import Nav from "./nav/Nav";
 import Start from "./pages/Start";
-import {SearchContextProvider} from "./context/SearchContext";
+import { SearchContextProvider } from "./context/SearchContext";
+import { CustomerQuestionnaire } from "pages/CustomerQuestionnaire";
 
 function App() {
   const feedbackModalConfig: ModalConfig = {
@@ -23,39 +22,42 @@ function App() {
   };
 
   return (
-      <RealEstateListingContextProvider>
-        <PotentialCustomerContextProvider>
-          <Router>
-            <Authenticated>
-              <FormModal modalConfig={feedbackModalConfig}>
-                <FeedbackFormHandler></FeedbackFormHandler>
-              </FormModal>
-            </Authenticated>
-            <div className="App px-4">
-              <Nav />
-              <Switch>
-                <Route path="/listings">
-                  <Authenticated>
-                    <RealEstateListingPage />
-                  </Authenticated>
-                </Route>
-                <Route path="/potential-customers">
-                  <Authenticated>
-                    <PotentialCustomersPage />
-                  </Authenticated>
-                </Route>
-                <Route path="/">
-                  <Authenticated>
-                    <SearchContextProvider>
-                      <Start />
-                    </SearchContextProvider>
-                  </Authenticated>
-                </Route>
-              </Switch>
-            </div>
-          </Router>
-        </PotentialCustomerContextProvider>
-      </RealEstateListingContextProvider>
+    <RealEstateListingContextProvider>
+      <PotentialCustomerContextProvider>
+        <Router>
+          <Authenticated>
+            <FormModal modalConfig={feedbackModalConfig}>
+              <FeedbackFormHandler></FeedbackFormHandler>
+            </FormModal>
+          </Authenticated>
+          <div className="App px-4">
+          <Nav />
+            <Switch>
+              <Route path="/questionnaire">
+                <CustomerQuestionnaire></CustomerQuestionnaire>
+              </Route>
+              <Route path="/listings">
+                <Authenticated>
+                  <RealEstateListingPage />
+                </Authenticated>
+              </Route>
+              <Route path="/potential-customers">
+                <Authenticated>
+                  <PotentialCustomersPage />
+                </Authenticated>
+              </Route>
+              <Route path="/">
+                <Authenticated>
+                  <SearchContextProvider>
+                    <Start />
+                  </SearchContextProvider>
+                </Authenticated>
+              </Route>
+            </Switch>
+          </div>
+        </Router>
+      </PotentialCustomerContextProvider>
+    </RealEstateListingContextProvider>
   );
 }
 

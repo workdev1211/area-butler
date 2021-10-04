@@ -8,18 +8,28 @@ import {
   meansOfTransportations,
   unitsOfTransportation,
 } from "../../../shared/constants/constants";
-import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import {
+  PotentialCustomerActions,
+  PotentialCustomerContext,
+} from "context/PotentialCustomerContext";
 import React from "react";
 import { PotentialCustomerFormDeleteHandler } from "potential-customer/PotentialCustomerDeleteHandler";
+import QuestionnaireRequestFormHandler from "potential-customer/QuestionnaireRequestFormHandler";
 
 export const PotentialCustomersPage = () => {
   const { get } = useHttp();
   const { potentialCustomerState, potentialCustomerDispatch } =
-    React.useContext(PotentialCustomerContext)
+    React.useContext(PotentialCustomerContext);
 
   const createCustomerModalConfig = {
     modalTitle: "Interessent erstellen",
     buttonTitle: "Interessent Erstellen",
+    buttonStyle: "btn btn-sm",
+  };
+
+  const createCustomerQuestionnaireModalConfig = {
+    modalTitle: "Fragebogen versenden",
+    buttonTitle: "Fragebogen versenden",
     buttonStyle: "btn btn-sm",
   };
 
@@ -39,8 +49,9 @@ export const PotentialCustomersPage = () => {
     const fetchCustomers = async () => {
       potentialCustomerDispatch({
         type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
-        payload: (await get<ApiPotentialCustomer[]>("/api/potential-customers")).data
-      })
+        payload: (await get<ApiPotentialCustomer[]>("/api/potential-customers"))
+          .data,
+      });
     };
     fetchCustomers();
   }, [true]);
@@ -48,11 +59,14 @@ export const PotentialCustomersPage = () => {
   return (
     <div className="container mx-auto mt-10">
       <h1 className="flex text-2xl">Meine Interessenten</h1>
-      <div className="my-4">
+      <div className="my-4 flex gap-5">
         <FormModal modalConfig={createCustomerModalConfig}>
           <PotentialCustomerFormHandler
             customer={{}}
           ></PotentialCustomerFormHandler>
+        </FormModal>
+        <FormModal modalConfig={createCustomerQuestionnaireModalConfig}>
+          <QuestionnaireRequestFormHandler></QuestionnaireRequestFormHandler>
         </FormModal>
       </div>
       <div className="overflow-x-auto">
@@ -68,62 +82,63 @@ export const PotentialCustomersPage = () => {
             </tr>
           </thead>
           <tbody>
-            {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
-              <tr key={customer.id}>
-                <th>{customer.name}</th>
-                <td>{customer.email}</td>
-                <td>
-                  {(customer.routingProfiles ?? []).map((routingProfile) => (
-                    <div key={`customer-${customer.id}-routing-profile-${routingProfile.type}`}>
-                      <span>
-                        {
-                          meansOfTransportations.find(
-                            (means) => means.type === routingProfile.type
-                          )?.label
-                        }{" "}
-                        ({routingProfile.amount}{" "}
-                        {
-                          unitsOfTransportation.find(
-                            (unit) => unit.type === routingProfile.unit
-                          )?.label
-                        }
-                        )
-                      </span>
-                      <br />
-                    </div>
-                  ))}
-                </td>
-                <td style={{width: '25%', whiteSpace: 'pre-wrap'}}>
-                  {(customer.preferredAmenities ?? [])
-                    .map(
-                      (amenity) =>
-                        osmEntityTypes.find((t) => t.name === amenity)?.label ||
-                        ""
-                    )
-                    .join(", ")}
-                </td>
-                <td style={{width: '25%', whiteSpace: 'pre-wrap'}}>
-                  {(customer.preferredLocations ?? [])
-                    .map(
-                      (location) =>
-                        location.title ||
-                        ""
-                    )
-                    .join(", ")}
-                </td>
-                <td className="flex gap-2">
-                  <FormModal modalConfig={editCustomerModalConfig}>
-                    <PotentialCustomerFormHandler
-                      customer={customer}
-                    ></PotentialCustomerFormHandler>
-                  </FormModal>
-                  <FormModal modalConfig={deleteCustomerModalConfig}>
-                    <PotentialCustomerFormDeleteHandler potentialCustomer={customer}>
-                    </PotentialCustomerFormDeleteHandler>
-                  </FormModal>
-                </td>
-              </tr>
-            ))}
+            {potentialCustomerState.customers.map(
+              (customer: ApiPotentialCustomer) => (
+                <tr key={customer.id}>
+                  <th>{customer.name}</th>
+                  <td>{customer.email}</td>
+                  <td>
+                    {(customer.routingProfiles ?? []).map((routingProfile) => (
+                      <div
+                        key={`customer-${customer.id}-routing-profile-${routingProfile.type}`}
+                      >
+                        <span>
+                          {
+                            meansOfTransportations.find(
+                              (means) => means.type === routingProfile.type
+                            )?.label
+                          }{" "}
+                          ({routingProfile.amount}{" "}
+                          {
+                            unitsOfTransportation.find(
+                              (unit) => unit.type === routingProfile.unit
+                            )?.label
+                          }
+                          )
+                        </span>
+                        <br />
+                      </div>
+                    ))}
+                  </td>
+                  <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
+                    {(customer.preferredAmenities ?? [])
+                      .map(
+                        (amenity) =>
+                          osmEntityTypes.find((t) => t.name === amenity)
+                            ?.label || ""
+                      )
+                      .join(", ")}
+                  </td>
+                  <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
+                    {(customer.preferredLocations ?? [])
+                      .map((location) => location.title || "")
+                      .join(", ")}
+                  </td>
+                  <td className="flex gap-2">
+                    <FormModal modalConfig={editCustomerModalConfig}>
+                      <PotentialCustomerFormHandler
+                        customer={customer}
+                      ></PotentialCustomerFormHandler>
+                    </FormModal>
+                    <FormModal modalConfig={deleteCustomerModalConfig}>
+                      <PotentialCustomerFormDeleteHandler
+                        potentialCustomer={customer}
+                      ></PotentialCustomerFormDeleteHandler>
+                    </FormModal>
+                  </td>
+                </tr>
+              )
+            )}
           </tbody>
         </table>
       </div>

@@ -1,4 +1,8 @@
-import { ApiUpsertPotentialCustomer } from '@area-butler-types/potential-customer';
+import {
+  ApiUpsertPotentialCustomer,
+  ApiUpsertQuestionnaire,
+  ApiUpsertQuestionnaireRequest,
+} from '@area-butler-types/potential-customer';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -7,12 +11,21 @@ import {
   PotentialCustomer,
   PotentialCustomerDocument,
 } from './schema/potential-customer.schema';
+import {
+  QuestionnaireRequest,
+  QuestionnaireRequestDocument,
+} from './schema/questionnaire-request.schema';
+const crypto = require('crypto');
+import { UserService } from 'src/user/user.service';
 
 @Injectable()
 export class PotentialCustomerService {
   constructor(
     @InjectModel(PotentialCustomer.name)
     private potentialCustomerModel: Model<PotentialCustomerDocument>,
+    @InjectModel(QuestionnaireRequest.name)
+    private questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
+    private userService: UserService,
   ) {}
 
   async fetchPotentialCustomers({
@@ -78,5 +91,60 @@ export class PotentialCustomerService {
     }
 
     await potentialCustomer.deleteOne();
+  }
+
+  async insertQuestionnaireRequest(
+    user: UserDocument,
+    { ...upsertData }: ApiUpsertQuestionnaireRequest,
+  ): Promise<QuestionnaireRequestDocument> {
+    const documentData: any = {
+      ...upsertData,
+    };
+
+    const document = {
+      userId: user.id,
+      token: crypto.randomBytes(60).toString('hex'),
+      ...documentData,
+    };
+    return await new this.questionnaireRequestModel(document).save();
+  }
+
+  async upsertCustomerFromQuestionnaire({
+    token,
+    customer,
+  }: ApiUpsertQuestionnaire) {
+    const questionnaireRequest = await this.questionnaireRequestModel.findOne({
+      token,
+    });
+
+    if (!questionnaireRequest) {
+      throw new Error('Unknown token');
+    }
+
+    const { name, email, userId } = questionnaireRequest;
+
+    const user = await this.userService.findById(userId);
+
+    const customers = await this.fetchPotentialCustomers(user.id);
+
+    const existingCustomer = customers.find(
+      c => c.email.toLowerCase() === email.toLowerCase(),
+    );
+    const upsertData = {
+      ...customer,
+      name,
+      email
+    };
+
+    // TODO update
+    if (!existingCustomer) {
+      await this.insertPotentialCustomer(user, upsertData);
+    } else {
+      await this.updatePotentialCustomer(
+        user,
+        existingCustomer.id!,
+        upsertData,
+      );
+    }
   }
 }

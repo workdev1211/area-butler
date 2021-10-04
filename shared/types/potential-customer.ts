@@ -17,6 +17,22 @@ export interface ApiPotentialCustomer {
   preferredLocations: ApiPreferredLocation[];
 }
 
+export interface ApiUpsertQuestionnaireRequest {
+  name: string;
+  email: string;
+}
+
+export interface ApiQuestionnaireRequest {
+  id: string;
+  name: string;
+  email: string;
+}
+
+export interface ApiUpsertQuestionnaire {
+  token: string;
+  customer: ApiUpsertPotentialCustomer;
+}
+
 export interface ApiPreferredLocation {
   title: string,
   address: string,

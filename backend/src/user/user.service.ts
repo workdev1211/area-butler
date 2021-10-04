@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { EventType, UserCreatedEvent } from 'src/event/event.types';
 import { User, UserDocument } from './schema/user.schema';
 
@@ -34,5 +34,10 @@ export class UserService {
 
   public async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email });
+  }
+
+  public async findById(id: string): Promise<UserDocument> {
+    const oid = new Types.ObjectId(id);
+    return this.userModel.findById({ _id: oid });
   }
 }

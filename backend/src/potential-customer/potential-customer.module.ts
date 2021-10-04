@@ -9,6 +9,8 @@ import {
 import { PotentialCustomerController } from './potential-customer.controller';
 import { PotentialCustomerService } from './potential-customer.service';
 import { PotentialCustomerListener } from './listener/potential-customer.listener';
+import { QuestionnaireRequest, QuestionnaireRequestSchema } from './schema/questionnaire-request.schema';
+import { QuestionnaireController } from './questionnaire.controller';
 
 @Module({
   imports: [
@@ -16,9 +18,10 @@ import { PotentialCustomerListener } from './listener/potential-customer.listene
     UserModule,
     MongooseModule.forFeature([
       { name: PotentialCustomer.name, schema: PotentialCustomerSchema },
+      { name: QuestionnaireRequest.name, schema: QuestionnaireRequestSchema },
     ]),
   ],
-  controllers: [PotentialCustomerController],
+  controllers: [PotentialCustomerController, QuestionnaireController],
   providers: [PotentialCustomerService, PotentialCustomerListener],
 })
 export class PotentialCustomerModule {}

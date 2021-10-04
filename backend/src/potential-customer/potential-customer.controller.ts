@@ -1,6 +1,8 @@
 import {
   ApiPotentialCustomer,
+  ApiQuestionnaireRequest,
   ApiUpsertPotentialCustomer,
+  ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
 import {
   Body,
@@ -14,7 +16,10 @@ import {
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
-import { mapPotentialCustomerToApiPotentialCustomer } from './mapper/potential-customer.mapper';
+import {
+  mapPotentialCustomerToApiPotentialCustomer,
+  mapQuestionnaireRequestToApiQuestionnaireRequest,
+} from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
 
 @Controller('api/potential-customers')
@@ -41,6 +46,19 @@ export class PotentialCustomerController extends AuthenticatedController {
       await this.potentialCustomerService.insertPotentialCustomer(
         user,
         potentialCustomer,
+      ),
+    );
+  }
+
+  @Post('/questionnaire-request')
+  public async insertQuestionnaireRequest(
+    @InjectUser() user: UserDocument,
+    @Body() questionnaireRequest: ApiUpsertQuestionnaireRequest,
+  ): Promise<ApiQuestionnaireRequest> {
+    return mapQuestionnaireRequestToApiQuestionnaireRequest(
+      await this.potentialCustomerService.insertQuestionnaireRequest(
+        user,
+        questionnaireRequest,
       ),
     );
   }
