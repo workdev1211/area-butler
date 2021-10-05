@@ -5,6 +5,7 @@ var SibApiV3Sdk = require('sib-api-v3-sdk');
 
 export interface MailProps {
   to: { name: string; email: string }[];
+  cc?: { name: string; email: string }[];
   templateId: number;
   params: Record<string, string>;
 }

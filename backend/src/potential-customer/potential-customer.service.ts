@@ -125,6 +125,11 @@ export class PotentialCustomerService {
         }`,
       },
     };
+
+    if (questionnaire.userInCopy) {
+      mailProps.cc = [{ name: user.fullname, email: user.email }];
+    }
+
     await this.mailSender.sendMail(mailProps);
 
     return questionnaire;
@@ -144,20 +149,18 @@ export class PotentialCustomerService {
 
     const { name, email, userId } = questionnaireRequest;
 
-
     const user = await this.userService.findById(userId);
     const customers = await this.fetchPotentialCustomers(user);
     const existingCustomer = customers.find(
       c => c.email.toLowerCase() === email.toLowerCase(),
     );
-    
+
     const upsertData = {
       ...customer,
       name,
       email,
     };
 
-    // TODO update
     if (!existingCustomer) {
       await this.insertPotentialCustomer(user, upsertData);
     } else {

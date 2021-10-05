@@ -1,3 +1,4 @@
+import { Checkbox } from "components/Checkbox";
 import { Input } from "components/Input";
 import { Form, Formik } from "formik";
 import { FunctionComponent } from "react";
@@ -15,6 +16,7 @@ export const QuestionnaireRequestForm: FunctionComponent<QuestionnaireRequestFor
         initialValues={{
           name: "",
           email: "",
+          userInCopy: true,
         }}
         validationSchema={Yup.object({
           name: Yup.string().required("Bitte geben den Namen ein"),
@@ -46,6 +48,11 @@ export const QuestionnaireRequestForm: FunctionComponent<QuestionnaireRequestFor
                 type="text"
                 placeholder="Email"
               />
+            </div>
+            <div className="form-control my-5">
+              <Checkbox name="userInCopy">
+                Ich möchte die Mail in Kopie erhalten
+              </Checkbox>
             </div>
           </Form>
         )}

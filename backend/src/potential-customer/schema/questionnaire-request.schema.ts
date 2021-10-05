@@ -18,6 +18,9 @@ export class QuestionnaireRequest {
     @Prop({ required: true })
     token: string;
 
+    @Prop()
+    userInCopy: boolean;
+
 }
 
 export const QuestionnaireRequestSchema = SchemaFactory.createForClass(

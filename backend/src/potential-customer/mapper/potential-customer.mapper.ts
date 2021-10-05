@@ -14,10 +14,11 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
 });
 
 export const mapQuestionnaireRequestToApiQuestionnaireRequest = (
-  potentialCustomer: QuestionnaireRequestDocument,
+  questionnaireRequest: QuestionnaireRequestDocument,
 ): ApiQuestionnaireRequest => ({
-  id: potentialCustomer.id,
-  name: potentialCustomer.name,
-  email: potentialCustomer.email,
+  id: questionnaireRequest.id,
+  name: questionnaireRequest.name,
+  email: questionnaireRequest.email,
+  userInCopy: questionnaireRequest.userInCopy
 });
 

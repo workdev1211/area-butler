@@ -20,12 +20,14 @@ export interface ApiPotentialCustomer {
 export interface ApiUpsertQuestionnaireRequest {
   name: string;
   email: string;
+  userInCopy: boolean;
 }
 
 export interface ApiQuestionnaireRequest {
   id: string;
   name: string;
   email: string;
+  userInCopy: boolean;
 }
 
 export interface ApiUpsertQuestionnaire {

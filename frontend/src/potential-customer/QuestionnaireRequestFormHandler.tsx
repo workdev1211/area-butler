@@ -9,6 +9,7 @@ export const mapFormToApiUpsertQuestionnaireRequest = async (
   return {
     name: values.name,
     email: values.email,
+    userInCopy: values.userInCopy,
   };
 };
 
