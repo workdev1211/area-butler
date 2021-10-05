@@ -22,7 +22,7 @@ export const RealEstateMenuList: React.FunctionComponent<RealEstateMenuListData>
         <div className="btn btn-sm btn-primary" onClick={() => setShowMenu(!showMenu)}>
           Meine Objekte
         </div>
-        <ul className="p-2 shadow menu dropdown-content bg-base-100 rounded-box">
+        <ul className="p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
           {realEstateListingState.listings.map(
             (realEstateListing: ApiRealEstateListing) => (
               <li key={'real-estate-listing-item-' + realEstateListing.id}>
