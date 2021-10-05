@@ -10,8 +10,13 @@ export class QuestionnaireController {
   public async insertQuestionnaire(
     @Body() questionnaireRequest: ApiUpsertQuestionnaire,
   ) {
-    await this.potentialCustomerService.upsertCustomerFromQuestionnaire(
-      questionnaireRequest,
-    );
+    try {
+      await this.potentialCustomerService.upsertCustomerFromQuestionnaire(
+        questionnaireRequest,
+      );
+    } catch (err) {
+      console.error('Error while storing questionnaire data', err);
+      throw err
+    }
   }
 }

@@ -7,6 +7,8 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
   const [token, setToken] = useState("");
   const formId = "customer-questionnaire";
   const [busy, setBusy] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [error, setError] = useState(false);
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -25,8 +27,10 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
         token,
         customer,
       });
+      setSuccess(true);
     } catch (err) {
       console.log(err);
+      setError(true);
     } finally {
       setBusy(false);
     }
@@ -35,25 +39,46 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
   return (
     <div>
       <h1 className="text-3xl my-5">Interessenten Fragebogen</h1>
-      <PotentialCustomerForm
-        questionnaire={true}
-        formId={formId}
-        onSubmit={onSubmit}
-        customer={{}}
-      ></PotentialCustomerForm>
-      <button
-        form={formId}
-        key="submit"
-        type="submit"
-        disabled={busy}
-        className={
-          busy
-            ? "loading mt-5 btn btn-primary btn-sm"
-            : "mt-5 btn btn-primary btn-sm"
-        }
-      >
-        Fragebogen absenden
-      </button>
+      {!success && !error && (
+        <>
+          <PotentialCustomerForm
+            questionnaire={true}
+            formId={formId}
+            onSubmit={onSubmit}
+            customer={{}}
+          ></PotentialCustomerForm>
+          <button
+            form={formId}
+            key="submit"
+            type="submit"
+            disabled={busy}
+            className={
+              busy
+                ? "loading mt-5 btn btn-primary btn-sm"
+                : "mt-5 btn btn-primary btn-sm"
+            }
+          >
+            Fragebogen absenden
+          </button>
+        </>
+      )}
+      {success && (
+        <div>
+          <p>
+            Herzlichen Dank für Ihre Eingabe!
+            <br /> Die Daten wurden erfolgreich übermittelt.
+          </p>
+        </div>
+      )}
+      {error && (
+        <div>
+          <p>
+            Leider gab es bei der Übermittlung der Daten ein Problem.
+            <br />
+            Bitte versuchen Sie es später noch einmal.
+          </p>
+        </div>
+      )}
     </div>
   );
 };
