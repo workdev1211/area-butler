@@ -120,7 +120,9 @@ export class PotentialCustomerService {
       to: [{ name: questionnaire.name, email: questionnaire.email }],
       templateId: 1,
       params: {
-        href: `${configService.getBaseAppUrl()}/questionnaire?token=${questionnaire.token}`,
+        href: `${configService.getBaseAppUrl()}/questionnaire?token=${
+          questionnaire.token
+        }`,
       },
     };
     await this.mailSender.sendMail(mailProps);
@@ -142,13 +144,13 @@ export class PotentialCustomerService {
 
     const { name, email, userId } = questionnaireRequest;
 
+
     const user = await this.userService.findById(userId);
-
-    const customers = await this.fetchPotentialCustomers(user.id);
-
+    const customers = await this.fetchPotentialCustomers(user);
     const existingCustomer = customers.find(
       c => c.email.toLowerCase() === email.toLowerCase(),
     );
+    
     const upsertData = {
       ...customer,
       name,
