@@ -21,6 +21,9 @@ module.exports = {
                 'print': {'raw': 'print'},
                 }
         },
+        fontFamily: {
+            'serif': ['archia']
+        },
     },
     variants: {
         extend: {},
