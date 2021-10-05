@@ -83,14 +83,14 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
               </div>
             )}
             <div className="my-6">
-              <strong>Bevorzugte Fortbewegungsarten</strong>
+              <strong>{questionnaire ? 'Meine ' : ''} Bevorzugte Fortbewegungsarten</strong>
               <TransportationParams
                 inputValues={routingProfiles}
                 onChange={(values) => setRoutingProfiles(values)}
               ></TransportationParams>
             </div>
             <div className="my-6">
-              <strong>Bevorzugte Lokalitäten</strong>
+              <strong>{questionnaire ? 'Meine ' : ''} Bevorzugte Lokalitäten</strong>
               <div className="grid grid-cols-2 gap-6 mt-5">
                 <LocalityOptions
                   inputValues={preferredAmenities}

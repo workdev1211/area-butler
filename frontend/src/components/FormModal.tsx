@@ -4,6 +4,7 @@ import { v4 as uuid } from 'uuid';
 
 export interface ModalConfig {
   buttonTitle: string;
+  submitButtonTitle?: string;
   buttonStyle?: string;
   modalTitle: string;
 }
@@ -49,7 +50,7 @@ export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = 
                 disabled={busy}
                 className={busy ? 'loading btn btn-primary btn-sm' : 'btn btn-primary btn-sm'}
               >
-                Speichern
+                {props.modalConfig.submitButtonTitle || 'Speichern'}
               </button>
           </div>
         </div>

@@ -54,6 +54,32 @@ export const QuestionnaireRequestForm: FunctionComponent<QuestionnaireRequestFor
                 Ich möchte die Mail in Kopie erhalten
               </Checkbox>
             </div>
+            <p className="text-sm">
+              Was passiert beim Klick auf <strong>Senden</strong>?
+            </p>
+            <ul className="list-decimal m-5 flex flex-col gap-3 text-xs">
+              <li>
+                Der Area Butler verschickt eine E-Mail an Ihren Interessenten.
+                Diese E-Mail enthält einen Link.
+              </li>
+              <li>
+                Über diesen kann Ihr Interessent nun seine bevorzugte
+                Fortbewegungsarten und Lokalitäten sowie seine/ihre wichtigen
+                Adressen eingeben.
+              </li>
+              <li>
+                Das Ergebnis der Analyse sieht Ihr Interessent nicht - dies
+                können Sie exklusiv bereitstellen.
+              </li>
+              <li>
+                Sobald wir eine Antwort erhalten haben, erscheint der
+                Interessent unter "Meine Interessenten" zur Schnellauswahl.
+              </li>
+            </ul>
+            <p className="text-sm">
+              Dadurch sparen Sie Zeit und Mühe und bieten einen persönlichen
+              Extraservice.
+            </p>
           </Form>
         )}
       ></Formik>

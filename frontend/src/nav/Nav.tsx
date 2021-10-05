@@ -12,6 +12,8 @@ type NavProps = {
 
 const Nav: FunctionComponent<NavProps> = (props) => {
 
+    const showNavBar = window.location.pathname !== '/questionnaire';
+
     const { logout, user, isAuthenticated } = useAuth0();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -61,7 +63,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                             <img className="hidden lg:block h-14 w-auto"
                                  src={Logo} alt="Logo"/>
                         </div>
-                        <div className="hidden sm:flex sm:items-center sm:ml-6">
+                        {showNavBar && (<div className="hidden sm:flex sm:items-center sm:ml-6">
                             <div className="flex space-x-4">
                                 <Link to="/" className="btn"
                                    aria-current="page">Start</Link>
@@ -74,9 +76,9 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                                    
                                 { !isAuthenticated && <LoginButton></LoginButton> }
                             </div>
-                        </div>
+                        </div>)}
                     </div>
-                    <div
+                    {showNavBar && (<div
                         className="absolute inset-y-0 right-0 flex items-center pr-2 sm:static sm:inset-auto sm:ml-6 sm:pr-0">
                         {/*<button type="button"*/}
                         {/*        className="bg-gray-800 p-1 rounded-full text-gray-400 hover:text-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-white">*/}
@@ -114,7 +116,7 @@ const Nav: FunctionComponent<NavProps> = (props) => {
                                       id="user-menu-item-2">Abmelden</button>
                             </div>
                         </div> }
-                    </div>
+                    </div>)}
                 </div>
             </div>
 

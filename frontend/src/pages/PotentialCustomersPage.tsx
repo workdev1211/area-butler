@@ -31,6 +31,7 @@ export const PotentialCustomersPage = () => {
     modalTitle: "Fragebogen versenden",
     buttonTitle: "Fragebogen versenden",
     buttonStyle: "btn btn-sm",
+    submitButtonTitle: 'Senden'
   };
 
   const editCustomerModalConfig = {

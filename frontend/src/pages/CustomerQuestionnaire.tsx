@@ -37,10 +37,10 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
   };
 
   return (
-    <div>
-      <h1 className="text-3xl my-5">Interessenten Fragebogen</h1>
+    <div className="m-10">
       {!success && !error && (
         <>
+          <h1 className="text-3xl my-5">Interessenten Fragebogen</h1>
           <PotentialCustomerForm
             questionnaire={true}
             formId={formId}
@@ -63,15 +63,29 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
         </>
       )}
       {success && (
-        <div>
+        <div className="flex flex-col gap-3 m-10">
+          <h1 className="text-2xl font-bold">Vielen Dank!</h1>
+          <p className="w-100">
+            Zusammen mit Ihrem Immobilienmakler bereite ich nun Ihre{" "}
+            <strong>persönliche Umfeldanalyse</strong> auf.
+          </p>
+          <p>Diese erhalten Sie exklusiv in Ihrem Exposee oder per E-Mail.</p>
           <p>
-            Herzlichen Dank für Ihre Eingabe!
-            <br /> Die Daten wurden erfolgreich übermittelt.
+            Ich hoffe Ihnen hat diese Abfrage gefallen. Ideen zu{" "}
+            <strong>Verbesserung</strong>?<br />
+            Geben Sie gern kurz Feedback Mit freundlichen Grüßen Ihr Area Butler
+          </p>
+          <p>
+            Mehr Infos:{" "}
+            <a href="www.area-butler.de">
+              <strong>www.area-butler.de</strong>
+            </a>
           </p>
         </div>
       )}
       {error && (
-        <div>
+        <div m-10>
+          <h1 className="text-2xl font-bold">Verzeihung!</h1>
           <p>
             Leider gab es bei der Übermittlung der Daten ein Problem.
             <br />

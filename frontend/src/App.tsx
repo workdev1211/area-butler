@@ -31,7 +31,7 @@ function App() {
             </FormModal>
           </Authenticated>
           <div className="App px-4">
-          <Nav />
+            <Nav />
             <Switch>
               <Route path="/questionnaire">
                 <CustomerQuestionnaire></CustomerQuestionnaire>
