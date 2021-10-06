@@ -259,6 +259,7 @@ const SearchResult: FunctionComponent = () => {
           selectedCenter={searchContextState.selectedCenter ?? searchContextState.searchResponse.centerOfInterest.coordinates}
           selectedZoomLevel={searchContextState.selectedZoomLevel ?? defaultMapZoom}
           printingActive={searchContextState.printingActive}
+          highlightId={searchContextState.highlightId}
         />
         <div className="flex-col gap-6 mt-5">
           <div className="tabs">

@@ -31,6 +31,7 @@ export interface SearchContextState {
     preferredLocations?: ApiPreferredLocation[];
     mapClippings?: MapClipping[];
     censusData?: ApiGeometry[];
+    highlightId?: number;
 }
 
 export const initialState: SearchContextState = {
@@ -74,6 +75,7 @@ export enum SearchContextActions {
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
     CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
     SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+    SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID'
 }
 
 const reducer: (
@@ -124,6 +126,9 @@ const reducer: (
         }
         case SearchContextActions.SET_ZENSUS_DATA: {
             return {...state, censusData: [...action.payload]}
+        }
+        case SearchContextActions.SET_HIGHLIGHT_ID: {
+            return {...state, highlightId: action.payload}
         }
         default:
             return state;

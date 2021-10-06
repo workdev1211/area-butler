@@ -27,6 +27,31 @@ export interface MapProps {
         byFoot: boolean;
         byBike: boolean;
         byCar: boolean;
+    },
+    highlightId?: number;
+}
+
+export class IdMarker extends L.Marker {
+    entity: ResultEntity;
+
+    constructor(latLng: L.LatLngExpression, entity: ResultEntity, options?: L.MarkerOptions) {
+        super(latLng, options);
+        this.entity = entity;
+    }
+
+    getEntity() {
+        return this.entity;
+    }
+
+    setEntity(entity: ResultEntity) {
+        this.entity = entity;
+    }
+
+    createOpenPopup() {
+        if (!this.getPopup()) {
+            this.bindPopup(`${this.entity.name || 'Name nicht bekannt'}`);
+        }
+        this.openPopup();
     }
 }
 
@@ -47,7 +72,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const selectedZoomLevelEqual = prevProps.selectedZoomLevel === nextProps.selectedZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual && censusDataEqual;
+    const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
+    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual && censusDataEqual && highlightIdEqual;
 }
 
 const Map = React.memo<MapProps>(({
@@ -58,7 +84,8 @@ const Map = React.memo<MapProps>(({
                                       printingActive,
                                       selectedZoomLevel,
                                       leafletMapId = 'mymap',
-                                      censusData
+                                      censusData,
+                                      highlightId
                                   }) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
     const initialPosition: L.LatLngExpression = [lat, lng];
@@ -122,7 +149,7 @@ const Map = React.memo<MapProps>(({
             currentMap.setView(selectedCenter, selectedZoomLevel);
             // handle growing/shrinking of icons based on zoom level
             if (amenityMarkerGroup) {
-                const markers = (amenityMarkerGroup.getLayers() as L.Marker[]);
+                const markers = (amenityMarkerGroup.getLayers() as IdMarker[]);
                 if (markers.length) {
                     const currentSize = markers[0].getIcon().options.iconSize;
                     if ((currentSize as L.Point).x === 20 && selectedZoomLevel >= 17) {
@@ -139,10 +166,19 @@ const Map = React.memo<MapProps>(({
                             marker.setIcon(icon);
                         });
                     }
+                    const marker = markers.find(m => m.getEntity().id === highlightId);
+                    if (marker) {
+                        // use timeout to wait for de-spider animation of cluster
+                        setTimeout(() => {
+                                marker.createOpenPopup()
+                                searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: null});
+                            }
+                            , 1200);
+                    }
                 }
             }
         }
-    }, [currentMap, amenityMarkerGroup, selectedCenter, selectedZoomLevel]);
+    }, [currentMap, amenityMarkerGroup, selectedCenter, selectedZoomLevel, highlightId]);
 
     // draw means
     useEffect(() => {
@@ -228,14 +264,11 @@ const Map = React.memo<MapProps>(({
                         iconSize: defaultAmenityIconSize,
                         className: entity.type
                     });
-                    const marker = L.marker(entity.coordinates, {
+                    const marker = new IdMarker(entity.coordinates, entity, {
                         icon,
                     }).on('click', function (e) {
                         const marker = e.target;
-                        if (!marker.getPopup()) {
-                            marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
-                        }
-                        marker.getPopup().openPopup();
+                        marker.createOpenPopup();
                     });
                     amenityMarkerGroup.addLayer(marker);
                 });

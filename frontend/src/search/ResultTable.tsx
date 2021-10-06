@@ -1,9 +1,9 @@
-import React, { useContext } from "react";
+import React, {useContext} from "react";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 import {MeansOfTransportation} from "../../../shared/types/types";
 import {ResultEntity} from "./SearchResult";
 import {fallbackIcon, osmNameToIcons} from "../map/makiIcons";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
 
 export interface ResultTableProps {
     title: string;
@@ -45,7 +45,10 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
                 <tbody>
                 {data.map((row: ResultEntity) => <tr
                     className="hover cursor-pointer"
-                    onClick={()=> searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: row.coordinates, zoom: 18 }})}
+                    onClick={()=> {
+                        searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: row.coordinates, zoom: 18 }});
+                        searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: row.id});
+                    }}
                     key={'result-table-' + props.title + '-' + row.name + row.distanceInMeters}>
                     {dataSelectable && <td className="w-4"><input
                             type="checkbox"
