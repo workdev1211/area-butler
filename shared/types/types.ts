@@ -62,6 +62,8 @@ export interface ApiOsmEntity {
   type: OsmType;
   name: OsmName;
   label: string;
+  uniqueRadius?: number;
+  uniqueTreshold?: number;
 }
 
 export interface ApiAddress {

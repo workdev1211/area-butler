@@ -138,19 +138,9 @@ export class OverpassService {
 
         const CIRCLE_OPTIONS: Properties = {units: 'meters'};
         const findDuplicatesAround = (elements, elementToInspect) => {
-            let distance;
-            switch (elementToInspect.entity.type) {
-                case OsmName.motorway_link:
-                    distance = 500;
-                    break;
-                case OsmName.bus_stop:
-                    distance = 500;
-                    break;
-                default:
-                    distance = 50
-                    break;
-            }
-            const polygon = circle(point([elementToInspect.coordinates.lat, elementToInspect.coordinates.lng]), distance, CIRCLE_OPTIONS);
+            const searchAroundDistance = osmEntityTypes.find(e => e.label === elementToInspect.entity.label)?.uniqueRadius || 20;
+            const similiarityTreshold = osmEntityTypes.find(e => e.label === elementToInspect.entity.label)?.uniqueTreshold || 0.8;
+            const polygon = circle(point([elementToInspect.coordinates.lat, elementToInspect.coordinates.lng]), searchAroundDistance, CIRCLE_OPTIONS);
             const container = [];
             elements
                 .filter(e => e.entity.id !== elementToInspect.entity.id && e.entity.type === elementToInspect.entity.type)
@@ -160,7 +150,7 @@ export class OverpassService {
 
                     if (booleanPointInPolygon(elementPoint, polygon)) {
                         const comparison = compareTwoStrings(elementToInspect.entity.name, element.entity.name);
-                        if (comparison >= 0.8) {
+                        if (comparison >= similiarityTreshold) {
                             const elementNameLonger = element.entity.name?.length > elementToInspect.entity.name?.length;
                             container.push(elementNameLonger ? elementToInspect : element);
                         }

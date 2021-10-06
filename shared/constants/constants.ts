@@ -22,80 +22,112 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     type: OsmType.leisure,
     name: OsmName.playground,
     label: "Spielplatz",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.amenity,
     name: OsmName.school,
     label: "Schule",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.amenity,
     name: OsmName.bar,
     label: "Bar",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.8
   },
   {
     type: OsmType.amenity,
     name: OsmName.restaurant,
     label: "Restaurant",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.8
   },
   {
     type: OsmType.leisure,
     name: OsmName.park,
     label: "Park",
+    uniqueRadius: 200,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.shop,
     name: OsmName.chemist,
     label: "Drogerie",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.shop,
     name: OsmName.supermarket,
     label: "Supermarkt",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.amenity,
     name: OsmName.doctors,
     label: "Arzt",
+    uniqueRadius: 100,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.amenity,
     name: OsmName.dentist,
     label: "Zahnarzt",
+    uniqueRadius: 100,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.amenity,
     name: OsmName.clinic,
     label: "Klinik",
+    uniqueRadius: 500,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.amenity,
     name: OsmName.kiosk,
     label: "Kiosk",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.8
   },
   {
     type: OsmType.amenity,
     name: OsmName.post_office,
     label: "Kiosk/Paketshop",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.8
   },
   {
     type: OsmType.amenity,
     name: OsmName.fuel,
     label: "Tankstelle",
+    uniqueRadius: 50,
+    uniqueTreshold: 0.6
   },
   {
     type: OsmType.public_transport,
     name: OsmName.station,
     label: "Öff. Schienenverkehr",
+    uniqueRadius: 100,
+    uniqueTreshold: 0.8
   },
   {
     type: OsmType.highway,
     name: OsmName.bus_stop,
     label: "Bushaltestelle",
+    uniqueRadius: 500,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.highway,
     name: OsmName.motorway_link,
     label: "Autobahnauffahrt",
+    uniqueRadius: 500,
+    uniqueTreshold: 0.4
   },
 ];
