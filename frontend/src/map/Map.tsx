@@ -31,6 +31,7 @@ export interface MapProps {
 }
 
 export const defaultMapZoom = 15;
+const defaultAmenityIconSize = new L.Point(20, 20);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -117,9 +118,31 @@ const Map = React.memo<MapProps>(({
     // react on zoom and center change
     useEffect(() => {
         if (currentMap && selectedCenter && selectedZoomLevel) {
+            // center and zoom view
             currentMap.setView(selectedCenter, selectedZoomLevel);
+            // handle growing/shrinking of icons based on zoom level
+            if (amenityMarkerGroup) {
+                const markers = (amenityMarkerGroup.getLayers() as L.Marker[]);
+                if (markers.length) {
+                    const currentSize = markers[0].getIcon().options.iconSize;
+                    if ((currentSize as L.Point).x === 20 && selectedZoomLevel >= 17) {
+                        markers.forEach(marker => {
+                            const icon = marker.getIcon();
+                            icon.options.iconSize = new L.Point(35, 35);
+                            marker.setIcon(icon);
+                        });
+                    }
+                    if ((currentSize as L.Point).x === 35 && selectedZoomLevel < 17) {
+                        markers.forEach(marker => {
+                            const icon = marker.getIcon();
+                            icon.options.iconSize = defaultAmenityIconSize;
+                            marker.setIcon(icon);
+                        });
+                    }
+                }
+            }
         }
-    }, [currentMap, selectedCenter, selectedZoomLevel]);
+    }, [currentMap, amenityMarkerGroup, selectedCenter, selectedZoomLevel]);
 
     // draw means
     useEffect(() => {
@@ -202,7 +225,7 @@ const Map = React.memo<MapProps>(({
                         iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
                         shadowUrl: leafletShadow,
                         shadowSize: [0, 0],
-                        iconSize: localZoom >= 16 ? new L.Point(35, 35) : new L.Point(20, 20),
+                        iconSize: defaultAmenityIconSize,
                         className: entity.type
                     });
                     const marker = L.marker(entity.coordinates, {
