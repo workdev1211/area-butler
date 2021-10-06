@@ -256,8 +256,8 @@ const SearchResult: FunctionComponent = () => {
           censusData={showCensus && searchContextState.censusData!}
           entities={filteredEntites}
           means={mapMeans}
-          selectedCenter={searchContextState.printingActive ? searchContextState.selectedCenter : searchContextState.searchResponse.centerOfInterest.coordinates}
-          selectedZoomLevel={searchContextState.printingActive ? searchContextState.selectedZoomLevel : defaultMapZoom}
+          selectedCenter={searchContextState.selectedCenter ?? searchContextState.searchResponse.centerOfInterest.coordinates}
+          selectedZoomLevel={searchContextState.selectedZoomLevel ?? defaultMapZoom}
           printingActive={searchContextState.printingActive}
         />
         <div className="flex-col gap-6 mt-5">

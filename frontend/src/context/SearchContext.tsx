@@ -1,19 +1,22 @@
 import React from "react";
 import {
-    ApiCoordinates, ApiGeometry, ApiSearchResponse,
-    MeansOfTransportation, OsmName,
+    ApiCoordinates,
+    ApiGeometry,
+    ApiSearchResponse,
+    MeansOfTransportation,
+    OsmName,
     TransportationParam,
     UnitsOfTransportation
 } from "../../../shared/types/types";
 import {osmEntityTypes} from "../../../shared/constants/constants";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import MapClippings from "pdf-export/MapClippings";
+import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
+import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 
 export interface MapClipping {
     zoomLevel: number;
     mapClippingDataUrl: string;
 }
+
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
@@ -62,12 +65,13 @@ export enum SearchContextActions {
     SET_LOCATION = 'SET_LOCATION',
     SET_SELECTED_CENTER = 'SET_SELECTED_CENTER',
     SET_SELECTED_ZOOM_LEVEL = 'SET_SELECTED_ZOOM_LEVEL',
+    CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
     SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
     SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
-    ADD_MAP_CLIPPING =  'ADD_MAP_CLIPPING',
+    ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
     CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
     SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
 }
@@ -78,45 +82,48 @@ const reducer: (
 ) => SearchContextState = (state, action) => {
     switch (action.type) {
         case SearchContextActions.SET_REAL_ESTATE_LISTING: {
-            return {...state, realEstateListing: {...action.payload} };
+            return {...state, realEstateListing: {...action.payload}};
         }
         case SearchContextActions.SET_PLACES_LOCATION: {
-            return {...state, placesLocation: {...action.payload} };
+            return {...state, placesLocation: {...action.payload}};
         }
         case SearchContextActions.SET_LOCATION: {
-            return { ...state, location: {...action.payload }};
+            return {...state, location: {...action.payload}};
         }
         case SearchContextActions.SET_SELECTED_CENTER: {
-            return { ...state, selectedCenter: {...action.payload }};
+            return {...state, selectedCenter: {...action.payload}};
         }
         case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
-            return { ...state, selectedZoomLevel: action.payload};
+            return {...state, selectedZoomLevel: action.payload};
+        }
+        case SearchContextActions.CENTER_ZOOM_COORDINATES: {
+            return {...state, selectedZoomLevel: action.payload.zoom, selectedCenter: action.payload.center}
         }
         case SearchContextActions.SET_PRINTING_ACTIVE: {
-            return { ...state, printingActive: action.payload};
+            return {...state, printingActive: action.payload};
         }
         case SearchContextActions.SET_PREFERRED_LOCATIONS: {
-            return { ...state, preferredLocations: [...action.payload ]};
+            return {...state, preferredLocations: [...action.payload]};
         }
         case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
-            return { ...state, transportationParams: [...action.payload]}
+            return {...state, transportationParams: [...action.payload]}
         }
         case SearchContextActions.SET_LOCALITY_OPTIONS: {
-            return { ...state, localityOptions: [...action.payload]}
+            return {...state, localityOptions: [...action.payload]}
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
-            return { ...state, searchResponse: {...action.payload}}
+            return {...state, searchResponse: {...action.payload}}
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];
             newMapClippings.push(action.payload);
-            return { ...state, mapClippings: newMapClippings};
+            return {...state, mapClippings: newMapClippings};
         }
         case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
-            return { ...state, mapClippings: []};
+            return {...state, mapClippings: []};
         }
         case SearchContextActions.SET_ZENSUS_DATA: {
-            return { ...state, censusData: [...action.payload]}
+            return {...state, censusData: [...action.payload]}
         }
         default:
             return state;
