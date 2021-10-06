@@ -104,8 +104,10 @@ const Map = React.memo<MapProps>(({searchResponse, entities, means, selectedCent
                         icon,
                     }).on('click', function (e) {
                         const marker = e.target;
-                        marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
-                        marker.openPopup();
+                        if (!marker.getPopup()) {
+                            marker.bindPopup(`${entity.name || 'Name nicht bekannt'}`);
+                        }
+                        marker.getPopup().openPopup();
                     });
                     amenityMarkerGroup.addLayer(marker);
                 });
