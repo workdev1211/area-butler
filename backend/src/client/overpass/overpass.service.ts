@@ -1,13 +1,16 @@
 import {ApiAddress, ApiCoordinates, ApiOsmLocation, OsmName,} from '@area-butler-types/types';
-import {HttpService, Injectable} from '@nestjs/common';
+import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {osmEntityTypes} from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 import {point, Properties} from '@turf/helpers';
 import circle from "@turf/circle";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
 
-const compareTwoStrings = (first: string, second: string) => {
-    if (!first || !second) {
+const compareTwoStrings = (first: string | undefined, second: string | undefined) => {
+    if (first === undefined && second === undefined) {
+        return 1;
+    }
+    if (first === undefined || second === undefined) {
         return 0;
     }
     first = first.toLowerCase().replace(/\s+/g, '')
@@ -42,6 +45,7 @@ const compareTwoStrings = (first: string, second: string) => {
 @Injectable()
 export class OverpassService {
     private baseUrl = 'https://overpass.x.syndicats.co/api/interpreter';
+    private logger: Logger = new Logger(OverpassService.name);
 
     constructor(private http: HttpService) {
     }
@@ -132,10 +136,21 @@ export class OverpassService {
         });
 
 
-        const DISTANCE = 10;
         const CIRCLE_OPTIONS: Properties = {units: 'meters'};
         const findDuplicatesAround = (elements, elementToInspect) => {
-            const polygon = circle(point([elementToInspect.coordinates.lat, elementToInspect.coordinates.lng]), DISTANCE, CIRCLE_OPTIONS);
+            let distance;
+            switch (elementToInspect.entity.type) {
+                case OsmName.motorway_link:
+                    distance = 500;
+                    break;
+                case OsmName.bus_stop:
+                    distance = 500;
+                    break;
+                default:
+                    distance = 50
+                    break;
+            }
+            const polygon = circle(point([elementToInspect.coordinates.lat, elementToInspect.coordinates.lng]), distance, CIRCLE_OPTIONS);
             const container = [];
             elements
                 .filter(e => e.entity.id !== elementToInspect.entity.id && e.entity.type === elementToInspect.entity.type)
@@ -146,7 +161,7 @@ export class OverpassService {
                     if (booleanPointInPolygon(elementPoint, polygon)) {
                         const comparison = compareTwoStrings(elementToInspect.entity.name, element.entity.name);
                         if (comparison >= 0.8) {
-                            const elementNameLonger = element.entity.name.length > elementToInspect.entity.name.length;
+                            const elementNameLonger = element.entity.name?.length > elementToInspect.entity.name?.length;
                             container.push(elementNameLonger ? elementToInspect : element);
                         }
                     }
