@@ -9,6 +9,7 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState(false);
+  const [showFaq, setShowFaq] = useState(false);
 
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -39,7 +40,7 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
   return (
     <div className="m-10">
       {!success && !error && (
-        <>
+        <div className="flex flex-col gap-2">
           <h1 className="text-3xl my-5">Interessenten Fragebogen</h1>
           <PotentialCustomerForm
             questionnaire={true}
@@ -47,6 +48,7 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
             onSubmit={onSubmit}
             customer={{}}
           ></PotentialCustomerForm>
+          <hr className="mt-4" />
           <button
             form={formId}
             key="submit"
@@ -54,13 +56,66 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
             disabled={busy}
             className={
               busy
-                ? "loading mt-5 btn btn-primary btn-sm"
-                : "mt-5 btn btn-primary btn-sm"
+                ? "loading mt-5 btn btn-primary btn-sm w-72"
+                : "mt-5 btn btn-primary btn-sm w-72"
             }
           >
             Fragebogen absenden
           </button>
-        </>
+          <button
+            className="mt-5 btn btn-xs w-32"
+            onClick={() => setShowFaq(!showFaq)}
+          >
+            Häufige Fragen
+          </button>
+          {showFaq && (
+            <div className="border p-3">
+              <h1 className="font-bold mb-3">Häufige Fragen</h1>
+              <ol className="list-decimal flex flex-col gap-2">
+                <li className="ml-5">
+                  Was passiert, wenn ich auf{" "}
+                  <strong>Fragebogen absenden</strong> klicke?
+                  <ul className="list-disc ml-10">
+                    <li className="mt-2">
+                      Ihr Area Butler macht sich nun daran, dass für Sie
+                      passende Objekt am für Sie perfekten Ort zu finden
+                    </li>
+                    <li>
+                      Ihre Mobilitätspräferenzen, persönlichen Kriterien und
+                      Ihre wichtigsten Adressen fließen nun in{" "}
+                      <strong>Ihre personalisierte Umfeldanalyse</strong> ein
+                    </li>
+                    <li>
+                      Ihre persönliche Umfeldanalyse erhalten sie exklusiv von
+                      Ihrem Immobilienmakler entweder per E-Mail oder im
+                      Objekt-Exposee
+                    </li>
+                  </ul>
+                </li>
+
+                <li className="ml-5">
+                  Wer sieht meine Angaben?
+                  <ul className="list-disc ml-10">
+                    <li className="mt-2">
+                      Die Antworten sieht nur Ihr Immobilienmakler
+                    </li>
+                    <li>
+                      Der Area Butler nutzt die Daten zu Aufbereitung Ihrer
+                      persönlichen Umfeldanalyse
+                    </li>
+                  </ul>
+                </li>
+
+                <li className="ml-5">
+                  Weitere Informationen unter{" "}
+                  <a href="https://www.area-butler.de">
+                    <strong>www.area-butler.de</strong>
+                  </a>
+                </li>
+              </ol>
+            </div>
+          )}
+        </div>
       )}
       {success && (
         <div className="flex flex-col gap-3 m-10">
