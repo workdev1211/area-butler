@@ -44,6 +44,7 @@ export const PotentialCustomersPage = () => {
     modalTitle: "Interessent löschen",
     buttonTitle: "Löschen",
     buttonStyle: "btn btn-xs",
+    submitButtonTitle: "Löschen"
   };
 
   useEffect(() => {
