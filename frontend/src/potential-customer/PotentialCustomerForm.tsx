@@ -1,7 +1,8 @@
 import { Input } from "components/Input";
-import { ConfigContext } from "context/ConfigContext";
-import { Form, Formik, FieldArray } from "formik";
-import { useContext, useState } from "react";
+import { Form, Formik } from "formik";
+import { useState } from "react";
+import RealEstateCharacteristicsControl from "real-estate-listings/RealEstateCharacteristicsControl";
+import RealEstateCostStructureControl from "real-estate-listings/RealEstateCostStructureControl";
 import LocalityOptions from "search/Localitites";
 import TransportationParams from "search/TransportationParams";
 import * as Yup from "yup";
@@ -9,6 +10,10 @@ import {
   ApiPotentialCustomer,
   ApiPreferredLocation,
 } from "../../../shared/types/potential-customer";
+import {
+  ApiRealEstateCharacteristics,
+  ApiRealEstateCost,
+} from "../../../shared/types/real-estate";
 import { OsmName, TransportationParam } from "../../../shared/types/types";
 import { PreferredLocationsControl } from "./PreferredLocationsControl";
 
@@ -31,6 +36,12 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
     const [preferredLocations, setPreferredLocations] = useState<
       ApiPreferredLocation[]
     >(customer.preferredLocations ?? []);
+
+    const [realEstateCharacteristics, setRealEstateCharacteristics] =
+      useState<ApiRealEstateCharacteristics>();
+
+    const [realEstateCostStructure, setRealEstateCostStructure] =
+      useState<ApiRealEstateCost>();
 
     return (
       <Formik
@@ -56,6 +67,8 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             preferredAmenities,
             routingProfiles,
             preferredLocations,
+            realEstateCharacteristics,
+            realEstateCostStructure
           };
           onSubmit(formValues);
         }}
@@ -83,14 +96,18 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
               </div>
             )}
             <div className="my-6">
-              <strong>{questionnaire ? 'Meine ' : ''} Bevorzugte Fortbewegungsarten</strong>
+              <strong>
+                {questionnaire ? "Meine " : ""} Bevorzugte Fortbewegungsarten
+              </strong>
               <TransportationParams
                 inputValues={routingProfiles}
                 onChange={(values) => setRoutingProfiles(values)}
               ></TransportationParams>
             </div>
             <div className="my-6">
-              <strong>{questionnaire ? 'Meine ' : ''} Bevorzugte Lokalitäten</strong>
+              <strong>
+                {questionnaire ? "Meine " : ""} Bevorzugte Lokalitäten
+              </strong>
               <div className="grid grid-cols-2 gap-6 mt-5">
                 <LocalityOptions
                   inputValues={preferredAmenities}
@@ -101,10 +118,24 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             <div className="my-6">
               <strong>Wichtige Adressen</strong>
             </div>
-            <PreferredLocationsControl
-              inputValues={preferredLocations}
-              onChange={(values) => setPreferredLocations(values)}
-            />
+            <div className="my-6">
+              <PreferredLocationsControl
+                inputValues={preferredLocations}
+                onChange={(values) => setPreferredLocations(values)}
+              />
+            </div>
+            {questionnaire && <div className="my-6"><strong>
+                Meine Wohnvorstellung
+              </strong></div>}
+            <RealEstateCostStructureControl
+              inputValues={customer.realEstateCostStructure}
+              onChange={(values) => setRealEstateCostStructure(values)}
+            ></RealEstateCostStructureControl>
+
+            <RealEstateCharacteristicsControl
+              inputValues={customer.realEstateCharacteristics}
+              onChange={(values) => setRealEstateCharacteristics(values)}
+            ></RealEstateCharacteristicsControl>
           </Form>
         )}
       ></Formik>

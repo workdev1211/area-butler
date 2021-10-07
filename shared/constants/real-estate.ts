@@ -9,6 +9,6 @@ export const allFurnishing = [
 
 export const allRealEstateCostTypes = [
     { label: 'Verkauf', type: ApiRealEstateCostType.SELL},
-    { label: 'Monatliche Warmmiete', type: ApiRealEstateCostType.RENT_MONTHLY_WARM},
-    { label: 'Monatliche Kaltmiete', type: ApiRealEstateCostType.RENT_MONTHLY_COLD},
+    { label: 'Monatl. Warmmiete', type: ApiRealEstateCostType.RENT_MONTHLY_WARM},
+    { label: 'Monatl. Kaltmiete', type: ApiRealEstateCostType.RENT_MONTHLY_COLD},
 ];

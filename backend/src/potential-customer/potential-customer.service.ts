@@ -164,7 +164,6 @@ export class PotentialCustomerService {
     if (!existingCustomer) {
       await this.insertPotentialCustomer(user, upsertData);
 
-
       const mailProps: MailProps = {
         to: [{ name: user.fullname, email: user.email }],
         templateId: 2,

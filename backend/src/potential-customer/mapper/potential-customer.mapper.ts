@@ -11,6 +11,8 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   routingProfiles: potentialCustomer.routingProfiles,
   preferredAmenities: potentialCustomer.preferredAmenities,
   preferredLocations: potentialCustomer.preferredLocations,
+  realEstateCharacteristics: potentialCustomer.realEstateCharacteristics,
+  realEstateCostStructure: potentialCustomer.realEstateCostStructure
 });
 
 export const mapQuestionnaireRequestToApiQuestionnaireRequest = (

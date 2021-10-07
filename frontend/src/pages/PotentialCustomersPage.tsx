@@ -15,6 +15,10 @@ import {
 import React from "react";
 import { PotentialCustomerFormDeleteHandler } from "potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "potential-customer/QuestionnaireRequestFormHandler";
+import {
+  allFurnishing,
+  allRealEstateCostTypes,
+} from "../../../shared/constants/real-estate";
 
 export const PotentialCustomersPage = () => {
   const { get } = useHttp();
@@ -31,7 +35,7 @@ export const PotentialCustomersPage = () => {
     modalTitle: "Fragebogen versenden",
     buttonTitle: "Fragebogen versenden",
     buttonStyle: "btn btn-sm",
-    submitButtonTitle: 'Senden'
+    submitButtonTitle: "Senden",
   };
 
   const editCustomerModalConfig = {
@@ -43,8 +47,8 @@ export const PotentialCustomersPage = () => {
   const deleteCustomerModalConfig = {
     modalTitle: "Interessent löschen",
     buttonTitle: "Löschen",
-    buttonStyle: "btn btn-xs",
-    submitButtonTitle: "Löschen"
+    buttonStyle: "btn btn-xs btn-primary",
+    submitButtonTitle: "Löschen",
   };
 
   useEffect(() => {
@@ -72,7 +76,7 @@ export const PotentialCustomersPage = () => {
         </FormModal>
       </div>
       <div className="overflow-x-auto">
-        <table className="table w-full">
+        <table className="table w-full text-sm">
           <thead>
             <tr>
               <th>Name</th>
@@ -80,6 +84,7 @@ export const PotentialCustomersPage = () => {
               <th>Bewegungsprofile</th>
               <th>Bevorzugte Umgebung</th>
               <th>Wichtige Adressen</th>
+              <th>Wohnvorstellung</th>
               <th></th>
             </tr>
           </thead>
@@ -125,6 +130,27 @@ export const PotentialCustomersPage = () => {
                     {(customer.preferredLocations ?? [])
                       .map((location) => location.title || "")
                       .join(", ")}
+                  </td>
+                  <td>
+                    {!!customer?.realEstateCostStructure?.type &&
+                    !!customer?.realEstateCostStructure.price
+                      ? `${customer?.realEstateCostStructure.price.amount} € (${
+                          allRealEstateCostTypes.find(
+                            (t) =>
+                              t.type === customer?.realEstateCostStructure?.type
+                          )?.label
+                        })`
+                      : ""}
+                    <br />
+                    {customer?.realEstateCharacteristics?.furnishing &&
+                      allFurnishing
+                        .filter((f) =>
+                          customer?.realEstateCharacteristics?.furnishing.includes(
+                            f.type
+                          )
+                        )
+                        .map((f) => f.label)
+                        .join(", ")}
                   </td>
                   <td className="flex gap-2">
                     <FormModal modalConfig={editCustomerModalConfig}>

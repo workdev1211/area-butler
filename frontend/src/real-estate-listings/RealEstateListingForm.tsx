@@ -19,7 +19,6 @@ export interface RealEstateListingFormData {
 export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFormData> =
   ({ realEstateListing, onSubmit, formId}) => {
 
-
     const furnishing =  {} as any;
     (realEstateListing?.characteristics?.furnishing || []).map(f => furnishing[f] = true);
 

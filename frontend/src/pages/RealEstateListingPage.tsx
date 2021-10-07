@@ -38,7 +38,7 @@ export const RealEstateListingPage = () => {
   const deleteRealEstateListingModalConfig: ModalConfig = {
     modalTitle: "Objekt löschen",
     buttonTitle: "Löschen",
-    buttonStyle: "btn btn-xs",
+    buttonStyle: "btn btn-xs btn-primary",
   };
 
   return (

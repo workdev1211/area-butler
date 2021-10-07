@@ -22,6 +22,8 @@ export const mapFormToApiUpsertPotentialCustomer = async (
     preferredAmenities: values.preferredAmenities,
     routingProfiles: values.routingProfiles,
     preferredLocations: values.preferredLocations,
+    realEstateCharacteristics: values.realEstateCharacteristics,
+    realEstateCostStructure: values.realEstateCostStructure
   };
 };
 
