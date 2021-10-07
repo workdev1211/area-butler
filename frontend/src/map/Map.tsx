@@ -49,7 +49,7 @@ export class IdMarker extends L.Marker {
 
     createOpenPopup() {
         if (!this.getPopup()) {
-            this.bindPopup(`${this.entity.name || 'Name nicht bekannt'}`);
+            this.bindPopup(`${this.entity.name || this.entity.label}`);
         }
         this.openPopup();
     }
