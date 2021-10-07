@@ -114,7 +114,7 @@ const reducer: (
             return {...state, localityOptions: [...action.payload]}
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
-            return {...state, searchResponse: {...action.payload}}
+            return {...state, searchResponse: {...action.payload}, selectedCenter: action.payload.centerOfInterest.coordinates}
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];

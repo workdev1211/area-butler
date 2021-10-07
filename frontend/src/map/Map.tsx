@@ -278,7 +278,7 @@ const Map = React.memo<MapProps>(({
         if (currentMap) {
             drawAmenityMarkers(zoom);
         }
-    }, [currentMap, entities]);
+    }, [currentMap, JSON.stringify(entities)]);
 
     // print actions
     useEffect(() => {

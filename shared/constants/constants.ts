@@ -113,8 +113,8 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     type: OsmType.public_transport,
     name: OsmName.station,
     label: "Öff. Schienenverkehr",
-    uniqueRadius: 100,
-    uniqueTreshold: 0.8
+    uniqueRadius: 200,
+    uniqueTreshold: 0.4
   },
   {
     type: OsmType.highway,
