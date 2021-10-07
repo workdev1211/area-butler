@@ -63,7 +63,7 @@ export const QuestionnaireRequestForm: FunctionComponent<QuestionnaireRequestFor
                 Diese E-Mail enthält einen Link.
               </li>
               <li>
-                Über diesen kann Ihr Interessent nun seine bevorzugte
+                Über diesen kann Ihr Interessent nun seine bevorzugten
                 Fortbewegungsarten und Lokalitäten sowie seine/ihre wichtigen
                 Adressen eingeben.
               </li>
