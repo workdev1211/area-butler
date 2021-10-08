@@ -54,7 +54,8 @@ export const PrivacyPage = () => {
                 nicht möglich.</p>
             <h3>Hinweise zur verantwortlichen Stelle</h3>
             <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
-            <p className="py-2" dangerouslySetInnerHTML={{__html: kudibaCompany.formattedAddress()}}></p>
+            <p className="pt-2" dangerouslySetInnerHTML={{__html: kudibaCompany.formattedAddress()}}></p>
+            <p className="pb-2">{ kudibaCompany.mail }</p>
             <p>Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen
                 über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, E-Mail-Adressen o.
                 Ä.) entscheidet.</p>
