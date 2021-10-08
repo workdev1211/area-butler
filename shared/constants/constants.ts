@@ -6,6 +6,7 @@ export const kudibaCompany = {
   address2: 'Nobistor 16',
   zip: '22767',
   city: 'Hamburg',
+  mail: 'info@area-butler.de',
   formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address1}<br />${kudibaCompany.address2}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
   court: 'Amtsgericht Hamburg',
   regNr: 'xxxxxxxxxxx',
