@@ -14,6 +14,7 @@ import { SearchContextProvider } from "./context/SearchContext";
 import { CustomerQuestionnaire } from "pages/CustomerQuestionnaire";
 import ImpressPage from "./pages/ImpressPage";
 import Footer from "./footer/Footer";
+import PrivacyPage from "./pages/PrivacyPage";
 
 function App() {
   const feedbackModalConfig: ModalConfig = {
@@ -50,6 +51,9 @@ function App() {
               </Route>
               <Route path="/impress">
                 <ImpressPage />
+              </Route>
+              <Route path="/privacy">
+                <PrivacyPage />
               </Route>
               <Route path="/">
                 <Authenticated>
