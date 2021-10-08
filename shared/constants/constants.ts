@@ -1,5 +1,17 @@
 import {ApiOsmEntity, MeansOfTransportation, OsmName, OsmType, UnitsOfTransportation} from "../types/types";
 
+export const kudibaCompany = {
+  name: 'KuDiBa GmbH i. G.',
+  address1: 'c/o Hamburger Ding',
+  address2: 'Nobistor 16',
+  zip: '22767',
+  city: 'Hamburg',
+  formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address1}<br />${kudibaCompany.address2}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
+  court: 'Amtsgericht Hamburg',
+  regNr: 'xxxxxxxxxxx',
+  vat: 'VAT12343434'
+}
+
 export const calculateMinutesToMeters = [
     {mean: MeansOfTransportation.WALK, multiplicator: 83},
     {mean: MeansOfTransportation.BICYCLE, multiplicator: 233},
