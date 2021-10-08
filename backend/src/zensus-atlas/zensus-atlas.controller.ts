@@ -21,10 +21,28 @@ interface ZensusDataGeojson {
     properties: object;
   };
   features: {
-    type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+    type:
+      | 'Polygon'
+      | 'MultiPolygon'
+      | 'Point'
+      | 'MultiPoint'
+      | 'LineString'
+      | 'MultiLineString'
+      | 'GeometryCollection'
+      | 'Feature'
+      | 'FeatureCollection';
     properties: object;
     geometry: {
-      type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+      type:
+        | 'Polygon'
+        | 'MultiPolygon'
+        | 'Point'
+        | 'MultiPoint'
+        | 'LineString'
+        | 'MultiLineString'
+        | 'GeometryCollection'
+        | 'Feature'
+        | 'FeatureCollection';
       coordinates: number[][][];
     };
   }[];
@@ -46,7 +64,14 @@ export class ZensusAtlasController {
   }
 
   @Post('query')
-  query(@Body() query: ApiGeometry) {
-    return this.zensusAtlasService.findIntersecting(query);
+  async query(@Body() query: ApiGeometry) {
+    return (await this.zensusAtlasService.findIntersecting(query)).map(
+      (d: any) => {
+        if (!!d?.properties?.Frauen_A) {
+          delete d?.properties?.Frauen_A;
+        }
+        return d;
+      },
+    );
   }
 }
