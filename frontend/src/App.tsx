@@ -12,6 +12,8 @@ import Nav from "./nav/Nav";
 import Start from "./pages/Start";
 import { SearchContextProvider } from "./context/SearchContext";
 import { CustomerQuestionnaire } from "pages/CustomerQuestionnaire";
+import ImpressPage from "./pages/ImpressPage";
+import Footer from "./footer/Footer";
 
 function App() {
   const feedbackModalConfig: ModalConfig = {
@@ -30,7 +32,7 @@ function App() {
               <FeedbackFormHandler></FeedbackFormHandler>
             </FormModal>
           </Authenticated>
-          <div className="App px-4">
+          <div className="app">
             <Nav />
             <Switch>
               <Route path="/questionnaire">
@@ -46,6 +48,9 @@ function App() {
                   <PotentialCustomersPage />
                 </Authenticated>
               </Route>
+              <Route path="/impress">
+                <ImpressPage />
+              </Route>
               <Route path="/">
                 <Authenticated>
                   <SearchContextProvider>
@@ -54,6 +59,7 @@ function App() {
                 </Authenticated>
               </Route>
             </Switch>
+            <Footer />
           </div>
         </Router>
       </PotentialCustomerContextProvider>
