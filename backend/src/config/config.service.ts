@@ -56,6 +56,14 @@ class ConfigService {
   public getBaseAppUrl(): string {
     return this.getValue('BASE_APP_URL');
   }
+
+  public getHereRouterApiUrl(): string {
+    return this.getValue('HERE_ROUTER_API_URL');
+  }
+
+  public getHereApiKey(): string {
+    return this.getValue('HERE_API_KEY')
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
