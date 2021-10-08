@@ -19,7 +19,7 @@ export interface ApiInsertFeedback {
 export type FeedbackType = 'ERROR' | 'IMPROVEMENT' | 'OTHER';
 
 export interface ApiMoneyAmount {
-  amount: number;
+  amount?: number;
   currency: string;
 }
 export interface ApiSearch {
