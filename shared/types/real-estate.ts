@@ -30,7 +30,7 @@ export interface ApiRealEstateListing {
   
   export interface ApiRealEstateCharacteristics {
     numberOfRooms: number;
-    realEstateSizeInSquareMeters: number;
+    realEstateSizeInSquareMeters?: number;
     propertySizeInSquareMeters?: number;
     energyEfficiency?: ApiEnergyEfficiency;
     furnishing: ApiFurnishing[];

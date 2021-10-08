@@ -131,7 +131,7 @@ export const CustomerQuestionnaire: FunctionComponent = () => {
             Geben Sie gern kurz Feedback Mit freundlichen Grüßen Ihr Area Butler
           </p>
           <p>
-            Mehr Infos:{" "}
+            Mehr Infos:{" "}<br/>
             <a href="www.area-butler.de">
               <strong>www.area-butler.de</strong>
             </a>

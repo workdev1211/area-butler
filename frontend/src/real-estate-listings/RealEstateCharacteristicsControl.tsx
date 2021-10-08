@@ -37,14 +37,14 @@ export const RealEstateCharacteristicsControl: FunctionComponent<RealEstateChara
       onChange({ ...characteristics });
     };
 
-    const setRealEstateSizeInSquareMeters = (value: number) => {
+    const setRealEstateSizeInSquareMeters = (value?: number) => {
       const newCharacteristics = {...characteristics};
       newCharacteristics.realEstateSizeInSquareMeters = value;
       setCharacteristics(newCharacteristics);
       onChange({...newCharacteristics});
     }
 
-    const setPropertySizeInSquareMeters = (value: number) => {
+    const setPropertySizeInSquareMeters = (value?: number) => {
       const newCharacteristics = {...characteristics};
       newCharacteristics.propertySizeInSquareMeters = value;
       setCharacteristics(newCharacteristics);
@@ -68,7 +68,7 @@ export const RealEstateCharacteristicsControl: FunctionComponent<RealEstateChara
             <input
               className="input input-bordered"
               value={characteristics.realEstateSizeInSquareMeters}
-              onChange={(event) => setRealEstateSizeInSquareMeters(+event.target.value)}
+              onChange={(event) => setRealEstateSizeInSquareMeters(!!event.target.value ? +event.target.value: undefined)}
               name="realEstateSizeInSquareMeters"
               type="number"
               placeholder="Größe in Quadrameter"
@@ -81,7 +81,7 @@ export const RealEstateCharacteristicsControl: FunctionComponent<RealEstateChara
             <input
               className="input input-bordered"
               value={characteristics.propertySizeInSquareMeters}
-              onChange={(event) => setPropertySizeInSquareMeters(+event.target.value)}
+              onChange={(event) => setPropertySizeInSquareMeters(!!event.target.value ? +event.target.value: undefined)}
               name="propertySizeInSquareMeters"
               type="number"
               placeholder="Grundstück in Quadrameter"

@@ -23,7 +23,7 @@ export const RealEstateCostStructureControl: FunctionComponent<RealEstateCostStr
     const [costStructure, setCostStructure] =
       useState<ApiRealEstateCost>(inputValues || defaultValue());
 
-    const setAmount = (value: number) => {
+    const setAmount = (value?: number) => {
       const newCostStructure = {...costStructure};
       newCostStructure.price.amount = value;
       setCostStructure(newCostStructure);
@@ -46,7 +46,7 @@ export const RealEstateCostStructureControl: FunctionComponent<RealEstateCostStr
             <input
               className="input input-bordered"
               value={costStructure.price.amount}
-              onChange={(event) => setAmount(+event.target.value)}
+              onChange={(event) => setAmount(!!event.target.value ? +event.target.value: undefined)}
               name="costAmount"
               type="number"
               placeholder="Preis eingeben"
