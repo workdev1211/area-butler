@@ -14,6 +14,7 @@ import {ResultEntity} from "../search/SearchResult";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
+import center from "@turf/center";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -254,7 +255,9 @@ const Map = React.memo<MapProps>(({
                     },
                     maxClusterRadius: 140,
                     disableClusteringAtZoom: 16,
-                    spiderfyOnMaxZoom: false
+                    spiderfyOnMaxZoom: false,
+                    animate: false,
+                    zoomToBoundsOnClick: false
                 });
                 entities?.forEach(entity => {
                     const icon = new L.Icon({
@@ -271,6 +274,10 @@ const Map = React.memo<MapProps>(({
                         marker.createOpenPopup();
                     });
                     amenityMarkerGroup.addLayer(marker);
+                });
+                amenityMarkerGroup.on('clusterclick', function (a) {
+                    const centerOfGroup = center(a.layer.toGeoJSON());
+                    searchContextDispatch({ type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}});
                 });
                 currentMap.addLayer(amenityMarkerGroup);
             }
