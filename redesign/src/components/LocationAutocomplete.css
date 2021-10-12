@@ -13,6 +13,27 @@
     border: 1px solid var(--primary) !important;
 }
 
-.oogle-autocomplete__value-container {
+.google-autocomplete__placeholder, .google-autocomplete__single-value {
+    margin-left: 24px !important;
+}
+
+.google-autocomplete__input {
+    margin-left: 6px !important;
+}
+
+.google-autocomplete__value-container {
     color: var(--base-anthracite);
+}
+
+.google-autocomplete__value-container:before {
+    display: block;
+    content: ' ';
+    background-image: url('../assets/icons/icons-16-x-16-outline-ic-location.svg');
+    background-size: 16px 16px;
+    height: 16px;
+    width: 16px;
+}
+
+.google-autocomplete__indicators {
+    display: none;
 }

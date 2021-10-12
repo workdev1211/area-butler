@@ -3,7 +3,6 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import {ApiConfig} from "../../shared/types/types";
-import {ConfigContext} from "../../frontend/src/context/ConfigContext";
 import {Auth0Provider} from "@auth0/auth0-react";
 import 'assets/fonts/archia-light-webfont.eot';
 import 'assets/fonts/archia-light-webfont.ttf';
@@ -17,6 +16,7 @@ import 'assets/fonts/archia-semibold-webfont.eot';
 import 'assets/fonts/archia-semibold-webfont.ttf';
 import 'assets/fonts/archia-semibold-webfont.woff';
 import 'assets/fonts/archia-semibold-webfont.woff2';
+import { ConfigContext } from 'context/ConfigContext';
 
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 

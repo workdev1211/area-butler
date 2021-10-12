@@ -69,7 +69,7 @@ const Nav: FunctionComponent = () => {
                     {showNavBar && (<div className="hidden sm:flex sm:items-center">
                         <div className="nav-links">
                             <NavLink to="/" className="nav-link" exact={true}
-                                     aria-current="page">Start</NavLink>
+                                     aria-current="page">Umgebungsanalyse</NavLink>
                             <Authenticated>
                                 <NavLink to="/listings" className="nav-link" exact={true}
                                          aria-current="page">Meine Objekte</NavLink>
@@ -112,7 +112,7 @@ const Nav: FunctionComponent = () => {
             <div className={mobileMenuClass} id="mobile-menu">
                 <div className="ml-5 flex flex-col gap-5 px-2 pt-2 pb-3 space-y-1 bg-white">
                     <NavLink to="/" className="nav-mobile-menu-link" exact={true}
-                             aria-current="page">Start</NavLink>
+                             aria-current="page">Umgebungsanalyse</NavLink>
                     <Authenticated>
                         <NavLink to="/listings" exact={true}
                                  className="nav-mobile-menu-link"

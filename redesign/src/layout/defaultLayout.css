@@ -5,7 +5,7 @@
 .default-layout-header {
     height: var(--content-header-height);
     padding: var(--nav-padding-y) var(--nav-padding-x);
-    background-image: linear-gradient(to right, #aa0c54, #cd1543 40%);
+    background-image: var(--primary-gradient);
     @apply flex items-center justify-between;
 }
 .default-layout-header h1 {

@@ -1,8 +1,8 @@
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import React, {FunctionComponent, useContext, useState} from "react";
-import {ConfigContext} from "../../../frontend/src/context/ConfigContext";
-import {deriveGeocodeByAddress} from "../../../frontend/src/shared/shared.functions";
 import "./LocationAutocomplete.css";
+import {ConfigContext} from "../context/ConfigContext";
+import {deriveGeocodeByAddress} from "../shared/shared.functions";
 
 export interface LocationAutocompleteProps {
     afterChange?: ({value, coordinates}: { value: any, coordinates: any }) => void;
@@ -23,10 +23,16 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
     const [focus, setFocus] = useState(false);
 
     const deriveLangLat = async (value: any) => {
-        const coordinates = await deriveGeocodeByAddress(value.label);
+        if (value) {
+            const coordinates = await deriveGeocodeByAddress(value.label);
+            afterChange({value, coordinates});
+        }
         setValue(value);
-        afterChange({value, coordinates});
     };
+
+    if (!googleApiKey) {
+        return <div>Missing google api key</div>
+    }
 
     return (
         <div className={focus ? 'form-control focus' : 'form-control'}>
@@ -52,9 +58,10 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         classNamePrefix: 'google-autocomplete',
                         placeholder: 'Adresse eingeben',
                         noOptionsMessage: () => 'Keine Ergebnisse',
-                        isClearable: true,
+                        loadingMessage: () => 'Suche...',
                         onFocus: () => setFocus(true),
-                        onBlur: () => setFocus(false)
+                        onBlur: () => setFocus(false),
+                        defaultValue: ''
                     }}
                     apiKey={googleApiKey}
                 />
