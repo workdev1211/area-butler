@@ -1,5 +1,4 @@
 import React from "react";
-import "./generalpage.css";
 import {kudibaCompany} from "../../../shared/constants/constants";
 import DefaultLayout from "../layout/defaultLayout";
 

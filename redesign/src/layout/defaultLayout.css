@@ -11,3 +11,15 @@
 .default-layout-content.padding {
     padding: var(--content-padding-y) var(--content-padding-x);
 }
+
+.default-layout h1 {
+    @apply text-2xl font-bold mb-5;
+}
+
+.default-layout h2 {
+    @apply text-2xl font-medium mb-3 pt-5;
+}
+
+.default-layout h3 {
+    @apply text-xl font-medium mb-2 pt-3;
+}

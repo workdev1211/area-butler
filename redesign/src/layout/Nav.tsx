@@ -60,12 +60,12 @@ const Nav: FunctionComponent = () => {
                 </div>
 
                 <div className="h-full flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div className="nav-logo">
+                    <NavLink to="/" className="nav-logo">
                         <img className="block lg:hidden h-full w-auto"
                              src={Logo} alt="Logo"/>
                         <img className="hidden lg:block h-full w-auto"
                              src={Logo} alt="Logo"/>
-                    </div>
+                    </NavLink>
                     {showNavBar && (<div className="hidden sm:flex sm:items-center">
                         <div className="nav-links">
                             <NavLink to="/" className="nav-link" exact={true}
