@@ -1,0 +1,18 @@
+.focus label {
+    color: var(--primary);
+}
+
+.google-autocomplete__control {
+    border: 1px solid var(--base-bright-silver) !important;
+    border-radius: 8px !important;
+    min-height: 48px !important;
+    box-shadow: none !important;
+}
+
+.google-autocomplete__control:hover, .google-autocomplete__control:focus {
+    border: 1px solid var(--primary) !important;
+}
+
+.oogle-autocomplete__value-container {
+    color: var(--base-anthracite);
+}

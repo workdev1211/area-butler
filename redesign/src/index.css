@@ -54,9 +54,38 @@ html {
 
   --content-header-height: var(--nav-height);
   --content-padding-x: var(--nav-padding-x);
-  --content-padding-y: 58px;
+  --content-padding-y: var(--nav-padding-y);
+  --subcontent-padding-y: 32px;
 }
 
-* {
-  letter-spacing: -0.45px;
+.sub-content {
+  padding: var(--subcontent-padding-y) 0;
+}
+
+.form-control label {
+  @apply relative;
+}
+
+.form-control label span {
+  color: var(--base-silver);
+  left: 4px;
+  top: 7px;
+  z-index: 90;
+  padding: 0 8px;
+  @apply text-sm absolute bg-white;
+}
+
+.form-control .input {
+  min-height: 48px;
+  color: var(--base-anthracite);
+}
+
+.form-control .input-bordered:focus {
+  outline: none !important;
+  border: 1px solid var(--primary);
+  box-shadow: none !important;
+}
+
+.form-control .input-bordered {
+  border: 1px solid var(--base-bright-silver);
 }

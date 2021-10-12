@@ -5,11 +5,11 @@
 .default-layout-header {
     height: var(--content-header-height);
     padding: var(--nav-padding-y) var(--nav-padding-x);
-    background-image: linear-gradient(to right, #aa0c54, #cd1543 100%);
+    background-image: linear-gradient(to right, #aa0c54, #cd1543 40%);
     @apply flex items-center justify-between;
 }
 .default-layout-header h1 {
-    @apply text-2xl font-medium text-white;
+    @apply text-3xl font-medium text-white;
 }
 
 .default-layout-header .dropdown .dropdown-btn {
@@ -32,14 +32,15 @@
     padding: var(--content-padding-y) var(--content-padding-x);
 }
 
-.default-layout-content h1 {
-    @apply text-2xl font-bold mb-5;
-}
-
 .default-layout-content h2 {
-    @apply text-2xl font-medium mb-3 pt-5;
+    border-bottom: 1px solid var(--base-bright-silver);
+    @apply text-2xl font-medium pb-6 pt-8;
 }
 
 .default-layout-content h3 {
     @apply text-xl font-medium mb-2 pt-3;
+}
+
+.default-layout-content p {
+    @apply py-2;
 }
