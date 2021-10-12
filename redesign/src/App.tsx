@@ -5,6 +5,7 @@ import Nav from "./layout/Nav";
 import ImpressPage from "./pages/ImpressPage";
 import PrivacyPage from "./pages/PrivacyPage";
 import SearchParamsPage from "./pages/SearchParamsPage";
+import Footer from "./layout/Footer";
 
 function App() {
     return (
@@ -22,6 +23,7 @@ function App() {
                         <SearchParamsPage/>
                     </Route>
                 </Switch>
+                <Footer />
             </div>
         </Router>
     );

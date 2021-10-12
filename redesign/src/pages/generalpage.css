@@ -9,7 +9,3 @@ h2 {
 h3 {
     @apply text-xl font-medium mb-2 pt-3;
 }
-
-p {
-    @apply text-sm;
-}
