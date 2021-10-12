@@ -1,0 +1,69 @@
+.nav {
+    height: var(--nav-height);
+    @apply relative flex items-center;
+}
+
+.nav .nav-logo {
+    padding: var(--nav-padding-y) var(--nav-padding-x);
+    @apply h-full flex items-center;
+}
+
+.nav .nav-links {
+    @apply flex h-full;
+}
+
+.nav .nav-links .nav-link {
+    padding: 0 var(--nav-padding-x);
+    line-height: var(--nav-height);
+    letter-spacing: -0.43px;
+    color: var(--base-anthracite);
+    @apply h-full font-medium;
+}
+
+.nav .nav-links .nav-link.active {
+    color: var(--primary);
+    border-bottom: 4px solid var(--primary);
+}
+
+.nav-usermenu {
+    @apply h-full relative;
+}
+
+.nav .nav-usermenu .nav-usermenu-button {
+    padding-right: var(--nav-padding-x);
+    @apply h-full w-auto flex justify-center items-center;
+}
+
+.nav .nav-usermenu .nav-usermenu-button button {
+    padding: 3px;
+    border: 1px solid var(--base-bright-silver);
+    height: 48px;
+    width: 48px;
+    @apply bg-white rounded-full focus:outline-none;
+}
+
+.nav .nav-usermenu .nav-usermenu-button img {
+    @apply h-full rounded-full;
+}
+
+.nav .nav-usermenu .nav-usermenu-link {
+    @apply block px-4 py-2;
+}
+
+.nav .nav-button {
+    left: 20px;
+    @apply absolute inset-y-0 flex items-center sm:hidden;
+}
+
+.nav-mobile-menu .nav-mobile-menu-link {
+    @apply block px-3 py-2 rounded-md text-base font-medium;
+}
+.nav-mobile-menu .nav-mobile-menu-link.active {
+    color: var(--primary);
+}
+
+@screen sm {
+    .nav .nav-logo, .nav .nav-links .nav-link {
+        border-right: 1px solid var(--base-bright-silver);
+    }
+}

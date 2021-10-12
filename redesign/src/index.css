@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+  font-family: 'archia';
+  src: url('assets/fonts/archia-light-webfont.eot');
+  src: url('assets/fonts/archia-light-webfont.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/archia-light-webfont.woff2') format('woff2'),
+  url('assets/fonts/archia-light-webfont.woff') format('woff'),
+  url('assets/fonts/archia-light-webfont.ttf') format('truetype');
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'archia';
+  src: url('assets/fonts/archia-regular-webfont.eot');
+  src: url('assets/fonts/archia-regular-webfont.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/archia-regular-webfont.woff2') format('woff2'),
+  url('assets/fonts/archia-regular-webfont.woff') format('woff'),
+  url('assets/fonts/archia-regular-webfont.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'archia';
+  src: url('assets/fonts/archia-semibold-webfont.eot');
+  src: url('assets/fonts/archia-semibold-webfont.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/archia-semibold-webfont.woff2') format('woff2'),
+  url('assets/fonts/archia-semibold-webfont.woff') format('woff'),
+  url('assets/fonts/archia-semibold-webfont.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+}
+
+html {
+  font-size: 14px;
+
+  --primary: #c91444;
+  --secondary: #640d24;
+  --category-01: #8f72eb;
+  --base-silver: #bec7ca;
+  --base-bright-silver: #e1e4e5;
+  --base-deep-black: #0e0e0e;
+  --base-anthracite: #201c1e;
+  --signal-yellow: #e4bc40;
+  --signal-error: #cb513b;
+
+  --nav-height: 80px;
+  --nav-padding-y: 20px;
+  --nav-padding-x: 52px;
+}

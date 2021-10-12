@@ -1,0 +1,15 @@
+h1 {
+    @apply text-2xl font-bold mb-5;
+}
+
+h2 {
+    @apply text-2xl font-medium mb-3 pt-5;
+}
+
+h3 {
+    @apply text-xl font-medium mb-2 pt-3;
+}
+
+p {
+    @apply text-sm;
+}
