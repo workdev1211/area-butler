@@ -16,6 +16,18 @@ module.exports = {
             '2000': 2000,
             'auto': 'auto',
         },
+        fontSize: {
+            'xs': '8px',
+            'sm': '10px',
+            'tiny': '12px',
+            'base': '1rem',
+            'lg': '16px',
+            'xl': '18px',
+            '2xl': '24px',
+            '3xl': '28px',
+            '4xl': '32px',
+            '5xl': '42px',
+        },
         extend: {
             screens: {
                 'print': {'raw': 'print'},

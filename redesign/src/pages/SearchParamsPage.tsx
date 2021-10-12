@@ -1,8 +1,11 @@
 import React from "react";
+import DefaultLayout from "../layout/defaultLayout";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     return (
-        <div>Test</div>
+        <DefaultLayout title="Standortanalyse" withHorizontalPadding={true}>
+            <div>Test</div>
+        </DefaultLayout>
     )
 }
 

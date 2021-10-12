@@ -15,7 +15,6 @@
 .nav .nav-links .nav-link {
     padding: 0 var(--nav-padding-x);
     line-height: var(--nav-height);
-    letter-spacing: -0.43px;
     color: var(--base-anthracite);
     @apply h-full font-medium;
 }
