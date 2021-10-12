@@ -37,7 +37,6 @@
 
 html {
   font-size: 14px;
-  letter-spacing: -0.45px;
 
   --primary: #c91444;
   --secondary: #640d24;
@@ -53,6 +52,11 @@ html {
   --nav-padding-y: 20px;
   --nav-padding-x: 52px;
 
+  --content-header-height: var(--nav-height);
   --content-padding-x: var(--nav-padding-x);
   --content-padding-y: 58px;
+}
+
+* {
+  letter-spacing: -0.45px;
 }
