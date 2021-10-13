@@ -15,7 +15,8 @@
 .default-layout-header .dropdown .dropdown-btn {
     color: white !important;
     text-transform: none !important;
-    @apply btn btn-outline hover:bg-primary hover:border-white font-light text-base;
+    border-radius: var(--btn-border-radius);
+    @apply btn btn-outline hover:bg-primary hover:border-white text-base;
 }
 
 .default-layout-header .dropdown-btn-content {
@@ -38,7 +39,7 @@
 }
 
 .default-layout-content h3 {
-    @apply text-xl font-medium mb-2 pt-3;
+    @apply text-primary text-lg font-medium mb-2 pt-3;
 }
 
 .default-layout-content p {

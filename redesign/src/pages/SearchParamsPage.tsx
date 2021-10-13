@@ -5,6 +5,7 @@ import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
 import {ApiCoordinates} from "../../../shared/types/types";
 import TransportationParams from "../components/TransportationParams";
+import ImportantAddresses from "../components/ImportantAddresses";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
@@ -65,11 +66,20 @@ const SearchParamsPage: React.FunctionComponent = () => {
                 </div>
             </div>
             <h2>Mobilität</h2>
-            <TransportationParams values={searchContextState.transportationParams}
-                                  onChange={(newParams) => searchContextDispatch({
-                                      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
-                                      payload: newParams
-                                  })} />
+            <div className="sub-content">
+                <TransportationParams values={searchContextState.transportationParams}
+                                      onChange={(newParams) => searchContextDispatch({
+                                          type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+                                          payload: newParams
+                                      })}/>
+                <h3 className="mt-8">Wichtige Adressen</h3>
+                <ImportantAddresses inputValues={searchContextState.preferredLocations}
+                                    onChange={(importantAdresses) => searchContextDispatch({
+                                       type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+                                       payload: importantAdresses
+                                   })}/>
+            </div>
+
         </DefaultLayout>
     )
 }

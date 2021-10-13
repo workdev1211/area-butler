@@ -88,7 +88,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
     }
 
     return (
-        <div className="sub-content grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-24">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 lg:gap-24">
             {meansOfTransportations.map((mean) => {
                 const isActive = values.some(v => v.type === mean.type);
                 const currentValue = values.find(v => v.type === mean.type);
@@ -98,7 +98,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                             <div className="flex gap-6 items-center">
                                 <img src={transportationParamIcons.find(list => list.type === mean.type)?.icon}
                                      alt="mean-icon"/>
-                                <span className="text-primary text-lg font-medium">{mean.label}</span>
+                                <h3>{mean.label}</h3>
                             </div>
                             <label className="flex items-center cursor-pointer">
                                 <input

@@ -72,8 +72,13 @@ html {
 
   --btn-height: 48px;
   --btn-padding: 16px;
+  --btn-border-radius: 8px;
 
   --form-field-short-flex-basis: 56px;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
 }
 
 .sub-content {
@@ -85,6 +90,7 @@ html {
   padding: var(--btn-padding);
   line-height: 1;
   text-transform: none;
+  border-radius: var(--btn-border-radius);
   @apply text-base font-normal;
 }
 

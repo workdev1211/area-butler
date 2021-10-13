@@ -1,0 +1,62 @@
+import React from "react";
+import InputWithIcon from "./InputWithIcon";
+import typeIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
+import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
+import LocationAutocomplete from "./LocationAutocomplete";
+
+export interface ImportantAddressesProps {
+    inputValues?: ApiPreferredLocation[];
+    onChange?: (preferredLocations: ApiPreferredLocation[]) => void;
+}
+
+const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
+                                                                                inputValues = [],
+                                                                                onChange = () => {
+                                                                                }
+                                                                            }) => {
+
+    const addAddress = () => {
+        const newEntry: ApiPreferredLocation = {
+            title: '',
+            address: ''
+        }
+        onChange([...inputValues, newEntry]);
+    }
+
+    const changeTitle = (title: string, index: number) => {
+        const updatedEntries = inputValues?.map((location, indexLocation) => index !== indexLocation ? location : {
+            ...location,
+            title
+        });
+        onChange([...updatedEntries]);
+    }
+
+    const onLocationAutocompleteChange = (payload: any, index: number) => {
+        const updatedEntries = inputValues?.map((location, indexLocation) => index !== indexLocation ? location : {
+            ...location,
+            address: payload.value.label,
+            coordinates: payload.coordinates
+        });
+        onChange([...updatedEntries]);
+    }
+
+    return (
+        <div className="flex flex-col gap-6 md:gap-4 items-start">
+            {inputValues?.map((location, index) => <div
+                className="w-full grid grid-cols-1 md:grid-cols-3 gap-4"
+                key={`important-address-${index}`}>
+                <InputWithIcon label="Bezeichung" icon={typeIcon} className="input input-bordered flex"
+                               value={location.title} onChange={(event) => changeTitle(event.target.value, index)}/>
+                <div className="flex col-span-1 md:col-span-2 2xl:col-span-1">
+                    <LocationAutocomplete value={location.address} setValue={() => {
+                    }} afterChange={(payload) => onLocationAutocompleteChange(payload, index)}/>
+                </div>
+            </div>)}
+            <button type="button" onClick={() => addAddress()} className="btn btn-link text-primary">+ Adresse
+                hinzufügen
+            </button>
+        </div>
+    )
+}
+
+export default ImportantAddresses;

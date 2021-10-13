@@ -35,7 +35,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
     }
 
     return (
-        <div className={focus ? 'form-control focus' : 'form-control'}>
+        <div className={focus ? 'form-control w-full focus' : 'form-control w-full'}>
             <label className="label">
                 <span>Adresse</span>
             </label>
