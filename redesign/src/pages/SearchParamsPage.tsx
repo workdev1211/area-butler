@@ -6,11 +6,12 @@ import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg"
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
-    const [placesValue, setPlacesValues] = useState<{ label: string, value: any } | null>(null);
 
     const onLocationAutocompleteChange = (payload: any) => {
         searchContextDispatch({type: SearchContextActions.SET_PLACES_LOCATION, payload: payload.value});
-        searchContextDispatch({type: SearchContextActions.SET_LOCATION, payload: payload.coordinates});
+        if (payload.coordinates) {
+            searchContextDispatch({type: SearchContextActions.SET_LOCATION, payload: payload.coordinates});
+        }
     }
 
     const [locationBusy, setLocationBusy] = useState(false);
@@ -27,7 +28,8 @@ const SearchParamsPage: React.FunctionComponent = () => {
                         }
                     });
                     searchContextDispatch({
-                        type: SearchContextActions.SET_PLACES_LOCATION
+                        type: SearchContextActions.SET_PLACES_LOCATION,
+                        payload: { label: 'Mein Standort'}
                     })
                     setLocationBusy(false);
                 },
@@ -54,7 +56,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true}>
             <h2>Standort</h2>
             <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
-                <LocationAutocomplete value={placesValue} setValue={setPlacesValues}
+                <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {}}
                                       afterChange={onLocationAutocompleteChange}/>
                 <div className="flex flex-wrap items-end gap-4">
                         <div className="form-control min-flex">

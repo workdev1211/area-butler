@@ -5,7 +5,7 @@ import {ConfigContext} from "../context/ConfigContext";
 import {deriveGeocodeByAddress} from "../shared/shared.functions";
 
 export interface LocationAutocompleteProps {
-    afterChange?: ({value, coordinates}: { value: any, coordinates: any }) => void;
+    afterChange?: ({value, coordinates}: { value: any, coordinates?: any }) => void;
     value: any;
     setValue: any;
 }
@@ -59,7 +59,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         placeholder: 'Adresse eingeben',
                         noOptionsMessage: () => 'Keine Ergebnisse',
                         loadingMessage: () => 'Suche...',
-                        onFocus: () => setFocus(true),
+                        onFocus: () => { setFocus(true); afterChange({value: null});},
                         onBlur: () => setFocus(false),
                         defaultValue: ''
                     }}
