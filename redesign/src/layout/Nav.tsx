@@ -23,7 +23,7 @@ const Nav: FunctionComponent = () => {
 
     let mobileMenuClass = 'hidden';
     if (mobileMenuOpen) {
-        mobileMenuClass = 'nav-mobile-menu sm:hidden';
+        mobileMenuClass = 'nav-mobile-menu lg:hidden';
     }
 
     let userMenuClass = 'hidden';
@@ -59,14 +59,14 @@ const Nav: FunctionComponent = () => {
                     </button>
                 </div>
 
-                <div className="h-full flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+                <div className="h-full flex-1 flex items-center justify-center lg:items-stretch lg:justify-start">
                     <NavLink to="/" className="nav-logo">
                         <img className="block lg:hidden h-full w-auto"
                              src={Logo} alt="Logo"/>
                         <img className="hidden lg:block h-full w-auto"
                              src={Logo} alt="Logo"/>
                     </NavLink>
-                    {showNavBar && (<div className="hidden sm:flex sm:items-center">
+                    {showNavBar && (<div className="hidden lg:flex lg:items-center">
                         <div className="nav-links">
                             <NavLink to="/" className="nav-link" exact={true}
                                      aria-current="page">Umgebungsanalyse</NavLink>

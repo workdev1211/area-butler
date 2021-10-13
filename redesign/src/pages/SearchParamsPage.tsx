@@ -6,7 +6,7 @@ import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg"
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
-    const [placesValue, setPlacesValues] = useState<{label:string, value: any} | null>(null);
+    const [placesValue, setPlacesValues] = useState<{ label: string, value: any } | null>(null);
 
     const onLocationAutocompleteChange = (payload: any) => {
         searchContextDispatch({type: SearchContextActions.SET_PLACES_LOCATION, payload: payload.value});
@@ -36,7 +36,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         }
     };
     const MyLocationButton: React.FunctionComponent = () => {
-        const baseClasses = 'btn bg-primary-gradient';
+        const baseClasses = 'btn bg-primary-gradient w-full sm:w-auto';
         return (
             <button
                 type="button"
@@ -53,34 +53,35 @@ const SearchParamsPage: React.FunctionComponent = () => {
     return (
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true}>
             <h2>Standort</h2>
-            <div className="sub-content grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <LocationAutocomplete value={placesValue} setValue={setPlacesValues} afterChange={onLocationAutocompleteChange} />
-                <div className="flex items-end gap-4">
-                    <div className="form-control flex-1">
-                        <label className="label">
-                            <span>Lat</span>
-                        </label>
-                        <input
-                            type="text"
-                            readOnly={true}
-                            value={searchContextState.location?.lat || '-'}
-                            className="input input-bordered w-full"
-                            placeholder="Latitude"
-                        />
-                    </div>
-                    <div className="form-control flex-1">
-                        <label className="label">
-                            <span>Long</span>
-                        </label>
-                        <input
-                            type="text"
-                            readOnly={true}
-                            value={searchContextState.location?.lng || '-'}
-                            className="input input-bordered w-full"
-                            placeholder="Longitude"
-                        />
-                    </div>
-                    <MyLocationButton />
+            <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
+                <LocationAutocomplete value={placesValue} setValue={setPlacesValues}
+                                      afterChange={onLocationAutocompleteChange}/>
+                <div className="flex flex-wrap items-end gap-4">
+                        <div className="form-control min-flex">
+                            <label className="label">
+                                <span>Lat</span>
+                            </label>
+                            <input
+                                type="text"
+                                readOnly={true}
+                                value={searchContextState.location?.lat || '-'}
+                                className="input input-bordered w-full"
+                                placeholder="Latitude"
+                            />
+                        </div>
+                        <div className="form-control min-flex">
+                            <label className="label">
+                                <span>Long</span>
+                            </label>
+                            <input
+                                type="text"
+                                readOnly={true}
+                                value={searchContextState.location?.lng || '-'}
+                                className="input input-bordered w-full"
+                                placeholder="Longitude"
+                            />
+                        </div>
+                    <MyLocationButton/>
                 </div>
             </div>
         </DefaultLayout>

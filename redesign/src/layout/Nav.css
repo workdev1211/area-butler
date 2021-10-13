@@ -51,7 +51,7 @@
 
 .nav .nav-button {
     left: 20px;
-    @apply absolute inset-y-0 flex items-center sm:hidden;
+    @apply absolute inset-y-0 flex items-center lg:hidden;
 }
 
 .nav-mobile-menu .nav-mobile-menu-link {
@@ -61,7 +61,7 @@
     color: var(--primary);
 }
 
-@screen sm {
+@screen md {
     .nav .nav-logo, .nav .nav-links .nav-link {
         border-right: 1px solid var(--base-bright-silver);
     }

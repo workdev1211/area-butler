@@ -3,10 +3,10 @@
 }
 
 .default-layout-header {
-    height: var(--content-header-height);
+    min-height: var(--content-header-height);
     padding: var(--nav-padding-y) var(--nav-padding-x);
     background-image: var(--primary-gradient);
-    @apply flex items-center justify-between;
+    @apply flex flex-wrap gap-4 items-center justify-between;
 }
 .default-layout-header h1 {
     @apply text-3xl font-medium text-white;

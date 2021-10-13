@@ -61,6 +61,8 @@ html {
 
   --btn-height: 48px;
   --btn-padding: 16px;
+
+  --form-field-short-flex-basis: 56px;
 }
 
 .sub-content {
@@ -81,6 +83,12 @@ html {
 }
 .bg-primary-gradient.loading {
   color: white;
+}
+
+.form-control.min-flex {
+  flex-grow: 1;
+  flex-shrink: 0;
+  flex-basis: var(--form-field-short-flex-basis);
 }
 
 .form-control label {
