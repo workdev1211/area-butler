@@ -3,11 +3,11 @@ import DefaultLayout from "../layout/defaultLayout";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
-import {ApiCoordinates, ApiOsmEntityCategory} from "../../../shared/types/types";
+import {ApiCoordinates} from "../../../shared/types/types";
 import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 import Input from "../components/Input";
-import {osmEntityTypes} from "../../../shared/constants/constants";
+import LocalityParams from "../components/LocalityParams";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
@@ -69,16 +69,10 @@ const SearchParamsPage: React.FunctionComponent = () => {
                                     })}/>
             </div>
             <h2>Lokalitäten</h2>
-            <div className="flex flex-wrap gap-12 lg:gap-24 w-full">
-                {Object.values(ApiOsmEntityCategory).map(category => <div className="flex flex-col">
-                    <h3>{category}</h3>
-                    {osmEntityTypes.filter(entityType => entityType.category === category).map(entity =>
-                        <label className="cursor-pointer label justify-start mt-2 pl-0">
-                            <input type="checkbox" className="checkbox checkbox-primary checkbox-sm"/>
-                            <span className="label-text ml-2">{entity.label}</span>
-                        </label>)}
-                </div>)}
-            </div>
+            <LocalityParams values={searchContextState.localityParams} onChange={(newValues) => searchContextDispatch({
+                type: SearchContextActions.SET_LOCALITY_PARAMS,
+                payload: newValues
+            })}/>
         </DefaultLayout>
     )
 }

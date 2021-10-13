@@ -90,6 +90,12 @@ html {
   --form-field-short-flex-basis: 56px;
 }
 
+@media screen(sm) {
+  html {
+    --nav-padding-x: 52px;
+  }
+}
+
 * {
   -webkit-font-smoothing: antialiased;
 }
@@ -153,10 +159,4 @@ html {
 
 .form-control .input-bordered {
   border: 1px solid var(--base-bright-silver);
-}
-
-@media screen(sm) {
-  html {
-    --nav-padding-x: 52px;
-  }
 }

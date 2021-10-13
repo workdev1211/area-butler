@@ -1,17 +1,23 @@
 import React from "react";
-import {ApiCoordinates, TransportationParam} from "../../../shared/types/types";
+import {ApiCoordinates, ApiOsmEntity, OsmName, TransportationParam} from "../../../shared/types/types";
 import {defaultTransportationParams} from "../components/TransportationParams";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
+import {osmEntityTypes} from "../../../shared/constants/constants";
 
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
     transportationParams: TransportationParam[];
     preferredLocations?: ApiPreferredLocation[];
+    localityParams: ApiOsmEntity[];
 }
 
 export const initialState: SearchContextState = {
-    transportationParams: [...defaultTransportationParams]
+    transportationParams: [...defaultTransportationParams],
+    localityParams: osmEntityTypes.filter(entity =>
+        [
+            OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
+        ].includes(entity.name))
 };
 
 export enum SearchContextActions {
@@ -19,6 +25,7 @@ export enum SearchContextActions {
     SET_LOCATION = 'SET_LOCATION',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
+    SET_LOCALITY_PARAMS = 'SET_LOCALITY_PARAMS'
 }
 
 const reducer: (
@@ -37,6 +44,9 @@ const reducer: (
         }
         case SearchContextActions.SET_PREFERRED_LOCATIONS: {
             return {...state, preferredLocations: [...action.payload]};
+        }
+        case SearchContextActions.SET_LOCALITY_PARAMS: {
+            return {...state, localityParams: [...action.payload]};
         }
         default:
             return state;
