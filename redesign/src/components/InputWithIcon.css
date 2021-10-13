@@ -3,8 +3,9 @@
     z-index: 50;
     top: 30px;
     left: 14px;
-    width:16px;
+    width: 16px;
     height: auto;
+    filter: invert(100%) sepia(62%) saturate(6621%) hue-rotate(336deg) brightness(81%) contrast(94%)
 }
 
 .input-with-icon input {

@@ -61,6 +61,19 @@ html {
 
   --primary-gradient: linear-gradient(to right, #aa0c54, #cd1543 40%);
 
+  --h1-size: 24px;
+  --h1-weight: 500;
+
+  --h2-size: 20px;
+  --h2-weight: 500;
+  --h2-pt: 56px;
+  --h2-pb: 22px;
+
+  --h3-size: 16px;
+  --h3-weight: 500;
+  --h3-pt: 26px;
+  --h3-pb: 14px;
+
   --nav-height: 80px;
   --nav-padding-y: 20px;
   --nav-padding-x: 52px;
@@ -68,7 +81,7 @@ html {
   --content-header-height: var(--nav-height);
   --content-padding-x: var(--nav-padding-x);
   --content-padding-y: var(--nav-padding-y);
-  --subcontent-padding-y: 32px;
+  --subcontent-padding-y: 26px;
 
   --btn-height: 48px;
   --btn-padding: 16px;
@@ -82,7 +95,7 @@ html {
 }
 
 .sub-content {
-  padding: var(--subcontent-padding-y) 0;
+  padding-top: var(--subcontent-padding-y);
 }
 
 .btn {

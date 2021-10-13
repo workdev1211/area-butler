@@ -98,7 +98,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                             <div className="flex gap-6 items-center">
                                 <img src={transportationParamIcons.find(list => list.type === mean.type)?.icon}
                                      alt="mean-icon"/>
-                                <h3>{mean.label}</h3>
+                                <span className="mean-label">{mean.label}</span>
                             </div>
                             <label className="flex items-center cursor-pointer">
                                 <input

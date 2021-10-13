@@ -9,7 +9,9 @@
     @apply flex flex-wrap gap-4 items-center justify-between;
 }
 .default-layout-header h1 {
-    @apply text-3xl font-medium text-white;
+    font-size: var(--h1-size);
+    font-weight: var(--h1-weight);
+    @apply text-white;
 }
 
 .default-layout-header .dropdown .dropdown-btn {
@@ -30,16 +32,21 @@
 }
 
 .default-layout-content.padding {
-    padding: var(--content-padding-y) var(--content-padding-x);
+    padding: 0 var(--content-padding-x) var(--content-padding-y);
 }
 
 .default-layout-content h2 {
+    font-size: var(--h2-size);
+    font-weight: var(--h2-weight);
+    padding: var(--h2-pt) 0 var(--h2-pb) 0;
     border-bottom: 1px solid var(--base-bright-silver);
-    @apply text-2xl font-medium pb-6 pt-8;
 }
 
 .default-layout-content h3 {
-    @apply text-primary text-lg font-medium mb-2 pt-3;
+    font-size: var(--h3-size);
+    font-weight: var(--h3-weight);
+    padding: var(--h3-pt) 0 var(--h3-pb) 0;
+    @apply text-primary;
 }
 
 .default-layout-content p {

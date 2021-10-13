@@ -79,7 +79,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                                        payload: importantAdresses
                                    })}/>
             </div>
-
+            <h2>Lokalitäten</h2>
         </DefaultLayout>
     )
 }
