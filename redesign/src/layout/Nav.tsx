@@ -3,9 +3,9 @@ import "./Nav.css";
 import Logo from 'assets/img/logo.svg';
 import useOnClickOutside from "../hooks/onclickoutside";
 import {NavLink} from 'react-router-dom';
-import LoginButton from '../auth/login-button';
 import {useAuth0, User} from "@auth0/auth0-react";
 import Authenticated from 'auth/authenticated';
+import LoginButton from "../components/LoginButton";
 
 const Nav: FunctionComponent = () => {
 

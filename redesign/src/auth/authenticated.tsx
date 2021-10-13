@@ -1,11 +1,14 @@
-import React, { FunctionComponent } from 'react';
-import { useAuth0 } from '@auth0/auth0-react';
-const  Authenticated : FunctionComponent = ({ children }) => {
+import React from 'react';
+import {useAuth0} from '@auth0/auth0-react';
+import {withRouter} from "react-router-dom";
+
+const Authenticated = withRouter(({ history, children }) => {
   const {
-    isAuthenticated, loginWithRedirect
+    isAuthenticated
   } = useAuth0();
-  if (!isAuthenticated) {
+  if (!isAuthenticated && history.location.pathname !== '/login') {
+    // history.push('/login');
   }
   return <>{children}</>;
-}
+});
 export default Authenticated;

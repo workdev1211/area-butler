@@ -59,7 +59,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         placeholder: 'Adresse eingeben',
                         noOptionsMessage: () => 'Keine Ergebnisse',
                         loadingMessage: () => 'Suche...',
-                        onFocus: () => { setFocus(true); afterChange({value: null});},
+                        onFocus: () => setFocus(true),
                         onBlur: () => setFocus(false),
                         defaultValue: ''
                     }}

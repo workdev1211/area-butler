@@ -20,13 +20,13 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
                     </div>
                     <ul tabIndex={0} className="right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-52">
                         <li>
-                            <a>Item 1</a>
+                            <a href="/">Item 1</a>
                         </li>
                         <li>
-                            <a>Item 2</a>
+                            <a href="/">Item 2</a>
                         </li>
                         <li>
-                            <a>Item 3</a>
+                            <a href="/">Item 3</a>
                         </li>
                     </ul>
                 </div>
