@@ -57,11 +57,20 @@ export interface ApiOsmLocation {
   address: ApiAddress;
 }
 
+export enum ApiOsmEntityCategory {
+  'LEISURE' = 'Freizeit',
+  'TRAFFIC' = 'Verkehr',
+  'SUPPLIES' = 'Nahversorgung',
+  'HEALTH' = 'Gesundheit',
+  'EDUCATION' = 'Bildung'
+}
+
 export interface ApiOsmEntity {
   id?: string;
   type: OsmType;
   name: OsmName;
   label: string;
+  category: ApiOsmEntityCategory;
   uniqueRadius?: number;
   uniqueTreshold?: number;
 }

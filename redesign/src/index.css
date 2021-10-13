@@ -76,7 +76,7 @@ html {
 
   --nav-height: 80px;
   --nav-padding-y: 20px;
-  --nav-padding-x: 52px;
+  --nav-padding-x: 16px;
 
   --content-header-height: var(--nav-height);
   --content-padding-x: var(--nav-padding-x);
@@ -155,11 +155,8 @@ html {
   border: 1px solid var(--base-bright-silver);
 }
 
-/*input:checked ~ .dot {*/
-/*  transform: translateX(100%);*/
-/*}*/
-
-/*input.checkbox:checked ~ .dot {*/
-/*  transform: translateX(100%);*/
-/*  background: var(--primary);*/
-/*}*/
+@media screen(sm) {
+  html {
+    --nav-padding-x: 52px;
+  }
+}

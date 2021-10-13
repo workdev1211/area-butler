@@ -1,5 +1,6 @@
 import {
   ApiIsochrone,
+  ApiOsmEntityCategory,
   ApiOsmLocation,
   ApiSearch,
   ApiSearchResponse,
@@ -9,17 +10,14 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { GeocodingService } from 'src/client/geocoding/geocoding.service';
-import { IsochroneService } from 'src/client/isochrone/isochrone.service';
-import { OverpassService } from 'src/client/overpass/overpass.service';
-import {
-  LocationSearch,
-  LocationSearchDocument,
-} from './schema/location-search.schema';
-import { calculateMinutesToMeters } from '../../../shared/constants/constants';
+import {Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model} from 'mongoose';
+import {GeocodingService} from 'src/client/geocoding/geocoding.service';
+import {IsochroneService} from 'src/client/isochrone/isochrone.service';
+import {OverpassService} from 'src/client/overpass/overpass.service';
+import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
+import {calculateMinutesToMeters} from '../../../shared/constants/constants';
 
 @Injectable()
 export class LocationService {
@@ -98,6 +96,7 @@ export class LocationService {
           label: 'Zentrum',
           name: OsmName.doctors,
           type: OsmType.amenity,
+          category: ApiOsmEntityCategory.LEISURE
         },
         coordinates,
         distanceInMeters: 0,

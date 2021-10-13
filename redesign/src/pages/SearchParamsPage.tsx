@@ -3,10 +3,11 @@ import DefaultLayout from "../layout/defaultLayout";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
-import {ApiCoordinates} from "../../../shared/types/types";
+import {ApiCoordinates, ApiOsmEntityCategory} from "../../../shared/types/types";
 import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 import Input from "../components/Input";
+import {osmEntityTypes} from "../../../shared/constants/constants";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
@@ -42,13 +43,13 @@ const SearchParamsPage: React.FunctionComponent = () => {
                            readOnly={true}
                            value={searchContextState.location?.lat || '-'}
                            className="input input-bordered w-full"
-                           placeholder="Latitude" />
+                           placeholder="Latitude"/>
                     <Input label="Long" type="text"
                            readOnly={true}
                            value={searchContextState.location?.lng || '-'}
                            className="input input-bordered w-full"
                            placeholder="Longitude"
-                        />
+                    />
                     <MyLocationButton classes="btn bg-primary-gradient w-full sm:w-auto"
                                       onComplete={onMyLocationChange}/>
                 </div>
@@ -63,11 +64,21 @@ const SearchParamsPage: React.FunctionComponent = () => {
                 <h3 className="mt-8">Wichtige Adressen</h3>
                 <ImportantAddresses inputValues={searchContextState.preferredLocations}
                                     onChange={(importantAdresses) => searchContextDispatch({
-                                       type: SearchContextActions.SET_PREFERRED_LOCATIONS,
-                                       payload: importantAdresses
-                                   })}/>
+                                        type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+                                        payload: importantAdresses
+                                    })}/>
             </div>
             <h2>Lokalitäten</h2>
+            <div className="flex flex-wrap gap-12 lg:gap-24 w-full">
+                {Object.values(ApiOsmEntityCategory).map(category => <div className="flex flex-col">
+                    <h3>{category}</h3>
+                    {osmEntityTypes.filter(entityType => entityType.category === category).map(entity =>
+                        <label className="cursor-pointer label justify-start mt-2 pl-0">
+                            <input type="checkbox" className="checkbox checkbox-primary checkbox-sm"/>
+                            <span className="label-text ml-2">{entity.label}</span>
+                        </label>)}
+                </div>)}
+            </div>
         </DefaultLayout>
     )
 }
