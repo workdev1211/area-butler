@@ -4,6 +4,7 @@ import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
 import {ApiCoordinates} from "../../../shared/types/types";
+import TransportationParams from "../components/TransportationParams";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
@@ -63,6 +64,12 @@ const SearchParamsPage: React.FunctionComponent = () => {
                                       onComplete={onMyLocationChange}/>
                 </div>
             </div>
+            <h2>Mobilität</h2>
+            <TransportationParams values={searchContextState.transportationParams}
+                                  onChange={(newParams) => searchContextDispatch({
+                                      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+                                      payload: newParams
+                                  })} />
         </DefaultLayout>
     )
 }

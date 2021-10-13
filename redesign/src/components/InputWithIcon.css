@@ -1,0 +1,12 @@
+.input-with-icon img {
+    position: absolute;
+    z-index: 50;
+    top: 30px;
+    left: 14px;
+    width:16px;
+    height: auto;
+}
+
+.input-with-icon input {
+    padding-left: 38px;
+}

@@ -14,11 +14,11 @@
 }
 
 .google-autocomplete__placeholder, .google-autocomplete__single-value {
-    margin-left: 24px !important;
+    margin-left: 32px !important;
 }
 
 .google-autocomplete__input {
-    margin-left: 6px !important;
+    margin-left: 8px !important;
 }
 
 .google-autocomplete__value-container {
@@ -32,6 +32,7 @@
     background-size: 16px 16px;
     height: 16px;
     width: 16px;
+    margin-left: 6px;
 }
 
 .google-autocomplete__indicators {

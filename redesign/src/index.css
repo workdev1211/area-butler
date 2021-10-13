@@ -26,6 +26,17 @@
 
 @font-face {
   font-family: 'archia';
+  src: url('assets/fonts/archia-medium-webfont.eot');
+  src: url('assets/fonts/archia-medium-webfont.eot?#iefix') format('embedded-opentype'),
+  url('assets/fonts/archia-medium-webfont.woff2') format('woff2'),
+  url('assets/fonts/archia-medium-webfont.woff') format('woff'),
+  url('assets/fonts/archia-medium-webfont.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'archia';
   src: url('assets/fonts/archia-semibold-webfont.eot');
   src: url('assets/fonts/archia-semibold-webfont.eot?#iefix') format('embedded-opentype'),
   url('assets/fonts/archia-semibold-webfont.woff2') format('woff2'),
@@ -97,7 +108,7 @@ html {
 
 .form-control label span {
   color: var(--base-silver);
-  left: 4px;
+  left: 12px;
   top: 7px;
   z-index: 90;
   padding: 0 8px;
@@ -106,14 +117,16 @@ html {
 
 .form-control:focus-within label span {
   color: var(--primary);
+  @apply font-normal;
 }
 
-.form-control .input {
+.form-control .input, .form-control select {
   min-height: 48px;
   color: var(--base-anthracite);
+  @apply font-normal;
 }
 
-.form-control .input-bordered:focus, .form-control .input-bordered:hover {
+.form-control .input-bordered:focus, .form-control .input-bordered:hover, .form-control .select-bordered:focus, .form-control .select-bordered:hover {
   outline: none !important;
   border: 1px solid var(--primary);
   box-shadow: none !important;
@@ -122,3 +135,12 @@ html {
 .form-control .input-bordered {
   border: 1px solid var(--base-bright-silver);
 }
+
+/*input:checked ~ .dot {*/
+/*  transform: translateX(100%);*/
+/*}*/
+
+/*input.checkbox:checked ~ .dot {*/
+/*  transform: translateX(100%);*/
+/*  background: var(--primary);*/
+/*}*/

@@ -1,0 +1,11 @@
+.mean-of-transportation {
+    @apply flex flex-col gap-4;
+}
+
+.mean-of-transportation .distance-unit .input-with-icon {
+    flex: 2;
+}
+
+.mean-of-transportation .distance-unit select {
+    flex: 1;
+}

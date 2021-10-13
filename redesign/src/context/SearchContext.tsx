@@ -1,17 +1,21 @@
 import React from "react";
-import {ApiCoordinates} from "../../../shared/types/types";
+import {ApiCoordinates, TransportationParam} from "../../../shared/types/types";
+import {defaultTransportationParams} from "../components/TransportationParams";
 
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
+    transportationParams: TransportationParam[];
 }
 
 export const initialState: SearchContextState = {
+    transportationParams: [...defaultTransportationParams]
 };
 
 export enum SearchContextActions {
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
+    SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
 }
 
 const reducer: (
@@ -24,6 +28,9 @@ const reducer: (
         }
         case SearchContextActions.SET_LOCATION: {
             return {...state, location: {...action.payload}};
+        }
+        case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
+            return {...state, transportationParams: [...action.payload]}
         }
         default:
             return state;
