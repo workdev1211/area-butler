@@ -1,5 +1,5 @@
 import React from "react";
-import InputWithIcon from "./InputWithIcon";
+import Input from "./Input";
 import typeIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import LocationAutocomplete from "./LocationAutocomplete";
@@ -45,8 +45,8 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
             {inputValues?.map((location, index) => <div
                 className="w-full grid grid-cols-1 md:grid-cols-3 gap-4"
                 key={`important-address-${index}`}>
-                <InputWithIcon label="Bezeichung" icon={typeIcon} className="input input-bordered flex"
-                               value={location.title} onChange={(event) => changeTitle(event.target.value, index)}/>
+                <Input label="Bezeichung" icon={typeIcon} className="input input-bordered flex"
+                       value={location.title} onChange={(event) => changeTitle(event.target.value, index)}/>
                 <div className="flex col-span-1 md:col-span-2 2xl:col-span-1">
                     <LocationAutocomplete value={location.address} setValue={() => {
                     }} afterChange={(payload) => onLocationAutocompleteChange(payload, index)}/>

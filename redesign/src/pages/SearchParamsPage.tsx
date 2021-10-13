@@ -6,6 +6,7 @@ import MyLocationButton from "../components/MyLocationButton";
 import {ApiCoordinates} from "../../../shared/types/types";
 import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
+import Input from "../components/Input";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
@@ -37,30 +38,17 @@ const SearchParamsPage: React.FunctionComponent = () => {
                 <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {
                 }} afterChange={onLocationAutocompleteChange}/>
                 <div className="flex flex-wrap items-end gap-4">
-                    <div className="form-control min-flex">
-                        <label className="label">
-                            <span>Lat</span>
-                        </label>
-                        <input
-                            type="text"
-                            readOnly={true}
-                            value={searchContextState.location?.lat || '-'}
-                            className="input input-bordered w-full"
-                            placeholder="Latitude"
+                    <Input label="Lat" type="text"
+                           readOnly={true}
+                           value={searchContextState.location?.lat || '-'}
+                           className="input input-bordered w-full"
+                           placeholder="Latitude" />
+                    <Input label="Long" type="text"
+                           readOnly={true}
+                           value={searchContextState.location?.lng || '-'}
+                           className="input input-bordered w-full"
+                           placeholder="Longitude"
                         />
-                    </div>
-                    <div className="form-control min-flex">
-                        <label className="label">
-                            <span>Long</span>
-                        </label>
-                        <input
-                            type="text"
-                            readOnly={true}
-                            value={searchContextState.location?.lng || '-'}
-                            className="input input-bordered w-full"
-                            placeholder="Longitude"
-                        />
-                    </div>
                     <MyLocationButton classes="btn bg-primary-gradient w-full sm:w-auto"
                                       onComplete={onMyLocationChange}/>
                 </div>

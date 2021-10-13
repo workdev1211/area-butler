@@ -5,7 +5,7 @@ import "./TransportationParams.css";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import InputWithIcon from "./InputWithIcon";
+import Input from "./Input";
 import distanceIcon from "../assets/icons/icons-16-x-16-outline-ic-distance.svg";
 
 export interface TransportationParamsProps {
@@ -125,7 +125,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                             </label>
                         </div>
                         {isActive && <div className="distance-unit flex gap-4 flex-wrap">
-                            <InputWithIcon
+                            <Input
                                 icon={distanceIcon}
                                 label="Erreichbar in" type="number"
                                 value={currentValue?.amount ?? 1}
