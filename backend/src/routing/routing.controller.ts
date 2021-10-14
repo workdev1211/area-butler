@@ -1,8 +1,7 @@
-import {Controller, Get, NotFoundException, Query} from '@nestjs/common';
+import {Controller, Get, NotFoundException, Param, Query} from '@nestjs/common';
 import {RoutingService} from "./routing.service";
-import {ApiPotentialCustomer} from "@area-butler-types/potential-customer";
-import {mapPotentialCustomerToApiPotentialCustomer} from "../potential-customer/mapper/potential-customer.mapper";
 import {ApiRoutingTransportType} from "@area-butler-types/routing";
+import {PotentialCustomerService} from "../potential-customer/potential-customer.service";
 
 interface ApiRouteQuery {
     originLat: number;
@@ -14,7 +13,10 @@ interface ApiRouteQuery {
 
 @Controller('api/routing')
 export class RoutingController {
-    constructor(private routingService: RoutingService) {}
+    constructor(
+        private routingService: RoutingService,
+        private potentialCustomerService: PotentialCustomerService
+    ) {}
 
     @Get()
     async getRoute(
@@ -29,6 +31,34 @@ export class RoutingController {
             return result;
         } else {
             throw new NotFoundException("Could not find route")
+        }
+    }
+
+    @Get('potential-customer/:potentialCustomerId/preferred')
+    async preferredRoutes(
+        @Param('potentialCustomerId') potentialCustomerId: string,
+        @Query('originLat') originLat: number,
+        @Query('originLng') originLng: number,
+    ) {
+        const potentialCustomer = await this.potentialCustomerService.findById(potentialCustomerId);
+
+        if (potentialCustomer && potentialCustomer.preferredLocations?.length) {
+            return potentialCustomer.preferredLocations.map((preferredLocation) => {
+                return {
+                    title: preferredLocation.title,
+                    routes: ['car', 'bicycle', 'pedestrian'].map((transportType) => {
+                        return this.routingService.getRoute({
+                                lng: originLng,
+                                lat: originLat
+                            },
+                            preferredLocation.coordinates,
+                            transportType as ApiRoutingTransportType
+                        )
+                    })
+                }
+            } )
+        } else {
+            throw new NotFoundException("No preferred locations or potential customer not known")
         }
     }
 
