@@ -43,10 +43,10 @@ export class RoutingController {
         const potentialCustomer = await this.potentialCustomerService.findById(potentialCustomerId);
 
         if (potentialCustomer && potentialCustomer.preferredLocations?.length) {
-            return potentialCustomer.preferredLocations.map((preferredLocation) => {
+            return await Promise.all(potentialCustomer.preferredLocations.map(async (preferredLocation) => {
                 return {
                     title: preferredLocation.title,
-                    routes: ['car', 'bicycle', 'pedestrian'].map((transportType) => {
+                    routes: await Promise.all(['car', 'bicycle', 'pedestrian'].map((transportType) => {
                         return this.routingService.getRoute({
                                 lng: originLng,
                                 lat: originLat
@@ -54,9 +54,9 @@ export class RoutingController {
                             preferredLocation.coordinates,
                             transportType as ApiRoutingTransportType
                         )
-                    })
+                    }))
                 }
-            } )
+            } ))
         } else {
             throw new NotFoundException("No preferred locations or potential customer not known")
         }
