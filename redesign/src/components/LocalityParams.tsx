@@ -19,10 +19,10 @@ const LocalityParams: React.FunctionComponent<LocalityParamsProps> = ({values, o
 
     return (
         <div className="flex flex-wrap gap-12 lg:gap-24 w-full">
-            {Object.values(ApiOsmEntityCategory).map(category => <div className="flex flex-col">
+            {Object.values(ApiOsmEntityCategory).map(category => <div className="flex flex-col" key={`category-${category}`}>
                 <h3>{category}</h3>
                 {osmEntityTypes.filter(entityType => entityType.category === category).map(entity =>
-                    <label className="cursor-pointer label justify-start mt-2 pl-0">
+                    <label className="cursor-pointer label justify-start mt-2 pl-0" key={`locality-${entity.label}`}>
                         <input type="checkbox" checked={values.includes(entity)} className="checkbox checkbox-primary checkbox-sm" onChange={() => handleChange(entity)}/>
                         <span className="label-text ml-2">{entity.label}</span>
                     </label>)}
