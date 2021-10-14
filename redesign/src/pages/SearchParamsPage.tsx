@@ -11,6 +11,7 @@ import LocalityParams from "../components/LocalityParams";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import {useHttp} from "../hooks/http";
 import {useCensusData} from "../hooks/censusdata";
+import {useHistory} from "react-router-dom";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {post} = useHttp();
@@ -38,6 +39,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     }
 
     const SearchButton: React.FunctionComponent<any> = () => {
+        const history = useHistory();
         const performLocationSearch = async () => {
             try {
                 searchContextDispatch({type: SearchContextActions.SET_SEARCH_BUSY, payload: true});
@@ -59,6 +61,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                     type: SearchContextActions.SET_ZENSUS_DATA,
                     payload: zensusData
                 });
+                history.push('/search-result');
             } catch (error) {
                 console.error(error);
             } finally {

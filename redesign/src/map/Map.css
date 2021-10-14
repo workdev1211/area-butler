@@ -1,0 +1,23 @@
+.leaflet-container {
+    height: 80vh;
+}
+
+.cluster-icon {
+    width: 100px !important;
+    height: auto !important;
+    background-color: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    padding: 6px;
+    aspect-ratio: 1 !important;
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
+}
+
+.cluster-icon-wrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    align-items: center
+}

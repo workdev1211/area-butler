@@ -24,7 +24,13 @@ const PrivacyPage = (
 
 const SearchParamsPage = (
     lazy(() => (
-        import ('./pages/SearchParamsPage')
+        import('./pages/SearchParamsPage')
+    ))
+);
+
+const SearchResultPage = (
+    lazy(() => (
+        import('./pages/SearchResultPage')
     ))
 );
 
@@ -41,6 +47,13 @@ function App() {
                         </Route>
                         <Route path="/privacy">
                             <PrivacyPage/>
+                        </Route>
+                        <Route path="/search-result">
+                            <Authenticated>
+                                <SearchContextProvider>
+                                    <SearchResultPage/>
+                                </SearchContextProvider>
+                            </Authenticated>
                         </Route>
                         <Route path="/">
                             <Authenticated>

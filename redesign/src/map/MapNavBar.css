@@ -1,0 +1,33 @@
+.map-nav-bar-container {
+    z-index: 999;
+    left: 0;
+    right: 0;
+    top: 16px;
+    @apply absolute flex;
+}
+
+.map-nav-bar {
+    z-index: 999;
+    padding: 10px;
+    border-radius: 28px;
+    @apply mx-auto bg-white flex flex-wrap justify-between;
+}
+
+.map-nav-bar .btn-link {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 6px 12px;
+    border-radius: 16px !important;
+    color: var(--base-anthracite);
+    @apply font-medium text-base border-none;
+}
+
+.map-nav-bar .btn-link.active {
+    background: var(--base-bright-silver);
+}
+
+.map-nav-bar .btn-link span {
+    height: 16px;
+    width: 16px;
+    @apply mask mask-circle mr-2;
+}

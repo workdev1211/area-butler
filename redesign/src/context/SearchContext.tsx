@@ -10,6 +10,11 @@ import {defaultTransportationParams} from "../components/TransportationParams";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {osmEntityTypes} from "../../../shared/constants/constants";
 
+export interface MapClipping {
+    zoomLevel: number;
+    mapClippingDataUrl: string;
+}
+
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
@@ -19,6 +24,9 @@ export interface SearchContextState {
     searchBusy: boolean;
     searchResponse?: ApiSearchResponse;
     censusData?: ApiGeometry[];
+    selectedZoomLevel?: number;
+    highlightId?: number;
+    mapClippings?: MapClipping[];
 }
 
 export const initialState: SearchContextState = {
@@ -39,6 +47,10 @@ export enum SearchContextActions {
     SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
     SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+    SET_SELECTED_ZOOM_LEVEL = 'SET_SELECTED_ZOOM_LEVEL',
+    CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
+    SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
+    ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
 }
 
 const reducer: (
@@ -69,6 +81,20 @@ const reducer: (
         }
         case SearchContextActions.SET_ZENSUS_DATA: {
             return {...state, censusData: [...action.payload]}
+        }
+        case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
+            return {...state, selectedZoomLevel: action.payload};
+        }
+        case SearchContextActions.CENTER_ZOOM_COORDINATES: {
+            return {...state, selectedZoomLevel: action.payload.zoom, location: action.payload.center}
+        }
+        case SearchContextActions.SET_HIGHLIGHT_ID: {
+            return {...state, highlightId: action.payload}
+        }
+        case SearchContextActions.ADD_MAP_CLIPPING: {
+            const newMapClippings = [...(state.mapClippings || [])];
+            newMapClippings.push(action.payload);
+            return {...state, mapClippings: newMapClippings};
         }
         default:
             return state;
