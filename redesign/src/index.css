@@ -120,6 +120,14 @@ html {
 .bg-primary-gradient.loading {
   color: white;
 }
+.bg-primary-gradient:disabled {
+  background: white;
+  color: var(--base-silver);
+  border: 1px solid var(--base-silver);
+}
+.bg-primary-gradient:disabled img {
+  filter: brightness(0.7);
+}
 
 .form-control.min-flex {
   flex-grow: 1;

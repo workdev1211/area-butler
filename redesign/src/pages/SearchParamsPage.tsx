@@ -3,13 +3,18 @@ import DefaultLayout from "../layout/defaultLayout";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
-import {ApiCoordinates} from "../../../shared/types/types";
+import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse} from "../../../shared/types/types";
 import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 import Input from "../components/Input";
 import LocalityParams from "../components/LocalityParams";
+import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
+import {useHttp} from "../hooks/http";
+import {useCensusData} from "../hooks/censusdata";
 
 const SearchParamsPage: React.FunctionComponent = () => {
+    const {post} = useHttp();
+    const {fetchNearData} = useCensusData();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
 
     const onLocationAutocompleteChange = (payload: any) => {
@@ -32,8 +37,55 @@ const SearchParamsPage: React.FunctionComponent = () => {
         })
     }
 
+    const SearchButton: React.FunctionComponent<any> = () => {
+        const performLocationSearch = async () => {
+            try {
+                searchContextDispatch({type: SearchContextActions.SET_SEARCH_BUSY, payload: true});
+                const search: ApiSearch = {
+                    coordinates: searchContextState.location!,
+                    meansOfTransportation: searchContextState.transportationParams,
+                    preferredAmenities: searchContextState.localityParams.map((l: ApiOsmEntity) => l.name),
+                };
+                const result = await post<ApiSearchResponse>(
+                    "/api/location/search",
+                    search
+                );
+                searchContextDispatch({
+                    type: SearchContextActions.SET_SEARCH_RESPONSE,
+                    payload: result.data
+                })
+                const zensusData = await fetchNearData(searchContextState.location);
+                searchContextDispatch({
+                    type: SearchContextActions.SET_ZENSUS_DATA,
+                    payload: zensusData
+                });
+            } catch (error) {
+                console.error(error);
+            } finally {
+                searchContextDispatch({type: SearchContextActions.SET_SEARCH_BUSY, payload: false});
+            }
+        }
+
+        const classes = 'btn bg-primary-gradient w-full sm:w-auto ';
+
+        return <button
+            type="button"
+            disabled={
+                searchContextState.searchBusy ||
+                !searchContextState.location?.lat ||
+                !searchContextState.location?.lng ||
+                searchContextState.transportationParams.length === 0 ||
+                searchContextState.localityParams.length === 0
+            }
+            onClick={performLocationSearch}
+            className={searchContextState.searchBusy ? `${classes} loading` : classes}
+        >
+            Analyse Starten <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
+        </button>
+    }
+
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true}>
+        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true} actionBottom={<SearchButton/>}>
             <h2>Standort</h2>
             <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
                 <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {

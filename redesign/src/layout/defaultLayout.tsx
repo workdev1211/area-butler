@@ -6,9 +6,10 @@ interface DefaultLayoutProps {
     title: string;
     withHorizontalPadding: boolean;
     children: React.ReactNode;
+    actionBottom?: React.ReactNode;
 }
 
-const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, withHorizontalPadding, children}) => {
+const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, withHorizontalPadding, actionBottom, children}) => {
     return (
         <div className="default-layout">
             <div className="default-layout-header">
@@ -34,6 +35,9 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
             <div className={withHorizontalPadding ? 'default-layout-content padding' : 'default-layout-content'}>
                 {children}
             </div>
+            {actionBottom && <div className="action-bottom">
+                {actionBottom}
+            </div>}
         </div>
     )
 }

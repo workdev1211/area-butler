@@ -1,5 +1,11 @@
 import React from "react";
-import {ApiCoordinates, ApiOsmEntity, OsmName, TransportationParam} from "../../../shared/types/types";
+import {
+    ApiCoordinates, ApiGeometry,
+    ApiOsmEntity,
+    ApiSearchResponse,
+    OsmName,
+    TransportationParam
+} from "../../../shared/types/types";
 import {defaultTransportationParams} from "../components/TransportationParams";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {osmEntityTypes} from "../../../shared/constants/constants";
@@ -10,6 +16,9 @@ export interface SearchContextState {
     transportationParams: TransportationParam[];
     preferredLocations?: ApiPreferredLocation[];
     localityParams: ApiOsmEntity[];
+    searchBusy: boolean;
+    searchResponse?: ApiSearchResponse;
+    censusData?: ApiGeometry[];
 }
 
 export const initialState: SearchContextState = {
@@ -17,7 +26,8 @@ export const initialState: SearchContextState = {
     localityParams: osmEntityTypes.filter(entity =>
         [
             OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
-        ].includes(entity.name))
+        ].includes(entity.name)),
+    searchBusy: false
 };
 
 export enum SearchContextActions {
@@ -25,7 +35,10 @@ export enum SearchContextActions {
     SET_LOCATION = 'SET_LOCATION',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
     SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
-    SET_LOCALITY_PARAMS = 'SET_LOCALITY_PARAMS'
+    SET_LOCALITY_PARAMS = 'SET_LOCALITY_PARAMS',
+    SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
+    SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
+    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
 }
 
 const reducer: (
@@ -47,6 +60,15 @@ const reducer: (
         }
         case SearchContextActions.SET_LOCALITY_PARAMS: {
             return {...state, localityParams: [...action.payload]};
+        }
+        case SearchContextActions.SET_SEARCH_BUSY: {
+            return {...state, searchBusy: action.payload}
+        }
+        case SearchContextActions.SET_SEARCH_RESPONSE: {
+            return {...state, searchResponse: {...action.payload}, location: action.payload.centerOfInterest.coordinates}
+        }
+        case SearchContextActions.SET_ZENSUS_DATA: {
+            return {...state, censusData: [...action.payload]}
         }
         default:
             return state;
