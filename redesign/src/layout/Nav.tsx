@@ -89,6 +89,7 @@ const Nav: FunctionComponent = () => {
                             <span className="sr-only">Benutzer Menü</span>
                             <img
                                 src={currentUser.picture}
+                                referrerPolicy="no-referrer"
                                 alt=""/>
                         </button>
                     </div>
