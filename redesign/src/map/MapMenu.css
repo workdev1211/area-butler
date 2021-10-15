@@ -79,14 +79,13 @@
 .map-menu .locality-option .collapse-title div.img-container {
     width: 36px;
     height: 36px;
-    background: green;
     @apply flex justify-center items-center mr-3 mask mask-circle;
 }
 .map-menu .locality-option .collapse-title .checkbox {
     z-index: 9999;
 }
 .map-menu .locality-option .collapse-content {
-    padding: 0;
+    padding: 0 !important;
 }
 .map-menu .locality-option.collapse-child-open .collapse-content {
     background: white !important;
@@ -112,10 +111,11 @@
     @apply pr-1;
 }
 .map-menu .locality-option .locality-item {
-    border-bottom: 1px solid var(--base-bright-silver);
+    border-bottom: 2px solid var(--base-bright-silver);
 }
 .map-menu .locality-option .locality-item .locality-item-title {
-    padding: 10px 80px 10px 24px !important;
+    padding: 10px 80px 10px 0px !important;
+    margin-left: 24px;
     border-bottom: 1px solid var(--base-bright-silver);
     @apply w-full font-medium text-lg;
 }

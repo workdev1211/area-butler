@@ -1,6 +1,13 @@
-import { geocodeByAddress, getLatLng } from "react-google-places-autocomplete";
-import { ApiCoordinates } from "../../../shared/types/types";
+import {geocodeByAddress, getLatLng} from "react-google-places-autocomplete";
+import {ApiCoordinates, OsmName} from "../../../shared/types/types";
 import harversine from "haversine";
+import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
+import fuelIcon from "../assets/icons/icons-20-x-20-outline-ic-gasstation.svg";
+import chemistIcon from "../assets/icons/icons-20-x-20-outline-ic-chemist.svg";
+import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
+import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
+import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
+import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
 
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
@@ -20,3 +27,53 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
     { unit: "meter" }
   );
 };
+
+export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: string} => {
+    switch (osmName) {
+        case OsmName.fuel:
+            return {
+                icon: fuelIcon,
+                color: '#8f72eb'
+            };
+        case OsmName.park:
+            return {
+                icon: parkIcon,
+                color: '#175c4f'
+            };
+        case OsmName.chemist:
+            return {
+                icon: chemistIcon,
+                color: '#267f9e'
+            }
+        case OsmName.supermarket:
+            return {
+                icon: chemistIcon,
+                color: '#76c5e9'
+            }
+        case OsmName.station:
+            return {
+                icon: trainIcon,
+                color: '#e1e4e5'
+            }
+        case OsmName.bus_stop:
+            return {
+                icon: busIcon,
+                color: '#c91462'
+            }
+        case OsmName.bar:
+            return {
+                icon: barIcon,
+                color: '#e4bc40'
+            }
+        case OsmName.restaurant:
+            return {
+                icon: restaurantIcon,
+                color: '#399086'
+            }
+        default:
+            return {
+                icon: parkIcon,
+                color: '#175c4f'
+            };
+    }
+}

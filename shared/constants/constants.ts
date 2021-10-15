@@ -52,7 +52,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Park",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 200,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.amenity,

@@ -8,13 +8,20 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
-import {ApiCoordinates, ApiGeojsonFeature, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {
+    ApiCoordinates,
+    ApiGeojsonFeature,
+    ApiSearchResponse,
+    MeansOfTransportation,
+    OsmName
+} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
 import {fallbackIcon, osmNameToIcons} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
 import {EntityGroups, ResultEntity} from "../pages/SearchResultPage";
+import {deriveIconForOsmName} from "../shared/shared.functions";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -271,7 +278,7 @@ const Map = React.memo<MapProps>(({
                 parsedEntities?.forEach(entity => {
                     if (parsedEntityGroups.some(eg => eg.title === entity.label && eg.active)) {
                         const icon = new L.Icon({
-                            iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
+                            iconUrl: deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon,
                             shadowUrl: leafletShadow,
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
