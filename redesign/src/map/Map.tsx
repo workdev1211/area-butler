@@ -89,7 +89,6 @@ const Map = React.memo<MapProps>(({
                                       highlightId
                                   }) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-    const initialPosition: L.LatLngExpression = [lat, lng];
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const {searchContextDispatch} = useContext(SearchContext);
@@ -103,6 +102,7 @@ const Map = React.memo<MapProps>(({
             currentMap.off();
             currentMap.remove();
         }
+        const initialPosition: L.LatLngExpression = [lat, lng];
         const localMap = L.map(leafletMapId, {
             scrollWheelZoom: false,
             preferCanvas: true,
@@ -141,7 +141,7 @@ const Map = React.memo<MapProps>(({
         }).bindPopup('Mein Standort').addTo(localMap);
 
         currentMap = localMap;
-    }, [lat, lng]);
+    }, [lat, lng, leafletMapId, searchContextDispatch, mapBoxAccessToken]);
 
     // react on zoom and center change
     useEffect(() => {
@@ -179,10 +179,12 @@ const Map = React.memo<MapProps>(({
                 }
             }
         }
-    }, [currentMap, amenityMarkerGroup, mapCenter, mapZoomLevel, highlightId]);
+    }, [mapCenter, mapZoomLevel, highlightId, searchContextDispatch]);
 
+    const meansStringified = JSON.stringify(means);
     // draw means
     useEffect(() => {
+        const parsedMeans = JSON.parse(meansStringified);
         if (currentMap) {
             if (meansGroup) {
                 currentMap.removeLayer(meansGroup);
@@ -194,23 +196,23 @@ const Map = React.memo<MapProps>(({
                     return [item[1], item[0]];
                 });
             }
-            if (means.byFoot) {
+            if (parsedMeans.byFoot) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.WALK), {
                     color: '#c91444'
                 }).addTo(meansGroup);
             }
-            if (means.byBike) {
+            if (parsedMeans.byBike) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.BICYCLE), {
                     color: '#8f72eb'
                 }).addTo(meansGroup);
             }
-            if (means.byCar) {
+            if (parsedMeans.byCar) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.CAR), {
                     color: '#1f2937'
                 }).addTo(meansGroup);
             }
         }
-    }, [currentMap, JSON.stringify(means)]);
+    }, [meansStringified, searchResponse.routingProfiles]);
 
     // draw census
     useEffect(() => {
@@ -226,8 +228,9 @@ const Map = React.memo<MapProps>(({
                 L.geoJSON(c).addTo(censusGroup!).bindTooltip(table);
             })
         }
-    }, [currentMap, censusData]);
+    }, [censusData]);
 
+    const entitiesStringified = JSON.stringify(entities);
     // draw amenities
     useEffect(() => {
         const groupBy = (xs: any, key: any) => {
@@ -236,6 +239,7 @@ const Map = React.memo<MapProps>(({
                 return rv;
             }, {});
         };
+        const parsedEntities: ResultEntity[] | null = JSON.parse(entitiesStringified);
         const drawAmenityMarkers = (localZoom: number) => {
             if (currentMap) {
                 currentMap.removeLayer(amenityMarkerGroup);
@@ -259,7 +263,7 @@ const Map = React.memo<MapProps>(({
                     animate: false,
                     zoomToBoundsOnClick: false
                 });
-                entities?.forEach(entity => {
+                parsedEntities?.forEach(entity => {
                     const icon = new L.Icon({
                         iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
                         shadowUrl: leafletShadow,
@@ -285,7 +289,7 @@ const Map = React.memo<MapProps>(({
         if (currentMap) {
             drawAmenityMarkers(zoom);
         }
-    }, [currentMap, JSON.stringify(entities)]);
+    }, [entitiesStringified, searchContextDispatch]);
 
     // print actions
     useEffect(() => {
@@ -307,7 +311,7 @@ const Map = React.memo<MapProps>(({
             }, 2000);
         }
 
-    }, [currentMap, printingActive, mapZoomLevel]);
+    }, [printingActive, mapZoomLevel, searchContextDispatch]);
 
     return (
         <div className='leaflet-container w-full' id={leafletMapId}>
