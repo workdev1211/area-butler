@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';
 
-var SibApiV3Sdk = require('sib-api-v3-sdk');
+const SibApiV3Sdk = require('sib-api-v3-sdk');
 
 export interface MailProps {
   to: { name: string; email: string }[];

@@ -1,19 +1,26 @@
-import {BadRequestException, HttpService, Injectable, InternalServerErrorException, Logger} from '@nestjs/common';
-import {ApiCoordinates, ApiGeometry} from "@area-butler-types/types";
+import {HttpService, Injectable, Logger} from '@nestjs/common';
+import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "@area-butler-types/types";
 import {configService} from "../config/config.service";
-import {ApiRoute, ApiRoutingTransportType} from "@area-butler-types/routing";
+import {ApiRoute} from "@area-butler-types/routing";
 import * as poly from "@liberty-rider/flexpolyline";
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
 
-
 interface HereApiRoutingRequest {
     apiKey: string;
-    transportMode: ApiRoutingTransportType;
+    transportMode: HereApiRoutingTransportType;
     origin: string; //{lat},{lng}
     destination: string;  //{lat},{lng}
     return: 'summary,polyline';
+}
+
+type HereApiRoutingTransportType = 'car' | 'bicycle' | 'pedestrian';
+
+const mapMeansOfTransportation :{[key in keyof typeof MeansOfTransportation]: HereApiRoutingTransportType} = {
+    [MeansOfTransportation.WALK]: 'pedestrian' ,
+    [MeansOfTransportation.BICYCLE]: 'bicycle' ,
+    [MeansOfTransportation.CAR]: 'car'
 }
 
 interface HereApiRouteSection {
@@ -46,20 +53,22 @@ export class RoutingService {
 
     constructor(private httpService: HttpService) {}
 
-    async getRoute(origin: ApiCoordinates, destination: ApiCoordinates, transportMode: ApiRoutingTransportType): Promise<ApiRoute | undefined> {
+    async getRoute(origin: ApiCoordinates, destination: ApiCoordinates, meansOfTransportation: MeansOfTransportation): Promise<ApiRoute | undefined> {
         try {
             const request: HereApiRoutingRequest = {
                 apiKey: configService.getHereApiKey(),
                 origin: `${origin.lat},${origin.lng}`,
                 destination: `${destination.lat},${destination.lng}`,
-                transportMode,
+                transportMode: mapMeansOfTransportation[meansOfTransportation],
                 return: 'summary,polyline'
             };
+
             const {data} = await this.httpService.get<HereApiRoutingResponse>(configService.getHereRouterApiUrl(), {params:  request }).toPromise();
             if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length === 1) {
                 const section = data.routes[0].sections[0];
                 const polyline = poly.decode(section.polyline).polyline;
                 return  {
+                    meansOfTransportation: meansOfTransportation,
                     duration: section.summary.duration,
                     length: section.summary.length,
                     geometry: {
