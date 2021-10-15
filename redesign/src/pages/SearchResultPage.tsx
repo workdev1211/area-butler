@@ -1,6 +1,6 @@
 import React, {useContext, useEffect, useState} from "react";
 import DefaultLayout from "../layout/defaultLayout";
-import {SearchContext} from "../context/SearchContext";
+import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import {
     ApiAddress,
     ApiCoordinates,
@@ -113,7 +113,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 }
 
 const SearchResultPage: React.FunctionComponent = () => {
-    const {searchContextState} = useContext(SearchContext);
+    const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const history = useHistory();
     if (!searchContextState.searchResponse?.routingProfiles) {
         history.push("/");
@@ -179,6 +179,11 @@ const SearchResultPage: React.FunctionComponent = () => {
         setGroupedEntries(newGroups);
     }
 
+    const highlightZoomEntity = (item: ResultEntity) => {
+            searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: item.coordinates, zoom: 18 }});
+            searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: item.id});
+    }
+
     return (
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false}>
             <div className="flex w-full">
@@ -194,6 +199,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                         searchResponse={searchContextState.searchResponse}
                         entities={filteredEntites}
                         groupedEntities={groupedEntries}
+                        highlightId={searchContextState.highlightId}
                         means={{
                             byFoot: activeMeans.includes(MeansOfTransportation.WALK),
                             byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
@@ -206,7 +212,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                     />
                 </div>
                 <MapMenu census={showCensus} toggleCensus={(active) => setShowCensus(active)}
-                         groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup}/>
+                         groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup} highlightZoomEntity={highlightZoomEntity}/>
             </div>
         </DefaultLayout>
     )

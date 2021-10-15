@@ -2,7 +2,7 @@ import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "@area-butler-types/types";
 import {configService} from "../config/config.service";
 import {ApiRoute} from "@area-butler-types/routing";
-import * as poly from "@liberty-rider/flexpolyline";
+// import * as poly from "@liberty-rider/flexpolyline";
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
@@ -66,14 +66,14 @@ export class RoutingService {
             const {data} = await this.httpService.get<HereApiRoutingResponse>(configService.getHereRouterApiUrl(), {params:  request }).toPromise();
             if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length === 1) {
                 const section = data.routes[0].sections[0];
-                const polyline = poly.decode(section.polyline).polyline;
+                // const polyline = poly.decode(section.polyline).polyline;
                 return  {
                     meansOfTransportation: meansOfTransportation,
                     duration: section.summary.duration,
                     length: section.summary.length,
                     geometry: {
                         type: 'LineString',
-                        coordinates: polyline.map(switchCoords)
+                        // coordinates: polyline.map(switchCoords)
                     } as ApiGeometry
                 }
             } else {

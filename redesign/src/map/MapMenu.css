@@ -1,5 +1,6 @@
 .map-menu {
-    @apply flex flex-col;
+    color: var(--base-anthracite);
+    @apply h-full flex flex-col;
     --map-menu-pr: 80px;
 }
 
@@ -8,16 +9,20 @@
     background: var(--base-anthracite);
     padding: 34px var(--map-menu-pr) 30px 24px !important;
     line-height: 1rem;
+    border-bottom: none;
     @apply font-medium text-2xl text-white;
 }
 
-.map-menu .view-option .collapse-title {
+.map-menu .collapse-title {
     color: var(--base-anthracite);
-    padding: 18px var(--map-menu-pr) 24px 24px;
+    padding: 18px var(--map-menu-pr) 20px 24px;
     background: white !important;
     @apply text-xl font-medium;
 }
-.map-menu .view-option.collapse-open .collapse-title {
+.map-menu .view-option {
+    @apply h-full;
+}
+.map-menu .view-option.collapse-open > .collapse-title {
     color:white;
     background: var(--primary-gradient) !important;
 }
@@ -25,7 +30,7 @@
     top: 25px;
     right: 50px;
 }
-.map-menu .view-option .collapse-content {
+.map-menu .view-option > .collapse-content {
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
@@ -34,13 +39,101 @@
 .map-menu .collapse-content ul {
     @apply w-full flex flex-col;
 }
-.map-menu .collapse-content ul li {
-    min-width: 300px;
+.map-menu .view-option .collapse-content ul li {
     padding: 4px 80px 4px 24px;
     border-bottom: 1px solid var(--base-bright-silver);
     @apply w-full flex justify-between items-center;
 }
-.map-menu .collapse-content ul li span {
+.map-menu .collapse-content ul li > span {
     color: var(--base-anthracite);
     @apply font-medium text-lg;
+}
+
+
+.map-menu .locality-option-li {
+    padding: 0 !important;
+}
+.map-menu .locality-option-li > .collapse-child-closed .collapse-content {
+    max-height: 0;
+    height: 0;
+}
+.map-menu .locality-option-li .collapse-child-closed .collapse-title:after {
+    transform: rotate(405deg) !important;
+}
+.map-menu .locality-option-li .collapse-child-open .collapse-title:after {
+    top: 30px;
+}
+.map-menu .locality-option-li .collapse-child-open .collapse-content {
+    max-height: 9000px;
+}
+.map-menu .locality-option {
+    @apply w-full;
+}
+.map-menu .locality-option .collapse-title {
+    border-bottom: 1px solid var(--base-bright-silver);
+    @apply flex justify-between items-center;
+}
+.map-menu .locality-option .collapse-title > div {
+    @apply flex items-center;
+}
+.map-menu .locality-option .collapse-title div.img-container {
+    width: 36px;
+    height: 36px;
+    background: green;
+    @apply flex justify-center items-center mr-3 mask mask-circle;
+}
+.map-menu .locality-option .collapse-title .checkbox {
+    z-index: 9999;
+}
+.map-menu .locality-option .collapse-content {
+    padding: 0;
+}
+.map-menu .locality-option.collapse-child-open .collapse-content {
+    background: white !important;
+    padding: 0;
+}
+
+.map-menu .locality-option .mean-items {
+    border-bottom: 2px solid var(--base-bright-silver);
+    padding: 10px 80px 10px 24px !important;
+    @apply flex;
+}
+.map-menu .locality-option .mean-items .item {
+    width: 120px;
+    border-right: 1px solid var(--base-bright-silver);
+    @apply flex items-center gap-2 text-tiny font-medium pl-6;
+}
+.map-menu .locality-option .mean-items .item:first-of-type {
+    @apply pl-0;
+}
+.map-menu .locality-option .mean-items .item img {
+    height: 20px;
+    width: 20px;
+    @apply pr-1;
+}
+.map-menu .locality-option .locality-item {
+    border-bottom: 1px solid var(--base-bright-silver);
+}
+.map-menu .locality-option .locality-item .locality-item-title {
+    padding: 10px 80px 10px 24px !important;
+    border-bottom: 1px solid var(--base-bright-silver);
+    @apply w-full font-medium text-lg;
+}
+.map-menu .locality-option .locality-item .locality-item-content {
+    padding: 10px 80px 10px 24px !important;
+    @apply w-full flex items-center font-medium text-base;
+}
+.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell {
+    width: 120px;
+    border-right: 1px solid var(--base-bright-silver);
+    @apply flex flex-col font-medium text-base pl-6;
+}
+.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell:first-of-type {
+    @apply pl-0;
+}
+.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell .locality-item-cell-label {
+    color: var(--base-silver);
+    font-size: 9px;
+
+    @apply font-medium;
 }
