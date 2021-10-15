@@ -9,6 +9,7 @@ import {
 import {defaultTransportationParams} from "../components/TransportationParams";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {osmEntityTypes} from "../../../shared/constants/constants";
+import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 
 export interface MapClipping {
     zoomLevel: number;
@@ -27,6 +28,7 @@ export interface SearchContextState {
     selectedZoomLevel?: number;
     highlightId?: number;
     mapClippings?: MapClipping[];
+    realEstateListings?: ApiRealEstateListing[];
 }
 
 export const initialState: SearchContextState = {
@@ -51,6 +53,7 @@ export enum SearchContextActions {
     CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
     SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
+    SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
 }
 
 const reducer: (
@@ -95,6 +98,9 @@ const reducer: (
             const newMapClippings = [...(state.mapClippings || [])];
             newMapClippings.push(action.payload);
             return {...state, mapClippings: newMapClippings};
+        }
+        case SearchContextActions.SET_REAL_ESTATE_LISTING: {
+            return {...state, realEstateListing: {...action.payload}};
         }
         default:
             return state;

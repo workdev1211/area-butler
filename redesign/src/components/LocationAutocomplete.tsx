@@ -52,7 +52,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                     }}
                     minLengthAutocomplete={5}
                     selectProps={{
-                        value,
+                        value: value && value.label ? value : {label: value},
                         onChange: deriveLangLat,
                         className: 'google-autocomplete',
                         classNamePrefix: 'google-autocomplete',

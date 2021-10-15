@@ -31,3 +31,19 @@
     width: 16px;
     @apply mask mask-circle mr-2;
 }
+
+.map-nav-bar .checkboxes {
+    @apply flex gap-4 items-center pl-20;
+}
+
+.map-nav-bar .checkboxes label {
+    @apply cursor-pointer label justify-start pl-0;
+}
+
+.map-nav-bar .checkboxes label input {
+    @apply checkbox checkbox-primary checkbox-sm;
+}
+
+.map-nav-bar .checkboxes label span {
+    @apply label-text ml-2 font-normal text-base;
+}
