@@ -14,12 +14,13 @@ import {fallbackIcon, osmNameToIcons} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
-import {ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroups, ResultEntity} from "../pages/SearchResultPage";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
+    groupedEntities: EntityGroups[];
     mapCenter?: ApiCoordinates;
     mapZoomLevel?: number;
     leafletMapId?: string;
@@ -68,18 +69,20 @@ let amenityMarkerGroup = L.markerClusterGroup();
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const responseEqual = JSON.stringify(prevProps.searchResponse) === JSON.stringify(nextProps.searchResponse);
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
+    const entityGroupsEqual = JSON.stringify(prevProps.groupedEntities) === JSON.stringify(nextProps.groupedEntities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
     const mapCenterEqual = JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
     const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
-    return responseEqual && entitiesEqual && meansEqual && mapCenterEqual && printingActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
 }
 
 const Map = React.memo<MapProps>(({
                                       searchResponse,
                                       entities,
+                                      groupedEntities,
                                       means,
                                       mapCenter,
                                       printingActive,
@@ -231,6 +234,7 @@ const Map = React.memo<MapProps>(({
     }, [censusData]);
 
     const entitiesStringified = JSON.stringify(entities);
+    const groupedEntitiesStringified = JSON.stringify(groupedEntities);
     // draw amenities
     useEffect(() => {
         const groupBy = (xs: any, key: any) => {
@@ -240,6 +244,7 @@ const Map = React.memo<MapProps>(({
             }, {});
         };
         const parsedEntities: ResultEntity[] | null = JSON.parse(entitiesStringified);
+        const parsedEntityGroups: EntityGroups[] = JSON.parse(groupedEntitiesStringified);
         const drawAmenityMarkers = (localZoom: number) => {
             if (currentMap) {
                 currentMap.removeLayer(amenityMarkerGroup);
@@ -264,24 +269,29 @@ const Map = React.memo<MapProps>(({
                     zoomToBoundsOnClick: false
                 });
                 parsedEntities?.forEach(entity => {
-                    const icon = new L.Icon({
-                        iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
-                        shadowUrl: leafletShadow,
-                        shadowSize: [0, 0],
-                        iconSize: defaultAmenityIconSize,
-                        className: entity.type
-                    });
-                    const marker = new IdMarker(entity.coordinates, entity, {
-                        icon,
-                    }).on('click', function (e) {
-                        const marker = e.target;
-                        marker.createOpenPopup();
-                    });
-                    amenityMarkerGroup.addLayer(marker);
+                    if (parsedEntityGroups.some(eg => eg.title === entity.label && eg.active)) {
+                        const icon = new L.Icon({
+                            iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
+                            shadowUrl: leafletShadow,
+                            shadowSize: [0, 0],
+                            iconSize: defaultAmenityIconSize,
+                            className: entity.type
+                        });
+                        const marker = new IdMarker(entity.coordinates, entity, {
+                            icon,
+                        }).on('click', function (e) {
+                            const marker = e.target;
+                            marker.createOpenPopup();
+                        });
+                        amenityMarkerGroup.addLayer(marker);
+                    }
                 });
                 amenityMarkerGroup.on('clusterclick', function (a) {
                     const centerOfGroup = center(a.layer.toGeoJSON());
-                    searchContextDispatch({ type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}});
+                    searchContextDispatch({
+                        type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+                        payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}
+                    });
                 });
                 currentMap.addLayer(amenityMarkerGroup);
             }
@@ -289,7 +299,7 @@ const Map = React.memo<MapProps>(({
         if (currentMap) {
             drawAmenityMarkers(zoom);
         }
-    }, [entitiesStringified, searchContextDispatch]);
+    }, [entitiesStringified, groupedEntitiesStringified, searchContextDispatch]);
 
     // print actions
     useEffect(() => {

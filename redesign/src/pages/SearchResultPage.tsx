@@ -12,9 +12,10 @@ import Map, {defaultMapZoom} from "../map/Map";
 import MapNavBar from "../map/MapNavBar";
 import {meansOfTransportations} from "../../../shared/constants/constants";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
-import {distanceInMeters} from "../../../frontend/src/shared/shared.functions";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {useHistory} from "react-router-dom";
+import MapMenu from "../map/MapMenu";
+import {distanceInMeters} from "shared/shared.functions";
 
 export interface ResultEntity {
     name?: string;
@@ -27,7 +28,12 @@ export interface ResultEntity {
     byBike: boolean;
     byCar: boolean;
     distanceInMeters: number;
-    selected: boolean;
+}
+
+export interface EntityGroups {
+    title: string;
+    active: boolean;
+    items: ResultEntity[];
 }
 
 const preferredLocationsTitle = 'Wichtige Adressen';
@@ -109,7 +115,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 const SearchResultPage: React.FunctionComponent = () => {
     const {searchContextState} = useContext(SearchContext);
     const history = useHistory();
-    if (!searchContextState.searchResponse) {
+    if (!searchContextState.searchResponse?.routingProfiles) {
         history.push("/");
     }
 
@@ -121,6 +127,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
 
     const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
+    const [groupedEntries, setGroupedEntries] = useState<EntityGroups[]>([]);
     const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
 
@@ -128,7 +135,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     useEffect(() => {
         const searchResponseParsed = JSON.parse(searchResponseString);
         const centerOfSearch = searchResponseParsed.centerOfInterest.coordinates;
-        const entities = buildEntityData(searchResponseParsed);
+        let entities = buildEntityData(searchResponseParsed);
         if (!!searchContextState.preferredLocations && showPreferredlocations) {
             entities?.push(...buildEntityDataFromPreferredLocations(centerOfSearch, searchContextState.preferredLocations));
         }
@@ -137,33 +144,69 @@ const SearchResultPage: React.FunctionComponent = () => {
         }
         if (entities) {
             setFilteredEntities((entities));
+            // eslint-disable-next-line no-sequences
+            const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
+            const newGroupedEntries: any[] = Object.entries(groupBy(entities, (item: ResultEntity) => item.label));
+
+            const combinedGroupEntries = [
+                {
+                    title: preferredLocationsTitle,
+                    active: true,
+                    items: [...newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle)]
+                },
+                {
+                    title: realEstateListingsTitle,
+                    active: true,
+                    items: [...newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle)]
+                },
+                ...newGroupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle).map(([title, items]) => ({
+                    title,
+                    active: true,
+                    items
+                }))
+            ]
+
+            setGroupedEntries(combinedGroupEntries);
         }
+
     }, [searchResponseString, showPreferredlocations, searchContextState.preferredLocations, showMyObjects, searchContextState.realEstateListings])
 
+    const toggleEntityGroup = (title: string) => {
+        const newGroups = groupedEntries.map(ge => ge.title !== title ? ge : {
+            ...ge,
+            active: !ge.active
+        });
+        setGroupedEntries(newGroups);
+    }
 
     return (
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false}>
-            <div className="relative">
-                <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
-                           onMeansChange={(newValues) => setActiveMeans(newValues)}
-                           showPreferredLocations={showPreferredlocations}
-                           onToggleShowPreferredLocations={(active) => setShowPreferredLocations(active)}
-                           showMyObjects={showMyObjects}
-                           onToggleShowMyObjects={(active) => setShowMyObjects(active)}
-                />
-                <Map
-                    searchResponse={searchContextState.searchResponse}
-                    entities={filteredEntites}
-                    means={{
-                        byFoot: activeMeans.includes(MeansOfTransportation.WALK),
-                        byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
-                        byCar: activeMeans.includes(MeansOfTransportation.CAR)
-                    }}
-                    mapCenter={searchContextState.mapCenter ?? searchContextState.location}
-                    mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
-                    printingActive={searchContextState.printingActive}
-                    censusData={showCensus && searchContextState.censusData}
-                />
+            <div className="flex w-full">
+                <div className="relative flex-1">
+                    <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
+                               onMeansChange={(newValues) => setActiveMeans(newValues)}
+                               showPreferredLocations={showPreferredlocations}
+                               onToggleShowPreferredLocations={(active) => setShowPreferredLocations(active)}
+                               showMyObjects={showMyObjects}
+                               onToggleShowMyObjects={(active) => setShowMyObjects(active)}
+                    />
+                    <Map
+                        searchResponse={searchContextState.searchResponse}
+                        entities={filteredEntites}
+                        groupedEntities={groupedEntries}
+                        means={{
+                            byFoot: activeMeans.includes(MeansOfTransportation.WALK),
+                            byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
+                            byCar: activeMeans.includes(MeansOfTransportation.CAR)
+                        }}
+                        mapCenter={searchContextState.mapCenter ?? searchContextState.location}
+                        mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
+                        printingActive={searchContextState.printingActive}
+                        censusData={showCensus && censusDataAvailable && searchContextState.censusData}
+                    />
+                </div>
+                <MapMenu census={showCensus} toggleCensus={(active) => setShowCensus(active)}
+                         groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup}/>
             </div>
         </DefaultLayout>
     )
