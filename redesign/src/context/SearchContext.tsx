@@ -25,8 +25,10 @@ export interface SearchContextState {
     searchBusy: boolean;
     searchResponse?: ApiSearchResponse;
     censusData?: ApiGeometry[];
-    selectedZoomLevel?: number;
+    mapCenter?: ApiCoordinates;
+    mapZoomLevel?: number;
     highlightId?: number;
+    printingActive: boolean;
     mapClippings?: MapClipping[];
     realEstateListings?: ApiRealEstateListing[];
 }
@@ -37,7 +39,8 @@ export const initialState: SearchContextState = {
         [
             OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
         ].includes(entity.name)),
-    searchBusy: false
+    searchBusy: false,
+    printingActive: false
 };
 
 export enum SearchContextActions {
@@ -49,9 +52,11 @@ export enum SearchContextActions {
     SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
     SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
-    SET_SELECTED_ZOOM_LEVEL = 'SET_SELECTED_ZOOM_LEVEL',
+    SET_MAP_CENTER = 'SET_MAP_CENTER',
+    SET_MAP_ZOOM_LEVEL = 'SET_MAP_ZOOM_LEVEL',
     CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
     SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
+    SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
     SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
 }
@@ -85,14 +90,20 @@ const reducer: (
         case SearchContextActions.SET_ZENSUS_DATA: {
             return {...state, censusData: [...action.payload]}
         }
-        case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
-            return {...state, selectedZoomLevel: action.payload};
+        case SearchContextActions.SET_MAP_ZOOM_LEVEL: {
+            return {...state, mapZoomLevel: action.payload};
+        }
+        case SearchContextActions.SET_MAP_CENTER: {
+            return {...state, mapCenter: action.payload}
         }
         case SearchContextActions.CENTER_ZOOM_COORDINATES: {
-            return {...state, selectedZoomLevel: action.payload.zoom, location: action.payload.center}
+            return {...state, mapZoomLevel: action.payload.zoom, mapCenter: action.payload.center}
         }
         case SearchContextActions.SET_HIGHLIGHT_ID: {
             return {...state, highlightId: action.payload}
+        }
+        case SearchContextActions.SET_PRINTING_ACTIVE: {
+            return {...state, printingActive: action.payload};
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];

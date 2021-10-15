@@ -20,8 +20,8 @@ export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
-    selectedCenter?: ApiCoordinates;
-    selectedZoomLevel?: number;
+    mapCenter?: ApiCoordinates;
+    mapZoomLevel?: number;
     leafletMapId?: string;
     printingActive?: boolean;
     means: {
@@ -69,21 +69,21 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const responseEqual = JSON.stringify(prevProps.searchResponse) === JSON.stringify(nextProps.searchResponse);
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
-    const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
-    const selectedZoomLevelEqual = prevProps.selectedZoomLevel === nextProps.selectedZoomLevel;
+    const mapCenterEqual = JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
+    const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual && censusDataEqual && highlightIdEqual;
+    return responseEqual && entitiesEqual && meansEqual && mapCenterEqual && printingActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
 }
 
 const Map = React.memo<MapProps>(({
                                       searchResponse,
                                       entities,
                                       means,
-                                      selectedCenter,
+                                      mapCenter,
                                       printingActive,
-                                      selectedZoomLevel,
+                                      mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
                                       highlightId
@@ -113,12 +113,12 @@ const Map = React.memo<MapProps>(({
 
         localMap.addEventListener("zoomend", (value) => {
             zoom = value.target._zoom;
-            searchContextDispatch({type: SearchContextActions.SET_SELECTED_ZOOM_LEVEL, payload: zoom})
+            searchContextDispatch({type: SearchContextActions.SET_MAP_ZOOM_LEVEL, payload: zoom})
         });
         localMap.on('moveend', (event) => {
             if (!!event?.target?.getCenter()) {
                 const center = event.target.getCenter();
-                searchContextDispatch({type: SearchContextActions.SET_LOCATION, payload: center});
+                searchContextDispatch({type: SearchContextActions.SET_MAP_CENTER, payload: center});
             }
         });
         L.tileLayer(url, {
@@ -145,22 +145,22 @@ const Map = React.memo<MapProps>(({
 
     // react on zoom and center change
     useEffect(() => {
-        if (currentMap && selectedCenter && selectedZoomLevel) {
+        if (currentMap && mapCenter && mapZoomLevel) {
             // center and zoom view
-            currentMap.setView(selectedCenter, selectedZoomLevel);
+            currentMap.setView(mapCenter, mapZoomLevel);
             // handle growing/shrinking of icons based on zoom level
             if (amenityMarkerGroup) {
                 const markers = (amenityMarkerGroup.getLayers() as IdMarker[]);
                 if (markers.length) {
                     const currentSize = markers[0].getIcon().options.iconSize;
-                    if ((currentSize as L.Point).x === 20 && selectedZoomLevel >= 17) {
+                    if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 17) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
                             icon.options.iconSize = new L.Point(35, 35);
                             marker.setIcon(icon);
                         });
                     }
-                    if ((currentSize as L.Point).x === 35 && selectedZoomLevel < 17) {
+                    if ((currentSize as L.Point).x === 35 && mapZoomLevel < 17) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
                             icon.options.iconSize = defaultAmenityIconSize;
@@ -179,7 +179,7 @@ const Map = React.memo<MapProps>(({
                 }
             }
         }
-    }, [currentMap, amenityMarkerGroup, selectedCenter, selectedZoomLevel, highlightId]);
+    }, [currentMap, amenityMarkerGroup, mapCenter, mapZoomLevel, highlightId]);
 
     // draw means
     useEffect(() => {
@@ -299,7 +299,7 @@ const Map = React.memo<MapProps>(({
                     searchContextDispatch({
                         type: SearchContextActions.ADD_MAP_CLIPPING,
                         payload: {
-                            zoomLevel: selectedZoomLevel || zoom,
+                            zoomLevel: mapZoomLevel || zoom,
                             mapClippingDataUrl,
                         },
                     });
@@ -307,7 +307,7 @@ const Map = React.memo<MapProps>(({
             }, 2000);
         }
 
-    }, [currentMap, printingActive, selectedZoomLevel]);
+    }, [currentMap, printingActive, mapZoomLevel]);
 
     return (
         <div className='leaflet-container w-full' id={leafletMapId}>

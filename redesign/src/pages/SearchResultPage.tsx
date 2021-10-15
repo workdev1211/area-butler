@@ -14,6 +14,7 @@ import {meansOfTransportations} from "../../../shared/constants/constants";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {distanceInMeters} from "../../../frontend/src/shared/shared.functions";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import {useHistory} from "react-router-dom";
 
 export interface ResultEntity {
     name?: string;
@@ -107,6 +108,10 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 
 const SearchResultPage: React.FunctionComponent = () => {
     const {searchContextState} = useContext(SearchContext);
+    const history = useHistory();
+    if (!searchContextState.searchResponse) {
+        history.push("/");
+    }
 
     const routingKeys = Object.keys(searchContextState.searchResponse!.routingProfiles);
     const availableMeans = meansOfTransportations.filter(mot => routingKeys.includes(mot.type)).map(mot => mot.type);
@@ -154,9 +159,9 @@ const SearchResultPage: React.FunctionComponent = () => {
                         byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
                         byCar: activeMeans.includes(MeansOfTransportation.CAR)
                     }}
-                    selectedCenter={searchContextState.location}
-                    selectedZoomLevel={defaultMapZoom}
-                    printingActive={false}
+                    mapCenter={searchContextState.mapCenter ?? searchContextState.location}
+                    mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
+                    printingActive={searchContextState.printingActive}
                     censusData={showCensus && searchContextState.censusData}
                 />
             </div>
