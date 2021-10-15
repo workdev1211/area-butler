@@ -14,6 +14,7 @@ import { PotentialCustomerModule } from './potential-customer/potential-customer
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailSenderService } from './client/mail/mail-sender.service';
+import { RoutingModule } from './routing/routing.module';
 
 @Module({
   imports: [
@@ -39,6 +40,7 @@ import { MailSenderService } from './client/mail/mail-sender.service';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
+    RoutingModule,
   ],
   controllers: [ConfigController],
 })

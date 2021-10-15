@@ -182,4 +182,8 @@ export class PotentialCustomerService {
       );
     }
   }
+
+  async findById(id: string): Promise<PotentialCustomerDocument> {
+    return this.potentialCustomerModel.findById(id);
+  }
 }
