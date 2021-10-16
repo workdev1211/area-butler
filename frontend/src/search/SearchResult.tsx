@@ -1,5 +1,4 @@
 import { RealEstateListingContext } from "context/RealEstateListingContext";
-import ExposeDownloadButton from "pdf-export/ExposeDownloadButton";
 import { ExposeModal } from "pdf-export/ExposeModal";
 import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import { distanceInMeters } from "shared/shared.functions";
@@ -8,7 +7,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiAddress, ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName } from "../../../shared/types/types";
 import { SearchContext } from "../context/SearchContext";
 import { fallbackIcon, osmNameToIcons } from "../map/makiIcons";
-import Map, {defaultMapZoom} from "../map/Map";
+import Map, { defaultMapZoom } from "../map/Map";
 import ResultTable from "./ResultTable";
 
 const preferredLocationsTitle = 'Wichtige Adressen';
@@ -183,6 +182,7 @@ const SearchResult: FunctionComponent = () => {
         <ExposeModal
           entities={filteredEntites}
           groupedEntries={groupedEntries}
+          censusData={searchContextState.censusData!}
         ></ExposeModal>
         <div className="flex gap-6 mt-10">
           {byFootAvailable && (

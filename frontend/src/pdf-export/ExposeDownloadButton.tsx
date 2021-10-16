@@ -3,7 +3,7 @@ import React, { useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 import { ResultEntity } from "search/SearchResult";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiSearchResponse, TransportationParam } from "../../../shared/types/types";
+import { ApiGeojsonFeature, ApiSearchResponse, TransportationParam } from "../../../shared/types/types";
 import Expose from "./Expose";
 
 export interface ExposeDownloadButtonProps {
@@ -15,6 +15,7 @@ export interface ExposeDownloadButtonProps {
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
   mapClippings: MapClipping[];
+  censusData: ApiGeojsonFeature[];
   onAfterPrint: () => void;
 }
 
@@ -27,7 +28,8 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
     entities,
     searchResponse,
     downloadButtonDisabled,
-    mapClippings
+    mapClippings,
+    censusData
   }) => {
     const componentRef = useRef();
 
@@ -66,6 +68,7 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
           listingAddress={listingAddress}
           realEstateListing={realEstateListing}
           mapClippings={mapClippings}
+          censusData={censusData}
         />
       </div>
     );

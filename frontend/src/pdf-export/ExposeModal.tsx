@@ -1,12 +1,14 @@
-import {SearchContext, SearchContextActions} from "context/SearchContext";
-import {useContext, useEffect, useState} from "react";
-import {ResultEntity} from "search/SearchResult";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { useContext, useEffect, useState } from "react";
+import { ResultEntity } from "search/SearchResult";
+import { ApiGeojsonFeature } from "../../../shared/types/types";
 import ExposeDownloadButton from "./ExposeDownloadButton";
-import {birdsEye, city, nearby} from "./MapClippings";
+import { birdsEye, city, nearby } from "./MapClippings";
 
 export interface ExposeModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
+  censusData: ApiGeojsonFeature[];
 }
 
 const waitingTime = 2500;
@@ -16,6 +18,7 @@ const zoomLevels = [birdsEye, nearby, city];
 export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
   entities,
   groupedEntries,
+  censusData
 }) => {
   const [modalOpen, setModalOpen] = useState(false);
   const { searchContextState, searchContextDispatch } =
@@ -113,6 +116,7 @@ export const ExposeModal: React.FunctionComponent<ExposeModalProps> = ({
               <ExposeDownloadButton
                 entities={entities}
                 groupedEntries={groupedEntries!}
+                censusData={censusData}
                 searchResponse={searchContextState.searchResponse!}
                 transportationParams={searchContextState.transportationParams}
                 listingAddress={searchContextState.placesLocation.label}

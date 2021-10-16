@@ -5,19 +5,22 @@ import ResultTable from "search/ResultTable";
 import { ResultEntity } from "search/SearchResult";
 import {
   meansOfTransportations,
-  unitsOfTransportation
+  unitsOfTransportation,
 } from "../../../shared/constants/constants";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
+  ApiGeojsonFeature,
+  ApiGeometry,
   ApiSearchResponse,
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../shared/types/types";
 import AreaButlerLogo from "../assets/img/areabutler-logo.jpg";
+import { CensusSummary } from "./CensusSummary";
 import EntityGridSummary from "./EntityGridSummary";
 import MapClippings from "./MapClippings";
 import { PdfPage } from "./PdfPage";
@@ -25,6 +28,7 @@ import { PdfPage } from "./PdfPage";
 export interface ExposeProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
+  censusData: ApiGeojsonFeature[];
   groupedEntries: any;
   transportationParams: TransportationParam[];
   listingAddress: string;
@@ -46,12 +50,13 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
   const searchResponse = props.searchResponse;
   const mapClippings = props.mapClippings;
   const routingKeys = Object.keys(searchResponse!.routingProfiles);
+  const censusData = props.censusData;
 
   const mapMeans = {
     byFoot: routingKeys.includes(MeansOfTransportation.WALK),
     byBike: routingKeys.includes(MeansOfTransportation.BICYCLE),
-    byCar: routingKeys.includes(MeansOfTransportation.CAR)
-}
+    byCar: routingKeys.includes(MeansOfTransportation.CAR),
+  };
 
   return (
     <div className="hidden print:block" ref={ref as any}>
@@ -195,7 +200,9 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
                 <ResultTable
                   dataSelectable={false}
                   title={importantEntites[0]}
-                  data={importantEntites[1].filter((e: ResultEntity) => e.selected)}
+                  data={importantEntites[1].filter(
+                    (e: ResultEntity) => e.selected
+                  )}
                 />
               </div>
             )}
@@ -208,11 +215,18 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
             return (
               <PdfPage>
                 <div className="m-10" key={"tab-content-" + label}>
-                  <ResultTable dataSelectable={false} title={label} data={data.filter((e: ResultEntity) => e.selected)} />
+                  <ResultTable
+                    dataSelectable={false}
+                    title={label}
+                    data={data.filter((e: ResultEntity) => e.selected)}
+                  />
                 </div>
               </PdfPage>
             );
           })}
+          {!!censusData && censusData.length > 0 && <PdfPage>
+            <CensusSummary censusData={censusData}></CensusSummary>
+          </PdfPage>}
         </>
       )}
     </div>
