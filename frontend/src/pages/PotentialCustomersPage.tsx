@@ -1,7 +1,7 @@
 import FormModal from "components/FormModal";
 import { useHttp } from "hooks/http";
 import { PotentialCustomerFormHandler } from "potential-customer/PotentialCustomerFormHandler";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import {
@@ -25,6 +25,18 @@ export const PotentialCustomersPage = () => {
   const { potentialCustomerState, potentialCustomerDispatch } =
     React.useContext(PotentialCustomerContext);
 
+
+  const [selectedCustomerId, setSelectedCustomerId] = useState<string | null>(null);
+
+    React.useEffect(() => {
+      const params = new URLSearchParams(window.location.search);
+      const customerId = params.get("customer-id") || "";
+      console.log(customerId);
+      if(!!customerId) {
+        setSelectedCustomerId(customerId);
+      }
+    }, []);
+
   const createCustomerModalConfig = {
     modalTitle: "Interessent erstellen",
     buttonTitle: "Interessent Erstellen",
@@ -41,7 +53,7 @@ export const PotentialCustomersPage = () => {
   const editCustomerModalConfig = {
     modalTitle: "Interessent bearbeiten",
     buttonTitle: "Bearbeiten",
-    buttonStyle: "btn btn-xs",
+    buttonStyle: "btn btn-xs mr-2",
   };
 
   const deleteCustomerModalConfig = {
@@ -91,7 +103,7 @@ export const PotentialCustomersPage = () => {
           <tbody>
             {potentialCustomerState.customers.map(
               (customer: ApiPotentialCustomer) => (
-                <tr key={customer.id}>
+                <tr key={customer.id} className={customer.id === selectedCustomerId ? 'active' : ''}>
                   <th>{customer.name}</th>
                   <td>{customer.email}</td>
                   <td>
@@ -152,7 +164,7 @@ export const PotentialCustomersPage = () => {
                         .map((f) => f.label)
                         .join(", ")}
                   </td>
-                  <td className="flex gap-2">
+                  <td>
                     <FormModal modalConfig={editCustomerModalConfig}>
                       <PotentialCustomerFormHandler
                         customer={customer}

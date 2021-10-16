@@ -2,7 +2,7 @@ import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "@area-butler-types/types";
 import {configService} from "../config/config.service";
 import {ApiRoute} from "@area-butler-types/routing";
-import * as poly from "@liberty-rider/flexpolyline";
+const poly = require("@liberty-rider/flexpolyline");
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html

@@ -97,7 +97,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             )}
             <div className="my-6">
               <strong>
-                {questionnaire ? "Meine " : ""} Bevorzugte Fortbewegungsarten
+                {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Fortbewegungsarten
               </strong>
               <TransportationParams
                 inputValues={routingProfiles}
@@ -106,7 +106,7 @@ export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFor
             </div>
             <div className="my-6">
               <strong>
-                {questionnaire ? "Meine " : ""} Bevorzugte Lokalitäten
+                {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Lokalitäten
               </strong>
               <div className="grid grid-cols-2 gap-6 mt-5">
                 <LocalityOptions

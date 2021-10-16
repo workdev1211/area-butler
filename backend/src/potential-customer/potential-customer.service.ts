@@ -162,13 +162,13 @@ export class PotentialCustomerService {
     };
 
     if (!existingCustomer) {
-      await this.insertPotentialCustomer(user, upsertData);
+      const newCustomer = await this.insertPotentialCustomer(user, upsertData);
 
       const mailProps: MailProps = {
         to: [{ name: user.fullname, email: user.email }],
         templateId: 2,
         params: {
-          href: `${configService.getBaseAppUrl()}/potential-customers`,
+          href: `${configService.getBaseAppUrl()}/potential-customers?customer-id=${newCustomer.id}`,
         },
       };
   
