@@ -115,7 +115,7 @@ export const RealEstateListingForm: React.FunctionComponent<RealEstateListingFor
           </div>
           <label className="label mt-4">
             <span className="label-text">
-              <strong>Austattung</strong>
+              <strong>Ausstattung</strong>
             </span>
           </label>
           {allFurnishing.map((furnishing) => (

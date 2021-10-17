@@ -114,7 +114,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref) => {
                       )}
                     {props.realEstateListing.characteristics?.furnishing && (
                       <div>
-                        <strong>Austattung:</strong>{" "}
+                        <strong>Ausstattung:</strong>{" "}
                         {allFurnishing
                           .filter((f) =>
                             props.realEstateListing.characteristics?.furnishing.includes(

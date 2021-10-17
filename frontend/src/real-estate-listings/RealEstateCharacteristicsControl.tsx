@@ -106,7 +106,7 @@ export const RealEstateCharacteristicsControl: FunctionComponent<RealEstateChara
         </div>
         <label className="label mt-4">
           <span className="label-text">
-            <strong>Austattung</strong>
+            <strong>Ausstattung</strong>
           </span>
         </label>
         {allFurnishing.map((f) => (

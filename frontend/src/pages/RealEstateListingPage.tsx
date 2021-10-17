@@ -51,7 +51,7 @@ export const RealEstateListingPage = () => {
               <th>Name</th>
               <th>Addresse</th>
               <th>Kosten</th>
-              <th>Austattung</th>
+              <th>Ausstattung</th>
               <th></th>
             </tr>
           </thead>
