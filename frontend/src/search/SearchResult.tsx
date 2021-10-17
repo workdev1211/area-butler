@@ -1,5 +1,5 @@
 import { RealEstateListingContext } from "context/RealEstateListingContext";
-import { ExposeModal } from "pdf-export/ExposeModal";
+import ExportModal from "export/ExportModal";
 import React, { FunctionComponent, useContext, useEffect, useState } from "react";
 import { distanceInMeters } from "shared/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -179,11 +179,19 @@ const SearchResult: FunctionComponent = () => {
 
     return (
       <>
-        <ExposeModal
-          entities={filteredEntites}
-          groupedEntries={groupedEntries}
-          censusData={searchContextState.censusData!}
-        ></ExposeModal>
+        <div className="flex gap-2">
+          <ExportModal
+            entities={filteredEntites}
+            groupedEntries={groupedEntries}
+            censusData={searchContextState.censusData!}
+          ></ExportModal>
+          <ExportModal
+            entities={filteredEntites}
+            groupedEntries={groupedEntries}
+            censusData={searchContextState.censusData!}
+            exportType='CHEATSHEET'
+          ></ExportModal>
+        </div>
         <div className="flex gap-6 mt-10">
           {byFootAvailable && (
             <label className="flex items-center cursor-pointer">

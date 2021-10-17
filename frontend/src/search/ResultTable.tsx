@@ -10,12 +10,16 @@ export interface ResultTableProps {
     data: ResultEntity[];
     dataSelectable?: boolean;
     changeEntitySelection?: (title: string, row: ResultEntity) => void;
+    limit?: number;
+    showRoutingColumns?: boolean;
 }
 
 const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
     const {searchContextDispatch} = useContext(SearchContext);
-    const data = props.data.slice(0, 10);
+    const limit = props.limit || 10;
+    const data = props.data.slice(0, limit);
     const dataSelectable = props.dataSelectable || false;
+    const showRoutingColumns = props.showRoutingColumns === undefined ? true : props.showRoutingColumns;
     const changeEntitySelection = props.changeEntitySelection;
 
     const hasNames = data.some(sd => sd.name && sd.name.length);
@@ -37,9 +41,9 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
                     {dataSelectable && <th className="w-4"></th>}
                     {hasNames && <th className="pr-4 py-1 text-left">Name</th>}
                     <th className={hasNames ? 'px-4 py-1 text-left' : 'py-1 text-left'}>Entfernung</th>
-                    <th className="px-4 py-1 text-left">Zu Fuß</th>
-                    <th className="px-4 py-1 text-left">Fahrrad</th>
-                    <th className="px-4 py-1 text-left">Auto</th>
+                    {showRoutingColumns && <th className="px-4 py-1 text-left">Zu Fuß</th>}
+                    {showRoutingColumns && <th className="px-4 py-1 text-left">Fahrrad</th>}
+                    {showRoutingColumns && <th className="px-4 py-1 text-left">Auto</th>}
                 </tr>
                 </thead>
                 <tbody>
@@ -59,9 +63,9 @@ const ResultTable: React.FunctionComponent<ResultTableProps> = (props) => {
                         /></td>}
                     {hasNames && <td className="pr-4 py-1">{row.name || '-'}</td>}
                     <td className={hasNames ? 'px-4 py-1' : 'py-1'}>{row.distanceInMeters ? Math.trunc(row.distanceInMeters) + ' m' : 'unbekannt'}</td>
-                    <td className="px-4 py-1">{row.byFoot ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.WALK))} min` : ''}</td>
-                    <td className="px-4 py-1">{row.byBike ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.BICYCLE))} min` : ''}</td>
-                    <td className="px-4 py-1">{row.byCar ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.CAR))} min` : ''}</td>
+                    {showRoutingColumns && <td className="px-4 py-1">{row.byFoot ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.WALK))} min` : ''}</td>}
+                    {showRoutingColumns && <td className="px-4 py-1">{row.byBike ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.BICYCLE))} min` : ''}</td>}
+                    {showRoutingColumns && <td className="px-4 py-1">{row.byCar ? `${Math.trunc(deriveMinutesFromMeters(row.distanceInMeters, MeansOfTransportation.CAR))} min` : ''}</td>}
                 </tr>)}
                 </tbody>
             </table>

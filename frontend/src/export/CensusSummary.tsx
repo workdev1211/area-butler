@@ -11,7 +11,7 @@ export const CensusSummary: FunctionComponent<CensusSummaryProps> = ({
   const censusCenter = censusData[0] as any;
 
   return (
-    <div className="m-10">
+    <div>
       <h1 className="mb-10 text-xl font-bold">Nachbarschaftsdemographie</h1>
       {censusCenter && (
         <table className="table w-96">

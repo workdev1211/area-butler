@@ -2,11 +2,11 @@ import { MapClipping } from "context/SearchContext";
 import React, { useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 import { ResultEntity } from "search/SearchResult";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiGeojsonFeature, ApiSearchResponse, TransportationParam } from "../../../shared/types/types";
-import Expose from "./Expose";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
+import { ApiGeojsonFeature, ApiSearchResponse, TransportationParam } from "../../../../shared/types/types";
+import Cheatsheet from "./Cheatsheet";
 
-export interface ExposeDownloadButtonProps {
+export interface CheatsheetDownloadProps {
   entities: ResultEntity[];
   searchResponse: ApiSearchResponse;
   groupedEntries: any;
@@ -19,7 +19,7 @@ export interface ExposeDownloadButtonProps {
   onAfterPrint: () => void;
 }
 
-export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonProps> =
+export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps> =
   ({
     groupedEntries,
     transportationParams,
@@ -58,7 +58,7 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
           )}
           content={() => componentRef.current!}
         />
-        <Expose
+        <Cheatsheet
           searchResponse={searchResponse}
           entities={entities}
           activePrinting={activePrinting}
@@ -74,4 +74,4 @@ export const ExposeDownloadButton: React.FunctionComponent<ExposeDownloadButtonP
     );
   };
 
-export default ExposeDownloadButton;
+export default CheatsheetDownload;

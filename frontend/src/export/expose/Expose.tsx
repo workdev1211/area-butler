@@ -5,25 +5,23 @@ import ResultTable from "search/ResultTable";
 import { ResultEntity } from "search/SearchResult";
 import {
   meansOfTransportations,
-  unitsOfTransportation,
-} from "../../../shared/constants/constants";
+  unitsOfTransportation
+} from "../../../../shared/constants/constants";
 import {
   allFurnishing,
-  allRealEstateCostTypes,
-} from "../../../shared/constants/real-estate";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+  allRealEstateCostTypes
+} from "../../../../shared/constants/real-estate";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
-  ApiGeojsonFeature,
-  ApiGeometry,
-  ApiSearchResponse,
+  ApiGeojsonFeature, ApiSearchResponse,
   MeansOfTransportation,
-  TransportationParam,
-} from "../../../shared/types/types";
-import AreaButlerLogo from "../assets/img/areabutler-logo.jpg";
-import { CensusSummary } from "./CensusSummary";
-import EntityGridSummary from "./EntityGridSummary";
-import MapClippings from "./MapClippings";
-import { PdfPage } from "./PdfPage";
+  TransportationParam
+} from "../../../../shared/types/types";
+import AreaButlerLogo from "../../assets/img/areabutler-logo.jpg";
+import { CensusSummary } from "../CensusSummary";
+import EntityGridSummary from "../EntityGridSummary";
+import MapClippings from "../MapClippings";
+import { PdfPage } from "../PdfPage";
 
 export interface ExposeProps {
   searchResponse: ApiSearchResponse;

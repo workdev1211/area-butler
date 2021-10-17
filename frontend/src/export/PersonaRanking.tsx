@@ -58,7 +58,7 @@ const PersonaRanking: FunctionComponent<PersonaRankingProps> = ({
   };
 
   return (
-    <div className="flex gap-6 justify-between">
+    <div className="flex gap-40">
       <table className="table">
         <thead>
           <tr>
@@ -87,8 +87,8 @@ const PersonaRanking: FunctionComponent<PersonaRankingProps> = ({
       </table>
       <div className="h-96 w-96">
         <Radar
-          width={800}
-          height={800}
+          width={400}
+          height={400}
           id="persona-chart"
           data={radarChartData}
           options={radarChartOptions}
