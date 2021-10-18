@@ -1,5 +1,7 @@
 .map-menu {
     color: var(--base-anthracite);
+    max-height: 100%;
+    overflow-y: scroll;
     @apply h-full flex flex-col;
     --map-menu-pr: 80px;
 }
@@ -17,11 +19,16 @@
     color: var(--base-anthracite);
     padding: 18px var(--map-menu-pr) 20px 24px;
     background: white !important;
-    @apply text-xl font-medium;
+    @apply text-xl font-medium cursor-pointer;
 }
-.map-menu .view-option {
-    @apply h-full;
+.map-menu input[type=checkbox] {
+    cursor: pointer;
 }
+.map-menu .view-option .collapse-title {
+    height: 56px;
+    line-height: 18px;
+}
+
 .map-menu .view-option.collapse-open > .collapse-title {
     color:white;
     background: var(--primary-gradient) !important;
@@ -34,6 +41,8 @@
     background: white !important;
     padding: 0 !important;
     margin: 0 !important;
+    max-height: 100% !important;
+    overflow-y: scroll;
 }
 
 .map-menu .collapse-content ul {
@@ -86,6 +95,8 @@
 }
 .map-menu .locality-option .collapse-content {
     padding: 0 !important;
+    max-height: 25vh !important;
+    overflow-y: scroll;
 }
 .map-menu .locality-option.collapse-child-open .collapse-content {
     background: white !important;
@@ -114,7 +125,8 @@
     border-bottom: 2px solid var(--base-bright-silver);
 }
 .map-menu .locality-option .locality-item .locality-item-title {
-    padding: 10px 80px 10px 0px !important;
+    max-width: 100%;
+    padding: 10px 80px 10px 0 !important;
     margin-left: 24px;
     border-bottom: 1px solid var(--base-bright-silver);
     @apply w-full font-medium text-lg;

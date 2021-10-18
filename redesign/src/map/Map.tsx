@@ -16,7 +16,7 @@ import {
     OsmName
 } from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
-import {fallbackIcon, osmNameToIcons} from "./makiIcons";
+import {fallbackIcon} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";

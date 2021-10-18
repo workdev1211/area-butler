@@ -80,6 +80,7 @@ const Nav: FunctionComponent = () => {
                     </div>)}
                 </div>
 
+                <LoginButton />
                 {showNavBar && isAuthenticated && currentUser && (<div
                     className="nav-usermenu">
                     <div className="nav-usermenu-button">

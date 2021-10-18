@@ -16,6 +16,7 @@ import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {useHistory} from "react-router-dom";
 import MapMenu from "../map/MapMenu";
 import {distanceInMeters} from "shared/shared.functions";
+import "./SearchResultPage.css";
 
 export interface ResultEntity {
     name?: string;
@@ -186,7 +187,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
     return (
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false}>
-            <div className="flex w-full">
+            <div className="search-result-container">
                 <div className="relative flex-1">
                     <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
                                onMeansChange={(newValues) => setActiveMeans(newValues)}
