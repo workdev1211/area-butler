@@ -18,6 +18,7 @@ import MapMenu from "../map/MapMenu";
 import {distanceInMeters} from "shared/shared.functions";
 import "./SearchResultPage.css";
 import backIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
+import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 
 export interface ResultEntity {
@@ -33,7 +34,7 @@ export interface ResultEntity {
     distanceInMeters: number;
 }
 
-export interface EntityGroups {
+export interface EntityGroup {
     title: string;
     active: boolean;
     items: ResultEntity[];
@@ -130,7 +131,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
 
     const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
-    const [groupedEntries, setGroupedEntries] = useState<EntityGroups[]>([]);
+    const [groupedEntries, setGroupedEntries] = useState<EntityGroup[]>([]);
     const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
 
@@ -183,54 +184,87 @@ const SearchResultPage: React.FunctionComponent = () => {
     }
 
     const highlightZoomEntity = (item: ResultEntity) => {
-            searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: item.coordinates, zoom: 18 }});
-            searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: item.id});
+        searchContextDispatch({
+            type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+            payload: {center: item.coordinates, zoom: 18}
+        });
+        searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: item.id});
     }
 
     const ActionsTop: React.FunctionComponent = () => {
         return (<>
             <li>
-                <button type="button" className="btn btn-link"><img src={pdfIcon} alt="pdf-icon" />PDF Generieren</button>
+                <button
+                    type="button"
+                    onClick={() => {
+                        searchContextDispatch({type: SearchContextActions.SET_PRINTING_ACTIVE, payload: true});
+                    }}
+                    className="btn btn-link"
+                >
+                    <img src={pdfIcon} alt="pdf-icon"/> Umgebungsanalyse PDF
+                </button>
+            </li>
+            <li>
+                <button
+                    type="button"
+                    onClick={() => {
+                        searchContextDispatch({type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE, payload: true});
+                    }}
+                    className="btn btn-link"
+                >
+                    <img src={pdfIcon} alt="pdf-icon"/> Spickzettel PDF
+                </button>
             </li>
         </>)
     }
 
     const BackButton: React.FunctionComponent = () => {
         const history = useHistory();
-        return (<button type="button" className="btn bg-primary-gradient w-full sm:w-auto mr-auto" onClick={() => history.push('/')}><img className="mr-1 -mt-0.5" src={backIcon} alt="icon-back"/> Zurück</button>)
+        return (<button type="button" className="btn bg-primary-gradient w-full sm:w-auto mr-auto"
+                        onClick={() => history.push('/')}><img className="mr-1 -mt-0.5" src={backIcon}
+                                                               alt="icon-back"/> Zurück</button>)
     }
 
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false} actionTop={<ActionsTop />} actionBottom={[<BackButton />]}>
-            <div className="search-result-container">
-                <div className="relative flex-1">
-                    <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
-                               onMeansChange={(newValues) => setActiveMeans(newValues)}
-                               showPreferredLocations={showPreferredlocations}
-                               onToggleShowPreferredLocations={(active) => setShowPreferredLocations(active)}
-                               showMyObjects={showMyObjects}
-                               onToggleShowMyObjects={(active) => setShowMyObjects(active)}
-                    />
-                    <Map
-                        searchResponse={searchContextState.searchResponse}
-                        entities={filteredEntites}
-                        groupedEntities={groupedEntries}
-                        highlightId={searchContextState.highlightId}
-                        means={{
-                            byFoot: activeMeans.includes(MeansOfTransportation.WALK),
-                            byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
-                            byCar: activeMeans.includes(MeansOfTransportation.CAR)
-                        }}
-                        mapCenter={searchContextState.mapCenter ?? searchContextState.location}
-                        mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
-                        printingActive={searchContextState.printingActive}
-                        censusData={showCensus && censusDataAvailable && searchContextState.censusData}
-                    />
+        <>
+            <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false} actionTop={<ActionsTop/>}
+                           actionBottom={[<BackButton key="back-button"/>]}>
+                <div className="search-result-container">
+                    <div className="relative flex-1">
+                        <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
+                                   onMeansChange={(newValues) => setActiveMeans(newValues)}
+                                   showPreferredLocations={showPreferredlocations}
+                                   onToggleShowPreferredLocations={(active) => setShowPreferredLocations(active)}
+                                   showMyObjects={showMyObjects}
+                                   onToggleShowMyObjects={(active) => setShowMyObjects(active)}
+                        />
+                        <Map
+                            searchResponse={searchContextState.searchResponse}
+                            entities={filteredEntites}
+                            groupedEntities={groupedEntries}
+                            highlightId={searchContextState.highlightId}
+                            means={{
+                                byFoot: activeMeans.includes(MeansOfTransportation.WALK),
+                                byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
+                                byCar: activeMeans.includes(MeansOfTransportation.CAR)
+                            }}
+                            mapCenter={searchContextState.mapCenter ?? searchContextState.location}
+                            mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
+                            printingActive={searchContextState.printingActive}
+                            printingCheatsheetActive={searchContextState.printingCheatsheetActive}
+                            censusData={showCensus && censusDataAvailable && searchContextState.censusData}
+                        />
+                    </div>
+                    <MapMenu census={showCensus} toggleCensus={(active) => setShowCensus(active)}
+                             groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup}
+                             highlightZoomEntity={highlightZoomEntity}/>
                 </div>
-                <MapMenu census={showCensus} toggleCensus={(active) => setShowCensus(active)}
-                         groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup} highlightZoomEntity={highlightZoomEntity}/>
-            </div>
-        </DefaultLayout>
+            </DefaultLayout>
+            {searchContextState.printingActive && <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
+                         censusData={searchContextState.censusData!}/>}
+            {searchContextState.printingCheatsheetActive && <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
+                         censusData={searchContextState.censusData!} exportType="CHEATSHEET"/>}
+        </>
     )
 }
 export default SearchResultPage;

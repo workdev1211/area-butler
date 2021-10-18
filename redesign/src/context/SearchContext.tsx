@@ -29,7 +29,8 @@ export interface SearchContextState {
     mapZoomLevel?: number;
     highlightId?: number;
     printingActive: boolean;
-    mapClippings?: MapClipping[];
+    printingCheatsheetActive: boolean;
+    mapClippings: MapClipping[];
     realEstateListings?: ApiRealEstateListing[];
 }
 
@@ -40,7 +41,9 @@ export const initialState: SearchContextState = {
             OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
         ].includes(entity.name)),
     searchBusy: false,
-    printingActive: false
+    printingActive: false,
+    printingCheatsheetActive: false,
+    mapClippings: [],
 };
 
 export enum SearchContextActions {
@@ -57,7 +60,9 @@ export enum SearchContextActions {
     CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
     SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
     SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
+    SET_PRINTING_CHEATSHEET_ACTIVE = 'SET_PRINTING_CHEATSHEET_ACTIVE',
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
+    CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
     SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
 }
 
@@ -103,12 +108,18 @@ const reducer: (
             return {...state, highlightId: action.payload}
         }
         case SearchContextActions.SET_PRINTING_ACTIVE: {
-            return {...state, printingActive: action.payload};
+            return {...state, printingActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
+        }
+        case SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE: {
+            return {...state, printingCheatsheetActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];
             newMapClippings.push(action.payload);
             return {...state, mapClippings: newMapClippings};
+        }
+        case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
+            return {...state, mapClippings: []};
         }
         case SearchContextActions.SET_REAL_ESTATE_LISTING: {
             return {...state, realEstateListing: {...action.payload}};

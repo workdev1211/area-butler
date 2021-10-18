@@ -88,7 +88,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     }
 
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true} actionBottom={[<SearchButton/>]}>
+        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true} actionBottom={[<SearchButton key="search-button" />]}>
             <h2>Standort</h2>
             <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
                 <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {

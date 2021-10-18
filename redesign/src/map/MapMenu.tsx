@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import "./MapMenu.css";
-import {EntityGroups, ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
 import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -12,7 +12,7 @@ import {deriveIconForOsmName} from "../shared/shared.functions";
 export interface MapMenuProps {
     census: boolean;
     toggleCensus: (active: boolean) => void;
-    groupedEntries: EntityGroups[];
+    groupedEntries: EntityGroup[];
     toggleEntryGroup: (title: string) => void;
     highlightZoomEntity: (item: ResultEntity) => void;
 }

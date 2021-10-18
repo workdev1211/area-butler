@@ -20,18 +20,19 @@ import {fallbackIcon} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
-import {EntityGroups, ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
 import {deriveIconForOsmName} from "../shared/shared.functions";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
-    groupedEntities: EntityGroups[];
+    groupedEntities: EntityGroup[];
     mapCenter?: ApiCoordinates;
     mapZoomLevel?: number;
     leafletMapId?: string;
     printingActive?: boolean;
+    printingCheatsheetActive?: boolean;
     means: {
         byFoot: boolean;
         byBike: boolean;
@@ -81,9 +82,10 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const mapCenterEqual = JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
     const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
+    const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
 }
 
 const Map = React.memo<MapProps>(({
@@ -93,6 +95,7 @@ const Map = React.memo<MapProps>(({
                                       means,
                                       mapCenter,
                                       printingActive,
+    printingCheatsheetActive,
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
@@ -251,7 +254,7 @@ const Map = React.memo<MapProps>(({
             }, {});
         };
         const parsedEntities: ResultEntity[] | null = JSON.parse(entitiesStringified);
-        const parsedEntityGroups: EntityGroups[] = JSON.parse(groupedEntitiesStringified);
+        const parsedEntityGroups: EntityGroup[] = JSON.parse(groupedEntitiesStringified);
         const drawAmenityMarkers = (localZoom: number) => {
             if (currentMap) {
                 currentMap.removeLayer(amenityMarkerGroup);
@@ -310,7 +313,7 @@ const Map = React.memo<MapProps>(({
 
     // print actions
     useEffect(() => {
-        if (printingActive) {
+        if (printingActive || printingCheatsheetActive) {
             setTimeout(() => {
                 html2canvas(document.querySelector("#mymap")!, {
                     allowTaint: true,
@@ -328,7 +331,7 @@ const Map = React.memo<MapProps>(({
             }, 2000);
         }
 
-    }, [printingActive, mapZoomLevel, searchContextDispatch]);
+    }, [printingActive, printingCheatsheetActive, mapZoomLevel, searchContextDispatch]);
 
     return (
         <div className='leaflet-container w-full' id={leafletMapId}>

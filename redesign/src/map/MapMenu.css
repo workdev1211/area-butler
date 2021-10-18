@@ -91,7 +91,7 @@
     @apply flex justify-center items-center mr-3 mask mask-circle;
 }
 .map-menu .locality-option .collapse-title .checkbox {
-    z-index: 9999;
+    z-index: 99;
 }
 .map-menu .locality-option .collapse-content {
     padding: 0 !important;
