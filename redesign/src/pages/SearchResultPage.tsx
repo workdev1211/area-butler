@@ -17,6 +17,7 @@ import {useHistory} from "react-router-dom";
 import MapMenu from "../map/MapMenu";
 import {distanceInMeters} from "shared/shared.functions";
 import "./SearchResultPage.css";
+import backIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 
 export interface ResultEntity {
     name?: string;
@@ -185,8 +186,27 @@ const SearchResultPage: React.FunctionComponent = () => {
             searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: item.id});
     }
 
+    const ActionsTop: React.FunctionComponent = () => {
+        return (<>
+            <li>
+                <a href="/">Item 1</a>
+            </li>
+            <li>
+                <a href="/">Item 2</a>
+            </li>
+            <li>
+                <a href="/">Item 3</a>
+            </li>
+        </>)
+    }
+
+    const BackButton: React.FunctionComponent = () => {
+        const history = useHistory();
+        return (<button type="button" className="btn bg-primary-gradient w-full sm:w-auto mr-auto" onClick={() => history.push('/')}><img className="mr-1 -mt-0.5" src={backIcon} alt="icon-back"/> Zurück</button>)
+    }
+
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false}>
+        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false} actionTop={<ActionsTop />} actionBottom={[<BackButton />]}>
             <div className="search-result-container">
                 <div className="relative flex-1">
                     <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}

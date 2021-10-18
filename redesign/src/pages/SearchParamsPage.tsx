@@ -69,7 +69,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             }
         }
 
-        const classes = 'btn bg-primary-gradient w-full sm:w-auto ';
+        const classes = 'btn bg-primary-gradient w-full sm:w-auto ml-auto';
 
         return <button
             type="button"
@@ -88,7 +88,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     }
 
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true} actionBottom={<SearchButton/>}>
+        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true} actionBottom={[<SearchButton/>]}>
             <h2>Standort</h2>
             <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
                 <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {

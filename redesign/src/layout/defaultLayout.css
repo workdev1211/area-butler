@@ -56,5 +56,5 @@
 .action-bottom {
     border-top: 1px solid var(--base-bright-silver);
     padding: 14px var(--content-padding-x);
-    @apply flex justify-end mt-10;
+    @apply flex;
 }
