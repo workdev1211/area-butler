@@ -18,6 +18,7 @@ import MapMenu from "../map/MapMenu";
 import {distanceInMeters} from "shared/shared.functions";
 import "./SearchResultPage.css";
 import backIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
+import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 
 export interface ResultEntity {
     name?: string;
@@ -189,13 +190,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     const ActionsTop: React.FunctionComponent = () => {
         return (<>
             <li>
-                <a href="/">Item 1</a>
-            </li>
-            <li>
-                <a href="/">Item 2</a>
-            </li>
-            <li>
-                <a href="/">Item 3</a>
+                <button type="button" className="btn btn-link"><img src={pdfIcon} alt="pdf-icon" />PDF Generieren</button>
             </li>
         </>)
     }

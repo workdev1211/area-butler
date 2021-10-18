@@ -31,6 +31,19 @@
     @apply h-full;
 }
 
+.default-layout .dropdown-content {
+    background: #353535;
+    color: white;
+    top: 50px;
+}
+
+.default-layout .dropdown-content * {
+    color: white;
+}
+.default-layout .dropdown-content img {
+    @apply mr-2;
+}
+
 .default-layout-content.padding {
     padding: 0 var(--content-padding-x) var(--content-padding-y);
 }
