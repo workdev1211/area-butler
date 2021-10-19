@@ -1,14 +1,16 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
 import {PotentialCustomerActions, PotentialCustomerContext} from "../context/PotentialCustomerContext";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {allFurnishing, allRealEstateCostTypes} from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import { Link } from "react-router-dom";
 
 const PotentialCustomersPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const {potentialCustomerState, potentialCustomerDispatch} = useContext(PotentialCustomerContext);
+
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -24,13 +26,12 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     const ActionsTop: React.FunctionComponent = () => {
         return (<>
             <li>
-                <button
-                    type="button"
-
-                    className="btn btn-link"
+                <Link
+                    to="/potential-customers/new"
+                    className="btn btn-link" style={{paddingLeft: 0}}
                 >
                     <img src={plusIcon} alt="pdf-icon"/> Interessent anlegen
-                </button>
+                </Link>
             </li>
         </>)
     }
@@ -38,6 +39,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     return (
         <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop />}>
             <div className="overflow-x-auto">
+                {potentialCustomerState.customers.map((c: ApiPotentialCustomer) => JSON.stringify(c))}
                 <table className="table w-full text-sm">
                     <thead>
                     <tr>

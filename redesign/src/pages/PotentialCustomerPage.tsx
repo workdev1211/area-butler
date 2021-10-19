@@ -1,18 +1,28 @@
 import React, {useContext, useEffect, useState} from "react";
 import {useParams} from "react-router-dom";
+import {v4 as uuid} from 'uuid';
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
 import {PotentialCustomerActions, PotentialCustomerContext} from "../context/PotentialCustomerContext";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
+import PotentialCustomerFormHandler from "../potential-customer/PotentialCustomerFormHandler";
 
 export interface PotentialCustomerPageRouterProps {
     customerId: string;
 }
 
+const newCustomer: Partial<ApiPotentialCustomer> = {
+    name: 'Neuer Interessent',
+    email: 'vorname.nachname@kudiba.net',
+    preferredLocations: [],
+    routingProfiles: []
+}
+
 const PotentialCustomerPage: React.FunctionComponent = () => {
     const {customerId} = useParams<PotentialCustomerPageRouterProps>();
     const isNewCustomer = customerId === 'new';
-    const [customer, setCustomer] = useState<ApiPotentialCustomer | null>(null);
+    const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(newCustomer);
+    const [busy, setBusy] = useState(false);
 
     const {get} = useHttp();
     const {potentialCustomerState, potentialCustomerDispatch} = useContext(PotentialCustomerContext);
@@ -32,13 +42,31 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
         if (!isNewCustomer) {
             setCustomer(potentialCustomerState.customers.find((c: ApiPotentialCustomer) => c.id === customerId));
         } else {
-            setCustomer(null);
+            setCustomer(newCustomer);
         }
     }, [potentialCustomerState.customers, isNewCustomer, customerId, setCustomer]);
 
+    const formId = `form-${uuid()}`;
+    const beforeSubmit = () => setBusy(true);
+    const postSubmit = (success: boolean) => {
+        setBusy(false);
+    }
+
+    const SubmitButton: React.FunctionComponent = () => {
+        const classes = 'btn bg-primary-gradient w-full sm:w-auto ml-auto';
+        return (
+            <button form={formId} key="submti" type="submit" disabled={busy}
+                    className={busy ? 'busy ' + classes : classes}>{ customer.id ? 'Speichern' : 'Anlegen' }</button>
+        )
+    }
+
     return (
-        <DefaultLayout title={isNewCustomer ? 'Neuer Interessent' : (customer?.name || 'Unbekannter Name')} withHorizontalPadding={true}>
-            <div>Test {customerId}</div>
+        <DefaultLayout title={customer.name || 'Unbekannter Name'} withHorizontalPadding={true}
+                       actionBottom={[<SubmitButton key="customer-submit" />]}>
+            <div className="py-20">
+                <PotentialCustomerFormHandler customer={customer} formId={formId} beforeSubmit={beforeSubmit}
+                                              postSubmit={postSubmit}/>
+            </div>
         </DefaultLayout>
     );
 };

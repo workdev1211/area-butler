@@ -124,8 +124,10 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                 />
                             </label>
                         </div>
-                        {isActive && <div className="distance-unit flex gap-4 flex-wrap">
+                        {isActive &&
+                        <div className="distance-unit flex gap-4 flex-wrap">
                             <Input
+                                name="distance"
                                 icon={distanceIcon}
                                 label="Erreichbar in" type="number"
                                 value={currentValue?.amount ?? 1}
@@ -136,12 +138,13 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                 placeholder={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'Minuten' : 'Meter'}/>
                             <div className="form-control min-flex">
                                 <label className="label">
-                                <span>Einheit</span>
-                            </label>
-                            <select className="select select-bordered flex" value={currentValue?.unit} onChange={(event) => setMeanUnit(event.target.value, mean.type)}>
-                                <option value={UnitsOfTransportation.METERS}>Meter</option>
-                                <option value={UnitsOfTransportation.MINUTES}>Minuten</option>
-                            </select>
+                                    <span>Einheit</span>
+                                </label>
+                                <select className="select select-bordered flex" value={currentValue?.unit}
+                                        onChange={(event) => setMeanUnit(event.target.value, mean.type)}>
+                                    <option value={UnitsOfTransportation.METERS}>Meter</option>
+                                    <option value={UnitsOfTransportation.MINUTES}>Minuten</option>
+                                </select>
                             </div>
                         </div>}
                     </div>
