@@ -1,11 +1,12 @@
 import React, {useContext, useEffect, useState} from "react";
-import {useParams} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 import {v4 as uuid} from 'uuid';
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
 import {PotentialCustomerActions, PotentialCustomerContext} from "../context/PotentialCustomerContext";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import PotentialCustomerFormHandler from "../potential-customer/PotentialCustomerFormHandler";
+import BackButton from "../layout/BackButton";
 
 export interface PotentialCustomerPageRouterProps {
     customerId: string;
@@ -52,17 +53,19 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
         setBusy(false);
     }
 
+    const baseClasses = 'btn bg-primary-gradient w-full sm:w-auto';
+
     const SubmitButton: React.FunctionComponent = () => {
-        const classes = 'btn bg-primary-gradient w-full sm:w-auto ml-auto';
+        const classes = baseClasses + ' ml-auto';
         return (
-            <button form={formId} key="submti" type="submit" disabled={busy}
+            <button form={formId} key="submit" type="submit" disabled={busy}
                     className={busy ? 'busy ' + classes : classes}>{ customer.id ? 'Speichern' : 'Anlegen' }</button>
         )
     }
 
     return (
         <DefaultLayout title={customer.name || 'Unbekannter Name'} withHorizontalPadding={true}
-                       actionBottom={[<SubmitButton key="customer-submit" />]}>
+                       actionBottom={[<BackButton to="/potential-customers" key="customer-back"/>, <SubmitButton key="customer-submit" />]}>
             <div className="py-20">
                 <PotentialCustomerFormHandler customer={customer} formId={formId} beforeSubmit={beforeSubmit}
                                               postSubmit={postSubmit}/>

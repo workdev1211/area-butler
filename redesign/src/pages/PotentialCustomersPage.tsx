@@ -5,6 +5,7 @@ import {PotentialCustomerActions, PotentialCustomerContext} from "../context/Pot
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {allFurnishing, allRealEstateCostTypes} from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import {Link, useHistory} from "react-router-dom";
 
 const PotentialCustomersPage: React.FunctionComponent = () => {
@@ -38,7 +39,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     }
 
     return (
-        <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop />}>
+        <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop/>}>
             <div className="overflow-x-auto">
                 <table className="table w-full">
                     <thead>
@@ -47,20 +48,18 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                         <th>E-Mail</th>
                         <th>Wichtige Adressen</th>
                         <th>Wohnvorstellung</th>
-                        <th />
+                        <th/>
                     </tr>
                     </thead>
                     <tbody>
                     {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
-                        <tr key={customer.id} className="cursor-pointer" onClick={() => history.push(`/potential-customers/${customer.id}`)}>
+                        <tr key={customer.id}>
                             <td>{customer.name}</td>
-                            <td>{customer.email}</td>
-
-
-                            <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
-                                {(customer.preferredLocations ?? [])
+                            <td><a href={`mailto:${customer.email}`} className="link-primary">{customer.email}</a></td>
+                            <td style={{width: "25%", whiteSpace: "pre-wrap"}}>
+                                {Array.isArray(customer.preferredLocations) && customer.preferredLocations.length ? customer.preferredLocations
                                     .map((location) => location.title || "")
-                                    .join(", ")}
+                                    .join(", ") : '-'}
                             </td>
                             <td>
                                 {!!customer?.realEstateCostStructure?.type &&
@@ -72,7 +71,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                                         )?.label
                                     })`
                                     : ""}
-                                <br />
+                                <br/>
                                 {customer?.realEstateCharacteristics?.furnishing &&
                                 allFurnishing
                                     .filter((f) =>
@@ -83,7 +82,10 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                                     .map((f) => f.label)
                                     .join(", ")}
                             </td>
-                            <td>Actions</td>
+                            <td>
+                                <div><img src={editIcon} alt="icon-edit" className="cursor-pointer"
+                                          onClick={() => history.push(`/potential-customers/${customer.id}`)}/></div>
+                            </td>
                         </tr>
                     ))}
                     </tbody>
