@@ -22,7 +22,7 @@ const Input: React.FunctionComponent<InputProps> = ({ label, icon, ...props}) =>
             {icon && <img src={icon} alt="input-icon" />}
             {meta.touched && meta.error && (
                 <label className="label">
-                    <span className="label-text-alt text-red-500">{meta.error}</span>
+                    <span className="error">{meta.error}</span>
                 </label>
             )}
         </div>

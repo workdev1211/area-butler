@@ -153,6 +153,10 @@ html {
   @apply font-normal;
 }
 
+.form-control label .error {
+  color: var(--primary);
+}
+
 .form-control .input, .form-control select {
   min-height: 48px;
   color: var(--base-anthracite);

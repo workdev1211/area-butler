@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import * as Yup from "yup";
 import {Form, Formik} from "formik";
@@ -24,6 +24,10 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
 
     const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(inputCustomer);
 
+    useEffect(() => {
+        setCustomer(inputCustomer);
+    }, [inputCustomer, setCustomer]);
+
     return (
         <Formik
             initialValues={customer} validationSchema={Yup.object({
@@ -35,8 +39,9 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                 : Yup.string().email().required('Gültige Email-Adresse wird benötigt'),
             preferredLocations: Yup.array()
         })}
-            onSubmit={() => onSubmit({...customer})}
-        >
+            enableReinitialize={true}
+            onSubmit={(values) => onSubmit({...customer, ...values})}
+        >{(formikValues) =>
             <Form id={formId}>
                 <div className="grid grid-cols-1 gap-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -49,7 +54,7 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                                                type="text"
                                                placeholder="Email" className="input input-bordered w-full"/>)}
                     </div>
-                    <div className="my-6">
+                    <div className="my-6 flex flex-col gap-6">
                         <strong>{questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Fortbewegungsarten</strong>
                         <TransportationParams values={customer.routingProfiles || []}
                                               onChange={(newValues) => setCustomer({
@@ -66,7 +71,7 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                                 preferredAmenities: [...newValues.map(v => v.name)]
                             })}/>
                     </div>
-                    <div className="my-6">
+                    <div className="my-6 flex flex-col gap-4">
                         <strong>Wichtige Adressen</strong>
                         <ImportantAddresses inputValues={customer.preferredLocations}
                                             onChange={(newValues) => setCustomer({
@@ -76,6 +81,7 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                     </div>
                 </div>
             </Form>
+                }
         </Formik>
     )
 }

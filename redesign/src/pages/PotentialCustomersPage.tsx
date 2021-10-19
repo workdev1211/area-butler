@@ -5,10 +5,11 @@ import {PotentialCustomerActions, PotentialCustomerContext} from "../context/Pot
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {allFurnishing, allRealEstateCostTypes} from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
-import { Link } from "react-router-dom";
+import {Link, useHistory} from "react-router-dom";
 
 const PotentialCustomersPage: React.FunctionComponent = () => {
     const {get} = useHttp();
+    const history = useHistory();
     const {potentialCustomerState, potentialCustomerDispatch} = useContext(PotentialCustomerContext);
 
 
@@ -39,11 +40,11 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     return (
         <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop />}>
             <div className="overflow-x-auto">
-                <table className="table w-full text-sm">
+                <table className="table w-full">
                     <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Kontaktdaten</th>
+                        <th>E-Mail</th>
                         <th>Wichtige Adressen</th>
                         <th>Wohnvorstellung</th>
                         <th />
@@ -51,7 +52,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     </thead>
                     <tbody>
                     {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
-                        <tr key={customer.id}>
+                        <tr key={customer.id} className="cursor-pointer" onClick={() => history.push(`/potential-customers/${customer.id}`)}>
                             <td>{customer.name}</td>
                             <td>{customer.email}</td>
 

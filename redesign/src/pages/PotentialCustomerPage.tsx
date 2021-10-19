@@ -36,11 +36,11 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
             })
         };
         void fetchCustomers();
-    }, [get, potentialCustomerDispatch]);
+    }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     useEffect(() => {
         if (!isNewCustomer) {
-            setCustomer(potentialCustomerState.customers.find((c: ApiPotentialCustomer) => c.id === customerId));
+            setCustomer(potentialCustomerState.customers.find((c: ApiPotentialCustomer) => c.id === customerId) ?? newCustomer);
         } else {
             setCustomer(newCustomer);
         }

@@ -34,6 +34,17 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
         return <div>Missing google api key</div>
     }
 
+    const deriveValue = (value?: any) => {
+        if (value) {
+            if (value.value?.place_id) {
+                return value;
+            }
+            return { label: value, value: { place_id: '123' }}
+        }
+        return null;
+    }
+    const selectValue = deriveValue(value);
+
     return (
         <div className={focus ? 'form-control w-full focus' : 'form-control w-full'}>
             <label className="label">
@@ -52,7 +63,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                     }}
                     minLengthAutocomplete={5}
                     selectProps={{
-                        value: value && value.label ? value : {label: value},
+                        value: selectValue,
                         onChange: deriveLangLat,
                         className: 'google-autocomplete',
                         classNamePrefix: 'google-autocomplete',
@@ -61,7 +72,6 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         loadingMessage: () => 'Suche...',
                         onFocus: () => setFocus(true),
                         onBlur: () => setFocus(false),
-                        defaultValue: ''
                     }}
                     apiKey={googleApiKey}
                 />

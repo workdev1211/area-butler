@@ -1,7 +1,11 @@
 import {PotentialCustomerActions, PotentialCustomerContext} from "context/PotentialCustomerContext";
 import {useHttp} from "hooks/http";
 import React from "react";
-import {ApiPotentialCustomer, ApiUpsertPotentialCustomer} from "../../../shared/types/potential-customer";
+import {
+    ApiPotentialCustomer,
+    ApiPreferredLocation,
+    ApiUpsertPotentialCustomer
+} from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
 import {useHistory} from "react-router-dom";
 
@@ -14,7 +18,7 @@ const mapFormToApiUpsertPotentialCustomer = async (
         email: values.email,
         preferredAmenities: values.preferredAmenities,
         routingProfiles: values.routingProfiles,
-        preferredLocations: values.preferredLocations,
+        preferredLocations: values.preferredLocations.filter((pl: ApiPreferredLocation) => !!pl.title && !!pl.address),
         realEstateCharacteristics: values.realEstateCharacteristics,
         realEstateCostStructure: values.realEstateCostStructure
     };
