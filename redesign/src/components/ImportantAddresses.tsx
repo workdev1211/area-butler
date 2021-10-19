@@ -1,6 +1,7 @@
 import React from "react";
 import Input from "./Input";
 import typeIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
+import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import LocationAutocomplete from "./LocationAutocomplete";
 
@@ -21,6 +22,10 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
             address: ''
         }
         onChange([...inputValues, newEntry]);
+    }
+
+    const removeAddress = (index: number) => {
+        onChange(inputValues.filter((_, i) => index !== i ));
     }
 
     const changeTitle = (title: string, index: number) => {
@@ -50,6 +55,7 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
                 <div className="flex col-span-1 md:col-span-2 2xl:col-span-1">
                     <LocationAutocomplete value={location.address} setValue={() => {
                     }} afterChange={(payload) => onLocationAutocompleteChange(payload, index)}/>
+                    <div className="flex items-end px-4 pb-4"><img src={deleteIcon} className="w-6 h-6 cursor-pointer" alt="icon-delete" onClick={() => removeAddress(index)}/></div>
                 </div>
             </div>)}
             <button type="button" onClick={() => addAddress()} className="btn btn-link text-primary">+ Adresse
