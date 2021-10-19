@@ -6,5 +6,5 @@ export const allPersonas = [
   { label: "Bodenständige Mittelschicht", type: ApiPersonaType.MIDDLE_CLASS },
   { label: "Professioneller Single", type: ApiPersonaType.PROFESSIONAL_SINGLE },
   { label: "Studierende", type: ApiPersonaType.STUDENTS },
-  { label: "Junge Familie", type: ApiPersonaType.YOUNG_FAMILY },
+  { label: " Junge Familie", type: ApiPersonaType.YOUNG_FAMILY },
 ];

@@ -32,7 +32,7 @@ export const EntityTable: FunctionComponent<EntityTableProps> = ({
 
   return (
     <div>
-      <h1 className="text-xl ml-2">{entityGroup.title}</h1>
+      <h1 className="text-xl ml-2 font-bold">{entityGroup.title}</h1>
       <table className="table w-full mt-5">
         <thead>
           <tr>
