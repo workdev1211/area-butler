@@ -17,7 +17,6 @@ import {useHistory} from "react-router-dom";
 import MapMenu from "../map/MapMenu";
 import {distanceInMeters} from "shared/shared.functions";
 import "./SearchResultPage.css";
-import backIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import BackButton from "../layout/BackButton";

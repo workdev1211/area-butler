@@ -6,7 +6,15 @@ import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {allFurnishing, allRealEstateCostTypes} from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
+import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import {Link, useHistory} from "react-router-dom";
+import FormModal from "../components/FormModal";
+import {PotentialCustomerFormDeleteHandler} from "../potential-customer/PotentialCustomerDeleteHandler";
+
+const deleteCustomerModalConfig = {
+    modalTitle: "Interessent löschen",
+    submitButtonTitle: "Löschen",
+};
 
 const PotentialCustomersPage: React.FunctionComponent = () => {
     const {get} = useHttp();
@@ -83,8 +91,17 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                                     .join(", ")}
                             </td>
                             <td>
-                                <div><img src={editIcon} alt="icon-edit" className="cursor-pointer"
-                                          onClick={() => history.push(`/potential-customers/${customer.id}`)}/></div>
+                                <div className="flex gap-4">
+                                    <img src={editIcon} alt="icon-edit" className="cursor-pointer"
+                                          onClick={() => history.push(`/potential-customers/${customer.id}`)}/>
+                                    <FormModal modalConfig={{
+                                        ...deleteCustomerModalConfig,
+                                        modalButton: <img src={deleteIcon} alt="icon-delete"
+                                                          className="cursor-pointer"/>
+                                    }}>
+                                        <PotentialCustomerFormDeleteHandler potentialCustomer={customer}/>
+                                    </FormModal>
+                                </div>
                             </td>
                         </tr>
                     ))}

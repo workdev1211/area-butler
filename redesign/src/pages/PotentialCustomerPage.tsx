@@ -1,5 +1,5 @@
 import React, {useContext, useEffect, useState} from "react";
-import {Link, useParams} from "react-router-dom";
+import {useParams} from "react-router-dom";
 import {v4 as uuid} from 'uuid';
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
