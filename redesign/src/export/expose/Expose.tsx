@@ -15,6 +15,7 @@ import {meansOfTransportations, unitsOfTransportation} from "../../../../shared/
 import EntityGridSummary from "../EntityGridSummary";
 import MapClippings from "../MapClippings";
 import {CensusSummary} from "../CensusSummary";
+import { EntityTable } from "export/EntityTable";
 
 export interface ExposeProps {
     searchResponse: ApiSearchResponse;
@@ -29,11 +30,10 @@ export interface ExposeProps {
 }
 
 export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const groupedEntries = props.groupedEntries.filter(group => group.title !== "Wichtige Adressen");
+    const groupedEntries = props.groupedEntries.filter(group => group.title !== "Wichtige Adressen").filter(group => group.items.length > 0);
     const importantEntites = props.groupedEntries.find(group => group.title === "Wichtige Adressen");
     const transportationParams = props.transportationParams;
     const activePrinting = props.activePrinting;
-    const entites = props.entities;
     const searchResponse = props.searchResponse;
     const mapClippings = props.mapClippings;
     const routingKeys = Object.keys(searchResponse!.routingProfiles);
@@ -44,6 +44,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
         byBike: routingKeys.includes(MeansOfTransportation.BICYCLE),
         byCar: routingKeys.includes(MeansOfTransportation.CAR),
     };
+
 
     return (
         <div className="hidden print:block" ref={ref}>
@@ -118,19 +119,10 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
 
                             <div className="flex gap-4 justify-between m-10">
                                 <div className="flex flex-col gap-6">
-                                    <h3 className="text-xl font-bold">Ihre Bevorzugten Orte</h3>
+                                    <h3 className="text-l font-bold">Ihre Bevorzugten Orte</h3>
                                     <div className="flex flex-wrap gap-2">
                                         {groupedEntries.map(group => (
                                                 <div className="w-56 bg-primary rounded p-2 text-white flex gap-2">
-                                                    {/*<img*/}
-                                                    {/*    alt="icon"*/}
-                                                    {/*    src={*/}
-                                                    {/*        osmNameToIcons.find(*/}
-                                                    {/*            (entry) => entry.name === data[0].type*/}
-                                                    {/*        )?.icon || fallbackIcon*/}
-                                                    {/*    }*/}
-                                                    {/*    className={data[0].type}*/}
-                                                    {/*/>*/}
                                                     <h5 className="text-xs">
                                                         {group.title} (
                                                         {Math.round(
@@ -144,14 +136,14 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
                                     </div>
                                 </div>
                                 <div className="flex flex-col gap-6">
-                                    <h3 className="text-xl w-56 font-bold">
+                                    <h3 className="text-l w-56 font-bold">
                                         Ihre Mobilitätskriterien
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
                                         {transportationParams.map(
                                             (routingProfile: TransportationParam) => (
                                                 <div
-                                                    className="w-48 bg-secondary rounded p-2 text-white text-xs flex gap-2">
+                                                    className="w-48 bg-info rounded p-2 text-white text-xs flex gap-2">
                           <span>
                             {
                                 meansOfTransportations.find(
@@ -182,21 +174,19 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
                             groupedEntries={groupedEntries}
                             transportationParams={transportationParams}
                         />
-                        {/*todo important entities*/}
+                        {!!importantEntites && importantEntites.items.length > 0 && <EntityTable entityGroup={importantEntites!}>
+                        </EntityTable>}
                     </PdfPage>
                     <PdfPage>
                         <h1 className="m-10 text-xl font-bold">Kartenausschnitte</h1>
                         <MapClippings mapClippings={mapClippings}/>
                     </PdfPage>
-                    {groupedEntries.map(([label, data]: any, index: number) => {
+                    {groupedEntries.filter(entityGroup => entityGroup.items.length > 0).map((entityGroup: EntityGroup) => {
                         return (
                             <PdfPage>
-                                <div className="m-10" key={"tab-content-" + label}>
-                                    {/*<ResultTable*/}
-                                    {/*    dataSelectable={false}*/}
-                                    {/*    title={label}*/}
-                                    {/*    data={data.filter((e: ResultEntity) => e.selected)}*/}
-                                    {/*/>*/}
+                                <div className="m-10" key={"tab-content-" + entityGroup.title}>
+                                    <EntityTable entityGroup={entityGroup}>
+                                    </EntityTable>
                                 </div>
                             </PdfPage>
                         );

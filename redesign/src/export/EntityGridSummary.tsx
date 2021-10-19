@@ -72,17 +72,17 @@ export const EntityGridSummary: FunctionComponent<EntityGridSummaryProps> = ({
               <h5 className="text-xs">{group.title}</h5>
             </div>
             {byFootAvailable && (
-              <div className="w-36 bg-secondary rounded p-2 text-white flex gap-2 text-xs">
+              <div className="w-36 bg-info rounded p-2 text-white flex gap-2 text-xs">
                 {group.items.filter((d: ResultEntity) => d.byFoot).length}
               </div>
             )}
             {byBikeAvailable && (
-              <div className="w-36 bg-secondary rounded p-2 text-white flex gap-2 text-xs">
+              <div className="w-36 bg-info rounded p-2 text-white flex gap-2 text-xs">
                 {group.items.filter((d: ResultEntity) => d.byBike).length}
               </div>
             )}
             {byCarAvailable && (
-              <div className="w-36 bg-secondary rounded p-2 text-white flex gap-2 text-xs">
+              <div className="w-36 bg-info rounded p-2 text-white flex gap-2 text-xs">
                 {group.items.filter((d: ResultEntity) => d.byCar).length}
               </div>
             )}
