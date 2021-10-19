@@ -5,6 +5,7 @@ import Nav from "./layout/Nav";
 import Footer from "./layout/Footer";
 import {SearchContextProvider} from "./context/SearchContext";
 import Authenticated from "./auth/authenticated";
+import {PotentialCustomerContextProvider} from "./context/PotentialCustomerContext";
 
 const LoadingMessage = () => (
     <div>Seite wird geladen...</div>
@@ -68,12 +69,16 @@ function App() {
                         </Route>
                         <Route path="/potential-customers/:customerId">
                             <Authenticated>
-                                <PotentialCustomerPage />
+                                <PotentialCustomerContextProvider>
+                                    <PotentialCustomerPage />
+                                </PotentialCustomerContextProvider>
                             </Authenticated>
                         </Route>
                         <Route path="/potential-customers">
                             <Authenticated>
-                                <PotentialCustomersPage />
+                                <PotentialCustomerContextProvider>
+                                    <PotentialCustomersPage />
+                                </PotentialCustomerContextProvider>
                             </Authenticated>
                         </Route>
                         <Route path="/">

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useState} from "react";
+import React, {useContext, useEffect} from "react";
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
 import {PotentialCustomerActions, PotentialCustomerContext} from "../context/PotentialCustomerContext";
@@ -20,8 +20,8 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                 payload: response.data
             })
         };
-        void fetchCustomers();
-    }, [get, potentialCustomerDispatch]);
+        fetchCustomers();
+    }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const ActionsTop: React.FunctionComponent = () => {
         return (<>
@@ -39,7 +39,6 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     return (
         <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop />}>
             <div className="overflow-x-auto">
-                {potentialCustomerState.customers.map((c: ApiPotentialCustomer) => JSON.stringify(c))}
                 <table className="table w-full text-sm">
                     <thead>
                     <tr>
