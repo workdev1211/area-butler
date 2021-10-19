@@ -34,6 +34,17 @@ const SearchResultPage = (
     ))
 );
 
+const PotentialCustomersPage = (
+    lazy(() => (
+        import('./pages/PotentialCustomersPage')
+    ))
+);
+
+const PotentialCustomerPage = (
+    lazy(() => (
+        import('./pages/PotentialCustomerPage')
+    ))
+);
 
 function App() {
     return (
@@ -53,6 +64,16 @@ function App() {
                                 <SearchContextProvider>
                                     <SearchResultPage/>
                                 </SearchContextProvider>
+                            </Authenticated>
+                        </Route>
+                        <Route path="/potential-customers/:customerId">
+                            <Authenticated>
+                                <PotentialCustomerPage />
+                            </Authenticated>
+                        </Route>
+                        <Route path="/potential-customers">
+                            <Authenticated>
+                                <PotentialCustomersPage />
                             </Authenticated>
                         </Route>
                         <Route path="/">

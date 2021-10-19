@@ -6,8 +6,8 @@ const Authenticated = withRouter(({ history, children }) => {
   const {
     isAuthenticated
   } = useAuth0();
-  if (!isAuthenticated && history.location.pathname !== '/login') {
-    // history.push('/login');
+  if (!isAuthenticated) {
+    return <></>;
   }
   return <>{children}</>;
 });

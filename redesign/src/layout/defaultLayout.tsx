@@ -17,7 +17,7 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
                 <h1>{title}</h1>
                 {actionTop && <div className="dropdown">
                     <div tabIndex={0} className="dropdown-btn">
-                        <div className="dropdown-btn-content">Optionen <span className="divider" /><img src={caretDown} alt="icon-dropdown" />
+                        <div className="dropdown-btn-content">Aktionen <span className="divider" /><img src={caretDown} alt="icon-dropdown" />
                         </div>
                     </div>
                     <ul tabIndex={0} className="right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-72">
@@ -28,7 +28,7 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
             <div className={withHorizontalPadding ? 'default-layout-content padding' : 'default-layout-content'}>
                 {children}
             </div>
-            {actionBottom.length && <div className="action-bottom">
+            {(actionBottom.length > 0) && <div className="action-bottom">
                 {...actionBottom}
             </div>}
         </div>

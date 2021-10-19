@@ -55,7 +55,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                 }), (index + 1) * waitingTime)
             );
         }
-    }, [searchContextState.printingActive])
+    }, [searchContextState.printingActive, searchContextDispatch])
 
     useEffect(() => {
         if (searchContextState.printingCheatsheetActive) {
@@ -68,7 +68,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                 }), (index + 1) * waitingTime)
             );
         }
-    }, [searchContextState.printingCheatsheetActive])
+    }, [searchContextState.printingCheatsheetActive, searchContextDispatch])
 
     return (
         <>
