@@ -29,7 +29,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
          searchResponse,
          downloadButtonDisabled,
          mapClippings,
-         censusData
+         censusData,
+         onAfterPrint
      }) => {
         const componentRef = useRef();
 
@@ -52,7 +53,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
                     onBeforeGetContent={async () => {
                         setActivePrinting(true);
                     }}
-                    onAfterPrint={async () => setActivePrinting(false)}
+                    onAfterPrint={async () => {setActivePrinting(false); onAfterPrint();}}
                     trigger={() => (
                         <button className="btn btn-primary btn-sm" disabled={downloadButtonDisabled}>
                             Exportieren

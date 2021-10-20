@@ -37,7 +37,8 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
          searchResponse,
          downloadButtonDisabled,
          mapClippings= [],
-         censusData= []
+         censusData= [],
+         onAfterPrint
      }) => {
         const componentRef = useRef<HTMLDivElement>(null);
         const [activePrinting, setActivePrinting] = useState(false);
@@ -56,8 +57,8 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
             <div>
                 <ReactToPrint
                     documentTitle={documentTitle}
-                    onBeforeGetContent={async () => {setActivePrinting(true);}}
-                    onAfterPrint={async () => setActivePrinting(false)}
+                    onBeforeGetContent={async () => {setActivePrinting(true)}}
+                    onAfterPrint={async () => {console.log("onafterprint"); setActivePrinting(false); onAfterPrint();}}
                     trigger={() => (
                         <button className="btn btn-primary btn-sm" disabled={downloadButtonDisabled} >
                             Exportieren
