@@ -42,6 +42,10 @@
     @apply w-full text-left;
 }
 
+.default-layout .dropdown-content a.btn-link {
+    justify-content: flex-start;
+}
+
 .default-layout .dropdown-content * {
     color: white;
 }

@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import DefaultLayout from "../layout/defaultLayout";
 import {useHttp} from "../hooks/http";
 import {PotentialCustomerActions, PotentialCustomerContext} from "../context/PotentialCustomerContext";
@@ -10,16 +10,24 @@ import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import {Link, useHistory} from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {PotentialCustomerFormDeleteHandler} from "../potential-customer/PotentialCustomerDeleteHandler";
+import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 
 const deleteCustomerModalConfig = {
     modalTitle: "Interessent löschen",
     submitButtonTitle: "Löschen",
 };
 
+const createCustomerQuestionnaireModalConfig = {
+    modalTitle: "Fragebogen versenden",
+    submitButtonTitle: "Senden",
+};
+
 const PotentialCustomersPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const history = useHistory();
     const {potentialCustomerState, potentialCustomerDispatch} = useContext(PotentialCustomerContext);
+
+    const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
 
 
     useEffect(() => {
@@ -38,16 +46,30 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
             <li>
                 <Link
                     to="/potential-customers/new"
-                    className="btn btn-link" style={{paddingLeft: 0}}
+                    className="btn btn-link"
                 >
                     <img src={plusIcon} alt="pdf-icon"/> Interessent anlegen
                 </Link>
             </li>
+            <li>
+                <button type="button" className="btn btn-link" onClick={() => setQuestionnaireModalOpen(true)}>
+                    <img src={plusIcon} alt="pdf-icon"/> Fragebogen versenden
+                </button>
+            </li>
         </>)
+    }
+
+    const questionnaireModalConfig = {
+        ...createCustomerQuestionnaireModalConfig,
+        modalOpen: questionnaireModalOpen,
+        postSubmit: () => setQuestionnaireModalOpen(false)
     }
 
     return (
         <DefaultLayout title="Meine Interessenten" withHorizontalPadding={false} actionTop={<ActionsTop/>}>
+            <FormModal modalConfig={questionnaireModalConfig}>
+                <QuestionnaireRequestFormHandler postSubmit={() => setQuestionnaireModalOpen(false)}/>
+            </FormModal>
             <div className="overflow-x-auto">
                 <table className="table w-full">
                     <thead>

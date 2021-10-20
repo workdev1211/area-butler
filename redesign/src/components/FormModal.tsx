@@ -1,4 +1,4 @@
-import React, {JSXElementConstructor, ReactElement, useState} from "react";
+import React, {JSXElementConstructor, ReactElement, useEffect, useState} from "react";
 import {v4 as uuid} from 'uuid';
 
 export interface ModalConfig {
@@ -7,6 +7,8 @@ export interface ModalConfig {
     submitButtonTitle?: string;
     modalTitle: string;
     modalButton?: React.ReactNode;
+    modalOpen?: boolean;
+    postSubmit?: (success: boolean) => void;
 }
 
 export interface FormModalData {
@@ -18,10 +20,16 @@ export interface FormModalData {
 export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = (props) => {
     const {modalConfig} = props;
 
-    const [modalOpen, setModalOpen] = useState(false);
+    const [modalOpen, setModalOpen] = useState(modalConfig.modalOpen);
     const [busy, setBusy] = useState(false);
 
     const formId = `form-${uuid()}`;
+
+    useEffect(() => {
+        if(!!modalConfig.modalOpen) {
+            setModalOpen(modalConfig.modalOpen);
+        }
+    }, [modalConfig.modalOpen, setModalOpen]);
 
     const beforeSubmit = () => setBusy(true);
 
@@ -33,10 +41,10 @@ export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = 
     return (
         <>
             {modalConfig.modalButton ? React.cloneElement(modalConfig.modalButton as ReactElement<any, string | JSXElementConstructor<any>>, {onClick: () => setModalOpen(!modalOpen)})
-                : <button type="button" onClick={() => setModalOpen(!modalOpen)}
+                : modalConfig.buttonTitle ? <button type="button" onClick={() => setModalOpen(!modalOpen)}
                           className={modalConfig.buttonStyle || 'btn btn-primary'}>
                     {modalConfig.buttonTitle}
-                </button>}
+                </button> : null}
             {modalOpen && <div id="my-modal" className='modal modal-open'>
                 <div className="modal-box max-h-screen overflow-y-auto">
                     <h1 className="text-xl mb-5">{modalConfig.modalTitle}</h1>
@@ -46,7 +54,7 @@ export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = 
                         postSubmit
                     })}
                     <div className="modal-action">
-                        <button type="button" onClick={() => setModalOpen(!modalOpen)} className="btn btn-sm">
+                        <button type="button" onClick={() => { setModalOpen(false); modalConfig.postSubmit && modalConfig.postSubmit(false)}} className="btn btn-sm">
                             Schließen
                         </button>
                         <button

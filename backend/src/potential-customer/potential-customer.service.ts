@@ -120,7 +120,7 @@ export class PotentialCustomerService {
       to: [{ name: questionnaire.name, email: questionnaire.email }],
       templateId: 1,
       params: {
-        href: `${configService.getBaseAppUrl()}/questionnaire?token=${
+        href: `${configService.getBaseAppUrl()}/questionnaire/${
           questionnaire.token
         }`,
       },
@@ -168,7 +168,7 @@ export class PotentialCustomerService {
         to: [{ name: user.fullname, email: user.email }],
         templateId: 2,
         params: {
-          href: `${configService.getBaseAppUrl()}/potential-customers?customer-id=${newCustomer.id}`,
+          href: `${configService.getBaseAppUrl()}/potential-customers/${newCustomer.id}`,
         },
       };
   
