@@ -75,7 +75,7 @@ const Nav: FunctionComponent = () => {
                             <NavLink to="/" className="nav-link" exact={true}
                                      aria-current="page">Umgebungsanalyse</NavLink>
                             <Authenticated>
-                                <NavLink to="/listings" className="nav-link" exact={true}
+                                <NavLink to="/real-estates" className="nav-link" exact={true}
                                          aria-current="page">Meine Objekte</NavLink>
                                 <NavLink to="/potential-customers" className="nav-link" exact={true}
                                          aria-current="page">Meine Interessenten</NavLink>
