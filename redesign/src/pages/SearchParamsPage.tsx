@@ -16,12 +16,16 @@ import LocalityParams from "../components/LocalityParams";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import RealEstateDropDown from "real-estates/RealEstateDropDown";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
     const {fetchNearData} = useCensusData();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {potentialCustomerDispatch} = useContext(PotentialCustomerContext);
+    const {realEstateDispatch} = useContext(RealEstateContext);
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -32,6 +36,17 @@ const SearchParamsPage: React.FunctionComponent = () => {
             })
         };
         fetchCustomers();
+    }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
+
+    useEffect(() => {
+        const fetchRealEstates = async () => {
+            const response = await get<ApiRealEstateListing[]>("/api/real-estate-listings")
+            realEstateDispatch({
+                type: RealEstateActions.SET_REAL_ESTATES,
+                payload: response.data
+            })
+        };
+        fetchRealEstates();
     }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onLocationAutocompleteChange = (payload: any) => {
@@ -114,6 +129,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                         <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {
                         }} afterChange={onLocationAutocompleteChange}/>
                         <div className="flex flex-wrap items-end gap-4">
+                            <RealEstateDropDown></RealEstateDropDown>
                             <Input label="Lat" type="text" name="lat"
                                    readOnly={true}
                                    value={searchContextState.location?.lat || '-'}
