@@ -7,7 +7,7 @@ export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
     icon?: string;
 }
 
-const Input: React.FunctionComponent<InputProps> = ({ label, icon, ...props}) => {
+const Input: React.FunctionComponent<InputProps> = ({ label = '', icon, ...props}) => {
     let [field, meta] = useField(props as any);
     const classes = icon ? 'input-with-icon form-control min-flex relative' : 'form-control min-flex relative';
     return (

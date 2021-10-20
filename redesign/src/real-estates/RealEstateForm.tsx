@@ -5,7 +5,8 @@ import {ApiEnergyEfficiency, ApiRealEstateCostType, ApiRealEstateListing} from "
 import Input from "../components/Input";
 import Select from "../components/Select";
 import Checkbox from "../components/Checkbox";
-import React from "react";
+import React, {useEffect, useState} from "react";
+import LocationAutocomplete from "../components/LocationAutocomplete";
 
 export interface RealEstateFormProps {
     formId: string;
@@ -19,29 +20,49 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> =
         const furnishing = {} as any;
         (realEstate?.characteristics?.furnishing || []).map(f => furnishing[f] = true);
 
+        const [localRealEstate, setLocalRealEstate] = useState<Partial<ApiRealEstateListing>>(realEstate);
+
+        useEffect(() => {
+            setLocalRealEstate(realEstate);
+        }, [JSON.stringify(realEstate), setLocalRealEstate])
+
+        const onLocationAutocompleteChange = (payload: any) => {
+            const updatedRealEstate = {
+                ...realEstate,
+                address: payload.value.label,
+                coordinates: payload.coordinates
+            };
+            setLocalRealEstate(updatedRealEstate);
+        }
+
         return (
             <Formik
                 initialValues={{
-                    name: realEstate?.name,
-                    address: realEstate?.address,
-                    price: realEstate?.costStructure?.price?.amount || 0,
-                    type: realEstate?.costStructure?.type || ApiRealEstateCostType.RENT_MONTHLY_COLD,
-                    realEstateSizeInSquareMeters: realEstate.characteristics?.realEstateSizeInSquareMeters || 0,
-                    propertySizeInSquareMeters: realEstate.characteristics?.propertySizeInSquareMeters || 0,
-                    energyEfficiency: realEstate.characteristics?.energyEfficiency || "A",
+                    name: localRealEstate?.name ?? '',
+                    price: localRealEstate?.costStructure?.price?.amount || 0,
+                    type: localRealEstate?.costStructure?.type || ApiRealEstateCostType.RENT_MONTHLY_COLD,
+                    realEstateSizeInSquareMeters: localRealEstate.characteristics?.realEstateSizeInSquareMeters ?? 0,
+                    propertySizeInSquareMeters: localRealEstate.characteristics?.propertySizeInSquareMeters ?? 0,
+                    energyEfficiency: localRealEstate.characteristics?.energyEfficiency ?? "A",
                     ...furnishing
                 }}
-                enableReinitialize={true}
                 validationSchema={Yup.object({
                     name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-                    address: Yup.string().required("Bitte geben Sie eine Adresse an"),
                     price: Yup.number(),
                     type: Yup.string(),
                     realEstateSizeInSquareMeters: Yup.number(),
                     propertySizeInSquareMeters: Yup.number(),
                     energyEfficiency: Yup.string(),
                 })}
-                onSubmit={onSubmit}
+                enableReinitialize={true}
+                onSubmit={(values) => {
+                    onSubmit({
+                            ...values,
+                            address: localRealEstate.address,
+                            coordinates: localRealEstate.coordinates
+                        }
+                    )
+                }}
             >
                 <Form id={formId}>
                     <div className="form-control">
@@ -53,15 +74,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> =
                             className="input input-bordered w-full"
                         />
                     </div>
-                    <div className="form-control">
-                        <Input
-                            label="Adressse"
-                            name="address"
-                            type="text"
-                            placeholder="Adresse eingeben"
-                            className="input input-bordered w-full"
-                        />
-                    </div>
+                    <LocationAutocomplete value={localRealEstate.address} setValue={() => {}} afterChange={onLocationAutocompleteChange}/>
                     <div className="flex flex-wrap items-end gap-6">
                         <div className="form-control flex-1">
                             <Input

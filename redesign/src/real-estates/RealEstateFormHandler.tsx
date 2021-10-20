@@ -16,10 +16,7 @@ const mapFormToApiUpsertRealEstateListing = async (
         .filter(([k, v]) => availableFurnishing.includes(k))
         .map(([k, v]) => k) as ApiFurnishing[];
 
-    debugger;
-
     const {lat, lng} = await deriveGeocodeByAddress(values.address);
-
     return {
         name: values.name,
         address: values.address,
