@@ -6,6 +6,8 @@ import Footer from "./layout/Footer";
 import { SearchContextProvider } from "./context/SearchContext";
 import Authenticated from "./auth/authenticated";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
+import  {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -33,6 +35,17 @@ function App() {
   return (
     <Router>
       <div className="app">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover/>
+        <ToastContainer />
         <Nav />
         <Suspense fallback={<LoadingMessage />}>
           <PotentialCustomerContextProvider>

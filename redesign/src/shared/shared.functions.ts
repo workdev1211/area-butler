@@ -8,6 +8,7 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
+import {toast} from "react-toastify";
 
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
@@ -27,6 +28,30 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
     { unit: "meter" }
   );
 };
+
+export const toastSuccess = (message: string) => {
+    toast.success(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+}
+
+export const toastError = (message: string) => {
+    toast.error(message, {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        });
+}
 
 export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: string} => {
     switch (osmName) {

@@ -8,6 +8,7 @@ import {
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
 import {useHistory} from "react-router-dom";
+import { toastError, toastSuccess } from "shared/shared.functions";
 
 export const mapFormToApiUpsertPotentialCustomer = async (
     values: any
@@ -68,9 +69,11 @@ const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFor
                     payload: storedCustomer,
                 });
                 postSubmit(true);
+                toastSuccess("Interessent erfolgreich gespeichert!");
                 history.push(`/potential-customers/${storedCustomer.id}`);
             } catch (err) {
                 console.log(err);
+                toastError("Fehler beim Speichern eines Interessenten");
                 postSubmit(false);
             }
         };
