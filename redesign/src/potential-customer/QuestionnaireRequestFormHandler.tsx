@@ -2,6 +2,7 @@ import { useHttp } from "hooks/http";
 import { ApiUpsertQuestionnaireRequest } from "../../../shared/types/potential-customer";
 import QuestionnaireRequestForm from "./QuestionnaireRequestForm";
 import {FormModalData} from "../components/FormModal";
+import { toastError, toastSuccess } from "shared/shared.functions";
 
 export const mapFormToApiUpsertQuestionnaireRequest = async (
   values: any
@@ -27,10 +28,11 @@ export const QuestionnaireRequestFormHandler: React.FunctionComponent<FormModalD
           "/api/potential-customers/questionnaire-request",
           mappedPotentialCustomer
         );
-
+        toastSuccess("Fragebogen erfolgreich versandt!");
         postSubmit(true);
       } catch (err) {
         console.log(err);
+        toastError("Fehler beim Versenden des Fragebogens");
         postSubmit(false);
       }
     };
