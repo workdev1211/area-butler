@@ -3,6 +3,7 @@ import {useHttp} from "hooks/http";
 import React from "react";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
+import {toastSuccess} from "../shared/shared.functions";
 
 export interface RealEstateDeleteHandlerProps extends FormModalData {
   realEstate: Partial<ApiRealEstateListing>;
@@ -32,6 +33,7 @@ export const RealEstateDeleteHandler: React.FunctionComponent<RealEstateDeleteHa
             payload: realEstate,
           });
         }
+        toastSuccess("Object erfolgreich gelöscht!");
         postSubmit(true);
       } catch (err) {
         console.log(err);

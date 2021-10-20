@@ -3,6 +3,7 @@ import {PotentialCustomerActions, PotentialCustomerContext} from "context/Potent
 import {useHttp} from "hooks/http";
 import React from "react";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
+import {toastSuccess} from "../shared/shared.functions";
 
 export interface PotentialCustomerHandlerDeleteProps extends FormModalData {
     potentialCustomer: Partial<ApiPotentialCustomer>;
@@ -32,6 +33,7 @@ export interface PotentialCustomerHandlerDeleteProps extends FormModalData {
               payload: potentialCustomer,
             });
           }
+          toastSuccess("Interessent erfolgreich gelöscht!");
           postSubmit(true);
         } catch (err) {
           console.log(err);
