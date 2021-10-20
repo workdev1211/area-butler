@@ -9,7 +9,7 @@ import LoginButton from "../components/LoginButton";
 
 const Nav: FunctionComponent = () => {
 
-    const showNavBar = window.location.pathname !== '/questionnaire';
+    const showNavBar =  !RegExp(/questionnaire.+/).test(window.location.pathname);
 
     const [currentUser, setCurrentUser] = useState<User>();
     const {logout, user, isAuthenticated} = useAuth0();
@@ -32,6 +32,10 @@ const Nav: FunctionComponent = () => {
     }
     const userMenuRef = useRef(null);
     useOnClickOutside(userMenuRef, () => userMenuOpen && setUserMenuOpen(false));
+
+    if (!showNavBar) {
+        return null;
+    }
 
     return (
         <nav>
