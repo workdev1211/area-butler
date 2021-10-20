@@ -9,7 +9,7 @@ import {
 import PotentialCustomerForm from "./PotentialCustomerForm";
 import {useHistory} from "react-router-dom";
 
-const mapFormToApiUpsertPotentialCustomer = async (
+export const mapFormToApiUpsertPotentialCustomer = async (
     values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
 

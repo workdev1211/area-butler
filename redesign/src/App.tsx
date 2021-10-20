@@ -25,6 +25,10 @@ const PotentialCustomerPage = lazy(
   () => import("./pages/PotentialCustomerPage")
 );
 
+const CustomerQuestionnairePage = lazy(
+    () => import("./pages/CustomerQuestionnairePage")
+);
+
 function App() {
   return (
     <Router>
@@ -55,6 +59,9 @@ function App() {
                     <PotentialCustomersPage />
                   </Authenticated>
                 </Route>
+                  <Route path="/questionnaire/:inputToken">
+                      <CustomerQuestionnairePage />
+                  </Route>
                 <Route path="/">
                   <Authenticated>
                     <SearchParamsPage />
