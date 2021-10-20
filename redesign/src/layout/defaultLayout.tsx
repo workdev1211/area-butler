@@ -15,7 +15,7 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
         <div className="default-layout">
             <div className="default-layout-header">
                 <h1>{title}</h1>
-                {actionTop && <div className="dropdown">
+                {actionTop && <div className="dropdown z-2000">
                     <div tabIndex={0} className="dropdown-btn">
                         <div className="dropdown-btn-content">Aktionen <span className="divider" /><img src={caretDown} alt="icon-dropdown" />
                         </div>
