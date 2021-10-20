@@ -1,4 +1,4 @@
-import React, {useContext} from "react";
+import React, {useContext, useEffect} from "react";
 import DefaultLayout from "../layout/defaultLayout";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
@@ -14,11 +14,25 @@ import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 import LocalityParams from "../components/LocalityParams";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
+import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
 
 const SearchParamsPage: React.FunctionComponent = () => {
-    const {post} = useHttp();
+    const {get, post} = useHttp();
     const {fetchNearData} = useCensusData();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+    const {potentialCustomerDispatch} = useContext(PotentialCustomerContext);
+
+    useEffect(() => {
+        const fetchCustomers = async () => {
+            const response = await get<ApiPotentialCustomer[]>('/api/potential-customers');
+            potentialCustomerDispatch({
+                type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+                payload: response.data
+            })
+        };
+        fetchCustomers();
+    }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const onLocationAutocompleteChange = (payload: any) => {
         searchContextDispatch({type: SearchContextActions.SET_PLACES_LOCATION, payload: payload.value});
