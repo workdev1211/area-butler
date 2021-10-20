@@ -1,5 +1,5 @@
 import {geocodeByAddress, getLatLng} from "react-google-places-autocomplete";
-import {ApiCoordinates, OsmName} from "../../../shared/types/types";
+import {ApiCoordinates, MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import harversine from "haversine";
 import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
 import fuelIcon from "../assets/icons/icons-20-x-20-outline-ic-gasstation.svg";
@@ -9,6 +9,7 @@ import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
 import {toast} from "react-toastify";
+import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
@@ -28,6 +29,10 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
     { unit: "meter" }
   );
 };
+
+export const deriveMinutesFromMeters = (distanceInMeters: number, mean: MeansOfTransportation) => {
+    return Math.round(distanceInMeters / (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator || 1));
+}
 
 export const toastSuccess = (message: string) => {
     toast.success(message, {

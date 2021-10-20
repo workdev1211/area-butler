@@ -7,7 +7,7 @@ import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import {MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
-import {deriveIconForOsmName} from "../shared/shared.functions";
+import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
 
 export interface MapMenuProps {
     census: boolean;
@@ -37,9 +37,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         setLocalityOpen(filtered);
     }
 
-    const deriveMinutesFromMeters = (distanceInMeters: number, mean: MeansOfTransportation) => {
-        return Math.round(distanceInMeters / (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator || 1));
-    }
+
 
     return <div className="map-menu">
         <h2 className="heading">Ergebnisse</h2>

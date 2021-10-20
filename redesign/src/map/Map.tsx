@@ -21,7 +21,10 @@ import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
 import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
-import {deriveIconForOsmName} from "../shared/shared.functions";
+import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
+import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -59,7 +62,11 @@ export class IdMarker extends L.Marker {
 
     createOpenPopup() {
         if (!this.getPopup()) {
-            this.bindPopup(`${this.entity.name || this.entity.label}`);
+            const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
+            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK)} min.</span></span>` : '';
+            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE)} min.</span></span>` : '';
+            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR)} min.</span></span>` : '';
+            this.bindPopup(`${title}<br /><div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
         }
         this.openPopup();
     }
