@@ -7,6 +7,8 @@ import TransportationParams from "../components/TransportationParams";
 import LocalityParams from "../components/LocalityParams";
 import {osmEntityTypes} from "../../../shared/constants/constants";
 import ImportantAddresses from "../components/ImportantAddresses";
+import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
+import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
 
 export interface PotentialCustomerFormProps {
     formId: string;
@@ -45,14 +47,14 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
             <Form id={formId}>
                 <div className="grid grid-cols-1 gap-4">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {!questionnaire && (<Input label="Name des Interessenten"
-                                               name="name"
-                                               type="text"
-                                               placeholder="Name" className="input input-bordered w-full"/>)}
-                    {!questionnaire && (<Input label="Email-Adresse des Interessenten"
-                                               name="email"
-                                               type="text"
-                                               placeholder="Email" className="input input-bordered w-full"/>)}
+                        {!questionnaire && (<Input label="Name des Interessenten"
+                                                   name="name"
+                                                   type="text"
+                                                   placeholder="Name" className="input input-bordered w-full"/>)}
+                        {!questionnaire && (<Input label="Email-Adresse des Interessenten"
+                                                   name="email"
+                                                   type="text"
+                                                   placeholder="Email" className="input input-bordered w-full"/>)}
                     </div>
                     <div className="my-6 flex flex-col gap-6">
                         <strong>{questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Fortbewegungsarten</strong>
@@ -79,9 +81,26 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                                                 preferredLocations: [...newValues]
                                             })}/>
                     </div>
+                    <div className="my-6"><strong>
+                        {questionnaire ? "Meine" : "Bevorzugte"} Wohnvorstellung
+                    </strong></div>
+                    <RealEstateCostStructureControl
+                        inputValues={customer.realEstateCostStructure}
+                        onChange={(newValue) => setCustomer({
+                            ...customer,
+                            realEstateCostStructure: newValue
+                        })}
+                    />
+                    <RealEstateCharacteristicsControl
+                        inputValues={customer.realEstateCharacteristics}
+                        onChange={(newValue) => setCustomer({
+                            ...customer,
+                            realEstateCharacteristics: newValue
+                        })}
+                    />
                 </div>
             </Form>
-                }
+        }
         </Formik>
     )
 }
