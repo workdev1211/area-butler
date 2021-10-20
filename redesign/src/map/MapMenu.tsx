@@ -112,7 +112,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                 Auto
                                             </div>
                                         </div>
-                                        {ge.items.map(item => <div className="locality-item"
+                                        {localityOpen.includes(ge.title) && ge.items.map(item => <div className="locality-item"
                                                                    key={`locality-item-${ge.title}-${item.id}`}>
                                             <h4 className="locality-item-title cursor-pointer"
                                                 onClick={() => highlightZoomEntity(item)}>{item.name ?? ge.title}</h4>
