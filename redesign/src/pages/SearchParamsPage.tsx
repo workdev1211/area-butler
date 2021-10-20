@@ -13,6 +13,7 @@ import {Form, Formik} from "formik";
 import TransportationParams from "../components/TransportationParams";
 import ImportantAddresses from "../components/ImportantAddresses";
 import LocalityParams from "../components/LocalityParams";
+import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {post} = useHttp();
@@ -127,6 +128,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                                                 type: SearchContextActions.SET_PREFERRED_LOCATIONS,
                                                 payload: importantAdresses
                                             })}/>
+                        <PotentialCustomerDropDown></PotentialCustomerDropDown>
                     </div>
                     <h2>Lokalitäten</h2>
                     <LocalityParams values={searchContextState.localityParams}
