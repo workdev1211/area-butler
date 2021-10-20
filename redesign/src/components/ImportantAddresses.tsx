@@ -50,7 +50,7 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
             {inputValues?.map((location, index) => <div
                 className="w-full grid grid-cols-1 md:grid-cols-3 gap-4"
                 key={`important-address-${index}`}>
-                <Input label="Bezeichung" icon={typeIcon} className="input input-bordered flex" name={`description-${index}`}
+                <Input label="Bezeichung" icon={typeIcon} className="input input-bordered flex" name={`description-${index}`} list="suggestedTitles"
                        value={location.title} onChange={(event) => changeTitle(event.target.value, index)}/>
                 <div className="flex col-span-1 md:col-span-2 2xl:col-span-1">
                     <LocationAutocomplete value={location.address} setValue={() => {
@@ -61,6 +61,14 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
             {inputValues?.length < 4 && <button type="button" onClick={() => addAddress()} className="btn btn-link text-primary">+ Adresse
                 hinzufügen
             </button>}
+            <datalist id="suggestedTitles">
+                <option value="Arbeitsort"></option>
+                <option value="Eltern"></option>
+                <option value="Kita"></option>
+                <option value="Schule"></option>
+                <option value="Schwiegereltern"></option>
+                <option value="Eigene Bezeichnung"></option>
+            </datalist>
         </div>
     )
 }
