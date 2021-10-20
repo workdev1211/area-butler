@@ -151,17 +151,18 @@ const SearchResultPage: React.FunctionComponent = () => {
             // eslint-disable-next-line no-sequences
             const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
             const newGroupedEntries: any[] = Object.entries(groupBy(entities, (item: ResultEntity) => item.label));
+            console.log(newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle).map(([label, items]) => items).flat());
 
             const combinedGroupEntries = [
                 {
                     title: preferredLocationsTitle,
                     active: true,
-                    items: [...newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle)]
+                    items: newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle).map(([label, items]) => items).flat()
                 },
                 {
                     title: realEstateListingsTitle,
                     active: true,
-                    items: [...newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle)]
+                    items: newGroupedEntries.filter(([label, _]) => label === realEstateListingsTitle).map(([label, items]) => items).flat()
                 },
                 ...newGroupedEntries.filter(([label, _]) => label !== preferredLocationsTitle && label !== realEstateListingsTitle).map(([title, items]) => ({
                     title,
