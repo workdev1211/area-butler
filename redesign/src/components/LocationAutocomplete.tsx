@@ -72,6 +72,8 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         loadingMessage: () => 'Suche...',
                         onFocus: () => setFocus(true),
                         onBlur: () => setFocus(false),
+                        menuPortalTarget: document.body,
+                        styles: { menuPortal: (base: any) => ({ ...base, zIndex: 99 }) }
                     }}
                     apiKey={googleApiKey}
                 />

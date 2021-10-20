@@ -38,3 +38,7 @@
 .google-autocomplete__indicators {
     display: none;
 }
+
+.google-autocomplete__menu, .google-autocomplete__menu-list, .google-autocomplete__option {
+    z-index: 9999;
+}
