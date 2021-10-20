@@ -35,7 +35,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         });
         searchContextDispatch({
             type: SearchContextActions.SET_PLACES_LOCATION,
-            payload: {label: 'Mein Standort'}
+            payload: {label: 'Mein Standort', value: { place_id: '123'}}
         })
     }
 

@@ -32,7 +32,7 @@
 }
 
 .default-layout .dropdown-content {
-    background: rgba(53, 53, 53, 0.9);
+    background: rgba(53, 53, 53, 0.95);
     color: white;
     top: 50px;
 }
