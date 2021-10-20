@@ -44,6 +44,13 @@
     max-height: 100% !important;
     overflow-y: scroll;
 }
+.map-menu .collapse-closed > .collapse-content {
+    max-height: 0 !important;
+    height: 0;
+}
+.map-menu .collapse-open > .collapse-content {
+    min-height: 50px;
+}
 
 .map-menu .collapse-content ul {
     @apply w-full flex flex-col;
