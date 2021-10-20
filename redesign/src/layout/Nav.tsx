@@ -75,9 +75,9 @@ const Nav: FunctionComponent = () => {
                             <NavLink to="/" className="nav-link" exact={true}
                                      aria-current="page">Umgebungsanalyse</NavLink>
                             <Authenticated>
-                                <NavLink to="/real-estates" className="nav-link" exact={true}
+                                <NavLink to="/real-estates" className="nav-link"
                                          aria-current="page">Meine Objekte</NavLink>
-                                <NavLink to="/potential-customers" className="nav-link" exact={true}
+                                <NavLink to="/potential-customers" className="nav-link"
                                          aria-current="page">Meine Interessenten</NavLink>
                             </Authenticated>
                         </div>
@@ -120,10 +120,10 @@ const Nav: FunctionComponent = () => {
                     <NavLink to="/" className="nav-mobile-menu-link" exact={true}
                              aria-current="page">Umgebungsanalyse</NavLink>
                     <Authenticated>
-                        <NavLink to="/real-estates" exact={true}
+                        <NavLink to="/real-estates"
                                  className="nav-mobile-menu-link"
                                  aria-current="page">Meine Objekte</NavLink>
-                        <NavLink to="/potential-customers" exact={true}
+                        <NavLink to="/potential-customers"
                                  className="nav-mobile-menu-link"
                                  aria-current="page">Meine Interessenten</NavLink>
                     </Authenticated>
