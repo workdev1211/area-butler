@@ -19,6 +19,7 @@ import { PotentialCustomerActions, PotentialCustomerContext } from "context/Pote
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
+import { toastError } from "shared/shared.functions";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -94,6 +95,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                 });
                 history.push('/search-result');
             } catch (error) {
+                toastError("Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen.")
                 console.error(error);
             } finally {
                 searchContextDispatch({type: SearchContextActions.SET_SEARCH_BUSY, payload: false});
