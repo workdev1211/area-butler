@@ -20,6 +20,7 @@ import "./SearchResultPage.css";
 import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import BackButton from "../layout/BackButton";
+import { RealEstateContext } from "context/RealEstateContext";
 
 export interface ResultEntity {
     name?: string;
@@ -118,6 +119,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 
 const SearchResultPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+    const {realEstateState} = useContext(RealEstateContext);
     const history = useHistory();
     if (!searchContextState.searchResponse?.routingProfiles) {
         history.push("/");
@@ -143,15 +145,14 @@ const SearchResultPage: React.FunctionComponent = () => {
         if (!!searchContextState.preferredLocations && showPreferredlocations) {
             entities?.push(...buildEntityDataFromPreferredLocations(centerOfSearch, searchContextState.preferredLocations));
         }
-        if (!!searchContextState.realEstateListings && showMyObjects) {
-            entities?.push(...buildEntityDataFromRealEstateListings(centerOfSearch, searchContextState.realEstateListings));
+        if (!!realEstateState.listings && showMyObjects) {
+            entities?.push(...buildEntityDataFromRealEstateListings(centerOfSearch, realEstateState.listings));
         }
         if (entities) {
             setFilteredEntities((entities));
             // eslint-disable-next-line no-sequences
             const groupBy = (xs: any, f: any): Record<string, any> => xs.reduce((r: any, v: any, i: any, a: any, k = f(v)) => ((r[k] || (r[k] = [])).push(v), r), {});
             const newGroupedEntries: any[] = Object.entries(groupBy(entities, (item: ResultEntity) => item.label));
-            console.log(newGroupedEntries.filter(([label, _]) => label === preferredLocationsTitle).map(([label, items]) => items).flat());
 
             const combinedGroupEntries = [
                 {

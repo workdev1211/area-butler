@@ -31,7 +31,6 @@ export interface SearchContextState {
     printingActive: boolean;
     printingCheatsheetActive: boolean;
     mapClippings: MapClipping[];
-    realEstateListings?: ApiRealEstateListing[];
 }
 
 export const initialState: SearchContextState = {
