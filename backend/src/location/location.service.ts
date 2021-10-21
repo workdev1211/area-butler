@@ -13,7 +13,6 @@ import {
 import {Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
-import {GeocodingService} from 'src/client/geocoding/geocoding.service';
 import {IsochroneService} from 'src/client/isochrone/isochrone.service';
 import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
@@ -22,7 +21,6 @@ import {calculateMinutesToMeters} from '../../../shared/constants/constants';
 @Injectable()
 export class LocationService {
   constructor(
-    private geocodingService: GeocodingService,
     private overpassService: OverpassService,
     private isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
@@ -31,7 +29,6 @@ export class LocationService {
 
   async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
     const coordinates = search.coordinates;
-    const address = await this.geocodingService.reverse(search.coordinates);
     const preferredAmenities = search.preferredAmenities;
 
     const routingProfiles = {};
@@ -100,7 +97,9 @@ export class LocationService {
         },
         coordinates,
         distanceInMeters: 0,
-        address,
+        address: {
+          street: 'Mein Standort'
+        },
       },
       routingProfiles: routingProfiles as Record<
         MeansOfTransportation,

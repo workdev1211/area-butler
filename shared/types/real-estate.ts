@@ -1,4 +1,4 @@
-import { ApiAddress, ApiCoordinates, ApiMoneyAmount } from "./types";
+import { ApiCoordinates, ApiMoneyAmount } from "./types";
 
 export interface ApiRealEstateListing {
     id: string;
