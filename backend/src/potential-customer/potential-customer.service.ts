@@ -128,6 +128,7 @@ export class PotentialCustomerService {
 
     if (questionnaire.userInCopy) {
       mailProps.cc = [{ name: user.fullname, email: user.email }];
+      mailProps.replyTo = { name: user.fullname, email: user.email };
     }
 
     await this.mailSender.sendMail(mailProps);
