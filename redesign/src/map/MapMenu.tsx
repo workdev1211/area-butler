@@ -6,7 +6,6 @@ import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.sv
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import {MeansOfTransportation, OsmName} from "../../../shared/types/types";
-import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
 
 export interface MapMenuProps {
@@ -36,7 +35,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         }
         setLocalityOpen(filtered);
     }
-
 
 
     return <div className="map-menu">
@@ -78,10 +76,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                            onChange={(event) => toggleLocality(ge.title, event.target.checked)}/>
                                     <div className="collapse-title">
                                         <div onClick={() => toggleLocality(ge.title, !localityOpen.includes(ge.title))}>
-                                            <div className="img-container" style={{'background': groupIconInfo.color}}><img
-                                                src={groupIconInfo.icon}
-                                                alt="group-icon"
-                                                onClick={() => toggleLocality(ge.title, !ge.active)}/>
+                                            <div className="img-container" style={{'background': groupIconInfo.color}}>
+                                                <img
+                                                    src={groupIconInfo.icon}
+                                                    alt="group-icon"
+                                                    onClick={() => toggleLocality(ge.title, !ge.active)}/>
                                             </div>
                                             {ge.title} [{ge.items.length}]
                                         </div>
@@ -110,8 +109,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                 Auto
                                             </div>
                                         </div>
-                                        {localityOpen.includes(ge.title) && ge.items.map(item => <div className="locality-item"
-                                                                   key={`locality-item-${ge.title}-${item.id}`}>
+                                        {localityOpen.includes(ge.title) && ge.items.map(item => <div
+                                            className="locality-item"
+                                            key={`locality-item-${ge.title}-${item.id}`}>
                                             <h4 className="locality-item-title cursor-pointer"
                                                 onClick={() => highlightZoomEntity(item)}>{item.name ?? ge.title}</h4>
                                             <div className="locality-item-content">

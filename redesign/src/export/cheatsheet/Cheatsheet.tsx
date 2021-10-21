@@ -1,24 +1,16 @@
-import { MapClipping } from "context/SearchContext";
-import { EntityTable } from "export/EntityTable";
+import {MapClipping} from "context/SearchContext";
 import PersonaRanking from "export/PersonaRanking";
-import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
+import {EntityGroup, ResultEntity} from "pages/SearchResultPage";
 import React from "react";
-import {
-  allFurnishing,
-  allRealEstateCostTypes,
-} from "../../../../shared/constants/real-estate";
-import { ApiPersonaType } from "../../../../shared/types/persona";
-import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import {
-  ApiGeojsonFeature,
-  ApiSearchResponse,
-  TransportationParam,
-} from "../../../../shared/types/types";
-import { CensusSummary } from "../CensusSummary";
+import {allFurnishing, allRealEstateCostTypes,} from "../../../../shared/constants/real-estate";
+import {ApiPersonaType} from "../../../../shared/types/persona";
+import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
+import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam,} from "../../../../shared/types/types";
+import {CensusSummary} from "../CensusSummary";
 import MapClippings from "../MapClippings";
-import { PdfPage } from "../PdfPage";
+import {PdfPage} from "../PdfPage";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
-import { EntityList } from "export/EntityList";
+import {EntityList} from "export/EntityList";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -108,7 +100,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           {groupedEntries.map((group) => {
             return (
               <div className="text-xs w-72" key={"tab-content-" + group.title}>
-                <EntityList entityGroup={group} limit={3}></EntityList>
+                <EntityList entityGroup={group} limit={3}/>
               </div>
             );
           })}

@@ -1,12 +1,7 @@
 import {MapClipping} from "context/SearchContext";
 import React, {ForwardedRef} from "react";
 import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
-import {
-    ApiGeojsonFeature,
-    ApiSearchResponse,
-    MeansOfTransportation,
-    TransportationParam
-} from "../../../../shared/types/types";
+import {ApiGeojsonFeature, TransportationParam} from "../../../../shared/types/types";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import {PdfPage} from "../PdfPage";
 import {EntityGroup, ResultEntity} from "../../pages/SearchResultPage";
@@ -15,10 +10,9 @@ import {meansOfTransportations, unitsOfTransportation} from "../../../../shared/
 import EntityGridSummary from "../EntityGridSummary";
 import MapClippings from "../MapClippings";
 import {CensusSummary} from "../CensusSummary";
-import { EntityTable } from "export/EntityTable";
+import {EntityTable} from "export/EntityTable";
 
 export interface ExposeProps {
-    searchResponse: ApiSearchResponse;
     entities: ResultEntity[];
     censusData: ApiGeojsonFeature[];
     groupedEntries: EntityGroup[];
@@ -34,17 +28,8 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
     const importantEntites = props.groupedEntries.find(group => group.title === "Wichtige Adressen");
     const transportationParams = props.transportationParams;
     const activePrinting = props.activePrinting;
-    const searchResponse = props.searchResponse;
     const mapClippings = props.mapClippings;
-    const routingKeys = Object.keys(searchResponse!.routingProfiles);
     const censusData = props.censusData;
-
-    const mapMeans = {
-        byFoot: routingKeys.includes(MeansOfTransportation.WALK),
-        byBike: routingKeys.includes(MeansOfTransportation.BICYCLE),
-        byCar: routingKeys.includes(MeansOfTransportation.CAR),
-    };
-
 
     return (
         <div className="hidden print:block" ref={ref}>

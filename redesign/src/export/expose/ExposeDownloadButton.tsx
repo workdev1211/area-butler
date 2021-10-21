@@ -2,13 +2,12 @@ import {MapClipping} from "context/SearchContext";
 import React, {useRef, useState} from "react";
 import ReactToPrint from "react-to-print";
 import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
-import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam} from "../../../../shared/types/types";
+import {ApiGeojsonFeature, TransportationParam} from "../../../../shared/types/types";
 import Expose from "./Expose";
 import {ResultEntity} from "../../pages/SearchResultPage";
 
 export interface ExposeDownloadProps {
     entities: ResultEntity[];
-    searchResponse: ApiSearchResponse;
     groupedEntries: any;
     transportationParams: TransportationParam[];
     listingAddress: string;
@@ -34,7 +33,6 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
          listingAddress,
          realEstateListing,
          entities= [],
-         searchResponse,
          downloadButtonDisabled,
          mapClippings= [],
          censusData= [],
@@ -67,7 +65,6 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
                     content={() => componentRef.current!}
                 />
                 <Expose
-                    searchResponse={searchResponse}
                     entities={entities}
                     groupedEntries={groupedEntries}
                     ref={componentRef}

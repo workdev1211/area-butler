@@ -22,9 +22,11 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> =
 
         const [localRealEstate, setLocalRealEstate] = useState<Partial<ApiRealEstateListing>>(realEstate);
 
+        const realEstateString = JSON.stringify(realEstate);
         useEffect(() => {
-            setLocalRealEstate(realEstate);
-        }, [JSON.stringify(realEstate), setLocalRealEstate])
+            const parsedEstate = JSON.parse(realEstateString);
+            setLocalRealEstate(parsedEstate);
+        }, [realEstateString, setLocalRealEstate])
 
         const onLocationAutocompleteChange = (payload: any) => {
             const updatedRealEstate = {

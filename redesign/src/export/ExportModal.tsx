@@ -106,7 +106,6 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                                     entities={entities}
                                     groupedEntries={groupedEntries!}
                                     censusData={censusData}
-                                    searchResponse={searchContextState.searchResponse!}
                                     transportationParams={searchContextState.transportationParams}
                                     listingAddress={searchContextState.placesLocation.label}
                                     realEstateListing={searchContextState.realEstateListing}
