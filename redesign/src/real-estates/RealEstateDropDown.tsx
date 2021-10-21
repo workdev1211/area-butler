@@ -45,7 +45,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
                 <div className={buttonStyles} onClick={() => setShowMenu(!showMenu)}>
                     + Meine Objekte
                 </div>
-                <ul className="p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
+                {showMenu && (<ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
                     {realEstateState.listings.map(
                         (realEstateListing: ApiRealEstateListing) => (
                             <li key={'real-estate-listing-item-' + realEstateListing.id}>
@@ -58,7 +58,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
                                     className="btn btn-link whitespace-nowrap w-full"
                                 >
                                     <div className="flex flex-col items-start">
-                                        <span>{realEstateListing.name}</span>
+                                        <span className="font-bold">{realEstateListing.name}</span>
                                         <span className="text-gray-500 text-xs">
                       {realEstateListing.address}
                     </span>
@@ -67,7 +67,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
                             </li>
                         )
                     )}
-                </ul>
+                </ul>)}
             </div>
         ) : null;
     };
