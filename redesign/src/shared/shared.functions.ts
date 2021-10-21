@@ -1,4 +1,4 @@
-import {geocodeByAddress, getLatLng} from "react-google-places-autocomplete";
+import {geocodeByAddress, geocodeByLatLng, getLatLng} from "react-google-places-autocomplete";
 import {ApiCoordinates, MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import harversine from "haversine";
 import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
@@ -15,6 +15,21 @@ export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
   return await getLatLng(latlngResults[0]);
 };
+
+export const deriveAddressFromCoordinates = async (coordinates: ApiCoordinates) : Promise<{label: string, value: {place_id: string}} | null> => {
+    const places = await geocodeByLatLng(coordinates);
+    if (!!places && places.length > 0) {
+        const {formatted_address, place_id} = places[0];
+        return {
+            label: formatted_address,
+            value: {
+                place_id
+            }
+        }
+    } else {
+        return null;
+    }
+}
 
 export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   return harversine(

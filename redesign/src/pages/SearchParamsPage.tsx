@@ -19,7 +19,7 @@ import { PotentialCustomerActions, PotentialCustomerContext } from "context/Pote
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
-import { toastError } from "shared/shared.functions";
+import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, toastError } from "shared/shared.functions";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -57,17 +57,20 @@ const SearchParamsPage: React.FunctionComponent = () => {
         }
     }
 
-    const onMyLocationChange = (coordinates: ApiCoordinates) => {
+    const onMyLocationChange = async (coordinates: ApiCoordinates) => {
         searchContextDispatch({
             type: SearchContextActions.SET_LOCATION,
             payload: {
                 ...coordinates
             }
         });
+        const place = (await derivePlacesLocationFromCoordinates(
+          coordinates
+        )) || { label: "Mein Standort", value: { place_id: "123" } };
         searchContextDispatch({
-            type: SearchContextActions.SET_PLACES_LOCATION,
-            payload: {label: 'Mein Standort', value: { place_id: '123'}}
-        })
+          type: SearchContextActions.SET_PLACES_LOCATION,
+          payload: place,
+        });
     }
 
     const SearchButton: React.FunctionComponent<any> = () => {
