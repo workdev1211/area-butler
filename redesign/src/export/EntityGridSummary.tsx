@@ -59,16 +59,8 @@ export const EntityGridSummary: FunctionComponent<EntityGridSummaryProps> = ({
             ))}
         </div>
         {groupedEntries.map(group => (
-          <div className="flex gap-2">
+          <div className="flex gap-2" key={`entity-grid-item-${group.title}`}>
             <div className="w-48 bg-primary rounded p-2 text-white flex gap-2">
-              {/*<img*/}
-              {/*  alt="icon"*/}
-              {/*  src={*/}
-              {/*    osmNameToIcons.find((entry) => entry.name === data[0].type)*/}
-              {/*      ?.icon || fallbackIcon*/}
-              {/*  }*/}
-              {/*  className={data[0].type}*/}
-              {/*/>*/}
               <h5 className="text-xs">{group.title}</h5>
             </div>
             {byFootAvailable && (
