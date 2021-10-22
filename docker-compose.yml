@@ -36,6 +36,7 @@ services:
       - OPERATIONS_SLACK_WEBHOOK
       - MAIL_PROVIDER_API_KEY
       - BASE_APP_URL
+      - HERE_API_KEY
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
