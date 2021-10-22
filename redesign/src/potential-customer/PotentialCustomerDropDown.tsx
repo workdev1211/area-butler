@@ -45,7 +45,7 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
             "p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll";
 
         return potentialCustomerState.customers?.length > 0 ? (
-            <div ref={dropDownRef} className="dropdown z-2000">
+            <div ref={dropDownRef} className="dropdown">
                 <div className={buttonStyles} tabIndex={0} onClick={(e) => setMenuOpen(!menuOpen)}>
                     + Meine Interessenten
                 </div>

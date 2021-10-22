@@ -38,7 +38,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
         const [showMenu, setShowMenu] = useState(false);
         useOnClickOutside(dropDownRef, () => showMenu && setShowMenu(false));
 
-        const dropdownClasses = showMenu ? "dropdown dropdown-open dropdown-top dropdown-end z-2000 relative" : "dropdown";
+        const dropdownClasses = showMenu ? "dropdown dropdown-open dropdown-top z-2000 relative" : "dropdown";
 
         return realEstateState.listings?.length > 0 ? (
             <div className={dropdownClasses} ref={dropDownRef}>
