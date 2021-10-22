@@ -43,9 +43,9 @@ const RealEstatePage = lazy(
 );
 
 const feedbackModalConfig: ModalConfig = {
-    buttonTitle: "Feedback",
+    buttonTitle: "?",
     buttonStyle:
-      "fixed -bottom-60 -right-7 mb-96 z-20 rotate-90 btn-sm rounded border bg-white text-primary border-primary hover:bg-primary hover:text-white",
+      "fixed -bottom-80 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white",
     modalTitle: "Feedback abgeben",
   };
 
