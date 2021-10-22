@@ -38,6 +38,7 @@ export interface ResultEntity {
     byBike: boolean;
     byCar: boolean;
     distanceInMeters: number;
+    selected?: boolean;
 }
 
 export interface EntityGroup {

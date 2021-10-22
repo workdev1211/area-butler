@@ -26,8 +26,8 @@ export interface CheatsheetProps {
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const groupedEntries = props.groupedEntries
-    .filter(([label, data]: any) => label !== "Wichtige Adressen")
-    .filter((group) => group.items.length > 0);
+    .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
+    .filter((group) => group.active && group.items.length > 0);
   const activePrinting = props.activePrinting;
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;

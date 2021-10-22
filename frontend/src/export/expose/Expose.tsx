@@ -24,8 +24,8 @@ export interface ExposeProps {
 }
 
 export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
-    const groupedEntries = props.groupedEntries.filter(group => group.title !== "Wichtige Adressen").filter(group => group.items.length > 0);
-    const importantEntites = props.groupedEntries.find(group => group.title === "Wichtige Adressen");
+    const groupedEntries = props.groupedEntries.filter(group => group.title !== "Wichtige Adressen").filter(group => group.active && group.items.length > 0);
+    const importantEntites = props.groupedEntries.find(group => group.active && group.title === "Wichtige Adressen");
     const transportationParams = props.transportationParams;
     const activePrinting = props.activePrinting;
     const mapClippings = props.mapClippings;

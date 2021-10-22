@@ -1,10 +1,11 @@
 import {SearchContext, SearchContextActions} from "context/SearchContext";
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {ApiGeojsonFeature} from "../../../shared/types/types";
-import {ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
 import {birdsEye, city, nearby} from "./MapClippings";
 import ExposeDownload from "./expose/ExposeDownloadButton";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
+import EntitySelection from "./EntitySelection";
 
 export interface ExportModalProps {
     entities: ResultEntity[];
@@ -19,7 +20,10 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                                                                     censusData,
                                                                     exportType = "EXPOSE",
                                                                 }) => {
+
+    const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries)).filter((group: EntityGroup) => group.title !== 'Meine Objekte');               
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+    const [filteredEntites, setFilteredEntities] = useState<EntityGroup[]>(groupCopy);
 
     const buttonTitle =
         exportType === "EXPOSE"
@@ -27,8 +31,8 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
             : "Spickzettel exportieren";
     const headerCompleted =
         exportType === "EXPOSE"
-            ? "Ihre Umgebungsanalyse ist aufbereitet!"
-            : "Ihr Export ist aufbereitet!";
+            ? "Ihre Umgebungsanalyse ist bereit!"
+            : "Ihr Export ist bereit!";
 
     const onClose = () => {
         searchContextDispatch({
@@ -82,6 +86,9 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                             {searchContextState.mapClippings.length < 4 ? buttonTitle : headerCompleted}
                         </h1>
 
+                        <EntitySelection groupedEntries={filteredEntites} setGroupedEntries={setFilteredEntities}>
+                        </EntitySelection>
+
                         {searchContextState.mapClippings.length < 4 && (
                             <>
                                 <progress
@@ -104,7 +111,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                             {exportType !== "CHEATSHEET" ? (
                                 <ExposeDownload
                                     entities={entities}
-                                    groupedEntries={groupedEntries!}
+                                    groupedEntries={filteredEntites!}
                                     censusData={censusData}
                                     transportationParams={searchContextState.transportationParams}
                                     listingAddress={searchContextState.placesLocation.label}
@@ -116,7 +123,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                             ) : (
                                 <CheatsheetDownload
                                     entities={entities}
-                                    groupedEntries={groupedEntries!}
+                                    groupedEntries={filteredEntites!}
                                     censusData={censusData}
                                     searchResponse={searchContextState.searchResponse!}
                                     transportationParams={searchContextState.transportationParams}

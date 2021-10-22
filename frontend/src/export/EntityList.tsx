@@ -10,7 +10,7 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
   entityGroup,
   limit = 3,
 }) => {
-  const items = [...entityGroup.items].slice(0, limit);
+  const items = [...entityGroup.items].filter(item => item.selected).slice(0, limit);
   return (
     <>
       <h1 className="text-xl ml-2 font-bold">{entityGroup.title}</h1>

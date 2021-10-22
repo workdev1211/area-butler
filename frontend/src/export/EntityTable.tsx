@@ -52,7 +52,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
           </tr>
         </thead>
         <tbody>
-          {items.map((item: ResultEntity) => (
+          {items.filter((item: ResultEntity) => item.selected).map((item: ResultEntity) => (
             <tr
               key={
                 "result-table-" +
