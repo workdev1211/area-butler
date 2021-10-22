@@ -9,6 +9,8 @@ import {PotentialCustomerContextProvider} from "./context/PotentialCustomerConte
 import {ToastContainer} from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import {RealEstateContextProvider} from "./context/RealEstateContext";
+import FormModal, { ModalConfig } from "components/FormModal";
+import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -40,10 +42,22 @@ const RealEstatePage = lazy(
     () => import("./pages/RealEstatePage")
 );
 
+const feedbackModalConfig: ModalConfig = {
+    buttonTitle: "Feedback",
+    buttonStyle:
+      "fixed -bottom-60 -right-7 mb-96 z-20 rotate-90 btn-sm rounded border bg-white text-primary border-primary hover:bg-primary hover:text-white",
+    modalTitle: "Feedback abgeben",
+  };
+
 function App() {
     return (
         <Router>
             <div className="app">
+                <Authenticated>
+                    <FormModal modalConfig={feedbackModalConfig}>
+                        <FeedbackFormHandler></FeedbackFormHandler>
+                    </FormModal>
+                </Authenticated>
                 <ToastContainer
                     position="top-right"
                     autoClose={5000}
