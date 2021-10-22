@@ -1,4 +1,4 @@
-FROM node:15-alpine
+FROM node:14-alpine
 
 RUN apk --no-cache --virtual build-dependencies add python make g++
 
