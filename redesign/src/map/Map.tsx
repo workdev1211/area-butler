@@ -287,12 +287,13 @@ const Map = React.memo<MapProps>(({
                 });
                 parsedEntities?.forEach(entity => {
                     if (parsedEntityGroups.some(eg => eg.title === entity.label && eg.active)) {
-                        const icon = new L.Icon({
+                        const icon = L.divIcon({
                             iconUrl: deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon,
                             shadowUrl: leafletShadow,
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
-                            className: entity.type
+                            className: 'locality-marker-wrapper',
+                            html: `<div class="locality-marker"><img src="${deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon}" alt="marker-icon" class="${entity.type}" /></div>`
                         });
                         const marker = new IdMarker(entity.coordinates, entity, {
                             icon,
