@@ -1,5 +1,5 @@
 import { Form, Formik } from "formik";
-import { FunctionComponent } from "react";
+import React from "react";
 import * as Yup from "yup";
 import Input from "../components/Input";
 import Checkbox from "../components/Checkbox";
@@ -9,7 +9,7 @@ export interface QuestionnaireRequestFormProps {
   onSubmit: (values: any) => any;
 }
 
-export const QuestionnaireRequestForm: FunctionComponent<QuestionnaireRequestFormProps> =
+export const QuestionnaireRequestForm: React.FunctionComponent<QuestionnaireRequestFormProps> =
   ({ formId, onSubmit }) => {
     return (
       <Formik

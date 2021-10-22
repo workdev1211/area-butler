@@ -1,12 +1,12 @@
 import { EntityGroup } from "pages/SearchResultPage";
-import { FunctionComponent } from "react";
+import React from "react";
 
 export interface EntityListProps {
   entityGroup: EntityGroup;
   limit?: number;
 }
 
-export const EntityList: FunctionComponent<EntityListProps> = ({
+export const EntityList: React.FunctionComponent<EntityListProps> = ({
   entityGroup,
   limit = 3,
 }) => {

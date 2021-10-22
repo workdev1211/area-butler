@@ -87,7 +87,7 @@ export interface ApiCoordinates {
 }
 
 export interface ApiGeometry {
-  type: string;
+  type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
   coordinates: any[];
 }
 

@@ -1,11 +1,12 @@
-import {FunctionComponent} from "react";
 import {ApiGeojsonFeature} from "../../../shared/types/types";
+import React from "react";
+
 
 export interface CensusSummaryProps {
     censusData: ApiGeojsonFeature[];
 }
 
-export const CensusSummary: FunctionComponent<CensusSummaryProps> = ({
+export const CensusSummary: React.FunctionComponent<CensusSummaryProps> = ({
                                                                          censusData,
                                                                      }) => {
     const censusCenter = censusData[0] as any;

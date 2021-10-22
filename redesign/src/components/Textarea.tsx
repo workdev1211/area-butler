@@ -1,6 +1,11 @@
 import { useField } from "formik";
+import React, {InputHTMLAttributes, TextareaHTMLAttributes} from "react";
 
-const Textarea = ({ label, ...props }: any) => {
+export interface TextAreaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
+    label: string;
+}
+
+const Textarea: React.FunctionComponent<TextAreaProps> = ({ label, ...props }: any) => {
   const [field, meta] = useField(props);
   return (
     <>

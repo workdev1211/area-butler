@@ -20,11 +20,12 @@ import {fallbackIcon} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
-import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
 import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import {ApiRoute} from "../../../shared/types/routing";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -41,7 +42,8 @@ export interface MapProps {
         byBike: boolean;
         byCar: boolean;
     },
-    highlightId?: number;
+    highlightId?: string;
+    routes: EntityRoute[]
 }
 
 export class IdMarker extends L.Marker {
@@ -79,6 +81,7 @@ let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
 let censusGroup = L.layerGroup();
+let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
@@ -92,9 +95,19 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual;
+    const routesEqual = prevProps.routes === nextProps.routes;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual && routesEqual;
 }
 
+const WALK_COLOR = '#c91444';
+const BICYCLE_COLOR = '#8f72eb';
+const CAR_COLOR = '#1f2937';
+
+const MEAN_COLORS: {[key in keyof typeof MeansOfTransportation]: string } = {
+    [MeansOfTransportation.CAR]: CAR_COLOR,
+    [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
+    [MeansOfTransportation.WALK]: WALK_COLOR
+}
 const Map = React.memo<MapProps>(({
                                       searchResponse,
                                       entities,
@@ -106,7 +119,8 @@ const Map = React.memo<MapProps>(({
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
-                                      highlightId
+                                      highlightId,
+                                      routes
                                   }) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
 
@@ -218,21 +232,43 @@ const Map = React.memo<MapProps>(({
             }
             if (parsedMeans.byFoot) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.WALK), {
-                    color: '#c91444'
+                    color: WALK_COLOR
                 }).addTo(meansGroup);
             }
             if (parsedMeans.byBike) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.BICYCLE), {
-                    color: '#8f72eb'
+                    color: BICYCLE_COLOR
                 }).addTo(meansGroup);
             }
             if (parsedMeans.byCar) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.CAR), {
-                    color: '#1f2937'
+                    color: CAR_COLOR
                 }).addTo(meansGroup);
             }
         }
     }, [meansStringified, searchResponse.routingProfiles]);
+
+    // draw routes
+    useEffect(() => {
+        const isActiveMeans = (r: ApiRoute) => (r.meansOfTransportation === MeansOfTransportation.WALK && means.byFoot) ||
+            (r.meansOfTransportation=== MeansOfTransportation.CAR && means.byCar) ||
+            (r.meansOfTransportation === MeansOfTransportation.BICYCLE && means.byBike);
+
+        if (currentMap) {
+            if (routesGroup) {
+                currentMap.removeLayer(routesGroup);
+            }
+            routesGroup = L.layerGroup();
+            currentMap.addLayer(routesGroup);
+            routes.filter(e => e.show).forEach(entityRoute => {
+                entityRoute.routes.filter(isActiveMeans).forEach( (r) => {
+                    L.geoJSON(r.geometry, {style: function (feature) {
+                            return {color: MEAN_COLORS[r.meansOfTransportation]};
+                        }}).addTo(routesGroup)
+                })
+            })
+        }
+    }, [routes, means]);
 
     // draw census
     useEffect(() => {

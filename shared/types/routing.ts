@@ -16,3 +16,9 @@ export interface ApiRouteQuery {
     }[]
     meansOfTransportation: MeansOfTransportation[]
 }
+
+export interface ApiRouteQueryResultItem {
+    coordinates: ApiCoordinates,
+    title: string,
+    routes: ApiRoute[]
+}

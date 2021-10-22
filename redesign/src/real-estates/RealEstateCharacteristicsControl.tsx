@@ -1,4 +1,4 @@
-import {FunctionComponent} from "react";
+import React from "react";
 import {allFurnishing} from "../../../shared/constants/real-estate";
 import {ApiEnergyEfficiency, ApiFurnishing, ApiRealEstateCharacteristics} from "../../../shared/types/real-estate";
 
@@ -13,7 +13,7 @@ export interface RealEstateCharacteristicsControlProps {
     onChange: (furnishing: ApiRealEstateCharacteristics) => void;
 }
 
-const RealEstateCharacteristicsControl: FunctionComponent<RealEstateCharacteristicsControlProps> =
+const RealEstateCharacteristicsControl: React.FunctionComponent<RealEstateCharacteristicsControlProps> =
     ({onChange, inputValues = defaultValue()}) => {
 
         const changeFurnishing = (f: ApiFurnishing) => {

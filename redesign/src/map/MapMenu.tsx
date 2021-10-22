@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import "./MapMenu.css";
-import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
 import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import {MeansOfTransportation, OsmName} from "../../../shared/types/types";
-import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
+import {ApiCoordinates, OsmName} from "../../../shared/types/types";
+import {deriveIconForOsmName} from "../shared/shared.functions";
+import LocalityItem from "../components/LocalityItem";
 
 export interface MapMenuProps {
     census: boolean;
@@ -15,6 +16,8 @@ export interface MapMenuProps {
     toggleEntryGroup: (title: string) => void;
     highlightZoomEntity: (item: ResultEntity) => void;
     mobileMenuOpen: boolean;
+    toggleRoute: (item: ResultEntity) => void
+    routes: EntityRoute[]
 }
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
@@ -23,6 +26,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             groupedEntries,
                                                             toggleEntryGroup,
                                                             highlightZoomEntity,
+                                                            toggleRoute,
+                                                            routes,
                                                             mobileMenuOpen
                                                         }) => {
 
@@ -112,30 +117,17 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                 Auto
                                             </div>
                                         </div>
-                                        {localityOpen.includes(ge.title) && ge.items.map(item => <div
-                                            className="locality-item"
-                                            key={`locality-item-${ge.title}-${item.id}`}>
-                                            <h4 className="locality-item-title cursor-pointer"
-                                                onClick={() => highlightZoomEntity(item)}>{item.name ?? ge.title}</h4>
-                                            <div className="locality-item-content">
-                                                <div className="locality-item-cell">
-                                                    <span className="locality-item-cell-label">Distanz</span>
-                                                    <span>{Math.round(item.distanceInMeters)}m</span>
-                                                </div>
-                                                <div className="locality-item-cell">
-                                                    <span className="locality-item-cell-label">Fußweg</span>
-                                                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.WALK)} Min.</span>
-                                                </div>
-                                                <div className="locality-item-cell">
-                                                    <span className="locality-item-cell-label">Fahrrad</span>
-                                                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.BICYCLE)} Min.</span>
-                                                </div>
-                                                <div className="locality-item-cell">
-                                                    <span className="locality-item-cell-label">Auto</span>
-                                                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.CAR)} Min.</span>
-                                                </div>
-                                            </div>
-                                        </div>)}
+                                        {localityOpen.includes(ge.title) && ge.items.map((item,index) => <LocalityItem
+                                            key={index}
+                                            item={item}
+                                            group={ge}
+                                            onClickTitle={(item) => highlightZoomEntity(item)}
+                                            onToggleRoute={(item) => toggleRoute(item) }
+                                            route={routes?.find(r =>
+                                                r.coordinates.lat === item.coordinates.lat &&
+                                                r.coordinates.lng === item.coordinates.lng && r.show)}
+
+                                        />)}
                                     </div>
                                 </div>
                             </li>);

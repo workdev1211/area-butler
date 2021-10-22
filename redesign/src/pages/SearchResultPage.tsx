@@ -22,13 +22,16 @@ import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import BackButton from "../layout/BackButton";
-import { RealEstateContext } from "context/RealEstateContext";
+import {RealEstateContext} from "context/RealEstateContext";
+import {ApiRoute} from "../../../shared/types/routing";
+import {useRouting} from "../hooks/routing";
+import {v4} from "uuid";
 
 export interface ResultEntity {
     name?: string;
     type: string;
     label: string;
-    id: number;
+    id: string;
     coordinates: ApiCoordinates;
     address: ApiAddress;
     byFoot: boolean;
@@ -43,6 +46,12 @@ export interface EntityGroup {
     items: ResultEntity[];
 }
 
+export interface EntityRoute {
+    coordinates: ApiCoordinates,
+    show: boolean,
+    routes: ApiRoute[]
+}
+
 const preferredLocationsTitle = 'Wichtige Adressen';
 const buildEntityDataFromPreferredLocations = (
     centerCoordinates: ApiCoordinates,
@@ -51,7 +60,7 @@ const buildEntityDataFromPreferredLocations = (
     return preferredLocations
         .filter((preferredLocation) => !!preferredLocation.coordinates)
         .map((preferredLocation) => ({
-            id: parseInt(preferredLocation.title, 10),
+            id: v4(),
             name: `${preferredLocation.title} (${preferredLocation.address})`,
             label: preferredLocationsTitle,
             type: OsmName.favorite,
@@ -76,7 +85,7 @@ const buildEntityDataFromRealEstateListings = (
     return realEstateListings
         .filter((realEstateListing) => !!realEstateListing.coordinates)
         .map((realEstateListing) => ({
-            id: parseInt(realEstateListing.name, 10),
+            id: v4(),
             name: `${realEstateListing.name} (${realEstateListing.address})`,
             label: realEstateListingsTitle,
             type: OsmName.property,
@@ -104,7 +113,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
     return Array.from(allLocationIds).map(locationId => {
         const location = allLocations.find(l => l.entity.id === locationId)!;
         return {
-            id: parseInt(locationId!, 10),
+            id: locationId!,
             name: location.entity.name,
             label: location.entity.label,
             type: location.entity.type,
@@ -120,6 +129,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 }
 
 const SearchResultPage: React.FunctionComponent = () => {
+    const {fetchRoutes} = useRouting();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {realEstateState} = useContext(RealEstateContext);
 
@@ -139,6 +149,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
     const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
     const [groupedEntries, setGroupedEntries] = useState<EntityGroup[]>([]);
+    const [routes, setRoutes] = useState<EntityRoute[]>([])
     const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
 
@@ -196,6 +207,28 @@ const SearchResultPage: React.FunctionComponent = () => {
             payload: {center: item.coordinates, zoom: 18}
         });
         searchContextDispatch({type: SearchContextActions.SET_HIGHLIGHT_ID, payload: item.id});
+    }
+
+    const toggleRoutesToEntity = async (origin: ApiCoordinates, item: ResultEntity) => {
+        const existing = routes.find((r) => r.coordinates.lat === item.coordinates.lat && r.coordinates.lng === item.coordinates.lng);
+        if (existing) {
+            setRoutes((prevState) => [...prevState.filter(r => r.coordinates.lat !== item.coordinates.lat && r.coordinates.lng !== item.coordinates.lng),{...existing, show: !existing.show}]
+            )
+        } else {
+            const routesResult = await fetchRoutes({
+                meansOfTransportation: [MeansOfTransportation.BICYCLE, MeansOfTransportation.CAR, MeansOfTransportation.WALK],
+                origin: origin,
+                destinations: [{
+                    title: item.name || ''+item.id,
+                    coordinates: item.coordinates
+                }]
+            })
+            setRoutes((prev) =>([...prev, {
+                routes: routesResult[0].routes,
+                show: true,
+                coordinates: item.coordinates
+            }]));
+        }
     }
 
     const ActionsTop: React.FunctionComponent = () => {
@@ -262,12 +295,19 @@ const SearchResultPage: React.FunctionComponent = () => {
                             printingActive={searchContextState.printingActive}
                             printingCheatsheetActive={searchContextState.printingCheatsheetActive}
                             censusData={showCensus && censusDataAvailable && searchContextState.censusData}
+                            routes={routes}
                         />
                     </div>
                     <MapMenuMobileBtn />
-                    <MapMenu mobileMenuOpen={mobileMenuOpen} census={showCensus} toggleCensus={(active) => setShowCensus(active)}
-                             groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup}
-                             highlightZoomEntity={highlightZoomEntity}/>
+                    <MapMenu mobileMenuOpen={mobileMenuOpen}
+                             census={showCensus}
+                             toggleCensus={(active) => setShowCensus(active)}
+                             groupedEntries={groupedEntries}
+                             toggleEntryGroup={toggleEntityGroup}
+                             highlightZoomEntity={highlightZoomEntity}
+                             toggleRoute={(item) => toggleRoutesToEntity(searchContextState.location, item)}
+                             routes={routes}
+                    />
                 </div>
             </DefaultLayout>
             {searchContextState.printingActive && <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}

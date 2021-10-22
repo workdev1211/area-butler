@@ -1,4 +1,4 @@
-import {FunctionComponent} from "react";
+import React from "react";
 import {allRealEstateCostTypes} from "../../../shared/constants/real-estate";
 import {ApiRealEstateCost, ApiRealEstateCostType} from "../../../shared/types/real-estate";
 
@@ -15,7 +15,7 @@ export interface RealEstateCostStructureControlProps {
     onChange: (realEstateCost: ApiRealEstateCost) => void;
 }
 
-const RealEstateCostStructureControl: FunctionComponent<RealEstateCostStructureControlProps> =
+const RealEstateCostStructureControl: React.FunctionComponent<RealEstateCostStructureControlProps> =
     ({onChange, inputValues = defaultValue()}) => {
         const setAmount = (value?: number) => {
             const newCostStructure: ApiRealEstateCost = {

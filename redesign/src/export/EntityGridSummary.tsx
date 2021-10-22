@@ -1,5 +1,5 @@
 import {EntityGroup, ResultEntity} from "pages/SearchResultPage";
-import {FunctionComponent} from "react";
+import React from "react";
 import {meansOfTransportations, unitsOfTransportation,} from "../../../shared/constants/constants";
 import {MeansOfTransportation, TransportationParam,} from "../../../shared/types/types";
 
@@ -14,7 +14,7 @@ const routingProfileOrder = [
   MeansOfTransportation.CAR,
 ];
 
-export const EntityGridSummary: FunctionComponent<EntityGridSummaryProps> = ({
+export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> = ({
   groupedEntries,
   transportationParams,
 }) => {

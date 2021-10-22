@@ -1,4 +1,4 @@
-import {FunctionComponent} from "react";
+import React from "react";
 import {Radar} from "react-chartjs-2";
 import {allPersonas} from "../../../shared/constants/persona";
 import {ApiPersonaType} from "../../../shared/types/persona";
@@ -16,7 +16,7 @@ const starRankings: Record<number, string> = {
     5: "★★★★★",
 };
 
-const PersonaRanking: FunctionComponent<PersonaRankingProps> = ({
+const PersonaRanking: React.FunctionComponent<PersonaRankingProps> = ({
                                                                     rankings,
                                                                 }) => {
     const radarChartData = {

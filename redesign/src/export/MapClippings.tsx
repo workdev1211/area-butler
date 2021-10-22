@@ -1,5 +1,5 @@
 import {MapClipping} from "context/SearchContext";
-import {FunctionComponent} from "react";
+import React from "react";
 
 export interface MapClippingsProps {
     mapClippings: MapClipping[];
@@ -10,7 +10,7 @@ export const birdsEye = 10;
 export const city = 14;
 export const nearby = 17;
 
-export const MapClippings: FunctionComponent<MapClippingsProps> = ({
+export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
                                                                        mapClippings,
                                                                        showTitles = true,
                                                                    }) => {
