@@ -39,12 +39,14 @@ export class SlackSenderService {
       }),
     );
 
-    await this.http
-      .post(this.slackChannels[slackChannel], {blocks}, {
-        headers: {
-          'Content-type': 'application/json',
-        },
-      })
-      .toPromise();
+    if (!!this.slackChannels[slackChannel]) {
+      await this.http
+        .post(this.slackChannels[slackChannel], {blocks}, {
+          headers: {
+            'Content-type': 'application/json',
+          },
+        })
+        .toPromise();
+    }
   }
 }
