@@ -1,13 +1,12 @@
 import React from "react";
-import "./PrivacyPage.css";
 import {kudibaCompany} from "../../../shared/constants/constants";
+import DefaultLayout from "../layout/defaultLayout";
 
 export const PrivacyPage = () => {
 
 
     return (
-        <div className="container mx-auto mt-10">
-            <h1>Datenschutz</h1>
+        <DefaultLayout title="Datenschutz" withHorizontalPadding={true}>
             <p>Die folgenden Hinweise geben einen einfachen Überblick darüber, was mit Ihren personenbezogenen Daten
                 passiert, wenn Sie unsere Website besuchen. Personenbezogene Daten sind alle Daten, mit denen Sie
                 persönlich identifiziert werden können. Ausführliche Informationen zum Thema Datenschutz entnehmen Sie
@@ -119,7 +118,7 @@ export const PrivacyPage = () => {
                 Ihnen steht außerdem ein Recht auf Widerspruch, auf Datenübertragbarkeit und ein Beschwerderecht bei der
                 zuständigen Aufsichtsbehörde zu. Ferner können Sie die Berichtigung, Sperrung, Löschung und unter
                 bestimmten Umständen die Einschränkung der Verarbeitung Ihrer personenbezogenen Daten verlangen.</p>
-        </div>
+        </DefaultLayout>
     );
 };
 

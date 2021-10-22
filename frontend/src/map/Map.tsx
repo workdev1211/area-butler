@@ -8,28 +8,42 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
-import {ApiCoordinates, ApiGeojsonFeature, ApiSearchResponse, MeansOfTransportation} from "../../../shared/types/types";
+import {
+    ApiCoordinates,
+    ApiGeojsonFeature,
+    ApiSearchResponse,
+    MeansOfTransportation,
+    OsmName
+} from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
-import {ResultEntity} from "../search/SearchResult";
-import {fallbackIcon, osmNameToIcons} from "./makiIcons";
+import {fallbackIcon} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
+import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
+import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
+import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import {ApiRoute} from "../../../shared/types/routing";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
-    selectedCenter?: ApiCoordinates;
-    selectedZoomLevel?: number;
+    groupedEntities: EntityGroup[];
+    mapCenter?: ApiCoordinates;
+    mapZoomLevel?: number;
     leafletMapId?: string;
     printingActive?: boolean;
+    printingCheatsheetActive?: boolean;
     means: {
         byFoot: boolean;
         byBike: boolean;
         byCar: boolean;
     },
-    highlightId?: number;
+    highlightId?: string;
+    routes: EntityRoute[]
 }
 
 export class IdMarker extends L.Marker {
@@ -50,7 +64,11 @@ export class IdMarker extends L.Marker {
 
     createOpenPopup() {
         if (!this.getPopup()) {
-            this.bindPopup(`${this.entity.name || this.entity.label}`);
+            const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
+            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK)} min.</span></span>` : '';
+            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE)} min.</span></span>` : '';
+            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR)} min.</span></span>` : '';
+            this.bindPopup(`${title}<br /><div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
         }
         this.openPopup();
     }
@@ -63,33 +81,48 @@ let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
 let censusGroup = L.layerGroup();
+let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const responseEqual = JSON.stringify(prevProps.searchResponse) === JSON.stringify(nextProps.searchResponse);
     const entitiesEqual = JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
+    const entityGroupsEqual = JSON.stringify(prevProps.groupedEntities) === JSON.stringify(nextProps.groupedEntities);
     const meansEqual = JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
-    const selectedCenterEqual = JSON.stringify(prevProps.selectedCenter) === JSON.stringify(nextProps.selectedCenter);
-    const selectedZoomLevelEqual = prevProps.selectedZoomLevel === nextProps.selectedZoomLevel;
+    const mapCenterEqual = JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
+    const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
+    const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
-    return responseEqual && entitiesEqual && meansEqual && selectedCenterEqual && printingActiveEqual && selectedZoomLevelEqual && censusDataEqual && highlightIdEqual;
+    const routesEqual = prevProps.routes === nextProps.routes;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual && routesEqual;
 }
 
+const WALK_COLOR = '#c91444';
+const BICYCLE_COLOR = '#8f72eb';
+const CAR_COLOR = '#1f2937';
+
+const MEAN_COLORS: {[key in keyof typeof MeansOfTransportation]: string } = {
+    [MeansOfTransportation.CAR]: CAR_COLOR,
+    [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
+    [MeansOfTransportation.WALK]: WALK_COLOR
+}
 const Map = React.memo<MapProps>(({
                                       searchResponse,
                                       entities,
+                                      groupedEntities,
                                       means,
-                                      selectedCenter,
+                                      mapCenter,
                                       printingActive,
-                                      selectedZoomLevel,
+    printingCheatsheetActive,
+                                      mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
-                                      highlightId
+                                      highlightId,
+                                      routes
                                   }) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
-    const initialPosition: L.LatLngExpression = [lat, lng];
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const {searchContextDispatch} = useContext(SearchContext);
@@ -103,6 +136,7 @@ const Map = React.memo<MapProps>(({
             currentMap.off();
             currentMap.remove();
         }
+        const initialPosition: L.LatLngExpression = [lat, lng];
         const localMap = L.map(leafletMapId, {
             scrollWheelZoom: false,
             preferCanvas: true,
@@ -113,12 +147,12 @@ const Map = React.memo<MapProps>(({
 
         localMap.addEventListener("zoomend", (value) => {
             zoom = value.target._zoom;
-            searchContextDispatch({type: SearchContextActions.SET_SELECTED_ZOOM_LEVEL, payload: zoom})
+            searchContextDispatch({type: SearchContextActions.SET_MAP_ZOOM_LEVEL, payload: zoom})
         });
         localMap.on('moveend', (event) => {
             if (!!event?.target?.getCenter()) {
                 const center = event.target.getCenter();
-                searchContextDispatch({type: SearchContextActions.SET_SELECTED_CENTER, payload: center});
+                searchContextDispatch({type: SearchContextActions.SET_MAP_CENTER, payload: center});
             }
         });
         L.tileLayer(url, {
@@ -141,26 +175,26 @@ const Map = React.memo<MapProps>(({
         }).bindPopup('Mein Standort').addTo(localMap);
 
         currentMap = localMap;
-    }, [lat, lng]);
+    }, [lat, lng, leafletMapId, searchContextDispatch, mapBoxAccessToken]);
 
     // react on zoom and center change
     useEffect(() => {
-        if (currentMap && selectedCenter && selectedZoomLevel) {
+        if (currentMap && mapCenter && mapZoomLevel) {
             // center and zoom view
-            currentMap.setView(selectedCenter, selectedZoomLevel);
+            currentMap.setView(mapCenter, mapZoomLevel);
             // handle growing/shrinking of icons based on zoom level
             if (amenityMarkerGroup) {
                 const markers = (amenityMarkerGroup.getLayers() as IdMarker[]);
                 if (markers.length) {
                     const currentSize = markers[0].getIcon().options.iconSize;
-                    if ((currentSize as L.Point).x === 20 && selectedZoomLevel >= 17) {
+                    if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 17) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
                             icon.options.iconSize = new L.Point(35, 35);
                             marker.setIcon(icon);
                         });
                     }
-                    if ((currentSize as L.Point).x === 35 && selectedZoomLevel < 17) {
+                    if ((currentSize as L.Point).x === 35 && mapZoomLevel < 17) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
                             icon.options.iconSize = defaultAmenityIconSize;
@@ -179,10 +213,12 @@ const Map = React.memo<MapProps>(({
                 }
             }
         }
-    }, [currentMap, amenityMarkerGroup, selectedCenter, selectedZoomLevel, highlightId]);
+    }, [mapCenter, mapZoomLevel, highlightId, searchContextDispatch]);
 
+    const meansStringified = JSON.stringify(means);
     // draw means
     useEffect(() => {
+        const parsedMeans = JSON.parse(meansStringified);
         if (currentMap) {
             if (meansGroup) {
                 currentMap.removeLayer(meansGroup);
@@ -194,23 +230,45 @@ const Map = React.memo<MapProps>(({
                     return [item[1], item[0]];
                 });
             }
-            if (means.byFoot) {
+            if (parsedMeans.byFoot) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.WALK), {
-                    color: 'blue'
+                    color: WALK_COLOR
                 }).addTo(meansGroup);
             }
-            if (means.byBike) {
+            if (parsedMeans.byBike) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.BICYCLE), {
-                    color: 'green'
+                    color: BICYCLE_COLOR
                 }).addTo(meansGroup);
             }
-            if (means.byCar) {
+            if (parsedMeans.byCar) {
                 L.polygon(derivePositionForTransportationMean(MeansOfTransportation.CAR), {
-                    color: 'gray'
+                    color: CAR_COLOR
                 }).addTo(meansGroup);
             }
         }
-    }, [currentMap, JSON.stringify(means)]);
+    }, [meansStringified, searchResponse.routingProfiles]);
+
+    // draw routes
+    useEffect(() => {
+        const isActiveMeans = (r: ApiRoute) => (r.meansOfTransportation === MeansOfTransportation.WALK && means.byFoot) ||
+            (r.meansOfTransportation=== MeansOfTransportation.CAR && means.byCar) ||
+            (r.meansOfTransportation === MeansOfTransportation.BICYCLE && means.byBike);
+
+        if (currentMap) {
+            if (routesGroup) {
+                currentMap.removeLayer(routesGroup);
+            }
+            routesGroup = L.layerGroup();
+            currentMap.addLayer(routesGroup);
+            routes.filter(e => e.show).forEach(entityRoute => {
+                entityRoute.routes.filter(isActiveMeans).forEach( (r) => {
+                    L.geoJSON(r.geometry, {style: function (feature) {
+                            return {color: MEAN_COLORS[r.meansOfTransportation]};
+                        }}).addTo(routesGroup)
+                })
+            })
+        }
+    }, [routes, means]);
 
     // draw census
     useEffect(() => {
@@ -226,8 +284,10 @@ const Map = React.memo<MapProps>(({
                 L.geoJSON(c).addTo(censusGroup!).bindTooltip(table);
             })
         }
-    }, [currentMap, censusData]);
+    }, [censusData]);
 
+    const entitiesStringified = JSON.stringify(entities);
+    const groupedEntitiesStringified = JSON.stringify(groupedEntities);
     // draw amenities
     useEffect(() => {
         const groupBy = (xs: any, key: any) => {
@@ -236,6 +296,8 @@ const Map = React.memo<MapProps>(({
                 return rv;
             }, {});
         };
+        const parsedEntities: ResultEntity[] | null = JSON.parse(entitiesStringified);
+        const parsedEntityGroups: EntityGroup[] = JSON.parse(groupedEntitiesStringified);
         const drawAmenityMarkers = (localZoom: number) => {
             if (currentMap) {
                 currentMap.removeLayer(amenityMarkerGroup);
@@ -259,25 +321,31 @@ const Map = React.memo<MapProps>(({
                     animate: false,
                     zoomToBoundsOnClick: false
                 });
-                entities?.forEach(entity => {
-                    const icon = new L.Icon({
-                        iconUrl: osmNameToIcons.find(entry => entry.name === entity.type)?.icon || fallbackIcon,
-                        shadowUrl: leafletShadow,
-                        shadowSize: [0, 0],
-                        iconSize: defaultAmenityIconSize,
-                        className: entity.type
-                    });
-                    const marker = new IdMarker(entity.coordinates, entity, {
-                        icon,
-                    }).on('click', function (e) {
-                        const marker = e.target;
-                        marker.createOpenPopup();
-                    });
-                    amenityMarkerGroup.addLayer(marker);
+                parsedEntities?.forEach(entity => {
+                    if (parsedEntityGroups.some(eg => eg.title === entity.label && eg.active)) {
+                        const icon = L.divIcon({
+                            iconUrl: deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon,
+                            shadowUrl: leafletShadow,
+                            shadowSize: [0, 0],
+                            iconSize: defaultAmenityIconSize,
+                            className: 'locality-marker-wrapper',
+                            html: `<div class="locality-marker"><img src="${deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon}" alt="marker-icon" class="${entity.type}" /></div>`
+                        });
+                        const marker = new IdMarker(entity.coordinates, entity, {
+                            icon,
+                        }).on('click', function (e) {
+                            const marker = e.target;
+                            marker.createOpenPopup();
+                        });
+                        amenityMarkerGroup.addLayer(marker);
+                    }
                 });
                 amenityMarkerGroup.on('clusterclick', function (a) {
                     const centerOfGroup = center(a.layer.toGeoJSON());
-                    searchContextDispatch({ type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}});
+                    searchContextDispatch({
+                        type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+                        payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}
+                    });
                 });
                 currentMap.addLayer(amenityMarkerGroup);
             }
@@ -285,11 +353,11 @@ const Map = React.memo<MapProps>(({
         if (currentMap) {
             drawAmenityMarkers(zoom);
         }
-    }, [currentMap, JSON.stringify(entities)]);
+    }, [entitiesStringified, groupedEntitiesStringified, searchContextDispatch]);
 
     // print actions
     useEffect(() => {
-        if (printingActive) {
+        if (printingActive || printingCheatsheetActive) {
             setTimeout(() => {
                 html2canvas(document.querySelector("#mymap")!, {
                     allowTaint: true,
@@ -299,7 +367,7 @@ const Map = React.memo<MapProps>(({
                     searchContextDispatch({
                         type: SearchContextActions.ADD_MAP_CLIPPING,
                         payload: {
-                            zoomLevel: selectedZoomLevel || zoom,
+                            zoomLevel: mapZoomLevel || zoom,
                             mapClippingDataUrl,
                         },
                     });
@@ -307,10 +375,10 @@ const Map = React.memo<MapProps>(({
             }, 2000);
         }
 
-    }, [currentMap, printingActive, selectedZoomLevel]);
+    }, [printingActive, printingCheatsheetActive, mapZoomLevel, searchContextDispatch]);
 
     return (
-        <div className='leaflet-container' id={leafletMapId}>
+        <div className='leaflet-container w-full' id={leafletMapId}>
         </div>
     )
 }, areMapPropsEqual);

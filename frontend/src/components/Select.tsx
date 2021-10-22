@@ -1,6 +1,7 @@
 import { useField } from "formik";
+import React from "react";
 
-export const Select = ({ label, ...props }: any) => {
+const Select = ({ label, ...props }: any) => {
     const [field, meta] = useField(props);
     return (
       <div>
@@ -13,8 +14,11 @@ export const Select = ({ label, ...props }: any) => {
           className="select select-bordered w-full max-w-xs"
         />
         {meta.touched && meta.error ? (
-          <div className="error">{meta.error}</div>
+            <label className="label">
+                <span className="error">{meta.error}</span>
+            </label>
         ) : null}
       </div>
     );
   };
+export default Select;

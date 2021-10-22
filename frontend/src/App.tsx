@@ -1,74 +1,128 @@
-import Authenticated from "auth/authenticated";
-import FormModal, { ModalConfig } from "components/FormModal";
-import { PotentialCustomerContextProvider } from "context/PotentialCustomerContext";
-import { RealEstateListingContextProvider } from "context/RealEstateListingContext";
-import { FeedbackFormHandler } from "feedback/FeedbackFormHandler";
-import { PotentialCustomersPage } from "pages/PotentialCustomersPage";
-import { RealEstateListingPage } from "pages/RealEstateListingPage";
-import React from "react";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import React, {lazy, Suspense} from "react";
 import "./App.css";
-import Nav from "./nav/Nav";
-import Start from "./pages/Start";
-import { SearchContextProvider } from "./context/SearchContext";
-import { CustomerQuestionnaire } from "pages/CustomerQuestionnaire";
-import ImpressPage from "./pages/ImpressPage";
-import Footer from "./footer/Footer";
-import PrivacyPage from "./pages/PrivacyPage";
+import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import Nav from "./layout/Nav";
+import Footer from "./layout/Footer";
+import {SearchContextProvider} from "./context/SearchContext";
+import Authenticated from "./auth/authenticated";
+import {PotentialCustomerContextProvider} from "./context/PotentialCustomerContext";
+import {ToastContainer} from "react-toastify";
+import 'react-toastify/dist/ReactToastify.css';
+import {RealEstateContextProvider} from "./context/RealEstateContext";
+import FormModal, { ModalConfig } from "components/FormModal";
+import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 
-function App() {
-  const feedbackModalConfig: ModalConfig = {
-    buttonTitle: "Feedback",
+const LoadingMessage = () => <div>Seite wird geladen...</div>;
+
+const ImpressPage = lazy(() => import("./pages/ImpressPage"));
+
+const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
+
+const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
+
+const SearchResultPage = lazy(() => import("./pages/SearchResultPage"));
+
+const PotentialCustomersPage = lazy(
+    () => import("./pages/PotentialCustomersPage")
+);
+
+const PotentialCustomerPage = lazy(
+    () => import("./pages/PotentialCustomerPage")
+);
+
+const CustomerQuestionnairePage = lazy(
+    () => import("./pages/CustomerQuestionnairePage")
+);
+
+const RealEstatesPage = lazy(
+    () => import("./pages/RealEstatesPage")
+);
+
+const RealEstatePage = lazy(
+    () => import("./pages/RealEstatePage")
+);
+
+const feedbackModalConfig: ModalConfig = {
+    buttonTitle: "?",
     buttonStyle:
-      "fixed -bottom-60 -right-5 mb-96 z-20 rotate-90 bg-blue-500 hover:bg-blue-700 text-white text-xs font-bold h-8 px-2 rounded",
+      "fixed -bottom-80 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white",
     modalTitle: "Feedback abgeben",
   };
 
-  return (
-    <RealEstateListingContextProvider>
-      <PotentialCustomerContextProvider>
+function App() {
+    return (
         <Router>
-          <Authenticated>
-            <FormModal modalConfig={feedbackModalConfig}>
-              <FeedbackFormHandler></FeedbackFormHandler>
-            </FormModal>
-          </Authenticated>
-          <div className="app">
-            <Nav />
-            <Switch>
-              <Route path="/questionnaire">
-                <CustomerQuestionnaire></CustomerQuestionnaire>
-              </Route>
-              <Route path="/listings">
+            <div className="app">
                 <Authenticated>
-                  <RealEstateListingPage />
+                    <FormModal modalConfig={feedbackModalConfig}>
+                        <FeedbackFormHandler></FeedbackFormHandler>
+                    </FormModal>
                 </Authenticated>
-              </Route>
-              <Route path="/potential-customers">
-                <Authenticated>
-                  <PotentialCustomersPage />
-                </Authenticated>
-              </Route>
-              <Route path="/impress">
-                <ImpressPage />
-              </Route>
-              <Route path="/privacy">
-                <PrivacyPage />
-              </Route>
-              <Route path="/">
-                <Authenticated>
-                  <SearchContextProvider>
-                    <Start />
-                  </SearchContextProvider>
-                </Authenticated>
-              </Route>
-            </Switch>
-            <Footer />
-          </div>
+                <ToastContainer
+                    position="top-right"
+                    autoClose={5000}
+                    hideProgressBar={false}
+                    newestOnTop={false}
+                    closeOnClick
+                    rtl={false}
+                    pauseOnFocusLoss
+                    draggable
+                    pauseOnHover/>
+                <ToastContainer/>
+                <Nav/>
+                <Suspense fallback={<LoadingMessage/>}>
+                    <PotentialCustomerContextProvider>
+                        <RealEstateContextProvider>
+                            <SearchContextProvider>
+                                <Switch>
+                                    <Route path="/impress">
+                                        <ImpressPage/>
+                                    </Route>
+                                    <Route path="/privacy">
+                                        <PrivacyPage/>
+                                    </Route>
+                                    <Route path="/search-result">
+                                        <Authenticated>
+                                            <SearchResultPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/potential-customers/:customerId">
+                                        <Authenticated>
+                                            <PotentialCustomerPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/potential-customers">
+                                        <Authenticated>
+                                            <PotentialCustomersPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/questionnaire/:inputToken">
+                                        <CustomerQuestionnairePage/>
+                                    </Route>
+                                    <Route path="/real-estates/:realEstateId">
+                                        <Authenticated>
+                                            <RealEstatePage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/real-estates">
+                                        <Authenticated>
+                                            <RealEstatesPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/">
+                                        <Authenticated>
+                                            <SearchParamsPage/>
+                                        </Authenticated>
+                                    </Route>
+                                </Switch>
+                            </SearchContextProvider>
+                        </RealEstateContextProvider>
+                    </PotentialCustomerContextProvider>
+                </Suspense>
+                <Footer/>
+            </div>
         </Router>
-      </PotentialCustomerContextProvider>
-    </RealEstateListingContextProvider>
-  );
+    );
 }
 
 export default App;

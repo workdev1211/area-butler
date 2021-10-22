@@ -1,15 +1,14 @@
 import React from "react";
 import {
-    ApiCoordinates,
-    ApiGeometry,
+    ApiCoordinates, ApiGeometry,
+    ApiOsmEntity,
     ApiSearchResponse,
-    MeansOfTransportation,
     OsmName,
-    TransportationParam,
-    UnitsOfTransportation
+    TransportationParam
 } from "../../../shared/types/types";
-import {osmEntityTypes} from "../../../shared/constants/constants";
+import {defaultTransportationParams} from "../components/TransportationParams";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
+import {osmEntityTypes} from "../../../shared/constants/constants";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 
 export interface MapClipping {
@@ -20,62 +19,50 @@ export interface MapClipping {
 export interface SearchContextState {
     placesLocation?: any;
     location?: ApiCoordinates;
-    realEstateListing?: ApiRealEstateListing;
-    selectedCenter?: ApiCoordinates;
-    selectedZoomLevel?: number;
-    printingActive?: boolean;
     transportationParams: TransportationParam[];
-    localityOptions: OsmName[];
-    searchResponse?: ApiSearchResponse;
-    realEstateListings?: ApiRealEstateListing[];
     preferredLocations?: ApiPreferredLocation[];
-    mapClippings?: MapClipping[];
+    localityParams: ApiOsmEntity[];
+    searchBusy: boolean;
+    searchResponse?: ApiSearchResponse;
     censusData?: ApiGeometry[];
+    mapCenter?: ApiCoordinates;
+    mapZoomLevel?: number;
     highlightId?: number;
+    printingActive: boolean;
+    printingCheatsheetActive: boolean;
+    mapClippings: MapClipping[];
 }
 
 export const initialState: SearchContextState = {
-    transportationParams: [
-        {
-            type: MeansOfTransportation.WALK,
-            amount: 5,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-        {
-            type: MeansOfTransportation.BICYCLE,
-            amount: 15,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-        {
-            type: MeansOfTransportation.CAR,
-            amount: 30,
-            unit: UnitsOfTransportation.MINUTES,
-        },
-    ],
-    printingActive: false,
-    mapClippings: [],
-    localityOptions: osmEntityTypes.filter(entity =>
+    transportationParams: [...defaultTransportationParams],
+    localityParams: osmEntityTypes.filter(entity =>
         [
             OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
-        ].includes(entity.name)).map((entity) => entity.name)
+        ].includes(entity.name)),
+    searchBusy: false,
+    printingActive: false,
+    printingCheatsheetActive: false,
+    mapClippings: [],
 };
 
 export enum SearchContextActions {
-    SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
     SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
     SET_LOCATION = 'SET_LOCATION',
-    SET_SELECTED_CENTER = 'SET_SELECTED_CENTER',
-    SET_SELECTED_ZOOM_LEVEL = 'SET_SELECTED_ZOOM_LEVEL',
-    CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
-    SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
-    SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
     SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
-    SET_LOCALITY_OPTIONS = 'SET_LOCALITY_OPTIONS',
+    SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
+    SET_LOCALITY_PARAMS = 'SET_LOCALITY_PARAMS',
+    SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
+    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+    SET_MAP_CENTER = 'SET_MAP_CENTER',
+    SET_MAP_ZOOM_LEVEL = 'SET_MAP_ZOOM_LEVEL',
+    CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
+    SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
+    SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
+    SET_PRINTING_CHEATSHEET_ACTIVE = 'SET_PRINTING_CHEATSHEET_ACTIVE',
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
     CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
-    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
-    SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID'
+    SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
 }
 
 const reducer: (
@@ -83,38 +70,47 @@ const reducer: (
     action: { type: SearchContextActions; payload?: any }
 ) => SearchContextState = (state, action) => {
     switch (action.type) {
-        case SearchContextActions.SET_REAL_ESTATE_LISTING: {
-            return {...state, realEstateListing: {...action.payload}};
-        }
         case SearchContextActions.SET_PLACES_LOCATION: {
             return {...state, placesLocation: {...action.payload}};
         }
         case SearchContextActions.SET_LOCATION: {
             return {...state, location: {...action.payload}};
         }
-        case SearchContextActions.SET_SELECTED_CENTER: {
-            return {...state, selectedCenter: {...action.payload}};
-        }
-        case SearchContextActions.SET_SELECTED_ZOOM_LEVEL: {
-            return {...state, selectedZoomLevel: action.payload};
-        }
-        case SearchContextActions.CENTER_ZOOM_COORDINATES: {
-            return {...state, selectedZoomLevel: action.payload.zoom, selectedCenter: action.payload.center}
-        }
-        case SearchContextActions.SET_PRINTING_ACTIVE: {
-            return {...state, printingActive: action.payload};
+        case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
+            return {...state, transportationParams: [...action.payload]}
         }
         case SearchContextActions.SET_PREFERRED_LOCATIONS: {
             return {...state, preferredLocations: [...action.payload]};
         }
-        case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
-            return {...state, transportationParams: [...action.payload]}
+        case SearchContextActions.SET_LOCALITY_PARAMS: {
+            return {...state, localityParams: [...action.payload]};
         }
-        case SearchContextActions.SET_LOCALITY_OPTIONS: {
-            return {...state, localityOptions: [...action.payload]}
+        case SearchContextActions.SET_SEARCH_BUSY: {
+            return {...state, searchBusy: action.payload}
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
-            return {...state, searchResponse: {...action.payload}, selectedCenter: action.payload.centerOfInterest.coordinates}
+            return {...state, searchResponse: {...action.payload}, location: action.payload.centerOfInterest.coordinates}
+        }
+        case SearchContextActions.SET_ZENSUS_DATA: {
+            return {...state, censusData: [...action.payload]}
+        }
+        case SearchContextActions.SET_MAP_ZOOM_LEVEL: {
+            return {...state, mapZoomLevel: action.payload};
+        }
+        case SearchContextActions.SET_MAP_CENTER: {
+            return {...state, mapCenter: action.payload}
+        }
+        case SearchContextActions.CENTER_ZOOM_COORDINATES: {
+            return {...state, mapZoomLevel: action.payload.zoom, mapCenter: action.payload.center}
+        }
+        case SearchContextActions.SET_HIGHLIGHT_ID: {
+            return {...state, highlightId: action.payload}
+        }
+        case SearchContextActions.SET_PRINTING_ACTIVE: {
+            return {...state, printingActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
+        }
+        case SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE: {
+            return {...state, printingCheatsheetActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];
@@ -124,11 +120,8 @@ const reducer: (
         case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
             return {...state, mapClippings: []};
         }
-        case SearchContextActions.SET_ZENSUS_DATA: {
-            return {...state, censusData: [...action.payload]}
-        }
-        case SearchContextActions.SET_HIGHLIGHT_ID: {
-            return {...state, highlightId: action.payload}
+        case SearchContextActions.SET_REAL_ESTATE_LISTING: {
+            return {...state, realEstateListing: {...action.payload}};
         }
         default:
             return state;

@@ -1,29 +1,22 @@
-import { MapClipping } from "context/SearchContext";
+import {MapClipping} from "context/SearchContext";
 import PersonaRanking from "export/PersonaRanking";
+import {EntityGroup, ResultEntity} from "pages/SearchResultPage";
 import React from "react";
-import ResultTable from "search/ResultTable";
-import { ResultEntity } from "search/SearchResult";
-import {
-  allFurnishing,
-  allRealEstateCostTypes,
-} from "../../../../shared/constants/real-estate";
-import { ApiPersonaType } from "../../../../shared/types/persona";
-import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import {
-  ApiGeojsonFeature,
-  ApiSearchResponse,
-  MeansOfTransportation,
-  TransportationParam,
-} from "../../../../shared/types/types";
-import { CensusSummary } from "../CensusSummary";
+import {allFurnishing, allRealEstateCostTypes,} from "../../../../shared/constants/real-estate";
+import {ApiPersonaType} from "../../../../shared/types/persona";
+import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
+import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam,} from "../../../../shared/types/types";
+import {CensusSummary} from "../CensusSummary";
 import MapClippings from "../MapClippings";
-import { PdfPage } from "../PdfPage";
+import {PdfPage} from "../PdfPage";
+import AreaButlerLogo from "../../assets/img/logo.jpg";
+import {EntityList} from "export/EntityList";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
   censusData: ApiGeojsonFeature[];
-  groupedEntries: any;
+  groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
@@ -32,25 +25,12 @@ export interface CheatsheetProps {
 }
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
-  const groupedEntries = props.groupedEntries.filter(
-    ([label, data]: any) => label !== "Wichtige Adressen"
-  );
-  const importantEntites = props.groupedEntries.find(
-    ([label, data]: any) => label === "Wichtige Adressen"
-  );
-  const transportationParams = props.transportationParams;
+  const groupedEntries = props.groupedEntries
+    .filter(([label, data]: any) => label !== "Wichtige Adressen")
+    .filter((group) => group.items.length > 0);
   const activePrinting = props.activePrinting;
-  const entites = props.entities;
-  const searchResponse = props.searchResponse;
   const mapClippings = props.mapClippings;
-  const routingKeys = Object.keys(searchResponse!.routingProfiles);
   const censusData = props.censusData;
-
-  const mapMeans = {
-    byFoot: routingKeys.includes(MeansOfTransportation.WALK),
-    byBike: routingKeys.includes(MeansOfTransportation.BICYCLE),
-    byCar: routingKeys.includes(MeansOfTransportation.CAR),
-  };
 
   const mockData = {
     [ApiPersonaType.ACTIVE_SENIORS]: 5,
@@ -64,10 +44,18 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   return (
     <div className="hidden print:block" ref={ref as any}>
       <PdfPage>
+        <div className="flex justify-center items-center flex-col mt-16">
+          <div className="bg-primary w-96 h-24">
+            <img src={AreaButlerLogo} alt="Logo" />
+          </div>
+          <h1 className="mx-10 mt-10 mb-40 text-3xl font-extrabold">
+            Alle Informationen auf einen Blick
+          </h1>
+        </div>
         <div className="flex flex-col gap-6" style={{ width: "1600px" }}>
           {!!props.realEstateListing && (
             <>
-              <h3 className="text-xl w-56 font-bold">Objektdetails</h3>
+              <h3 className="text-3xl w-56 font-bold">Objektdetails</h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
 
               {!!props.realEstateListing?.costStructure?.type &&
@@ -99,42 +87,31 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
               )}
             </>
           )}
-          <h1 className="text-xl font-bold">Personengruppen</h1>
-          <PersonaRanking rankings={mockData}></PersonaRanking>
+          <h1 className="text-3xl mb-5 font-bold">Personengruppen</h1>
+          <PersonaRanking rankings={mockData} />
           {!!censusData && censusData.length > 0 && (
-            <CensusSummary censusData={censusData}></CensusSummary>
+            <CensusSummary censusData={censusData} />
           )}
         </div>
       </PdfPage>
       <PdfPage>
-        <h1 className="text-xl font-bold">Die naheliegendsten Standorte</h1>
+        <h1 className="text-3xl font-bold mb-5">Die nächsten Orte</h1>
         <div className="flex gap-6 flex-wrap">
-          {groupedEntries.map(([label, data]: any, index: number) => {
+          {groupedEntries.map((group) => {
             return (
-              <div className="text-xs w-80" key={"tab-content-" + label}>
-                <ResultTable
-                  dataSelectable={false}
-                  title={label}
-                  data={data.filter((e: ResultEntity) => e.selected)}
-                  limit={3}
-                  showRoutingColumns={false}
-                />
+              <div className="text-xs w-72" key={"tab-content-" + group.title}>
+                <EntityList entityGroup={group} limit={3}/>
               </div>
             );
           })}
         </div>
+        {activePrinting && (
+          <>
+            <h1 className="my-5 text-3xl font-bold">Kartenausschnitte</h1>
+            <MapClippings mapClippings={mapClippings} showTitles={false} />
+          </>
+        )}
       </PdfPage>
-      {activePrinting && (
-        <>
-          <PdfPage>
-            <h1 className="m-10 text-xl font-bold">Kartenausschnitte</h1>
-            <MapClippings
-              mapClippings={mapClippings}
-              showTitles={false}
-            ></MapClippings>
-          </PdfPage>
-        </>
-      )}
     </div>
   );
 });

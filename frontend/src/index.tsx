@@ -1,12 +1,9 @@
-import React from "react";
-import ReactDOM from "react-dom";
-import "./index.css";
-import App from "./App";
-import reportWebVitals from "./reportWebVitals";
-import {Auth0Provider} from "@auth0/auth0-react";
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css';
+import App from './App';
 import {ApiConfig} from "../../shared/types/types";
-import {ConfigContext} from "./context/ConfigContext";
-
+import {Auth0Provider} from "@auth0/auth0-react";
 import 'assets/fonts/archia-light-webfont.eot';
 import 'assets/fonts/archia-light-webfont.ttf';
 import 'assets/fonts/archia-light-webfont.woff';
@@ -19,6 +16,7 @@ import 'assets/fonts/archia-semibold-webfont.eot';
 import 'assets/fonts/archia-semibold-webfont.ttf';
 import 'assets/fonts/archia-semibold-webfont.woff';
 import 'assets/fonts/archia-semibold-webfont.woff2';
+import { ConfigContext } from 'context/ConfigContext';
 
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 
@@ -42,11 +40,4 @@ fetch(`${baseUrl}/api/config`).then(async result => {
         </React.StrictMode>,
         document.getElementById("root")
     );
-
-    // If you want to start measuring performance in your app, pass a function
-    // to log results (for example: reportWebVitals(console.log))
-    // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-    reportWebVitals();
 });
-
-

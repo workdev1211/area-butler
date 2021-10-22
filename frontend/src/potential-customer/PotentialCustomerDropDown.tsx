@@ -1,102 +1,81 @@
-import { PotentialCustomerContext } from "context/PotentialCustomerContext";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
-import React from "react";
-import { useState } from "react";
-import {
-  meansOfTransportations,
-  unitsOfTransportation,
-} from "../../../shared/constants/constants";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-
+import {PotentialCustomerContext} from "context/PotentialCustomerContext";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
+import React, {useRef, useState} from "react";
+import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
+import {osmEntityTypes} from "../../../shared/constants/constants";
+import useOnClickOutside from "hooks/onclickoutside";
 
 export interface PotentialCustomerDropDownProps {
-  buttonStyles?: string;
-  menuOrientation?: string;
+    buttonStyles?: string;
 }
 
-export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustomerDropDownProps> = ({buttonStyles = 'btn btn-sm', menuOrientation = ''}) => {
-  const { potentialCustomerState } = React.useContext(PotentialCustomerContext);
-  const { searchContextDispatch } = React.useContext(SearchContext);
+export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustomerDropDownProps> =
+    ({buttonStyles = "dropdown-btn btn btn-sm bg-primary-gradient"}) => {
+        const {potentialCustomerState} = React.useContext(
+            PotentialCustomerContext
+        );
+        const {searchContextDispatch} = React.useContext(SearchContext);
 
-  const [showMenu, setShowMenu] = useState(false);
+        const fillDataFromCustomer = (customer: ApiPotentialCustomer) => {
+            const localityParams = osmEntityTypes.filter((entity) =>
+                customer.preferredAmenities.includes(entity.name)
+            );
 
-  const fillDataFromCustomer = (customer: ApiPotentialCustomer) => {
-    searchContextDispatch({
-      type: SearchContextActions.SET_LOCALITY_OPTIONS,
-      payload: customer.preferredAmenities,
-    });
-    searchContextDispatch({
-      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
-      payload: customer.routingProfiles,
-    });
-    searchContextDispatch({
-      type: SearchContextActions.SET_PREFERRED_LOCATIONS,
-      payload: customer.preferredLocations,
-    });
-  };
+            searchContextDispatch({
+                type: SearchContextActions.SET_LOCALITY_PARAMS,
+                payload: localityParams,
+            });
+            searchContextDispatch({
+                type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+                payload: customer.routingProfiles,
+            });
+            searchContextDispatch({
+                type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+                payload: customer.preferredLocations,
+            });
+        };
 
-  const dropdownClasses = showMenu ? `dropdown dropdown-open ${menuOrientation}` : "dropdown";
+        const dropDownRef = useRef(null);
+        const [menuOpen, setMenuOpen] = useState(false);
 
-  const dropDownListStyle = 'p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48';
+        useOnClickOutside(dropDownRef, () => menuOpen && setMenuOpen(false));
 
-  return potentialCustomerState.customers?.length > 0 ? (
-    <div className={dropdownClasses}>
-      <div className={buttonStyles} onClick={() => setShowMenu(!showMenu)}>
-        Meine Interessenten
-      </div>
-      <ul className={dropDownListStyle}>
-        {potentialCustomerState.customers.map(
-          (customer: ApiPotentialCustomer) => (
-            <li key={"customer-drop-down-" + customer.id}>
-              <a
-                onClick={(e) => {
-                  fillDataFromCustomer(customer);
-                  setShowMenu(false);
-                }}
-                className="whitespace-nowrap w-full"
-                key={"customer-drop-down-a-" + customer.id}
-              >
-                <div className="flex flex-col items-start">
-                  <span>{customer.name}</span>
-                  <span className="text-gray-500 text-xs">
-                    {customer.email}
+        const dropDownListStyle = menuOpen ?
+            "p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll" :
+            "p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll";
 
-                    {(customer.routingProfiles ?? []).map((routingProfile) => (
-                      <span
-                        key={
-                          "customer-drop-down-" +
-                          customer.id +
-                          "-routing-profile-" +
-                          routingProfile.type
-                        }
-                      >
-                        <br />
-                        <span>
-                          {
-                            meansOfTransportations.find(
-                              (means) => means.type === routingProfile.type
-                            )?.label
-                          }{" "}
-                          ({routingProfile.amount}{" "}
-                          {
-                            unitsOfTransportation.find(
-                              (unit) => unit.type === routingProfile.unit
-                            )?.label
-                          }
-                          )
-                        </span>
-                        <br />
-                      </span>
-                    ))}
-                  </span>
+        return potentialCustomerState.customers?.length > 0 ? (
+            <div ref={dropDownRef} className="dropdown">
+                <div className={buttonStyles} tabIndex={0} onClick={(e) => setMenuOpen(!menuOpen)}>
+                    + Meine Interessenten
                 </div>
-              </a>
-            </li>
-          )
-        )}
-      </ul>
-    </div>
-  ) : null;
-};
+                {menuOpen && (
+                    <ul tabIndex={0} className={dropDownListStyle}>
+                        {potentialCustomerState.customers.map(
+                            (customer: ApiPotentialCustomer) => (
+                                <li key={"customer-drop-down-" + customer.id}>
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            fillDataFromCustomer(customer);
+                                            setMenuOpen(false);
+                                        }}
+                                        className="btn btn-link whitespace-nowrap"
+                                        key={"customer-drop-down-a-" + customer.id}
+                                    >
+                                        <div className="flex flex-col items-start">
+                      <span className="font-bold">
+                        {customer.name} ({customer.email})
+                      </span>
+                                        </div>
+                                    </button>
+                                </li>
+                            )
+                        )}
+                    </ul>
+                )}
+            </div>
+        ) : null;
+    };
 
 export default PotentialCustomerDropDown;

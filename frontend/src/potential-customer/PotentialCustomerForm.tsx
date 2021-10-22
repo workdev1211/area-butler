@@ -1,145 +1,108 @@
-import { Input } from "components/Input";
-import { Form, Formik } from "formik";
-import { useState } from "react";
-import RealEstateCharacteristicsControl from "real-estate-listings/RealEstateCharacteristicsControl";
-import RealEstateCostStructureControl from "real-estate-listings/RealEstateCostStructureControl";
-import LocalityOptions from "search/Localitites";
-import TransportationParams from "search/TransportationParams";
+import React, {useEffect, useState} from "react";
+import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import * as Yup from "yup";
-import {
-  ApiPotentialCustomer,
-  ApiPreferredLocation,
-} from "../../../shared/types/potential-customer";
-import {
-  ApiRealEstateCharacteristics,
-  ApiRealEstateCost,
-} from "../../../shared/types/real-estate";
-import { OsmName, TransportationParam } from "../../../shared/types/types";
-import { PreferredLocationsControl } from "./PreferredLocationsControl";
+import {Form, Formik} from "formik";
+import Input from "../components/Input";
+import TransportationParams from "../components/TransportationParams";
+import LocalityParams from "../components/LocalityParams";
+import {osmEntityTypes} from "../../../shared/constants/constants";
+import ImportantAddresses from "../components/ImportantAddresses";
+import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
+import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
 
-export interface PotentialCustomerFormData {
-  formId: string;
-  onSubmit: (values: any) => any;
-  customer: Partial<ApiPotentialCustomer>;
-  questionnaire?: boolean;
+export interface PotentialCustomerFormProps {
+    formId: string;
+    inputCustomer: Partial<ApiPotentialCustomer>,
+    onSubmit: (newValues: Partial<ApiPotentialCustomer>) => void,
+    questionnaire?: boolean;
 }
 
-export const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormData> =
-  ({ formId, onSubmit, customer, questionnaire = false }) => {
-    const [preferredAmenities, setPreferredAmenities] = useState<OsmName[]>(
-      customer.preferredAmenities ?? []
-    );
-    const [routingProfiles, setRoutingProfiles] = useState<
-      TransportationParam[]
-    >(customer.routingProfiles ?? []);
+const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps> = ({
+                                                                                        formId,
+                                                                                        inputCustomer,
+                                                                                        onSubmit,
+                                                                                        questionnaire
+                                                                                    }) => {
 
-    const [preferredLocations, setPreferredLocations] = useState<
-      ApiPreferredLocation[]
-    >(customer.preferredLocations ?? []);
+    const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(inputCustomer);
 
-    const [realEstateCharacteristics, setRealEstateCharacteristics] =
-      useState<ApiRealEstateCharacteristics>();
-
-    const [realEstateCostStructure, setRealEstateCostStructure] =
-      useState<ApiRealEstateCost>();
+    useEffect(() => {
+        setCustomer(inputCustomer);
+    }, [inputCustomer, setCustomer]);
 
     return (
-      <Formik
-        initialValues={{
-          name: customer.name || "",
-          email: customer.email || "",
-          preferredLocations: customer.preferredLocations || [],
-        }}
-        validationSchema={Yup.object({
-          name: questionnaire
-            ? Yup.string()
-            : Yup.string().required("Bitte geben den Namen ein"),
-          email: questionnaire
-            ? Yup.string()
-            : Yup.string()
-                .email()
-                .required("Bitte geben Sie eine gültige Email-Adresse ein"),
-          preferredLocations: Yup.array(),
+        <Formik
+            initialValues={customer} validationSchema={Yup.object({
+            name: questionnaire
+                ? Yup.string()
+                : Yup.string().required('Name wird benötigt'),
+            email: questionnaire
+                ? Yup.string()
+                : Yup.string().email().required('Gültige Email-Adresse wird benötigt'),
+            preferredLocations: Yup.array()
         })}
-        onSubmit={(values) => {
-          const formValues = {
-            ...values,
-            preferredAmenities,
-            routingProfiles,
-            preferredLocations,
-            realEstateCharacteristics,
-            realEstateCostStructure
-          };
-          onSubmit(formValues);
-        }}
-        render={({ values }) => (
-          <Form id={formId}>
-            {!questionnaire && (
-              <div className="form-control">
-                <Input
-                  label="Name des Interessenten"
-                  name="name"
-                  type="text"
-                  placeholder="Name"
-                />
-              </div>
-            )}
-
-            {!questionnaire && (
-              <div className="form-control">
-                <Input
-                  label="Email des Interessenten"
-                  name="email"
-                  type="text"
-                  placeholder="Email"
-                />
-              </div>
-            )}
-            <div className="my-6">
-              <strong>
-                {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Fortbewegungsarten
-              </strong>
-              <TransportationParams
-                inputValues={routingProfiles}
-                onChange={(values) => setRoutingProfiles(values)}
-              ></TransportationParams>
-            </div>
-            <div className="my-6">
-              <strong>
-                {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Lokalitäten
-              </strong>
-              <div className="grid grid-cols-2 gap-6 mt-5">
-                <LocalityOptions
-                  inputValues={preferredAmenities}
-                  onChange={(values) => setPreferredAmenities(values)}
-                ></LocalityOptions>
-              </div>
-            </div>
-            <div className="my-6">
-              <strong>Wichtige Adressen</strong>
-            </div>
-            <div className="my-6">
-              <PreferredLocationsControl
-                inputValues={preferredLocations}
-                onChange={(values) => setPreferredLocations(values)}
-              />
-            </div>
-            {questionnaire && <div className="my-6"><strong>
-                Meine Wohnvorstellung
-              </strong></div>}
-            <RealEstateCostStructureControl
-              inputValues={customer.realEstateCostStructure}
-              onChange={(values) => setRealEstateCostStructure(values)}
-            ></RealEstateCostStructureControl>
-
-            <RealEstateCharacteristicsControl
-              inputValues={customer.realEstateCharacteristics}
-              onChange={(values) => setRealEstateCharacteristics(values)}
-            ></RealEstateCharacteristicsControl>
-          </Form>
-        )}
-      ></Formik>
-    );
-  };
+            enableReinitialize={true}
+            onSubmit={(values) => onSubmit({...customer, ...values})}
+        >{(formikValues) =>
+            <Form id={formId}>
+                <div className="grid grid-cols-1 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        {!questionnaire && (<Input label="Name des Interessenten"
+                                                   name="name"
+                                                   type="text"
+                                                   placeholder="Name" className="input input-bordered w-full"/>)}
+                        {!questionnaire && (<Input label="Email-Adresse des Interessenten"
+                                                   name="email"
+                                                   type="text"
+                                                   placeholder="Email" className="input input-bordered w-full"/>)}
+                    </div>
+                    <div className="my-6 flex flex-col gap-6">
+                        <strong>{questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Fortbewegungsarten</strong>
+                        <TransportationParams values={customer.routingProfiles || []}
+                                              onChange={(newValues) => setCustomer({
+                                                  ...customer,
+                                                  routingProfiles: [...newValues]
+                                              })}/>
+                    </div>
+                    <div className="my-6">
+                        <strong>{questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Lokalitäten</strong>
+                        <LocalityParams
+                            values={osmEntityTypes.filter(oet => (customer.preferredAmenities ?? []).includes(oet.name))}
+                            onChange={(newValues) => setCustomer({
+                                ...customer,
+                                preferredAmenities: [...newValues.map(v => v.name)]
+                            })}/>
+                    </div>
+                    <div className="my-6 flex flex-col gap-4">
+                        <strong>Wichtige Adressen</strong>
+                        <ImportantAddresses inputValues={customer.preferredLocations}
+                                            onChange={(newValues) => setCustomer({
+                                                ...customer,
+                                                preferredLocations: [...newValues]
+                                            })}/>
+                    </div>
+                    <div className="my-6"><strong>
+                        {questionnaire ? "Meine" : "Bevorzugte"} Wohnvorstellung
+                    </strong></div>
+                    <RealEstateCostStructureControl
+                        inputValues={customer.realEstateCostStructure}
+                        onChange={(newValue) => setCustomer({
+                            ...customer,
+                            realEstateCostStructure: newValue
+                        })}
+                    />
+                    <RealEstateCharacteristicsControl
+                        inputValues={customer.realEstateCharacteristics}
+                        onChange={(newValue) => setCustomer({
+                            ...customer,
+                            realEstateCharacteristics: newValue
+                        })}
+                    />
+                </div>
+            </Form>
+        }
+        </Formik>
+    )
+}
 
 export default PotentialCustomerForm;

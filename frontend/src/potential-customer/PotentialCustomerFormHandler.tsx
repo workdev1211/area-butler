@@ -1,77 +1,90 @@
-import { FormModalData } from "components/FormModal";
-import {
-  PotentialCustomerActions,
-  PotentialCustomerContext
-} from "context/PotentialCustomerContext";
-import { useHttp } from "hooks/http";
+import {PotentialCustomerActions, PotentialCustomerContext} from "context/PotentialCustomerContext";
+import {useHttp} from "hooks/http";
 import React from "react";
-import { deriveGeocodeByAddress } from "shared/shared.functions";
 import {
-  ApiPotentialCustomer,
-  ApiUpsertPotentialCustomer
+    ApiPotentialCustomer,
+    ApiPreferredLocation,
+    ApiUpsertPotentialCustomer
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
+import {useHistory} from "react-router-dom";
+import { toastError, toastSuccess } from "shared/shared.functions";
 
 export const mapFormToApiUpsertPotentialCustomer = async (
-  values: any
+    values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
 
-  return {
-    name: values.name,
-    email: values.email,
-    preferredAmenities: values.preferredAmenities,
-    routingProfiles: values.routingProfiles,
-    preferredLocations: values.preferredLocations,
-    realEstateCharacteristics: values.realEstateCharacteristics,
-    realEstateCostStructure: values.realEstateCostStructure
-  };
+    return {
+        name: values.name,
+        email: values.email,
+        preferredAmenities: values.preferredAmenities,
+        routingProfiles: values.routingProfiles,
+        preferredLocations: values.preferredLocations.filter((pl: ApiPreferredLocation) => !!pl.title && !!pl.address),
+        realEstateCharacteristics: values.realEstateCharacteristics,
+        realEstateCostStructure: values.realEstateCostStructure
+    };
 };
 
-export interface PotentialCustomerFormHandlerData extends FormModalData {
-  customer: Partial<ApiPotentialCustomer>;
+export interface PotentialCustomerFormHandlerData {
+    customer: Partial<ApiPotentialCustomer>;
+    formId?: string;
+    beforeSubmit?: () => void;
+    postSubmit?: (success: boolean) => void;
 }
 
-export const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFormHandlerData> =
-  ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
-    const { post, put } = useHttp();
-    const { potentialCustomerDispatch } = React.useContext(
-      PotentialCustomerContext
-    );
+const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFormHandlerData> =
+    ({
+         formId, beforeSubmit = () => {
+        }, postSubmit = () => {
+        }, customer
+     }) => {
+        const {post, put} = useHttp();
+        const history = useHistory();
 
-    const onSubmit = async (values: any) => {
-      const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
-        await mapFormToApiUpsertPotentialCustomer(values);
+        const {potentialCustomerDispatch} = React.useContext(
+            PotentialCustomerContext
+        );
 
-      try {
-        let storedCustomer = null;
-        beforeSubmit();
-        if (customer.id) {
-          storedCustomer = await put(
-            `/api/potential-customers/${customer.id}`,
-            mappedPotentialCustomer
-          );
-        } else {
-          storedCustomer = await post(
-            "/api/potential-customers/",
-            mappedPotentialCustomer
-          );
-        }
-        potentialCustomerDispatch({
-          type: PotentialCustomerActions.PUT_POTENTIAL_CUSTOMER,
-          payload: storedCustomer.data as ApiPotentialCustomer,
-        });
-        postSubmit(true);
-      } catch (err) {
-        console.log(err);
-        postSubmit(false);
-      }
-    };
+        const onSubmit = async (values: any) => {
+            const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
+                await mapFormToApiUpsertPotentialCustomer(values);
 
-    return (
-      <PotentialCustomerForm
-        formId={formId!}
-        onSubmit={onSubmit}
-        customer={customer}
-      />
-    );
-  };
+            try {
+                let response = null;
+                beforeSubmit();
+                if (customer.id) {
+                    response = await put(
+                        `/api/potential-customers/${customer.id}`,
+                        mappedPotentialCustomer
+                    );
+                } else {
+                    response = await post(
+                        "/api/potential-customers/",
+                        mappedPotentialCustomer
+                    );
+                }
+                const storedCustomer = response.data as ApiPotentialCustomer;
+                potentialCustomerDispatch({
+                    type: PotentialCustomerActions.PUT_POTENTIAL_CUSTOMER,
+                    payload: storedCustomer,
+                });
+                postSubmit(true);
+                toastSuccess("Interessent erfolgreich gespeichert!");
+                history.push(`/potential-customers/${storedCustomer.id}`);
+            } catch (err) {
+                console.log(err);
+                toastError("Fehler beim Speichern eines Interessenten");
+                postSubmit(false);
+            }
+        };
+
+        return (
+            <PotentialCustomerForm
+                formId={formId!}
+                onSubmit={onSubmit}
+                inputCustomer={customer}
+            />
+        );
+    }
+
+export default PotentialCustomerFormHandler;

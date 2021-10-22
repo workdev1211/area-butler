@@ -5,7 +5,12 @@
 .school {
     filter: invert(43%) sepia(9%) saturate(3807%) hue-rotate(221deg) brightness(95%) contrast(84%);
 }
-.bar {}
+.bar {
+    filter: invert(43%) sepia(9%) saturate(3807%) hue-rotate(221deg) brightness(95%) contrast(84%);
+}
+.property {
+    filter: invert(43%) sepia(9%) saturate(3807%) hue-rotate(221deg) brightness(95%) contrast(84%);
+}
 .restaurant {
     filter: invert(58%) sepia(50%) saturate(2173%) hue-rotate(286deg) brightness(89%) contrast(88%);
 }

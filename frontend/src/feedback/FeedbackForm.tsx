@@ -1,7 +1,10 @@
-import { Select } from "components/Select";
-import { Textarea } from "components/Textarea";
+
+import Select from "components/Select";
+import Textarea from "components/Textarea";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import React from "react";
+
 
 export interface FeedbackFormData {
   formId: string;
@@ -41,10 +44,9 @@ export const FeedbackForm: React.FunctionComponent<FeedbackFormData> = ({
         </div>
         <div className="form-control">
           <Textarea
-            rows="12"
+            rows={12}
             label="Beschreibung"
             name="description"
-            type="text"
             placeholder="Beschreibung"
           />
         </div>

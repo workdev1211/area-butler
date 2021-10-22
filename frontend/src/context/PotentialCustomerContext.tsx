@@ -21,7 +21,7 @@ export interface PotentialCustomerState {
   ) => PotentialCustomerState = (state, action) => {
     switch (action.type) {
       case PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS: {
-        return {...state, customers: action.payload};
+        return {...state, customers: [...action.payload]};
       }
       case PotentialCustomerActions.PUT_POTENTIAL_CUSTOMER: {
           const customer = action.payload as ApiPotentialCustomer;
@@ -64,4 +64,3 @@ export interface PotentialCustomerState {
       </PotentialCustomerContext.Provider>
     );
   };
-  

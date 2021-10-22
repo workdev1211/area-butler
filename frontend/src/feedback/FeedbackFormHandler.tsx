@@ -3,7 +3,7 @@ import { useHttp } from "hooks/http";
 import { ApiInsertFeedback } from "../../../shared/types/types";
 import FeedbackForm from "./FeedbackForm";
 
-export const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
+const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
@@ -23,3 +23,5 @@ export const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
 
   return <FeedbackForm formId={formId!} onSubmit={onSubmit}/>;
 };
+
+export default FeedbackFormHandler;

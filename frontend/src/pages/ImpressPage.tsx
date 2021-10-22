@@ -1,13 +1,12 @@
 import React from "react";
-import "./ImpressPage.css";
 import {kudibaCompany} from "../../../shared/constants/constants";
+import DefaultLayout from "../layout/defaultLayout";
 
 export const ImpressPage = () => {
 
 
     return (
-        <div className="container mx-auto mt-10">
-            <h1>Impressum</h1>
+        <DefaultLayout title="Impressum" withHorizontalPadding={true}>
             <h2>Angaben gemäß § 5 TMG:</h2>
             <p dangerouslySetInnerHTML={{__html: kudibaCompany.formattedAddress()}}>
             </p>
@@ -50,7 +49,7 @@ export const ImpressPage = () => {
                 Dritter beachtet. Insbesondere werden Inhalte Dritter als solche gekennzeichnet. Sollten Sie trotzdem
                 auf eine Urheberrechtsverletzung aufmerksam werden, bitten wir um einen entsprechenden Hinweis. Bei
                 Bekanntwerden von Rechtsverletzungen werden wir derartige Inhalte umgehend entfernen.</p>
-        </div>
+        </DefaultLayout>
     );
 };
 

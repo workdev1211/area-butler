@@ -1,8 +1,9 @@
-import { FormModalData } from "components/FormModal";
-import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
-import { useHttp } from "hooks/http";
+import {FormModalData} from "components/FormModal";
+import {PotentialCustomerActions, PotentialCustomerContext} from "context/PotentialCustomerContext";
+import {useHttp} from "hooks/http";
 import React from "react";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
+import {toastSuccess} from "../shared/shared.functions";
 
 export interface PotentialCustomerHandlerDeleteProps extends FormModalData {
     potentialCustomer: Partial<ApiPotentialCustomer>;
@@ -22,10 +23,9 @@ export interface PotentialCustomerHandlerDeleteProps extends FormModalData {
         event.preventDefault();
   
         try {
-          let listing = null;
           beforeSubmit();
           if (!!potentialCustomer.id) {
-            listing = await deleteRequest(
+            await deleteRequest(
               `/api/potential-customers/${potentialCustomer.id}`
             );
             potentialCustomerDispatch({
@@ -33,6 +33,7 @@ export interface PotentialCustomerHandlerDeleteProps extends FormModalData {
               payload: potentialCustomer,
             });
           }
+          toastSuccess("Interessent erfolgreich gelöscht!");
           postSubmit(true);
         } catch (err) {
           console.log(err);

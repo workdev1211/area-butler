@@ -1,7 +1,6 @@
-import { CSSProperties } from "react";
+import React, {CSSProperties} from "react";
 
-
-export const PdfPage : React.FunctionComponent = ({children}) => {
+export const PdfPage: React.FunctionComponent = ({children}) => {
 
     const style = {
         'pageBreakAfter': 'always'
