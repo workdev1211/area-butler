@@ -11,6 +11,7 @@ WORKDIR /home/node/app
 COPY --chown=node:node backend/package*.json ./backend/
 
 COPY --chown=node:node frontend/package*.json ./frontend/
+COPY --chown=node:node frontend/yarn.lock ./frontend/
 
 WORKDIR /home/node/app/frontend
 
