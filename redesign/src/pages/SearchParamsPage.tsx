@@ -130,7 +130,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             }}>
                 <Form>
                     <h2>Standort</h2>
-                    <div className="sub-content grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
                         <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {
                         }} afterChange={onLocationAutocompleteChange}/>
                         <div className="flex flex-wrap items-end gap-4">

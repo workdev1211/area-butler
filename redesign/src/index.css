@@ -88,6 +88,8 @@ html {
   --btn-border-radius: 8px;
 
   --form-field-short-flex-basis: 56px;
+
+  --mobile-menu-width: 350px;
 }
 
 @media screen(sm) {

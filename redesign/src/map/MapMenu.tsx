@@ -14,6 +14,7 @@ export interface MapMenuProps {
     groupedEntries: EntityGroup[];
     toggleEntryGroup: (title: string) => void;
     highlightZoomEntity: (item: ResultEntity) => void;
+    mobileMenuOpen: boolean;
 }
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
@@ -21,7 +22,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             toggleCensus,
                                                             groupedEntries,
                                                             toggleEntryGroup,
-                                                            highlightZoomEntity
+                                                            highlightZoomEntity,
+                                                            mobileMenuOpen
                                                         }) => {
 
     const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
@@ -36,8 +38,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         setLocalityOpen(filtered);
     }
 
+    const mobileMenuButtonClasses = `map-menu ${mobileMenuOpen ? 'mobile-open' : ''}`
 
-    return <div className="map-menu">
+    return <div className={mobileMenuButtonClasses}>
         <h2 className="heading">Ergebnisse</h2>
         <div
             className={'collapse collapse-arrow view-option' + (viewOptionsOpen ? ' collapse-open' : ' collapse-closed')}>

@@ -19,6 +19,8 @@ import {distanceInMeters} from "shared/shared.functions";
 import "./SearchResultPage.css";
 import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
+import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
+import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import BackButton from "../layout/BackButton";
 import { RealEstateContext } from "context/RealEstateContext";
 
@@ -120,6 +122,9 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 const SearchResultPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {realEstateState} = useContext(RealEstateContext);
+
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
     const history = useHistory();
     if (!searchContextState.searchResponse?.routingProfiles) {
         history.push("/");
@@ -220,6 +225,15 @@ const SearchResultPage: React.FunctionComponent = () => {
         </>)
     }
 
+    const MapMenuMobileBtn: React.FunctionComponent = () => {
+        return (
+            <button type="button" className="mobile-menu-btn" onMouseDown={() => setMobileMenuOpen(!mobileMenuOpen)}>
+                {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
+                {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
+            </button>
+        );
+    }
+
     return (
         <>
             <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false} actionTop={<ActionsTop/>}
@@ -250,7 +264,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                             censusData={showCensus && censusDataAvailable && searchContextState.censusData}
                         />
                     </div>
-                    <MapMenu census={showCensus} toggleCensus={(active) => setShowCensus(active)}
+                    <MapMenuMobileBtn />
+                    <MapMenu mobileMenuOpen={mobileMenuOpen} census={showCensus} toggleCensus={(active) => setShowCensus(active)}
                              groupedEntries={groupedEntries} toggleEntryGroup={toggleEntityGroup}
                              highlightZoomEntity={highlightZoomEntity}/>
                 </div>
