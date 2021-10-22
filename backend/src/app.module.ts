@@ -1,4 +1,6 @@
 import { HttpModule, Module } from '@nestjs/common';
+import { APP_FILTER } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
@@ -6,15 +8,14 @@ import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
 import { ConfigController } from './config/config.controller';
 import { configService } from './config/config.service';
-import { LocationModule } from './location/location.module';
-import { UserModule } from './user/user.module';
-import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { FeedbackModule } from './feedback/feedback.module';
+import { LocationModule } from './location/location.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
-import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
-import { MailSenderService } from './client/mail/mail-sender.service';
+import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { RoutingModule } from './routing/routing.module';
+import { CustomExceptionFilter } from './shared/custom-exception.filter';
+import { UserModule } from './user/user.module';
+import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 
 @Module({
   imports: [
@@ -40,7 +41,13 @@ import { RoutingModule } from './routing/routing.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-    RoutingModule,
+    RoutingModule
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: CustomExceptionFilter,
+    },
   ],
   controllers: [ConfigController],
 })

@@ -49,6 +49,10 @@ class ConfigService {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK');
   }
 
+  public getOperationsSlackWebhook(): string {
+    return this.getValue('OPERATIONS_SLACK_WEBHOOK');
+  }
+
   public getMailProviderApiKey(): string {
     return this.getValue('MAIL_PROVIDER_API_KEY');
   }

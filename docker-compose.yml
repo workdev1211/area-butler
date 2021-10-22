@@ -33,6 +33,7 @@ services:
       - MONGO_CONNECTION_URI
       - GOOGLE_API_KEY
       - FEEDBACK_SLACK_WEBHOOK
+      - OPERATIONS_SLACK_WEBHOOK
       - MAIL_PROVIDER_API_KEY
       - BASE_APP_URL
     labels:
