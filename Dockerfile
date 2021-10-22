@@ -27,7 +27,7 @@ COPY --chown=node:node . .
 
 WORKDIR /home/node/app/frontend
 
-RUN npm run build
+RUN yarn build
 
 WORKDIR /home/node/app/backend
 
