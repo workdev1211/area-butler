@@ -12,6 +12,7 @@ export interface ApiUser {
   fullname: string;
   email: string;
   subscriptionPlan: ApiSubscriptionPlanType;
+  requestsExecuted: number;
 }
 
 export interface ApiUpsertUser {

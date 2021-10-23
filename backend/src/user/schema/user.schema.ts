@@ -24,6 +24,9 @@ export class User {
     default: ApiSubscriptionPlanType.STANDARD,
   })
   subscriptionPlan: ApiSubscriptionPlanType;
+
+  @Prop({ type: Number, default: 0 })
+  requestsExecuted: number;
 }
 
 export const Userschema = SchemaFactory.createForClass(User);

@@ -1,13 +1,16 @@
+import { RealEstateContext } from "context/RealEstateContext";
 import { UserContext } from "context/UserContext";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import { FunctionComponent, useContext, useState } from "react";
 import ProfileFormHandler from "user/ProfileFormHandler";
-import {v4 as uuid} from 'uuid';
+import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
+import { v4 as uuid } from "uuid";
 
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const { userState } = useContext(UserContext);
+  const { realEstateState } = useContext(RealEstateContext);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -41,7 +44,16 @@ const UserProfilePage: FunctionComponent = () => {
         <SubmitButton key="user-profile-submit" />,
       ]}
     >
-      <ProfileFormHandler user={userState.user} formId={formId}></ProfileFormHandler>
+      <div className="mt-10">
+        <ProfileFormHandler
+          user={userState.user}
+          formId={formId}
+        ></ProfileFormHandler>
+      </div>
+      <SubscriptionPlanLimits
+        realEstates={realEstateState.listings}
+        user={userState.user}
+      ></SubscriptionPlanLimits>
     </DefaultLayout>
   );
 };
