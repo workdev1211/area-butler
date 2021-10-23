@@ -19,7 +19,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
   },
   stripeId: "124", // TODO proper stripe id
   appFeatures: {
-    sendCustomerRequest: false,
+    sendCustomerQuestionnaireRequest: true, // TODO change
     dataSources: [ApiDataSource.OSM],
   },
 };
@@ -31,7 +31,7 @@ export const proSubscription: ApiSubscriptionPlan = {
   },
   stripeId: "125", // TODO proper stripe id
   appFeatures: {
-    sendCustomerRequest: true,
+    sendCustomerQuestionnaireRequest: true,
     dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
   },
 };

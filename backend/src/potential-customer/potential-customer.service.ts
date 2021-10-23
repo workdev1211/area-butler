@@ -3,10 +3,10 @@ import {
   ApiUpsertQuestionnaire,
   ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { UserDocument } from 'src/user/schema/user.schema';
+import { checkSubscriptionViolation, UserDocument } from 'src/user/schema/user.schema';
 import {
   PotentialCustomer,
   PotentialCustomerDocument,
@@ -103,6 +103,18 @@ export class PotentialCustomerService {
     user: UserDocument,
     { ...upsertData }: ApiUpsertQuestionnaireRequest,
   ): Promise<QuestionnaireRequestDocument> {
+
+
+    if (
+      checkSubscriptionViolation(
+        user,(user, subscription) => !subscription.appFeatures.sendCustomerQuestionnaireRequest)
+    ) {
+      throw new HttpException(
+        'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
+        400,
+      );
+    }
+
     const documentData: any = {
       ...upsertData,
     };

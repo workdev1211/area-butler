@@ -12,7 +12,7 @@ export interface ApiSubscriptionPlan {
         numberOfRealEstates?: number,
     },
     appFeatures: {
-        sendCustomerRequest: boolean,
+        sendCustomerQuestionnaireRequest: boolean,
         dataSources: ApiDataSource[]
     }
 }
