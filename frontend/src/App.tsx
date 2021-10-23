@@ -39,6 +39,8 @@ const RealEstatesPage = lazy(() => import("./pages/RealEstatesPage"));
 
 const RealEstatePage = lazy(() => import("./pages/RealEstatePage"));
 
+const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
+
 const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
   buttonStyle:
@@ -74,6 +76,11 @@ function App() {
               <RealEstateContextProvider>
                 <SearchContextProvider>
                   <Switch>
+                    <Route path="/profile">
+                        <Authenticated>
+                            <UserProfilePage />
+                        </Authenticated>
+                    </Route>
                     <Route path="/impress">
                       <ImpressPage />
                     </Route>

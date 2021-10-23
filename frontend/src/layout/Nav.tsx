@@ -102,8 +102,8 @@ const Nav: FunctionComponent = () => {
                         ref={userMenuRef}
                         className={userMenuClass}
                         role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
-                        <NavLink to="/" className="nav-usermenu-link" role="menuitem" exact={true}
-                                 id="user-menu-item-1">Einstellungen</NavLink>
+                        <NavLink to="/profile" className="nav-usermenu-link" role="menuitem" exact={true}
+                                 id="user-menu-item-1">Profil</NavLink>
                         <button onClick={() => logout({
                             returnTo: window.location.origin
                         })} className="nav-usermenu-link" role="menuitem"
