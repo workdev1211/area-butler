@@ -33,7 +33,7 @@ export class User {
   requestsExecuted: number;
 }
 
-export const checkSubscription = (
+export const checkSubscriptionViolation = (
   user: UserDocument,
   check: (user: User, subscription: ApiSubscriptionPlan) => boolean,
 ): boolean => {
