@@ -1,3 +1,5 @@
+import { ApiSubscriptionPlanType } from "./subscription-plan";
+
 export interface ApiConfig {
   auth: {
     clientId: string;
@@ -9,6 +11,7 @@ export interface ApiConfig {
 export interface ApiUser {
   fullname: string;
   email: string;
+  subscriptionPlan: ApiSubscriptionPlanType;
 }
 
 export interface ApiUpsertUser {

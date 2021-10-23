@@ -1,3 +1,4 @@
+import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
@@ -16,6 +17,13 @@ export class User {
 
   @Prop({ type: Boolean, default: false })
   consentGiven: boolean;
+
+  @Prop({
+    type: String,
+    enum: [ApiSubscriptionPlanType.STANDARD, ApiSubscriptionPlanType.PRO],
+    default: ApiSubscriptionPlanType.STANDARD,
+  })
+  subscriptionPlan: ApiSubscriptionPlanType;
 }
 
 export const Userschema = SchemaFactory.createForClass(User);
