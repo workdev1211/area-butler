@@ -1,4 +1,4 @@
-import { ApiSubscriptionPlanType } from "./subscription-plan";
+import { ApiSubscriptionPlan } from "./subscription-plan";
 
 export interface ApiConfig {
   auth: {
@@ -11,7 +11,7 @@ export interface ApiConfig {
 export interface ApiUser {
   fullname: string;
   email: string;
-  subscriptionPlan: ApiSubscriptionPlanType;
+  subscriptionPlan: ApiSubscriptionPlan;
   requestsExecuted: number;
 }
 
