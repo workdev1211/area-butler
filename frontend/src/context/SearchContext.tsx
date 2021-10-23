@@ -1,4 +1,6 @@
 import React from "react";
+import { osmEntityTypes } from "../../../shared/constants/constants";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
     ApiCoordinates, ApiGeometry,
     ApiOsmEntity,
@@ -6,10 +8,7 @@ import {
     OsmName,
     TransportationParam
 } from "../../../shared/types/types";
-import {defaultTransportationParams} from "../components/TransportationParams";
-import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
-import {osmEntityTypes} from "../../../shared/constants/constants";
-import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import { defaultTransportationParams } from "../components/TransportationParams";
 
 export interface MapClipping {
     zoomLevel: number;

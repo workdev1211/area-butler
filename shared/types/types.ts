@@ -11,6 +11,11 @@ export interface ApiUser {
   email: string;
 }
 
+export interface ApiUpsertUser {
+  fullname: string;
+  consentGiven: boolean;
+}
+
 export interface ApiInsertFeedback {
   description: string;
   type: FeedbackType;

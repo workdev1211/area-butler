@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { ApiUpsertUser } from '@area-butler-types/types';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model, Types } from 'mongoose';
@@ -18,10 +19,9 @@ export class UserService {
   ): Promise<UserDocument> {
     const existingUser = await this.userModel.findOne({ email });
     if (!!existingUser) {
-      await existingUser.updateOne({ fullname });
       return existingUser;
     } else {
-      const newUser = await new this.userModel({ email, fullname }).save();
+      const newUser = await new this.userModel({ email, fullname, consentGiven: false }).save();
       const event: UserCreatedEvent = {
         user: newUser,
       };
@@ -30,6 +30,22 @@ export class UserService {
 
       return newUser;
     }
+  }
+
+  public async patchUser(
+    email: string,
+    upsertUser: ApiUpsertUser
+  ) {
+    const existingUser = await this.userModel.findOne({ email });
+
+    if (!existingUser) {
+      throw new HttpException('Unknown User', 400);
+    }
+
+    Object.assign(existingUser, upsertUser);
+
+    return existingUser.save();
+
   }
 
   public async findByEmail(email: string): Promise<UserDocument> {
