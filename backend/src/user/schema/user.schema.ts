@@ -1,6 +1,10 @@
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
+import {
+  ApiSubscriptionPlan,
+  ApiSubscriptionPlanType,
+} from '@area-butler-types/subscription-plan';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+import { allSubscriptions } from '../../../../shared/constants/subscription-plan';
 
 export type UserDocument = User & Document;
 
@@ -28,5 +32,13 @@ export class User {
   @Prop({ type: Number, default: 0 })
   requestsExecuted: number;
 }
+
+export const checkSubscription = (
+  user: UserDocument,
+  check: (user: User, subscription: ApiSubscriptionPlan) => boolean,
+): boolean => {
+  const userSubscription = allSubscriptions[user.subscriptionPlan];
+  return check(user, userSubscription);
+};
 
 export const Userschema = SchemaFactory.createForClass(User);

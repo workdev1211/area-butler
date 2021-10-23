@@ -21,7 +21,11 @@ export class UserService {
     if (!!existingUser) {
       return existingUser;
     } else {
-      const newUser = await new this.userModel({ email, fullname, consentGiven: false }).save();
+      const newUser = await new this.userModel({
+        email,
+        fullname,
+        consentGiven: false,
+      }).save();
       const event: UserCreatedEvent = {
         user: newUser,
       };
@@ -32,10 +36,7 @@ export class UserService {
     }
   }
 
-  public async patchUser(
-    email: string,
-    upsertUser: ApiUpsertUser
-  ) {
+  public async patchUser(email: string, upsertUser: ApiUpsertUser) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -45,7 +46,6 @@ export class UserService {
     Object.assign(existingUser, upsertUser);
 
     return existingUser.save();
-
   }
 
   public async findByEmail(email: string): Promise<UserDocument> {

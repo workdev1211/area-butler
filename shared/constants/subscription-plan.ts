@@ -15,9 +15,9 @@ export const allSubscriptionTypes: {
 export const standardSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.STANDARD,
   limits: {
-    numberOfRealEstates: 5,
+    numberOfRealEstates: 500, // TODO proper limits
   },
-  stripeId: "124",
+  stripeId: "124", // TODO proper stripe id
   appFeatures: {
     sendCustomerRequest: false,
     dataSources: [ApiDataSource.OSM],
@@ -27,9 +27,9 @@ export const standardSubscription: ApiSubscriptionPlan = {
 export const proSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PRO,
   limits: {
-    numberOfRealEstates: 20,
+    numberOfRealEstates: 2000, // TODO proper limits
   },
-  stripeId: "125",
+  stripeId: "125", // TODO proper stripe id
   appFeatures: {
     sendCustomerRequest: true,
     dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],

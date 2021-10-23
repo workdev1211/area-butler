@@ -1,7 +1,7 @@
 import {FormModalData} from "components/FormModal";
 import {useHttp} from "hooks/http";
 import React from "react";
-import {deriveGeocodeByAddress, toastSuccess} from "shared/shared.functions";
+import {deriveGeocodeByAddress, toastError, toastSuccess} from "shared/shared.functions";
 import {ApiFurnishing, ApiRealEstateListing, ApiUpsertRealEstateListing,} from "../../../shared/types/real-estate";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import RealEstateForm from "./RealEstateForm";
@@ -85,6 +85,7 @@ export const RealEstateFormHandler: React.FunctionComponent<RealEstateFormHandle
                 toastSuccess("Objekt erfolgreich gespeichert!");
                 history.push(`/real-estates/${newRealEstate.id}`);
             } catch (err) {
+                toastError("Fehler beim Speichern des Objektes");
                 console.log(err);
                 postSubmit(false);
             }

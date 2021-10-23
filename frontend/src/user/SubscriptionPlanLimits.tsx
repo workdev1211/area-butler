@@ -16,7 +16,7 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
 
     return <div className="mt-20 flex flex-col gap-5">
         <div>
-            <h1 className="font-bold text-xl">Ihre aktuellens Abonnement und Kontingente</h1>
+            <h1 className="font-bold text-xl">Ihre aktuelles Abonnement und Kontingente</h1>
             <h3 className="font-bold">Aktuelles Abonnement: {subscriptionLabel}</h3>
         </div>
         <div key="request-contingent" className="flex flex-wrap gap-6 items-center">
