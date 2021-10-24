@@ -13,11 +13,11 @@ export interface ApiUser {
   email: string;
   subscriptionPlan: ApiSubscriptionPlan;
   requestsExecuted: number;
+  consentGiven?: Date;
 }
 
 export interface ApiUpsertUser {
   fullname: string;
-  consentGiven: boolean;
 }
 
 export interface ApiInsertFeedback {

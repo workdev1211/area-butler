@@ -19,8 +19,8 @@ export class User {
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
-  @Prop({ type: Boolean, default: false })
-  consentGiven: boolean;
+  @Prop({ type: Date, required: false })
+  consentGiven: Date;
 
   @Prop({
     type: String,

@@ -73,7 +73,7 @@ const Nav: FunctionComponent = () => {
                         <div className="nav-links">
                             <NavLink to="/" className="nav-link" exact={true}
                                      aria-current="page">Umgebungsanalyse</NavLink>
-                            <Authenticated>
+                            <Authenticated forceConsentRerouting={false}>
                                 <NavLink to="/real-estates" className="nav-link"
                                          aria-current="page">Meine Objekte</NavLink>
                                 <NavLink to="/potential-customers" className="nav-link"

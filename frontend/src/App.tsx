@@ -39,6 +39,8 @@ const RealEstatesPage = lazy(() => import("./pages/RealEstatesPage"));
 
 const RealEstatePage = lazy(() => import("./pages/RealEstatePage"));
 
+const UserConsentPage = lazy(() => import("./pages/UserConsentPage"));
+
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
 const feedbackModalConfig: ModalConfig = {
@@ -67,7 +69,7 @@ function App() {
         <Nav />
         <Suspense fallback={<LoadingMessage />}>
           <UserContextProvider>
-            <Authenticated>
+            <Authenticated forceConsentRerouting={false}>
               <FormModal modalConfig={feedbackModalConfig}>
                 <FeedbackFormHandler></FeedbackFormHandler>
               </FormModal>
@@ -76,10 +78,13 @@ function App() {
               <RealEstateContextProvider>
                 <SearchContextProvider>
                   <Switch>
+                    <Route path="/consent">
+                      <UserConsentPage />
+                    </Route>
                     <Route path="/profile">
-                        <Authenticated>
-                            <UserProfilePage />
-                        </Authenticated>
+                      <Authenticated>
+                        <UserProfilePage />
+                      </Authenticated>
                     </Route>
                     <Route path="/impress">
                       <ImpressPage />

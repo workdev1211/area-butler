@@ -24,7 +24,7 @@ export class UserService {
       const newUser = await new this.userModel({
         email,
         fullname,
-        consentGiven: false,
+        consentGiven: null,
       }).save();
       const event: UserCreatedEvent = {
         user: newUser,
@@ -44,6 +44,20 @@ export class UserService {
     }
 
     Object.assign(existingUser, upsertUser);
+
+    return existingUser.save();
+  }
+
+  public async giveConsent(email: string) {
+    const existingUser = await this.userModel.findOne({ email });
+
+    if (!existingUser) {
+      throw new HttpException('Unknown User', 400);
+    }
+
+    if (!existingUser.consentGiven) {
+      existingUser.consentGiven = new Date();
+    }
 
     return existingUser.save();
   }

@@ -1,17 +1,39 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import { withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter } from "react-router-dom";
 import { UserActions, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { ApiUser } from "../../../shared/types/types";
 
-const Authenticated = withRouter(({ history, children }) => {
+interface AuthenticatedProps extends RouteComponentProps {
+  forceConsentRerouting?: boolean;
+}
+
+const Authenticated = withRouter<
+  AuthenticatedProps,
+  FunctionComponent<AuthenticatedProps>
+>(({ history, children, forceConsentRerouting = true }) => {
   const { isAuthenticated } = useAuth0();
 
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated);
 
   const { get } = useHttp();
   const { userState, userDispatch } = useContext(UserContext);
+
+  useEffect(() => {
+    if (
+      forceConsentRerouting &&
+      !!userState?.user &&
+      !userState?.user?.consentGiven
+    ) {
+      history.push("/consent");
+    }
+  }, [userState]);
 
   useEffect(() => {
     setIsLoggedIn(isAuthenticated);

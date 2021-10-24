@@ -25,4 +25,12 @@ export class UserController {
     );
   }
 
+  @Post('me/consent')
+  public async giveConsent(@Req() request): Promise<ApiUser> {
+    const user = request?.user;
+    return mapUserToApiUser(
+      await this.userService.giveConsent(user.email)
+    );
+  }
+
 }

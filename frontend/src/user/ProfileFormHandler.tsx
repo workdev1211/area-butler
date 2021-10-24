@@ -13,14 +13,14 @@ export const mapFormToApiUpsertUser = async (
   };
 };
 
-export interface PotentialCustomerFormHandlerData {
+export interface ProfileFormHandlerProps {
   user: Partial<ApiUser>;
   formId?: string;
   beforeSubmit?: () => void;
   postSubmit?: (success: boolean) => void;
 }
 
-const ProfileFormHandler: React.FunctionComponent<PotentialCustomerFormHandlerData> =
+const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> =
   ({ formId, user, beforeSubmit = () => {}, postSubmit = () => {} }) => {
     const { post } = useHttp();
 
