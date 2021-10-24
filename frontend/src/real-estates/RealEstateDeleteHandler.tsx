@@ -33,7 +33,7 @@ export const RealEstateDeleteHandler: React.FunctionComponent<RealEstateDeleteHa
             payload: realEstate,
           });
         }
-        toastSuccess("Object erfolgreich gelöscht!");
+        toastSuccess("Objekt erfolgreich gelöscht!");
         postSubmit(true);
       } catch (err) {
         console.log(err);
