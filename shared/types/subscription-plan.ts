@@ -1,7 +1,7 @@
 export enum ApiSubscriptionPlanType {
     STANDARD = 'STANDARD',
     PRO = 'PRO',
-    // BUSINESS_PLUS = 'BUSINESS_PLUS', TODO coming soon
+    BUSINESS_PLUS = 'BUSINESS_PLUS'
     // ENTERPRISE = 'ENTERPRISE' TODO coming soon
 }
 
@@ -10,6 +10,7 @@ export interface ApiSubscriptionPlan {
     stripeId: string,
     limits: {
         numberOfRealEstates?: number,
+        numberOfRequestsPerMonth?: number,
     },
     appFeatures: {
         sendCustomerQuestionnaireRequest: boolean,
