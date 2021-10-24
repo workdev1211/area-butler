@@ -6,7 +6,10 @@ import {
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { checkSubscriptionViolation, UserDocument } from 'src/user/schema/user.schema';
+import {
+  checkSubscriptionViolation,
+  UserDocument,
+} from 'src/user/schema/user.schema';
 import {
   PotentialCustomer,
   PotentialCustomerDocument,
@@ -103,17 +106,13 @@ export class PotentialCustomerService {
     user: UserDocument,
     { ...upsertData }: ApiUpsertQuestionnaireRequest,
   ): Promise<QuestionnaireRequestDocument> {
-
-
-    if (
-      checkSubscriptionViolation(
-        user,(user, subscription) => !subscription.appFeatures.sendCustomerQuestionnaireRequest)
-    ) {
-      throw new HttpException(
-        'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
-        400,
-      );
-    }
+    
+    checkSubscriptionViolation(
+      user,
+      subscription =>
+        !subscription.appFeatures.sendCustomerQuestionnaireRequest,
+      'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
+    );
 
     const documentData: any = {
       ...upsertData,
@@ -181,12 +180,13 @@ export class PotentialCustomerService {
         to: [{ name: user.fullname, email: user.email }],
         templateId: 2,
         params: {
-          href: `${configService.getBaseAppUrl()}/potential-customers/${newCustomer.id}`,
+          href: `${configService.getBaseAppUrl()}/potential-customers/${
+            newCustomer.id
+          }`,
         },
       };
-  
-      await this.mailSender.sendMail(mailProps);
 
+      await this.mailSender.sendMail(mailProps);
     } else {
       await this.updatePotentialCustomer(
         user,

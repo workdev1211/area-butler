@@ -2,7 +2,10 @@ import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { checkSubscriptionViolation, UserDocument } from 'src/user/schema/user.schema';
+import {
+  checkSubscriptionViolation,
+  UserDocument,
+} from 'src/user/schema/user.schema';
 import {
   RealEstateListing,
   RealEstateListingDocument,
@@ -28,19 +31,13 @@ export class RealEstateListingService {
     const currentNumberOfRealEstates = (await this.getRealEstateListings(user))
       .length;
 
-    if (
-      checkSubscriptionViolation(
-        user,
-        (user, subscription) =>
-          subscription.limits.numberOfRealEstates &&
-          currentNumberOfRealEstates >= subscription.limits.numberOfRealEstates,
-      )
-    ) {
-      throw new HttpException(
-        'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
-        400,
-      );
-    }
+    checkSubscriptionViolation(
+      user,
+      subscription =>
+        subscription.limits.numberOfRealEstates &&
+        currentNumberOfRealEstates >= subscription.limits.numberOfRealEstates,
+      'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
+    );
 
     const documentData: any = {
       ...upsertData,

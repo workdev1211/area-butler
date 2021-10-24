@@ -2,6 +2,7 @@ import {
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from '@area-butler-types/subscription-plan';
+import { HttpException } from '@nestjs/common';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import { allSubscriptions } from '../../../../shared/constants/subscription-plan';
@@ -35,10 +36,13 @@ export class User {
 
 export const checkSubscriptionViolation = (
   user: UserDocument,
-  check: (user: User, subscription: ApiSubscriptionPlan) => boolean,
-): boolean => {
+  check: (subscription: ApiSubscriptionPlan) => boolean,
+  message: string,
+): void => {
   const userSubscription = allSubscriptions[user.subscriptionPlan];
-  return check(user, userSubscription);
+  if (check(userSubscription)) {
+    throw new HttpException(message, 400);
+  }
 };
 
 export const Userschema = SchemaFactory.createForClass(User);
