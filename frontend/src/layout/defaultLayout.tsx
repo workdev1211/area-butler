@@ -20,7 +20,7 @@ const DefaultLayout: React.FunctionComponent<DefaultLayoutProps> = ({title, with
                         <div className="dropdown-btn-content">Aktionen <span className="divider" /><img src={caretDown} alt="icon-dropdown" />
                         </div>
                     </div>
-                    <ul tabIndex={0} className="right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-72">
+                    <ul tabIndex={0} className="sm:right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-72">
                         { actionTop }
                     </ul>
                 </div>}
