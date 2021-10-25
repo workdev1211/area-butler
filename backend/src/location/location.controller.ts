@@ -16,6 +16,6 @@ export class LocationController extends AuthenticatedController {
     @InjectUser() user: UserDocument,
     @Body() search: ApiSearch,
   ): Promise<ApiSearchResponse> {
-    return this.locationService.searchLocation(search);
+    return this.locationService.searchLocation(user, search);
   }
 }

@@ -70,4 +70,9 @@ export class UserService {
     const oid = new Types.ObjectId(id);
     return this.userModel.findById({ _id: oid });
   }
+  
+  public async incrementExecutedRequestCount(id: string): Promise<void> {
+    const oid = new Types.ObjectId(id);
+    await this.userModel.updateOne({_id: oid}, {$inc: {requestsExecuted: 1}});
+  }
 }

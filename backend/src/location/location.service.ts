@@ -17,6 +17,8 @@ import {IsochroneService} from 'src/client/isochrone/isochrone.service';
 import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
 import {calculateMinutesToMeters} from '../../../shared/constants/constants';
+import { UserService } from 'src/user/user.service';
+import { UserDocument } from 'src/user/schema/user.schema';
 
 @Injectable()
 export class LocationService {
@@ -25,9 +27,10 @@ export class LocationService {
     private isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
     private locationModel: Model<LocationSearchDocument>,
+    private userService: UserService
   ) {}
 
-  async searchLocation(search: ApiSearch): Promise<ApiSearchResponse> {
+  async searchLocation(user: UserDocument, search: ApiSearch): Promise<ApiSearchResponse> {
     const coordinates = search.coordinates;
     const preferredAmenities = search.preferredAmenities;
 
@@ -86,6 +89,7 @@ export class LocationService {
     }
 
     await new this.locationModel({ locationSearch: search }).save();
+    await this.userService.incrementExecutedRequestCount(user.id);
 
     return {
       centerOfInterest: {

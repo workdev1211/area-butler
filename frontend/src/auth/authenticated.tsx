@@ -43,9 +43,8 @@ const Authenticated = withRouter<
         const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
         userDispatch({ type: UserActions.SET_USER, payload: user });
       };
-      if (!userState.user) {
-        fetchUser();
-      }
+
+      fetchUser();
     }
   }, [isAuthenticated, setIsLoggedIn]);
 
