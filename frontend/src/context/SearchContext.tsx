@@ -1,14 +1,15 @@
 import React from "react";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import {osmEntityTypes} from "../../../shared/constants/constants";
+import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {
-    ApiCoordinates, ApiGeometry,
+    ApiCoordinates,
+    ApiGeometry,
     ApiOsmEntity,
     ApiSearchResponse,
     OsmName,
     TransportationParam
 } from "../../../shared/types/types";
-import { defaultTransportationParams } from "../components/TransportationParams";
+import {defaultTransportationParams} from "../components/TransportationParams";
 
 export interface MapClipping {
     zoomLevel: number;
@@ -88,7 +89,12 @@ const reducer: (
             return {...state, searchBusy: action.payload}
         }
         case SearchContextActions.SET_SEARCH_RESPONSE: {
-            return {...state, searchResponse: {...action.payload}, location: action.payload.centerOfInterest.coordinates}
+            return {
+                ...state,
+                searchResponse: {...action.payload},
+                location: action.payload.centerOfInterest.coordinates,
+                mapCenter: action.payload.centerOfInterest.coordinates
+            }
         }
         case SearchContextActions.SET_ZENSUS_DATA: {
             return {...state, censusData: [...action.payload]}
@@ -106,10 +112,18 @@ const reducer: (
             return {...state, highlightId: action.payload}
         }
         case SearchContextActions.SET_PRINTING_ACTIVE: {
-            return {...state, printingActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
+            return {
+                ...state,
+                printingActive: action.payload,
+                mapCenter: state.searchResponse?.centerOfInterest.coordinates
+            };
         }
         case SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE: {
-            return {...state, printingCheatsheetActive: action.payload, mapCenter: state.searchResponse?.centerOfInterest.coordinates};
+            return {
+                ...state,
+                printingCheatsheetActive: action.payload,
+                mapCenter: state.searchResponse?.centerOfInterest.coordinates
+            };
         }
         case SearchContextActions.ADD_MAP_CLIPPING: {
             const newMapClippings = [...(state.mapClippings || [])];
