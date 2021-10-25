@@ -53,7 +53,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
                                 auf Ihre Kriterien abgestimmt ist.
                             </p>
                             <p className="mx-10 my-5">
-                                Machen Sie sich auf den nächsten Seite ein eigenes Bild
+                                Machen Sie sich auf den nächsten Seiten ein eigenes Bild!
                             </p>
                             <div className="flex flex-col gap-2 m-10">
                                 {!props.realEstateListing && (
