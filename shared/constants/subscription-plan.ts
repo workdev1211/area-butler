@@ -2,6 +2,7 @@ import {
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
   ApiDataSource,
+  ApiRequestContingentType,
 } from "../types/subscription-plan";
 
 export const allSubscriptionTypes: {
@@ -16,8 +17,12 @@ export const allSubscriptionTypes: {
 export const standardSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.STANDARD,
   limits: {
+    monthlyRequestContingent: {
+      type: ApiRequestContingentType.RECURRENT,
+      amount: 20
+    },
     numberOfRealEstates: 500, // TODO proper limits
-    numberOfRequestsPerMonth: 20
+    numberOfRequestsPerMonth: 5000 // TODO proper limits
   },
   stripeId: "124", // TODO proper stripe id
   appFeatures: {
@@ -29,6 +34,10 @@ export const standardSubscription: ApiSubscriptionPlan = {
 export const proSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PRO,
   limits: {
+    monthlyRequestContingent: {
+      type: ApiRequestContingentType.RECURRENT,
+      amount: 100
+    },
     numberOfRealEstates: 2000, // TODO proper limits
     numberOfRequestsPerMonth: 100
   },
@@ -42,6 +51,10 @@ export const proSubscription: ApiSubscriptionPlan = {
 export const businessPlusSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.BUSINESS_PLUS,
   limits: {
+    monthlyRequestContingent: {
+      type: ApiRequestContingentType.RECURRENT,
+      amount: 500
+    },
     numberOfRequestsPerMonth: 500
   },
   stripeId: "126", // TODO proper stripe id

@@ -1,15 +1,18 @@
 import { RealEstateContext } from "context/RealEstateContext";
-import { UserContext } from "context/UserContext";
+import { UserActions, UserContext } from "context/UserContext";
+import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import { v4 as uuid } from "uuid";
+import { ApiUser } from "../../../shared/types/types";
 
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
-  const { userState } = useContext(UserContext);
+  const { get } = useHttp();
+  const { userState, userDispatch } = useContext(UserContext);
   const { realEstateState } = useContext(RealEstateContext);
 
   const formId = `form-${uuid()}`;
@@ -17,6 +20,15 @@ const UserProfilePage: FunctionComponent = () => {
   const postSubmit = (success: boolean) => {
     setBusy(false);
   };
+
+  useEffect(() => {
+    const fetchUser = async () => {
+      const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+      userDispatch({ type: UserActions.SET_USER, payload: user });
+    };
+
+    fetchUser();
+  }, [true]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 

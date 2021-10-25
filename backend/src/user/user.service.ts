@@ -1,9 +1,14 @@
+import {
+  ApiRequestContingent,
+  ApiRequestContingentType,
+} from '@area-butler-types/subscription-plan';
 import { ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model, Types } from 'mongoose';
 import { EventType, UserCreatedEvent } from 'src/event/event.types';
+import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 
 @Injectable()
@@ -70,9 +75,54 @@ export class UserService {
     const oid = new Types.ObjectId(id);
     return this.userModel.findById({ _id: oid });
   }
-  
+
   public async incrementExecutedRequestCount(id: string): Promise<void> {
     const oid = new Types.ObjectId(id);
-    await this.userModel.updateOne({_id: oid}, {$inc: {requestsExecuted: 1}});
+    await this.userModel.updateOne(
+      { _id: oid },
+      { $inc: { requestsExecuted: 1 } },
+    );
+  }
+
+  public async addRequestContingentIncrease(
+    user: UserDocument,
+    amount: number,
+  ): Promise<UserDocument> {
+    user.requestContingents.push({
+      type: ApiRequestContingentType.INCREASE,
+      amount,
+      date: new Date(),
+    });
+    const oid = new Types.ObjectId(user.id);
+    await this.userModel.updateOne({_id: oid}, {$set: {requestContingents: user.requestContingents}});
+    return Promise.resolve(user);
+  }
+
+  public async addMonthlyRequestContingentIfMissing(
+    user: UserDocument,
+    date: Date,
+  ): Promise<UserDocument> {
+    if (!user.subscriptionPlan) {
+      return Promise.resolve(user);
+    }
+
+    const existingMonthlyContingent = user.requestContingents.find(
+      c =>
+        c.date.getMonth() === date.getMonth() &&
+        c.date.getFullYear() === date.getFullYear(),
+    );
+
+    if (!!existingMonthlyContingent) {
+      return Promise.resolve(user);
+    }
+
+    const subscription = allSubscriptions[user.subscriptionPlan];
+    user.requestContingents.push({
+      ...subscription.limits.monthlyRequestContingent,
+      date,
+    });
+    const oid = new Types.ObjectId(user.id);
+    await this.userModel.updateOne({_id: oid}, {$set: {requestContingents: user.requestContingents}});
+    return Promise.resolve(user);
   }
 }

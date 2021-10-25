@@ -18,6 +18,9 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
         (item) => user.subscriptionPlan.type === item.type
       )?.label || "Unbekannt";
 
+
+    const totalRequestContingent = user.requestContingents.length > 0 ? user.requestContingents.map(c => c.amount).reduce((acc, inc) => acc + inc) : 0;
+
     return (
       <div className="mt-20 flex flex-col gap-5">
         <div>
@@ -33,11 +36,11 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
           className="flex flex-wrap gap-6 items-center"
         >
           <span className="w-64">
-            Anfragen ausgeführt {user.requestsExecuted}/{60}:
+            Anfragen ausgeführt {user.requestsExecuted}/{totalRequestContingent}:
           </span>
           <progress
             value={user.requestsExecuted}
-            max={60}
+            max={totalRequestContingent}
             className="w-96 progress progress-primary"
           ></progress>
         </div>

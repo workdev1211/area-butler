@@ -9,6 +9,7 @@ export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
     stripeId: string,
     limits: {
+        monthlyRequestContingent: ApiRequestContingent,
         numberOfRealEstates?: number,
         numberOfRequestsPerMonth?: number,
     },
@@ -16,6 +17,17 @@ export interface ApiSubscriptionPlan {
         sendCustomerQuestionnaireRequest: boolean,
         dataSources: ApiDataSource[]
     }
+}
+
+export interface ApiRequestContingent {
+    amount: number;
+    type: ApiRequestContingentType;
+    date?: Date
+}
+
+export enum ApiRequestContingentType {
+    RECURRENT = 'RECURRENT',
+    INCREASE = 'INCRESE',
 }
 
 

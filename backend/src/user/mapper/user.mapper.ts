@@ -8,5 +8,6 @@ export const mapUserToApiUser = (user: UserDocument): ApiUser => ({
   email: user.email,
   subscriptionPlan: allSubscriptions[!!user.subscriptionPlan ? user.subscriptionPlan : ApiSubscriptionPlanType.STANDARD],
   requestsExecuted: user.requestsExecuted,
-  consentGiven: user.consentGiven
+  consentGiven: user.consentGiven,
+  requestContingents: user.requestContingents
 });

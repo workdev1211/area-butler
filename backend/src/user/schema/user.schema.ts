@@ -1,4 +1,5 @@
 import {
+  ApiRequestContingent,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from '@area-butler-types/subscription-plan';
@@ -32,6 +33,10 @@ export class User {
 
   @Prop({ type: Number, default: 0 })
   requestsExecuted: number;
+
+  @Prop({ type: Array, default: [] })
+  requestContingents: ApiRequestContingent[];
+
 }
 
 export const checkSubscriptionViolation = (
