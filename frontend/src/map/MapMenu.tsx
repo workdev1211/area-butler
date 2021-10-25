@@ -29,6 +29,8 @@ export interface MapMenuProps {
     resetPosition: () => void;
 }
 
+const localityPaginationSize = 5;
+
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             census,
                                                             toggleCensus,
@@ -45,6 +47,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
     const [localitiesOpen, setLocalitiesOpen] = useState(true);
     const [localityOpen, setLocalityOpen] = useState<string[]>([]);
+    const [localityPagination, setLocalityPagination] = useState<number[]>(groupedEntries.map(() => localityPaginationSize));
 
     const toggleLocality = (title: string, open: boolean) => {
         const filtered = [...localityOpen.filter(l => l !== title)];
@@ -91,7 +94,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
             <div className="collapse-content">
                 <ul>
                     {
-                        groupedEntries.filter(ge => ge.items.length).map(ge => {
+                        groupedEntries.filter((ge) => ge.items.length).map((ge, geIndex) => {
                             const isRealEstateListing = ge.items[0].label === realEstateListingsTitle;
                             const isPreferredLocation = ge.items[0].label === preferredLocationsTitle;
                             const groupIconInfo = isRealEstateListing ? realEstateListingsIcon : isPreferredLocation ? preferredLocationsIcon : deriveIconForOsmName(ge.items[0].type as OsmName);
@@ -136,17 +139,22 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                 Auto
                                             </div>
                                         </div>
-                                        {localityOpen.includes(ge.title) && ge.items.map((item, index) => <LocalityItem
-                                            key={index}
-                                            item={item}
-                                            group={ge}
-                                            onClickTitle={(item) => highlightZoomEntity(item)}
-                                            onToggleRoute={(item) => toggleRoute(item)}
-                                            route={routes?.find(r =>
-                                                r.coordinates.lat === item.coordinates.lat &&
-                                                r.coordinates.lng === item.coordinates.lng && r.show)}
+                                        {localityOpen.includes(ge.title) && ge.items.slice(0, localityPagination[geIndex]).map((item, index) =>
+                                            <LocalityItem
+                                                key={index}
+                                                item={item}
+                                                group={ge}
+                                                onClickTitle={(item) => highlightZoomEntity(item)}
+                                                onToggleRoute={(item) => toggleRoute(item)}
+                                                route={routes?.find(r =>
+                                                    r.coordinates.lat === item.coordinates.lat &&
+                                                    r.coordinates.lng === item.coordinates.lng && r.show)}
 
-                                        />)}
+                                            />)}
+                                        {localityOpen.includes(ge.title) && ge.items.length > localityPagination[geIndex] &&
+                                        <button type="button" className="btn btn-link"
+                                                onClick={() => setLocalityPagination(localityPagination.map((lp, index) => index !== geIndex ? lp : lp + localityPaginationSize))}>Mehr
+                                            anzeigen</button>}
                                     </div>
                                 </div>
                             </li>);
