@@ -86,7 +86,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                             {searchContextState.mapClippings.length < 4 ? buttonTitle : headerCompleted}
                         </h1>
 
-                        <EntitySelection groupedEntries={filteredEntites} setGroupedEntries={setFilteredEntities}>
+                        <EntitySelection groupedEntries={filteredEntites} setGroupedEntries={setFilteredEntities} limit={exportType !== "CHEATSHEET" ? 10 : 3}>
                         </EntitySelection>
 
                         {searchContextState.mapClippings.length < 4 && (
