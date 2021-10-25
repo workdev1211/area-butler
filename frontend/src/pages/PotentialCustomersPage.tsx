@@ -84,7 +84,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     <tbody>
                     {potentialCustomerState.customers.map((customer: ApiPotentialCustomer) => (
                         <tr key={customer.id}>
-                            <td>{customer.name}</td>
+                            <th>{customer.name}</th>
                             <td><a href={`mailto:${customer.email}`} className="link-primary">{customer.email}</a></td>
                             <td style={{width: "25%", whiteSpace: "pre-wrap"}}>
                                 {Array.isArray(customer.preferredLocations) && customer.preferredLocations.length ? customer.preferredLocations

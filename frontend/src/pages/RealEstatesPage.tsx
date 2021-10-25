@@ -61,7 +61,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
                     <tbody>
                     {realEstateState.listings.map((realEstate: ApiRealEstateListing) => (
                         <tr key={realEstate.id}>
-                            <td>{realEstate.name}</td>
+                            <th>{realEstate.name}</th>
                             <td>{realEstate.address}</td>
                             <td>
                                 {!!realEstate?.costStructure?.type &&
