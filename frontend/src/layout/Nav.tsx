@@ -28,7 +28,7 @@ const Nav: FunctionComponent = () => {
 
     let userMenuClass = 'hidden';
     if (userMenuOpen) {
-        userMenuClass = 'origin-top-right absolute right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-50';
+        userMenuClass = 'origin-top-right absolute right-2 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-2500';
     }
     const userMenuRef = useRef(null);
     useOnClickOutside(userMenuRef, () => userMenuOpen && setUserMenuOpen(false));
