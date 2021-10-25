@@ -126,8 +126,6 @@
 }
 .map-menu .locality-option .collapse-content {
     padding: 0 !important;
-    max-height: 25vh !important;
-    overflow-y: scroll;
 }
 .map-menu .locality-option.collapse-child-open .collapse-content {
     background: white !important;
