@@ -62,7 +62,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                 item.distanceInMeters
               }
             >
-              {hasNames && <td className="pr-4 py-1">{item.name || "-"}</td>}
+              {hasNames && <td className="pr-4 py-1">{item.name || entityGroup.title}</td>}
               <td className={hasNames ? "px-4 py-1" : "py-1"}>
                 {item.distanceInMeters
                   ? Math.trunc(item.distanceInMeters) + " m"
