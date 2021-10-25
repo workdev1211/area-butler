@@ -213,18 +213,21 @@ const SearchResultPage: React.FunctionComponent = () => {
     const toggleRoutesToEntity = async (origin: ApiCoordinates, item: ResultEntity) => {
         const existing = routes.find((r) => r.coordinates.lat === item.coordinates.lat && r.coordinates.lng === item.coordinates.lng);
         if (existing) {
-            setRoutes((prevState) => [...prevState.filter(r => r.coordinates.lat !== item.coordinates.lat && r.coordinates.lng !== item.coordinates.lng),{...existing, show: !existing.show}]
+            setRoutes((prevState) => [...prevState.filter(r => r.coordinates.lat !== item.coordinates.lat && r.coordinates.lng !== item.coordinates.lng), {
+                    ...existing,
+                    show: !existing.show
+                }]
             )
         } else {
             const routesResult = await fetchRoutes({
                 meansOfTransportation: [MeansOfTransportation.BICYCLE, MeansOfTransportation.CAR, MeansOfTransportation.WALK],
                 origin: origin,
                 destinations: [{
-                    title: item.name || ''+item.id,
+                    title: item.name || '' + item.id,
                     coordinates: item.coordinates
                 }]
             })
-            setRoutes((prev) =>([...prev, {
+            setRoutes((prev) => ([...prev, {
                 routes: routesResult[0].routes,
                 show: true,
                 coordinates: item.coordinates
@@ -249,7 +252,10 @@ const SearchResultPage: React.FunctionComponent = () => {
                 <button
                     type="button"
                     onClick={() => {
-                        searchContextDispatch({type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE, payload: true});
+                        searchContextDispatch({
+                            type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
+                            payload: true
+                        });
                     }}
                     className="btn btn-link"
                 >
@@ -262,8 +268,8 @@ const SearchResultPage: React.FunctionComponent = () => {
     const MapMenuMobileBtn: React.FunctionComponent = () => {
         return (
             <button type="button" className="mobile-menu-btn" onMouseDown={() => setMobileMenuOpen(!mobileMenuOpen)}>
-                {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-                {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
+                {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu"/>}
+                {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close"/>}
             </button>
         );
     }
@@ -274,7 +280,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                            actionBottom={[<BackButton key="back-button" to="/"/>]}>
                 <div className="search-result-container">
                     <div className="relative flex-1">
-                        <MapNavBar activeMeans={activeMeans} availableMeans={availableMeans}
+                        <MapNavBar transportationParams={searchContextState.transportationParams}
+                                   activeMeans={activeMeans} availableMeans={availableMeans}
                                    onMeansChange={(newValues) => setActiveMeans(newValues)}
                                    showPreferredLocations={showPreferredlocations}
                                    onToggleShowPreferredLocations={(active) => setShowPreferredLocations(active)}
@@ -299,7 +306,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                             routes={routes}
                         />
                     </div>
-                    <MapMenuMobileBtn />
+                    <MapMenuMobileBtn/>
                     <MapMenu mobileMenuOpen={mobileMenuOpen}
                              census={showCensus}
                              toggleCensus={(active) => setShowCensus(active)}
@@ -311,9 +318,11 @@ const SearchResultPage: React.FunctionComponent = () => {
                     />
                 </div>
             </DefaultLayout>
-            {searchContextState.printingActive && <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
+            {searchContextState.printingActive &&
+            <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
                          censusData={searchContextState.censusData!}/>}
-            {searchContextState.printingCheatsheetActive && <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
+            {searchContextState.printingCheatsheetActive &&
+            <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
                          censusData={searchContextState.censusData!} exportType="CHEATSHEET"/>}
         </>
     )

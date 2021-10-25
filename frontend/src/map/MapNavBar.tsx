@@ -1,9 +1,10 @@
 import React from "react";
 import "./MapNavBar.css";
 import {meansOfTransportations} from "../../../shared/constants/constants";
-import {MeansOfTransportation} from "../../../shared/types/types";
+import {MeansOfTransportation, TransportationParam, UnitsOfTransportation} from "../../../shared/types/types";
 
 export interface MapNavBarProps {
+    transportationParams: TransportationParam[];
     availableMeans: MeansOfTransportation[];
     activeMeans: MeansOfTransportation[];
     onMeansChange: (newValues: MeansOfTransportation[]) => void;
@@ -14,6 +15,7 @@ export interface MapNavBarProps {
 }
 
 const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
+                                                                transportationParams,
                                                                 availableMeans,
                                                                 activeMeans,
                                                                 onMeansChange,
@@ -45,17 +47,19 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
         <div className="map-nav-bar">
             <div className="flex gap-4 items-center">
                 {availableMeans.map(
-                    mean =>
-                        <button className={activeMeans.includes(mean) ? 'btn btn-link active' : 'btn btn-link'}
+                    mean => {
+                        const param = transportationParams.find(tp => tp.type === mean);
+                        return (<button className={activeMeans.includes(mean) ? 'btn btn-link active' : 'btn btn-link'}
                                 onClick={() => toggleMean(mean)} key={`mean-${mean}`}>
                             <span className={deriveBackgroundClass(mean)}/>
-                            {meansOfTransportations.find(mot => mot.type === mean)?.label}
-                        </button>
+                            {meansOfTransportations.find(mot => mot.type === mean)?.label} ({param?.amount} {param?.unit === UnitsOfTransportation.METERS ? 'm' : 'min'})
+                        </button>);
+                    }
                 )}
             </div>
             <div className="checkboxes">
                 <label>
-                    <input type="checkbox"  checked={showMyObjects}
+                    <input type="checkbox" checked={showMyObjects}
                            onChange={(event) => onToggleShowMyObjects(event.target.checked)}/>
                     <span>Meine Objekte</span>
                 </label>
