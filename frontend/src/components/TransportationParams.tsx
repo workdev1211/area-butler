@@ -55,7 +55,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
         onChange(newValue);
     }
 
-    const setMeanValue = (newValue: any, mean: MeansOfTransportation) => {
+    const setMeanValue = (newValue: any, unit: UnitsOfTransportation | undefined, mean: MeansOfTransportation) => {
         const newParams = values.map(value => {
             if (value.type !== mean) {
                 return value;
@@ -68,7 +68,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
             }
             return {
                 ...value,
-                amount: parseInt(newValue)
+                amount: unit === UnitsOfTransportation.MINUTES ? Math.min(parseInt(newValue), 60) : parseInt(newValue)
             }
         });
         handleOnChange(newParams);
@@ -79,9 +79,11 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
             if (value.type !== mean) {
                 return value;
             }
+            const unit = Object.values(UnitsOfTransportation).find(uot => uot === newValue) ?? UnitsOfTransportation.METERS;
             return {
                 ...value,
-                unit: Object.values(UnitsOfTransportation).find(uot => uot === newValue) ?? UnitsOfTransportation.METERS
+                amount: unit === UnitsOfTransportation.MINUTES ? Math.min(value.amount, 60) : value.amount,
+                unit
             }
         });
         handleOnChange(newParams);
@@ -133,7 +135,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                 value={currentValue?.amount ?? 1}
                                 min={1}
                                 max={10000}
-                                onChange={(event) => setMeanValue(event.target.value, mean.type)}
+                                onChange={(event) => setMeanValue(event.target.value, currentValue?.unit, mean.type)}
                                 className="input input-bordered flex"
                                 placeholder={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'Minuten' : 'Meter'}/>
                             <div className="form-control min-flex">
