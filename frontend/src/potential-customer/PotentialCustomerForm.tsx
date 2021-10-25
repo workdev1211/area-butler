@@ -50,10 +50,18 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                         {!questionnaire && (<Input label="Name des Interessenten"
                                                    name="name"
                                                    type="text"
+                                                   onChange={(newValue) => setCustomer({
+                                                    ...customer,
+                                                    name: newValue.target.value
+                                                    })}
                                                    placeholder="Name" className="input input-bordered w-full"/>)}
                         {!questionnaire && (<Input label="Email-Adresse des Interessenten"
                                                    name="email"
                                                    type="text"
+                                                   onChange={(newValue) => setCustomer({
+                                                    ...customer,
+                                                    email: newValue.target.value
+                                                    })}
                                                    placeholder="Email" className="input input-bordered w-full"/>)}
                     </div>
                     <div className="my-6 flex flex-col gap-6">
