@@ -9,12 +9,11 @@ import {
 
 export const kudibaCompany = {
   name: 'KuDiBa GmbH i. G.',
-  address1: 'c/o Hamburger Ding',
-  address2: 'Nobistor 16',
+  address: 'Nobistor 16',
   zip: '22767',
   city: 'Hamburg',
   mail: 'info@area-butler.de',
-  formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address1}<br />${kudibaCompany.address2}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
+  formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
   court: 'Amtsgericht Hamburg',
   regNr: 'xxxxxxxxxxx',
   vat: 'VAT12343434'
