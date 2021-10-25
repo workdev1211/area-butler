@@ -21,7 +21,12 @@ import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
 import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
-import {deriveIconForOsmName, deriveMinutesFromMeters} from "../shared/shared.functions";
+import {
+    deriveIconForOsmName,
+    deriveMinutesFromMeters, preferredLocationsIcon,
+    preferredLocationsTitle, realEstateListingsIcon,
+    realEstateListingsTitle
+} from "../shared/shared.functions";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
@@ -323,13 +328,16 @@ const Map = React.memo<MapProps>(({
                 });
                 parsedEntities?.forEach(entity => {
                     if (parsedEntityGroups.some(eg => eg.title === entity.label && eg.active)) {
+                        const isRealEstateListing = entity.type === 'property';
+                        const isPreferredLocation = entity.type === 'favorite';
+                        const markerIcon = isRealEstateListing ? realEstateListingsIcon : isPreferredLocation ? preferredLocationsIcon : deriveIconForOsmName(entity.type as OsmName);
                         const icon = L.divIcon({
-                            iconUrl: deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon,
+                            iconUrl: markerIcon.icon || fallbackIcon,
                             shadowUrl: leafletShadow,
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
                             className: 'locality-marker-wrapper',
-                            html: `<div class="locality-marker"><img src="${deriveIconForOsmName(entity.type as OsmName).icon || fallbackIcon}" alt="marker-icon" class="${entity.type}" /></div>`
+                            html: `<div class="locality-marker"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type}" /></div>`
                         });
                         const marker = new IdMarker(entity.coordinates, entity, {
                             icon,

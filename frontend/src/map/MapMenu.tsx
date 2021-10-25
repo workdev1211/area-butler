@@ -1,12 +1,19 @@
 import React, {useState} from "react";
 import "./MapMenu.css";
 import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
+import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
 import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import {ApiCoordinates, OsmName} from "../../../shared/types/types";
-import {deriveIconForOsmName} from "../shared/shared.functions";
+import {OsmName} from "../../../shared/types/types";
+import {
+    deriveIconForOsmName,
+    preferredLocationsIcon,
+    preferredLocationsTitle,
+    realEstateListingsIcon,
+    realEstateListingsTitle
+} from "../shared/shared.functions";
 import LocalityItem from "../components/LocalityItem";
 
 export interface MapMenuProps {
@@ -16,8 +23,10 @@ export interface MapMenuProps {
     toggleEntryGroup: (title: string) => void;
     highlightZoomEntity: (item: ResultEntity) => void;
     mobileMenuOpen: boolean;
-    toggleRoute: (item: ResultEntity) => void
-    routes: EntityRoute[]
+    toggleRoute: (item: ResultEntity) => void;
+    routes: EntityRoute[];
+    searchAddress: string;
+    resetPosition: () => void;
 }
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
@@ -28,7 +37,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             highlightZoomEntity,
                                                             toggleRoute,
                                                             routes,
-                                                            mobileMenuOpen
+                                                            mobileMenuOpen,
+                                                            searchAddress,
+                                                            resetPosition
                                                         }) => {
 
     const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
@@ -46,7 +57,13 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     const mobileMenuButtonClasses = `map-menu ${mobileMenuOpen ? 'mobile-open' : ''}`
 
     return <div className={mobileMenuButtonClasses}>
-        <h2 className="heading">Ergebnisse</h2>
+        <div className="heading">
+            <span className="heading">Ergebnisse</span>
+            <button type="button" className="btn btn-link" onClick={() => resetPosition()}><img className="mr-1"
+                                                                                                src={positionIcon}
+                                                                                                alt="icon-position"/>{searchAddress}
+            </button>
+        </div>
         <div
             className={'collapse collapse-arrow view-option' + (viewOptionsOpen ? ' collapse-open' : ' collapse-closed')}>
             <input type="checkbox" onChange={(event) => setViewOptionsOpen(event.target.checked)}/>
@@ -75,7 +92,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 <ul>
                     {
                         groupedEntries.filter(ge => ge.items.length).map(ge => {
-                            const groupIconInfo = deriveIconForOsmName(ge.items[0].type as OsmName);
+                            const isRealEstateListing = ge.items[0].label === realEstateListingsTitle;
+                            const isPreferredLocation = ge.items[0].label === preferredLocationsTitle;
+                            const groupIconInfo = isRealEstateListing ? realEstateListingsIcon : isPreferredLocation ? preferredLocationsIcon : deriveIconForOsmName(ge.items[0].type as OsmName);
                             return (<li className="locality-option-li"
                                         key={`grouped-entry-${ge.title}`}>
                                 <div
@@ -117,12 +136,12 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                 Auto
                                             </div>
                                         </div>
-                                        {localityOpen.includes(ge.title) && ge.items.map((item,index) => <LocalityItem
+                                        {localityOpen.includes(ge.title) && ge.items.map((item, index) => <LocalityItem
                                             key={index}
                                             item={item}
                                             group={ge}
                                             onClickTitle={(item) => highlightZoomEntity(item)}
-                                            onToggleRoute={(item) => toggleRoute(item) }
+                                            onToggleRoute={(item) => toggleRoute(item)}
                                             route={routes?.find(r =>
                                                 r.coordinates.lat === item.coordinates.lat &&
                                                 r.coordinates.lng === item.coordinates.lng && r.show)}

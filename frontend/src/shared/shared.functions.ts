@@ -8,6 +8,8 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
+import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
+import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {toast} from "react-toastify";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
 
@@ -71,6 +73,17 @@ export const toastError = (message: string) => {
         draggable: true,
         progress: undefined,
         });
+}
+
+export const preferredLocationsTitle = 'Wichtige Adressen';
+export const preferredLocationsIcon = {
+    icon: preferredLocationIcon,
+    color: '#c91444'
+}
+export const realEstateListingsTitle = 'Meine Objekte';
+export const realEstateListingsIcon = {
+    icon: realEstateListingIcon,
+    color: '#c91444'
 }
 
 export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: string} => {

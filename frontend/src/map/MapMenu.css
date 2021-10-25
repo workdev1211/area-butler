@@ -23,13 +23,20 @@
     }
 }
 
-.map-menu h2.heading {
-    height: 80px;
+.map-menu div.heading {
+    height: 90px;
     background: var(--base-anthracite);
-    padding: 34px var(--map-menu-pr) 30px 24px !important;
-    line-height: 1rem;
+    padding: 14px var(--map-menu-pr) 14px 24px !important;
     border-bottom: none;
+    @apply flex flex-col;
+}
+.map-menu div.heading span.heading {
     @apply font-medium text-2xl text-white;
+}
+.map-menu div.heading .btn-link {
+    padding: 0 !important;
+    height: auto !important;
+    @apply w-auto justify-start text-white;
 }
 
 .map-menu .collapse-title {

@@ -15,7 +15,7 @@ import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {useHistory} from "react-router-dom";
 import MapMenu from "../map/MapMenu";
-import {distanceInMeters} from "shared/shared.functions";
+import {distanceInMeters, preferredLocationsTitle, realEstateListingsTitle} from "shared/shared.functions";
 import "./SearchResultPage.css";
 import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
@@ -53,7 +53,7 @@ export interface EntityRoute {
     routes: ApiRoute[]
 }
 
-const preferredLocationsTitle = 'Wichtige Adressen';
+
 const buildEntityDataFromPreferredLocations = (
     centerCoordinates: ApiCoordinates,
     preferredLocations: ApiPreferredLocation[]
@@ -78,7 +78,6 @@ const buildEntityDataFromPreferredLocations = (
         }));
 };
 
-const realEstateListingsTitle = 'Meine Objekte';
 const buildEntityDataFromRealEstateListings = (
     centerCoordinates: ApiCoordinates,
     realEstateListings: ApiRealEstateListing[]
@@ -315,6 +314,11 @@ const SearchResultPage: React.FunctionComponent = () => {
                              highlightZoomEntity={highlightZoomEntity}
                              toggleRoute={(item) => toggleRoutesToEntity(searchContextState.location, item)}
                              routes={routes}
+                             searchAddress={searchContextState.placesLocation.label}
+                             resetPosition={() => searchContextDispatch({
+                                 type: SearchContextActions.SET_MAP_CENTER,
+                                 payload: searchContextState.searchResponse.centerOfInterest.coordinates
+                             })}
                     />
                 </div>
             </DefaultLayout>
