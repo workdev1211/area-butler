@@ -311,10 +311,11 @@ const Map = React.memo<MapProps>(({
                         const groupedMarkers = groupBy(cluster.getAllChildMarkers().map(m => m.getIcon().options), 'className');
                         const countedMarkers = Object.entries(groupedMarkers).map(([key, value]) => ({
                             key,
-                            icon: (value as any)[0].iconUrl,
+                            icon: (value as any)[0].html,
                             count: (value as any).length
                         })).sort((a, b) => b.count - a.count);
-                        const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
+                        // const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
+                        const markerIcons = countedMarkers.map(cm => '<div style="display: flex;">' + cm.icon + cm.count + '</div>');
                         return L.divIcon({
                             html: '<div class="cluster-icon-wrapper">' + markerIcons.join('') + '</div>',
                             className: 'cluster-icon'
@@ -336,7 +337,7 @@ const Map = React.memo<MapProps>(({
                             shadowUrl: leafletShadow,
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
-                            className: 'locality-marker-wrapper',
+                            className: 'locality-marker-wrapper icon-' +entity.type,
                             html: `<div class="locality-marker"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type}" /></div>`
                         });
                         const marker = new IdMarker(entity.coordinates, entity, {
