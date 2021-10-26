@@ -3,14 +3,23 @@ import { ApiUser } from "../../../shared/types/types";
 
 export interface UserState {
   user?: ApiUser;
+  upgradeSubscriptionModalProps: {
+    open: boolean,
+    message?: string
+  }
 }
 
 export const initialState: UserState = {
   user: undefined,
+  upgradeSubscriptionModalProps: {
+    open: false,
+    message: ''
+  }
 };
 
 export enum UserActions {
   SET_USER = "SET_USER",
+  SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS"
 }
 
 const reducer: (
@@ -20,6 +29,9 @@ const reducer: (
   switch (action.type) {
     case UserActions.SET_USER: {
       return { ...state, user: action.payload };
+    }
+    case UserActions.SET_SUBSCRIPTION_MODAL_PROPS: {
+      return { ...state, upgradeSubscriptionModalProps: action.payload };
     }
     default:
       return state;

@@ -41,14 +41,14 @@ export class UserService {
     }
   }
 
-  public async patchUser(email: string, upsertUser: ApiUpsertUser) {
+  public async patchUser(email: string, {fullname, subscriptionPlan}: ApiUpsertUser) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
     }
 
-    Object.assign(existingUser, upsertUser);
+    Object.assign(existingUser, {fullname, subscriptionPlan}); // TODO REMOVE PLAN DEV ONLY
 
     return existingUser.save();
   }

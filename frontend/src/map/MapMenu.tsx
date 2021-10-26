@@ -6,7 +6,7 @@ import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import {OsmName} from "../../../shared/types/types";
+import {ApiUser, OsmName} from "../../../shared/types/types";
 import {
     deriveIconForOsmName,
     preferredLocationsIcon,
@@ -15,6 +15,7 @@ import {
     realEstateListingsTitle
 } from "../shared/shared.functions";
 import LocalityItem from "../components/LocalityItem";
+import { ApiDataSource } from "../../../shared/types/subscription-plan";
 
 export interface MapMenuProps {
     census: boolean;
@@ -27,9 +28,12 @@ export interface MapMenuProps {
     routes: EntityRoute[];
     searchAddress: string;
     resetPosition: () => void;
+    user: ApiUser;
+    openUpgradeSubcriptionModal: (message: string) => void;
 }
 
 const localityPaginationSize = 5;
+const censusNotInSubscriptionPlanMessage = 'Die Census Daten sind in Ihrem aktuellen Abonnement nicht verfügbar.';
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             census,
@@ -41,13 +45,18 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             routes,
                                                             mobileMenuOpen,
                                                             searchAddress,
-                                                            resetPosition
+                                                            resetPosition,
+                                                            user,
+                                                            openUpgradeSubcriptionModal
                                                         }) => {
 
     const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
     const [localitiesOpen, setLocalitiesOpen] = useState(true);
     const [localityOpen, setLocalityOpen] = useState<string[]>([]);
     const [localityPagination, setLocalityPagination] = useState<number[]>(groupedEntries.map(() => localityPaginationSize));
+
+
+    const censusInSubscriptionPlan = user.subscriptionPlan.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
 
     const toggleLocality = (title: string, open: boolean) => {
         const filtered = [...localityOpen.filter(l => l !== title)];
@@ -85,7 +94,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                         <span>Zensus Atlas</span>
                         <label className="cursor-pointer label justify-start pl-0">
                             <input type="checkbox" checked={census} className="checkbox checkbox-primary checkbox-sm"
-                                   onChange={(event) => toggleCensus(event.target.checked)}/>
+                                   onChange={(event) => censusInSubscriptionPlan ? toggleCensus(event.target.checked) : openUpgradeSubcriptionModal(censusNotInSubscriptionPlanMessage)}/>
                         </label>
                     </li>
                 </ul>

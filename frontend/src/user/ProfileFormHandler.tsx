@@ -8,8 +8,10 @@ import ProfileForm from "./ProfileForm";
 export const mapFormToApiUpsertUser = async (
   values: any
 ): Promise<Partial<ApiUpsertUser>> => {
+  console.log(values);
   return {
     fullname: values.fullname,
+    subscriptionPlan: values.subscriptionPlan
   };
 };
 

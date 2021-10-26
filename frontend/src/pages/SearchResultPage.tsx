@@ -26,6 +26,7 @@ import {RealEstateContext} from "context/RealEstateContext";
 import {ApiRoute} from "../../../shared/types/routing";
 import {useRouting} from "../hooks/routing";
 import {v4} from "uuid";
+import { UserActions, UserContext } from "context/UserContext";
 
 export interface ResultEntity {
     name?: string;
@@ -132,6 +133,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     const {fetchRoutes} = useRouting();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {realEstateState} = useContext(RealEstateContext);
+    const {userState, userDispatch} = useContext(UserContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -319,6 +321,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                                  type: SearchContextActions.SET_MAP_CENTER,
                                  payload: searchContextState.searchResponse.centerOfInterest.coordinates
                              })}
+                             user={userState.user}
+                             openUpgradeSubcriptionModal={(message) => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message}})}
                     />
                 </div>
             </DefaultLayout>

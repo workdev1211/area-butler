@@ -1,4 +1,4 @@
-import React, {lazy, Suspense} from "react";
+import React, {lazy, Suspense, useContext, useEffect, useState} from "react";
 import "./App.css";
 import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
 import Nav from "./layout/Nav";
@@ -11,7 +11,9 @@ import "react-toastify/dist/ReactToastify.css";
 import {RealEstateContextProvider} from "./context/RealEstateContext";
 import FormModal, {ModalConfig} from "components/FormModal";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import {UserContextProvider} from "context/UserContext";
+import {UserActions, UserContext, UserContextProvider} from "context/UserContext";
+import UpgradeSubscriptionHandler from "user/UpgradeSubscriptionHandler";
+import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -50,6 +52,8 @@ const feedbackModalConfig: ModalConfig = {
     modalTitle: "Feedback abgeben",
 };
 
+
+
 function App() {
     return (
         <Router>
@@ -70,6 +74,7 @@ function App() {
                 <Suspense fallback={<LoadingMessage/>}>
                     <UserContextProvider>
                         <Authenticated forceConsentRerouting={false}>
+                            <UpgradeSubscriptionHandlerContainer />
                             <FormModal modalConfig={feedbackModalConfig}>
                                 <FeedbackFormHandler></FeedbackFormHandler>
                             </FormModal>
