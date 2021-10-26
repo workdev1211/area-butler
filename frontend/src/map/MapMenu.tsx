@@ -33,7 +33,7 @@ export interface MapMenuProps {
 }
 
 const localityPaginationSize = 5;
-const censusNotInSubscriptionPlanMessage = 'Die Census Daten sind in Ihrem aktuellen Abonnement nicht verfügbar.';
+const censusNotInSubscriptionPlanMessage = 'Der Zensus Atlas ist in Ihrem aktuellen Abonnement nicht verfügbar.';
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                             census,
