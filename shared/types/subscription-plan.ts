@@ -9,7 +9,6 @@ export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
     stripeId: string,
     limits: {
-        monthlyRequestContingent: ApiRequestContingent,
         numberOfRealEstates?: number,
         numberOfRequestsPerMonth?: number,
     },
@@ -22,7 +21,7 @@ export interface ApiSubscriptionPlan {
 export interface ApiRequestContingent {
     amount: number;
     type: ApiRequestContingentType;
-    date?: Date
+    date: Date
 }
 
 export enum ApiRequestContingentType {

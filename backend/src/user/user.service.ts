@@ -108,6 +108,7 @@ export class UserService {
 
     const existingMonthlyContingent = user.requestContingents.find(
       c =>
+        c.type === ApiRequestContingentType.RECURRENT &&
         c.date.getMonth() === date.getMonth() &&
         c.date.getFullYear() === date.getFullYear(),
     );
@@ -118,7 +119,8 @@ export class UserService {
 
     const subscription = allSubscriptions[user.subscriptionPlan];
     user.requestContingents.push({
-      ...subscription.limits.monthlyRequestContingent,
+      type: ApiRequestContingentType.RECURRENT,
+      amount: subscription.limits.numberOfRequestsPerMonth,
       date,
     });
     const oid = new Types.ObjectId(user.id);

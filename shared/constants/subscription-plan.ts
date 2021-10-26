@@ -17,16 +17,12 @@ export const allSubscriptionTypes: {
 export const standardSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.STANDARD,
   limits: {
-    monthlyRequestContingent: {
-      type: ApiRequestContingentType.RECURRENT,
-      amount: 20
-    },
-    numberOfRealEstates: 500, // TODO proper limits
-    numberOfRequestsPerMonth: 5000 // TODO proper limits
+    numberOfRealEstates: 5,
+    numberOfRequestsPerMonth: 20 
   },
   stripeId: "124", // TODO proper stripe id
   appFeatures: {
-    sendCustomerQuestionnaireRequest: true, // TODO change
+    sendCustomerQuestionnaireRequest: false,
     dataSources: [ApiDataSource.OSM],
   },
 };
@@ -34,11 +30,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
 export const proSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PRO,
   limits: {
-    monthlyRequestContingent: {
-      type: ApiRequestContingentType.RECURRENT,
-      amount: 100
-    },
-    numberOfRealEstates: 2000, // TODO proper limits
+    numberOfRealEstates: 20,
     numberOfRequestsPerMonth: 100
   },
   stripeId: "125", // TODO proper stripe id
@@ -51,10 +43,6 @@ export const proSubscription: ApiSubscriptionPlan = {
 export const businessPlusSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.BUSINESS_PLUS,
   limits: {
-    monthlyRequestContingent: {
-      type: ApiRequestContingentType.RECURRENT,
-      amount: 500
-    },
     numberOfRequestsPerMonth: 500
   },
   stripeId: "126", // TODO proper stripe id
