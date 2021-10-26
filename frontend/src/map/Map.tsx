@@ -66,6 +66,7 @@ export class IdMarker extends L.Marker {
     }
 
     createOpenPopup() {
+        this.unbindPopup();
         if (!this.getPopup()) {
             const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
             const street = this.entity.address.street && this.entity.address.street !== 'undefined' ? this.entity.address.street : null;
