@@ -226,7 +226,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     name: OsmName.bus_stop,
     label: "Bushaltestelle",
     category: ApiOsmEntityCategory.TRAFFIC,
-    uniqueRadius: 500,
-    uniqueTreshold: 0.5
-  }
+    uniqueRadius: 100,
+    uniqueTreshold: 0.8
+  },
 ];
