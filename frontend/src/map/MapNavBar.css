@@ -1,9 +1,15 @@
 .map-nav-bar-container {
     z-index: 999;
     left: 0;
-    right: 0;
+    right: 80px;
     top: 16px;
     @apply absolute flex;
+}
+
+@media screen(lg) {
+    .map-nav-bar-container {
+        right: 0;
+    }
 }
 
 .map-nav-bar {
@@ -33,7 +39,13 @@
 }
 
 .map-nav-bar .checkboxes {
-    @apply flex gap-4 items-center pl-20;
+    @apply flex gap-4 items-center pl-3;
+}
+
+@media screen(lg) {
+    .map-nav-bar .checkboxes {
+        @apply pl-20;
+    }
 }
 
 .map-nav-bar .checkboxes label {

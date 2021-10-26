@@ -216,7 +216,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.public_transport,
     name: OsmName.station,
-    label: "Öff. Schienenverkehr",
+    label: "S/U-Bahn",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 200,
     uniqueTreshold: 0.4

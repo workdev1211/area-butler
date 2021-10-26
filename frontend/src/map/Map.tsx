@@ -146,7 +146,8 @@ const Map = React.memo<MapProps>(({
             preferCanvas: true,
             renderer: new L.Canvas(),
             tap: false,
-            maxZoom: 18
+            maxZoom: 18,
+            zoomControl: false
         }).setView(initialPosition, zoom);
 
         localMap.addEventListener("zoomend", (value) => {
@@ -159,6 +160,10 @@ const Map = React.memo<MapProps>(({
                 searchContextDispatch({type: SearchContextActions.SET_MAP_CENTER, payload: center});
             }
         });
+
+        const zoomControl = L.control.zoom({position: 'bottomleft'});
+        zoomControl.addTo(localMap);
+
         L.tileLayer(url, {
                 attribution,
                 id: "mapbox/light-v10",
