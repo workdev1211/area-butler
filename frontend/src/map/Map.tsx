@@ -28,6 +28,7 @@ import {
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {ApiRoute} from "../../../shared/types/routing";
 
 export interface MapProps {
@@ -81,6 +82,7 @@ export class IdMarker extends L.Marker {
 
 export const defaultMapZoom = 15;
 const defaultAmenityIconSize = new L.Point(20, 20);
+const myLocationIconSize = new L.Point(40, 40);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -176,8 +178,10 @@ const Map = React.memo<MapProps>(({
         ).addTo(localMap);
         const positionIcon = L.Icon.extend({
             options: {
-                iconUrl: leafletIcon,
-                shadowUrl: leafletShadow
+                iconUrl: mylocationIcon,
+                shadowUrl: leafletShadow,
+                shadowSize: [0, 0],
+                iconSize: myLocationIconSize,
             }
         });
         L.marker([lat, lng], {
