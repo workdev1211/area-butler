@@ -27,7 +27,7 @@ export interface ApiRequestContingent {
 
 export enum ApiRequestContingentType {
     RECURRENT = 'RECURRENT',
-    INCREASE = 'INCRESE',
+    INCREASE = 'INCREASE',
 }
 
 

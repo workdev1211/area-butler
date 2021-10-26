@@ -1,7 +1,8 @@
 import { ApiUpsertUser, ApiUser } from '@area-butler-types/types';
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, HttpException, Post, Req, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { mapUserToApiUser } from './mapper/user.mapper';
+import { UserDocument } from './schema/user.schema';
 import { UserService } from './user.service';
 
 @Controller('api/users')
@@ -31,6 +32,19 @@ export class UserController {
     return mapUserToApiUser(
       await this.userService.giveConsent(user.email)
     );
+  }
+
+  @Post('me/increase-limit')
+  public async increaseLimit(@Req() request, @Body() {amount}: {amount: number}): Promise<ApiUser> {
+    const user = request?.user;
+    let existingUser: UserDocument = await this.userService.findByEmail(user.email);
+
+    if(!existingUser) {
+      throw new HttpException('Unknown User', 400);
+    }
+
+    existingUser = await this.userService.addRequestContingentIncrease(existingUser, amount);
+    return mapUserToApiUser(existingUser);
   }
 
 }

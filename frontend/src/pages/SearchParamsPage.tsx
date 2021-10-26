@@ -20,10 +20,14 @@ import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
 import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, toastError } from "shared/shared.functions";
+import { UserContext } from "context/UserContext";
+import FormModal, { ModalConfig } from "components/FormModal";
+import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
     const {fetchNearData} = useCensusData();
+    const {userState} = useContext(UserContext);
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {potentialCustomerDispatch} = useContext(PotentialCustomerContext);
     const {realEstateDispatch} = useContext(RealEstateContext);
@@ -73,6 +77,45 @@ const SearchParamsPage: React.FunctionComponent = () => {
         });
     }
 
+    const user = userState.user;
+    const totalRequestContingent =
+      user?.requestContingents?.length > 0
+        ? user.requestContingents
+            .map((c: any) => c.amount)
+            .reduce((acc: number, inc: number) => acc + inc)
+        : 0;
+    const requestsExecuted = user?.requestsExecuted;
+    const requestLimitExceeded = requestsExecuted >= totalRequestContingent;
+
+    const increaseLimitButton: React.ReactNode = (
+      <button
+        type="button"
+        disabled={
+          searchContextState.searchBusy ||
+          !searchContextState.location?.lat ||
+          !searchContextState.location?.lng ||
+          searchContextState.transportationParams.length === 0 ||
+          searchContextState.localityParams.length === 0
+        }
+        className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
+      >
+        Analyse Starten{" "}
+        <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
+      </button>
+    );
+    const increaseRequestLimitModalConfig: ModalConfig = {
+        modalTitle: 'Abfragelimit erreicht',
+        buttonTitle: 'Analyse starten',
+        submitButtonTitle: 'Neues Kontingent kaufen',
+        modalButton: increaseLimitButton
+    }
+
+    const IncreaseLimitModal: React.FunctionComponent<any> = () => (
+            <FormModal modalConfig={increaseRequestLimitModalConfig}>
+                <IncreaseRequestLimitFormHandler />
+            </FormModal>
+    );
+
     const SearchButton: React.FunctionComponent<any> = () => {
         const history = useHistory();
         const performLocationSearch = async () => {
@@ -119,13 +162,13 @@ const SearchParamsPage: React.FunctionComponent = () => {
             onClick={performLocationSearch}
             className={searchContextState.searchBusy ? `${classes} loading` : classes}
         >
-            Analyse Starten <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
+            Analyse starten <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
         </button>
     }
 
     return (
         <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true}
-                       actionBottom={[<SearchButton key="search-button"/>]}>
+                       actionBottom={[!requestLimitExceeded ? <SearchButton key="search-button"/> : <IncreaseLimitModal key="search-button"></IncreaseLimitModal>]}>
             <Formik initialValues={{lat: '', lng: ''}} onSubmit={() => {
             }}>
                 <Form>
