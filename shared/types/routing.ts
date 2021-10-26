@@ -7,6 +7,8 @@ export interface ApiRoute {
         geometry: ApiGeometry;
         transportMode: string;
     }[]
+    destination: ApiCoordinates,
+    origin: ApiCoordinates,
     meansOfTransportation: MeansOfTransportation
 
 }

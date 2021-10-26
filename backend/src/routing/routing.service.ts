@@ -70,6 +70,8 @@ export class RoutingService {
             if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length) {
                 return {
                     meansOfTransportation: meansOfTransportation,
+                    destination,
+                    origin,
                     sections: data.routes[0].sections.map(s => ({
                         duration: Math.round(s.summary.duration / 60),
                         length: s.summary.length,

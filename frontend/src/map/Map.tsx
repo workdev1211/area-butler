@@ -253,11 +253,19 @@ const Map = React.memo<MapProps>(({
         }
     }, [meansStringified, searchResponse.routingProfiles]);
 
+
+
     // draw routes
     useEffect(() => {
+        const activeEntities = groupedEntities?.filter(ge => ge.active).flatMap(value => value.items);
         const isActiveMeans = (r: ApiRoute) => (r.meansOfTransportation === MeansOfTransportation.WALK && means.byFoot) ||
             (r.meansOfTransportation=== MeansOfTransportation.CAR && means.byCar) ||
             (r.meansOfTransportation === MeansOfTransportation.BICYCLE && means.byBike);
+
+        const isVisibleDestination = (r: ApiRoute) =>
+            !!activeEntities.find(value => value.coordinates.lat === r.destination.lat
+               && value.coordinates.lng === r.destination.lng);
+
 
         if (currentMap) {
             if (routesGroup) {
@@ -266,7 +274,7 @@ const Map = React.memo<MapProps>(({
             routesGroup = L.layerGroup();
             currentMap.addLayer(routesGroup);
             routes.filter(e => e.show).forEach(entityRoute => {
-                entityRoute.routes.filter(isActiveMeans).forEach( (r) => {
+                entityRoute.routes.filter(isActiveMeans).filter(isVisibleDestination).forEach( (r) => {
                     r.sections.forEach((s) => {
                         L.geoJSON(s.geometry, {style: function (feature) {
                                 return {color: MEAN_COLORS[r.meansOfTransportation]};
@@ -275,7 +283,7 @@ const Map = React.memo<MapProps>(({
                 })
             })
         }
-    }, [routes, means]);
+    }, [routes, means, groupedEntities]);
 
     // draw census
     useEffect(() => {
@@ -295,6 +303,7 @@ const Map = React.memo<MapProps>(({
 
     const entitiesStringified = JSON.stringify(entities);
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
+
     // draw amenities
     useEffect(() => {
         const groupBy = (xs: any, key: any) => {
