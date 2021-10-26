@@ -32,6 +32,9 @@ interface HereApiRouteSection {
         baseDuration: number;
     };
     polyline: string; // Format: https://github.com/heremaps/flexible-polyline
+    transport: {
+        mode: 'car' | 'bicycle' | 'pedestrian'
+    }
 }
 
 interface HereApiRoute {
@@ -63,23 +66,24 @@ export class RoutingService {
                 return: 'summary,polyline'
             };
 
-            const {data} = await this.httpService.get<HereApiRoutingResponse>(configService.getHereRouterApiUrl(), {params:  request }).toPromise();
-            if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length === 1) {
-                const section = data.routes[0].sections[0];
-                const polyline = poly.decode(section.polyline).polyline;
-                return  {
+            const {data} = await this.httpService.get<HereApiRoutingResponse>(configService.getHereRouterApiUrl(), {params: request}).toPromise();
+            if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length) {
+                return {
                     meansOfTransportation: meansOfTransportation,
-                    duration: Math.round(section.summary.duration / 60),
-                    length: section.summary.length,
-                    geometry: {
-                        type: 'LineString',
-                        coordinates: polyline.map(switchCoords)
-                    } as ApiGeometry
+                    sections: data.routes[0].sections.map(s => ({
+                        duration: Math.round(s.summary.duration / 60),
+                        length: s.summary.length,
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: poly.decode(s.polyline).polyline.map(switchCoords)
+                        } as ApiGeometry,
+                        transportMode: s.transport.mode
+                    }))
                 }
-            } else {
-                this.logger.error(`Invalid route response: ${JSON.stringify(data)}`)
             }
-        } catch(e) {
+            // we should already have returned
+            this.logger.error(`Invalid route response: ${JSON.stringify(data)}`)
+        } catch (e) {
             this.logger.error("Could not fetch route", e)
         }
     }

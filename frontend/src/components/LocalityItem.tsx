@@ -23,9 +23,9 @@ const LocalityItem: React.FunctionComponent<LocalityItemProps> = ({item, group, 
     )
 }
 const PreferredLocationItemContent: React.FunctionComponent<{item:ResultEntity, onToggleRoute: (item: ResultEntity) => void, route?: EntityRoute }> = ({item, onToggleRoute, route}) => {
-        const byFootDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.WALK)?.duration ?? '-';
-        const byCarDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.CAR)?.duration ?? '-';
-        const byBicycleDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.BICYCLE)?.duration ?? '-';
+        const byFootDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.WALK)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
+        const byCarDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.CAR)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
+        const byBicycleDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.BICYCLE)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
 
         return (
             <>

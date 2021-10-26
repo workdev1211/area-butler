@@ -267,9 +267,11 @@ const Map = React.memo<MapProps>(({
             currentMap.addLayer(routesGroup);
             routes.filter(e => e.show).forEach(entityRoute => {
                 entityRoute.routes.filter(isActiveMeans).forEach( (r) => {
-                    L.geoJSON(r.geometry, {style: function (feature) {
-                            return {color: MEAN_COLORS[r.meansOfTransportation]};
-                        }}).addTo(routesGroup)
+                    r.sections.forEach((s) => {
+                        L.geoJSON(s.geometry, {style: function (feature) {
+                                return {color: MEAN_COLORS[r.meansOfTransportation]};
+                            }}).addTo(routesGroup)
+                    })
                 })
             })
         }

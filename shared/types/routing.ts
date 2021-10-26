@@ -1,9 +1,12 @@
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "./types";
 
 export interface ApiRoute {
-    duration: number;
-    length: number;
-    geometry: ApiGeometry;
+    sections: {
+        duration: number;
+        length: number;
+        geometry: ApiGeometry;
+        transportMode: string;
+    }[]
     meansOfTransportation: MeansOfTransportation
 
 }
