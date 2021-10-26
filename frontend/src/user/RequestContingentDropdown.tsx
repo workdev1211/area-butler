@@ -23,13 +23,13 @@ const RequestContingentDropDown: React.FunctionComponent<RequestContingentDropDo
 
     return requestContingents.length > 0 ? (
       <div ref={dropDownRef} className="dropdown">
-        <div
-          className="bordered bg-primary cursor-pointer ml-1 py-1 px-3 text-sm text-white font-bold rounded-full"
+        <button
+          className="ml-2 btn btn-circle btn-secondary btn-xs"
           tabIndex={0}
           onClick={(e) => setMenuOpen(!menuOpen)}
         >
           i
-        </div>
+        </button>
         {menuOpen && (
           <table tabIndex={0} className={dropDownListStyle}>
             <thead>
@@ -40,7 +40,7 @@ const RequestContingentDropDown: React.FunctionComponent<RequestContingentDropDo
               </tr>
             </thead>
             <tbody>
-              {requestContingents.map(
+              {requestContingents.reverse().map(
                 (requestContingent: ApiRequestContingent) => {
                   const date = new Date(requestContingent.date!);
 
