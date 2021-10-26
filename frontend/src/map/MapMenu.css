@@ -36,7 +36,7 @@
 .map-menu div.heading .btn-link {
     padding: 0 !important;
     height: auto !important;
-    @apply w-auto justify-start text-white;
+    @apply w-auto justify-start text-white flex flex-nowrap;
 }
 
 .map-menu .collapse-title {
@@ -69,7 +69,7 @@
     padding: 0 !important;
     margin: 0 !important;
     max-height: 100% !important;
-    overflow-y: scroll;
+    overflow-y: hidden;
 }
 .map-menu .collapse-closed > .collapse-content {
     max-height: 0 !important;
@@ -134,6 +134,7 @@
 }
 .map-menu .locality-option .collapse-content {
     padding: 0 !important;
+    overflow-y: hidden;
 }
 .map-menu .locality-option.collapse-child-open .collapse-content {
     background: white !important;
