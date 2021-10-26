@@ -19,7 +19,7 @@ import { PotentialCustomerActions, PotentialCustomerContext } from "context/Pote
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
-import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, toastError } from "shared/shared.functions";
+import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, deriveTotalRequestContingent, toastError } from "shared/shared.functions";
 import { UserContext } from "context/UserContext";
 import FormModal, { ModalConfig } from "components/FormModal";
 import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
@@ -78,12 +78,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     }
 
     const user = userState.user;
-    const totalRequestContingent =
-      user?.requestContingents?.length > 0
-        ? user.requestContingents
-            .map((c: any) => c.amount)
-            .reduce((acc: number, inc: number) => acc + inc)
-        : 0;
+    const totalRequestContingent = deriveTotalRequestContingent(user);
     const requestsExecuted = user?.requestsExecuted;
     const requestLimitExceeded = requestsExecuted >= totalRequestContingent;
 

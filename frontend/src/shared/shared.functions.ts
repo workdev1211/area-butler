@@ -1,5 +1,5 @@
 import {geocodeByAddress, geocodeByLatLng, getLatLng} from "react-google-places-autocomplete";
-import {ApiCoordinates, MeansOfTransportation, OsmName} from "../../../shared/types/types";
+import {ApiCoordinates, ApiUser, MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import harversine from "haversine";
 import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
 import fuelIcon from "../assets/icons/icons-20-x-20-outline-ic-gasstation.svg";
@@ -213,3 +213,10 @@ export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: st
             };
     }
 }
+
+export const deriveTotalRequestContingent = (user: ApiUser) =>
+  user?.requestContingents?.length > 0
+    ? user.requestContingents
+        .map((c) => c.amount)
+        .reduce((acc, inc) => acc + inc)
+    : 0;

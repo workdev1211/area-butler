@@ -3,6 +3,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiUser } from "../../../shared/types/types";
 import { allSubscriptionTypes } from "../../../shared/constants/subscription-plan";
 import RequestContingentDropDown from "./RequestContingentDropdown";
+import { deriveTotalRequestContingent } from "shared/shared.functions";
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -16,12 +17,7 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
         (item) => user.subscriptionPlan.type === item.type
       )?.label || "Unbekannt";
 
-    const totalRequestContingent =
-      user.requestContingents.length > 0
-        ? user.requestContingents
-            .map((c) => c.amount)
-            .reduce((acc, inc) => acc + inc)
-        : 0;
+    const totalRequestContingent = deriveTotalRequestContingent(user);
 
     return (
       <div className="mt-20 flex flex-col gap-5">
