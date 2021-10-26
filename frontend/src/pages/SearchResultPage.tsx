@@ -191,7 +191,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             setGroupedEntries(combinedGroupEntries);
         }
 
-    }, [searchResponseString, showPreferredlocations, searchContextState.preferredLocations, showMyObjects, searchContextState.realEstateListings])
+    }, [searchResponseString, showPreferredlocations, searchContextState.preferredLocations, showMyObjects, realEstateState.listings])
 
     const toggleEntityGroup = (title: string) => {
         const newGroups = groupedEntries.map(ge => ge.title !== title ? ge : {

@@ -33,7 +33,7 @@ const Authenticated = withRouter<
     ) {
       history.push("/consent");
     }
-  }, [userState]);
+  }, [userState, forceConsentRerouting, history]);
 
   useEffect(() => {
     setIsLoggedIn(isAuthenticated);
@@ -46,6 +46,7 @@ const Authenticated = withRouter<
 
       fetchUser();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, setIsLoggedIn]);
 
   if (!isLoggedIn) {

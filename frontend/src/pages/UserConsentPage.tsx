@@ -20,7 +20,7 @@ const UserConsentPage: FunctionComponent = () => {
     if (!!userState?.user?.consentGiven) {
       history.push("/");
     }
-  }, [userState]);
+  }, [userState, history]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 

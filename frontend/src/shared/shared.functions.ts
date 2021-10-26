@@ -8,6 +8,16 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
+import theaterIcon from "../assets/icons/icons-20-x-20-outline-ic-theater.svg";
+import playgroundIcon from "../assets/icons/icons-20-x-20-outline-ic-playground.svg";
+import kindergartenIcon from "../assets/icons/icons-20-x-20-outline-ic-kindergarten.svg";
+import schoolIcon from "../assets/icons/icons-20-x-20-outline-ic-school.svg";
+import universityIcon from "../assets/icons/icons-20-x-20-outline-ic-university.svg";
+import doctorIcon from "../assets/icons/icons-20-x-20-outline-ic-doctor.svg";
+import clinicIcon from "../assets/icons/icons-20-x-20-outline-ic-hospital.svg";
+import postofficeIcon from "../assets/icons/icons-20-x-20-outline-ic-paketshop.svg";
+import highwayIcon from "../assets/icons/icons-20-x-20-outline-ic-highway.svg";
+import sportIcon from "../assets/icons/icons-20-x-20-outline-ic-sport.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {toast} from "react-toastify";
@@ -91,47 +101,115 @@ export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: st
         case OsmName.fuel:
             return {
                 icon: fuelIcon,
-                color: '#8f72eb'
+                color: '#8E71EB'
             };
         case OsmName.park:
             return {
                 icon: parkIcon,
-                color: '#175c4f'
+                color: '#165B4E'
             };
         case OsmName.chemist:
             return {
                 icon: chemistIcon,
-                color: '#267f9e'
+                color: '#267F9D'
             }
         case OsmName.supermarket:
             return {
                 icon: chemistIcon,
-                color: '#76c5e9'
+                color: '#267F9D'
+            }
+        case OsmName.kiosk:
+            return {
+                icon: chemistIcon,
+                color: '#267F9D'
             }
         case OsmName.station:
             return {
                 icon: trainIcon,
-                color: '#e1e4e5'
+                color: '#CB513B'
             }
         case OsmName.bus_stop:
             return {
                 icon: busIcon,
-                color: '#c91462'
+                color: '#C71362'
             }
         case OsmName.bar:
             return {
                 icon: barIcon,
-                color: '#e4bc40'
+                color: '#E3BB3F'
             }
         case OsmName.restaurant:
             return {
                 icon: restaurantIcon,
-                color: '#399086'
+                color: '#48136D'
+            }
+        case OsmName.theatre:
+            return {
+                icon: theaterIcon,
+                color: '#C91444'
+            }
+        case OsmName.playground:
+            return {
+                icon: playgroundIcon,
+                color: '#D96666'
+            }
+        case OsmName.kindergarten:
+            return {
+                icon: kindergartenIcon,
+                color: '#734242'
+            }
+        case OsmName.school:
+            return {
+                icon: schoolIcon,
+                color: '#96476A'
+            }
+        case OsmName.university:
+            return {
+                icon: universityIcon,
+                color: '#201C1E'
+            }
+        case OsmName.doctors:
+            return {
+                icon: doctorIcon,
+                color: '#10A877'
+            }
+        case OsmName.dentist:
+            return {
+                icon: doctorIcon,
+                color: '#10A877'
+            }
+        case OsmName.clinic:
+            return {
+                icon: clinicIcon,
+                color: '#42AEA7'
+            }
+        case OsmName.hospital:
+            return {
+                icon: clinicIcon,
+                color: '#42AEA7'
+            }
+        case OsmName.post_office:
+            return {
+                icon: postofficeIcon,
+                color: '#66A3B7'
+            }
+        case OsmName.motorway_link:
+            return {
+                icon: highwayIcon,
+                color: '#579BE4'
+            }
+        case OsmName.sports_centre:
+        case OsmName.sports_hall:
+        case OsmName.swimming_pool:
+        case OsmName.fitness_centre:
+            return {
+                icon: sportIcon,
+                color: '#9F532E'
             }
         default:
             return {
                 icon: parkIcon,
-                color: '#175c4f'
+                color: '#165B4E'
             };
     }
 }

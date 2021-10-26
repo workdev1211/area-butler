@@ -69,6 +69,7 @@ export interface ApiOsmLocation {
 
 export enum ApiOsmEntityCategory {
   'LEISURE' = 'Freizeit',
+  'SPORT' = 'Sport',
   'TRAFFIC' = 'Verkehr',
   'SUPPLIES' = 'Nahversorgung',
   'HEALTH' = 'Gesundheit',
@@ -134,21 +135,29 @@ export enum OsmType {
 
 export enum OsmName {
   playground = "playground",
+  kindergarten = "kindergarten",
   school = "school",
+  university = "university",
   bar = "bar",
   restaurant = "restaurant",
   park = "park",
+  theatre = "theatre",
   chemist = "chemist",
   supermarket = "supermarket",
   doctors = "doctors",
   dentist = "dentist",
   clinic = "clinic",
+  hospital = "hospital",
   kiosk = "kiosk",
   post_office = "post office",
   fuel = "fuel",
   station = "station",
   bus_stop = "bus_stop",
   motorway_link = "motorway_link",
+  sports_centre = "sports_centre",
+  sports_hall = "sports_hall",
+  swimming_pool = "swimming_pool",
+  fitness_centre = "fitness_centre",
   favorite = "favorite",
   property = "property",
 }

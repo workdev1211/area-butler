@@ -2,7 +2,6 @@ import React, {useContext, useEffect} from "react";
 import * as L from "leaflet";
 import "leaflet.markercluster";
 import "./Map.css";
-import "./makiIcons.css";
 import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
@@ -16,16 +15,15 @@ import {
     OsmName
 } from "../../../shared/types/types";
 import {ConfigContext} from "../context/ConfigContext";
-import {fallbackIcon} from "./makiIcons";
 import {SearchContext, SearchContextActions} from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import center from "@turf/center";
 import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
 import {
     deriveIconForOsmName,
-    deriveMinutesFromMeters, preferredLocationsIcon,
-    preferredLocationsTitle, realEstateListingsIcon,
-    realEstateListingsTitle
+    deriveMinutesFromMeters,
+    preferredLocationsIcon,
+    realEstateListingsIcon
 } from "../shared/shared.functions";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -70,10 +68,11 @@ export class IdMarker extends L.Marker {
     createOpenPopup() {
         if (!this.getPopup()) {
             const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
+            const street = this.entity.address.street && this.entity.address.street !== 'undefined' ? this.entity.address.street : null;
             const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK)} min.</span></span>` : '';
             const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE)} min.</span></span>` : '';
             const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR)} min.</span></span>` : '';
-            this.bindPopup(`${title}<br /><div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
+            this.bindPopup(`<span class="font-semibold">${title}</span><br />${street? '<div>' + street + '</div><br />' : ''}<div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
         }
         this.openPopup();
     }
@@ -326,7 +325,7 @@ const Map = React.memo<MapProps>(({
                             count: (value as any).length
                         })).sort((a, b) => b.count - a.count);
                         // const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
-                        const markerIcons = countedMarkers.map(cm => '<div style="display: flex;">' + cm.icon + cm.count + '</div>');
+                        const markerIcons = countedMarkers.map(cm => '<div class="flex items-center gap-0.5">' + cm.icon + cm.count + '</div>');
                         return L.divIcon({
                             html: '<div class="cluster-icon-wrapper">' + markerIcons.join('') + '</div>',
                             className: 'cluster-icon'
@@ -344,12 +343,12 @@ const Map = React.memo<MapProps>(({
                         const isPreferredLocation = entity.type === 'favorite';
                         const markerIcon = isRealEstateListing ? realEstateListingsIcon : isPreferredLocation ? preferredLocationsIcon : deriveIconForOsmName(entity.type as OsmName);
                         const icon = L.divIcon({
-                            iconUrl: markerIcon.icon || fallbackIcon,
+                            iconUrl: markerIcon.icon,
                             shadowUrl: leafletShadow,
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
                             className: 'locality-marker-wrapper icon-' +entity.type,
-                            html: `<div class="locality-marker"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type}" /></div>`
+                            html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type}" /></div>`
                         });
                         const marker = new IdMarker(entity.coordinates, entity, {
                             icon,
@@ -364,7 +363,7 @@ const Map = React.memo<MapProps>(({
                     const centerOfGroup = center(a.layer.toGeoJSON());
                     searchContextDispatch({
                         type: SearchContextActions.CENTER_ZOOM_COORDINATES,
-                        payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 18}
+                        payload: {center: centerOfGroup.geometry.coordinates.reverse(), zoom: 17}
                     });
                 });
                 currentMap.addLayer(amenityMarkerGroup);

@@ -28,6 +28,7 @@ const UserProfilePage: FunctionComponent = () => {
     };
 
     fetchUser();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";

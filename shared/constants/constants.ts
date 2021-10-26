@@ -39,6 +39,38 @@ export const meansOfTransportations = [
 export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.leisure,
+    name: OsmName.sports_centre,
+    label: 'Sportcenter',
+    category: ApiOsmEntityCategory.SPORT,
+    uniqueRadius: 100,
+    uniqueTreshold: 0.5
+  },
+  {
+    type: OsmType.leisure,
+    name: OsmName.sports_hall,
+    label: 'Sporthalle',
+    category: ApiOsmEntityCategory.SPORT,
+    uniqueRadius: 100,
+    uniqueTreshold: 0.5
+  },
+  {
+    type: OsmType.leisure,
+    name: OsmName.swimming_pool,
+    label: 'Schwimmbad',
+    category: ApiOsmEntityCategory.SPORT,
+    uniqueRadius: 100,
+    uniqueTreshold: 0.5
+  },
+  {
+    type: OsmType.leisure,
+    name: OsmName.fitness_centre,
+    label: 'Fitness',
+    category: ApiOsmEntityCategory.SPORT,
+    uniqueRadius: 100,
+    uniqueTreshold: 0.5
+  },
+  {
+    type: OsmType.leisure,
     name: OsmName.playground,
     label: "Spielplatz",
     category: ApiOsmEntityCategory.LEISURE,
@@ -55,11 +87,27 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   },
   {
     type: OsmType.amenity,
+    name: OsmName.kindergarten,
+    label: "Kindergarten",
+    category: ApiOsmEntityCategory.EDUCATION,
+    uniqueRadius: 100,
+    uniqueTreshold: 0.4
+  },
+  {
+    type: OsmType.amenity,
     name: OsmName.school,
     label: "Schule",
     category: ApiOsmEntityCategory.EDUCATION,
     uniqueRadius: 50,
     uniqueTreshold: 0.6
+  },
+  {
+    type: OsmType.amenity,
+    name: OsmName.university,
+    label: 'Universität',
+    category: ApiOsmEntityCategory.EDUCATION,
+    uniqueRadius: 400,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.amenity,
@@ -76,6 +124,14 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 50,
     uniqueTreshold: 0.8
+  },
+  {
+    type: OsmType.amenity,
+    name: OsmName.theatre,
+    label: "Theater",
+    category: ApiOsmEntityCategory.LEISURE,
+    uniqueRadius: 500,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.shop,
@@ -115,6 +171,14 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Klinik",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 500,
+    uniqueTreshold: 0.6
+  },
+  {
+    type: OsmType.amenity,
+    name: OsmName.hospital,
+    label: "Krankenhaus",
+    category: ApiOsmEntityCategory.HEALTH,
+    uniqueRadius: 1000,
     uniqueTreshold: 0.6
   },
   {

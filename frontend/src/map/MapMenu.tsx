@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import "./MapMenu.css";
 import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
 import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
@@ -58,6 +58,12 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     }
 
     const mobileMenuButtonClasses = `map-menu ${mobileMenuOpen ? 'mobile-open' : ''}`
+
+    useEffect(() => {
+        if (Array.isArray(groupedEntries)) {
+            setLocalityPagination(groupedEntries.map(() => localityPaginationSize));
+        }
+    }, [groupedEntries, setLocalityPagination]);
 
     return <div className={mobileMenuButtonClasses}>
         <div className="heading">

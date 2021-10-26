@@ -48,6 +48,9 @@
 .map-menu input[type=checkbox] {
     cursor: pointer;
 }
+.map-menu .view-option {
+    overflow: initial;
+}
 .map-menu .view-option .collapse-title {
     height: 56px;
     line-height: 18px;
@@ -121,6 +124,11 @@
     height: 36px;
     @apply flex justify-center items-center mr-3 mask mask-circle;
 }
+.map-menu .locality-option .collapse-title div.img-container img {
+    filter: brightness(0) invert(1);
+}
+
+
 .map-menu .locality-option .collapse-title .checkbox {
     z-index: 99;
 }
