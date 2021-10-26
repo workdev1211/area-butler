@@ -87,16 +87,17 @@ const SearchParamsPage: React.FunctionComponent = () => {
     const requestsExecuted = user?.requestsExecuted;
     const requestLimitExceeded = requestsExecuted >= totalRequestContingent;
 
+
+    const searchButtonDisabled = searchContextState.searchBusy ||
+                                 !searchContextState.location?.lat ||
+                                 !searchContextState.location?.lng ||
+                                 searchContextState.transportationParams.length === 0 ||
+                                 searchContextState.localityParams.length === 0
+
     const increaseLimitButton: React.ReactNode = (
       <button
         type="button"
-        disabled={
-          searchContextState.searchBusy ||
-          !searchContextState.location?.lat ||
-          !searchContextState.location?.lng ||
-          searchContextState.transportationParams.length === 0 ||
-          searchContextState.localityParams.length === 0
-        }
+        disabled={searchButtonDisabled}
         className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
       >
         Analyse Starten{" "}
@@ -152,13 +153,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
 
         return <button
             type="button"
-            disabled={
-                searchContextState.searchBusy ||
-                !searchContextState.location?.lat ||
-                !searchContextState.location?.lng ||
-                searchContextState.transportationParams.length === 0 ||
-                searchContextState.localityParams.length === 0
-            }
+            disabled={searchButtonDisabled}
             onClick={performLocationSearch}
             className={searchContextState.searchBusy ? `${classes} loading` : classes}
         >
