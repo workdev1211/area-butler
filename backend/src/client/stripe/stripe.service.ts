@@ -28,6 +28,7 @@ export class StripeService {
         const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({customer: user.stripeCustomerId, 
             mode: 'subscription', 
             payment_method_types: ['card'],
+            billing_address_collection: 'required',
             line_items: [{price: stripePriceId, quantity: 1}],
             success_url: configService.getBaseAppUrl(),
             cancel_url: configService.getBaseAppUrl(),
