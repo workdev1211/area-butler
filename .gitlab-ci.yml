@@ -4,12 +4,12 @@ variables:
 default:
   image: docker:20.10.6
   tags:
-    - strato
+    - hetzner
 
 build:
   stage: build
   tags:
-    - strato
+    - hetzner
   script:
     - apk add --no-cache docker-compose
     - docker-compose build
@@ -18,14 +18,13 @@ build:
 deploy:
   stage: deploy
   tags:
-    - strato
+    - hetzner
   environment:
     name: production
-    url: 'https://${PROJECT_NAME}-${CI_BUILD_REF_SLUG}.x.syndicats.co/'
+    url: 'https://${PROJECT_NAME}-${CI_BUILD_REF_SLUG}.dev.area-butler.de/'
     on_stop: undeploy
   script:
     - apk add --no-cache docker-compose
-    - export MAPBOX_ACCESS_TOKEN=${MAPBOX_ACCESS_TOKEN}
     - docker-compose -p 'area-butler' down || true
     - docker-compose -p 'area-butler' up -d
   only:
@@ -34,7 +33,7 @@ deploy:
 undeploy:
   stage: deploy
   tags:
-    - strato
+    - hetzner
   variables:
     GIT_STRATEGY: none # requiring a deleted branch is not possible
   environment:
