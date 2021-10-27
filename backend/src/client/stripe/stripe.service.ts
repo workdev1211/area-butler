@@ -1,3 +1,4 @@
+import { ApiCreateCheckout } from "@area-butler-types/billing";
 import { Injectable } from "@nestjs/common";
 import { configService } from "src/config/config.service";
 import { UserDocument } from "src/user/schema/user.schema";
@@ -24,12 +25,15 @@ export class StripeService {
         return stripeSession.url;
     }
 
-    public async createCheckoutSessionUrl(user: UserDocument, stripePriceId: string): Promise<string> {
+    public async createCheckoutSessionUrl(user: UserDocument, {priceId, quantity = 1, trialPeriod}: ApiCreateCheckout): Promise<string> {
         const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({customer: user.stripeCustomerId, 
             mode: 'subscription', 
             payment_method_types: ['card'],
             billing_address_collection: 'required',
-            line_items: [{price: stripePriceId, quantity: 1}],
+            subscription_data: {
+                trial_period_days: trialPeriod
+            },
+            line_items: [{price: priceId, quantity}],
             success_url: configService.getBaseAppUrl(),
             cancel_url: configService.getBaseAppUrl(),
         })

@@ -1,3 +1,4 @@
+import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { Body, Controller, Post, Req, Res } from '@nestjs/common';
 import { response } from 'express';
 import { request } from 'http';
@@ -23,7 +24,7 @@ export class BillingController extends AuthenticatedController {
     }
 
     @Post('create-checkout-url')
-    async createCheckoutUrl(@InjectUser() user: UserDocument, @Body() {priceId}: {priceId: string}) {
-        return this.billingService.createCheckoutSessionUrl(user, priceId);
+    async createCheckoutUrl(@InjectUser() user: UserDocument, @Body() createCheckout: ApiCreateCheckout) {
+        return this.billingService.createCheckoutSessionUrl(user, createCheckout);
     }
 }

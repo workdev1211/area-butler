@@ -1,3 +1,4 @@
+import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { Injectable } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
 import { StripeService } from 'src/client/stripe/stripe.service';
@@ -18,8 +19,8 @@ export class BillingService {
     }
 
 
-    async createCheckoutSessionUrl(user: UserDocument, stripePriceId: string): Promise<string> {
-        return this.stripeService.createCheckoutSessionUrl(user, stripePriceId);
+    async createCheckoutSessionUrl(user: UserDocument, createCheckout: ApiCreateCheckout): Promise<string> {
+        return this.stripeService.createCheckoutSessionUrl(user, createCheckout);
     }
 
 
