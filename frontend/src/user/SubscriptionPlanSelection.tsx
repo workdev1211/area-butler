@@ -72,13 +72,13 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                 </div>
                 {intervall === PlanInterval.INTERVALL_MONTHLY && <div className="flex flex-wrap gap-20 mt-20">
                     <SubscribePlanCard stripePriceId={standardSubscription.priceIds.monthlyId!} name="Standard" price="60,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={standardSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.monthlyId!} name="Pro" price="70,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={proSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.monthlyId!} name="Business" price="80,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={businessPlusSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.monthlyId!} name="Pro" price="90,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={proSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.monthlyId!} name="Business" price="250,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={businessPlusSubscription.properties} />
                 </div>}
                 {intervall === PlanInterval.INTERVALL_ANNUALLY && <div className="flex flex-wrap gap-20 mt-20">
                     <SubscribePlanCard stripePriceId={standardSubscription.priceIds.annuallyId!} name="Standard" price="600,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={standardSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.annuallyId!} name="Pro" price="700,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.annuallyId!} name="Business" price="800,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.annuallyId!} name="Pro" price="900,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.annuallyId!} name="Business" price="2500,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
                 </div>}
             </div>
         </div>

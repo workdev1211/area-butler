@@ -7,7 +7,6 @@ export enum ApiSubscriptionPlanType {
 
 export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
-    stripeId: string,
     priceIds: {
         monthlyId?: string,
         annuallyId?: string

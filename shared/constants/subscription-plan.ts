@@ -19,7 +19,6 @@ export const standardSubscription: ApiSubscriptionPlan = {
         monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
         annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
     },
-    stripeId: "124", // TODO proper stripe id
     properties: [
         'bis zu 20 Umgebungsanalysen im Monat',
         'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
@@ -39,10 +38,9 @@ export const proSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 100
     },
     priceIds: {
-        monthlyId: 'monthly',
-        annuallyId: 'annually'
+        monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
+        annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
     },
-    stripeId: "125", // TODO proper stripe id
     properties: [
         'bis zu 20 Umgebungsanalysen im Monat',
         'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
@@ -62,10 +60,9 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 500
     },
     priceIds: {
-        monthlyId: 'monthly',
-        annuallyId: 'annually'
+        monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
+        annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
     },
-    stripeId: "126", // TODO proper stripe id
     properties: [
         'bis zu 20 Umgebungsanalysen im Monat',
         'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
