@@ -12,6 +12,7 @@ export interface ApiSubscriptionPlan {
         monthlyId?: string,
         annuallyId?: string
     },
+    properties: string[],
     limits: {
         numberOfRealEstates?: number,
         numberOfRequestsPerMonth?: number,
