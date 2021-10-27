@@ -32,12 +32,6 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
       window.location.href = customerPortalUrl;
     }
 
-
-    const forwardToCheckoutUrl = async (priceId: string) => {
-      const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId})).data;
-      window.location.href = checkoutUrl;
-    }
-
     return (
       <div className="mt-20 flex flex-col gap-5">
         <div>

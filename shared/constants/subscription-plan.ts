@@ -16,6 +16,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 20
     },
     priceIds: {
+        requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
         monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
         annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
     },

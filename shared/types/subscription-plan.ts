@@ -8,6 +8,7 @@ export enum ApiSubscriptionPlanType {
 export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
     priceIds: {
+        requestIncreaseId?: string,
         monthlyId?: string,
         annuallyId?: string
     },

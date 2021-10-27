@@ -25,15 +25,15 @@ export class StripeService {
         return stripeSession.url;
     }
 
-    public async createCheckoutSessionUrl(user: UserDocument, {priceId, quantity = 1, trialPeriod}: ApiCreateCheckout): Promise<string> {
+    public async createCheckoutSessionUrl(user: UserDocument, {priceId, amount = 1, trialPeriod, mode = 'subscription'}: ApiCreateCheckout): Promise<string> {
         const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({customer: user.stripeCustomerId, 
-            mode: 'subscription', 
+            mode, 
             payment_method_types: ['card'],
             billing_address_collection: 'required',
             subscription_data: {
                 trial_period_days: trialPeriod
             },
-            line_items: [{price: priceId, quantity}],
+            line_items: [{price: priceId, quantity: amount}],
             success_url: configService.getBaseAppUrl(),
             cancel_url: configService.getBaseAppUrl(),
         })
@@ -53,5 +53,10 @@ export class StripeService {
 
     public async verifyRequestBody(body: any, headers: any): Promise<any> {
         // TODO
+    }
+
+    public async fetchLineItemsFromCheckoutSession(checkoutSessionId: string): Promise<Stripe.LineItem[]> {
+        const lineItems = await this.stripeClient.checkout.sessions.listLineItems(checkoutSessionId);
+        return lineItems.data
     }
 }

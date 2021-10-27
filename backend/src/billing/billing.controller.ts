@@ -18,7 +18,6 @@ export class BillingController extends AuthenticatedController {
 
     @Post('create-customer-portal-link') 
     async createCustomerPortalLink(@InjectUser() user: UserDocument): Promise<string> {
-
         user.stripeCustomerId;
         return this.billingService.createCustomerPortalLink(user);
     }

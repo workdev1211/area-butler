@@ -133,7 +133,8 @@ export class UserService {
       { _id: oid },
       { $set: { subscriptionPlan: subscriptionPlan.type } },
     );
-    return this.findById(user.id);
+    const userWithSubscription = await this.findById(user.id);
+    return await this.addMonthlyRequestContingentIfMissing(userWithSubscription, new Date());
   }
 
   public async addRequestContingentIncrease(

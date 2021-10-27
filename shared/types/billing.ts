@@ -1,5 +1,6 @@
 export interface ApiCreateCheckout {
     priceId: string;
-    quantity?: number;
+    amount?: number;
     trialPeriod?: number;
+    mode?: 'subscription' | 'payment';
 }

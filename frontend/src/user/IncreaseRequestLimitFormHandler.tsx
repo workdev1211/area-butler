@@ -15,17 +15,15 @@ export interface IncreaseRequestLimitFormHandlerProps {
   const IncreaseRequestLimitFormHandler: React.FunctionComponent<IncreaseRequestLimitFormHandlerProps> =
     ({ formId, beforeSubmit = () => {}, postSubmit = () => {} }) => {
       const { post } = useHttp();
-      const history = useHistory();
-  
-      const { userDispatch } = useContext(UserContext);
+      const { userState } = useContext(UserContext);
   
       const onSubmit = async ({amount}: any) => {
         try {
           beforeSubmit();
-          const updatedUser = (await post<ApiUser>("/api/users/me/increase-limit", {amount}))
-            .data;
-          userDispatch({ type: UserActions.SET_USER, payload: updatedUser });
-          toastSuccess("Abfragelimit erfolgreich erhöht!");
+          const user : ApiUser = userState.user;
+          const priceId = user.subscriptionPlan?.priceIds.requestIncreaseId!;
+          const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId, amount, mode: 'payment'})).data;
+          window.location.href = checkoutUrl;
           postSubmit(true);
         } catch (err) {
           console.log(err);
