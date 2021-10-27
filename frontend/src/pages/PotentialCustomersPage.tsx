@@ -13,11 +13,14 @@ import {
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
+import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import { Link, useHistory } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 import { UserActions, UserContext } from "context/UserContext";
+import { osmEntityTypes } from "../../../shared/constants/constants";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -56,10 +59,30 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
 
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
+  const { searchContextDispatch } = useContext(SearchContext);
 
   const canSendCustomerRequest =
     userState.user.subscriptionPlan.appFeatures
       .sendCustomerQuestionnaireRequest;
+
+  const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
+    const localityParams = osmEntityTypes.filter((entity) =>
+      customer.preferredAmenities.includes(entity.name)
+    );
+    searchContextDispatch({
+      type: SearchContextActions.SET_LOCALITY_PARAMS,
+      payload: localityParams,
+    });
+    searchContextDispatch({
+      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+      payload: customer.routingProfiles,
+    });
+    searchContextDispatch({
+      type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+      payload: customer.preferredLocations,
+    });
+    history.push("/");
+  };
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -177,6 +200,8 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                   </td>
                   <td>
                     <div className="flex gap-4">
+                    <img src={searchIcon} alt="icon-search" className="cursor-pointer"
+                                          onClick={() => startSearchFromCustomer(customer)} />
                       <img
                         src={editIcon}
                         alt="icon-edit"
