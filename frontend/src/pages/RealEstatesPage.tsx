@@ -5,12 +5,15 @@ import {allFurnishing, allRealEstateCostTypes} from "../../../shared/constants/r
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
+import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import {Link, useHistory} from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {RealEstateDeleteHandler} from "../real-estates/RealEstateDeleteHandler";
 import { UserActions, UserContext } from "context/UserContext";
+import { deriveGeocodeByAddress } from "shared/shared.functions";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
 
 const deleteRealEstateModalConfig = {
     modalTitle: "Objekt löschen",
@@ -23,12 +26,33 @@ const RealEstatesPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const history = useHistory();
     const {realEstateState, realEstateDispatch} = useContext(RealEstateContext);
-
     const {userState, userDispatch} = useContext(UserContext);
+    const {searchContextDispatch} = useContext(SearchContext);
 
     const realEstates = realEstateState.listings || [];
     const subscriptionPlan = userState.user.subscriptionPlan;
     const canCreateNewRealEstate = !subscriptionPlan.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan.limits.numberOfRealEstates;
+
+    const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
+        const result = await deriveGeocodeByAddress(listing.address);
+        const {lat, lng} = result;
+        searchContextDispatch({
+            type: SearchContextActions.SET_PLACES_LOCATION,
+            payload: {label: listing.address, value: {place_id: '123'}}
+        })
+        searchContextDispatch({
+            type: SearchContextActions.SET_REAL_ESTATE_LISTING,
+            payload: listing
+        });
+        searchContextDispatch({
+            type: SearchContextActions.SET_LOCATION,
+            payload: {
+                lat,
+                lng
+            }
+        })
+        history.push('/');
+    }
 
     useEffect(() => {
         const fetchRealEstates = async () => {
@@ -101,6 +125,8 @@ const RealEstatesPage: React.FunctionComponent = () => {
                             </td>
                             <td>
                                 <div className="flex gap-4">
+                                    <img src={searchIcon} alt="icon-search" className="cursor-pointer"
+                                          onClick={() => startSearchFromRealEstate(realEstate)} />
                                     <img src={editIcon} alt="icon-edit" className="cursor-pointer"
                                          onClick={() => history.push(`/real-estates/${realEstate.id}`)}/>
                                     <FormModal modalConfig={{
