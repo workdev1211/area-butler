@@ -80,10 +80,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     groupedEntries.map(() => localityPaginationSize)
   );
 
-  const censusInSubscriptionPlan =
-    user?.subscriptionPlan?.appFeatures.dataSources.includes(
-      ApiDataSource.CENSUS
-    );
+
 
   const toggleLocality = (title: string, open: boolean) => {
     const filtered = [...localityOpen.filter((l) => l !== title)];
@@ -96,6 +93,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const mobileMenuButtonClasses = `map-menu ${
     mobileMenuOpen ? "mobile-open" : ""
   }`;
+    const censusInSubscriptionPlan = user.subscriptionPlan?.config?.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
 
   useEffect(() => {
     if (Array.isArray(groupedEntries)) {

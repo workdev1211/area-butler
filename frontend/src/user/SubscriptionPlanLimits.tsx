@@ -15,7 +15,7 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
   ({ user, realEstates }) => {
     const subscriptionLabel =
       allSubscriptionTypes.find(
-        (item) => user.subscriptionPlan.type === item.type
+        (item) => user.subscriptionPlan?.type === item.type
       )?.label || "Unbekannt";
 
     const totalRequestContingent = deriveTotalRequestContingent(user);
@@ -71,11 +71,11 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
         >
           <span className="w-64">
             Objekte angelegt {realEstates.length}/
-            {user.subscriptionPlan.limits.numberOfRealEstates}:
+            {user.subscriptionPlan?.limits.numberOfRealEstates}:
           </span>
           <progress
             value={realEstates.length}
-            max={user.subscriptionPlan.limits.numberOfRealEstates}
+            max={user.subscriptionPlan?.limits.numberOfRealEstates}
             className="w-96 progress progress-primary"
           ></progress>
         </div>
