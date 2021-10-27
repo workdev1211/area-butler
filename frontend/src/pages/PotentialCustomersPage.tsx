@@ -11,6 +11,7 @@ import {Link, useHistory} from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {PotentialCustomerFormDeleteHandler} from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
+import { UserActions, UserContext } from "context/UserContext";
 
 const deleteCustomerModalConfig = {
     modalTitle: "Interessent löschen",
@@ -22,13 +23,17 @@ const createCustomerQuestionnaireModalConfig = {
     submitButtonTitle: "Senden",
 };
 
+const subscriptionUpgradeSendCustomerRequestMessage = "Der Versand eines Fragebogens ist in Ihrem aktuellen Abonnement nicht verfügbar."
+
 const PotentialCustomersPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const history = useHistory();
     const {potentialCustomerState, potentialCustomerDispatch} = useContext(PotentialCustomerContext);
 
     const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
+    const {userState, userDispatch} = useContext(UserContext);
 
+    const canSendCustomerRequest = userState.user.subscriptionPlan.appFeatures.sendCustomerQuestionnaireRequest;
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -42,21 +47,35 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const ActionsTop: React.FunctionComponent = () => {
-        return (<>
+        return (
+          <>
             <li>
-                <Link
-                    to="/potential-customers/new"
-                    className="btn btn-link"
-                >
-                    <img src={plusIcon} alt="pdf-icon"/> Interessent anlegen
-                </Link>
+              <Link to="/potential-customers/new" className="btn btn-link">
+                <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
+              </Link>
             </li>
             <li>
-                <button type="button" className="btn btn-link" onClick={() => setQuestionnaireModalOpen(true)}>
-                    <img src={plusIcon} alt="pdf-icon"/> Fragebogen versenden
-                </button>
+              <button
+                type="button"
+                className="btn btn-link"
+                onClick={() =>
+                  canSendCustomerRequest
+                    ? setQuestionnaireModalOpen(true)
+                    : userDispatch({
+                        type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                        payload: {
+                          open: true,
+                          message:
+                            subscriptionUpgradeSendCustomerRequestMessage,
+                        },
+                      })
+                }
+              >
+                <img src={plusIcon} alt="pdf-icon" /> Fragebogen versenden
+              </button>
             </li>
-        </>)
+          </>
+        );
     }
 
     const questionnaireModalConfig = {

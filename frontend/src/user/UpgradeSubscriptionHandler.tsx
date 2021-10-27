@@ -17,7 +17,7 @@ const UpgradeSubscriptionHandler: FunctionComponent<UpgradeSubscriptionHandlerPr
         </Formik>
         {message && <p className="my-5">{message}</p>}
         <p>
-          Zum Freischalten der Funktion wechseln Sie zu Ihrem Abonnement
+          Zum Freischalten der Funktion wechseln Sie zu Ihrem Abonnement.
         </p>
       </div>
     );
