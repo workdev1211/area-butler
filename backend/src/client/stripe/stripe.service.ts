@@ -1,0 +1,52 @@
+import { Injectable } from "@nestjs/common";
+import { configService } from "src/config/config.service";
+import { UserDocument } from "src/user/schema/user.schema";
+import Stripe from 'stripe';
+
+@Injectable()
+export class StripeService {
+
+    stripeClient: Stripe;
+    stripeWebhookSecret: string;
+
+    constructor() {
+        this.stripeClient = new Stripe(configService.getStripeKey(), {apiVersion: '2020-08-27'});
+        this.stripeWebhookSecret = configService.getStripeWebhookSecret();
+    }
+
+
+    public async createCustomerPortalLink(user: UserDocument): Promise<string> {
+        const stripeSession: Stripe.BillingPortal.Session = await this.stripeClient.billingPortal.sessions.create({
+            customer: user.stripeCustomerId,
+            return_url: configService.getBaseAppUrl()
+        })
+
+        return stripeSession.url;
+    }
+
+    public async createCheckoutSessionUrl(user: UserDocument, stripePriceId: string): Promise<string> {
+        const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({customer: user.stripeCustomerId, 
+            mode: 'subscription', 
+            payment_method_types: ['card'],
+            line_items: [{price: stripePriceId, quantity: 1}],
+            success_url: configService.getBaseAppUrl(),
+            cancel_url: configService.getBaseAppUrl(),
+        })
+
+        return checkoutUrl.url;
+    }
+
+    public async createCustomer(user: UserDocument): Promise<string> {
+
+        const stripeCustomer : Stripe.Customer = await this.stripeClient.customers.create({
+            email: user.email,
+            name: user.fullname,
+        })
+
+        return stripeCustomer.id;
+    }
+
+    public async verifyRequestBody(body: any, headers: any): Promise<any> {
+        // TODO
+    }
+}

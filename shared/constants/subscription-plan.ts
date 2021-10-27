@@ -20,6 +20,10 @@ export const standardSubscription: ApiSubscriptionPlan = {
     numberOfRealEstates: 5,
     numberOfRequestsPerMonth: 20 
   },
+  priceIds: {
+    monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
+    annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+  },
   stripeId: "124", // TODO proper stripe id
   appFeatures: {
     sendCustomerQuestionnaireRequest: false,
@@ -33,6 +37,8 @@ export const proSubscription: ApiSubscriptionPlan = {
     numberOfRealEstates: 20,
     numberOfRequestsPerMonth: 100
   },
+  priceIds: {
+  },
   stripeId: "125", // TODO proper stripe id
   appFeatures: {
     sendCustomerQuestionnaireRequest: true,
@@ -44,6 +50,8 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.BUSINESS_PLUS,
   limits: {
     numberOfRequestsPerMonth: 500
+  },
+  priceIds: {
   },
   stripeId: "126", // TODO proper stripe id
   appFeatures: {

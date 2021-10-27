@@ -1,9 +1,10 @@
 import { FunctionComponent } from "react";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiUser } from "../../../shared/types/types";
-import { allSubscriptionTypes } from "../../../shared/constants/subscription-plan";
+import { allSubscriptionTypes, standardSubscription } from "../../../shared/constants/subscription-plan";
 import RequestContingentDropDown from "./RequestContingentDropdown";
 import { deriveTotalRequestContingent } from "shared/shared.functions";
+import { useHttp } from "hooks/http";
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -19,6 +20,20 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
 
     const totalRequestContingent = deriveTotalRequestContingent(user);
 
+    const {post} = useHttp();
+
+
+    const forwardToCustomerPortal = async () => {
+      const customerPortalUrl = (await post<string>('/api/billing/create-customer-portal-link', {})).data;
+      window.location.href = customerPortalUrl;
+    }
+
+
+    const forwardToCheckoutUrl = async (priceId: string) => {
+      const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId})).data;
+      window.location.href = checkoutUrl;
+    }
+
     return (
       <div className="mt-20 flex flex-col gap-5">
         <div>
@@ -28,6 +43,13 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
           <h3 className="font-bold">
             Aktuelles Abonnement: {subscriptionLabel}
           </h3>
+          <button onClick={() => forwardToCheckoutUrl(standardSubscription!.priceIds!.monthlyId!)} className="btn bg-primary-gradient btn-primary">
+              Abo abschließen
+            </button>
+            <button onClick={() => forwardToCustomerPortal()} className="btn bg-primary-gradient btn-primary">
+              Zahlung und Abonnement verwalten
+            </button>
+
         </div>
         <div
           key="request-contingent"

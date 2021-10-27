@@ -1,6 +1,7 @@
 import {
   ApiRequestContingent,
   ApiRequestContingentType,
+  ApiSubscriptionPlan,
 } from '@area-butler-types/subscription-plan';
 import { ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
@@ -41,14 +42,17 @@ export class UserService {
     }
   }
 
-  public async patchUser(email: string, {fullname, subscriptionPlan}: ApiUpsertUser) {
+  public async patchUser(
+    email: string,
+    { fullname, subscriptionPlan }: ApiUpsertUser,
+  ) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
     }
 
-    Object.assign(existingUser, {fullname, subscriptionPlan}); // TODO REMOVE PLAN DEV ONLY
+    Object.assign(existingUser, { fullname, subscriptionPlan }); // TODO REMOVE PLAN DEV ONLY
 
     return existingUser.save();
   }
@@ -67,8 +71,26 @@ export class UserService {
     return existingUser.save();
   }
 
+  public async setStripeCustomerId(
+    user: UserDocument,
+    stripeCustomerId: string,
+  ): Promise<UserDocument> {
+    const oid = new Types.ObjectId(user.id);
+    await this.userModel.updateOne(
+      { _id: oid },
+      { $set: { stripeCustomerId } },
+    );
+    return this.findById(user.id);
+  }
+
   public async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email });
+  }
+
+  async findByStripeCustomerId(
+    stripeCustomerId: string,
+  ): Promise<UserDocument> {
+    return this.userModel.findOne({ stripeCustomerId });
   }
 
   public async findById(id: string): Promise<UserDocument> {
@@ -84,6 +106,36 @@ export class UserService {
     );
   }
 
+  public async changeSubscriptionPlan(
+    stripeCustomerId: string,
+    stripePriceId: string,
+  ): Promise<UserDocument> {
+    const user = await this.findByStripeCustomerId(stripeCustomerId);
+
+    if (!user) {
+      console.log('no user found for stripeId: ' + stripeCustomerId);
+      return;
+    }
+
+    const subscriptionPlan = Object.values(allSubscriptions).find(
+      (subscription: ApiSubscriptionPlan) =>
+        subscription.priceIds.annuallyId === stripePriceId ||
+        subscription.priceIds.monthlyId,
+    );
+
+    if (!subscriptionPlan) {
+      console.log('no subscription plan found for price id: ' + stripePriceId);
+      return;
+    }
+
+    const oid = new Types.ObjectId(user.id);
+    await this.userModel.updateOne(
+      { _id: oid },
+      { $set: { subscriptionPlan: subscriptionPlan.type } },
+    );
+    return this.findById(user.id);
+  }
+
   public async addRequestContingentIncrease(
     user: UserDocument,
     amount: number,
@@ -94,7 +146,10 @@ export class UserService {
       date: new Date(),
     });
     const oid = new Types.ObjectId(user.id);
-    await this.userModel.updateOne({_id: oid}, {$set: {requestContingents: user.requestContingents}});
+    await this.userModel.updateOne(
+      { _id: oid },
+      { $set: { requestContingents: user.requestContingents } },
+    );
     return Promise.resolve(user);
   }
 
@@ -124,7 +179,10 @@ export class UserService {
       date,
     });
     const oid = new Types.ObjectId(user.id);
-    await this.userModel.updateOne({_id: oid}, {$set: {requestContingents: user.requestContingents}});
+    await this.userModel.updateOne(
+      { _id: oid },
+      { $set: { requestContingents: user.requestContingents } },
+    );
     return Promise.resolve(user);
   }
 }

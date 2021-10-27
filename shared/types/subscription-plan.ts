@@ -8,6 +8,10 @@ export enum ApiSubscriptionPlanType {
 export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
     stripeId: string,
+    priceIds: {
+        monthlyId?: string,
+        annuallyId?: string
+    },
     limits: {
         numberOfRealEstates?: number,
         numberOfRequestsPerMonth?: number,
@@ -28,7 +32,6 @@ export enum ApiRequestContingentType {
     RECURRENT = 'RECURRENT',
     INCREASE = 'INCREASE',
 }
-
 
 export enum ApiDataSource {
     OSM = 'OSM',

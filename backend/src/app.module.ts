@@ -16,6 +16,7 @@ import { RoutingModule } from './routing/routing.module';
 import { CustomExceptionFilter } from './shared/custom-exception.filter';
 import { UserModule } from './user/user.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
+import { BillingModule } from './billing/billing.module';
 
 @Module({
   imports: [
@@ -41,7 +42,8 @@ import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
       verboseMemoryLeak: false,
       ignoreErrors: false,
     }),
-    RoutingModule
+    RoutingModule,
+    BillingModule
   ],
   providers: [
     {

@@ -66,7 +66,15 @@ class ConfigService {
   }
 
   public getHereApiKey(): string {
-    return this.getValue('HERE_API_KEY')
+    return this.getValue('HERE_API_KEY');
+  }
+
+  public getStripeKey(): string {
+    return this.getValue('STRIPE_KEY');
+  }
+
+  public getStripeWebhookSecret(): string {
+    return this.getValue('STRIPE_WEBHOOK_SECRET');
   }
 }
 

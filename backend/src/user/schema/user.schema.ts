@@ -37,6 +37,9 @@ export class User {
   @Prop({ type: Array, default: [] })
   requestContingents: ApiRequestContingent[];
 
+  @Prop({required: false})
+  stripeCustomerId: string;
+
 }
 
 export const checkSubscriptionViolation = (

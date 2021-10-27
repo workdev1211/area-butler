@@ -38,6 +38,7 @@ services:
       - BASE_APP_URL
       - HERE_API_KEY
       - HERE_ROUTER_API_URL
+      - STRIPE_KEY
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'

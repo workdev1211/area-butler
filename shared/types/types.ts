@@ -11,7 +11,7 @@ export interface ApiConfig {
 export interface ApiUser {
   fullname: string;
   email: string;
-  subscriptionPlan: ApiSubscriptionPlan;
+  subscriptionPlan?: ApiSubscriptionPlan;
   requestsExecuted: number;
   consentGiven?: Date;
   requestContingents: ApiRequestContingent[];
