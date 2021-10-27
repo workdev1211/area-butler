@@ -10,16 +10,25 @@ import FormModal from "../components/FormModal";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {RealEstateDeleteHandler} from "../real-estates/RealEstateDeleteHandler";
+import { UserActions, UserContext } from "context/UserContext";
 
 const deleteRealEstateModalConfig = {
     modalTitle: "Objekt löschen",
     submitButtonTitle: "Löschen",
 };
 
+const noFurtherRealEstatesUpgradeSubscriptionMessage = 'In Ihrem aktuellen Abonnement können Sie keine weiteren Objekte anlegen.'
+
 const RealEstatesPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const history = useHistory();
     const {realEstateState, realEstateDispatch} = useContext(RealEstateContext);
+
+    const {userState, userDispatch} = useContext(UserContext);
+
+    const realEstates = realEstateState.listings || [];
+    const subscriptionPlan = userState.user.subscriptionPlan;
+    const canCreateNewRealEstate = !subscriptionPlan.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan.limits.numberOfRealEstates;
 
     useEffect(() => {
         const fetchRealEstates = async () => {
@@ -33,17 +42,25 @@ const RealEstatesPage: React.FunctionComponent = () => {
     }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const ActionsTop: React.FunctionComponent = () => {
-        return (<>
-            <li>
-                <Link
-                    to="/real-estates/new"
-                    className="btn btn-link"
-                >
-                    <img src={plusIcon} alt="pdf-icon"/> Objekt anlegen
-                </Link>
-            </li>
-        </>)
-    }
+      return (
+        <>
+          <li>
+            {canCreateNewRealEstate ? (
+              <Link to="/real-estates/new" className="btn btn-link">
+                <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
+              </Link>
+            ) : (
+              <button className="btn btn-link"
+                onClick={() => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message: noFurtherRealEstatesUpgradeSubscriptionMessage}})}
+              
+              >
+                <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
+              </button>
+            )}
+          </li>
+        </>
+      );
+    };
 
     return (
         <DefaultLayout title="Meine Objekte" withHorizontalPadding={false} actionTop={<ActionsTop/>}>
@@ -59,7 +76,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
                     </tr>
                     </thead>
                     <tbody>
-                    {realEstateState.listings.map((realEstate: ApiRealEstateListing) => (
+                    {realEstates.map((realEstate: ApiRealEstateListing) => (
                         <tr key={realEstate.id}>
                             <th>{realEstate.name}</th>
                             <td>{realEstate.address}</td>
