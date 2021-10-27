@@ -2,7 +2,7 @@ import { Form, Formik } from "formik";
 import { FunctionComponent } from "react";
 
 export interface UpgradeSubscriptionHandlerProps {
-  message: string;
+  message: React.ReactNode;
   formId?: string;
   onSubmit: () => void
 }
