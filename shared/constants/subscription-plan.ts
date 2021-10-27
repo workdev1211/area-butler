@@ -42,11 +42,11 @@ export const proSubscription: ApiSubscriptionPlan = {
         annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
     },
     properties: [
-        'bis zu 20 Umgebungsanalysen im Monat',
-        'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
+        'bis zu 100 Umgebungsanalysen im Monat',
+        'Daten von bis zu 20 Interessenten & Objekten hinterlegen',
         'vollautomatisiertes Exposé',
-        'Analyse basierend auf OSM-Daten',
-        'pro features!'
+        'Analyse basierend auf OSM- und Zensus-Daten',
+        'Versand von Fragebögen'
     ],
     appFeatures: {
         sendCustomerQuestionnaireRequest: true,
@@ -64,12 +64,11 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
     },
     properties: [
-        'bis zu 20 Umgebungsanalysen im Monat',
-        'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
+        'bis zu 500 Umgebungsanalysen im Monat',
+        'Beliebig viele Interessenten & Objekte hinterlegen',
         'vollautomatisiertes Exposé',
-        'Analyse basierend auf OSM-Daten',
-        'pro features!',
-        'business features!'
+        'Analyse basierend auf allen Geo-Daten',
+        'Versand von Fragebögen',
     ],
     appFeatures: {
         sendCustomerQuestionnaireRequest: true,

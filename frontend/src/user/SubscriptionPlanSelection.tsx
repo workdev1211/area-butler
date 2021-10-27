@@ -27,7 +27,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
     const [intervall, setIntervall] = useState(PlanInterval.INTERVALL_MONTHLY);
 
     const forwardToCheckoutUrl = async (priceId: string) => {
-      const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId})).data;
+      const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId, trialPeriod: 14})).data;
       window.location.href = checkoutUrl;
     }
 
@@ -41,6 +41,9 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                     <div className="flex justify-center items-baseline">
                         <span className="text-4xl font-semibold w-auto">{price} €</span>
                         <span className="text-lg ml-2"> /{intervall === PlanInterval.INTERVALL_MONTHLY ? 'Monat' : 'Jahr'}</span>
+                    </div>
+                    <div className="flex justify-end">
+                        <div className="badge badge-primary">14 Tage kostenfrei testen!</div> 
                     </div>
                     <div className="flex flex-col my-10">
                         <span className="font-semibold">Eigenschaften:</span>
