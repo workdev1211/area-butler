@@ -34,8 +34,8 @@ export class RealEstateListingService {
     checkSubscriptionViolation(
       user,
       subscription =>
-        subscription.limits.numberOfRealEstates &&
-        currentNumberOfRealEstates >= subscription.limits.numberOfRealEstates,
+        subscription?.limits?.numberOfRealEstates &&
+        currentNumberOfRealEstates >= subscription?.limits?.numberOfRealEstates,
       'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
     );
 

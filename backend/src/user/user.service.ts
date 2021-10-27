@@ -175,7 +175,7 @@ export class UserService {
     const subscription = allSubscriptions[user.subscriptionPlan];
     user.requestContingents.push({
       type: ApiRequestContingentType.RECURRENT,
-      amount: subscription.limits.numberOfRequestsPerMonth,
+      amount: subscription?.limits?.numberOfRequestsPerMonth,
       date,
     });
     const oid = new Types.ObjectId(user.id);

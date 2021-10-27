@@ -21,6 +21,7 @@ import QuestionnaireRequestFormHandler from "../potential-customer/Questionnaire
 import { UserActions, UserContext } from "context/UserContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { ApiUser } from "../../../shared/types/types";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -61,9 +62,9 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
+  const user: ApiUser = userState.user;
   const canSendCustomerRequest =
-    userState.user.subscriptionPlan.appFeatures
-      .sendCustomerQuestionnaireRequest;
+    user.subscriptionPlan?.config?.appFeatures.sendCustomerQuestionnaireRequest;
 
   const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
     const localityParams = osmEntityTypes.filter((entity) =>
@@ -200,8 +201,12 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                   </td>
                   <td>
                     <div className="flex gap-4">
-                    <img src={searchIcon} alt="icon-search" className="cursor-pointer"
-                                          onClick={() => startSearchFromCustomer(customer)} />
+                      <img
+                        src={searchIcon}
+                        alt="icon-search"
+                        className="cursor-pointer"
+                        onClick={() => startSearchFromCustomer(customer)}
+                      />
                       <img
                         src={editIcon}
                         alt="icon-edit"

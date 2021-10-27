@@ -110,7 +110,7 @@ export class PotentialCustomerService {
     checkSubscriptionViolation(
       user,
       subscription =>
-        !subscription.appFeatures.sendCustomerQuestionnaireRequest,
+        !subscription?.appFeatures.sendCustomerQuestionnaireRequest,
       'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
     );
 

@@ -80,8 +80,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     groupedEntries.map(() => localityPaginationSize)
   );
 
-
-
   const toggleLocality = (title: string, open: boolean) => {
     const filtered = [...localityOpen.filter((l) => l !== title)];
     if (open) {

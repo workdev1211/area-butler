@@ -13,6 +13,10 @@ export interface SubscriptionPlanLimitsProps {
 
 const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
   ({ user, realEstates }) => {
+
+
+    const hasSubcription = !!user.subscriptionPlan;
+
     const subscriptionLabel =
       allSubscriptionTypes.find(
         (item) => user.subscriptionPlan?.type === item.type
@@ -43,13 +47,9 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
           <h3 className="font-bold">
             Aktuelles Abonnement: {subscriptionLabel}
           </h3>
-          <button onClick={() => forwardToCheckoutUrl(standardSubscription!.priceIds!.monthlyId!)} className="btn bg-primary-gradient btn-primary">
-              Abo abschließen
-            </button>
             <button onClick={() => forwardToCustomerPortal()} className="btn bg-primary-gradient btn-primary">
               Zahlung und Abonnement verwalten
             </button>
-
         </div>
         <div
           key="request-contingent"

@@ -26,8 +26,8 @@ export class User {
 
   @Prop({
     type: String,
-    enum: [ApiSubscriptionPlanType.STANDARD, ApiSubscriptionPlanType.PRO],
-    default: ApiSubscriptionPlanType.STANDARD,
+    required: false,
+    enum: [ApiSubscriptionPlanType.STANDARD, ApiSubscriptionPlanType.PRO]
   })
   subscriptionPlan: ApiSubscriptionPlanType;
 

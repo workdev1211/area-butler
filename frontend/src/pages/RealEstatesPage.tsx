@@ -31,7 +31,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
 
     const realEstates = realEstateState.listings || [];
     const subscriptionPlan = userState.user.subscriptionPlan;
-    const canCreateNewRealEstate = !subscriptionPlan.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan.limits.numberOfRealEstates;
+    const canCreateNewRealEstate = !subscriptionPlan?.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan?.limits.numberOfRealEstates;
 
     const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
         const result = await deriveGeocodeByAddress(listing.address);

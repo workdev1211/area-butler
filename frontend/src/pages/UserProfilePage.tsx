@@ -6,6 +6,7 @@ import DefaultLayout from "layout/defaultLayout";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
+import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { v4 as uuid } from "uuid";
 import { ApiUser } from "../../../shared/types/types";
 
@@ -20,6 +21,9 @@ const UserProfilePage: FunctionComponent = () => {
   const postSubmit = (success: boolean) => {
     setBusy(false);
   };
+
+  const user: ApiUser = userState.user;
+  const hasSubscription = !!user.subscriptionPlan;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -65,10 +69,14 @@ const UserProfilePage: FunctionComponent = () => {
           postSubmit={postSubmit}
         ></ProfileFormHandler>
       </div>
-      <SubscriptionPlanLimits
-        realEstates={realEstateState.listings}
-        user={userState.user}
-      ></SubscriptionPlanLimits>
+      {hasSubscription ? (
+        <SubscriptionPlanLimits
+          realEstates={realEstateState.listings}
+          user={userState.user}
+        ></SubscriptionPlanLimits>
+      ) : (
+        <SubscriptionPlanSelection></SubscriptionPlanSelection>
+      )}
     </DefaultLayout>
   );
 };

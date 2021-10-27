@@ -33,7 +33,18 @@ const Authenticated = withRouter<
     ) {
       history.push("/consent");
     }
-  }, [userState, forceConsentRerouting, history]);
+  }, [userState, forceConsentRerouting, history, window.location.href]);
+
+  useEffect(() => {
+    console.log(history);
+    if (
+      forceConsentRerouting &&
+      !!userState?.user?.consentGiven
+      && !userState?.user?.subscriptionPlan
+    ) {
+      history.push("/profile");
+    }
+  }, [userState, forceConsentRerouting, history, window.location.href]);
 
   useEffect(() => {
     setIsLoggedIn(isAuthenticated);
