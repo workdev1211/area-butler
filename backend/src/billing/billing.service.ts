@@ -5,6 +5,7 @@ import { StripeService } from 'src/client/stripe/stripe.service';
 import {
   EventType,
   RequestContingentIncreasedEvent,
+  SubscriptionCanceledEvent,
   SubscriptionCreatedEvent,
 } from 'src/event/event.types';
 import { UserDocument } from 'src/user/schema/user.schema';
@@ -38,11 +39,33 @@ export class BillingService {
         this.handleSubscriptionCreatedEvent(requestBody);
         break;
       }
+      case 'customer.subscription.updated': {
+        this.handleSubscriptionUpdated(requestBody);
+        break;
+      }
       default: {
         console.log('Unknown Type: ' + requestBody.type);
         console.log(JSON.stringify(requestBody));
         break;
       }
+    }
+  }
+
+  private async handleSubscriptionUpdated(requestBody) {
+    const payload = requestBody.data.object;
+    const stripeCustomerId = payload.customer;
+
+    const hasBeenCanceled = !!payload.canceled_at;
+
+    if (hasBeenCanceled) {
+      const subscriptionCanceledEvent: SubscriptionCanceledEvent = {
+        stripeCustomerId,
+      };
+
+      this.eventEmitter.emitAsync(
+        EventType.SUBSCRIPTION_CANCELED_EVENT,
+        subscriptionCanceledEvent,
+      );
     }
   }
 

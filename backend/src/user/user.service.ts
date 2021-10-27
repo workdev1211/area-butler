@@ -1,7 +1,6 @@
 import {
-  ApiRequestContingent,
   ApiRequestContingentType,
-  ApiSubscriptionPlan,
+  ApiSubscriptionPlan
 } from '@area-butler-types/subscription-plan';
 import { ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
@@ -104,6 +103,16 @@ export class UserService {
       { _id: oid },
       { $inc: { requestsExecuted: 1 } },
     );
+  }
+
+  public async cancelSubscription(
+    stripeCustomerId: string
+  ) : Promise<UserDocument> {
+    await this.userModel.updateOne(
+      { stripeCustomerId },
+      { $set: { subscriptionPlan: null, requestContingents: [] } },
+    );
+    return await this.findByStripeCustomerId(stripeCustomerId);
   }
 
   public async changeSubscriptionPlan(

@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
-import { EventType, RequestContingentIncreasedEvent, SubscriptionCreatedEvent } from "src/event/event.types";
+import { EventType, RequestContingentIncreasedEvent, SubscriptionCanceledEvent, SubscriptionCreatedEvent } from "src/event/event.types";
 import { UserService } from "../user.service";
 
 @Injectable()
@@ -10,6 +10,11 @@ export class UserListener {
   @OnEvent(EventType.SUBSCRIPTION_CREATED_EVENT, { async: true })
   private async handleSubscriptionCreatedEvent({ stripeCustomerId, stripePriceId }: SubscriptionCreatedEvent) {
     await this.userService.changeSubscriptionPlan(stripeCustomerId, stripePriceId);
+  }
+
+  @OnEvent(EventType.SUBSCRIPTION_CANCELED_EVENT, { async: true })
+  private async handleSubscriptionCanceledEvent({ stripeCustomerId }: SubscriptionCanceledEvent) {
+    await this.userService.cancelSubscription(stripeCustomerId);
   }
 
   @OnEvent(EventType.REQUEST_CONTINGENT_INCREASED_EVENT, { async: true })
