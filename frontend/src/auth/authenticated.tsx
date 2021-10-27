@@ -59,7 +59,7 @@ const Authenticated = withRouter<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated, setIsLoggedIn]);
 
-  if (!isLoggedIn || !userState?.user) {
+  if (!isLoggedIn) {
     return <></>;
   }
   return <>{children}</>;
