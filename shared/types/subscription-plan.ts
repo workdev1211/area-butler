@@ -3,6 +3,7 @@ export interface ApiUserSubscription {
     createdAt: Date;
     endsAt: Date;
     trialEndsAt: Date;
+    config: ApiSubscriptionPlan;
 }
 
 export enum ApiSubscriptionPlanType {

@@ -1,202 +1,194 @@
 import {
-  ApiUpsertPotentialCustomer,
-  ApiUpsertQuestionnaire,
-  ApiUpsertQuestionnaireRequest,
+    ApiUpsertPotentialCustomer,
+    ApiUpsertQuestionnaire,
+    ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
-import { HttpException, Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import {
-  checkSubscriptionViolation,
-  UserDocument,
-} from 'src/user/schema/user.schema';
-import {
-  PotentialCustomer,
-  PotentialCustomerDocument,
-} from './schema/potential-customer.schema';
-import {
-  QuestionnaireRequest,
-  QuestionnaireRequestDocument,
-} from './schema/questionnaire-request.schema';
+import {Injectable} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {Model, Types} from 'mongoose';
+import {UserDocument,} from 'src/user/schema/user.schema';
+import {PotentialCustomer, PotentialCustomerDocument,} from './schema/potential-customer.schema';
+import {QuestionnaireRequest, QuestionnaireRequestDocument,} from './schema/questionnaire-request.schema';
+import {UserService} from 'src/user/user.service';
+import {MailProps, MailSenderService,} from 'src/client/mail/mail-sender.service';
+import {configService} from 'src/config/config.service';
+import {SubscriptionService} from "../user/subscription.service";
+
 const crypto = require('crypto');
-import { UserService } from 'src/user/user.service';
-import {
-  MailProps,
-  MailSenderService,
-} from 'src/client/mail/mail-sender.service';
-import { configService } from 'src/config/config.service';
 
 @Injectable()
 export class PotentialCustomerService {
-  constructor(
-    @InjectModel(PotentialCustomer.name)
-    private potentialCustomerModel: Model<PotentialCustomerDocument>,
-    @InjectModel(QuestionnaireRequest.name)
-    private questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
-    private userService: UserService,
-    private mailSender: MailSenderService,
-  ) {}
-
-  async fetchPotentialCustomers({
-    id,
-  }: UserDocument): Promise<PotentialCustomerDocument[]> {
-    return await this.potentialCustomerModel.find({ userId: id });
-  }
-
-  async insertPotentialCustomer(
-    user: UserDocument,
-    { ...upsertData }: ApiUpsertPotentialCustomer,
-  ): Promise<PotentialCustomerDocument> {
-    const documentData: any = {
-      ...upsertData,
-    };
-
-    const document = {
-      userId: user.id,
-      ...documentData,
-    };
-    return await new this.potentialCustomerModel(document).save();
-  }
-
-  async updatePotentialCustomer(
-    user: UserDocument,
-    id: string,
-    { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
-  ): Promise<PotentialCustomerDocument> {
-    const oid = new Types.ObjectId(id);
-    const potentialCustomer = await this.potentialCustomerModel.findById({
-      _id: oid,
-    });
-    if (!potentialCustomer) {
-      throw 'Entity not found';
+    constructor(
+        @InjectModel(PotentialCustomer.name)
+        private potentialCustomerModel: Model<PotentialCustomerDocument>,
+        @InjectModel(QuestionnaireRequest.name)
+        private questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
+        private userService: UserService,
+        private mailSender: MailSenderService,
+        private subscriptionService: SubscriptionService
+    ) {
     }
 
-    if (potentialCustomer.userId !== user.id) {
-      throw 'Unallowed change';
+    async fetchPotentialCustomers({
+                                      id,
+                                  }: UserDocument): Promise<PotentialCustomerDocument[]> {
+        return await this.potentialCustomerModel.find({userId: id});
     }
 
-    const documentData: any = {
-      ...upsertData,
-    };
+    async insertPotentialCustomer(
+        user: UserDocument,
+        {...upsertData}: ApiUpsertPotentialCustomer,
+    ): Promise<PotentialCustomerDocument> {
+        const documentData: any = {
+            ...upsertData,
+        };
 
-    await potentialCustomer.updateOne(documentData);
-    return await this.potentialCustomerModel.findById({
-      _id: oid,
-    });
-  }
-
-  async deletePotentialCustomer(user: UserDocument, id: string) {
-    const oid = new Types.ObjectId(id);
-    const potentialCustomer = await this.potentialCustomerModel.findById({
-      _id: oid,
-    });
-
-    if (!potentialCustomer) {
-      throw 'Entity not found';
+        const document = {
+            userId: user.id,
+            ...documentData,
+        };
+        return await new this.potentialCustomerModel(document).save();
     }
 
-    if (potentialCustomer.userId !== user.id) {
-      throw 'Unallowed delete';
+    async updatePotentialCustomer(
+        user: UserDocument,
+        id: string,
+        {...upsertData}: Partial<ApiUpsertPotentialCustomer>,
+    ): Promise<PotentialCustomerDocument> {
+        const oid = new Types.ObjectId(id);
+        const potentialCustomer = await this.potentialCustomerModel.findById({
+            _id: oid,
+        });
+        if (!potentialCustomer) {
+            throw 'Entity not found';
+        }
+
+        if (potentialCustomer.userId !== user.id) {
+            throw 'Unallowed change';
+        }
+
+        const documentData: any = {
+            ...upsertData,
+        };
+
+        await potentialCustomer.updateOne(documentData);
+        return await this.potentialCustomerModel.findById({
+            _id: oid,
+        });
     }
 
-    await potentialCustomer.deleteOne();
-  }
+    async deletePotentialCustomer(user: UserDocument, id: string) {
+        const oid = new Types.ObjectId(id);
+        const potentialCustomer = await this.potentialCustomerModel.findById({
+            _id: oid,
+        });
 
-  async insertQuestionnaireRequest(
-    user: UserDocument,
-    { ...upsertData }: ApiUpsertQuestionnaireRequest,
-  ): Promise<QuestionnaireRequestDocument> {
-    
-    checkSubscriptionViolation(
-      user,
-      subscription =>
-        !subscription?.appFeatures.sendCustomerQuestionnaireRequest,
-      'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
-    );
+        if (!potentialCustomer) {
+            throw 'Entity not found';
+        }
 
-    const documentData: any = {
-      ...upsertData,
-    };
+        if (potentialCustomer.userId !== user.id) {
+            throw 'Unallowed delete';
+        }
 
-    const document = {
-      userId: user.id,
-      token: crypto.randomBytes(60).toString('hex'),
-      ...documentData,
-    };
-    const questionnaire = await new this.questionnaireRequestModel(
-      document,
-    ).save();
-
-    const mailProps: MailProps = {
-      to: [{ name: questionnaire.name, email: questionnaire.email }],
-      templateId: 1,
-      params: {
-        href: `${configService.getBaseAppUrl()}/questionnaire/${
-          questionnaire.token
-        }`,
-      },
-    };
-
-    if (questionnaire.userInCopy) {
-      mailProps.cc = [{ name: user.fullname, email: user.email }];
-      mailProps.replyTo = { name: user.fullname, email: user.email };
+        await potentialCustomer.deleteOne();
     }
 
-    await this.mailSender.sendMail(mailProps);
+    async insertQuestionnaireRequest(
+        user: UserDocument,
+        {...upsertData}: ApiUpsertQuestionnaireRequest,
+    ): Promise<QuestionnaireRequestDocument> {
 
-    return questionnaire;
-  }
+        await this.subscriptionService.checkSubscriptionViolation(
+            user._id,
+            subscription =>
+                !subscription?.appFeatures.sendCustomerQuestionnaireRequest,
+            'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
+        );
 
-  async upsertCustomerFromQuestionnaire({
-    token,
-    customer,
-  }: ApiUpsertQuestionnaire) {
-    const questionnaireRequest = await this.questionnaireRequestModel.findOne({
-      token,
-    });
+        const documentData: any = {
+            ...upsertData,
+        };
 
-    if (!questionnaireRequest) {
-      throw new Error('Unknown token');
+        const document = {
+            userId: user.id,
+            token: crypto.randomBytes(60).toString('hex'),
+            ...documentData,
+        };
+        const questionnaire = await new this.questionnaireRequestModel(
+            document,
+        ).save();
+
+        const mailProps: MailProps = {
+            to: [{name: questionnaire.name, email: questionnaire.email}],
+            templateId: 1,
+            params: {
+                href: `${configService.getBaseAppUrl()}/questionnaire/${
+                    questionnaire.token
+                }`,
+            },
+        };
+
+        if (questionnaire.userInCopy) {
+            mailProps.cc = [{name: user.fullname, email: user.email}];
+            mailProps.replyTo = {name: user.fullname, email: user.email};
+        }
+
+        await this.mailSender.sendMail(mailProps);
+
+        return questionnaire;
     }
 
-    const { name, email, userId } = questionnaireRequest;
+    async upsertCustomerFromQuestionnaire({
+                                              token,
+                                              customer,
+                                          }: ApiUpsertQuestionnaire) {
+        const questionnaireRequest = await this.questionnaireRequestModel.findOne({
+            token,
+        });
 
-    const user = await this.userService.findById(userId);
-    const customers = await this.fetchPotentialCustomers(user);
-    const existingCustomer = customers.find(
-      c => c.email.toLowerCase() === email.toLowerCase(),
-    );
+        if (!questionnaireRequest) {
+            throw new Error('Unknown token');
+        }
 
-    const upsertData = {
-      ...customer,
-      name,
-      email,
-    };
+        const {name, email, userId} = questionnaireRequest;
 
-    if (!existingCustomer) {
-      const newCustomer = await this.insertPotentialCustomer(user, upsertData);
+        const user = await this.userService.findById(userId);
+        const customers = await this.fetchPotentialCustomers(user);
+        const existingCustomer = customers.find(
+            c => c.email.toLowerCase() === email.toLowerCase(),
+        );
 
-      const mailProps: MailProps = {
-        to: [{ name: user.fullname, email: user.email }],
-        templateId: 2,
-        params: {
-          href: `${configService.getBaseAppUrl()}/potential-customers/${
-            newCustomer.id
-          }`,
-        },
-      };
+        const upsertData = {
+            ...customer,
+            name,
+            email,
+        };
 
-      await this.mailSender.sendMail(mailProps);
-    } else {
-      await this.updatePotentialCustomer(
-        user,
-        existingCustomer.id!,
-        upsertData,
-      );
+        if (!existingCustomer) {
+            const newCustomer = await this.insertPotentialCustomer(user, upsertData);
+
+            const mailProps: MailProps = {
+                to: [{name: user.fullname, email: user.email}],
+                templateId: 2,
+                params: {
+                    href: `${configService.getBaseAppUrl()}/potential-customers/${
+                        newCustomer.id
+                    }`,
+                },
+            };
+
+            await this.mailSender.sendMail(mailProps);
+        } else {
+            await this.updatePotentialCustomer(
+                user,
+                existingCustomer.id!,
+                upsertData,
+            );
+        }
     }
-  }
 
-  async findById(id: string): Promise<PotentialCustomerDocument> {
-    return this.potentialCustomerModel.findById(id);
-  }
+    async findById(id: string): Promise<PotentialCustomerDocument> {
+        return this.potentialCustomerModel.findById(id);
+    }
 }

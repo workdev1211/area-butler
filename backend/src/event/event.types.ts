@@ -5,6 +5,7 @@ export enum EventType {
     USER_CREATED_EVENT = 'USER_CREATED_EVENT',
     SUBSCRIPTION_CREATED_EVENT = 'SUBSCRIPTION_CREATED_EVENT',
     SUBSCRIPTION_CANCELED_EVENT = 'SUBSCRIPTION_CANCELED_EVENT',
+    SUBSCRIPTION_RENEWED_EVENT = 'SUBSCRIPTION_RENEWED_EVENT',
     REQUEST_CONTINGENT_INCREASED_EVENT = 'REQUEST_CONTINGENT_INCREASED_EVENT',
     CHECKOUT_COMPLETED_EVENT = 'SUBSCRIPTION_CREATED_EVENT'
 }
@@ -16,6 +17,9 @@ export interface UserCreatedEvent {
 export interface SubscriptionCreatedEvent {
     stripeCustomerId: string;
     stripePriceId: string;
+    stripeSubscriptionId: string;
+    endsAt: Date;
+    trialEndsAt: Date;
 }
 
 export interface SubscriptionCanceledEvent {
@@ -25,4 +29,8 @@ export interface SubscriptionCanceledEvent {
 export interface RequestContingentIncreasedEvent {
     stripeCustomerId: string;
     amount: number;
+}
+
+export interface SubscriptionRenewedEvent {
+    stripeSubscriptionId: string;
 }

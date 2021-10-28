@@ -18,7 +18,8 @@ import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
 import {calculateMinutesToMeters} from '../../../shared/constants/constants';
 import { UserService } from 'src/user/user.service';
-import { checkSubscriptionViolation, UserDocument } from 'src/user/schema/user.schema';
+import { UserDocument } from 'src/user/schema/user.schema';
+import {SubscriptionService} from "../user/subscription.service";
 
 @Injectable()
 export class LocationService {
@@ -27,7 +28,8 @@ export class LocationService {
     private isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
     private locationModel: Model<LocationSearchDocument>,
-    private userService: UserService
+    private userService: UserService,
+    private subscriptionService: SubscriptionService
   ) {}
 
   async searchLocation(user: UserDocument, search: ApiSearch): Promise<ApiSearchResponse> {
@@ -35,8 +37,8 @@ export class LocationService {
 
     user = await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
 
-    checkSubscriptionViolation(
-      user,
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
       _ => user.requestsExecuted + 1 > user.requestContingents.map(c => c.amount).reduce((acc, inc) => acc + inc),
       'Im aktuellen Monat sind keine weiteren Abfragen möglich',
     );

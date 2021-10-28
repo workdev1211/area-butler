@@ -3,19 +3,20 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import {
-  checkSubscriptionViolation,
   UserDocument,
 } from 'src/user/schema/user.schema';
 import {
   RealEstateListing,
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
+import {SubscriptionService} from "../user/subscription.service";
 
 @Injectable()
 export class RealEstateListingService {
   constructor(
     @InjectModel(RealEstateListing.name)
     private realEstateListingModel: Model<RealEstateListingDocument>,
+    private subscriptionService: SubscriptionService
   ) {}
 
   async getRealEstateListings({
@@ -31,8 +32,8 @@ export class RealEstateListingService {
     const currentNumberOfRealEstates = (await this.getRealEstateListings(user))
       .length;
 
-    checkSubscriptionViolation(
-      user,
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
       subscription =>
         subscription?.limits?.numberOfRealEstates &&
         currentNumberOfRealEstates >= subscription?.limits?.numberOfRealEstates,

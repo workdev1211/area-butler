@@ -1,118 +1,152 @@
-import { ApiCreateCheckout } from '@area-butler-types/billing';
-import { Injectable } from '@nestjs/common';
-import { EventEmitter2 } from 'eventemitter2';
-import { StripeService } from 'src/client/stripe/stripe.service';
+import {ApiCreateCheckout} from '@area-butler-types/billing';
+import {HttpException, Injectable} from '@nestjs/common';
+import {EventEmitter2} from 'eventemitter2';
+import {StripeService} from 'src/client/stripe/stripe.service';
 import {
-  EventType,
-  RequestContingentIncreasedEvent,
-  SubscriptionCanceledEvent,
-  SubscriptionCreatedEvent,
+    EventType,
+    RequestContingentIncreasedEvent,
+    SubscriptionCanceledEvent,
+    SubscriptionCreatedEvent, SubscriptionRenewedEvent,
 } from 'src/event/event.types';
-import { UserDocument } from 'src/user/schema/user.schema';
-import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import {UserDocument} from 'src/user/schema/user.schema';
+import {allSubscriptions} from '../../../shared/constants/subscription-plan';
 import {configService} from "../config/config.service";
+import Stripe from "stripe";
 
 @Injectable()
 export class BillingService {
-  constructor(
-    private stripeService: StripeService,
-    private eventEmitter: EventEmitter2,
-  ) {}
-
-  async createCustomerPortalLink(user: UserDocument): Promise<string> {
-    return this.stripeService.createCustomerPortalLink(user);
-  }
-
-  async createCheckoutSessionUrl(
-    user: UserDocument,
-    createCheckout: ApiCreateCheckout,
-  ): Promise<string> {
-    return this.stripeService.createCheckoutSessionUrl(user, createCheckout);
-  }
-
-  async consumeWebhook(request: any, requestBody: any): Promise<void> {
-    switch (requestBody.type) {
-      case 'checkout.session.completed': {
-        await this.handleCheckoutSessionCompleted(requestBody);
-        break;
-      }
-      case 'customer.subscription.created': {
-        this.handleSubscriptionCreatedEvent(requestBody);
-        break;
-      }
-      case 'customer.subscription.updated': {
-        this.handleSubscriptionUpdated(requestBody);
-        break;
-      }
-      default: {
-        console.log('Unknown Type: ' + requestBody.type);
-        console.log(JSON.stringify(requestBody));
-        break;
-      }
+    constructor(
+        private stripeService: StripeService,
+        private eventEmitter: EventEmitter2,
+    ) {
     }
-  }
 
-  private async handleSubscriptionUpdated(requestBody) {
-    const payload = requestBody.data.object;
-    const stripeCustomerId = payload.customer;
-
-    const hasBeenCanceled = !!payload.canceled_at;
-
-    if (hasBeenCanceled) {
-      const subscriptionCanceledEvent: SubscriptionCanceledEvent = {
-        stripeCustomerId,
-      };
-
-      this.eventEmitter.emitAsync(
-        EventType.SUBSCRIPTION_CANCELED_EVENT,
-        subscriptionCanceledEvent,
-      );
+    async createCustomerPortalLink(user: UserDocument): Promise<string> {
+        return this.stripeService.createCustomerPortalLink(user);
     }
-  }
 
-  private async handleCheckoutSessionCompleted(requestBody) {
-    const stripeEnv = configService.getStripeEnv();
-    const payload = requestBody.data.object;
-    const stripeCustomerId = payload.customer;
-    const checkoutSessionId = payload.id;
-    const lineItems = await this.stripeService.fetchLineItemsFromCheckoutSession(
-      checkoutSessionId,
-    );
+    async createCheckoutSessionUrl(
+        user: UserDocument,
+        createCheckout: ApiCreateCheckout,
+    ): Promise<string> {
+        return this.stripeService.createCheckoutSessionUrl(user, createCheckout);
+    }
 
-    if (lineItems.length > 0) {
-      const lineItem = lineItems[0];
-      const requestIncreasingLineItem = Object.values(allSubscriptions).some(
-        subscription =>
-          subscription.priceIds[stripeEnv].requestIncreaseId === lineItem.price.id,
-      );
+    async consumeWebhook(request: any): Promise<void> {
+        try {
+            const event = this.stripeService.constructEvent(request);
+            switch (event.type) {
+                case 'checkout.session.completed': {
+                    await this.handleCheckoutSessionCompleted(event.data);
+                    break;
+                }
+                case 'customer.subscription.created': {
+                    this.handleSubscriptionCreatedEvent(event.data);
+                    break;
+                }
+                case 'customer.subscription.updated': {
+                    this.handleSubscriptionUpdated(event.data);
+                    break;
+                }
+                case 'invoice.paid': {
+                    this.handleInvoicePaid(event.data);
+                    break;
+                }
+                default: {
+                    console.log('Unknown Type: ' + event.type);
+                    console.log(JSON.stringify(event.data));
+                    break;
+                }
+            }
+        } catch {
+            throw new HttpException("Failed to consume stripe webhook", 400);
+        }
 
-      if (!!requestIncreasingLineItem) {
-        const requestContingentIncreasedEvent: RequestContingentIncreasedEvent = {
-          stripeCustomerId,
-          amount: lineItem.quantity,
+    }
+
+    private async handleSubscriptionUpdated(eventData: Stripe.Event.Data) {
+        const payload = eventData.object as any;
+        const stripeCustomerId = payload.customer;
+
+        const hasBeenCanceled = !!payload.canceled_at;
+
+        if (hasBeenCanceled) {
+            const subscriptionCanceledEvent: SubscriptionCanceledEvent = {
+                stripeCustomerId,
+            };
+
+            this.eventEmitter.emitAsync(
+                EventType.SUBSCRIPTION_CANCELED_EVENT,
+                subscriptionCanceledEvent,
+            );
+        }
+    }
+
+    private async handleCheckoutSessionCompleted(eventData: Stripe.Event.Data) {
+        const stripeEnv = configService.getStripeEnv();
+        const payload = eventData.object as any;
+        const stripeCustomerId = payload.customer;
+        const checkoutSessionId = payload.id;
+        const lineItems = await this.stripeService.fetchLineItemsFromCheckoutSession(
+            checkoutSessionId,
+        );
+
+        if (lineItems.length > 0) {
+            const lineItem = lineItems[0];
+            const requestIncreasingLineItem = Object.values(allSubscriptions).some(
+                subscription =>
+                    subscription.priceIds[stripeEnv].requestIncreaseId === lineItem.price.id,
+            );
+
+            if (!!requestIncreasingLineItem) {
+                const requestContingentIncreasedEvent: RequestContingentIncreasedEvent = {
+                    stripeCustomerId,
+                    amount: lineItem.quantity,
+                };
+
+                this.eventEmitter.emitAsync(
+                    EventType.REQUEST_CONTINGENT_INCREASED_EVENT,
+                    requestContingentIncreasedEvent,
+                );
+            }
+        }
+    }
+
+    private handleSubscriptionCreatedEvent(eventData: Stripe.Event.Data) {
+        const payload = eventData.object as any;
+        const stripeCustomerId = payload.customer;
+        const stripePriceId = payload.items.data[0].price.id;
+        const stripeSubscriptionId = payload.id;
+        const trialEndsAt = payload.trial_end;
+        const endsAt = payload.current_period_end;
+
+        const subscriptionCreatedEvent: SubscriptionCreatedEvent = {
+            stripeCustomerId,
+            stripePriceId,
+            stripeSubscriptionId,
+            trialEndsAt: new Date(trialEndsAt * 1000),
+            endsAt: new Date(endsAt * 1000)
         };
 
         this.eventEmitter.emitAsync(
-          EventType.REQUEST_CONTINGENT_INCREASED_EVENT,
-          requestContingentIncreasedEvent,
+            EventType.SUBSCRIPTION_CREATED_EVENT,
+            subscriptionCreatedEvent,
         );
-      }
     }
-  }
 
-  private handleSubscriptionCreatedEvent(requestBody) {
-    const payload = requestBody.data.object;
-    const stripeCustomerId = payload.customer;
-    const stripePriceId = payload.items.data[0].price.id;
+    private handleInvoicePaid(eventData: Stripe.Event.Data) {
+        const payload = eventData.object as any;
+        const stripeSubscriptionId = payload.subscription;
 
-    const subscriptionCreatedEvent: SubscriptionCreatedEvent = {
-      stripeCustomerId,
-      stripePriceId,
-    };
+        const event: SubscriptionRenewedEvent = {
+            stripeSubscriptionId
+        }
 
-    this.eventEmitter.emitAsync(
-      EventType.SUBSCRIPTION_CREATED_EVENT,
-      subscriptionCreatedEvent,
-    );
-  }
+        if (stripeSubscriptionId) {
+            this.eventEmitter.emitAsync(
+                EventType.SUBSCRIPTION_RENEWED_EVENT,
+                event
+            )
+        }
+    }
 }

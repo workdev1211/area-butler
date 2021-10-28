@@ -26,7 +26,7 @@ const IncreaseRequestLimitFormHandler: React.FunctionComponent<IncreaseRequestLi
             try {
                 beforeSubmit();
                 const user: ApiUser = userState.user;
-                const priceId = user.subscriptionPlan?.priceIds[stripeEnv].requestIncreaseId!;
+                const priceId = user.subscriptionPlan?.config.priceIds[stripeEnv].requestIncreaseId!;
                 window.location.href = (await post<string>('/api/billing/create-checkout-url', {
                     priceId,
                     amount,

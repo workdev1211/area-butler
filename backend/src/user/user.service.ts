@@ -129,12 +129,7 @@ export class UserService {
       return;
     }
 
-    const stripeEnv = configService.getStripeEnv();
-    const subscriptionPlan = Object.values(allSubscriptions).find(
-      (subscription: ApiSubscriptionPlan) =>
-        subscription.priceIds[stripeEnv].annuallyId === stripePriceId ||
-        subscription.priceIds[stripeEnv].monthlyId,
-    );
+    const subscriptionPlan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
 
     if (!subscriptionPlan) {
       console.log('no subscription plan found for price id: ' + stripePriceId);

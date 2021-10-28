@@ -47,7 +47,7 @@ export class StripeService {
                     tax_rates: [configService.getStripeTaxId()]
                 }
             ],
-            success_url: configService.getBaseAppUrl(),
+            success_url: `${configService.getCallbackUrl()}?${mode === 'subscription' ? 'subscriptionId' : 'checkoutId'}={CHECKOUT_SESSION_ID}`,
             cancel_url: configService.getBaseAppUrl(),
         })
 
@@ -64,12 +64,28 @@ export class StripeService {
         return stripeCustomer.id;
     }
 
-    public async verifyRequestBody(body: any, headers: any): Promise<any> {
-        // TODO
+    public constructEvent(request: any): Stripe.Event {
+        const webhookSecret = configService.getStripeWebhookSecret();
+        const signature = request.headers["stripe-signature"];
+        return request.body as Stripe.Event;
+        // try {
+        //     return this.stripeClient.webhooks.constructEvent(
+        //         request.body,
+        //         signature,
+        //         webhookSecret
+        //     );
+        // } catch (err) {
+        //     console.error(`⚠️  Webhook signature verification failed.`);
+        //     throw new Error('Webhook signature verification failed.');
+        // }
     }
 
     public async fetchLineItemsFromCheckoutSession(checkoutSessionId: string): Promise<Stripe.LineItem[]> {
         const lineItems = await this.stripeClient.checkout.sessions.listLineItems(checkoutSessionId);
         return lineItems.data
+    }
+
+    public async fetchSubscriptionData(stripeSubscriptionId: string): Promise<Stripe.Subscription> {
+        return await this.stripeClient.subscriptions.retrieve(stripeSubscriptionId);
     }
 }

@@ -65,11 +65,11 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
         >
           <span className="w-64">
             Objekte angelegt {realEstates.length}/
-            {user.subscriptionPlan?.limits.numberOfRealEstates}:
+            {user.subscriptionPlan?.config.limits.numberOfRealEstates}:
           </span>
           <progress
             value={realEstates.length}
-            max={user.subscriptionPlan?.limits.numberOfRealEstates}
+            max={user.subscriptionPlan?.config.limits.numberOfRealEstates}
             className="w-96 progress progress-primary"
           ></progress>
         </div>

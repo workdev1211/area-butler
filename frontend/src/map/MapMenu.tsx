@@ -91,7 +91,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const mobileMenuButtonClasses = `map-menu ${
     mobileMenuOpen ? "mobile-open" : ""
   }`;
-    const censusInSubscriptionPlan = user.subscriptionPlan?.config?.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
+  const censusInSubscriptionPlan =
+    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+      ApiDataSource.CENSUS
+    );
 
   useEffect(() => {
     if (Array.isArray(groupedEntries)) {

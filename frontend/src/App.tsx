@@ -45,6 +45,8 @@ const UserConsentPage = lazy(() => import("./pages/UserConsentPage"));
 
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
+const CallbackPage = lazy(() => import("./pages/CallbackPage"));
+
 const feedbackModalConfig: ModalConfig = {
     buttonTitle: "?",
     buttonStyle:
@@ -89,6 +91,11 @@ function App() {
                                         <Route path="/profile">
                                             <Authenticated>
                                                 <UserProfilePage/>
+                                            </Authenticated>
+                                        </Route>
+                                        <Route path="/callback">
+                                            <Authenticated>
+                                                <CallbackPage />
                                             </Authenticated>
                                         </Route>
                                         <Route path="/impress">

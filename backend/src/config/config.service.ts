@@ -61,6 +61,10 @@ class ConfigService {
     return this.getValue('BASE_APP_URL');
   }
 
+  public getCallbackUrl(): string {
+    return `${this.getBaseAppUrl()}/callback`
+  }
+
   public getHereRouterApiUrl(): string {
     return this.getValue('HERE_ROUTER_API_URL');
   }

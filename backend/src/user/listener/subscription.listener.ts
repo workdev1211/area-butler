@@ -1,0 +1,53 @@
+import {Injectable} from "@nestjs/common";
+import {OnEvent} from "@nestjs/event-emitter";
+import {
+    EventType,
+    RequestContingentIncreasedEvent,
+    SubscriptionCanceledEvent,
+    SubscriptionCreatedEvent, SubscriptionRenewedEvent
+} from "src/event/event.types";
+import {UserService} from "../user.service";
+import {SubscriptionService} from "../subscription.service";
+import {StripeService} from "../../client/stripe/stripe.service";
+
+@Injectable()
+export class SubscriptionListener {
+    constructor(private userService: UserService, private subscriptionService: SubscriptionService, private stripeService: StripeService) {
+    }
+
+    @OnEvent(EventType.SUBSCRIPTION_CREATED_EVENT, {async: true})
+    private async handleSubscriptionCreatedEvent({
+                                                     stripeCustomerId,
+                                                     stripePriceId,
+                                                     stripeSubscriptionId,
+                                                     endsAt,
+                                                     trialEndsAt
+                                                 }: SubscriptionCreatedEvent) {
+        const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
+        const plan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
+        if (user && plan) {
+            await this.subscriptionService.createForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
+            await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
+        }
+    }
+
+    @OnEvent(EventType.SUBSCRIPTION_CANCELED_EVENT, {async: true})
+    private async handleSubscriptionCanceledEvent({stripeCustomerId}: SubscriptionCanceledEvent) {
+        await this.userService.cancelSubscription(stripeCustomerId);
+    }
+
+    @OnEvent(EventType.SUBSCRIPTION_RENEWED_EVENT,  {async: true})
+    private async handleSubscriptionRenewedEvent({stripeSubscriptionId}: SubscriptionRenewedEvent) {
+        const subscription = await this.stripeService.fetchSubscriptionData(stripeSubscriptionId);
+        const newEndDate = new Date(subscription.current_period_end * 1000);
+        await this.subscriptionService.renewSubscription(stripeSubscriptionId, newEndDate);
+    }
+
+    @OnEvent(EventType.REQUEST_CONTINGENT_INCREASED_EVENT, {async: true})
+    private async handleRequestContingentIncreasedEvent({stripeCustomerId, amount}: RequestContingentIncreasedEvent) {
+        const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
+        if (!!user) {
+            await this.userService.addRequestContingentIncrease(user, amount);
+        }
+    }
+}
