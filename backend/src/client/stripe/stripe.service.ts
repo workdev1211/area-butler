@@ -67,17 +67,16 @@ export class StripeService {
     public constructEvent(request: any): Stripe.Event {
         const webhookSecret = configService.getStripeWebhookSecret();
         const signature = request.headers["stripe-signature"];
-        return request.body as Stripe.Event;
-        // try {
-        //     return this.stripeClient.webhooks.constructEvent(
-        //         request.body,
-        //         signature,
-        //         webhookSecret
-        //     );
-        // } catch (err) {
-        //     console.error(`⚠️  Webhook signature verification failed.`);
-        //     throw new Error('Webhook signature verification failed.');
-        // }
+        try {
+            return this.stripeClient.webhooks.constructEvent(
+                request.rawBody,
+                signature,
+                webhookSecret
+            );
+        } catch (err) {
+            console.error(`Webhook signature verification failed.`);
+            throw new Error('Webhook signature verification failed.');
+        }
     }
 
     public async fetchLineItemsFromCheckoutSession(checkoutSessionId: string): Promise<Stripe.LineItem[]> {

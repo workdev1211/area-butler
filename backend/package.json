@@ -36,6 +36,7 @@
     "@turf/helpers": "^6.5.0",
     "@types/node-geocoder": "^3.24.2",
     "@types/stripe": "^8.0.417",
+    "clone-buffer": "^1.0.0",
     "dotenv": "^10.0.0",
     "fuse.js": "^6.4.6",
     "haversine": "^1.1.1",
