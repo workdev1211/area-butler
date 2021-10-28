@@ -5,8 +5,8 @@ import {StripeService} from 'src/client/stripe/stripe.service';
 import {
     EventType,
     RequestContingentIncreasedEvent,
-    SubscriptionCanceledEvent,
-    SubscriptionCreatedEvent, SubscriptionRenewedEvent,
+    SubscriptionCreatedEvent,
+    SubscriptionRenewedEvent,
 } from 'src/event/event.types';
 import {UserDocument} from 'src/user/schema/user.schema';
 import {allSubscriptions} from '../../../shared/constants/subscription-plan';
@@ -44,10 +44,6 @@ export class BillingService {
                     this.handleSubscriptionCreatedEvent(event.data);
                     break;
                 }
-                case 'customer.subscription.updated': {
-                    this.handleSubscriptionUpdated(event.data);
-                    break;
-                }
                 case 'invoice.paid': {
                     this.handleInvoicePaid(event.data);
                     break;
@@ -62,24 +58,6 @@ export class BillingService {
             throw new HttpException("Failed to consume stripe webhook", 400);
         }
 
-    }
-
-    private async handleSubscriptionUpdated(eventData: Stripe.Event.Data) {
-        const payload = eventData.object as any;
-        const stripeCustomerId = payload.customer;
-
-        const hasBeenCanceled = !!payload.canceled_at;
-
-        if (hasBeenCanceled) {
-            const subscriptionCanceledEvent: SubscriptionCanceledEvent = {
-                stripeCustomerId,
-            };
-
-            this.eventEmitter.emitAsync(
-                EventType.SUBSCRIPTION_CANCELED_EVENT,
-                subscriptionCanceledEvent,
-            );
-        }
     }
 
     private async handleCheckoutSessionCompleted(eventData: Stripe.Event.Data) {

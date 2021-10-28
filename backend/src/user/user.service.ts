@@ -108,16 +108,6 @@ export class UserService {
     );
   }
 
-  public async cancelSubscription(
-    stripeCustomerId: string
-  ) : Promise<UserDocument> {
-    await this.userModel.updateOne(
-      { stripeCustomerId },
-      { $set: { subscriptionPlan: null, requestContingents: [] } },
-    );
-    return await this.findByStripeCustomerId(stripeCustomerId);
-  }
-
   public async changeSubscriptionPlan(
     stripeCustomerId: string,
     stripePriceId: string,

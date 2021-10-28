@@ -3,7 +3,6 @@ import {OnEvent} from "@nestjs/event-emitter";
 import {
     EventType,
     RequestContingentIncreasedEvent,
-    SubscriptionCanceledEvent,
     SubscriptionCreatedEvent, SubscriptionRenewedEvent
 } from "src/event/event.types";
 import {UserService} from "../user.service";
@@ -29,11 +28,6 @@ export class SubscriptionListener {
             await this.subscriptionService.createForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
             await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
         }
-    }
-
-    @OnEvent(EventType.SUBSCRIPTION_CANCELED_EVENT, {async: true})
-    private async handleSubscriptionCanceledEvent({stripeCustomerId}: SubscriptionCanceledEvent) {
-        await this.userService.cancelSubscription(stripeCustomerId);
     }
 
     @OnEvent(EventType.SUBSCRIPTION_RENEWED_EVENT,  {async: true})

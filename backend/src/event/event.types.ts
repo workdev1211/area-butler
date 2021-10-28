@@ -4,10 +4,8 @@ import { UserDocument } from "src/user/schema/user.schema";
 export enum EventType {
     USER_CREATED_EVENT = 'USER_CREATED_EVENT',
     SUBSCRIPTION_CREATED_EVENT = 'SUBSCRIPTION_CREATED_EVENT',
-    SUBSCRIPTION_CANCELED_EVENT = 'SUBSCRIPTION_CANCELED_EVENT',
     SUBSCRIPTION_RENEWED_EVENT = 'SUBSCRIPTION_RENEWED_EVENT',
     REQUEST_CONTINGENT_INCREASED_EVENT = 'REQUEST_CONTINGENT_INCREASED_EVENT',
-    CHECKOUT_COMPLETED_EVENT = 'SUBSCRIPTION_CREATED_EVENT'
 }
 
 export interface UserCreatedEvent {
@@ -20,10 +18,6 @@ export interface SubscriptionCreatedEvent {
     stripeSubscriptionId: string;
     endsAt: Date;
     trialEndsAt: Date;
-}
-
-export interface SubscriptionCanceledEvent {
-    stripeCustomerId: string;
 }
 
 export interface RequestContingentIncreasedEvent {
