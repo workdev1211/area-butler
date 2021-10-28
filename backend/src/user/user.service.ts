@@ -1,6 +1,6 @@
 import {
   ApiRequestContingentType,
-  ApiSubscriptionPlan
+  ApiSubscriptionPlan,
 } from '@area-butler-types/subscription-plan';
 import { ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
@@ -10,8 +10,8 @@ import { Model, Types } from 'mongoose';
 import { EventType, UserCreatedEvent } from 'src/event/event.types';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
-import {configService} from "../config/config.service";
-import {SubscriptionService} from "./subscription.service";
+import { configService } from '../config/config.service';
+import { SubscriptionService } from './subscription.service';
 
 @Injectable()
 export class UserService {
@@ -44,10 +44,7 @@ export class UserService {
     }
   }
 
-  public async patchUser(
-    email: string,
-    { fullname }: ApiUpsertUser,
-  ) {
+  public async patchUser(email: string, { fullname }: ApiUpsertUser) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -119,7 +116,9 @@ export class UserService {
       return;
     }
 
-    const subscriptionPlan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
+    const subscriptionPlan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
+      stripePriceId,
+    );
 
     if (!subscriptionPlan) {
       console.log('no subscription plan found for price id: ' + stripePriceId);
@@ -132,7 +131,10 @@ export class UserService {
       { $set: { subscriptionPlan: subscriptionPlan.type } },
     );
     const userWithSubscription = await this.findById(user.id);
-    return await this.addMonthlyRequestContingentIfMissing(userWithSubscription, new Date());
+    return await this.addMonthlyRequestContingents(
+      userWithSubscription,
+      new Date(),
+    );
   }
 
   public async addRequestContingentIncrease(
@@ -152,32 +154,48 @@ export class UserService {
     return Promise.resolve(user);
   }
 
-  public async addMonthlyRequestContingentIfMissing(
+  public async addMonthlyRequestContingents(
     user: UserDocument,
-    date: Date,
+    untilMonthIncluded: Date,
   ): Promise<UserDocument> {
-    const userSubscription = await this.subscriptionService.findActiveByUserId(user._id);
+    const userSubscription = await this.subscriptionService.findActiveByUserId(
+      user._id,
+    );
+
     if (!userSubscription) {
       return Promise.resolve(user);
     }
 
-    const existingMonthlyContingent = user.requestContingents.find(
-      c =>
-        c.type === ApiRequestContingentType.RECURRENT &&
-        c.date.getMonth() === date.getMonth() &&
-        c.date.getFullYear() === date.getFullYear(),
-    );
+    const subscription = allSubscriptions[userSubscription.type];
+    const currentMonth = new Date();
 
-    if (!!existingMonthlyContingent) {
-      return Promise.resolve(user);
+    while (
+      currentMonth.getFullYear() < untilMonthIncluded.getFullYear() ||
+      (currentMonth.getFullYear() === untilMonthIncluded.getFullYear() &&
+        currentMonth.getMonth() <= untilMonthIncluded.getMonth())
+    ) {
+
+      const existingMonthlyContingent = user.requestContingents.find(
+        c =>
+          c.type === ApiRequestContingentType.RECURRENT &&
+          c.date.getMonth() === currentMonth.getMonth() &&
+          c.date.getFullYear() === currentMonth.getFullYear(),
+      );
+
+      if (!existingMonthlyContingent) {
+        user.requestContingents.push({
+          type: ApiRequestContingentType.RECURRENT,
+          amount: subscription?.limits?.numberOfRequestsPerMonth,
+          date: currentMonth,
+        });
+      } else {
+        existingMonthlyContingent.amount =
+          subscription?.limits?.numberOfRequestsPerMonth;
+      }
+
+      currentMonth.setMonth(currentMonth.getMonth() + 1);
     }
 
-    const subscription = allSubscriptions[userSubscription.type];
-    user.requestContingents.push({
-      type: ApiRequestContingentType.RECURRENT,
-      amount: subscription?.limits?.numberOfRequestsPerMonth,
-      date,
-    });
     const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(
       { _id: oid },

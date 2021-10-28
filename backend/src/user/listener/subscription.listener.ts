@@ -25,32 +25,19 @@ export class SubscriptionListener {
                                                  }: SubscriptionCreatedEvent) {
         const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const plan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
-        const stripeEnv = configService.getStripeEnv();
         if (user && plan) {
             await this.subscriptionService.createForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
-            
-            if (plan.priceIds[stripeEnv].monthlyId === stripePriceId) {
-                // Add monthly contingent
-                await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
-
-            } else if (plan.priceIds[stripeEnv].annuallyId === stripePriceId) {
-
-                // Add anually contingent
-                for (let month = 0; month < 12; month++) {
-                    const monthlyContingent = new Date();
-                    monthlyContingent.setMonth(monthlyContingent.getMonth() + month);
-                    await this.userService.addMonthlyRequestContingentIfMissing(user, monthlyContingent);
-                }
-            }
-
+            await this.userService.addMonthlyRequestContingents(user, endsAt);
         }
     }
 
     @OnEvent(EventType.SUBSCRIPTION_RENEWED_EVENT,  {async: true})
-    private async handleSubscriptionRenewedEvent({stripeSubscriptionId}: SubscriptionRenewedEvent) {
+    private async handleSubscriptionRenewedEvent({stripeSubscriptionId, stripeCustomerId}: SubscriptionRenewedEvent) {
+        const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const subscription = await this.stripeService.fetchSubscriptionData(stripeSubscriptionId);
         const newEndDate = new Date(subscription.current_period_end * 1000);
         await this.subscriptionService.renewSubscription(stripeSubscriptionId, newEndDate);
+        await this.userService.addMonthlyRequestContingents(user, newEndDate);
     }
 
     @OnEvent(EventType.REQUEST_CONTINGENT_INCREASED_EVENT, {async: true})

@@ -18,8 +18,7 @@ export class SubscriptionService {
         return Object.values(allSubscriptions).find(
             (subscription: ApiSubscriptionPlan) =>
                 subscription.priceIds[stripeEnv].annuallyId === stripePriceId ||
-                subscription.priceIds[stripeEnv].monthlyId,
-        );
+                subscription.priceIds[stripeEnv].monthlyId === stripePriceId);
     }
 
     public async checkSubscriptionViolation(

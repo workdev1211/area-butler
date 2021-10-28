@@ -34,9 +34,6 @@ export class LocationService {
 
   async searchLocation(user: UserDocument, search: ApiSearch): Promise<ApiSearchResponse> {
 
-
-    user = await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
-
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       _ => user.requestsExecuted + 1 > retrieveTotalRequestContingent(user).map(c => c.amount).reduce((acc, inc) => acc + inc),

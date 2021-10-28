@@ -26,5 +26,6 @@ export interface RequestContingentIncreasedEvent {
 }
 
 export interface SubscriptionRenewedEvent {
+    stripeCustomerId: string;
     stripeSubscriptionId: string;
 }

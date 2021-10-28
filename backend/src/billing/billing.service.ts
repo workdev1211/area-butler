@@ -120,9 +120,11 @@ export class BillingService {
 
     private handleInvoicePaid(eventData: Stripe.Event.Data) {
         const payload = eventData.object as any;
+        const stripeCustomerId = payload.customer;
         const stripeSubscriptionId = payload.subscription;
 
         const event: SubscriptionRenewedEvent = {
+            stripeCustomerId,
             stripeSubscriptionId
         }
 
