@@ -10,7 +10,6 @@ export const mapFormToApiUpsertUser = async (
 ): Promise<Partial<ApiUpsertUser>> => {
   return {
     fullname: values.fullname,
-    subscriptionPlan: values.subscriptionPlan
   };
 };
 

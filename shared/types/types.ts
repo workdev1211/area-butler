@@ -20,7 +20,6 @@ export interface ApiUser {
 
 export interface ApiUpsertUser {
   fullname: string;
-  subscriptionPlan: string; // TODO REMOVE
 }
 
 export interface ApiInsertFeedback {
