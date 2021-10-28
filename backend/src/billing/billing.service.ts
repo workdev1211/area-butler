@@ -10,6 +10,7 @@ import {
 } from 'src/event/event.types';
 import { UserDocument } from 'src/user/schema/user.schema';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import {configService} from "../config/config.service";
 
 @Injectable()
 export class BillingService {
@@ -70,6 +71,7 @@ export class BillingService {
   }
 
   private async handleCheckoutSessionCompleted(requestBody) {
+    const stripeEnv = configService.getStripeEnv();
     const payload = requestBody.data.object;
     const stripeCustomerId = payload.customer;
     const checkoutSessionId = payload.id;
@@ -81,7 +83,7 @@ export class BillingService {
       const lineItem = lineItems[0];
       const requestIncreasingLineItem = Object.values(allSubscriptions).some(
         subscription =>
-          subscription.priceIds.requestIncreaseId === lineItem.price.id,
+          subscription.priceIds[stripeEnv].requestIncreaseId === lineItem.price.id,
       );
 
       if (!!requestIncreasingLineItem) {

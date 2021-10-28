@@ -7,6 +7,7 @@ export interface ApiConfig {
   };
   googleApiKey: string;
   mapBoxAccessToken: string;
+  stripeEnv: 'dev' | 'prod';
 }
 export interface ApiUser {
   fullname: string;

@@ -9,6 +9,7 @@ export class ConfigController {
     const { domain, audience } = configService.getAuthConfig();
     const googleApiKey = configService.getGoogleApiKey();
     const mapBoxAccessToken = configService.getMapBoxAccessToken();
+    const stripeEnv = configService.getStripeEnv();
     return {
       auth: {
         domain,
@@ -16,6 +17,7 @@ export class ConfigController {
       },
       googleApiKey,
       mapBoxAccessToken,
+      stripeEnv
     };
   }
 }

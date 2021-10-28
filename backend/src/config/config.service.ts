@@ -69,6 +69,11 @@ class ConfigService {
     return this.getValue('HERE_API_KEY');
   }
 
+  public getStripeEnv(): 'dev' | 'prod' {
+    const env = this.getValue('STRIPE_ENV');
+    return env === 'prod' ? 'prod' : 'dev';
+  }
+
   public getStripeKey(): string {
     return this.getValue('STRIPE_KEY');
   }

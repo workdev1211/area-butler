@@ -1,10 +1,11 @@
 import { useHttp } from "hooks/http";
-import React, {useState} from "react";
+import React, {useContext, useState} from "react";
 import {
     businessPlusSubscription,
     proSubscription,
     standardSubscription
 } from "../../../shared/constants/subscription-plan";
+import {ConfigContext} from "../context/ConfigContext";
 
 enum PlanInterval {
     INTERVALL_MONTHLY,
@@ -23,6 +24,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
   () => {
 
     const {post} = useHttp();
+    const {stripeEnv} = useContext(ConfigContext);
 
     const [intervall, setIntervall] = useState(PlanInterval.INTERVALL_MONTHLY);
 
@@ -74,14 +76,14 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                     <button className={`btn btn-lg ${intervall === PlanInterval.INTERVALL_ANNUALLY ? 'btn-active' : ''}`} onClick={() => setIntervall(PlanInterval.INTERVALL_ANNUALLY)}>Jährlich</button>
                 </div>
                 {intervall === PlanInterval.INTERVALL_MONTHLY && <div className="flex flex-wrap gap-20 mt-20">
-                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds.monthlyId!} name="Standard" price="60,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={standardSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.monthlyId!} name="Pro" price="90,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={proSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.monthlyId!} name="Business" price="250,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={businessPlusSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds[stripeEnv].monthlyId!} name="Standard" price="60,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={standardSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={proSubscription.priceIds[stripeEnv].monthlyId!} name="Pro" price="90,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={proSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds[stripeEnv].monthlyId!} name="Business" price="250,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={businessPlusSubscription.properties} />
                 </div>}
                 {intervall === PlanInterval.INTERVALL_ANNUALLY && <div className="flex flex-wrap gap-20 mt-20">
-                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds.annuallyId!} name="Standard" price="600,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={standardSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={proSubscription.priceIds.annuallyId!} name="Pro" price="900,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds.annuallyId!} name="Business" price="2500,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds[stripeEnv].annuallyId!} name="Standard" price="600,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={standardSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={proSubscription.priceIds[stripeEnv].annuallyId!} name="Pro" price="900,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds[stripeEnv].annuallyId!} name="Business" price="2500,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
                 </div>}
             </div>
         </div>

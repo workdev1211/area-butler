@@ -16,9 +16,16 @@ export const standardSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 20
     },
     priceIds: {
-        requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
-        monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
-        annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+        dev: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
+            annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+        },
+        prod: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
+            annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+        }
     },
     properties: [
         'bis zu 20 Umgebungsanalysen im Monat',
@@ -39,8 +46,16 @@ export const proSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 100
     },
     priceIds: {
-        monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
-        annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
+        dev: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
+            annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
+        },
+        prod: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
+            annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
+        },
     },
     properties: [
         'bis zu 100 Umgebungsanalysen im Monat',
@@ -61,8 +76,16 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         numberOfRequestsPerMonth: 500
     },
     priceIds: {
-        monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
-        annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
+        dev: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
+            annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
+        },
+        prod: {
+            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
+            annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
+        }
     },
     properties: [
         'bis zu 500 Umgebungsanalysen im Monat',

@@ -5,12 +5,17 @@ export enum ApiSubscriptionPlanType {
     // ENTERPRISE = 'ENTERPRISE' TODO coming soon
 }
 
+export interface ApiSubscriptionPricing {
+    requestIncreaseId?: string,
+    monthlyId?: string,
+    annuallyId?: string
+}
+
 export interface ApiSubscriptionPlan {
     type: ApiSubscriptionPlanType,
     priceIds: {
-        requestIncreaseId?: string,
-        monthlyId?: string,
-        annuallyId?: string
+        dev: ApiSubscriptionPricing,
+        prod: ApiSubscriptionPricing
     },
     properties: string[],
     limits: {
