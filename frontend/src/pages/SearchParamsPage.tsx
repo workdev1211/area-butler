@@ -3,7 +3,7 @@ import DefaultLayout from "../layout/defaultLayout";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import {SearchContext, SearchContextActions} from "../context/SearchContext";
 import MyLocationButton from "../components/MyLocationButton";
-import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse} from "../../../shared/types/types";
+import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser} from "../../../shared/types/types";
 import Input from "../components/Input";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import {useHttp} from "../hooks/http";
@@ -77,7 +77,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         });
     }
 
-    const user = userState.user;
+    const user: ApiUser = userState.user;
     const totalRequestContingent = deriveTotalRequestContingent(user);
     const requestsExecuted = user?.requestsExecuted;
     const requestLimitExceeded = requestsExecuted >= totalRequestContingent;

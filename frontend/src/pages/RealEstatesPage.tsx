@@ -14,6 +14,7 @@ import {RealEstateDeleteHandler} from "../real-estates/RealEstateDeleteHandler";
 import { UserActions, UserContext } from "context/UserContext";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { ApiUser } from "../../../shared/types/types";
 
 const deleteRealEstateModalConfig = {
     modalTitle: "Objekt löschen",
@@ -30,7 +31,8 @@ const RealEstatesPage: React.FunctionComponent = () => {
     const {searchContextDispatch} = useContext(SearchContext);
 
     const realEstates = realEstateState.listings || [];
-    const subscriptionPlan = userState.user.subscriptionPlan;
+    const user: ApiUser = userState.user;
+    const subscriptionPlan = user.subscriptionPlan?.config;
     const canCreateNewRealEstate = !subscriptionPlan?.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan?.limits.numberOfRealEstates;
 
     const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {

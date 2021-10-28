@@ -58,13 +58,13 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     PotentialCustomerContext
   );
 
-  const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
-  const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
+  const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
+  const { userState, userDispatch } = useContext(UserContext);
   const user: ApiUser = userState.user;
   const canSendCustomerRequest =
-    user.subscriptionPlan?.config?.appFeatures.sendCustomerQuestionnaireRequest;
+    user.subscriptionPlan?.config.appFeatures.sendCustomerQuestionnaireRequest;
 
   const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
     const localityParams = osmEntityTypes.filter((entity) =>
