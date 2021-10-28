@@ -3,7 +3,7 @@ import React, {useContext, useState} from "react";
 import {
     businessPlusSubscription,
     proSubscription,
-    standardSubscription
+    standardSubscription, TRIAL_DAYS
 } from "../../../shared/constants/subscription-plan";
 import {ConfigContext} from "../context/ConfigContext";
 
@@ -45,7 +45,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                         <span className="text-lg ml-2"> /{intervall === PlanInterval.INTERVALL_MONTHLY ? 'Monat' : 'Jahr'}</span>
                     </div>
                     <div className="flex justify-end">
-                        <div className="badge badge-primary">14 Tage kostenfrei testen!</div> 
+                        <div className="badge badge-primary">{TRIAL_DAYS} Tage kostenfrei testen!</div>
                     </div>
                     <div className="flex flex-col my-10">
                         <span className="font-semibold">Eigenschaften:</span>

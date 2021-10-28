@@ -9,14 +9,16 @@ import {
     SubscriptionRenewedEvent,
 } from 'src/event/event.types';
 import {UserDocument} from 'src/user/schema/user.schema';
-import {allSubscriptions} from '../../../shared/constants/subscription-plan';
+import {allSubscriptions, TRIAL_DAYS} from '../../../shared/constants/subscription-plan';
 import {configService} from "../config/config.service";
 import Stripe from "stripe";
+import {SubscriptionService} from "../user/subscription.service";
 
 @Injectable()
 export class BillingService {
     constructor(
         private stripeService: StripeService,
+        private subscriptionService: SubscriptionService,
         private eventEmitter: EventEmitter2,
     ) {
     }
@@ -29,7 +31,11 @@ export class BillingService {
         user: UserDocument,
         createCheckout: ApiCreateCheckout,
     ): Promise<string> {
-        return this.stripeService.createCheckoutSessionUrl(user, createCheckout);
+        const existingsSubscriptions = await this.subscriptionService.allUserSubscriptions(user._id);
+        return this.stripeService.createCheckoutSessionUrl(user, {
+            ...createCheckout,
+            trialPeriod: existingsSubscriptions.length ? null: TRIAL_DAYS
+        });
     }
 
     async consumeWebhook(request: any): Promise<void> {

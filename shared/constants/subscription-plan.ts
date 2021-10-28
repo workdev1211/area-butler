@@ -1,5 +1,7 @@
 import {ApiDataSource, ApiSubscriptionPlan, ApiSubscriptionPlanType,} from "../types/subscription-plan";
 
+export const TRIAL_DAYS = 14;
+
 export const allSubscriptionTypes: {
     type: ApiSubscriptionPlanType;
     label: string;
