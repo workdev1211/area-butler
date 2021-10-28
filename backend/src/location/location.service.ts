@@ -18,7 +18,7 @@ import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
 import {calculateMinutesToMeters} from '../../../shared/constants/constants';
 import { UserService } from 'src/user/user.service';
-import { UserDocument } from 'src/user/schema/user.schema';
+import { retrieveTotalRequestContingent, UserDocument } from 'src/user/schema/user.schema';
 import {SubscriptionService} from "../user/subscription.service";
 
 @Injectable()
@@ -39,7 +39,7 @@ export class LocationService {
 
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      _ => user.requestsExecuted + 1 > user.requestContingents.map(c => c.amount).reduce((acc, inc) => acc + inc),
+      _ => user.requestsExecuted + 1 > retrieveTotalRequestContingent(user).map(c => c.amount).reduce((acc, inc) => acc + inc),
       'Im aktuellen Monat sind keine weiteren Abfragen möglich',
     );
 

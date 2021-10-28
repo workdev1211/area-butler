@@ -8,6 +8,7 @@ import {
 import {UserService} from "../user.service";
 import {SubscriptionService} from "../subscription.service";
 import {StripeService} from "../../client/stripe/stripe.service";
+import { configService } from "src/config/config.service";
 
 @Injectable()
 export class SubscriptionListener {
@@ -24,9 +25,24 @@ export class SubscriptionListener {
                                                  }: SubscriptionCreatedEvent) {
         const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const plan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
+        const stripeEnv = configService.getStripeEnv();
         if (user && plan) {
             await this.subscriptionService.createForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
-            await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
+            
+            if (plan.priceIds[stripeEnv].monthlyId === stripePriceId) {
+                // Add monthly contingent
+                await this.userService.addMonthlyRequestContingentIfMissing(user, new Date());
+
+            } else if (plan.priceIds[stripeEnv].annuallyId === stripePriceId) {
+
+                // Add anually contingent
+                for (let month = 0; month < 12; month++) {
+                    const monthlyContingent = new Date();
+                    monthlyContingent.setMonth(monthlyContingent.getMonth() + month);
+                    await this.userService.addMonthlyRequestContingentIfMissing(user, monthlyContingent);
+                }
+            }
+
         }
     }
 

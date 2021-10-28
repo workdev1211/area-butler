@@ -29,4 +29,18 @@ export class User {
 
 }
 
+export const retrieveTotalRequestContingent = (
+  user: UserDocument,
+  date: Date = new Date(),
+) => {
+  const contingents = user.requestContingents || [];
+
+  return contingents.filter(
+    c =>
+      c.date.getFullYear() < date.getFullYear() ||
+      (c.date.getFullYear() === date.getFullYear() &&
+        c.date.getMonth() <= date.getMonth()),
+  );
+};
+
 export const Userschema = SchemaFactory.createForClass(User);

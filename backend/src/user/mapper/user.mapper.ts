@@ -1,5 +1,5 @@
 import {ApiUser} from '@area-butler-types/types';
-import {UserDocument} from '../schema/user.schema';
+import {retrieveTotalRequestContingent, UserDocument} from '../schema/user.schema';
 import {SubscriptionDocument} from "../schema/subscription.schema";
 import {mapSubscriptionToApiSubscription} from "./subscription.mapper";
 
@@ -9,5 +9,5 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   subscriptionPlan: subscription ? mapSubscriptionToApiSubscription(subscription) : null,
   requestsExecuted: user.requestsExecuted,
   consentGiven: user.consentGiven,
-  requestContingents: user.requestContingents
+  requestContingents: retrieveTotalRequestContingent(user)
 });
