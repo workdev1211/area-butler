@@ -1,18 +1,20 @@
 import Input from "components/Input";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+import { ApiSubscriptionPlan } from "../../../shared/types/subscription-plan";
 
 export interface IncreaseRequestLimitFormProps {
+  subscriptionPlan: ApiSubscriptionPlan,
   formId: string;
   onSubmit: (values: any) => void;
 }
 
 const IncreaseRequestLimitForm: React.FunctionComponent<IncreaseRequestLimitFormProps> =
-  ({ formId, onSubmit }) => {
+  ({ formId, onSubmit, subscriptionPlan }) => {
     return (
       <Formik
         initialValues={{
-          amount: 20,
+          amount: subscriptionPlan.appFeatures.requestIncreasePackage,
         }}
         validationSchema={Yup.object({
           amount: Yup.number().min(0, "Kontingent darf nicht negativ sein."),
@@ -24,7 +26,7 @@ const IncreaseRequestLimitForm: React.FunctionComponent<IncreaseRequestLimitForm
         <Form id={formId}>
           <p>
             Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu.
-            Bitte kaufen Sie ein weiteres Kontingent oder wechseln Sie auf einen
+            Bitte kaufen Sie ein weiteres Kontingent für 30,00 € oder wechseln Sie auf einen
             höheren Plan
           </p>
 
@@ -33,6 +35,7 @@ const IncreaseRequestLimitForm: React.FunctionComponent<IncreaseRequestLimitForm
               label="Abfrage Kontingent"
               name="amount"
               type="number"
+              disabled={true}
               placeholder="Abfrage Kontingent"
               className="input input-bordered w-full"
             />

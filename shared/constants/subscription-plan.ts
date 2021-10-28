@@ -19,12 +19,12 @@ export const standardSubscription: ApiSubscriptionPlan = {
     },
     priceIds: {
         dev: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
             monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
             annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
         },
         prod: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
             monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
             annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
         }
@@ -36,6 +36,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
         'Analyse basierend auf OSM-Daten',
     ],
     appFeatures: {
+        requestIncreasePackage: 12,
         sendCustomerQuestionnaireRequest: false,
         dataSources: [ApiDataSource.OSM],
     },
@@ -49,12 +50,12 @@ export const proSubscription: ApiSubscriptionPlan = {
     },
     priceIds: {
         dev: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
             monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
             annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
         },
         prod: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
             monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
             annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
         },
@@ -67,6 +68,7 @@ export const proSubscription: ApiSubscriptionPlan = {
         'Versand von Fragebögen'
     ],
     appFeatures: {
+        requestIncreasePackage: 50,
         sendCustomerQuestionnaireRequest: true,
         dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
     },
@@ -79,12 +81,12 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     },
     priceIds: {
         dev: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
             monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
             annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
         },
         prod: {
-            requestIncreaseId: 'price_1JpIK4Lcbb2Q3qBpNUuopdLE',
+            requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
             monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
             annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
         }
@@ -97,6 +99,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         'Versand von Fragebögen',
     ],
     appFeatures: {
+        requestIncreasePackage: 100,
         sendCustomerQuestionnaireRequest: true,
         dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
     },

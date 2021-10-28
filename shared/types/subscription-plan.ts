@@ -31,6 +31,7 @@ export interface ApiSubscriptionPlan {
         numberOfRequestsPerMonth?: number,
     },
     appFeatures: {
+        requestIncreasePackage: number;
         sendCustomerQuestionnaireRequest: boolean,
         dataSources: ApiDataSource[]
     }
