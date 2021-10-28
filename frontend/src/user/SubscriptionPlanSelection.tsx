@@ -1,10 +1,11 @@
 import { useHttp } from "hooks/http";
-import React, {useContext, useState} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {
     businessPlusSubscription,
     proSubscription,
     standardSubscription, TRIAL_DAYS
 } from "../../../shared/constants/subscription-plan";
+import { ApiUserSubscription } from "../../../shared/types/subscription-plan";
 import {ConfigContext} from "../context/ConfigContext";
 
 enum PlanInterval {
@@ -23,10 +24,22 @@ interface PlanProps {
 const SubscriptionPlanSelection: React.FunctionComponent =
   () => {
 
-    const {post} = useHttp();
+    const {get, post} = useHttp();
     const {stripeEnv} = useContext(ConfigContext);
 
+    const [hadPreviousSubscriptions, setHadPreviousSubscriptions] = useState(false);
+
     const [intervall, setIntervall] = useState(PlanInterval.INTERVALL_MONTHLY);
+
+
+    useEffect(() => {
+        const fetchSubscriptions = async () => {
+            const subscriptions = (await get<ApiUserSubscription[]>('/api/users/me/subscriptions')).data
+            setHadPreviousSubscriptions(subscriptions.length > 0);
+        }
+        fetchSubscriptions();
+    }, [hadPreviousSubscriptions]);
+
 
     const forwardToCheckoutUrl = async (priceId: string) => {
       const checkoutUrl = (await post<string>('/api/billing/create-checkout-url', {priceId, trialPeriod: 14})).data;
@@ -44,9 +57,9 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                         <span className="text-4xl font-semibold w-auto">{price} €</span>
                         <span className="text-lg ml-2"> /{intervall === PlanInterval.INTERVALL_MONTHLY ? 'Monat' : 'Jahr'}</span>
                     </div>
-                    <div className="flex justify-end">
+                    {!hadPreviousSubscriptions && <div className="flex justify-end">
                         <div className="badge badge-primary">{TRIAL_DAYS} Tage kostenfrei testen!</div>
-                    </div>
+                    </div>}
                     <div className="flex flex-col my-10">
                         <span className="font-semibold">Eigenschaften:</span>
                         <ul className="list-disc ml-5 mt-2">
@@ -66,7 +79,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
       <div className="mt-20 flex flex-col gap-5">
         <div>
           <h1 className="font-bold text-xl">
-            Bitte wählen Sie zur Vervollständigung Ihres Profils ein Abonnement aus
+            Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das passende Abonnement für Sie aus.
           </h1>
 
             <div className="p-20 flex flex-col items-center justify-center">

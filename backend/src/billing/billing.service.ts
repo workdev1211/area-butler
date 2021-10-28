@@ -34,7 +34,7 @@ export class BillingService {
         const existingsSubscriptions = await this.subscriptionService.allUserSubscriptions(user._id);
         return this.stripeService.createCheckoutSessionUrl(user, {
             ...createCheckout,
-            trialPeriod: existingsSubscriptions.length ? null: TRIAL_DAYS
+            trialPeriod: existingsSubscriptions.length ? undefined : TRIAL_DAYS
         });
     }
 

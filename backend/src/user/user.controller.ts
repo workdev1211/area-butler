@@ -4,6 +4,8 @@ import {AuthGuard} from '@nestjs/passport';
 import {mapUserToApiUser} from './mapper/user.mapper';
 import {UserService} from './user.service';
 import {SubscriptionService} from "./subscription.service";
+import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
+import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
 
 @Controller('api/users')
 @UseGuards(AuthGuard('jwt'))
@@ -19,6 +21,13 @@ export class UserController {
             user,
             await this.subscriptionService.findActiveByUserId(user._id)
         );
+    }
+
+    @Get('me/subscriptions')
+    public async allSubscriptions(@Req() request): Promise<ApiUserSubscription[]> {
+        const requestUser = request?.user;
+        const user = await this.userService.upsertUser(requestUser.email, requestUser.email);
+        return (await this.subscriptionService.allUserSubscriptions(user._id)).map(s => mapSubscriptionToApiSubscription(s));
     }
 
     @Post('me')
