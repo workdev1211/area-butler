@@ -5,7 +5,7 @@ import {StripeService} from 'src/client/stripe/stripe.service';
 import {
     EventType,
     RequestContingentIncreasedEvent,
-    SubscriptionCreatedEvent,
+    SubscriptionCreatedEvent as SubscriptionUpsertedEvent,
     SubscriptionRenewedEvent,
 } from 'src/event/event.types';
 import {UserDocument} from 'src/user/schema/user.schema';
@@ -46,10 +46,12 @@ export class BillingService {
                     await this.handleCheckoutSessionCompleted(event.data);
                     break;
                 }
-                case 'customer.subscription.created': {
-                    this.handleSubscriptionCreatedEvent(event.data);
+                case 'customer.subscription.created': 
+                case 'customer.subscription.updated': {
+                    this.handleSubscriptionUpsertedEvent(event.data);
                     break;
                 }
+                
                 case 'invoice.paid': {
                     this.handleInvoicePaid(event.data);
                     break;
@@ -96,7 +98,7 @@ export class BillingService {
         }
     }
 
-    private handleSubscriptionCreatedEvent(eventData: Stripe.Event.Data) {
+    private handleSubscriptionUpsertedEvent(eventData: Stripe.Event.Data) {
         const payload = eventData.object as any;
         const stripeCustomerId = payload.customer;
         const stripePriceId = payload.items.data[0].price.id;
@@ -104,7 +106,7 @@ export class BillingService {
         const trialEndsAt = payload.trial_end;
         const endsAt = payload.current_period_end;
 
-        const subscriptionCreatedEvent: SubscriptionCreatedEvent = {
+        const subscriptionUpsertedEvent: SubscriptionUpsertedEvent = {
             stripeCustomerId,
             stripePriceId,
             stripeSubscriptionId,
@@ -113,8 +115,8 @@ export class BillingService {
         };
 
         this.eventEmitter.emitAsync(
-            EventType.SUBSCRIPTION_CREATED_EVENT,
-            subscriptionCreatedEvent,
+            EventType.SUBSCRIPTION_UPSERTED_EVENT,
+            subscriptionUpsertedEvent,
         );
     }
 
@@ -122,13 +124,12 @@ export class BillingService {
         const payload = eventData.object as any;
         const stripeCustomerId = payload.customer;
         const stripeSubscriptionId = payload.subscription;
-
         const event: SubscriptionRenewedEvent = {
             stripeCustomerId,
             stripeSubscriptionId
         }
-
         if (stripeSubscriptionId) {
+            
             this.eventEmitter.emitAsync(
                 EventType.SUBSCRIPTION_RENEWED_EVENT,
                 event

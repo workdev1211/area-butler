@@ -15,8 +15,8 @@ export class SubscriptionListener {
     constructor(private userService: UserService, private subscriptionService: SubscriptionService, private stripeService: StripeService) {
     }
 
-    @OnEvent(EventType.SUBSCRIPTION_CREATED_EVENT, {async: true})
-    private async handleSubscriptionCreatedEvent({
+    @OnEvent(EventType.SUBSCRIPTION_UPSERTED_EVENT, {async: true})
+    private async handleSubscriptionUpsertedEvent({
                                                      stripeCustomerId,
                                                      stripePriceId,
                                                      stripeSubscriptionId,
@@ -26,7 +26,7 @@ export class SubscriptionListener {
         const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const plan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(stripePriceId);
         if (user && plan) {
-            await this.subscriptionService.createForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
+            await this.subscriptionService.upsertForUserId(user._id, plan.type, stripeSubscriptionId, stripePriceId, endsAt, trialEndsAt);
             await this.userService.addMonthlyRequestContingents(user, endsAt);
         }
     }
@@ -35,6 +35,7 @@ export class SubscriptionListener {
     private async handleSubscriptionRenewedEvent({stripeSubscriptionId, stripeCustomerId}: SubscriptionRenewedEvent) {
         const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const subscription = await this.stripeService.fetchSubscriptionData(stripeSubscriptionId);
+        console.log(subscription);
         const newEndDate = new Date(subscription.current_period_end * 1000);
         await this.subscriptionService.renewSubscription(stripeSubscriptionId, newEndDate);
         await this.userService.addMonthlyRequestContingents(user, newEndDate);

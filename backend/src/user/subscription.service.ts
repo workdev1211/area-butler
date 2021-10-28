@@ -53,18 +53,36 @@ export class SubscriptionService {
         return activeSubscriptions[0];
     }
 
-    public async createForUserId(userId: string, type: ApiSubscriptionPlanType, stripeSubscriptionId = 'unverified-new', stripePriceId: string, endsAt: Date, trialEndsAt: Date): Promise<SubscriptionDocument> {
-        if (await this.findActiveByUserId(userId)) {
-            throw new HttpException("user has already an active subscription", 400);
+    public async findByStripeSubscriptionId(stripeSubscriptionId: string): Promise<SubscriptionDocument> {
+        return this.subscriptionModel.findOne({stripeSubscriptionId});
+    }
+
+    public async upsertForUserId(userId: string, type: ApiSubscriptionPlanType, stripeSubscriptionId = 'unverified-new', stripePriceId: string, endsAt: Date, trialEndsAt: Date): Promise<SubscriptionDocument> {
+
+        const subscription = await this.findByStripeSubscriptionId(stripeSubscriptionId);
+
+        if (!!subscription) {
+            subscription.stripePriceId = stripePriceId;
+            subscription.type = type;
+            subscription.endsAt = endsAt;
+            subscription.trialEndsAt = trialEndsAt;
+            return subscription.save();
+        } else {
+            if (await this.findActiveByUserId(userId)) {
+                throw new HttpException("user has already an active subscription", 400);
+            }
+
+            return await new this.subscriptionModel({
+                userId,
+                type,
+                stripePriceId,
+                endsAt,
+                trialEndsAt,
+                stripeSubscriptionId
+            }).save();
         }
-        return await new this.subscriptionModel({
-            userId,
-            type,
-            stripePriceId,
-            endsAt,
-            trialEndsAt,
-            stripeSubscriptionId
-        }).save();
+
+
     }
 
 }
