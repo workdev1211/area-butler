@@ -1,11 +1,12 @@
-import { ApiUser } from '@area-butler-types/types';
-import { allSubscriptions } from '../../../../shared/constants/subscription-plan';
-import { UserDocument } from '../schema/user.schema';
+import {ApiUser} from '@area-butler-types/types';
+import {UserDocument} from '../schema/user.schema';
+import {SubscriptionDocument} from "../schema/subscription.schema";
+import {mapSubscriptionToApiSubscription} from "./subscription.mapper";
 
-export const mapUserToApiUser = (user: UserDocument): ApiUser => ({
+export const mapUserToApiUser = (user: UserDocument, subscription?: SubscriptionDocument): ApiUser => ({
   fullname: user.fullname,
   email: user.email,
-  subscriptionPlan: !!user.subscriptionPlan ? allSubscriptions[user.subscriptionPlan] : null,
+  subscriptionPlan: subscription ? mapSubscriptionToApiSubscription(subscription) : null,
   requestsExecuted: user.requestsExecuted,
   consentGiven: user.consentGiven,
   requestContingents: user.requestContingents

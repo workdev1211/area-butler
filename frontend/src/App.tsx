@@ -70,13 +70,13 @@ function App() {
                     pauseOnHover
                 />
                 <ToastContainer/>
-                <Nav/>
                 <Suspense fallback={<LoadingMessage/>}>
                     <UserContextProvider>
+                        <Nav/>
                         <Authenticated forceConsentRerouting={false}>
                             <UpgradeSubscriptionHandlerContainer />
                             <FormModal modalConfig={feedbackModalConfig}>
-                                <FeedbackFormHandler></FeedbackFormHandler>
+                                <FeedbackFormHandler/>
                             </FormModal>
                         </Authenticated>
                         <PotentialCustomerContextProvider>

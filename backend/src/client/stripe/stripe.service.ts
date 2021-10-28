@@ -1,7 +1,8 @@
-import { ApiCreateCheckout } from "@area-butler-types/billing";
-import { Injectable } from "@nestjs/common";
-import { configService } from "src/config/config.service";
-import { UserDocument } from "src/user/schema/user.schema";
+/* eslint-disable @typescript-eslint/camelcase */
+import {ApiCreateCheckout} from "@area-butler-types/billing";
+import {Injectable} from "@nestjs/common";
+import {configService} from "src/config/config.service";
+import {UserDocument} from "src/user/schema/user.schema";
 import Stripe from 'stripe';
 
 @Injectable()
@@ -25,15 +26,27 @@ export class StripeService {
         return stripeSession.url;
     }
 
-    public async createCheckoutSessionUrl(user: UserDocument, {priceId, amount = 1, trialPeriod, mode = 'subscription'}: ApiCreateCheckout): Promise<string> {
-        const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({customer: user.stripeCustomerId, 
-            mode, 
+    public async createCheckoutSessionUrl(user: UserDocument, {
+        priceId,
+        amount = 1,
+        trialPeriod,
+        mode = 'subscription'
+    }: ApiCreateCheckout): Promise<string> {
+        const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create({
+            customer: user.stripeCustomerId,
+            mode,
             payment_method_types: ['card'],
             billing_address_collection: 'required',
             subscription_data: {
                 trial_period_days: trialPeriod
             },
-            line_items: [{price: priceId, quantity: amount}],
+            line_items: [
+                {
+                    price: priceId,
+                    quantity: amount,
+                    tax_rates: [configService.getStripeTaxId()]
+                }
+            ],
             success_url: configService.getBaseAppUrl(),
             cancel_url: configService.getBaseAppUrl(),
         })
@@ -43,7 +56,7 @@ export class StripeService {
 
     public async createCustomer(user: UserDocument): Promise<string> {
 
-        const stripeCustomer : Stripe.Customer = await this.stripeClient.customers.create({
+        const stripeCustomer: Stripe.Customer = await this.stripeClient.customers.create({
             email: user.email,
             name: user.fullname,
         })

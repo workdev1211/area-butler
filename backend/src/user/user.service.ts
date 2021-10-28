@@ -10,11 +10,14 @@ import { Model, Types } from 'mongoose';
 import { EventType, UserCreatedEvent } from 'src/event/event.types';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
+import {configService} from "../config/config.service";
+import {SubscriptionService} from "./subscription.service";
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
+    private subscriptionService: SubscriptionService,
     private eventEmitter: EventEmitter2,
   ) {}
 
@@ -126,10 +129,11 @@ export class UserService {
       return;
     }
 
+    const stripeEnv = configService.getStripeEnv();
     const subscriptionPlan = Object.values(allSubscriptions).find(
       (subscription: ApiSubscriptionPlan) =>
-        subscription.priceIds.annuallyId === stripePriceId ||
-        subscription.priceIds.monthlyId,
+        subscription.priceIds[stripeEnv].annuallyId === stripePriceId ||
+        subscription.priceIds[stripeEnv].monthlyId,
     );
 
     if (!subscriptionPlan) {
@@ -167,7 +171,8 @@ export class UserService {
     user: UserDocument,
     date: Date,
   ): Promise<UserDocument> {
-    if (!user.subscriptionPlan) {
+    const userSubscription = await this.subscriptionService.findActiveByUserId(user._id);
+    if (!userSubscription) {
       return Promise.resolve(user);
     }
 
@@ -182,7 +187,7 @@ export class UserService {
       return Promise.resolve(user);
     }
 
-    const subscription = allSubscriptions[user.subscriptionPlan];
+    const subscription = allSubscriptions[userSubscription.type];
     user.requestContingents.push({
       type: ApiRequestContingentType.RECURRENT,
       amount: subscription?.limits?.numberOfRequestsPerMonth,

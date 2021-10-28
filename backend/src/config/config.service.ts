@@ -81,6 +81,10 @@ class ConfigService {
   public getStripeWebhookSecret(): string {
     return this.getValue('STRIPE_WEBHOOK_SECRET');
   }
+
+  public getStripeTaxId(): string {
+    return this.getValue('STRIPE_TAX_ID');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([

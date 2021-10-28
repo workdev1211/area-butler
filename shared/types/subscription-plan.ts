@@ -1,3 +1,10 @@
+export interface ApiUserSubscription {
+    type: ApiSubscriptionPlanType;
+    createdAt: Date;
+    endsAt: Date;
+    trialEndsAt: Date;
+}
+
 export enum ApiSubscriptionPlanType {
     STANDARD = 'STANDARD',
     PRO = 'PRO',

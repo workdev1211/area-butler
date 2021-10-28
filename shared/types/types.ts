@@ -1,4 +1,4 @@
-import { ApiRequestContingent, ApiSubscriptionPlan } from "./subscription-plan";
+import {ApiRequestContingent, ApiSubscriptionPlan, ApiUserSubscription} from "./subscription-plan";
 
 export interface ApiConfig {
   auth: {
@@ -12,7 +12,7 @@ export interface ApiConfig {
 export interface ApiUser {
   fullname: string;
   email: string;
-  subscriptionPlan?: ApiSubscriptionPlan;
+  subscriptionPlan?: ApiUserSubscription;
   requestsExecuted: number;
   consentGiven?: Date;
   requestContingents: ApiRequestContingent[];
