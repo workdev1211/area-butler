@@ -38,7 +38,10 @@ services:
       - BASE_APP_URL
       - HERE_API_KEY
       - HERE_ROUTER_API_URL
+      - STRIPE_ENV
       - STRIPE_KEY
+      - STRIPE_WEBHOOK_SECRET
+      - STRIPE_TAX_ID
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
