@@ -117,7 +117,23 @@ export const PrivacyPage = () => {
             </ul>
             <p>Die Übermittlung der Daten erfolgt unter Berücksichtigung der European Standard Contractual Clauses.
                 Weiter Informationen bezüglich der Datenverarbeitung durch Mapbox, Inc. sind der <a
+                    className="link-primary"
                     href="https://www.mapbox.com/legal/privacy/">Datenschutzerklärung</a> zu entnehmen.</p>
+            Grundlage für die Datenverarbeitung ist Art. 6 Abs. 1 lit. f DSGVO, der die Verarbeitung von Daten zur
+            Erfüllung eines Vertrags oder vorvertraglicher Maßnahmen gestattet.
+            <h3>Google Places API / Webdienst</h3>
+            <p>Zum Zwecke der automatischen Adressvervollständigung nutzen wir den Web Service Google Places API von
+                Google. Die Nutzung des Dienstes bedingt die automatische Übermittlung folgender Informationen:</p>
+            <ul className="list-disc ml-5 py-1">
+                <li>IP-Adresse</li>
+                <li>Browsertyp und Browserversion</li>
+                <li>Datum und Uhrzeit der Serveranfrage</li>
+                <li>Eingegeben Inhalte bezüglich der Adressvervollständigung</li>
+            </ul>
+            Die Nutzung ermöglicht die einfache Vervollständigung der Eingabefelder von Adressfeldern in unserer
+            Applikation und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
+            Weitere Informationen können der <a className="link-primary" href="www.google.com/policies/privacy">Datenschutzerklärung
+            von Google</a> entnommen werden.
             <h2>4. Kontaktaufnahme</h2>
             <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, soweit an der
                 Verarbeitung ein berechtigtes Interesse besteht (Art. 6 Abs. 1 lit. f DSGVO), Sie in die
