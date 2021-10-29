@@ -55,7 +55,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                 <div className="card-body py-10">
                     <div className="flex justify-center items-baseline">
                         <span className="text-4xl font-semibold w-auto">{price} €</span>
-                        <span className="text-lg ml-2"> /{intervall === PlanInterval.INTERVALL_MONTHLY ? 'Monat' : 'Jahr'}</span>
+                        <span className="text-lg ml-2"> /{intervall === PlanInterval.INTERVALL_MONTHLY ? 'Monat ' : 'Jahr '}zzgl. MwSt.</span>
                     </div>
                     {!hadPreviousSubscriptions && <div className="flex justify-end">
                         <div className="badge badge-primary">{TRIAL_DAYS} Tage kostenfrei testen!</div>

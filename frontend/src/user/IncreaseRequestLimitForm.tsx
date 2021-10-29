@@ -26,7 +26,7 @@ const IncreaseRequestLimitForm: React.FunctionComponent<IncreaseRequestLimitForm
         <Form id={formId}>
           <p>
             Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu.
-            Bitte kaufen Sie ein weiteres Kontingent für 30,00 € oder wechseln Sie auf einen
+            Bitte kaufen Sie ein weiteres Kontingent für 30,00 € (zzgl. MwSt.) oder wechseln Sie auf einen
             höheren Plan
           </p>
 
