@@ -32,6 +32,6 @@ export class PotentialCustomerListener {
 
   @OnEvent(EventType.USER_CREATED_EVENT, { async: true })
   private async handleUserCreatedEvent({ user }: UserCreatedEvent) {
-    await this.potentialCustomerService.insertPotentialCustomer(user, createInitialPotentialCustomer());
+    await this.potentialCustomerService.insertPotentialCustomer(user, createInitialPotentialCustomer(), false);
   }
 }

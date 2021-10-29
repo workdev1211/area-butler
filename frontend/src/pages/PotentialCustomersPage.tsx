@@ -51,11 +51,14 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
   </div>
 );
 
+const noFurtherCustomersUpgradeSubscriptionMessage =
+  "In Ihrem aktuellen Abonnement können Sie keine weiteren Interessenten anlegen.";
+
 const PotentialCustomersPage: React.FunctionComponent = () => {
   const { get } = useHttp();
   const history = useHistory();
   const queryParams = new URLSearchParams(useLocation().search);
-  const customerHighlightId = queryParams.get('id');
+  const customerHighlightId = queryParams.get("id");
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
   );
@@ -65,8 +68,13 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
   const user: ApiUser = userState.user;
+  const subscriptionPlan = user.subscriptionPlan?.config;
   const canSendCustomerRequest =
-    user.subscriptionPlan?.config.appFeatures.sendCustomerQuestionnaireRequest;
+    subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
+  const canCreateNewCustomer =
+    !subscriptionPlan?.limits.numberOfCustomers ||
+    potentialCustomerState.customers.length <
+      subscriptionPlan?.limits.numberOfCustomers;
 
   const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
     const localityParams = osmEntityTypes.filter((entity) =>
@@ -104,9 +112,26 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
     return (
       <>
         <li>
-          <Link to="/potential-customers/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
-          </Link>
+          {canCreateNewCustomer ? (
+            <Link to="/potential-customers/new" className="btn btn-link">
+              <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
+            </Link>
+          ) : (
+            <button
+              className="btn btn-link"
+              onClick={() =>
+                userDispatch({
+                  type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                  payload: {
+                    open: true,
+                    message: noFurtherCustomersUpgradeSubscriptionMessage,
+                  },
+                })
+              }
+            >
+              <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
+            </button>
+          )}
         </li>
         <li>
           <button
@@ -162,7 +187,12 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
           <tbody>
             {potentialCustomerState.customers.map(
               (customer: ApiPotentialCustomer) => (
-                <tr key={customer.id} className={customer.id === customerHighlightId ? 'active': ''}>
+                <tr
+                  key={customer.id}
+                  className={
+                    customer.id === customerHighlightId ? "active" : ""
+                  }
+                >
                   <th>{customer.name}</th>
                   <td>
                     <a

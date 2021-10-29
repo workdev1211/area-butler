@@ -15,6 +15,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
     type: ApiSubscriptionPlanType.STANDARD,
     limits: {
         numberOfRealEstates: 5,
+        numberOfCustomers: 5,
         numberOfRequestsPerMonth: 20
     },
     priceIds: {
@@ -46,6 +47,7 @@ export const proSubscription: ApiSubscriptionPlan = {
     type: ApiSubscriptionPlanType.PRO,
     limits: {
         numberOfRealEstates: 20,
+        numberOfCustomers: 20,
         numberOfRequestsPerMonth: 100
     },
     priceIds: {

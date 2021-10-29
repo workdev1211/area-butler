@@ -28,6 +28,7 @@ export interface ApiSubscriptionPlan {
     properties: string[],
     limits: {
         numberOfRealEstates?: number,
+        numberOfCustomers?: number,
         numberOfRequestsPerMonth?: number,
     },
     appFeatures: {

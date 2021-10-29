@@ -1,3 +1,4 @@
+import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActions, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
@@ -15,6 +16,7 @@ const UserProfilePage: FunctionComponent = () => {
   const { get } = useHttp();
   const { userState, userDispatch } = useContext(UserContext);
   const { realEstateState } = useContext(RealEstateContext);
+  const { potentialCustomerState } = useContext(PotentialCustomerContext);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -73,6 +75,7 @@ const UserProfilePage: FunctionComponent = () => {
         <SubscriptionPlanLimits
           realEstates={realEstateState.listings}
           user={userState.user}
+          customers={potentialCustomerState.customers}
         ></SubscriptionPlanLimits>
       ) : (
         <SubscriptionPlanSelection></SubscriptionPlanSelection>
