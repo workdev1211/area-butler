@@ -89,6 +89,10 @@ class ConfigService {
   public getStripeTaxId(): string {
     return this.getValue('STRIPE_TAX_ID');
   }
+
+  public getJwtRolesClaim(): string {
+    return this.getValue('JWT_ROLES_CLAIM');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([

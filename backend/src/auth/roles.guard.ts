@@ -1,9 +1,7 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { Role, ROLES_KEY } from './roles.decorator';
-
-//TODO: move to config / change general namespace?
-const JWT_ROLES_CLAIM = 'https://area-butler.x.syndicats.co/roles';
+import {configService} from "../config/config.service";
 
 @Injectable()
 export class RolesGuard implements CanActivate {
@@ -18,6 +16,6 @@ export class RolesGuard implements CanActivate {
       return true;
     }
     const { user } = context.switchToHttp().getRequest();
-    return requiredRoles.some(role => user[JWT_ROLES_CLAIM]?.includes(role));
+    return requiredRoles.some(role => user[configService.getJwtRolesClaim()]?.includes(role));
   }
 }
