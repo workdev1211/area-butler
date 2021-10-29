@@ -6,7 +6,7 @@ import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import {Link, useHistory} from "react-router-dom";
+import {Link, useHistory, useLocation} from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
@@ -26,6 +26,8 @@ const noFurtherRealEstatesUpgradeSubscriptionMessage = 'In Ihrem aktuellen Abonn
 const RealEstatesPage: React.FunctionComponent = () => {
     const {get} = useHttp();
     const history = useHistory();
+    const queryParams = new URLSearchParams(useLocation().search);
+    const realEstateHighlightId = queryParams.get('id');
     const {realEstateState, realEstateDispatch} = useContext(RealEstateContext);
     const {userState, userDispatch} = useContext(UserContext);
     const {searchContextDispatch} = useContext(SearchContext);
@@ -103,7 +105,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
                     </thead>
                     <tbody>
                     {realEstates.map((realEstate: ApiRealEstateListing) => (
-                        <tr key={realEstate.id}>
+                        <tr key={realEstate.id} className={realEstateHighlightId === realEstate.id ? 'active' : ''}>
                             <th>{realEstate.name}</th>
                             <td>{realEstate.address}</td>
                             <td>

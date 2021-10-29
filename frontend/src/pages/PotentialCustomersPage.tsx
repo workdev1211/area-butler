@@ -14,7 +14,7 @@ import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import { Link, useHistory } from "react-router-dom";
+import { Link, useHistory, useLocation } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
@@ -54,6 +54,8 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
 const PotentialCustomersPage: React.FunctionComponent = () => {
   const { get } = useHttp();
   const history = useHistory();
+  const queryParams = new URLSearchParams(useLocation().search);
+  const customerHighlightId = queryParams.get('id');
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
   );
@@ -160,7 +162,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
           <tbody>
             {potentialCustomerState.customers.map(
               (customer: ApiPotentialCustomer) => (
-                <tr key={customer.id}>
+                <tr key={customer.id} className={customer.id === customerHighlightId ? 'active': ''}>
                   <th>{customer.name}</th>
                   <td>
                     <a

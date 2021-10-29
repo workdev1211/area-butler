@@ -83,7 +83,7 @@ export const RealEstateFormHandler: React.FunctionComponent<RealEstateFormHandle
                 });
                 postSubmit(true);
                 toastSuccess("Objekt erfolgreich gespeichert!");
-                history.push(`/real-estates/${newRealEstate.id}`);
+                history.push(`/real-estates?id=${newRealEstate.id}`);
             } catch (err) {
                 toastError("Fehler beim Speichern des Objektes");
                 console.log(err);

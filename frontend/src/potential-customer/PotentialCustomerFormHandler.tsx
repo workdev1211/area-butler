@@ -70,7 +70,7 @@ const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFor
                 });
                 postSubmit(true);
                 toastSuccess("Interessent erfolgreich gespeichert!");
-                history.push(`/potential-customers/${storedCustomer.id}`);
+                history.push(`/potential-customers?id=${storedCustomer.id}`);
             } catch (err) {
                 console.log(err);
                 toastError("Fehler beim Speichern eines Interessenten");
