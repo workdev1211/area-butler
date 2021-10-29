@@ -35,10 +35,11 @@ export class SubscriptionListener {
     private async handleSubscriptionRenewedEvent({stripeSubscriptionId, stripeCustomerId}: SubscriptionRenewedEvent) {
         const user = await this.userService.findByStripeCustomerId(stripeCustomerId);
         const subscription = await this.stripeService.fetchSubscriptionData(stripeSubscriptionId);
-        console.log(subscription);
         const newEndDate = new Date(subscription.current_period_end * 1000);
-        await this.subscriptionService.renewSubscription(stripeSubscriptionId, newEndDate);
-        await this.userService.addMonthlyRequestContingents(user, newEndDate);
+        if (user && subscription) {
+            await this.subscriptionService.renewSubscription(stripeSubscriptionId, newEndDate);
+            await this.userService.addMonthlyRequestContingents(user, newEndDate);
+        }
     }
 
     @OnEvent(EventType.REQUEST_CONTINGENT_INCREASED_EVENT, {async: true})
