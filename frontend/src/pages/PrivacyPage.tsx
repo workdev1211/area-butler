@@ -23,7 +23,7 @@ export const PrivacyPage = () => {
                 Sie unsere Website betreten.
             </p>
             <h3>Wofür nutzen wir Ihre Daten?</h3>
-            <p>hre Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten.</p>
+            <p>Ihre Daten werden erhoben, um eine fehlerfreie Bereitstellung der Website zu gewährleisten.</p>
             <h3>Welche Rechte haben Sie bezüglich Ihrer Daten?</h3>
             <p>Sie haben jederzeit das Recht unentgeltlich Auskunft über Herkunft, Empfänger und Zweck Ihrer
                 gespeicherten personenbezogenen Daten zu erhalten. Sie haben außerdem ein Recht, die Berichtigung,
@@ -54,7 +54,7 @@ export const PrivacyPage = () => {
             <h3>Hinweise zur verantwortlichen Stelle</h3>
             <p>Die verantwortliche Stelle für die Datenverarbeitung auf dieser Website ist:</p>
             <p className="pt-2" dangerouslySetInnerHTML={{__html: kudibaCompany.formattedAddress()}}></p>
-            <p className="pb-2">{ kudibaCompany.mail }</p>
+            <p className="pb-2">{kudibaCompany.mail}</p>
             <p>Verantwortliche Stelle ist die natürliche oder juristische Person, die allein oder gemeinsam mit anderen
                 über die Zwecke und Mittel der Verarbeitung von personenbezogenen Daten (z.B. Namen, E-Mail-Adressen o.
                 Ä.) entscheidet.</p>
@@ -68,7 +68,8 @@ export const PrivacyPage = () => {
                 Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde in datenschutzrechtlichen Fragen ist der
                 Landesdatenschutzbeauftragte des Bundeslandes, in dem unser Unternehmen seinen Sitz hat. Eine Liste der
                 Datenschutzbeauftragten sowie deren Kontaktdaten können folgendem Link entnommen werden:
-                <a className="pl-2 link-primary" href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html">https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>.
+                <a className="pl-2 link-primary"
+                   href="https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html">https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html</a>.
             </p>
             <h3>Recht auf Datenübertragbarkeit</h3>
             <p>Sie haben das Recht, Daten, die wir auf Grundlage Ihrer Einwilligung oder in Erfüllung eines Vertrags
@@ -104,6 +105,19 @@ export const PrivacyPage = () => {
                 Grundlage für die Datenverarbeitung ist Art. 6 Abs. 1 lit. f DSGVO, der die Verarbeitung von Daten zur
                 Erfüllung eines Vertrags oder vorvertraglicher Maßnahmen gestattet.
             </p>
+            <h3>Mapbox, Inc.</h3>
+            <p>Für die Darstellung der Karten in der Umgebungsanalysen und dem Exposé wird ein Service von Mapbox, Inc.
+                verwendet. Hierfür werden folgende Informationen automatisch übermittelt:</p>
+            <ul className="list-disc ml-5 py-1">
+                <li>IP-Adresse</li>
+                <li>Browsertyp und Browserversion</li>
+                <li>verwendetes Betriebssystem</li>
+                <li>Datum und Uhrzeit der Serveranfrage</li>
+                <li>Anfrage-Inhalte bezüglich der angefragten Karten-Lokationen</li>
+            </ul>
+            <p>Die Übermittlung der Daten erfolgt unter Berücksichtigung der European Standard Contractual Clauses.
+                Weiter Informationen bezüglich der Datenverarbeitung durch Mapbox, Inc. sind der <a
+                    href="https://www.mapbox.com/legal/privacy/">Datenschutzerklärung</a> zu entnehmen.</p>
             <h2>4. Kontaktaufnahme</h2>
             <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, soweit an der
                 Verarbeitung ein berechtigtes Interesse besteht (Art. 6 Abs. 1 lit. f DSGVO), Sie in die
