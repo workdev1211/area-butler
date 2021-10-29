@@ -1,14 +1,13 @@
-import {Injectable} from "@nestjs/common";
-import {OnEvent} from "@nestjs/event-emitter";
+import { Injectable } from "@nestjs/common";
+import { OnEvent } from "@nestjs/event-emitter";
 import {
     EventType,
     RequestContingentIncreasedEvent,
     SubscriptionCreatedEvent, SubscriptionRenewedEvent
 } from "src/event/event.types";
-import {UserService} from "../user.service";
-import {SubscriptionService} from "../subscription.service";
-import {StripeService} from "../../client/stripe/stripe.service";
-import { configService } from "src/config/config.service";
+import { StripeService } from "../../client/stripe/stripe.service";
+import { SubscriptionService } from "../subscription.service";
+import { UserService } from "../user.service";
 
 @Injectable()
 export class SubscriptionListener {

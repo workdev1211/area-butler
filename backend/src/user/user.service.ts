@@ -167,14 +167,13 @@ export class UserService {
     }
 
     const subscription = allSubscriptions[userSubscription.type];
-    const currentMonth = new Date();
+    let currentMonth = new Date();
 
     while (
       currentMonth.getFullYear() < untilMonthIncluded.getFullYear() ||
       (currentMonth.getFullYear() === untilMonthIncluded.getFullYear() &&
         currentMonth.getMonth() <= untilMonthIncluded.getMonth())
     ) {
-
       const existingMonthlyContingent = user.requestContingents.find(
         c =>
           c.type === ApiRequestContingentType.RECURRENT &&
@@ -193,8 +192,12 @@ export class UserService {
           subscription?.limits?.numberOfRequestsPerMonth;
       }
 
-      currentMonth.setMonth(currentMonth.getMonth() + 1);
+      const month = currentMonth.getMonth();
+      currentMonth = new Date();
+      currentMonth.setMonth(month + 1);
     }
+
+    console.log(user.requestContingents);
 
     const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(
