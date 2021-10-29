@@ -41,6 +41,7 @@ export class RealEstateListingListener {
     await this.realEstateListingService.insertRealEstateListing(
       user,
       createInitialRealEstateListing(),
+      false
     );
   }
 }

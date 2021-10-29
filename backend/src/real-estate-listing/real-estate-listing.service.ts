@@ -28,11 +28,12 @@ export class RealEstateListingService {
   async insertRealEstateListing(
     user: UserDocument,
     { coordinates, ...upsertData }: ApiUpsertRealEstateListing,
+    subscriptionCheck = true
   ): Promise<RealEstateListingDocument> {
     const currentNumberOfRealEstates = (await this.getRealEstateListings(user))
       .length;
 
-    await this.subscriptionService.checkSubscriptionViolation(
+    subscriptionCheck && await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       subscription =>
         subscription?.limits?.numberOfRealEstates &&
