@@ -93,10 +93,15 @@ class ConfigService {
   public getJwtRolesClaim(): string {
     return this.getValue('JWT_ROLES_CLAIM');
   }
+
+  public getOverpassUrl(): string {
+    return this.getValue('OVERPASS_URL');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
   'MAPBOX_ACCESS_TOKEN',
+  'OVERPASS_URL'
 ]);
 
 export { configService };

@@ -17,6 +17,8 @@ import { CustomExceptionFilter } from './shared/custom-exception.filter';
 import { UserModule } from './user/user.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { BillingModule } from './billing/billing.module';
+import { ScheduleModule } from '@nestjs/schedule';
+import { DataProvisionModule } from './data-provision/data-provision.module';
 
 @Module({
   imports: [
@@ -24,6 +26,7 @@ import { BillingModule } from './billing/billing.module';
     ServeStaticModule.forRoot({
       rootPath: join(__dirname, '..', '..', 'static'),
     }),
+    ScheduleModule.forRoot(),
     MongooseModule.forRoot(configService.getMongoConnectionUri()),
     HttpModule,
     LocationModule,
@@ -33,6 +36,7 @@ import { BillingModule } from './billing/billing.module';
     FeedbackModule,
     PotentialCustomerModule,
     ZensusAtlasModule,
+    DataProvisionModule,
     EventEmitterModule.forRoot({
       wildcard: true,
       delimiter: '.',
