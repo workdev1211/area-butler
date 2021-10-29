@@ -20,6 +20,7 @@ export class StripeService {
     public async createCustomerPortalLink(user: UserDocument): Promise<string> {
         const stripeSession: Stripe.BillingPortal.Session = await this.stripeClient.billingPortal.sessions.create({
             customer: user.stripeCustomerId,
+            locale: "de",
             return_url: configService.getBaseAppUrl()
         })
 
@@ -37,6 +38,7 @@ export class StripeService {
             mode,
             payment_method_types: ['card'],
             billing_address_collection: 'required',
+            locale: "de",
             subscription_data: {
                 trial_period_days: trialPeriod
             },
