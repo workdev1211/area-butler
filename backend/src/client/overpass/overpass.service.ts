@@ -10,7 +10,7 @@ const Fuse = require('fuse.js/dist/fuse.common')
 
 @Injectable()
 export class OverpassService {
-    private baseUrl = 'https://overpass.x.syndicats.co/api/interpreter';
+    private baseUrl = 'https://overpass.area-butler.de/api/interpreter';
     private logger: Logger = new Logger(OverpassService.name);
 
     constructor(private http: HttpService) {
