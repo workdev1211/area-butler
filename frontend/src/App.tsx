@@ -1,6 +1,6 @@
-import React, {lazy, Suspense, useContext, useEffect, useState} from "react";
+import React, {lazy, Suspense, useEffect} from "react";
 import "./App.css";
-import {BrowserRouter as Router, Route, Switch} from "react-router-dom";
+import {BrowserRouter as Router, Route, Switch, useLocation} from "react-router-dom";
 import Nav from "./layout/Nav";
 import Footer from "./layout/Footer";
 import {SearchContextProvider} from "./context/SearchContext";
@@ -11,8 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {RealEstateContextProvider} from "./context/RealEstateContext";
 import FormModal, {ModalConfig} from "components/FormModal";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import {UserActions, UserContext, UserContextProvider} from "context/UserContext";
-import UpgradeSubscriptionHandler from "user/UpgradeSubscriptionHandler";
+import {UserContextProvider} from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
@@ -54,11 +53,20 @@ const feedbackModalConfig: ModalConfig = {
     modalTitle: "Feedback abgeben",
 };
 
+const ScrollToTop: React.FunctionComponent = () => {
+    const { pathname } = useLocation();
 
+    useEffect(() => {
+        window.scrollTo(0, 0);
+    }, [pathname]);
+
+    return null;
+}
 
 function App() {
     return (
         <Router>
+            <ScrollToTop />
             <div className="app">
                 <ToastContainer
                     position="top-right"
