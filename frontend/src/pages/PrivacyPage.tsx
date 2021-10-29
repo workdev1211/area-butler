@@ -134,6 +134,27 @@ export const PrivacyPage = () => {
             Applikation und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
             Weitere Informationen können der <a className="link-primary" href="www.google.com/policies/privacy">Datenschutzerklärung
             von Google</a> entnommen werden.
+            <h3>Stripe</h3>
+            <p>Stripe ist ein Online-Bezahldienst und ermöglicht die automatisierte Abrechnung und Zahlung von unseren Services. Hierfür werden folgende Daten erfasst:</p>
+            <ul className="list-disc ml-5 py-1">
+                <li>IP-Adresse</li>
+                <li>Browsertyp und Browserversion</li>
+                <li>Datum und Uhrzeit der Serveranfrage</li>
+                <li>Vor- und Nachname</li>
+                <li>Adresse</li>
+                <li>E-Mail Adresse</li>
+                <li>Telfonnummer</li>
+                <li>Kreditkartennummer</li>
+            </ul>
+            Stripe nutzt diese Daten zur
+            <ul className="list-disc ml-5 py-1">
+                <li>Ermittlung der Kontodeckung</li>
+                <li>Ermittlung des Kreditrahmens</li>
+                <li>Automatischen Zahlungsabwicklung</li>
+            </ul>
+            Die Nutzung ermöglicht die automatische Abrechnung and Abwicklung von Zahlungen und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
+            Weitere Informationen können der <a className="link-primary" href="https://stripe.com/en-de/privacy-center/legal">Datenschutzerklärung
+            von Stripe</a> entnommen werden.
             <h2>4. Kontaktaufnahme</h2>
             <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, soweit an der
                 Verarbeitung ein berechtigtes Interesse besteht (Art. 6 Abs. 1 lit. f DSGVO), Sie in die
