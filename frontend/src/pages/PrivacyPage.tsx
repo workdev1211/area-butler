@@ -155,6 +155,23 @@ export const PrivacyPage = () => {
             Die Nutzung ermöglicht die automatische Abrechnung and Abwicklung von Zahlungen und stellt somit eine Grundlage für die Datenverarbeitung gemäß Art. 6 Abs. 1 lit. f DSGVO dar.
             Weitere Informationen können der <a className="link-primary" href="https://stripe.com/en-de/privacy-center/legal">Datenschutzerklärung
             von Stripe</a> entnommen werden.
+            <h3>Auth0</h3>
+            <p>
+                Für die Authentifizierung und Authorisierung werden die Services von auth0.com verwendet. Zu diesem Zweck
+                werden u.a. folgende Informationen übermittelt:
+            </p>
+            <ul className="list-disc ml-5 py-1">
+                <li>E-Mail Addresse</li>
+                <li>Browsertyp und Browserversion</li>
+                <li>Login Datum</li>
+                <li>Vor- und Nachname</li>
+            </ul>
+            Die Nutzung erlaubt eine DSGVO konforme Realisierung der benötigten Authentifizierungs- und
+            Authorisierungsmechanismen. Details hierzu können der{" "}
+            <a className="link-primary" href="https://auth0.com/de/privacy">
+                Datenschutzerklärung von Auth0
+            </a>{" "}
+            entnommen werden.
             <h2>4. Kontaktaufnahme</h2>
             <p>Wenn Sie uns per E-Mail kontaktieren, verarbeiten wir Ihre personenbezogenen Daten nur, soweit an der
                 Verarbeitung ein berechtigtes Interesse besteht (Art. 6 Abs. 1 lit. f DSGVO), Sie in die
@@ -174,4 +191,3 @@ export const PrivacyPage = () => {
 };
 
 export default PrivacyPage;
-
