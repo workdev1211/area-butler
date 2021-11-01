@@ -53,7 +53,8 @@ module.exports = {
                 }
         },
         fontFamily: {
-            'serif': ['archia']
+            'serif': ['archia'],
+            'mono': [ 'ui-monospace', 'SFMono-Regular', 'Menlo', 'Monaco', 'Consolas', 'Liberation Mono', 'Courier New', 'monospace'],
         },
     },
     variants: {

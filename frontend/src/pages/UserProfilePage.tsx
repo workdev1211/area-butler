@@ -1,3 +1,4 @@
+import { ConfigContext } from "context/ConfigContext";
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActions, UserContext } from "context/UserContext";
@@ -5,6 +6,7 @@ import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import InviteCodesTable from "user/InviteCodesTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
@@ -14,6 +16,7 @@ import { ApiUser } from "../../../shared/types/types";
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const { get } = useHttp();
+  const { inviteCodeNeeded } = useContext(ConfigContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { potentialCustomerState } = useContext(PotentialCustomerContext);
@@ -79,6 +82,12 @@ const UserProfilePage: FunctionComponent = () => {
         ></SubscriptionPlanLimits>
       ) : (
         <SubscriptionPlanSelection></SubscriptionPlanSelection>
+      )}
+      {hasSubscription && inviteCodeNeeded && (
+        <div className="my-10">
+          <h1 className="text-lg font-bold mb-5">Ihre Einladungscodes</h1>
+          <InviteCodesTable></InviteCodesTable>
+        </div>
       )}
     </DefaultLayout>
   );

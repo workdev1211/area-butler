@@ -2,7 +2,7 @@ import {
   ApiRequestContingentType,
   ApiSubscriptionPlan,
 } from '@area-butler-types/subscription-plan';
-import { ApiUpsertUser } from '@area-butler-types/types';
+import { ApiConsent, ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
@@ -12,14 +12,20 @@ import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { configService } from '../config/config.service';
 import { SubscriptionService } from './subscription.service';
+import { InviteCodeService } from './invite-code.service';
 
 @Injectable()
 export class UserService {
+  inviteCodeNeeded = true;
+
   constructor(
     @InjectModel(User.name) private userModel: Model<UserDocument>,
     private subscriptionService: SubscriptionService,
+    private inviteCodeService: InviteCodeService,
     private eventEmitter: EventEmitter2,
-  ) {}
+  ) {
+    this.inviteCodeNeeded = configService.IsInviteCodeNeeded();
+  }
 
   public async upsertUser(
     email: string,
@@ -56,11 +62,15 @@ export class UserService {
     return existingUser.save();
   }
 
-  public async giveConsent(email: string) {
+  public async giveConsent(email: string, apiConsent: ApiConsent) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
+    }
+
+    if (!!this.inviteCodeNeeded) {
+      await this.inviteCodeService.consumeInviteCode(apiConsent.inviteCode);
     }
 
     if (!existingUser.consentGiven) {
@@ -196,8 +206,6 @@ export class UserService {
       currentMonth = new Date();
       currentMonth.setMonth(month + 1);
     }
-
-    console.log(user.requestContingents);
 
     const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(

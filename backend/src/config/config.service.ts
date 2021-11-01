@@ -97,6 +97,10 @@ class ConfigService {
   public getOverpassUrl(): string {
     return this.getValue('OVERPASS_URL');
   }
+
+  public IsInviteCodeNeeded(): boolean {
+    return this.getValue('INVITE_CODE_NEEDED') === 'true' ? true : false;
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([

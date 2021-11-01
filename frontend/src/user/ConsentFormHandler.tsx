@@ -10,31 +10,36 @@ export interface ConstentFormHandlerProps {
   formId?: string;
   beforeSubmit?: () => void;
   postSubmit?: (success: boolean) => void;
+  inviteCodeNeeded?: boolean;
 }
 
 const ConsentFormHandler: React.FunctionComponent<ConstentFormHandlerProps> =
-  ({ formId, beforeSubmit = () => {}, postSubmit = () => {} }) => {
+  ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, inviteCodeNeeded = false }) => {
     const { post } = useHttp();
     const history = useHistory();
 
     const { userDispatch } = useContext(UserContext);
 
-    const onSubmit = async (values: any) => {
+    const onSubmit = async (values: {inviteCode?: string}) => {
       try {
         beforeSubmit();
-        const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
+        const updatedUser = (await post<ApiUser>("/api/users/me/consent", {...values}))
           .data;
         userDispatch({ type: UserActions.SET_USER, payload: updatedUser });
         postSubmit(true);
         history.push("/");
       } catch (err) {
         console.log(err);
-        toastError("Fehler bei der Zustimmung");
+        if(inviteCodeNeeded) {
+          toastError("Fehler bei der Zustimmung. Möglicherweise ist der Einladungscode falsch");
+        } else {
+          toastError("Fehler bei der Zustimmung");
+        }
         postSubmit(false);
       }
     };
 
-    return <ConsentForm formId={formId!} onSubmit={onSubmit} />;
+    return <ConsentForm formId={formId!} onSubmit={onSubmit} inviteCodeNeeded={inviteCodeNeeded} />;
   };
 
 export default ConsentFormHandler;

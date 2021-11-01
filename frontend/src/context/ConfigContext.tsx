@@ -5,5 +5,6 @@ export const ConfigContext = createContext<ApiConfig>({
     auth: {clientId: '', domain: ''},
     googleApiKey: '',
     mapBoxAccessToken: '',
-    stripeEnv: 'dev'
+    stripeEnv: 'dev',
+    inviteCodeNeeded: false
 });

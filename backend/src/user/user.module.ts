@@ -7,16 +7,24 @@ import {UserService} from './user.service';
 import {Subscription, Subscriptionschema} from "./schema/subscription.schema";
 import {SubscriptionService} from "./subscription.service";
 import {ClientModule} from "../client/client.module";
+import { InviteCode, InviteCodeSchema } from './schema/invite-code.schema';
+import { InviteCodeService } from './invite-code.service';
 
 @Module({
     imports: [
         MongooseModule.forFeature([{name: User.name, schema: Userschema}, {
             name: Subscription.name,
             schema: Subscriptionschema
-        }]),
+        },
+        {
+            name: InviteCode.name,
+            schema: InviteCodeSchema
+        },
+    
+    ]),
         ClientModule
     ],
-    providers: [UserService, SubscriptionService, SubscriptionListener],
+    providers: [UserService, SubscriptionService, SubscriptionListener, InviteCodeService],
     exports: [UserService, SubscriptionService],
     controllers: [UserController],
 })

@@ -1,3 +1,4 @@
+import { ConfigContext } from "context/ConfigContext";
 import { UserContext } from "context/UserContext";
 import DefaultLayout from "layout/defaultLayout";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
@@ -9,6 +10,7 @@ const UserConsentPage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const history = useHistory();
   const { userState } = useContext(UserContext);
+  const { inviteCodeNeeded } = useContext(ConfigContext);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -50,6 +52,7 @@ const UserConsentPage: FunctionComponent = () => {
           formId={formId}
           beforeSubmit={beforeSubmit}
           postSubmit={postSubmit}
+          inviteCodeNeeded={inviteCodeNeeded}
         ></ConsentFormHandler>
       </div>
     </DefaultLayout>

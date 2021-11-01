@@ -21,7 +21,7 @@ import { ConfigContext } from 'context/ConfigContext';
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 
 fetch(`${baseUrl}/api/config`).then(async result => {
-    const {auth, googleApiKey, mapBoxAccessToken, stripeEnv} = await result.json() as ApiConfig;
+    const {auth, googleApiKey, mapBoxAccessToken, stripeEnv, inviteCodeNeeded} = await result.json() as ApiConfig;
     ReactDOM.render(
         <React.StrictMode>
             <Auth0Provider
@@ -33,7 +33,8 @@ fetch(`${baseUrl}/api/config`).then(async result => {
                     auth,
                     googleApiKey,
                     mapBoxAccessToken,
-                    stripeEnv
+                    stripeEnv,
+                    inviteCodeNeeded
                 }}>
                     <App/>
                 </ConfigContext.Provider>

@@ -1,4 +1,4 @@
-import {ApiRequestContingent, ApiSubscriptionPlan, ApiUserSubscription} from "./subscription-plan";
+import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 
 export interface ApiConfig {
   auth: {
@@ -8,6 +8,7 @@ export interface ApiConfig {
   googleApiKey: string;
   mapBoxAccessToken: string;
   stripeEnv: 'dev' | 'prod';
+  inviteCodeNeeded: boolean;
 }
 export interface ApiUser {
   fullname: string;
@@ -20,6 +21,15 @@ export interface ApiUser {
 
 export interface ApiUpsertUser {
   fullname: string;
+}
+
+export interface ApiConsent {
+  inviteCode?: string;
+}
+
+export interface ApiInviteCode {
+  code: string,
+  used: Date
 }
 
 export interface ApiInsertFeedback {
