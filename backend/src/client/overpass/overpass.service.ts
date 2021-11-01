@@ -1,16 +1,18 @@
-import {ApiAddress, ApiCoordinates, ApiOsmLocation, OsmName,} from '@area-butler-types/types';
+import {ApiAddress, ApiCoordinates, ApiOsmEntity, ApiOsmLocation, OsmName,} from '@area-butler-types/types';
 import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {osmEntityTypes} from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 import {point, Properties} from '@turf/helpers';
 import circle from "@turf/circle";
 import booleanPointInPolygon from "@turf/boolean-point-in-polygon";
+import {configService} from "../../config/config.service";
+import {OverpassData} from "../../data-provision/schemas/overpass-data.schema";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common')
 
 @Injectable()
 export class OverpassService {
-    private baseUrl = 'https://overpass.area-butler.de/api/interpreter';
+    private baseUrl = configService.getOverpassUrl();
     private logger: Logger = new Logger(OverpassService.name);
 
     constructor(private http: HttpService) {
@@ -162,5 +164,31 @@ export class OverpassService {
         queryParts.push('); out center; ');
 
         return queryParts.join('');
+    }
+
+    async fetchForEntityType(entitType: ApiOsmEntity): Promise<OverpassData[]>  {
+        const query = `[out:json];node[${entitType.type}=${entitType.name}];out center;`
+
+        try {
+            this.logger.debug(`fetching ${entitType.type}`)
+            const response = await this.http
+                .get(this.baseUrl, {params: {data: query}})
+                .toPromise();
+            this.logger.debug(`${entitType.type} fetched.`)
+
+            return response?.data?.elements.map((e) => ({
+                geometry: {
+                    type: 'Point',
+                    coordinates: [e.lon, e.lat]
+                },
+                overpassId: e.id,
+                properties:{
+                    ...e
+                }
+            }));
+        } catch (e) {
+            console.error('Error while fetching data from overpass', e);
+            throw e;
+        }
     }
 }

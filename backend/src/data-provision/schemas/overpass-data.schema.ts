@@ -22,8 +22,6 @@ export class OverpassData {
     type: string;
     id: string;
     tags: object;
-    relations: any[];
-    meta: object;
   };
 }
 

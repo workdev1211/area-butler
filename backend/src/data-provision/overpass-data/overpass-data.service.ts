@@ -1,6 +1,6 @@
 import { HttpService, Injectable, Logger } from '@nestjs/common';
 import {InjectConnection, InjectModel} from '@nestjs/mongoose';
-import {Connection, Model} from 'mongoose';
+import {Connection, Model, Promise} from 'mongoose';
 import { configService } from 'src/config/config.service';
 import { Cron, CronExpression } from '@nestjs/schedule';
 import {
@@ -8,7 +8,7 @@ import {
   OverpassDataDocument,
 } from '../schemas/overpass-data.schema';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
-import * as QueryOverpass from 'query-overpass';
+import {OverpassService} from "../../client/overpass/overpass.service";
 
 @Injectable()
 export class OverpassDataService {
@@ -16,72 +16,57 @@ export class OverpassDataService {
   constructor(
     @InjectModel(OverpassData.name)
     private overpassDataModel: Model<OverpassDataDocument>,
-    private httpService: HttpService,
+    private overpassService: OverpassService,
     @InjectConnection() private connection: Connection,
   ) {}
 
   @Cron('0 0 2 * * *')
   async loadOverpassData() {
+    const tempCollectionName = `${this.overpassDataModel.collection.name}_tmp`
     this.logger.log(`Loading overpass data into database`)
+    const collection = this.connection.db.collection(
+        tempCollectionName
+    );
+    this.logger.log(
+        `creating new ${tempCollectionName} collection`,
+    );
+    const chunksize = 1000;
+    const createChunks = (a, size) =>
+        Array.from(new Array(Math.ceil(a.length / size)), (_, i) =>
+            a.slice(i * size, i * size + size),
+        );
+
     try {
-      await this.overpassDataModel.collection.dropIndex('geometry_index');
-    } catch(e) {
-      console.error(`could not drop index for overpass data: ${e.code}`)
-    }
+      this.logger.debug('Dropping existing collection');
+      await collection.drop();
+    } catch (e) {}
+
     this.logger.debug('fetchOverpassData called');
     for (const et of osmEntityTypes) {
       try {
-        const feats = await this.fetchOverpassData(`node[${et.type}=${et.name}];out;`);
-        const updateOne = feats.map(f => {
-          return {
-            replaceOne: {
-              filter: {overpassId: f.properties.id},
-              replacement: {...f },
-              upsert: true
-            },
+        const feats = await this.overpassService.fetchForEntityType(et);
+        const chunks = createChunks(feats, chunksize);
+
+        this.logger.debug(`about to bulkWrite ${et.name}[${feats.length}]`)
+        if (feats.length) {
+          for (const chunk of chunks) {
+            await collection.insertMany(chunk);
           }
-        })
-        this.logger.debug(`about to bulkWrite ${et.type}[${feats.length}]`)
-        await this.overpassDataModel.bulkWrite(updateOne, {raw: true, bypassDocumentValidation: true, ordered: false});
-        this.logger.debug("bulkWrite done")
+        }
+        this.logger.debug(`bulkWrite ${et.name} done`)
       } catch(e) {
         console.error(e)
       }
     }
     this.logger.log(`Overpass data loaded`)
     this.logger.log(`Building overpass data index`)
-    await this.overpassDataModel.collection.createIndex({
+    await collection.createIndex({
       geometry: '2dsphere',
-    },{name: 'geometry_index'} );
-    this.logger.log(`Overpass index created`)
-  }
-
-  fetchOverpassData(query): Promise<any[]> {
-    return new Promise((resolve, reject) => {
-      QueryOverpass(
-        query,
-        (error, data) => {
-          if (error) {
-            console.error(error);
-            reject();
-          } else {
-            console.log(`data fetched: ${data.features.length}`);
-            resolve(data.features);
-          }
-        },
-        {
-          overpassUrl: configService.getOverpassUrl(),
-        },
-      );
     });
-  }
-
-  async writeToTb(features) {
-    try {
-      this.logger.debug(`inserting ${features.length} features into database`)
-      return await this.overpassDataModel.insertMany(features,{lean: true, limit: 100, rawResult: true});
-    } catch (e) {
-      this.logger.error(e);
-    }
+    this.logger.log(`Overpass index created`)
+    this.logger.log('Switching collection')
+    await this.overpassDataModel.collection.drop();
+    await collection.rename(this.overpassDataModel.collection.collectionName)
+    this.logger.log('new overpass data active')
   }
 }
