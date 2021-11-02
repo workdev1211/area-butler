@@ -20,6 +20,8 @@ const ImpressPage = lazy(() => import("./pages/ImpressPage"));
 
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 
+const TermsPage = lazy(() => import("./pages/TermsPage"));
+
 const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
 
 const SearchResultPage = lazy(() => import("./pages/SearchResultPage"));
@@ -111,6 +113,9 @@ function App() {
                                         </Route>
                                         <Route path="/privacy">
                                             <PrivacyPage/>
+                                        </Route>
+                                        <Route path="/terms">
+                                            <TermsPage/>
                                         </Route>
                                         <Route path="/search-result">
                                             <Authenticated>

@@ -1,0 +1,20 @@
+.terms > ol {
+    list-style-type: none;
+    counter-reset: item;
+    margin: 0;
+    @apply pt-5;
+}
+
+.terms > ol > li {
+    display: table;
+    counter-increment: item;
+    margin-bottom: 0.6em;
+    width: 100%;
+}
+
+.terms > ol > li:before {
+    content: attr(data-start) "." counters(item, ".") ". " ;
+    display: table-cell;
+    padding-right: 0.6em;
+    width: 42px;
+}
