@@ -24,7 +24,8 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
   showTour,
   onShowTour = () => {},
 }) => {
-  const [showModal, setShowModal] = useState<boolean>(showTour[tour]);
+  const [showModal, setShowModal] = useState(showTour[tour]);
+  const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 
   const { post } = useHttp();
 
@@ -32,7 +33,7 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
     const postDoNotShowTour = async (tour: ApiTour) => {
       try {
         let user = {};
-        if (!!tour) {
+        if (!showNoMoreTips) {
           user = (await post<ApiUser>(`/api/users/me/hide-tour/${tour}`, {}))
             .data;
         } else {
@@ -56,6 +57,16 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
             <h1 className="text-xl mb-5">Dürfen wir helfen?</h1>
             {tourDescriptions[tour]}
 
+            <label className="cursor-pointer flex items-center mt-5">
+                <input
+                  type="checkbox"
+                  checked={showNoMoreTips}
+                  className="checkbox checkbox-primary checkbox-sm"
+                  onChange={(event) => setShowNoMoreTips(event.target.checked)}
+                />
+                <span className="text-sm font-bold ml-5">Ich möchte keine weiteren Tipps angezeigt bekommen</span>
+              
+            </label>
             <div className="modal-action">
               <button
                 type="button"
@@ -66,7 +77,14 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
               >
                 Kein Interesse
               </button>
-              <button onClick={() => {setShowModal(false); doNotShowTourAgain(tour); onShowTour()}} className="btn btn-primary btn-sm">
+              <button
+                onClick={() => {
+                  setShowModal(false);
+                  doNotShowTourAgain(tour);
+                  onShowTour();
+                }}
+                className="btn btn-primary btn-sm"
+              >
                 Einführung beginnen
               </button>
             </div>
