@@ -58,7 +58,7 @@ const steps: Step[] = [
     target: 'div[data-tour="transportation-type-WALK"]',
   },
   {
-    content: "Über Adresse hinuzufügen lassen sich bis zu vier wichtige Adressen eines Interessenten hinterlegen, die im Ergebnis später hervorgehoben werden. Ebenfalls steht eine Routen berechnen zur Verfügung.",
+    content: "Über Adresse hinuzufügen lassen sich bis zu vier wichtige Adressen eines Interessenten hinterlegen, die im Ergebnis später hervorgehoben werden. Ebenfalls steht eine Routenberechnung zu den Adressen zur Verfügung.",
     locale: defaultLocale,
     target: 'button[data-tour="add-important-address"]',
   },
@@ -74,7 +74,7 @@ const steps: Step[] = [
     target: 'div[data-tour="locality-params"]',
   },
   {
-    content: "Wenn alle Daten eingegeben sind kann es losgehen und die Suche gestartet werden.",
+    content: "Wenn alle Daten eingegeben sind, kann es losgehen und die Suche gestartet werden.",
     locale: defaultLocale,
     placement: 'top',
     target: 'button[data-tour="start-search"]',
