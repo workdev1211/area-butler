@@ -9,5 +9,6 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   subscriptionPlan: subscription ? mapSubscriptionToApiSubscription(subscription) : null,
   requestsExecuted: user.requestsExecuted,
   consentGiven: user.consentGiven,
-  requestContingents: retrieveTotalRequestContingent(user)
+  requestContingents: retrieveTotalRequestContingent(user),
+  showTour: user.showTour
 });

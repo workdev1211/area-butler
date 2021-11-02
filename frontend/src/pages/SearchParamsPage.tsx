@@ -23,6 +23,8 @@ import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, de
 import { UserContext } from "context/UserContext";
 import FormModal, { ModalConfig } from "components/FormModal";
 import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
+import SearchPageTour from "tour/SearchPageTour";
+import TourStarter from "tour/TourStarter";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -157,57 +159,89 @@ const SearchParamsPage: React.FunctionComponent = () => {
     }
 
     return (
-        <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={true}
-                       actionBottom={[!requestLimitExceeded ? <SearchButton key="search-button"/> : <IncreaseLimitModal key="search-button"></IncreaseLimitModal>]}>
-            <Formik initialValues={{lat: '', lng: ''}} onSubmit={() => {
-            }}>
-                <Form>
-                    <h2>Standort</h2>
-                    <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
-                        <LocationAutocomplete value={searchContextState.placesLocation} setValue={() => {
-                        }} afterChange={onLocationAutocompleteChange}/>
-                        <div className="flex flex-wrap items-end gap-4">
-                            <RealEstateDropDown></RealEstateDropDown>
-                            <Input label="Lat" type="text" name="lat"
-                                   readOnly={true}
-                                   value={searchContextState.location?.lat || '-'}
-                                   className="input input-bordered w-full"
-                                   placeholder="Latitude"/>
-                            <Input label="Long" type="text" name="long"
-                                   readOnly={true}
-                                   value={searchContextState.location?.lng || '-'}
-                                   className="input input-bordered w-full"
-                                   placeholder="Longitude"
-                            />
-                            <MyLocationButton classes="btn bg-primary-gradient w-full sm:w-auto"
-                                              onComplete={onMyLocationChange}/>
-                        </div>
-                    </div>
-                    <h2>Mobilität</h2>
-                    <div className="sub-content">
-                        <TransportationParams values={searchContextState.transportationParams}
-                                              onChange={(newParams) => searchContextDispatch({
-                                                  type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
-                                                  payload: newParams
-                                              })}/>
-                        <h3 className="mt-8">Wichtige Adressen</h3>
-                        <ImportantAddresses inputValues={searchContextState.preferredLocations}
-                                            onChange={(importantAdresses) => searchContextDispatch({
-                                                type: SearchContextActions.SET_PREFERRED_LOCATIONS,
-                                                payload: importantAdresses
-                                            })}/>
-                        <PotentialCustomerDropDown></PotentialCustomerDropDown>
-                    </div>
-                    <h2>Lokalitäten</h2>
-                    <LocalityParams values={searchContextState.localityParams}
-                                    onChange={(newValues) => searchContextDispatch({
-                                        type: SearchContextActions.SET_LOCALITY_PARAMS,
-                                        payload: newValues
-                                    })}/>
-                </Form>
-            </Formik>
-        </DefaultLayout>
-    )
+      <DefaultLayout
+        title="Umgebungsanalyse"
+        withHorizontalPadding={true}
+        actionBottom={[
+          !requestLimitExceeded ? (
+            <SearchButton key="search-button" />
+          ) : (
+            <IncreaseLimitModal key="search-button"></IncreaseLimitModal>
+          ),
+        ]}
+      >
+        <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
+          <Form>
+            <h2>Standort</h2>
+            <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
+              <LocationAutocomplete
+                value={searchContextState.placesLocation}
+                setValue={() => {}}
+                afterChange={onLocationAutocompleteChange}
+              />
+              <div className="flex flex-wrap items-end gap-4">
+                <RealEstateDropDown></RealEstateDropDown>
+                <Input
+                  label="Lat"
+                  type="text"
+                  name="lat"
+                  readOnly={true}
+                  value={searchContextState.location?.lat || "-"}
+                  className="input input-bordered w-full"
+                  placeholder="Latitude"
+                />
+                <Input
+                  label="Long"
+                  type="text"
+                  name="long"
+                  readOnly={true}
+                  value={searchContextState.location?.lng || "-"}
+                  className="input input-bordered w-full"
+                  placeholder="Longitude"
+                />
+                <MyLocationButton
+                  classes="tour_my_location_button btn bg-primary-gradient w-full sm:w-auto"
+                  onComplete={onMyLocationChange}
+                />
+              </div>
+            </div>
+            <h2>Mobilität</h2>
+            <div className="sub-content">
+              <TransportationParams
+                values={searchContextState.transportationParams}
+                onChange={(newParams) =>
+                  searchContextDispatch({
+                    type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+                    payload: newParams,
+                  })
+                }
+              />
+              <h3 className="mt-8">Wichtige Adressen</h3>
+              <ImportantAddresses
+                inputValues={searchContextState.preferredLocations}
+                onChange={(importantAdresses) =>
+                  searchContextDispatch({
+                    type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+                    payload: importantAdresses,
+                  })
+                }
+              />
+              <PotentialCustomerDropDown></PotentialCustomerDropDown>
+            </div>
+            <h2>Lokalitäten</h2>
+            <LocalityParams
+              values={searchContextState.localityParams}
+              onChange={(newValues) =>
+                searchContextDispatch({
+                  type: SearchContextActions.SET_LOCALITY_PARAMS,
+                  payload: newValues,
+                })
+              }
+            />
+          </Form>
+        </Formik>
+      </DefaultLayout>
+    );
 }
 
 export default SearchParamsPage;

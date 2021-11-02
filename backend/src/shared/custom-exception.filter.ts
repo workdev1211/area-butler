@@ -66,9 +66,6 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
       });
     }
 
-    console.error(req);
-    console.error(res);
-
     super.catch(exception, host);
   }
 }

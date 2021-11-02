@@ -1,5 +1,5 @@
-import {ApiConsent, ApiInviteCode, ApiUpsertUser, ApiUser} from '@area-butler-types/types';
-import {Body, Controller, Get, Post, Req, UseGuards} from '@nestjs/common';
+import {ApiConsent, ApiInviteCode, ApiTour, ApiUpsertUser, ApiUser} from '@area-butler-types/types';
+import {Body, Controller, Get, Param, Post, Req, UseGuards} from '@nestjs/common';
 import {AuthGuard} from '@nestjs/passport';
 import {mapUserToApiUser} from './mapper/user.mapper';
 import {UserService} from './user.service';
@@ -46,6 +46,27 @@ export class UserController {
     public async giveConsent(@Req() request, @Body() apiConsent: ApiConsent): Promise<ApiUser> {
         const requestUser = request?.user;
         const user = await this.userService.giveConsent(requestUser.email, apiConsent)
+        return mapUserToApiUser(
+            user,
+            await this.subscriptionService.findActiveByUserId(user._id)
+        );
+    }
+
+    @Post('me/hide-tour')
+    public async hideAllTours(@Req() request) {
+        const requestUser = request?.user;
+        const user = await this.userService.hideTour(requestUser.email);
+        return mapUserToApiUser(
+            user,
+            await this.subscriptionService.findActiveByUserId(user._id)
+        );
+    }
+
+
+    @Post('me/hide-tour/:tour')
+    public async hideTour(@Req() request, @Param('tour') tour: ApiTour) {
+        const requestUser = request?.user;
+        const user = await this.userService.hideTour(requestUser.email, tour);
         return mapUserToApiUser(
             user,
             await this.subscriptionService.findActiveByUserId(user._id)

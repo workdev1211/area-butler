@@ -1,6 +1,7 @@
 import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
+  ApiShowTour,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -17,6 +18,14 @@ export const kudibaCompany = {
   court: 'Amtsgericht Hamburg',
   regNr: 'xxxxxxxxxxx',
   vat: 'VAT12343434'
+}
+
+export const initialShowTour: ApiShowTour = {
+  search: true,
+  result: true,
+  realEstates: true,
+  customers: true,
+  profile: true
 }
 
 export const calculateMinutesToMeters = [

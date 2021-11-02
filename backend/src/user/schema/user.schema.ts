@@ -1,6 +1,8 @@
 import {ApiRequestContingent,} from '@area-butler-types/subscription-plan';
+import { ApiShowTour } from '@area-butler-types/types';
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
 import {Document} from 'mongoose';
+import { initialShowTour } from '../../../../shared/constants/constants';
 
 export type UserDocument = User & Document;
 
@@ -26,6 +28,9 @@ export class User {
 
     @Prop({required: false})
     stripeCustomerId: string;
+
+    @Prop({type: Object, default: {...initialShowTour}})
+    showTour: ApiShowTour;
 
 }
 

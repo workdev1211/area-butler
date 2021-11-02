@@ -2,7 +2,7 @@ import {
   ApiRequestContingentType,
   ApiSubscriptionPlan,
 } from '@area-butler-types/subscription-plan';
-import { ApiConsent, ApiUpsertUser } from '@area-butler-types/types';
+import { ApiConsent, ApiTour, ApiUpsertUser } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
@@ -78,6 +78,24 @@ export class UserService {
     }
 
     return existingUser.save();
+  }
+
+  public async hideTour(email: string, tour?: ApiTour) {
+    const user = await this.findByEmail(email);
+
+    if (!user) {
+      throw new HttpException('Unknown User', 400);
+    }
+
+    const showTour = {...user.showTour};
+
+    if (!!tour) {
+      showTour[tour] = false;
+    } else {
+      Object.keys(user.showTour).forEach(tour => showTour[tour] = false);
+    }
+    user.showTour = showTour;
+    return await user.save();
   }
 
   public async setStripeCustomerId(

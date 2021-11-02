@@ -17,6 +17,7 @@ export interface ApiUser {
   requestsExecuted: number;
   consentGiven?: Date;
   requestContingents: ApiRequestContingent[];
+  showTour: ApiShowTour;
 }
 
 export interface ApiUpsertUser {
@@ -30,6 +31,16 @@ export interface ApiConsent {
 export interface ApiInviteCode {
   code: string,
   used: Date
+}
+
+export type ApiTour = 'search' | 'result' | 'realEstates' | 'customers' | 'profile';
+
+export interface ApiShowTour {
+  search: boolean;
+  result: boolean;
+  realEstates: boolean;
+  customers: boolean;
+  profile: boolean
 }
 
 export interface ApiInsertFeedback {
