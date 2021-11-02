@@ -98,6 +98,10 @@ class ConfigService {
     return this.getValue('OVERPASS_URL');
   }
 
+  public useOverpassDb() {
+    return JSON.parse(this.getValue('USE_OVERPASS_DB'));
+  }
+
   public IsInviteCodeNeeded(): boolean {
     return this.getValue('INVITE_CODE_NEEDED') === 'true' ? true : false;
   }

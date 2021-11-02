@@ -20,6 +20,8 @@ import {calculateMinutesToMeters} from '../../../shared/constants/constants';
 import { UserService } from 'src/user/user.service';
 import { retrieveTotalRequestContingent, UserDocument } from 'src/user/schema/user.schema';
 import {SubscriptionService} from "../user/subscription.service";
+import {OverpassDataService} from "../data-provision/overpass-data/overpass-data.service";
+import {configService} from "../config/config.service";
 
 @Injectable()
 export class LocationService {
@@ -29,7 +31,8 @@ export class LocationService {
     @InjectModel(LocationSearch.name)
     private locationModel: Model<LocationSearchDocument>,
     private userService: UserService,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
+    private overpassDataService: OverpassDataService
   ) {}
 
   async searchLocation(user: UserDocument, search: ApiSearch): Promise<ApiSearchResponse> {
@@ -78,7 +81,10 @@ export class LocationService {
     }
 
     for (const routingProfile of search.meansOfTransportation) {
-      const locationsOfInterest = await this.overpassService.fetchEntites(
+      const locationsOfInterest = !!configService.useOverpassDb() ? await this.overpassDataService.findForCenterAndDistance(
+          coordinates,
+          deriveMeterEquivalent(routingProfile),
+          preferredAmenities) : await this.overpassService.fetchEntites(
         coordinates,
         deriveMeterEquivalent(routingProfile),
         preferredAmenities,

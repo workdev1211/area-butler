@@ -9,12 +9,14 @@ import {
   LocationSearch,
   LocationSearchschema,
 } from './schema/location-search.schema';
+import {DataProvisionModule} from "../data-provision/data-provision.module";
 
 @Module({
   imports: [
     ClientModule,
     AuthModule,
     UserModule,
+    DataProvisionModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchschema },
     ]),

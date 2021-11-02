@@ -44,6 +44,7 @@ services:
       - STRIPE_TAX_ID
       - JWT_ROLES_CLAIM
       - OVERPASS_URL
+      - USE_OVERPASS_DB
       - INVITE_CODE_NEEDED
     labels:
       - 'traefik.docker.network=web'

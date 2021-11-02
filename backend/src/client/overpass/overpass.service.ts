@@ -41,11 +41,11 @@ export class OverpassService {
         }
     }
 
-    private async mapResponse(
+    async mapResponse(
         response,
         centerCoordinates: ApiCoordinates,
     ): Promise<ApiOsmLocation[]> {
-        const elements = response?.data?.elements;
+        const elements = Array.isArray(response) ? response : response?.data?.elements;
 
         if (!elements) {
             return [];
@@ -167,24 +167,23 @@ export class OverpassService {
     }
 
     async fetchForEntityType(entitType: ApiOsmEntity): Promise<OverpassData[]>  {
-        const query = `[out:json];node[${entitType.type}=${entitType.name}];out center;`
-
+        const query = `[out:json];(node[${entitType.type}=${entitType.name}];way[${entitType.type}=${entitType.name}];relation[${entitType.type}=${entitType.name}];);out center;`
+        const hasCoordinates = (e) => e.center || (e.lat && e.lon);
         try {
-            this.logger.debug(`fetching ${entitType.type}`)
+            this.logger.debug(`fetching ${entitType.name}`)
             const response = await this.http
                 .get(this.baseUrl, {params: {data: query}})
                 .toPromise();
-            this.logger.debug(`${entitType.type} fetched.`)
+            this.logger.debug(`${entitType.name} fetched.`)
 
-            return response?.data?.elements.map((e) => ({
+            return response?.data?.elements.filter(hasCoordinates).map((e) => ({
+                ...e,
                 geometry: {
                     type: 'Point',
-                    coordinates: [e.lon, e.lat]
+                    coordinates: !!e.center ? [ e.center.lon, e.center.lat] : [e.lon, e.lat]
                 },
                 overpassId: e.id,
-                properties:{
-                    ...e
-                }
+                entityType: entitType.name,
             }));
         } catch (e) {
             console.error('Error while fetching data from overpass', e);

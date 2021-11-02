@@ -15,14 +15,13 @@ export class OverpassData {
   overpassId: string;
 
   @Prop()
+  entityType: string;
+
+  @Prop()
   type: string;
 
   @Prop({type: mongoose.Schema.Types.Mixed})
-  properties: {
-    type: string;
-    id: string;
-    tags: object;
-  };
+  tags: object;
 }
 
 export const OverpassDataSchema = SchemaFactory.createForClass(OverpassData);

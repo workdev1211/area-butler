@@ -1,14 +1,15 @@
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger} from '@nestjs/common';
 import {InjectConnection, InjectModel} from '@nestjs/mongoose';
 import {Connection, Model, Promise} from 'mongoose';
-import { configService } from 'src/config/config.service';
-import { Cron, CronExpression } from '@nestjs/schedule';
+import { Cron } from '@nestjs/schedule';
 import {
   OverpassData,
   OverpassDataDocument,
 } from '../schemas/overpass-data.schema';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import {OverpassService} from "../../client/overpass/overpass.service";
+import {ApiCoordinates, ApiOsmLocation, OsmName} from "@area-butler-types/types";
+
 
 @Injectable()
 export class OverpassDataService {
@@ -44,7 +45,7 @@ export class OverpassDataService {
     this.logger.debug('fetchOverpassData called');
     for (const et of osmEntityTypes) {
       try {
-        const feats = await this.overpassService.fetchForEntityType(et);
+        const feats = (await this.overpassService.fetchForEntityType(et));
         const chunks = createChunks(feats, chunksize);
 
         this.logger.debug(`about to bulkWrite ${et.name}[${feats.length}]`)
@@ -69,4 +70,20 @@ export class OverpassDataService {
     await collection.rename(this.overpassDataModel.collection.collectionName)
     this.logger.log('new overpass data active')
   }
+
+  async findForCenterAndDistance( coordinates: ApiCoordinates, distanceInMeters: number, preferredAmenities: OsmName[],): Promise<ApiOsmLocation[]> {
+    const dbQuery = {
+      geometry: {
+        $nearSphere: {
+          $geometry: { type: "Point", coordinates: [coordinates.lng, coordinates.lat] },
+          $maxDistance: distanceInMeters,
+          $minDistance: 0
+        },
+      },
+      entityType: {$in : Object.values(preferredAmenities)}
+    };
+    const response = await this.overpassDataModel.find(dbQuery).lean().exec();
+    return this.overpassService.mapResponse(response,coordinates)
+  }
+
 }
