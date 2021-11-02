@@ -1,28 +1,30 @@
-import FormModal, { ModalConfig } from "components/FormModal";
-import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
-import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
-import { UserContext } from "context/UserContext";
-import { Form, Formik } from "formik";
-import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
-import React, { useContext, useEffect } from "react";
-import { useHistory } from "react-router-dom";
-import RealEstateDropDown from "real-estates/RealEstateDropDown";
-import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, deriveTotalRequestContingent, toastError } from "shared/shared.functions";
-import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser } from "../../../shared/types/types";
-import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
-import ImportantAddresses from "../components/ImportantAddresses";
-import Input from "../components/Input";
-import LocalityParams from "../components/LocalityParams";
-import LocationAutocomplete from "../components/LocationAutocomplete";
-import MyLocationButton from "../components/MyLocationButton";
-import TransportationParams from "../components/TransportationParams";
-import { SearchContext, SearchContextActions } from "../context/SearchContext";
-import { useCensusData } from "../hooks/censusdata";
-import { useHttp } from "../hooks/http";
+import React, {useContext, useEffect} from "react";
 import DefaultLayout from "../layout/defaultLayout";
+import LocationAutocomplete from "../components/LocationAutocomplete";
+import {SearchContext, SearchContextActions} from "../context/SearchContext";
+import MyLocationButton from "../components/MyLocationButton";
+import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser} from "../../../shared/types/types";
+import Input from "../components/Input";
+import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
+import {useHttp} from "../hooks/http";
+import {useCensusData} from "../hooks/censusdata";
+import {useHistory} from "react-router-dom";
+import {Form, Formik} from "formik";
+import TransportationParams from "../components/TransportationParams";
+import ImportantAddresses from "../components/ImportantAddresses";
+import LocalityParams from "../components/LocalityParams";
+import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
+import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { PotentialCustomerActions, PotentialCustomerContext } from "context/PotentialCustomerContext";
+import RealEstateDropDown from "real-estates/RealEstateDropDown";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { RealEstateActions, RealEstateContext } from "context/RealEstateContext";
+import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, deriveTotalRequestContingent, toastError } from "shared/shared.functions";
+import { UserContext } from "context/UserContext";
+import FormModal, { ModalConfig } from "components/FormModal";
+import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
+import SearchPageTour from "tour/SearchPageTour";
+import TourStarter from "tour/TourStarter";
 
 const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
@@ -93,6 +95,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
       <button
         type="button"
         disabled={searchButtonDisabled}
+        data-tour="start-search"
         className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
       >
         Analyse Starten{" "}
@@ -147,6 +150,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         const classes = 'btn bg-primary-gradient w-full sm:w-auto ml-auto';
 
         return <button
+            data-tour="start-search"
             type="button"
             disabled={searchButtonDisabled}
             onClick={performLocationSearch}
@@ -168,6 +172,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
           ),
         ]}
       >
+        <TourStarter tour='search'/>
         <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
           <Form>
             <h2>Standort</h2>
@@ -198,7 +203,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                   placeholder="Longitude"
                 />
                 <MyLocationButton
-                  classes="tour_my_location_button btn bg-primary-gradient w-full sm:w-auto"
+                  classes="btn bg-primary-gradient w-full sm:w-auto"
                   onComplete={onMyLocationChange}
                 />
               </div>

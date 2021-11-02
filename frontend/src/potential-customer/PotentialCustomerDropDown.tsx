@@ -46,7 +46,7 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
 
         return potentialCustomerState.customers?.length > 0 ? (
             <div ref={dropDownRef} className="dropdown">
-                <div className={buttonStyles} tabIndex={0} onClick={(e) => setMenuOpen(!menuOpen)}>
+                <div className={buttonStyles} tabIndex={0} onClick={(e) => setMenuOpen(!menuOpen)} data-tour="my-customers">
                     + Meine Interessenten
                 </div>
                 {menuOpen && (

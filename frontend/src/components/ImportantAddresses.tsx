@@ -58,7 +58,7 @@ const ImportantAddresses: React.FunctionComponent<ImportantAddressesProps> = ({
                     <div className="flex items-end px-4 pb-4"><img src={deleteIcon} className="w-6 h-6 cursor-pointer" alt="icon-delete" onClick={() => removeAddress(index)}/></div>
                 </div>
             </div>)}
-            {inputValues?.length < 4 && <button type="button" onClick={() => addAddress()} className="btn btn-link text-primary">+ Adresse
+            {inputValues?.length < 4 && <button data-tour="add-important-address" type="button" onClick={() => addAddress()} className="btn btn-link text-primary">+ Adresse
                 hinzufügen
             </button>}
             <datalist id="suggestedTitles">

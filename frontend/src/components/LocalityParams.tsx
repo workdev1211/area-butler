@@ -18,7 +18,7 @@ const LocalityParams: React.FunctionComponent<LocalityParamsProps> = ({values, o
     }
 
     return (
-        <div className="flex flex-wrap gap-12 lg:gap-24 w-full">
+        <div className="flex flex-wrap gap-12 lg:gap-24 w-full" data-tour="locality-params">
             {Object.values(ApiOsmEntityCategory).map(category => <div className="flex flex-col" key={`category-${category}`}>
                 <h3>{category}</h3>
                 {osmEntityTypes.filter(entityType => entityType.category === category).map(entity =>

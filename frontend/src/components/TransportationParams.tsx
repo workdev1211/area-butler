@@ -95,7 +95,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                 const isActive = values.some(v => v.type === mean.type);
                 const currentValue = values.find(v => v.type === mean.type);
                 return (
-                    <div className={`mean-of-transportation tour_my_location_button_${mean.type}`} key={`transportation-mean-${mean.type}`}>
+                    <div className='mean-of-transportation' key={`transportation-mean-${mean.type}`} data-tour={`transportation-type-${mean.type}`}>
                         <div className="flex gap-4 justify-between">
                             <div className="flex gap-6 items-center">
                                 <img src={transportationParamIcons.find(list => list.type === mean.type)?.icon}

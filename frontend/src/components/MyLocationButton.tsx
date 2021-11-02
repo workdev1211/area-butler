@@ -24,6 +24,7 @@ const MyLocationButton: React.FunctionComponent<MyLocationButtonProps> = ({onCom
     };
     return (
         <button
+            data-tour="my-location"
             type="button"
             disabled={locationBusy}
             onClick={locateUser}

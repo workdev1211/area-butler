@@ -4,7 +4,7 @@ import { toastError } from "shared/shared.functions";
 import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
 
 const tourDescriptions: Record<ApiTour, string> = {
-  search: "Möchten Sie eine kurze Einführung für Suche Seite bekommen?",
+  search: "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
   result: "Möchten Sie eine kurze Einführung für die Ergebniss Seite bekommen?",
   customers:
     "Möchten Sie eine kurze Einführung für die Interessenten Seite bekommen?",
