@@ -7,6 +7,7 @@ export interface UserState {
     open: boolean,
     message?: string
   }
+  startTour: boolean;
 }
 
 export const initialState: UserState = {
@@ -14,12 +15,14 @@ export const initialState: UserState = {
   upgradeSubscriptionModalProps: {
     open: false,
     message: ''
-  }
+  },
+  startTour: false
 };
 
 export enum UserActions {
   SET_USER = "SET_USER",
-  SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS"
+  SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
+  SET_START_TOUR = "SET_START_TOUR"
 }
 
 const reducer: (
@@ -32,6 +35,9 @@ const reducer: (
     }
     case UserActions.SET_SUBSCRIPTION_MODAL_PROPS: {
       return { ...state, upgradeSubscriptionModalProps: action.payload };
+    }
+    case UserActions.SET_START_TOUR: {
+      return { ...state, startTour: action.payload };
     }
     default:
       return state;

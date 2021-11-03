@@ -1,5 +1,5 @@
-import { UserContext } from "context/UserContext";
-import { useContext, useState } from "react";
+import { UserActions, UserContext } from "context/UserContext";
+import { useContext, useEffect, useState } from "react";
 import Joyride, {
   CallBackProps,
   STATUS,
@@ -40,14 +40,19 @@ const tourSteps: Record<ApiTour, Step[]> = {
   profile: ProfileSteps,
 };
 
-const TourStarter: React.FunctionComponent<TourStarterProps> = ({
-  tour,
-}) => {
+const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
   const [runTour, setRunTour] = useState(false);
-  const { userState } = useContext(UserContext);
+  const { userState, userDispatch } = useContext(UserContext);
   const user: ApiUser = userState.user;
 
   const onShowTour = () => setRunTour(true);
+
+  useEffect(() => {
+    if (!!userState.startTour) {
+      setRunTour(true);
+      userDispatch({ type: UserActions.SET_START_TOUR, payload: false });
+    }
+  }, [userState.startTour]);
 
   const [helpers, setHelpers] = useState<StoreHelpers | undefined>();
 
