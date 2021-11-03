@@ -5,12 +5,11 @@ import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
 
 const tourDescriptions: Record<ApiTour, string> = {
   search: "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
-  result: "Möchten Sie eine kurze Einführung für die Ergebniss Seite bekommen?",
+  result: "Möchten Sie eine kurze Einführung zur Ergebnisseite bekommen?",
   customers:
-    "Möchten Sie eine kurze Einführung für die Interessenten Seite bekommen?",
-  realEstates:
-    "Möchten Sie eine kurze Einführung für die Objekte Seite bekommen?",
-  profile: "Möchten Sie eine kurze Einführung für die Profile Seite bekommen?",
+    "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
+  realEstates: "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
+  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
 };
 
 export interface StartTourModalProps {
@@ -58,14 +57,15 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
             {tourDescriptions[tour]}
 
             <label className="cursor-pointer flex items-center mt-5">
-                <input
-                  type="checkbox"
-                  checked={showNoMoreTips}
-                  className="checkbox checkbox-primary checkbox-sm"
-                  onChange={(event) => setShowNoMoreTips(event.target.checked)}
-                />
-                <span className="text-sm font-bold ml-5">Ich möchte keine weiteren Tipps angezeigt bekommen</span>
-              
+              <input
+                type="checkbox"
+                checked={showNoMoreTips}
+                className="checkbox checkbox-primary checkbox-sm"
+                onChange={(event) => setShowNoMoreTips(event.target.checked)}
+              />
+              <span className="text-sm font-bold ml-5">
+                Ich möchte keine weiteren Tipps angezeigt bekommen
+              </span>
             </label>
             <div className="modal-action">
               <button

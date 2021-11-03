@@ -23,7 +23,7 @@ import { deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates, de
 import { UserContext } from "context/UserContext";
 import FormModal, { ModalConfig } from "components/FormModal";
 import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
-import SearchPageTour from "tour/SearchPageTour";
+import SearchPageTour from "tour/SearchPageSteps";
 import TourStarter from "tour/TourStarter";
 
 const SearchParamsPage: React.FunctionComponent = () => {
