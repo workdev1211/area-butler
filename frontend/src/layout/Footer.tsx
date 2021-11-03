@@ -11,6 +11,8 @@ const Footer: React.FunctionComponent = () => {
                       aria-current="page">Impressum</Link>
                 <Link to="/privacy" className="link-neutral"
                       aria-current="page">Datenschutz</Link>
+                <Link to="/terms" className="link-neutral"
+                      aria-current="page">Allgemeine Geschäftsbedingungen</Link>
             </div>
         </div>
     )
