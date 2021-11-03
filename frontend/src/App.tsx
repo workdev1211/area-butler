@@ -1,4 +1,4 @@
-import React, {lazy, Suspense, useEffect} from "react";
+import React, {lazy, Suspense, useContext, useEffect} from "react";
 import "./App.css";
 import {BrowserRouter as Router, Route, Switch, useLocation} from "react-router-dom";
 import Nav from "./layout/Nav";
@@ -11,7 +11,7 @@ import "react-toastify/dist/ReactToastify.css";
 import {RealEstateContextProvider} from "./context/RealEstateContext";
 import FormModal, {ModalConfig} from "components/FormModal";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import {UserContextProvider} from "context/UserContext";
+import {UserActions, UserContext} from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import {useAuth0} from "@auth0/auth0-react";
 import {ApiConsent, ApiUser} from "../../shared/types/types";
@@ -60,7 +60,7 @@ const feedbackModalConfig: ModalConfig = {
 };
 
 const ScrollToTop: React.FunctionComponent = () => {
-    const { pathname } = useLocation();
+    const {pathname} = useLocation();
 
     useEffect(() => {
         window.scrollTo(0, 0);
@@ -71,22 +71,32 @@ const ScrollToTop: React.FunctionComponent = () => {
 
 function App() {
     const {isAuthenticated} = useAuth0();
-    const {post} = useHttp();
+    const {get, post} = useHttp();
+
+    const {userDispatch} = useContext(UserContext);
 
     useEffect(() => {
         if (isAuthenticated) {
             const consumeInvitationCode = async () => {
                 const payload: ApiConsent = {inviteCode: localStorage.getItem(localStorageInvitationCodeKey)!};
                 try {
-                    await post<ApiUser>("/api/users/me/consent", payload);
+                    const updatedUser = (await post<ApiUser>("/api/users/me/consent", payload))
+                        .data;
+                    userDispatch({type: UserActions.SET_USER, payload: updatedUser});
                     localStorage.removeItem(localStorageInvitationCodeKey);
                 } catch (error) {
                     console.error(error);
                 }
             }
+            const fetchUser = async () => {
+                const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+                userDispatch({type: UserActions.SET_USER, payload: user});
+            };
 
             if (localStorage.getItem(localStorageInvitationCodeKey)) {
                 consumeInvitationCode();
+            } else {
+                fetchUser();
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -94,7 +104,7 @@ function App() {
 
     return (
         <Router>
-            <ScrollToTop />
+            <ScrollToTop/>
             <div className="app">
                 <ToastContainer
                     position="top-right"
@@ -109,78 +119,76 @@ function App() {
                 />
                 <ToastContainer/>
                 <Suspense fallback={<LoadingMessage/>}>
-                    <UserContextProvider>
-                        <Nav/>
-                        <Authenticated>
-                            <UpgradeSubscriptionHandlerContainer />
-                            <FormModal modalConfig={feedbackModalConfig}>
-                                <FeedbackFormHandler/>
-                            </FormModal>
-                        </Authenticated>
-                        <PotentialCustomerContextProvider>
-                            <RealEstateContextProvider>
-                                <SearchContextProvider>
-                                    <Switch>
-                                        <Route path="/register">
-                                            <Auth0ConsentPage/>
-                                        </Route>
-                                        <Route path="/profile">
-                                            <Authenticated>
-                                                <UserProfilePage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/callback">
-                                            <Authenticated>
-                                                <CallbackPage />
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/impress">
-                                            <ImpressPage/>
-                                        </Route>
-                                        <Route path="/privacy">
-                                            <PrivacyPage/>
-                                        </Route>
-                                        <Route path="/terms">
-                                            <TermsPage/>
-                                        </Route>
-                                        <Route path="/search-result">
-                                            <Authenticated>
-                                                <SearchResultPage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/potential-customers/:customerId">
-                                            <Authenticated>
-                                                <PotentialCustomerPage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/potential-customers">
-                                            <Authenticated>
-                                                <PotentialCustomersPage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/questionnaire/:inputToken">
-                                            <CustomerQuestionnairePage/>
-                                        </Route>
-                                        <Route path="/real-estates/:realEstateId">
-                                            <Authenticated>
-                                                <RealEstatePage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/real-estates">
-                                            <Authenticated>
-                                                <RealEstatesPage/>
-                                            </Authenticated>
-                                        </Route>
-                                        <Route path="/">
-                                            <Authenticated>
-                                                <SearchParamsPage/>
-                                            </Authenticated>
-                                        </Route>
-                                    </Switch>
-                                </SearchContextProvider>
-                            </RealEstateContextProvider>
-                        </PotentialCustomerContextProvider>
-                    </UserContextProvider>
+                    <Nav/>
+                    <Authenticated>
+                        <UpgradeSubscriptionHandlerContainer/>
+                        <FormModal modalConfig={feedbackModalConfig}>
+                            <FeedbackFormHandler/>
+                        </FormModal>
+                    </Authenticated>
+                    <PotentialCustomerContextProvider>
+                        <RealEstateContextProvider>
+                            <SearchContextProvider>
+                                <Switch>
+                                    <Route path="/register">
+                                        <Auth0ConsentPage/>
+                                    </Route>
+                                    <Route path="/profile">
+                                        <Authenticated>
+                                            <UserProfilePage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/callback">
+                                        <Authenticated>
+                                            <CallbackPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/impress">
+                                        <ImpressPage/>
+                                    </Route>
+                                    <Route path="/privacy">
+                                        <PrivacyPage/>
+                                    </Route>
+                                    <Route path="/terms">
+                                        <TermsPage/>
+                                    </Route>
+                                    <Route path="/search-result">
+                                        <Authenticated>
+                                            <SearchResultPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/potential-customers/:customerId">
+                                        <Authenticated>
+                                            <PotentialCustomerPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/potential-customers">
+                                        <Authenticated>
+                                            <PotentialCustomersPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/questionnaire/:inputToken">
+                                        <CustomerQuestionnairePage/>
+                                    </Route>
+                                    <Route path="/real-estates/:realEstateId">
+                                        <Authenticated>
+                                            <RealEstatePage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/real-estates">
+                                        <Authenticated>
+                                            <RealEstatesPage/>
+                                        </Authenticated>
+                                    </Route>
+                                    <Route path="/">
+                                        <Authenticated>
+                                            <SearchParamsPage/>
+                                        </Authenticated>
+                                    </Route>
+                                </Switch>
+                            </SearchContextProvider>
+                        </RealEstateContextProvider>
+                    </PotentialCustomerContextProvider>
                 </Suspense>
                 <Footer/>
             </div>

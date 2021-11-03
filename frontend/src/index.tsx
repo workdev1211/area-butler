@@ -17,6 +17,7 @@ import 'assets/fonts/archia-semibold-webfont.ttf';
 import 'assets/fonts/archia-semibold-webfont.woff';
 import 'assets/fonts/archia-semibold-webfont.woff2';
 import { ConfigContext } from 'context/ConfigContext';
+import {UserContextProvider} from "./context/UserContext";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 
@@ -36,7 +37,9 @@ fetch(`${baseUrl}/api/config`).then(async result => {
                     stripeEnv,
                     inviteCodeNeeded
                 }}>
-                    <App/>
+                    <UserContextProvider>
+                        <App/>
+                    </UserContextProvider>
                 </ConfigContext.Provider>
             </Auth0Provider>
         </React.StrictMode>,
