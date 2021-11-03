@@ -49,7 +49,7 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
     const formId = `form-${uuid()}`;
     return (
         <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
-            <div className="consent pt-20">
+            <div className="w-1/3 mx-auto pt-20">
                 <h2>Herzlich Willkommen</h2>
                 { inviteCodeNeeded && <p className="mt-10">Die Nutzung des Area Butler steht nur einem exklusiven Nutzerkreis zur
                     Verfügung.</p>}

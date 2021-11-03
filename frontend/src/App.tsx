@@ -1,6 +1,6 @@
 import React, {lazy, Suspense, useContext, useEffect} from "react";
 import "./App.css";
-import {BrowserRouter as Router, Route, Switch, useLocation} from "react-router-dom";
+import {Route, Switch, useHistory, useLocation} from "react-router-dom";
 import Nav from "./layout/Nav";
 import Footer from "./layout/Footer";
 import {SearchContextProvider} from "./context/SearchContext";
@@ -27,6 +27,8 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 
 const Auth0ConsentPage = lazy(() => import("./pages/Auth0ConsentPage"));
+
+const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage"));
 
 const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
 
@@ -70,13 +72,21 @@ const ScrollToTop: React.FunctionComponent = () => {
 }
 
 function App() {
-    const {isAuthenticated} = useAuth0();
+    const {isAuthenticated, getIdTokenClaims} = useAuth0();
     const {get, post} = useHttp();
+    const history = useHistory();
 
     const {userDispatch} = useContext(UserContext);
 
     useEffect(() => {
         if (isAuthenticated) {
+            const validateEmailVerified = async () => {
+                const idToken = await getIdTokenClaims();
+                const {email_verified} = idToken;
+                if (!email_verified) {
+                    history.push('/verify');
+                }
+            }
             const consumeInvitationCode = async () => {
                 const payload: ApiConsent = {inviteCode: localStorage.getItem(localStorageInvitationCodeKey)!};
                 try {
@@ -93,6 +103,7 @@ function App() {
                 userDispatch({type: UserActions.SET_USER, payload: user});
             };
 
+            validateEmailVerified();
             if (localStorage.getItem(localStorageInvitationCodeKey)) {
                 consumeInvitationCode();
             } else {
@@ -103,7 +114,7 @@ function App() {
     }, [isAuthenticated]);
 
     return (
-        <Router>
+        <>
             <ScrollToTop/>
             <div className="app">
                 <ToastContainer
@@ -132,6 +143,11 @@ function App() {
                                 <Switch>
                                     <Route path="/register">
                                         <Auth0ConsentPage/>
+                                    </Route>
+                                    <Route path="/verify">
+                                        <Authenticated>
+                                            <VerifyEmailPage />
+                                        </Authenticated>
                                     </Route>
                                     <Route path="/profile">
                                         <Authenticated>
@@ -192,7 +208,7 @@ function App() {
                 </Suspense>
                 <Footer/>
             </div>
-        </Router>
+        </>
     );
 }
 
