@@ -119,13 +119,15 @@ export interface ApiCoordinates {
   lng: number;
 }
 
+export type ApiGeojsonType = "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+
 export interface ApiGeometry {
-  type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+  type: ApiGeojsonType;
   coordinates: any[];
 }
 
 export interface ApiGeojsonFeature {
-  type: "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+  type: ApiGeojsonType;
   properties: object;
   geometry: ApiGeometry
 }
