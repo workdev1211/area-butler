@@ -22,12 +22,12 @@ export const standardSubscription: ApiSubscriptionPlan = {
         dev: {
             requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
             monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
-            annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+            annuallyId: 'price_1JrlPQLcbb2Q3qBpJQF5JTaF'
         },
         prod: {
             requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
             monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
-            annuallyId: 'price_1Jp7oWLcbb2Q3qBp7Zr0tdAg'
+            annuallyId: 'price_1JrlPQLcbb2Q3qBpJQF5JTaF'
         }
     },
     properties: [
@@ -54,12 +54,12 @@ export const proSubscription: ApiSubscriptionPlan = {
         dev: {
             requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
             monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
-            annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
+            annuallyId: 'price_1JrlQeLcbb2Q3qBpdXq9M5sW'
         },
         prod: {
             requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
             monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
-            annuallyId: 'price_1JpHb4Lcbb2Q3qBpMdpyAKwQ'
+            annuallyId: 'price_1JrlQeLcbb2Q3qBpdXq9M5sW'
         },
     },
     properties: [
@@ -85,12 +85,12 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         dev: {
             requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
             monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
-            annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
+            annuallyId: 'price_1JrlRBLcbb2Q3qBpoLgnzxCC'
         },
         prod: {
             requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
             monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
-            annuallyId: 'price_1JpHc4Lcbb2Q3qBpKlNJC5mP'
+            annuallyId: 'price_1JrlRBLcbb2Q3qBpoLgnzxCC'
         }
     },
     properties: [
