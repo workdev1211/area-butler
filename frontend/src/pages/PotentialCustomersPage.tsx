@@ -22,6 +22,7 @@ import { UserActions, UserContext } from "context/UserContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { SearchContext, SearchContextActions } from "context/SearchContext";
 import { ApiUser } from "../../../shared/types/types";
+import TourStarter from "tour/TourStarter";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -168,12 +169,13 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
       withHorizontalPadding={false}
       actionTop={<ActionsTop />}
     >
+      <TourStarter tour='customers' />
       <FormModal modalConfig={questionnaireModalConfig}>
         <QuestionnaireRequestFormHandler
           postSubmit={() => setQuestionnaireModalOpen(false)}
         />
       </FormModal>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto" data-tour="customers-table">
         <table className="table w-full">
           <thead>
             <tr>
@@ -186,7 +188,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
           </thead>
           <tbody>
             {potentialCustomerState.customers.map(
-              (customer: ApiPotentialCustomer) => (
+              (customer: ApiPotentialCustomer, index: number) => (
                 <tr
                   key={customer.id}
                   className={
@@ -238,6 +240,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                         alt="icon-search"
                         className="cursor-pointer"
                         onClick={() => startSearchFromCustomer(customer)}
+                        data-tour={'customers-table-item-search-button-' + index}
                       />
                       <img
                         src={editIcon}
@@ -246,6 +249,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                         onClick={() =>
                           history.push(`/potential-customers/${customer.id}`)
                         }
+                        data-tour={'customers-table-item-edit-button-' + index}
                       />
                       <FormModal
                         modalConfig={{
@@ -255,6 +259,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                               src={deleteIcon}
                               alt="icon-delete"
                               className="cursor-pointer"
+                              data-tour={'customers-table-item-delete-button-' + index}
                             />
                           ),
                         }}
