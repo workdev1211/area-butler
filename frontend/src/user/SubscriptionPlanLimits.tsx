@@ -48,6 +48,7 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
           <button
             onClick={() => forwardToCustomerPortal()}
             className="btn bg-primary-gradient btn-primary"
+            data-tour="manage-subscription"
           >
             Zahlung und Abonnement verwalten
           </button>
@@ -55,6 +56,7 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
         <div
           key="request-contingent"
           className="flex flex-wrap gap-6 items-center"
+          data-tour="request-contingent"
         >
           <span className="w-64 flex items-center">
             Anfragen ausgeführt {user.requestsExecuted}/{totalRequestContingent}

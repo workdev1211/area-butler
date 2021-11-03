@@ -6,6 +6,7 @@ import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import TourStarter from "tour/TourStarter";
 import InviteCodesTable from "user/InviteCodesTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
@@ -66,7 +67,8 @@ const UserProfilePage: FunctionComponent = () => {
         <SubmitButton key="user-profile-submit" />,
       ]}
     >
-      <div className="mt-10">
+      {hasSubscription && <TourStarter tour='profile' />}
+      <div className="mt-10" data-tour="profile-form">
         <ProfileFormHandler
           user={userState.user}
           formId={formId}
