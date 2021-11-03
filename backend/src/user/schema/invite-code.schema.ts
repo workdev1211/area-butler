@@ -14,6 +14,9 @@ export class InviteCode {
     @Prop({required: false})
     used: Date
 
+    @Prop({required: false})
+    usedBy: string;
+
 }
 
 export const InviteCodeSchema = SchemaFactory.createForClass(InviteCode);

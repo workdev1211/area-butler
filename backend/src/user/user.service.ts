@@ -70,7 +70,7 @@ export class UserService {
     }
 
     if (!!this.inviteCodeNeeded) {
-      await this.inviteCodeService.consumeInviteCode(apiConsent.inviteCode);
+      await this.inviteCodeService.consumeInviteCode(existingUser._id, apiConsent.inviteCode);
     }
 
     if (!existingUser.consentGiven) {

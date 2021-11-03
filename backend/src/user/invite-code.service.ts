@@ -39,7 +39,7 @@ export class InviteCodeService {
         return await new this.inviteCodeModel({userId, code}).save();
     }
 
-    public async consumeInviteCode(code: string): Promise<InviteCodeDocument> {
+    public async consumeInviteCode(userId: string, code: string): Promise<InviteCodeDocument> {
         if (!code) {
             throw new HttpException('Code is empty', 400);
         }
@@ -55,6 +55,7 @@ export class InviteCodeService {
         }
 
         inviteCode.used = new Date();
+        inviteCode.usedBy = userId;
 
         return await inviteCode.save();
     }
