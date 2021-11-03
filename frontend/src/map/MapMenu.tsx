@@ -103,13 +103,14 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   }, [groupedEntries, setLocalityPagination]);
 
   return (
-    <div className={mobileMenuButtonClasses}>
+    <div className={mobileMenuButtonClasses} data-tour="map-menu">
       <div className="heading">
         <span className="heading">Ergebnisse</span>
         <button
           type="button"
           className="btn btn-link"
           onClick={() => resetPosition()}
+          data-tour="reset-position"
         >
           <img className="mr-1" src={positionIcon} alt="icon-position" />
           {searchAddress}
@@ -128,7 +129,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         <div className="collapse-title">Anzeigeoptionen</div>
         <div className="collapse-content">
           <ul>
-            <li>
+            <li data-tour="census-data-toggle">
               <span>Zensus Atlas</span>
               <label className="cursor-pointer label justify-start pl-0">
                 <input

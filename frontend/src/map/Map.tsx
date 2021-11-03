@@ -407,7 +407,7 @@ const Map = React.memo<MapProps>(({
     }, [printingActive, printingCheatsheetActive, mapZoomLevel, searchContextDispatch]);
 
     return (
-        <div className='leaflet-container w-full' id={leafletMapId}>
+        <div className='leaflet-container w-full' id={leafletMapId} data-tour="map">
         </div>
     )
 }, areMapPropsEqual);

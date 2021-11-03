@@ -36,7 +36,7 @@ const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> =
         const updatedUser = (await post<ApiUser>("/api/users/me", mappedUser))
           .data;
         userDispatch({ type: UserActions.SET_USER, payload: updatedUser });
-        toastSuccess("Profil Aktualisiert!");
+        toastSuccess("Profil aktualisiert!");
         postSubmit(true);
       } catch (err) {
         console.log(err);

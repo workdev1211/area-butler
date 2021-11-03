@@ -27,6 +27,7 @@ import {ApiRoute} from "../../../shared/types/routing";
 import {useRouting} from "../hooks/routing";
 import {v4} from "uuid";
 import { UserActions, UserContext } from "context/UserContext";
+import TourStarter from "tour/TourStarter";
 
 export interface ResultEntity {
     name?: string;
@@ -279,6 +280,7 @@ const SearchResultPage: React.FunctionComponent = () => {
         <>
             <DefaultLayout title="Umgebungsanalyse" withHorizontalPadding={false} actionTop={<ActionsTop/>}
                            actionBottom={[<BackButton key="back-button" to="/"/>]}>
+                <TourStarter tour='result' />
                 <div className="search-result-container">
                     <div className="relative flex-1">
                         <MapNavBar transportationParams={searchContextState.transportationParams}
