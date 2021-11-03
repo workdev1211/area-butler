@@ -13,6 +13,10 @@ import FormModal, {ModalConfig} from "components/FormModal";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 import {UserContextProvider} from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
+import {useAuth0} from "@auth0/auth0-react";
+import {ApiConsent, ApiUser} from "../../shared/types/types";
+import {localStorageInvitationCodeKey} from "../../shared/constants/constants";
+import {useHttp} from "./hooks/http";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -66,6 +70,28 @@ const ScrollToTop: React.FunctionComponent = () => {
 }
 
 function App() {
+    const {isAuthenticated} = useAuth0();
+    const {post} = useHttp();
+
+    useEffect(() => {
+        if (isAuthenticated) {
+            const consumeInvitationCode = async () => {
+                const payload: ApiConsent = {inviteCode: localStorage.getItem(localStorageInvitationCodeKey)!};
+                try {
+                    await post<ApiUser>("/api/users/me/consent", payload);
+                    localStorage.removeItem(localStorageInvitationCodeKey);
+                } catch (error) {
+                    console.error(error);
+                }
+            }
+
+            if (localStorage.getItem(localStorageInvitationCodeKey)) {
+                consumeInvitationCode();
+            }
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isAuthenticated]);
+
     return (
         <Router>
             <ScrollToTop />
