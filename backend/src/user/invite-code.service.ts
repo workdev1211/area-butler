@@ -48,6 +48,10 @@ export class InviteCodeService {
             throw new HttpException('Unknown Invite Code', 400);
         }
 
+        if (!!inviteCode.used) {
+            throw new HttpException('Invite Code already used', 400);
+        }
+
         inviteCode.used = new Date();
 
         return await inviteCode.save();
