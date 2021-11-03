@@ -196,6 +196,18 @@ export const TermsPage = () => {
                         nicht innerhalb der jeweils geltenden Kündigungsfrist kündigt.
                     </li>
                     <li data-start="6">
+                        In der Laufzeitoption "Monatlich" beträgt der Abonnement-Zeitraum einen Monat. Nach Ende des
+                        aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen
+                        weiteren Monat, wenn der Nutzer den Vertrag nicht mit einer Frist von zwei Wochen zum Ende des
+                        aktuellen Abonnement-Zeitraums durch Erklärung gegenüber KuDiBa kündigt.
+                    </li>
+                    <li data-start="6">
+                        In der Laufzeitoption "Jährlich" beträgt der Abonnement-Zeitraum ein Jahr. Nach Ende des
+                        aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um ein
+                        weiteres Jahr, wenn der Nutzer den Vertrag nicht mit einer Frist von einem Monat zum Ende des
+                        aktuellen Abonnement-Zeitraums durch Erklärung gegenüber KuDiBa kündigt.
+                    </li>
+                    <li data-start="6">
                         Soweit KuDiBa auf Area Butler im Bereich für registrierte Nutzer ein auszufüllendes
                         Online-Formular für die Vertragsbeendigung zur Verfügung stellt, ist dem Nutzer eine
                         Vertragsbeendigung auch mittels dieses Formulars gestattet. Im Übrigen ist die

@@ -15,6 +15,16 @@ const Authenticated = withRouter<RouteComponentProps,
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, setIsLoggedIn]);
 
+    useEffect(() => {
+        if (
+            !!userState?.user?.consentGiven
+            && !userState?.user?.subscriptionPlan
+        ) {
+            history.push("/profile");
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [userState, window.location.href]);
+
     if (!isLoggedIn || !userState.user) {
         return <></>;
     }
