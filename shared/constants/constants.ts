@@ -28,6 +28,8 @@ export const initialShowTour: ApiShowTour = {
   profile: true
 }
 
+export const localStorageInvitationCodeKey = "ab-ic";
+
 export const calculateMinutesToMeters = [
     {mean: MeansOfTransportation.WALK, multiplicator: 83},
     {mean: MeansOfTransportation.BICYCLE, multiplicator: 233},

@@ -6,5 +6,5 @@ export const ConfigContext = createContext<ApiConfig>({
     googleApiKey: '',
     mapBoxAccessToken: '',
     stripeEnv: 'dev',
-    inviteCodeNeeded: false
+    inviteCodeNeeded: false,
 });

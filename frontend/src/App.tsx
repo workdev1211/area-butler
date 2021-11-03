@@ -22,6 +22,8 @@ const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
 
 const TermsPage = lazy(() => import("./pages/TermsPage"));
 
+const Auth0ConsentPage = lazy(() => import("./pages/Auth0ConsentPage"));
+
 const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
 
 const SearchResultPage = lazy(() => import("./pages/SearchResultPage"));
@@ -41,8 +43,6 @@ const CustomerQuestionnairePage = lazy(
 const RealEstatesPage = lazy(() => import("./pages/RealEstatesPage"));
 
 const RealEstatePage = lazy(() => import("./pages/RealEstatePage"));
-
-const UserConsentPage = lazy(() => import("./pages/UserConsentPage"));
 
 const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
@@ -85,7 +85,7 @@ function App() {
                 <Suspense fallback={<LoadingMessage/>}>
                     <UserContextProvider>
                         <Nav/>
-                        <Authenticated forceConsentRerouting={false}>
+                        <Authenticated>
                             <UpgradeSubscriptionHandlerContainer />
                             <FormModal modalConfig={feedbackModalConfig}>
                                 <FeedbackFormHandler/>
@@ -95,8 +95,8 @@ function App() {
                             <RealEstateContextProvider>
                                 <SearchContextProvider>
                                     <Switch>
-                                        <Route path="/consent">
-                                            <UserConsentPage/>
+                                        <Route path="/register">
+                                            <Auth0ConsentPage/>
                                         </Route>
                                         <Route path="/profile">
                                             <Authenticated>

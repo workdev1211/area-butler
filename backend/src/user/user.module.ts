@@ -9,6 +9,7 @@ import {SubscriptionService} from "./subscription.service";
 import {ClientModule} from "../client/client.module";
 import { InviteCode, InviteCodeSchema } from './schema/invite-code.schema';
 import { InviteCodeService } from './invite-code.service';
+import {InviteCodeController} from "./invite-code.controller";
 
 @Module({
     imports: [
@@ -26,7 +27,7 @@ import { InviteCodeService } from './invite-code.service';
     ],
     providers: [UserService, SubscriptionService, SubscriptionListener, InviteCodeService],
     exports: [UserService, SubscriptionService],
-    controllers: [UserController],
+    controllers: [UserController, InviteCodeController],
 })
 export class UserModule {
 }

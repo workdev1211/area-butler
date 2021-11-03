@@ -1,7 +1,8 @@
-import { HttpException, Injectable } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { InviteCode, InviteCodeDocument } from "./schema/invite-code.schema";
+import {HttpException, Injectable} from "@nestjs/common";
+import {InjectModel} from "@nestjs/mongoose";
+import {Model} from "mongoose";
+import {InviteCode, InviteCodeDocument} from "./schema/invite-code.schema";
+
 const crypto = require('crypto');
 
 @Injectable()
@@ -11,14 +12,15 @@ export class InviteCodeService {
 
     constructor(
         @InjectModel(InviteCode.name) private inviteCodeModel: Model<InviteCodeDocument>,
-    ) {}
+    ) {
+    }
 
     public async fetchInviteCodes(userId: string): Promise<InviteCodeDocument[]> {
 
         const inviteCodes: InviteCodeDocument[] = await this.inviteCodeModel.find({userId});
-        
+
         if (!inviteCodes || inviteCodes.length === 0) {
-            for(const _ of Array(this.numberOfInviteCodes).fill(0)) {
+            for (const _ of Array(this.numberOfInviteCodes).fill(0)) {
                 inviteCodes.push(await this.createInviteCode(userId));
             }
         }
@@ -55,6 +57,14 @@ export class InviteCodeService {
         inviteCode.used = new Date();
 
         return await inviteCode.save();
+    }
+
+    public async validateInviteCode(code: string): Promise<boolean> {
+        if (!code) {
+            return false;
+        }
+        const inviteCode = await this.inviteCodeModel.findOne({code: code.toUpperCase()});
+        return !(!inviteCode || (inviteCode && !!inviteCode.used));
     }
 
 }
