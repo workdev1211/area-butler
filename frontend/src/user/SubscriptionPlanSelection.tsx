@@ -97,9 +97,9 @@ const SubscriptionPlanSelection: React.FunctionComponent =
                     <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds[stripeEnv].monthlyId!} name="Business" price="250,00" intervall={PlanInterval.INTERVALL_MONTHLY} properties={businessPlusSubscription.properties} />
                 </div>}
                 {intervall === PlanInterval.INTERVALL_ANNUALLY && <div className="grid grid-cols-1 xl:grid-cols-3 gap-20 mt-20">
-                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds[stripeEnv].annuallyId!} name="Standard" price="600,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={standardSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={proSubscription.priceIds[stripeEnv].annuallyId!} name="Pro" price="900,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
-                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds[stripeEnv].annuallyId!} name="Business" price="2500,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={standardSubscription.priceIds[stripeEnv].annuallyId!} name="Standard" price="660,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={standardSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={proSubscription.priceIds[stripeEnv].annuallyId!} name="Pro" price="990,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={proSubscription.properties} />
+                    <SubscribePlanCard stripePriceId={businessPlusSubscription.priceIds[stripeEnv].annuallyId!} name="Business" price="2750,00" intervall={PlanInterval.INTERVALL_ANNUALLY} properties={businessPlusSubscription.properties} />
                 </div>}
             </div>
         </div>
