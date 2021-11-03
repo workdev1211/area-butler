@@ -40,7 +40,7 @@ const tourSteps: Record<ApiTour, Step[]> = {
   profile: ProfileSteps,
 };
 
-export const TourStarter: React.FunctionComponent<TourStarterProps> = ({
+const TourStarter: React.FunctionComponent<TourStarterProps> = ({
   tour,
 }) => {
   const [runTour, setRunTour] = useState(false);
