@@ -53,7 +53,7 @@ const RequestContingentDropDown: React.FunctionComponent<RequestContingentDropDo
                       <td className="w-48 text-left">{contingentTypeLabels[requestContingent.type]}</td>
                       <td className="w-24 text-left">{requestContingent.amount}</td>
                       <td className="w-24 text-left">
-                        {date.getFullYear()}-{date.getMonth()}
+                        {date.getFullYear()}-{date.getMonth() + 1}
                       </td>
                     </tr>
                   );
