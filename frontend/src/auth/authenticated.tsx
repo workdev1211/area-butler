@@ -12,6 +12,9 @@ const Authenticated = withRouter<RouteComponentProps,
 
     useEffect(() => {
         setIsLoggedIn(isAuthenticated);
+        if (!isAuthenticated && history.location.pathname !== '/') {
+            history.push("/");
+        }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [isAuthenticated, setIsLoggedIn]);
 

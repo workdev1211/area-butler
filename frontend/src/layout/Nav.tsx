@@ -69,9 +69,9 @@ const Nav: FunctionComponent = () => {
                         <img className="hidden lg:block h-full w-auto"
                              src={Logo} alt="Logo"/>
                     </NavLink>
-                    {showNavBar && (<div className="hidden lg:flex lg:items-center">
+                    {showNavBar && isAuthenticated && (<div className="hidden lg:flex lg:items-center">
                         <div className="nav-links">
-                            <NavLink to="/" className="nav-link" exact={true}
+                            <NavLink to="/search" className="nav-link" exact={true}
                                      aria-current="page">Umgebungsanalyse</NavLink>
                             <Authenticated>
                                 <NavLink to="/real-estates" className="nav-link"
@@ -83,7 +83,9 @@ const Nav: FunctionComponent = () => {
                     </div>)}
                 </div>
 
-                <LoginButton />
+                <div className="mr-10">
+                    <LoginButton />
+                </div>
                 {showNavBar && isAuthenticated && currentUser && (<div
                     className="nav-usermenu">
                     <div className="nav-usermenu-button">
@@ -116,7 +118,7 @@ const Nav: FunctionComponent = () => {
 
             <div className={mobileMenuClass} id="mobile-menu">
                 <div className="ml-5 flex flex-col gap-5 px-2 pt-2 pb-3 space-y-1 bg-white">
-                    <NavLink to="/" className="nav-mobile-menu-link" exact={true}
+                    <NavLink to="/search" className="nav-mobile-menu-link" exact={true}
                              aria-current="page">Umgebungsanalyse</NavLink>
                     <Authenticated>
                         <NavLink to="/real-estates"

@@ -20,6 +20,8 @@ import {useHttp} from "./hooks/http";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
+const LoginPage = lazy(() => import("./pages/LoginPage"));
+
 const ImpressPage = lazy(() => import("./pages/ImpressPage"));
 
 const PrivacyPage = lazy(() => import("./pages/PrivacyPage"));
@@ -196,10 +198,13 @@ function App() {
                                             <RealEstatesPage/>
                                         </Authenticated>
                                     </Route>
-                                    <Route path="/">
+                                    <Route path="/search">
                                         <Authenticated>
                                             <SearchParamsPage/>
                                         </Authenticated>
+                                    </Route>
+                                    <Route path="/">
+                                        <LoginPage/>
                                     </Route>
                                 </Switch>
                             </SearchContextProvider>
