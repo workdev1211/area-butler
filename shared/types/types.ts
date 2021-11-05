@@ -173,7 +173,7 @@ export enum OsmName {
   clinic = "clinic",
   hospital = "hospital",
   kiosk = "kiosk",
-  post_office = "post office",
+  post_office = "post_office",
   fuel = "fuel",
   station = "station",
   bus_stop = "bus_stop",
