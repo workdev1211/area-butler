@@ -167,7 +167,7 @@ export class OverpassService {
     }
 
     async fetchForEntityType(entitType: ApiOsmEntity): Promise<OverpassData[]>  {
-        const query = `[out:json][timeout:3600][maxsize:1073741824];(node[${entitType.type}=${entitType.name}];way[${entitType.type}=${entitType.name}];relation[${entitType.type}=${entitType.name}];);out center;`
+        const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entitType.type}"="${entitType.name}"];way["${entitType.type}"="${entitType.name}"];relation["${entitType.type}"="${entitType.name}"];);out center;`
         const hasCoordinates = (e) => e.center || (e.lat && e.lon);
         try {
             this.logger.debug(`fetching ${entitType.name}`)
