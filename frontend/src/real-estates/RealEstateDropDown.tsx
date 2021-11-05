@@ -10,7 +10,7 @@ export interface RealEstateMenuListProps {
 }
 
 const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
-    ({buttonStyles = 'btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white'}) => {
+    ({buttonStyles = 'btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto'}) => {
         const {realEstateState} = React.useContext(RealEstateContext);
         const {searchContextDispatch} = React.useContext(SearchContext);
 
@@ -38,7 +38,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
         const [showMenu, setShowMenu] = useState(false);
         useOnClickOutside(dropDownRef, () => showMenu && setShowMenu(false));
 
-        const dropdownClasses = showMenu ? "dropdown dropdown-open dropdown-top z-2000 relative" : "dropdown";
+        const dropdownClasses = showMenu ? "dropdown dropdown-open dropdown-top z-2000 relative mt-4 w-full sm:w-auto" : "dropdown mt-4 w-full sm:w-auto";
 
         return realEstateState.listings?.length > 0 ? (
             <div className={dropdownClasses} ref={dropDownRef}>

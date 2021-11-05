@@ -10,7 +10,7 @@ export interface PotentialCustomerDropDownProps {
 }
 
 export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustomerDropDownProps> =
-    ({buttonStyles = "dropdown-btn btn btn-sm bg-primary-gradient"}) => {
+    ({buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto"}) => {
         const {potentialCustomerState} = React.useContext(
             PotentialCustomerContext
         );
@@ -45,7 +45,7 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
             "p-2 shadow menu dropdown-content bg-base-100 rounded-box overflow-y-scroll";
 
         return potentialCustomerState.customers?.length > 0 ? (
-            <div ref={dropDownRef} className="dropdown">
+            <div ref={dropDownRef} className="dropdown mt-5 w-full sm:w-auto">
                 <div className={buttonStyles} tabIndex={0} onClick={(e) => setMenuOpen(!menuOpen)} data-tour="my-customers">
                     + Meine Interessenten
                 </div>
