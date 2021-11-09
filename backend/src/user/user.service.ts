@@ -63,7 +63,7 @@ export class UserService {
   }
 
   public async giveConsent(email: string, apiConsent: ApiConsent) {
-    const existingUser = await this.userModel.findOne({ email });
+    const existingUser = await this.upsertUser(email, email);
 
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
