@@ -1,6 +1,6 @@
+import { ApiFederalElectionFeatureProperties } from '@area-butler-types/federal-election';
 import { ApiGeojsonType, ApiGeometry } from '@area-butler-types/types';
 import { Prop, raw, SchemaFactory } from '@nestjs/mongoose';
-import { FederalElectionFeatureProperties } from '../federal-election/federal-election.types';
 
 export type FederalElectionDocument = FederalElection & Document;
 
@@ -10,7 +10,7 @@ export class FederalElection {
     type: ApiGeojsonType;
   
     @Prop(raw({}))
-    properties: FederalElectionFeatureProperties;
+    properties: ApiFederalElectionFeatureProperties;
   
     @Prop(
       raw({

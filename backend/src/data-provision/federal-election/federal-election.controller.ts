@@ -1,3 +1,4 @@
+import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
 import { ApiGeometry } from '@area-butler-types/types';
 import {
   Body,
@@ -13,7 +14,6 @@ import { Role, Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { FederalElectionService } from './federal-election.service';
-import { FederalElectionFeature } from './federal-election.types';
 
 @Controller('api/federal-election')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
@@ -26,7 +26,7 @@ export class FederalElectionController extends AuthenticatedController {
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const data: { features: FederalElectionFeature[] } = JSON.parse(
+    const data: { features: ApiFederalElectionFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
     //TODO: Validate Data

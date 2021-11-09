@@ -1,21 +1,21 @@
-import { ApiGeojsonFeature, ApiGeometry } from "@area-butler-types/types";
+import { ApiGeojsonFeature } from "./types";
 
-export interface FederalElectionFeature extends ApiGeojsonFeature {
-    properties: FederalElectionFeatureProperties;
+export interface ApiFederalElectionFeature extends ApiGeojsonFeature {
+    properties: ApiFederalElectionFeatureProperties;
 }
 
-export interface FederalElectionFeatureProperties {
+export interface ApiFederalElectionFeatureProperties {
     WKR_NR: number;
     WKR_NAME: string;
     LAND_NR: string;
     LAND_NAME: string;
-    ERGEBNIS: FederalElectionFeatureResult[];
+    ERGEBNIS: ApiFederalElectionFeatureResult[];
 }
 
-export interface FederalElectionFeatureResult {
+export interface ApiFederalElectionFeatureResult {
     Gebietsnummer: number;
-    Gruppenart: FeatureElectionFeatureResultGroup;
-    Gruppenname: FeatureElectionParty;
+    Gruppenart: ApiFeatureElectionFeatureResultGroup;
+    Gruppenname: ApiFeatureElectionParty;
     Gruppenreihenfolge: number;
     Stimme: 1 | 2,
     Anzahl: number,
@@ -26,12 +26,12 @@ export interface FederalElectionFeatureResult {
     DiffProzentPkt: number
 }
 
-export enum FeatureElectionFeatureResultGroup {
+export enum ApiFeatureElectionFeatureResultGroup {
     SYSTEM_GROUP = 'System-Gruppe',
     PARTY = 'Partei'
 }
 
-export enum FeatureElectionParty {
+export enum ApiFeatureElectionParty {
     CDU = 'CDU',
     SPD = 'SPD',
     FDP = 'FDP',

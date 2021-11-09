@@ -24,6 +24,8 @@ import { ApiDataSource } from "../../../shared/types/subscription-plan";
 export interface MapMenuProps {
   census: boolean;
   toggleCensus: (active: boolean) => void;
+  federalElection: boolean;
+  toggleFederalElection: (active: boolean) => void;
   groupedEntries: EntityGroup[];
   toggleEntryGroup: (title: string) => void;
   highlightZoomEntity: (item: ResultEntity) => void;
@@ -58,10 +60,20 @@ const censusNotInSubscriptionPlanMessage = (
     </p>
   </div>
 );
+const federalElectionNotInSubscriptionPlanMessage = (
+  <div>
+    <p className="my-5">
+      Die Ergebnisse der Bundestagswahl sind in Ihrem aktuellen Abonnement nicht
+      verfügbar.
+    </p>
+  </div>
+);
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   census,
   toggleCensus,
+  federalElection,
+  toggleFederalElection,
   groupedEntries,
   toggleEntryGroup,
   highlightZoomEntity,
@@ -94,6 +106,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const censusInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
+    );
+
+  const federalElectionInSubscriptionPlan =
+    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+      ApiDataSource.FEDERAL_ELECTION
     );
 
   useEffect(() => {
@@ -141,6 +158,23 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                       ? toggleCensus(event.target.checked)
                       : openUpgradeSubcriptionModal(
                           censusNotInSubscriptionPlanMessage
+                        )
+                  }
+                />
+              </label>
+            </li>
+            <li data-tour="census-data-toggle">
+              <span>Bundestagswahl 2021</span>
+              <label className="cursor-pointer label justify-start pl-0">
+                <input
+                  type="checkbox"
+                  checked={federalElection}
+                  className="checkbox checkbox-primary checkbox-sm"
+                  onChange={(event) =>
+                    federalElectionInSubscriptionPlan
+                      ? toggleFederalElection(event.target.checked)
+                      : openUpgradeSubcriptionModal(
+                          federalElectionNotInSubscriptionPlanMessage
                         )
                   }
                 />

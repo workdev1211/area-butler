@@ -1,3 +1,4 @@
+import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
 import { ApiGeometry } from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
@@ -6,7 +7,7 @@ import {
   FederalElection,
   FederalElectionDocument,
 } from '../schemas/federal-election.schema';
-import { FederalElectionFeature } from './federal-election.types';
+
 
 export const distinctValues = (value: any, index: any, self: any) =>
   self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) === index;
@@ -21,7 +22,7 @@ export class FederalElectionService {
     @InjectConnection() private connection: Connection,
   ) {}
 
-  async createCollection(federalElectionFeatures: FederalElectionFeature[]) {
+  async createCollection(federalElectionFeatures: ApiFederalElectionFeature[]) {
 
     const collection = this.connection.db.collection(
       this.federalElectionModel.collection.name,

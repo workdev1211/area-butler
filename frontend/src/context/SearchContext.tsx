@@ -1,6 +1,7 @@
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import React from "react";
-import {osmEntityTypes} from "../../../shared/constants/constants";
-import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
+import { osmEntityTypes } from "../../../shared/constants/constants";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
     ApiCoordinates,
     ApiGeometry,
@@ -9,7 +10,7 @@ import {
     OsmName,
     TransportationParam
 } from "../../../shared/types/types";
-import {defaultTransportationParams} from "../components/TransportationParams";
+import { defaultTransportationParams } from "../components/TransportationParams";
 
 export interface MapClipping {
     zoomLevel: number;
@@ -25,6 +26,7 @@ export interface SearchContextState {
     searchBusy: boolean;
     searchResponse?: ApiSearchResponse;
     censusData?: ApiGeometry[];
+    federalElectionData?: FederalElectionDistrict;
     mapCenter?: ApiCoordinates;
     mapZoomLevel?: number;
     highlightId?: number;
@@ -54,6 +56,7 @@ export enum SearchContextActions {
     SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
     SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
     SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+    SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
     SET_MAP_CENTER = 'SET_MAP_CENTER',
     SET_MAP_ZOOM_LEVEL = 'SET_MAP_ZOOM_LEVEL',
     CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
@@ -98,6 +101,9 @@ const reducer: (
         }
         case SearchContextActions.SET_ZENSUS_DATA: {
             return {...state, censusData: [...action.payload]}
+        }
+        case SearchContextActions.SET_FEDERAL_ELECTION_DATA: {
+            return {...state, federalElectionData: {...action.payload}}
         }
         case SearchContextActions.SET_MAP_ZOOM_LEVEL: {
             return {...state, mapZoomLevel: action.payload};

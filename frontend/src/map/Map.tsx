@@ -1,12 +1,15 @@
-import React, {useContext, useEffect} from "react";
+import center from "@turf/center";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { FederalElectionDistrict, FederalElectionResult } from "hooks/federalelectiondata";
+import html2canvas from 'html2canvas';
 import * as L from "leaflet";
 import "leaflet.markercluster";
-import "./Map.css";
-import "leaflet/dist/leaflet.css";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
-import leafletIcon from "leaflet/dist/images/marker-icon.png";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
+import "leaflet/dist/leaflet.css";
+import React, { useContext, useEffect } from "react";
+import { ApiRoute } from "../../../shared/types/routing";
 import {
     ApiCoordinates,
     ApiGeojsonFeature,
@@ -14,26 +17,24 @@ import {
     MeansOfTransportation,
     OsmName
 } from "../../../shared/types/types";
-import {ConfigContext} from "../context/ConfigContext";
-import {SearchContext, SearchContextActions} from "context/SearchContext";
-import html2canvas from 'html2canvas';
-import center from "@turf/center";
-import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
+import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
+import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import { ConfigContext } from "../context/ConfigContext";
+import { EntityGroup, EntityRoute, ResultEntity } from "../pages/SearchResultPage";
 import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
     preferredLocationsIcon,
     realEstateListingsIcon
 } from "../shared/shared.functions";
-import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
-import {ApiRoute} from "../../../shared/types/routing";
+import "./Map.css";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
+    federalElectionData: FederalElectionDistrict;
     entities: ResultEntity[] | null;
     groupedEntities: EntityGroup[];
     mapCenter?: ApiCoordinates;
@@ -88,6 +89,7 @@ let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
 let censusGroup = L.layerGroup();
+let federalElectionGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
@@ -100,10 +102,11 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
-    const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);
+    const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);    
+    const federalElectionDataEqual = JSON.stringify(prevProps.federalElectionData) === JSON.stringify(nextProps.federalElectionData);    
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
     const routesEqual = prevProps.routes === nextProps.routes;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && highlightIdEqual && routesEqual;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && highlightIdEqual && routesEqual;
 }
 
 const WALK_COLOR = '#c91444';
@@ -122,10 +125,11 @@ const Map = React.memo<MapProps>(({
                                       means,
                                       mapCenter,
                                       printingActive,
-    printingCheatsheetActive,
+                                      printingCheatsheetActive,
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
+                                      federalElectionData,
                                       highlightId,
                                       routes
                                   }) => {
@@ -309,6 +313,22 @@ const Map = React.memo<MapProps>(({
             })
         }
     }, [censusData]);
+
+    // draw federal election
+    useEffect(() => {
+        if (currentMap && federalElectionGroup) {
+            currentMap.removeLayer(federalElectionGroup);
+        }
+        if (currentMap && !!federalElectionData) {
+            federalElectionGroup = L.layerGroup();
+            currentMap.addLayer(federalElectionGroup);
+            const propertyTable = (p: FederalElectionResult) => `<tr><td>${p.party}</td><td>${p.percentage}</td><td>${p.lastElectionPercentage}</td></tr>`;
+            const table = `<h1>${federalElectionData.name}</h1><table><tbody>${federalElectionData.results.sort((r1, r2) => r2.percentage - r1.percentage).map(propertyTable).join("")}</tbody></table>`;
+
+            L.geoJSON(federalElectionData).addTo(federalElectionGroup!).bindTooltip(table);
+        }
+    }, [federalElectionData]);
+
 
     const entitiesStringified = JSON.stringify(entities);
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);

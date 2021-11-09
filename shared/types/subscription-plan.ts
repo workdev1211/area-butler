@@ -51,5 +51,6 @@ export enum ApiRequestContingentType {
 
 export enum ApiDataSource {
     OSM = 'OSM',
-    CENSUS = 'CENSUS'
+    CENSUS = 'CENSUS',
+    FEDERAL_ELECTION = 'FEDERAL_ELECTION'
 }

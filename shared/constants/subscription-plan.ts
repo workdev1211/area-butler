@@ -103,7 +103,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     appFeatures: {
         requestIncreasePackage: 100,
         sendCustomerQuestionnaireRequest: true,
-        dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
+        dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS, ApiDataSource.FEDERAL_ELECTION],
     },
 };
 

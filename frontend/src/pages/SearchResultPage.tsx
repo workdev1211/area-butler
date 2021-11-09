@@ -155,6 +155,8 @@ const SearchResultPage: React.FunctionComponent = () => {
     const [routes, setRoutes] = useState<EntityRoute[]>([])
     const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
+    const [showFederalElection, setShowFederalElection] = useState(false);
+    const federalElectionDataAvailable = !!searchContextState.federalElectionData;
 
     const searchResponseString = JSON.stringify(searchContextState.searchResponse);
     useEffect(() => {
@@ -305,6 +307,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                             mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
                             printingActive={searchContextState.printingActive}
                             printingCheatsheetActive={searchContextState.printingCheatsheetActive}
+                            federalElectionData={showFederalElection && federalElectionDataAvailable && searchContextState.federalElectionData}
                             censusData={showCensus && censusDataAvailable && searchContextState.censusData}
                             routes={routes}
                         />
@@ -313,6 +316,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                     <MapMenu mobileMenuOpen={mobileMenuOpen}
                              census={showCensus}
                              toggleCensus={(active) => setShowCensus(active)}
+                             federalElection={showFederalElection}
+                             toggleFederalElection={(active) => setShowFederalElection(active)}
                              groupedEntries={groupedEntries}
                              toggleEntryGroup={toggleEntityGroup}
                              highlightZoomEntity={highlightZoomEntity}
