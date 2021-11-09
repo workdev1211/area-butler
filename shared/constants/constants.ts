@@ -9,14 +9,14 @@ import {
 } from "../types/types";
 
 export const kudibaCompany = {
-  name: 'KuDiBa GmbH i. G.',
+  name: 'KuDiBa GmbH',
   address: 'Nobistor 16',
   zip: '22767',
   city: 'Hamburg',
   mail: 'info@area-butler.de',
   formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
   court: 'Amtsgericht Hamburg',
-  regNr: 'xxxxxxxxxxx',
+  regNr: 'HRB 171915',
   vat: 'VAT12343434'
 }
 
