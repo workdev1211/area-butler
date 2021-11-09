@@ -1,4 +1,12 @@
-import { Controller, Post, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { ApiGeometry } from '@area-butler-types/types';
+import {
+  Body,
+  Controller,
+  Post,
+  UploadedFile,
+  UseGuards,
+  UseInterceptors,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, Roles } from 'src/auth/roles.decorator';
@@ -18,9 +26,16 @@ export class FederalElectionController extends AuthenticatedController {
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
-    const data: {features: FederalElectionFeature[]} = JSON.parse(file.buffer.toString());
+    const data: { features: FederalElectionFeature[] } = JSON.parse(
+      file.buffer.toString(),
+    );
     //TODO: Validate Data
     await this.federalElectionService.createCollection(data.features);
     return 'done';
+  }
+
+  @Post('query')
+  async query(@Body() query: ApiGeometry) {
+    return await this.federalElectionService.findIntersecting(query);
   }
 }

@@ -1,3 +1,4 @@
+import { ApiGeometry } from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
@@ -45,5 +46,18 @@ export class FederalElectionService {
     await collection.createIndex({ geometry: '2dsphere' });
     this.logger.log(`${collection.collectionName} created`);
     return;
+  }
+
+  findIntersecting(query: ApiGeometry) {
+    return this.federalElectionModel.find({
+      geometry: {
+        $geoIntersects: {
+          $geometry: {
+            type: query.type,
+            coordinates: query.coordinates,
+          },
+        },
+      },
+    });
   }
 }
