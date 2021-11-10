@@ -15,8 +15,8 @@ export const TermsPage = () => {
                 <ol>
                     <li data-start="1">Diese Allgemeinen Geschäftsbedingungen gelten für sämtliche Rechtsverhältnisse,
                         die zwischen der
-                        KuDiBa GmbH [i.G.], vertreten durch den Geschäftsführer Alexander Timper, Nobistor 16, 22767
-                        Hamburg, eingetragen im Handelsregister des Amtsgerichts Hamburg unter HRB [●] (nachfolgend
+                        KuDiBa GmbH, vertreten durch den Geschäftsführer Alexander Timper, Nobistor 16, 22767
+                        Hamburg, eingetragen im Handelsregister des Amtsgerichts Hamburg unter HRB 171915 (nachfolgend
                         „KuDiBa“) und dem Nutzer der unter www.areabutler.de („Website“) von KuDiBa angebotenen
                         entgeltlichen Web-App Area Butler (nachfolgend „Area Butler“) entstehen.
                     </li>
