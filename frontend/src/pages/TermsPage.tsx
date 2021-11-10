@@ -8,7 +8,7 @@ export const TermsPage = () => {
     return (
         <DefaultLayout title="Allgemeine Geschäftsbedingungen" withHorizontalPadding={true}>
             <div className="terms pt-20">
-                <p>Allgemeine Geschäftsbedingungen der KuDiBa GmbH i.G. für die Nutzung der über die Website
+                <p>Allgemeine Geschäftsbedingungen der KuDiBa GmbH, HRB 171915 Amtsgericht Hamburg für die Nutzung der über die Website
                     www.areabutler.de angebotenen Services</p>
                 <p>Stand: 11/2021</p>
                 <h2>§1 Geltungsbereich</h2>
