@@ -1,19 +1,19 @@
-import { forwardRef, HttpModule, Module } from '@nestjs/common';
+import { HttpModule, Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { UserModule } from 'src/user/user.module';
+import { ClientModule } from '../client/client.module';
+import { DataProvisionController } from "./data-provision.controller";
+import { FederalElectionController } from './federal-election/federal-election.controller';
+import { FederalElectionService } from './federal-election/federal-election.service';
 import { OverpassDataService } from './overpass-data/overpass-data.service';
 import {
-  OverpassData,
-  OverpassDataSchema,
-} from './schemas/overpass-data.schema';
-import { ClientModule } from '../client/client.module';
-import {
   FederalElection,
-  FederalElectionSchema,
+  FederalElectionSchema
 } from './schemas/federal-election.schema';
-import { FederalElectionService } from './federal-election/federal-election.service';
-import { FederalElectionController } from './federal-election/federal-election.controller';
-import { UserModule } from 'src/user/user.module';
-import {DataProvisionController} from "./data-provision.controller";
+import {
+  OverpassData,
+  OverpassDataSchema
+} from './schemas/overpass-data.schema';
 
 @Module({
   providers: [OverpassDataService, FederalElectionService],

@@ -82,7 +82,7 @@ export class IdMarker extends L.Marker {
 }
 
 export const defaultMapZoom = 15;
-const defaultAmenityIconSize = new L.Point(20, 20);
+const defaultAmenityIconSize = new L.Point(10, 10);
 const myLocationIconSize = new L.Point(40, 40);
 
 let zoom = defaultMapZoom;
@@ -205,14 +205,14 @@ const Map = React.memo<MapProps>(({
                 const markers = (amenityMarkerGroup.getLayers() as IdMarker[]);
                 if (markers.length) {
                     const currentSize = markers[0].getIcon().options.iconSize;
-                    if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 17) {
+                    if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
-                            icon.options.iconSize = new L.Point(35, 35);
+                            icon.options.iconSize = new L.Point(25, 25);
                             marker.setIcon(icon);
                         });
                     }
-                    if ((currentSize as L.Point).x === 35 && mapZoomLevel < 17) {
+                    if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
                         markers.forEach(marker => {
                             const icon = marker.getIcon();
                             icon.options.iconSize = defaultAmenityIconSize;
@@ -378,7 +378,7 @@ const Map = React.memo<MapProps>(({
                             shadowSize: [0, 0],
                             iconSize: defaultAmenityIconSize,
                             className: 'locality-marker-wrapper icon-' +entity.type,
-                            html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type}" /></div>`
+                            html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
                         });
                         const marker = new IdMarker(entity.coordinates, entity, {
                             icon,
