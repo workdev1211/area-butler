@@ -21,7 +21,7 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
       })
     );
     setGroupedEntries([...groupedEntries]);
-  }, [limit, groupedEntries, setGroupedEntries]);
+  }, [limit]);
 
   const onGroupSelectionChange = (group: EntityGroup) => {
     group.active = !group.active;
