@@ -17,6 +17,7 @@ import TourStarter from "tour/TourStarter";
 import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import { ApiDataSource } from "../../../shared/types/subscription-plan";
 import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser} from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import ImportantAddresses from "../components/ImportantAddresses";
@@ -138,16 +139,20 @@ const SearchParamsPage: React.FunctionComponent = () => {
                     type: SearchContextActions.SET_SEARCH_RESPONSE,
                     payload: result.data
                 })
-                const federalElectionData = await fetchElectionData(searchContextState.location);
-                searchContextDispatch({
-                    type: SearchContextActions.SET_FEDERAL_ELECTION_DATA,
-                    payload: federalElectionData
-                });
-                const zensusData = await fetchNearData(searchContextState.location);
-                searchContextDispatch({
-                    type: SearchContextActions.SET_ZENSUS_DATA,
-                    payload: zensusData
-                });
+                if (user.subscriptionPlan?.config.appFeatures.dataSources.includes(ApiDataSource.FEDERAL_ELECTION)) {
+                    const federalElectionData = await fetchElectionData(searchContextState.location);
+                    searchContextDispatch({
+                        type: SearchContextActions.SET_FEDERAL_ELECTION_DATA,
+                        payload: federalElectionData
+                    });
+                }
+                if (user.subscriptionPlan?.config.appFeatures.dataSources.includes(ApiDataSource.CENSUS)) {
+                    const zensusData = await fetchNearData(searchContextState.location);
+                    searchContextDispatch({
+                        type: SearchContextActions.SET_ZENSUS_DATA,
+                        payload: zensusData
+                    });
+                }
                 history.push('/search-result');
             } catch (error) {
                 toastError("Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen.")

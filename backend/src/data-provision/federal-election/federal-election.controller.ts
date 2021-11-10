@@ -13,6 +13,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { Role, Roles } from 'src/auth/roles.decorator';
 import { RolesGuard } from 'src/auth/roles.guard';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
+import { InjectUser } from 'src/user/inject-user.decorator';
+import { UserDocument } from 'src/user/schema/user.schema';
 import { FederalElectionService } from './federal-election.service';
 
 @Controller('api/federal-election')
@@ -35,7 +37,7 @@ export class FederalElectionController extends AuthenticatedController {
   }
 
   @Post('query')
-  async query(@Body() query: ApiGeometry) {
-    return await this.federalElectionService.findIntersecting(query);
+  async query(@Body() query: ApiGeometry, @InjectUser() user: UserDocument) {
+    return await this.federalElectionService.findIntersecting(query, user);
   }
 }

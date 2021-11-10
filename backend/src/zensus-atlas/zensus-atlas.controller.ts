@@ -12,6 +12,9 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
 import { ApiGeometry } from '@area-butler-types/types';
+import { AuthenticatedController } from 'src/shared/authenticated.controller';
+import { InjectUser } from 'src/user/inject-user.decorator';
+import { UserDocument } from 'src/user/schema/user.schema';
 
 interface ZensusDataGeojson {
   type: string;
@@ -50,8 +53,10 @@ interface ZensusDataGeojson {
 
 @Controller('api/zensus-atlas')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
-export class ZensusAtlasController {
-  constructor(private readonly zensusAtlasService: ZensusAtlasService) {}
+export class ZensusAtlasController extends AuthenticatedController {
+  constructor(private readonly zensusAtlasService: ZensusAtlasService) {
+    super();
+  }
 
   @Post('upload')
   @Roles(Role.Admin)
@@ -64,8 +69,8 @@ export class ZensusAtlasController {
   }
 
   @Post('query')
-  async query(@Body() query: ApiGeometry) {
-    return (await this.zensusAtlasService.findIntersecting(query)).map(
+  async query(@Body() query: ApiGeometry, @InjectUser() user: UserDocument) {
+    return (await this.zensusAtlasService.findIntersecting(user, query)).map(
       (d: any) => {
         if (!!d?.properties?.Frauen_A) {
           delete d?.properties?.Frauen_A;

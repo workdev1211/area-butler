@@ -1,8 +1,11 @@
 import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
+import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { ApiGeometry } from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
+import { UserDocument } from 'src/user/schema/user.schema';
+import { SubscriptionService } from 'src/user/subscription.service';
 import {
   FederalElection,
   FederalElectionDocument,
@@ -20,6 +23,7 @@ export class FederalElectionService {
     @InjectModel(FederalElection.name)
     private federalElectionModel: Model<FederalElectionDocument>,
     @InjectConnection() private connection: Connection,
+    private subscriptionService: SubscriptionService
   ) {}
 
   async createCollection(federalElectionFeatures: ApiFederalElectionFeature[]) {
@@ -49,7 +53,14 @@ export class FederalElectionService {
     return;
   }
 
-  findIntersecting(query: ApiGeometry) {
+  async findIntersecting(query: ApiGeometry, user: UserDocument) {
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription =>
+        !subscription?.appFeatures.dataSources.includes(ApiDataSource.FEDERAL_ELECTION),
+      'Bundestagswahldaten sind im aktuellem Abonnement nicht verfügbar',
+    );
+
     return this.federalElectionModel.find({
       geometry: {
         $geoIntersects: {

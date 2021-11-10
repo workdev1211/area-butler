@@ -27,6 +27,12 @@ export class SubscriptionService {
         message: string,
     ): Promise<void> {
         const userSubscription = await this.findActiveByUserId(userId);
+
+        if (!userSubscription) {
+            throw new HttpException('User has no active subscription', 400);
+        }
+
+
         if (check(allSubscriptions[userSubscription.type])) {
             throw new HttpException(message, 400);
         }

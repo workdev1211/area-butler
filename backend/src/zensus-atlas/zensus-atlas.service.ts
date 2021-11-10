@@ -3,6 +3,9 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ZensusAtlas, ZensusAtlasDocument } from './schema/zensus-atlas.schema';
 import { Connection, Model, Promise } from 'mongoose';
 import { ApiGeojsonFeature, ApiGeometry } from '@area-butler-types/types';
+import { SubscriptionService } from 'src/user/subscription.service';
+import { UserDocument } from 'src/user/schema/user.schema';
+import { ApiDataSource } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class ZensusAtlasService {
@@ -12,6 +15,7 @@ export class ZensusAtlasService {
     @InjectModel(ZensusAtlas.name)
     private zensusAtlasModel: Model<ZensusAtlasDocument>,
     @InjectConnection() private connection: Connection,
+    private subscriptionService: SubscriptionService,
   ) {}
 
   async create(zensusAtlasFeature: ApiGeojsonFeature): Promise<ZensusAtlas> {
@@ -53,7 +57,14 @@ export class ZensusAtlasService {
     return this.zensusAtlasModel.findById(id);
   }
 
-  findIntersecting(query: ApiGeometry) {
+  async findIntersecting(user: UserDocument, query: ApiGeometry) {
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription =>
+        !subscription?.appFeatures.dataSources.includes(ApiDataSource.CENSUS),
+      'Zensusdaten sind im aktuellem Abonnement nicht verfügbar',
+    );
+
     return this.zensusAtlasModel.find({
       geometry: {
         $geoIntersects: {
