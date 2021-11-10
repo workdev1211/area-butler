@@ -322,8 +322,8 @@ const Map = React.memo<MapProps>(({
         if (currentMap && !!federalElectionData) {
             federalElectionGroup = L.layerGroup();
             currentMap.addLayer(federalElectionGroup);
-            const propertyTable = (p: FederalElectionResult) => `<tr><td>${p.party}</td><td>${p.percentage}</td><td>${p.lastElectionPercentage}</td></tr>`;
-            const table = `<h1>${federalElectionData.name}</h1><table><tbody>${federalElectionData.results.sort((r1, r2) => r2.percentage - r1.percentage).map(propertyTable).join("")}</tbody></table>`;
+            const propertyTable = (p: FederalElectionResult) => `<tr><td>${p.party}</td><td>${p.percentage} %</td><td>${p.lastElectionPercentage} %</td></tr>`;
+            const table = `<h1>${federalElectionData.name}</h1><table><tbody>${federalElectionData.results.map(propertyTable).join("")}</tbody></table>`;
 
             L.geoJSON(federalElectionData).addTo(federalElectionGroup!).bindTooltip(table);
         }

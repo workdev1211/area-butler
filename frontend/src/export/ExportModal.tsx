@@ -118,6 +118,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                                     realEstateListing={searchContextState.realEstateListing}
                                     downloadButtonDisabled={searchContextState.mapClippings.length < 4}
                                     mapClippings={searchContextState.mapClippings}
+                                    federalElectionData={searchContextState.federalElectionData}
                                     onAfterPrint={onClose}
                                 />
                             ) : (
@@ -131,6 +132,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                                     realEstateListing={searchContextState.realEstateListing}
                                     downloadButtonDisabled={searchContextState.mapClippings.length < 4}
                                     mapClippings={searchContextState.mapClippings}
+                                    federalElectionData={searchContextState.federalElectionData}
                                     onAfterPrint={onClose}
                                 />
                             )}

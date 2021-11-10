@@ -5,6 +5,7 @@ import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
 import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam} from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
 import {ResultEntity} from "../../pages/SearchResultPage";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
 
 export interface CheatsheetDownloadProps {
     entities: ResultEntity[];
@@ -16,6 +17,7 @@ export interface CheatsheetDownloadProps {
     downloadButtonDisabled: boolean;
     mapClippings: MapClipping[];
     censusData: ApiGeojsonFeature[];
+    federalElectionData: FederalElectionDistrict;
     onAfterPrint: () => void;
 }
 
@@ -30,6 +32,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
          downloadButtonDisabled,
          mapClippings,
          censusData,
+         federalElectionData,
          onAfterPrint
      }) => {
         const componentRef = useRef();
@@ -72,6 +75,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
                     realEstateListing={realEstateListing}
                     mapClippings={mapClippings}
                     censusData={censusData}
+                    federalElectionData={federalElectionData}
                 />
             </div>
         );

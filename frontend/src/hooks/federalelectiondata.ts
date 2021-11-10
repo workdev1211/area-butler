@@ -38,6 +38,7 @@ export const useFederalElectionData = () => {
 
         const results : FederalElectionResult[] = electionResultData.properties.ERGEBNIS
         .filter(data => data.Gruppenart === ApiFeatureElectionFeatureResultGroup.PARTY && data.Stimme === 2 && !!data.Prozent && !!data.VorpProzent && data.Prozent > 5)
+        .sort((r1, r2) => r2.Prozent - r1.Prozent)
         .map(data => ({
            party: data.Gruppenname,
            percentage: Math.round(data.Prozent * 100) / 100,

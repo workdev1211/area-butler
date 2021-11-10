@@ -5,6 +5,7 @@ import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
 import {ApiGeojsonFeature, TransportationParam} from "../../../../shared/types/types";
 import Expose from "./Expose";
 import {ResultEntity} from "../../pages/SearchResultPage";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
 
 export interface ExposeDownloadProps {
     entities: ResultEntity[];
@@ -15,6 +16,7 @@ export interface ExposeDownloadProps {
     downloadButtonDisabled: boolean;
     mapClippings: MapClipping[];
     censusData: ApiGeojsonFeature[];
+    federalElectionData: FederalElectionDistrict;
     onAfterPrint: () => void;
 }
 
@@ -29,13 +31,14 @@ export class ComponentToPrint extends React.PureComponent {
 export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
     ({
          groupedEntries = [],
-         transportationParams= [],
+         transportationParams = [],
          listingAddress,
          realEstateListing,
-         entities= [],
+         entities = [],
          downloadButtonDisabled,
-         mapClippings= [],
-         censusData= [],
+         mapClippings = [],
+         censusData = [],
+         federalElectionData,
          onAfterPrint
      }) => {
         const componentRef = useRef<HTMLDivElement>(null);
@@ -73,6 +76,7 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
                     realEstateListing={realEstateListing}
                     mapClippings={mapClippings}
                     censusData={censusData}
+                    federalElectionData={federalElectionData}
                     activePrinting={activePrinting}
                 />
             </div>

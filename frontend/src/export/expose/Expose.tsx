@@ -11,10 +11,13 @@ import EntityGridSummary from "../EntityGridSummary";
 import MapClippings from "../MapClippings";
 import {CensusSummary} from "../CensusSummary";
 import {EntityTable} from "export/EntityTable";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
+import FederalElectionSummary from "export/FederalElectionSummary";
 
 export interface ExposeProps {
     entities: ResultEntity[];
     censusData: ApiGeojsonFeature[];
+    federalElectionData: FederalElectionDistrict;
     groupedEntries: EntityGroup[];
     transportationParams: TransportationParam[];
     listingAddress: string;
@@ -30,6 +33,7 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
     const activePrinting = props.activePrinting;
     const mapClippings = props.mapClippings;
     const censusData = props.censusData;
+    const federalElectionData = props.federalElectionData;
 
     return (
         <div className="hidden print:block" ref={ref}>
@@ -178,6 +182,9 @@ export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HT
                     })}
                     {!!censusData && censusData.length > 0 && <PdfPage>
                         <CensusSummary censusData={censusData}/>
+                    </PdfPage>}
+                    {!!federalElectionData && <PdfPage>
+                        <FederalElectionSummary federalElectionDistrict={federalElectionData}></FederalElectionSummary>
                     </PdfPage>}
                 </>
             )}

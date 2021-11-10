@@ -1,21 +1,31 @@
-import {MapClipping} from "context/SearchContext";
+import { MapClipping } from "context/SearchContext";
 import PersonaRanking from "export/PersonaRanking";
-import {EntityGroup, ResultEntity} from "pages/SearchResultPage";
+import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import React from "react";
-import {allFurnishing, allRealEstateCostTypes,} from "../../../../shared/constants/real-estate";
-import {ApiPersonaType} from "../../../../shared/types/persona";
-import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
-import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam,} from "../../../../shared/types/types";
-import {CensusSummary} from "../CensusSummary";
+import {
+  allFurnishing,
+  allRealEstateCostTypes,
+} from "../../../../shared/constants/real-estate";
+import { ApiPersonaType } from "../../../../shared/types/persona";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
+import {
+  ApiGeojsonFeature,
+  ApiSearchResponse,
+  TransportationParam,
+} from "../../../../shared/types/types";
+import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
-import {PdfPage} from "../PdfPage";
+import { PdfPage } from "../PdfPage";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
-import {EntityList} from "export/EntityList";
+import { EntityList } from "export/EntityList";
+import FederalElectionSummary from "export/FederalElectionSummary";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
   censusData: ApiGeojsonFeature[];
+  federalElectionData: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
   listingAddress: string;
@@ -31,6 +41,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const activePrinting = props.activePrinting;
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
+  const federalElectionData = props.federalElectionData;
 
   const mockData = {
     [ApiPersonaType.ACTIVE_SENIORS]: 5,
@@ -100,7 +111,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           {groupedEntries.map((group) => {
             return (
               <div className="text-xs w-72" key={"tab-content-" + group.title}>
-                <EntityList entityGroup={group} limit={3}/>
+                <EntityList entityGroup={group} limit={3} />
               </div>
             );
           })}
@@ -112,6 +123,13 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           </>
         )}
       </PdfPage>
+      {!!federalElectionData && (
+        <PdfPage>
+          <FederalElectionSummary
+            federalElectionDistrict={federalElectionData}
+          ></FederalElectionSummary>
+        </PdfPage>
+      )}
     </div>
   );
 });
