@@ -362,7 +362,7 @@ const Map = React.memo<MapProps>(({
                         });
                     },
                     maxClusterRadius: 140,
-                    disableClusteringAtZoom: 16,
+                    disableClusteringAtZoom: 15,
                     spiderfyOnMaxZoom: false,
                     animate: false,
                     zoomToBoundsOnClick: false
