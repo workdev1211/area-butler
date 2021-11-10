@@ -173,7 +173,7 @@ const Map = React.memo<MapProps>(({
 
         L.tileLayer(url, {
                 attribution,
-                id: "mapbox/streets-v11",
+                id: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
                 zoomOffset: -1,
                 accessToken: mapBoxAccessToken,
                 tileSize: 512,
