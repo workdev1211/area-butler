@@ -1,147 +1,124 @@
-import {SearchContext, SearchContextActions} from "context/SearchContext";
-import React, {useContext, useEffect, useState} from "react";
-import {ApiGeojsonFeature} from "../../../shared/types/types";
-import {EntityGroup, ResultEntity} from "../pages/SearchResultPage";
-import {birdsEye, city, nearby} from "./MapClippings";
-import ExposeDownload from "./expose/ExposeDownloadButton";
+import {
+  MapClipping,
+  SearchContext,
+  SearchContextActions,
+} from "context/SearchContext";
+import React, { useContext, useState } from "react";
+import { ApiGeojsonFeature } from "../../../shared/types/types";
+import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import EntitySelection from "./EntitySelection";
+import ExposeDownload from "./expose/ExposeDownloadButton";
+import MapClippingSelection, {
+  SelectedMapClipping,
+} from "./MapClippingSelection";
 
 export interface ExportModalProps {
-    entities: ResultEntity[];
-    groupedEntries: any;
-    censusData: ApiGeojsonFeature[];
-    exportType?: "CHEATSHEET" | "EXPOSE";
+  entities: ResultEntity[];
+  groupedEntries: any;
+  censusData: ApiGeojsonFeature[];
+  exportType?: "CHEATSHEET" | "EXPOSE";
 }
 
 const ExportModal: React.FunctionComponent<ExportModalProps> = ({
-                                                                    entities,
-                                                                    groupedEntries,
-                                                                    censusData,
-                                                                    exportType = "EXPOSE",
-                                                                }) => {
+  entities,
+  groupedEntries,
+  censusData,
+  exportType = "EXPOSE",
+}) => {
+  const groupCopy: EntityGroup[] = JSON.parse(
+    JSON.stringify(groupedEntries)
+  ).filter((group: EntityGroup) => group.title !== "Meine Objekte");
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
+  const [filteredEntites, setFilteredEntities] =
+    useState<EntityGroup[]>(groupCopy);
 
-    const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries)).filter((group: EntityGroup) => group.title !== 'Meine Objekte');               
-    const {searchContextState, searchContextDispatch} = useContext(SearchContext);
-    const [filteredEntites, setFilteredEntities] = useState<EntityGroup[]>(groupCopy);
+  const selectableClippings = (searchContextState.mapClippings || []).map(
+    (c: MapClipping) => ({ selected: true, ...c })
+  );
+  const [selectedMapClippings, setSelectedMapClippings] =
+    useState<SelectedMapClipping[]>(selectableClippings);
 
-    const buttonTitle =
-        exportType === "EXPOSE"
-            ? "Umgebungsanalyse exportieren"
-            : "Spickzettel exportieren";
-    const headerCompleted =
-        exportType === "EXPOSE"
-            ? "Ihre Umgebungsanalyse ist bereit!"
-            : "Ihr Export ist bereit!";
+  const buttonTitle =
+    exportType === "EXPOSE"
+      ? "Umgebungsanalyse exportieren"
+      : "Spickzettel exportieren";
 
-    const onClose = () => {
-        searchContextDispatch({
-            type: SearchContextActions.SET_PRINTING_ACTIVE,
-            payload: false,
-        });
-        searchContextDispatch({
-            type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
-            payload: false,
-        });
-        searchContextDispatch({
-            type: SearchContextActions.CLEAR_MAP_CLIPPINGS,
-        });
-    };
+  const onClose = () => {
+    searchContextDispatch({
+      type: SearchContextActions.SET_PRINTING_ACTIVE,
+      payload: false,
+    });
+    searchContextDispatch({
+      type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
+      payload: false,
+    });
+  };
 
-    useEffect(() => {
-        if (searchContextState.printingActive) {
-            const waitingTime = 2500;
-            const zoomLevels = [birdsEye, nearby, city];
-            zoomLevels.map((level, index) =>
-                setTimeout(() => searchContextDispatch({
-                    type: SearchContextActions.SET_MAP_ZOOM_LEVEL,
-                    payload: level
-                }), (index + 1) * waitingTime)
-            );
-        }
-    }, [searchContextState.printingActive, searchContextDispatch])
+  return (
+    <>
+      {(searchContextState.printingActive ||
+        searchContextState.printingCheatsheetActive) && (
+        <div
+          id="expose-modal"
+          className="modal modal-open z-2000"
+        >
+          <div className="modal-box">
+            <h1 className="text-xl text-bold">
+                {buttonTitle}
+            </h1>
 
-    useEffect(() => {
-        if (searchContextState.printingCheatsheetActive) {
-            const waitingTime = 2500;
-            const zoomLevels = [birdsEye, nearby, city];
-            zoomLevels.map((level, index) =>
-                setTimeout(() => searchContextDispatch({
-                    type: SearchContextActions.SET_MAP_ZOOM_LEVEL,
-                    payload: level
-                }), (index + 1) * waitingTime)
-            );
-        }
-    }, [searchContextState.printingCheatsheetActive, searchContextDispatch])
+            <div className="overflow-y-scroll flex flex-col h-96">
+              <MapClippingSelection
+                selectedMapClippings={selectedMapClippings}
+                setSelectedMapClippings={setSelectedMapClippings}
+              ></MapClippingSelection>
+              <EntitySelection
+                groupedEntries={filteredEntites}
+                setGroupedEntries={setFilteredEntities}
+                limit={exportType !== "CHEATSHEET" ? 10 : 3}
+              ></EntitySelection>
+            </div>
 
-    return (
-        <>
-            {(searchContextState.printingActive || searchContextState.printingCheatsheetActive) && (
-                <div
-                    id="expose-modal"
-                    className="modal modal-open backdrop-filter backdrop-contrast-0 z-2000"
-                >
-                    <div className="modal-box">
-                        <h1 className="text-xl text-bold">
-                            {searchContextState.mapClippings.length < 4 ? buttonTitle : headerCompleted}
-                        </h1>
-
-                        <EntitySelection groupedEntries={filteredEntites} setGroupedEntries={setFilteredEntities} limit={exportType !== "CHEATSHEET" ? 10 : 3}>
-                        </EntitySelection>
-
-                        {searchContextState.mapClippings.length < 4 && (
-                            <>
-                                <progress
-                                    className="my-10 progress"
-                                    value={searchContextState.mapClippings.length}
-                                    max={4}
-                                />
-                                <div>Stelle Daten für Export zusammen...</div>
-                            </>
-                        )}
-                        <div className="modal-action">
-                            <button
-                                type="button"
-                                onClick={onClose}
-                                className="btn btn-sm"
-                                disabled={searchContextState.mapClippings.length < 4}
-                            >
-                                Schließen
-                            </button>
-                            {exportType !== "CHEATSHEET" ? (
-                                <ExposeDownload
-                                    entities={entities}
-                                    groupedEntries={filteredEntites!}
-                                    censusData={censusData}
-                                    transportationParams={searchContextState.transportationParams}
-                                    listingAddress={searchContextState.placesLocation.label}
-                                    realEstateListing={searchContextState.realEstateListing}
-                                    downloadButtonDisabled={searchContextState.mapClippings.length < 4}
-                                    mapClippings={searchContextState.mapClippings}
-                                    federalElectionData={searchContextState.federalElectionData}
-                                    onAfterPrint={onClose}
-                                />
-                            ) : (
-                                <CheatsheetDownload
-                                    entities={entities}
-                                    groupedEntries={filteredEntites!}
-                                    censusData={censusData}
-                                    searchResponse={searchContextState.searchResponse!}
-                                    transportationParams={searchContextState.transportationParams}
-                                    listingAddress={searchContextState.placesLocation.label}
-                                    realEstateListing={searchContextState.realEstateListing}
-                                    downloadButtonDisabled={searchContextState.mapClippings.length < 4}
-                                    mapClippings={searchContextState.mapClippings}
-                                    federalElectionData={searchContextState.federalElectionData}
-                                    onAfterPrint={onClose}
-                                />
-                            )}
-                        </div>
-                    </div>
-                </div>
-            )}
-        </>
-    );
+            <div className="modal-action">
+              <button type="button" onClick={onClose} className="btn btn-sm">
+                Schließen
+              </button>
+              {exportType !== "CHEATSHEET" ? (
+                <ExposeDownload
+                  entities={entities}
+                  groupedEntries={filteredEntites!}
+                  censusData={censusData}
+                  transportationParams={searchContextState.transportationParams}
+                  listingAddress={searchContextState.placesLocation.label}
+                  realEstateListing={searchContextState.realEstateListing}
+                  downloadButtonDisabled={false}
+                  mapClippings={selectedMapClippings}
+                  federalElectionData={searchContextState.federalElectionData}
+                  onAfterPrint={onClose}
+                />
+              ) : (
+                <CheatsheetDownload
+                  entities={entities}
+                  groupedEntries={filteredEntites!}
+                  censusData={censusData}
+                  searchResponse={searchContextState.searchResponse!}
+                  transportationParams={searchContextState.transportationParams}
+                  listingAddress={searchContextState.placesLocation.label}
+                  realEstateListing={searchContextState.realEstateListing}
+                  downloadButtonDisabled={false}
+                  mapClippings={selectedMapClippings}
+                  federalElectionData={searchContextState.federalElectionData}
+                  onAfterPrint={onClose}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
 };
 
 export default ExportModal;

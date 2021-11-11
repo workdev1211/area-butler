@@ -153,6 +153,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                         payload: zensusData
                     });
                 }
+                searchContextDispatch({type: SearchContextActions.CLEAR_MAP_CLIPPINGS});
                 history.push('/search-result');
             } catch (error) {
                 toastError("Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen.")

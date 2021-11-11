@@ -1,25 +1,25 @@
-import { MapClipping } from "context/SearchContext";
+import { EntityList } from "export/EntityList";
+import FederalElectionSummary from "export/FederalElectionSummary";
+import { SelectedMapClipping } from "export/MapClippingSelection";
 import PersonaRanking from "export/PersonaRanking";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import React from "react";
 import {
   allFurnishing,
-  allRealEstateCostTypes,
+  allRealEstateCostTypes
 } from "../../../../shared/constants/real-estate";
 import { ApiPersonaType } from "../../../../shared/types/persona";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
-  TransportationParam,
+  TransportationParam
 } from "../../../../shared/types/types";
+import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
-import AreaButlerLogo from "../../assets/img/logo.jpg";
-import { EntityList } from "export/EntityList";
-import FederalElectionSummary from "export/FederalElectionSummary";
-import { FederalElectionDistrict } from "hooks/federalelectiondata";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -31,7 +31,7 @@ export interface CheatsheetProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
-  mapClippings: MapClipping[];
+  mapClippings: SelectedMapClipping[];
 }
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
@@ -119,7 +119,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
         {activePrinting && (
           <>
             <h1 className="my-5 text-3xl font-bold">Kartenausschnitte</h1>
-            <MapClippings mapClippings={mapClippings} showTitles={false} />
+            <MapClippings mapClippings={mapClippings} />
           </>
         )}
       </PdfPage>

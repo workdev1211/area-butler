@@ -6,6 +6,7 @@ import {ApiGeojsonFeature, TransportationParam} from "../../../../shared/types/t
 import Expose from "./Expose";
 import {ResultEntity} from "../../pages/SearchResultPage";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
+import { SelectedMapClipping } from "export/MapClippingSelection";
 
 export interface ExposeDownloadProps {
     entities: ResultEntity[];
@@ -14,7 +15,7 @@ export interface ExposeDownloadProps {
     listingAddress: string;
     realEstateListing: ApiRealEstateListing;
     downloadButtonDisabled: boolean;
-    mapClippings: MapClipping[];
+    mapClippings: SelectedMapClipping[];
     censusData: ApiGeojsonFeature[];
     federalElectionData: FederalElectionDistrict;
     onAfterPrint: () => void;

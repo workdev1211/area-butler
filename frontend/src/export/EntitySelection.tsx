@@ -44,7 +44,7 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
   };
 
   return (
-    <div className="overflow-y-scroll h-96">
+    <div>
       <h1 className="my-5 font-bold">
         Ausgewählte Lokalitäten (
         {groupedEntries.filter((group) => group.active).length}/
@@ -54,7 +54,7 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
       {groupedEntries.map((group) => (
         <div
           className={
-            "collapse w-96 border collapse-arrow" +
+            "collapse border collapse-arrow" +
             (localityOpen.includes(group.title)
               ? " collapse-open"
               : " collapse-closed")

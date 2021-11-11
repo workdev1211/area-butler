@@ -27,7 +27,8 @@ import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
     preferredLocationsIcon,
-    realEstateListingsIcon
+    realEstateListingsIcon,
+    toastSuccess
 } from "../shared/shared.functions";
 import "./Map.css";
 
@@ -404,30 +405,31 @@ const Map = React.memo<MapProps>(({
         }
     }, [entitiesStringified, groupedEntitiesStringified, searchContextDispatch]);
 
-    // print actions
-    useEffect(() => {
-        if (printingActive || printingCheatsheetActive) {
-            setTimeout(() => {
-                html2canvas(document.querySelector("#mymap")!, {
-                    allowTaint: true,
-                    useCORS: true,
-                }).then((canvas) => {
-                    const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-                    searchContextDispatch({
-                        type: SearchContextActions.ADD_MAP_CLIPPING,
-                        payload: {
-                            zoomLevel: mapZoomLevel || zoom,
-                            mapClippingDataUrl,
-                        },
-                    });
-                });
-            }, 2000);
-        }
-
-    }, [printingActive, printingCheatsheetActive, mapZoomLevel, searchContextDispatch]);
+    const takePicture = () => {
+        html2canvas(document.querySelector("#mymap")!, {
+            allowTaint: true,
+            useCORS: true,
+        }).then((canvas) => {
+            const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+            searchContextDispatch({
+                type: SearchContextActions.ADD_MAP_CLIPPING,
+                payload: {
+                    zoomLevel: mapZoomLevel || zoom,
+                    mapClippingDataUrl,
+                },
+            });
+            toastSuccess('Kartenausschnitt erfolgreich gespeichert!');
+        });
+    }
 
     return (
         <div className='leaflet-container w-full' id={leafletMapId} data-tour="map">
+            <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
+                <div className="leaflet-control-zoom leaflet-bar leaflet-control">
+                    <a data-tour="take-map-picture" className="leaflet-control-zoom-in cursor-pointer" role="button" onClick={() => takePicture()}>📷</a>
+                </div>
+                
+            </div>
         </div>
     )
 }, areMapPropsEqual);

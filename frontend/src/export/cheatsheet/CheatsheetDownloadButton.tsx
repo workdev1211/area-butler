@@ -6,6 +6,7 @@ import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam} from "../../.
 import Cheatsheet from "./Cheatsheet";
 import {ResultEntity} from "../../pages/SearchResultPage";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
+import { SelectedMapClipping } from "export/MapClippingSelection";
 
 export interface CheatsheetDownloadProps {
     entities: ResultEntity[];
@@ -15,7 +16,7 @@ export interface CheatsheetDownloadProps {
     listingAddress: string;
     realEstateListing: ApiRealEstateListing;
     downloadButtonDisabled: boolean;
-    mapClippings: MapClipping[];
+    mapClippings: SelectedMapClipping[];
     censusData: ApiGeojsonFeature[];
     federalElectionData: FederalElectionDistrict;
     onAfterPrint: () => void;

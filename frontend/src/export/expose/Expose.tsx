@@ -13,6 +13,7 @@ import {CensusSummary} from "../CensusSummary";
 import {EntityTable} from "export/EntityTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionSummary from "export/FederalElectionSummary";
+import { SelectedMapClipping } from "export/MapClippingSelection";
 
 export interface ExposeProps {
     entities: ResultEntity[];
@@ -23,7 +24,7 @@ export interface ExposeProps {
     listingAddress: string;
     realEstateListing: ApiRealEstateListing;
     activePrinting: boolean;
-    mapClippings: MapClipping[];
+    mapClippings: SelectedMapClipping[];
 }
 
 export const Expose = React.forwardRef((props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
