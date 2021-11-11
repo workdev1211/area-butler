@@ -157,6 +157,8 @@ const SearchResultPage: React.FunctionComponent = () => {
     const censusDataAvailable = !!searchContextState.censusData?.length;
     const [showFederalElection, setShowFederalElection] = useState(false);
     const federalElectionDataAvailable = !!searchContextState.federalElectionData;
+    const [showParticlePollution, setShowParticlePollution] = useState(false);
+    const particlePollutionDataAvailable = !!searchContextState.particlePollutionData?.length;
 
     const searchResponseString = JSON.stringify(searchContextState.searchResponse);
     useEffect(() => {
@@ -309,6 +311,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                             printingCheatsheetActive={searchContextState.printingCheatsheetActive}
                             federalElectionData={showFederalElection && federalElectionDataAvailable && searchContextState.federalElectionData}
                             censusData={showCensus && censusDataAvailable && searchContextState.censusData}
+                            particlePollutionData={showParticlePollution && particlePollutionDataAvailable && searchContextState.particlePollutionData}
                             routes={routes}
                         />
                     </div>
@@ -318,6 +321,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                              toggleCensus={(active) => setShowCensus(active)}
                              federalElection={showFederalElection}
                              toggleFederalElection={(active) => setShowFederalElection(active)}
+                             particlePollution={showParticlePollution}
+                             toggleParticlePollution={(active) => setShowParticlePollution(active)}
                              groupedEntries={groupedEntries}
                              toggleEntryGroup={toggleEntityGroup}
                              highlightZoomEntity={highlightZoomEntity}

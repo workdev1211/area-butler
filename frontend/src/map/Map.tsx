@@ -36,6 +36,7 @@ export interface MapProps {
     searchResponse: ApiSearchResponse;
     censusData: ApiGeojsonFeature[];
     federalElectionData: FederalElectionDistrict;
+    particlePollutionData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
     groupedEntities: EntityGroup[];
     mapCenter?: ApiCoordinates;
@@ -91,6 +92,7 @@ let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
 let censusGroup = L.layerGroup();
 let federalElectionGroup = L.layerGroup();
+let particlePollutionGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
@@ -105,9 +107,10 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
     const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);    
     const federalElectionDataEqual = JSON.stringify(prevProps.federalElectionData) === JSON.stringify(nextProps.federalElectionData);    
+    const particlePollutionDataEqual = JSON.stringify(prevProps.particlePollutionData) === JSON.stringify(nextProps.particlePollutionData);    
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
     const routesEqual = prevProps.routes === nextProps.routes;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && highlightIdEqual && routesEqual;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual;
 }
 
 const WALK_COLOR = '#c91444';
@@ -125,12 +128,11 @@ const Map = React.memo<MapProps>(({
                                       groupedEntities,
                                       means,
                                       mapCenter,
-                                      printingActive,
-                                      printingCheatsheetActive,
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
                                       censusData,
                                       federalElectionData,
+                                      particlePollutionData,
                                       highlightId,
                                       routes
                                   }) => {
@@ -328,8 +330,21 @@ const Map = React.memo<MapProps>(({
 
             L.geoJSON(federalElectionData).addTo(federalElectionGroup!).bindTooltip(table);
         }
-    }, [federalElectionData]);
+    }, [federalElectionData]);    
+    
+    
+    // draw particle pollution
+    useEffect(() => {
+        if (currentMap && particlePollutionGroup) {
+            currentMap.removeLayer(particlePollutionGroup);
+        }
+        if (currentMap && !!particlePollutionData && particlePollutionData.length > 0) {
+            particlePollutionGroup = L.layerGroup();
+            currentMap.addLayer(particlePollutionGroup);
 
+            L.geoJSON(particlePollutionData[0]).addTo(particlePollutionGroup!);
+        }
+    }, [particlePollutionData]);
 
     const entitiesStringified = JSON.stringify(entities);
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);

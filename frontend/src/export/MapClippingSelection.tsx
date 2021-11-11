@@ -36,7 +36,7 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
           onClick={() => setCollapseOpen(!collapseOpen)}
         >
           {selectedMapClippings.length > 0 ? <span>Ausgewählte Bilder {selectedMapClippings.filter(c => c.selected).length}/{selectedMapClippings.length}</span> :
-          <span>Keine Bilder auswählbar</span>
+          <span>Keine Kartenausschnitte gespeichert</span>
           }
           
         </div>

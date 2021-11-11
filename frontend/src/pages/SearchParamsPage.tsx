@@ -4,6 +4,7 @@ import {RealEstateActions, RealEstateContext} from "context/RealEstateContext";
 import {UserContext} from "context/UserContext";
 import {Form, Formik} from "formik";
 import { useFederalElectionData } from "hooks/federalelectiondata";
+import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 import React, {useContext, useEffect} from "react";
 import {useHistory} from "react-router-dom";
@@ -35,6 +36,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     const {get, post} = useHttp();
     const {fetchNearData} = useCensusData();
     const {fetchElectionData} = useFederalElectionData();
+    const {fetchParticlePollutionData} = useParticlePollutionData();
     const {userState} = useContext(UserContext);
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {potentialCustomerDispatch} = useContext(PotentialCustomerContext);
@@ -144,6 +146,13 @@ const SearchParamsPage: React.FunctionComponent = () => {
                     searchContextDispatch({
                         type: SearchContextActions.SET_FEDERAL_ELECTION_DATA,
                         payload: federalElectionData
+                    });
+                }
+                if (user.subscriptionPlan?.config.appFeatures.dataSources.includes(ApiDataSource.PARTICLE_POLLUTION)) {
+                    const particlePollutionData = await fetchParticlePollutionData(searchContextState.location);
+                    searchContextDispatch({
+                        type: SearchContextActions.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+                        payload: particlePollutionData
                     });
                 }
                 if (user.subscriptionPlan?.config.appFeatures.dataSources.includes(ApiDataSource.CENSUS)) {

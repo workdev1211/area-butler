@@ -26,6 +26,8 @@ export interface MapMenuProps {
   toggleCensus: (active: boolean) => void;
   federalElection: boolean;
   toggleFederalElection: (active: boolean) => void;
+  particlePollution: boolean;
+  toggleParticlePollution: (active: boolean) => void;
   groupedEntries: EntityGroup[];
   toggleEntryGroup: (title: string) => void;
   highlightZoomEntity: (item: ResultEntity) => void;
@@ -60,10 +62,20 @@ const censusNotInSubscriptionPlanMessage = (
     </p>
   </div>
 );
+
 const federalElectionNotInSubscriptionPlanMessage = (
   <div>
     <p className="my-5">
       Die Ergebnisse der Bundestagswahl sind in Ihrem aktuellen Abonnement nicht
+      verfügbar.
+    </p>
+  </div>
+);
+
+const particlePollutionNotInSubscriptionPlanMessage = (
+  <div>
+    <p className="my-5">
+      Die Daten zur Feinstaubbelastung sind in Ihrem aktuellen Abonnement nicht
       verfügbar.
     </p>
   </div>
@@ -74,6 +86,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   toggleCensus,
   federalElection,
   toggleFederalElection,
+  particlePollution,
+  toggleParticlePollution,
   groupedEntries,
   toggleEntryGroup,
   highlightZoomEntity,
@@ -111,6 +125,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const federalElectionInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
+    );
+
+  const particlePollutionInSubscriptionPlan =
+    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+      ApiDataSource.PARTICLE_POLLUTION
     );
 
   useEffect(() => {
@@ -163,7 +182,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 />
               </label>
             </li>
-            <li data-tour="census-data-toggle">
+            <li data-tour="federal-election-data-toggle">
               <span>Bundestagswahl 2021</span>
               <label className="cursor-pointer label justify-start pl-0">
                 <input
@@ -175,6 +194,23 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                       ? toggleFederalElection(event.target.checked)
                       : openUpgradeSubcriptionModal(
                           federalElectionNotInSubscriptionPlanMessage
+                        )
+                  }
+                />
+              </label>
+            </li>
+            <li data-tour="partical-pollution-data-toggle">
+              <span>Feinstaubbelastung</span>
+              <label className="cursor-pointer label justify-start pl-0">
+                <input
+                  type="checkbox"
+                  checked={particlePollution}
+                  className="checkbox checkbox-primary checkbox-sm"
+                  onChange={(event) =>
+                    particlePollutionInSubscriptionPlan
+                      ? toggleParticlePollution(event.target.checked)
+                      : openUpgradeSubcriptionModal(
+                          particlePollutionNotInSubscriptionPlanMessage
                         )
                   }
                 />
