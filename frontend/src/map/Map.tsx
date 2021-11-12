@@ -432,6 +432,13 @@ const Map = React.memo<MapProps>(({
     }, [entitiesStringified, groupedEntitiesStringified, searchContextDispatch]);
 
     const takePicture = () => {
+
+        const bottomElements = document.getElementsByClassName("leaflet-bottom");
+        for (let i = 0; i < bottomElements.length; i++) {
+            const className = bottomElements[i].className
+            bottomElements[i].className = className + ' hidden';
+        }
+
         html2canvas(document.querySelector("#mymap")!, {
             allowTaint: true,
             useCORS: true,
@@ -445,6 +452,10 @@ const Map = React.memo<MapProps>(({
                 },
             });
             toastSuccess('Kartenausschnitt erfolgreich gespeichert!');
+            for (let i = 0; i < bottomElements.length; i++) {
+                const className = bottomElements[i].className.replace('hidden', '');
+                bottomElements[i].className = className;
+            }
         });
     }
 
