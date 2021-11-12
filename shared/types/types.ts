@@ -1,5 +1,11 @@
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 
+export interface RollbarConfig {
+  accessToken: string;
+  environment: string;
+  code_version: string;
+}
+
 export interface ApiConfig {
   auth: {
     clientId: string;
@@ -9,6 +15,7 @@ export interface ApiConfig {
   mapBoxAccessToken: string;
   stripeEnv: 'dev' | 'prod';
   inviteCodeNeeded: boolean;
+  rollbarConfig: RollbarConfig;
 }
 export interface ApiUser {
   fullname: string;
