@@ -4,7 +4,7 @@ services:
   area-butler-db:
     image: mongo:5.0.2
     container_name: area-butler-db
-    restart: always
+    restart: unless-stopped
     command: mongod --logpath /dev/null --oplogSize 128 --quiet
     networks:
       - main
