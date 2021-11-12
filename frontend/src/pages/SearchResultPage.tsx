@@ -23,7 +23,7 @@ import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import BackButton from "../layout/BackButton";
 import {RealEstateContext} from "context/RealEstateContext";
-import {ApiRoute} from "../../../shared/types/routing";
+import {ApiRoute, ApiTransitRoute} from "../../../shared/types/routing";
 import {useRouting} from "../hooks/routing";
 import {v4} from "uuid";
 import { UserActions, UserContext } from "context/UserContext";
@@ -56,6 +56,12 @@ export interface EntityRoute {
     routes: ApiRoute[]
 }
 
+export interface EntityTransitRoute {
+    title: string;
+    coordinates: ApiCoordinates,
+    show: boolean,
+    route: ApiTransitRoute
+}
 
 const buildEntityDataFromPreferredLocations = (
     centerCoordinates: ApiCoordinates,
@@ -132,7 +138,7 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 }
 
 const SearchResultPage: React.FunctionComponent = () => {
-    const {fetchRoutes} = useRouting();
+    const {fetchRoutes,fetchTransitRoutes } = useRouting();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {realEstateState} = useContext(RealEstateContext);
     const {userState, userDispatch} = useContext(UserContext);
@@ -154,6 +160,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
     const [groupedEntries, setGroupedEntries] = useState<EntityGroup[]>([]);
     const [routes, setRoutes] = useState<EntityRoute[]>([])
+    const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([])
     const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
     const [showFederalElection, setShowFederalElection] = useState(false);
@@ -243,6 +250,31 @@ const SearchResultPage: React.FunctionComponent = () => {
         }
     }
 
+    const toggleTransitRoutesToEntity = async (origin: ApiCoordinates, item: ResultEntity) => {
+        const existing = transitRoutes.find((r) => r.coordinates.lat === item.coordinates.lat && r.coordinates.lng === item.coordinates.lng);
+        if (existing) {
+            setTransitRoutes((prevState) => [...prevState.filter(r => r.coordinates.lat !== item.coordinates.lat && r.coordinates.lng !== item.coordinates.lng), {
+                    ...existing,
+                    show: !existing.show
+                }]
+            )
+        } else {
+            const routesResult = await fetchTransitRoutes({
+                origin: origin,
+                destinations: [{
+                    title: item.name || '' + item.id,
+                    coordinates: item.coordinates
+                }]
+            })
+            setTransitRoutes((prev) => ([...prev, {
+                route: routesResult[0].route,
+                title:  routesResult[0].title,
+                show: true,
+                coordinates: item.coordinates
+            }]));
+        }
+    }
+
     const ActionsTop: React.FunctionComponent = () => {
         return (<>
             <li>
@@ -315,6 +347,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                             censusData={showCensus && censusDataAvailable && searchContextState.censusData}
                             particlePollutionData={showParticlePollution && particlePollutionDataAvailable && searchContextState.particlePollutionData}
                             routes={routes}
+                            transitRoutes={transitRoutes}
                         />
                     </div>
                     <MapMenuMobileBtn/>
@@ -330,6 +363,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                              highlightZoomEntity={highlightZoomEntity}
                              toggleRoute={(item) => toggleRoutesToEntity(searchContextState.location, item)}
                              routes={routes}
+                             toggleTransitRoute={( item ) => toggleTransitRoutesToEntity(searchContextState.location, item)}
+                             transitRoutes={transitRoutes}
                              searchAddress={searchContextState.placesLocation.label}
                              resetPosition={() => searchContextDispatch({
                                  type: SearchContextActions.SET_MAP_CENTER,

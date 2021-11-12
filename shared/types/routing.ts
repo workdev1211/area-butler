@@ -10,7 +10,18 @@ export interface ApiRoute {
     destination: ApiCoordinates,
     origin: ApiCoordinates,
     meansOfTransportation: MeansOfTransportation
+}
 
+export interface ApiTransitRoute {
+    sections: {
+        duration: number;
+        length: number;
+        type: string;
+        geometry: ApiGeometry;
+        transportMode: string;
+    }[]
+    destination: ApiCoordinates,
+    origin: ApiCoordinates,
 }
 
 export interface ApiRouteQuery {
@@ -22,8 +33,22 @@ export interface ApiRouteQuery {
     meansOfTransportation: MeansOfTransportation[]
 }
 
+export interface ApiTransitRouteQuery {
+    origin: ApiCoordinates,
+    destinations: {
+        title: string
+        coordinates: ApiCoordinates
+    }[]
+}
+
 export interface ApiRouteQueryResultItem {
     coordinates: ApiCoordinates,
     title: string,
     routes: ApiRoute[]
+}
+
+export interface ApiTransitRouteQueryResultItem {
+    coordinates: ApiCoordinates,
+    title: string,
+    route: ApiTransitRoute
 }

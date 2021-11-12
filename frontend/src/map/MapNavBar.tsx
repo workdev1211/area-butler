@@ -57,18 +57,6 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
                     }
                 )}
             </div>
-            <div className="checkboxes">
-                <label>
-                    <input type="checkbox" checked={showMyObjects}
-                           onChange={(event) => onToggleShowMyObjects(event.target.checked)}/>
-                    <span>Meine Objekte</span>
-                </label>
-                <label>
-                    <input type="checkbox" checked={showPreferredLocations}
-                           onChange={(event) => onToggleShowPreferredLocations(event.target.checked)}/>
-                    <span>Wichtige Adressen</span>
-                </label>
-            </div>
         </div>
     </div>
 }

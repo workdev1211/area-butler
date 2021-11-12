@@ -105,11 +105,18 @@ class ConfigService {
   public IsInviteCodeNeeded(): boolean {
     return this.getValue('INVITE_CODE_NEEDED') === 'true' ? true : false;
   }
+
+  public getHereTransitRouterApiUrl() {
+    return this.getValue('HERE_TRANSIT_ROUTER_API_URL');
+  }
 }
 
 const configService = new ConfigService(process.env).ensureValues([
   'MAPBOX_ACCESS_TOKEN',
-  'OVERPASS_URL'
+  'OVERPASS_URL',
+  'HERE_ROUTER_API_URL',
+  'HERE_API_KEY',
+  'HERE_TRANSIT_ROUTER_API_URL',
 ]);
 
 export { configService };

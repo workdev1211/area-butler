@@ -28,4 +28,21 @@ export class RoutingController {
             return []
         }
     }
+
+    @Post('search-transit')
+    async searchTransitRoutes(
+        @Body() query: ApiRouteQuery
+    ) {
+        if (query.destinations.length) {
+            return await Promise.all(query.destinations.map(async (destination) => {
+                return {
+                    coordinates: destination.coordinates,
+                    title: destination.title,
+                    route:  await this.routingService.getTransitRoute(query.origin, destination.coordinates)
+                }
+            }))
+        } else {
+            return []
+        }
+    }
 }

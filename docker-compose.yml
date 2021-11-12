@@ -38,6 +38,7 @@ services:
       - BASE_APP_URL
       - HERE_API_KEY
       - HERE_ROUTER_API_URL
+      - HERE_TRANSIT_ROUTER_API_URL
       - STRIPE_ENV
       - STRIPE_KEY
       - STRIPE_WEBHOOK_SECRET

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import "./MapMenu.css";
 import {
   EntityGroup,
-  EntityRoute,
+  EntityRoute, EntityTransitRoute,
   ResultEntity,
 } from "../pages/SearchResultPage";
 import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
@@ -34,6 +34,8 @@ export interface MapMenuProps {
   mobileMenuOpen: boolean;
   toggleRoute: (item: ResultEntity) => void;
   routes: EntityRoute[];
+  toggleTransitRoute: (item: ResultEntity) => void;
+  transitRoutes: EntityTransitRoute[];
   searchAddress: string;
   resetPosition: () => void;
   user: ApiUser;
@@ -93,6 +95,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   highlightZoomEntity,
   toggleRoute,
   routes,
+  toggleTransitRoute,
+  transitRoutes,
   mobileMenuOpen,
   searchAddress,
   resetPosition,
@@ -334,6 +338,13 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                       item.coordinates.lng &&
                                     r.show
                                 )}
+                                onToggleTransitRoute={(item) => toggleTransitRoute(item)}
+                                transitRoute={transitRoutes?.find( (tr) =>
+                                    tr.coordinates.lat ===
+                                    item.coordinates.lat &&
+                                    tr.coordinates.lng ===
+                                    item.coordinates.lng &&
+                                    tr.show)}
                               />
                             ))}
                         {localityOpen.includes(ge.title) &&

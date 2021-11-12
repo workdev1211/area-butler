@@ -9,7 +9,7 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import React, {useContext, useEffect} from "react";
-import {ApiRoute} from "../../../shared/types/routing";
+import {ApiRoute, ApiTransitRoute} from "../../../shared/types/routing";
 import {
     ApiCoordinates,
     ApiGeojsonFeature,
@@ -21,8 +21,10 @@ import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
+import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import {ConfigContext} from "../context/ConfigContext";
-import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
+import {EntityGroup, EntityRoute, EntityTransitRoute, ResultEntity} from "../pages/SearchResultPage";
 import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
@@ -50,7 +52,8 @@ export interface MapProps {
         byCar: boolean;
     },
     highlightId?: string;
-    routes: EntityRoute[]
+    routes: EntityRoute[];
+    transitRoutes: EntityTransitRoute[];
 }
 
 export class IdMarker extends L.Marker {
@@ -110,7 +113,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const particlePollutionDataEqual = JSON.stringify(prevProps.particlePollutionData) === JSON.stringify(nextProps.particlePollutionData);    
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
     const routesEqual = prevProps.routes === nextProps.routes;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual;
+    const transitRoutesEqual = prevProps.transitRoutes === nextProps.transitRoutes;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual && transitRoutesEqual;
 }
 
 const WALK_COLOR = '#c91444';
@@ -134,7 +138,9 @@ const Map = React.memo<MapProps>(({
                                       federalElectionData,
                                       particlePollutionData,
                                       highlightId,
-                                      routes
+                                      routes,
+                                      transitRoutes
+
                                   }) => {
     const {lat, lng} = searchResponse.centerOfInterest.coordinates;
 
@@ -277,7 +283,7 @@ const Map = React.memo<MapProps>(({
         const isActiveMeans = (r: ApiRoute) => (r.meansOfTransportation === MeansOfTransportation.WALK && means.byFoot) ||
             (r.meansOfTransportation=== MeansOfTransportation.CAR && means.byCar) ||
             (r.meansOfTransportation === MeansOfTransportation.BICYCLE && means.byBike);
-        const getIcon = (m: MeansOfTransportation) => {
+        const getIcon = (m: MeansOfTransportation | string) => {
             switch(m) {
                 case MeansOfTransportation.CAR:
                     return carIcon;
@@ -285,9 +291,26 @@ const Map = React.memo<MapProps>(({
                     return bikeIcon;
                 case MeansOfTransportation.WALK:
                     return walkIcon;
+                case 'pedestrian':
+                    return walkIcon;
+                case 'bus':
+                    return busIcon;
+                default:
+                    return trainIcon;
         }};
 
-        const isVisibleDestination = (r: ApiRoute) =>
+        const getDashArray = (transportMode: string) => {
+            switch(transportMode) {
+                case 'pedestrian':
+                    return "4";
+                case 'bus':
+                    return "2";
+                default:
+                    return "0";
+            }
+        }
+
+        const isVisibleDestination = (r: ApiRoute | ApiTransitRoute) =>
             !!activeEntities.find(value => value.coordinates.lat === r.destination.lat
                && value.coordinates.lng === r.destination.lng);
 
@@ -309,8 +332,20 @@ const Map = React.memo<MapProps>(({
                     })
                 })
             })
+            transitRoutes.filter(e => e.show).forEach(entityRoute => {
+                const { route } = entityRoute;
+               if (isVisibleDestination(route)) {
+                   route.sections.forEach((s) => {
+                       L.geoJSON(s.geometry, {style: function (feature) {
+                               return {color: '#fcba03', dashArray: getDashArray(s.transportMode) };
+                           }})
+                           .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon" /><span>${s.duration} min.</span></span></div>`)
+                           .addTo(routesGroup)
+                   })
+               }
+            })
         }
-    }, [routes, means, groupedEntities]);
+    }, [routes,transitRoutes, means, groupedEntities]);
 
     // draw census
     useEffect(() => {

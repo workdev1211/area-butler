@@ -1,7 +1,7 @@
 import {HttpService, Injectable, Logger} from '@nestjs/common';
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "@area-butler-types/types";
 import {configService} from "../config/config.service";
-import {ApiRoute} from "@area-butler-types/routing";
+import {ApiRoute, ApiTransitRoute} from "@area-butler-types/routing";
 import * as poly from "@liberty-rider/flexpolyline";
 
 // We only map a subset. Additional Info:
@@ -14,6 +14,15 @@ interface HereApiRoutingRequest {
     destination: string;  //{lat},{lng}
     return: 'summary,polyline';
 }
+
+
+interface HereApiTransitRoutingRequest {
+    apiKey: string;
+    origin: string; //{lat},{lng}
+    destination: string;  //{lat},{lng}
+    return: 'travelSummary,polyline';
+}
+
 
 type HereApiRoutingTransportType = 'car' | 'bicycle' | 'pedestrian';
 
@@ -46,6 +55,29 @@ interface HereApiRoutingResponse {
     routes: HereApiRoute[];
 }
 
+interface HereApiTransitRouteSection {
+    id: string;
+    type: string;
+    travelSummary: {
+        duration: number; //in seconds
+        length: number; //in meters
+        baseDuration: number;
+    };
+    polyline: string;
+    transport: {
+        mode: string
+    }
+}
+
+interface HereApiTransitRoute {
+    id: string;
+    sections: HereApiTransitRouteSection[];
+}
+
+interface HereApiTransitRoutingResponse {
+    routes: HereApiTransitRoute[];
+}
+
 const switchCoords = (array) => {
     return array.reverse();
 }
@@ -75,6 +107,39 @@ export class RoutingService {
                     sections: data.routes[0].sections.map(s => ({
                         duration: Math.round(s.summary.duration / 60),
                         length: s.summary.length,
+                        geometry: {
+                            type: 'LineString',
+                            coordinates: poly.decode(s.polyline).polyline.map(switchCoords)
+                        } as ApiGeometry,
+                        transportMode: s.transport.mode
+                    }))
+                }
+            }
+            // we should already have returned
+            this.logger.error(`Invalid route response: ${JSON.stringify(data)}`)
+        } catch (e) {
+            this.logger.error("Could not fetch route", e)
+        }
+    }
+
+    async getTransitRoute(origin: ApiCoordinates, destination: ApiCoordinates): Promise<ApiTransitRoute | undefined> {
+        try {
+            const request: HereApiTransitRoutingRequest = {
+                apiKey: configService.getHereApiKey(),
+                origin: `${origin.lat},${origin.lng}`,
+                destination: `${destination.lat},${destination.lng}`,
+                return: 'travelSummary,polyline'
+            };
+
+            const {data} = await this.httpService.get<HereApiTransitRoutingResponse>(configService.getHereTransitRouterApiUrl(), {params: request}).toPromise();
+            if (data.routes.length && data.routes.length === 1 && data.routes[0].sections && data.routes[0].sections.length) {
+                return {
+                    destination,
+                    origin,
+                    sections: data.routes[0].sections.map(s => ({
+                        type: s.type,
+                        duration: Math.round(s.travelSummary.duration / 60),
+                        length: s.travelSummary.length,
                         geometry: {
                             type: 'LineString',
                             coordinates: poly.decode(s.polyline).polyline.map(switchCoords)

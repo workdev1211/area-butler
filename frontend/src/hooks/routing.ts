@@ -1,5 +1,10 @@
 import {useHttp} from "./http";
-import {ApiRouteQuery, ApiRouteQueryResultItem} from "../../../shared/types/routing";
+import {
+    ApiRouteQuery,
+    ApiRouteQueryResultItem,
+    ApiTransitRouteQuery,
+    ApiTransitRouteQueryResultItem
+} from "../../../shared/types/routing";
 
 export const useRouting = () => {
     const { post } = useHttp();
@@ -7,5 +12,9 @@ export const useRouting = () => {
     const fetchRoutes = async (query: ApiRouteQuery) => {
         return (await post("/api/routes/search", query)).data as ApiRouteQueryResultItem[]
     }
-    return {fetchRoutes}
+
+    const fetchTransitRoutes = async (query: ApiTransitRouteQuery) => {
+        return (await post("/api/routes/search-transit", query)).data as ApiTransitRouteQueryResultItem[]
+    }
+    return {fetchRoutes, fetchTransitRoutes}
 }
