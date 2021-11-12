@@ -1,6 +1,6 @@
 import center from "@turf/center";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
-import { FederalElectionDistrict, FederalElectionResult } from "hooks/federalelectiondata";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
+import {FederalElectionDistrict, FederalElectionResult} from "hooks/federalelectiondata";
 import html2canvas from 'html2canvas';
 import * as L from "leaflet";
 import "leaflet.markercluster";
@@ -8,8 +8,8 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
-import React, { useContext, useEffect } from "react";
-import { ApiRoute } from "../../../shared/types/routing";
+import React, {useContext, useEffect} from "react";
+import {ApiRoute} from "../../../shared/types/routing";
 import {
     ApiCoordinates,
     ApiGeojsonFeature,
@@ -21,8 +21,8 @@ import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import { ConfigContext } from "../context/ConfigContext";
-import { EntityGroup, EntityRoute, ResultEntity } from "../pages/SearchResultPage";
+import {ConfigContext} from "../context/ConfigContext";
+import {EntityGroup, EntityRoute, ResultEntity} from "../pages/SearchResultPage";
 import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
@@ -277,6 +277,15 @@ const Map = React.memo<MapProps>(({
         const isActiveMeans = (r: ApiRoute) => (r.meansOfTransportation === MeansOfTransportation.WALK && means.byFoot) ||
             (r.meansOfTransportation=== MeansOfTransportation.CAR && means.byCar) ||
             (r.meansOfTransportation === MeansOfTransportation.BICYCLE && means.byBike);
+        const getIcon = (m: MeansOfTransportation) => {
+            switch(m) {
+                case MeansOfTransportation.CAR:
+                    return carIcon;
+                case MeansOfTransportation.BICYCLE:
+                    return bikeIcon;
+                case MeansOfTransportation.WALK:
+                    return walkIcon;
+        }};
 
         const isVisibleDestination = (r: ApiRoute) =>
             !!activeEntities.find(value => value.coordinates.lat === r.destination.lat
@@ -294,7 +303,9 @@ const Map = React.memo<MapProps>(({
                     r.sections.forEach((s) => {
                         L.geoJSON(s.geometry, {style: function (feature) {
                                 return {color: MEAN_COLORS[r.meansOfTransportation]};
-                            }}).addTo(routesGroup)
+                            }})
+                            .bindPopup(`<h4 class="font-semibold">Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(r.meansOfTransportation)} alt="icon" /><span>${ r.sections.map(s => s.duration).reduce((p,c) => p + c) } min.</span></span></div>`)
+                            .addTo(routesGroup)
                     })
                 })
             })

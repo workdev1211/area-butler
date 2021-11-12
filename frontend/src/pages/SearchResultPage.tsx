@@ -50,6 +50,7 @@ export interface EntityGroup {
 }
 
 export interface EntityRoute {
+    title: string;
     coordinates: ApiCoordinates,
     show: boolean,
     routes: ApiRoute[]
@@ -235,6 +236,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             })
             setRoutes((prev) => ([...prev, {
                 routes: routesResult[0].routes,
+                title:  routesResult[0].title,
                 show: true,
                 coordinates: item.coordinates
             }]));
