@@ -84,8 +84,8 @@ export class IdMarker extends L.Marker {
 }
 
 export const defaultMapZoom = 15;
-const defaultAmenityIconSize = new L.Point(10, 10);
-const myLocationIconSize = new L.Point(40, 40);
+const defaultAmenityIconSize = new L.Point(32, 32);
+const myLocationIconSize = new L.Point(32, 32);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
