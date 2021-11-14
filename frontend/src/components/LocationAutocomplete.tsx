@@ -19,6 +19,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                             }) => {
 
     const {googleApiKey} = useContext(ConfigContext);
+    const [inputValue, setInputValue] = useState(value || '');
 
     const [focus, setFocus] = useState(false);
 
@@ -28,11 +29,21 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             afterChange({value, coordinates});
         }
         setValue(value);
+        setInputValue(null);
     };
 
     if (!googleApiKey) {
         return <div>Missing google api key</div>
     }
+
+    const onInputChange = (v: string, action: string) => {
+        if (action === 'input-change') {
+            setInputValue(v);
+        }
+        if (action === 'menu-close') {
+            setInputValue(null);
+        }
+    };
 
     const deriveValue = (value?: any) => {
         if (value) {
@@ -50,7 +61,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             <label className="label">
                 <span>Adresse</span>
             </label>
-            <div className="google-input">
+            <div className="google-input" onClick={() => !!value && !inputValue && setInputValue(value.label)}>
                 <GooglePlacesAutocomplete
                     apiOptions={{
                         language: "de",
@@ -64,6 +75,8 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                     minLengthAutocomplete={5}
                     selectProps={{
                         value: selectValue,
+                        inputValue: inputValue,
+                        onInputChange: (v: any, {action} : any) => onInputChange(v, action),
                         onChange: deriveLangLat,
                         className: 'google-autocomplete',
                         classNamePrefix: 'google-autocomplete',
