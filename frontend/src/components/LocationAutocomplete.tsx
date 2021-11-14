@@ -29,7 +29,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             afterChange({value, coordinates});
         }
         setValue(value);
-        setInputValue(null);
+        setInputValue('');
     };
 
     if (!googleApiKey) {
@@ -41,7 +41,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             setInputValue(v);
         }
         if (action === 'menu-close') {
-            setInputValue(null);
+            setInputValue('');
         }
     };
 
