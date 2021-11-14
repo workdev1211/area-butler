@@ -1,5 +1,6 @@
+import { UserActions, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { toastError } from "shared/shared.functions";
 import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
 
@@ -25,6 +26,7 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
 }) => {
   const [showModal, setShowModal] = useState(showTour[tour]);
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
+  const {userDispatch} = useContext(UserContext);
 
   const { post } = useHttp();
 
@@ -38,7 +40,9 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
         } else {
           user = (await post<ApiUser>(`/api/users/me/hide-tour`, {})).data;
         }
+        userDispatch({ type: UserActions.SET_USER, payload: user });
         setShowModal(false);
+
       } catch (err) {
         console.log(err);
         toastError("Fehler beim Beenden der Tour");
