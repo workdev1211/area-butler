@@ -1,7 +1,10 @@
+import { RollbarConfig } from '@area-butler-types/types';
+
 require('dotenv').config();
 
 class ConfigService {
-  constructor(private env: { [k: string]: string | undefined }) {}
+  constructor(private env: { [k: string]: string | undefined }) {
+  }
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
@@ -62,7 +65,7 @@ class ConfigService {
   }
 
   public getCallbackUrl(): string {
-    return `${this.getBaseAppUrl()}/callback`
+    return `${this.getBaseAppUrl()}/callback`;
   }
 
   public getHereRouterApiUrl(): string {
@@ -108,6 +111,14 @@ class ConfigService {
 
   public getHereTransitRouterApiUrl() {
     return this.getValue('HERE_TRANSIT_ROUTER_API_URL');
+  }
+
+  getRollbarConfig(): RollbarConfig {
+    return {
+      'accessToken': this.getValue('ROLLBAR_ACCESS_TOKEN', false) || '',
+      'environment': this.getValue('ROLLBAR_ENVIRONMENT', false) || 'local',
+      'code_version': this.getValue('CI_COMMIT_SHORT_SHA', false) || 'undefined',
+    };
   }
 }
 
