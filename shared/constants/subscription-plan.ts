@@ -25,9 +25,9 @@ export const standardSubscription: ApiSubscriptionPlan = {
             annuallyId: 'price_1JrlPQLcbb2Q3qBpJQF5JTaF'
         },
         prod: {
-            requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
-            monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
-            annuallyId: 'price_1JrlPQLcbb2Q3qBpJQF5JTaF'
+            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBpESLlpZ4v',
+            monthlyId: 'price_1Jw8gALcbb2Q3qBp20TjytRI',
+            annuallyId: 'price_1Jw8gALcbb2Q3qBpKDAnhGnX'
         }
     },
     properties: [
@@ -57,9 +57,9 @@ export const proSubscription: ApiSubscriptionPlan = {
             annuallyId: 'price_1JrlQeLcbb2Q3qBpdXq9M5sW'
         },
         prod: {
-            requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
-            monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
-            annuallyId: 'price_1JrlQeLcbb2Q3qBpdXq9M5sW'
+            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBpGXldv0vo',
+            monthlyId: 'price_1Jw8g6Lcbb2Q3qBp6GfMGdkC',
+            annuallyId: 'price_1Jw8g6Lcbb2Q3qBpJ8VSzPvZ'
         },
     },
     properties: [
@@ -88,9 +88,9 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
             annuallyId: 'price_1JrlRBLcbb2Q3qBpoLgnzxCC'
         },
         prod: {
-            requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
-            monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
-            annuallyId: 'price_1JrlRBLcbb2Q3qBpoLgnzxCC'
+            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBp73Out78u',
+            monthlyId: 'price_1Jw8g2Lcbb2Q3qBp72CuwKjT',
+            annuallyId: 'price_1Jw8g2Lcbb2Q3qBpX7r3BGMl'
         }
     },
     properties: [
