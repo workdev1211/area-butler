@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  area-butler-db:
+    image: mongo:5.0.2
+    container_name: area-butler-db-prod
+    restart: always
+    command: mongod --logpath /dev/null --oplogSize 128 --quiet
+    networks:
+      - web
+    expose:
+      - 27017
+    volumes:
+      - area-butler-db-prod:/data/db
+      - area-butler-db-dump-prod:/dump
+    labels:
+      - 'traefik.enable=false'
+
+  area-butler:
+    image: "${PROJECT_NAME}-${CI_BUILD_REF_SLUG}:${CI_COMMIT_SHORT_SHA}"
+    container_name: area-butler-app-prod
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8077:3000
+    environment:
+      - PORT=3000
+      - MAPBOX_ACCESS_TOKEN
+      - AUTH0_DOMAIN
+      - AUTH0_AUDIENCE
+      - MONGO_CONNECTION_URI
+      - GOOGLE_API_KEY
+      - FEEDBACK_SLACK_WEBHOOK
+      - OPERATIONS_SLACK_WEBHOOK
+      - MAIL_PROVIDER_API_KEY
+      - BASE_APP_URL
+      - HERE_API_KEY
+      - HERE_ROUTER_API_URL
+      - HERE_TRANSIT_ROUTER_API_URL
+      - STRIPE_ENV
+      - STRIPE_KEY
+      - STRIPE_WEBHOOK_SECRET
+      - STRIPE_TAX_ID
+      - JWT_ROLES_CLAIM
+      - OVERPASS_URL
+      - USE_OVERPASS_DB
+      - INVITE_CODE_NEEDED
+      - ROLLBAR_ACCESS_TOKEN
+      - ROLLBAR_ENVIRONMENT
+      - CI_COMMIT_SHORT_SHA
+    labels:
+      - 'traefik.docker.network=web'
+      - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
+      - 'traefik.http.routers.area-butler-http.entrypoints=web'
+      - 'traefik.http.routers.area-butler-http.middlewares=redirect'
+      - 'traefik.http.routers.area-butler-http.rule=Host(`app.area-butler.de`)'
+      - 'traefik.http.routers.area-butler.entrypoints=websecure'
+      - 'traefik.http.routers.area-butler.rule=Host(`app.area-butler.de`)'
+      - 'traefik.http.routers.area-butler.tls=true'
+      - 'traefik.http.routers.area-butler.tls.certresolver=le'
+      - 'traefik.port=8077'
+
+    depends_on:
+      - area-butler-db-prod
+
+volumes:
+  area-butler-db-prod:
+    external: true
+  area-butler-db-dump-prod:
+    external: true
+
+networks:
+  web:
+    external: true
