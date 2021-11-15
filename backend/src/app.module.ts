@@ -19,6 +19,7 @@ import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { BillingModule } from './billing/billing.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DataProvisionModule } from './data-provision/data-provision.module';
+import { HealthModule } from './health/health.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { DataProvisionModule } from './data-provision/data-provision.module';
     LocationModule,
     AuthModule,
     UserModule,
+    HealthModule,
     RealEstateListingModule,
     FeedbackModule,
     PotentialCustomerModule,
@@ -47,7 +49,8 @@ import { DataProvisionModule } from './data-provision/data-provision.module';
       ignoreErrors: false,
     }),
     RoutingModule,
-    BillingModule
+    BillingModule,
+    HealthModule
   ],
   providers: [
     {
