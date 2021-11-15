@@ -22,7 +22,7 @@ deploy-dev:
   environment:
     name: dev
     url: 'https://area-butler.dev.area-butler.de/'
-    on_stop: undeploy
+    on_stop: undeploy-dev
   script:
     - cat $DEV_ENV > .env
     - apk add --no-cache docker-compose
@@ -56,7 +56,7 @@ deploy-prod:
   environment:
     name: production
     url: 'https://app.area-butler.de/'
-    on_stop: undeploy
+    on_stop: undeploy-prod
   when: manual
   script:
     - cat $PROD_ENV > .env
