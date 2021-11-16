@@ -22,7 +22,10 @@ const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
   const onSubmit = async ({ description, type }: ApiInsertFeedback) => {
     try {
       beforeSubmit();
-      await post("/api/feedback", { description, type });
+
+      const content = description + `\n\nURL: ${window.location.href}`;
+
+      await post("/api/feedback", { description: content, type });
       postSubmit(true);
     } catch (err) {
       console.log(err);
