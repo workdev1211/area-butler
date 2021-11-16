@@ -56,7 +56,6 @@ deploy-prod:
   environment:
     name: production
     url: 'https://app.area-butler.de/'
-    on_stop: undeploy-prod
   when: manual
   script:
     - cat $PROD_ENV > .env
