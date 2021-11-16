@@ -13,6 +13,7 @@ import {allSubscriptions, TRIAL_DAYS} from '../../../shared/constants/subscripti
 import {configService} from "../config/config.service";
 import Stripe from "stripe";
 import {SubscriptionService} from "../user/subscription.service";
+import { SlackChannel, SlackSenderService } from 'src/client/slack/slack-sender.service';
 
 @Injectable()
 export class BillingService {
@@ -20,6 +21,7 @@ export class BillingService {
         private stripeService: StripeService,
         private subscriptionService: SubscriptionService,
         private eventEmitter: EventEmitter2,
+        private slackSenderService: SlackSenderService
     ) {
     }
 
@@ -46,13 +48,15 @@ export class BillingService {
                     await this.handleCheckoutSessionCompleted(event.data);
                     break;
                 }
-                case 'customer.subscription.created': 
+                case 'customer.subscription.created':
+                    this.slackSenderService.sendNotifcation(SlackChannel.REVENUES, {textBlocks: ['🎉 New customer has signed a subscription 🎉! ']}); 
                 case 'customer.subscription.updated': {
                     this.handleSubscriptionUpsertedEvent(event.data);
                     break;
                 }
                 
                 case 'invoice.paid': {
+                    this.slackSenderService.sendNotifcation(SlackChannel.REVENUES, {textBlocks: ['💰 Invoice paid, ka-ching 💰!']}); 
                     this.handleInvoicePaid(event.data);
                     break;
                 }

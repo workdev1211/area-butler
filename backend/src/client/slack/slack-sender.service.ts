@@ -8,6 +8,7 @@ export interface SlackNotification {
 export enum SlackChannel {
   OPERATIONS = 'OPERATIONS',
   FEEDBACK = 'FEEDBACK',
+  REVENUES = 'REVENUES'
 }
 
 @Injectable()
@@ -21,6 +22,9 @@ export class SlackSenderService {
     this.slackChannels[
       SlackChannel.OPERATIONS
     ] = configService.getOperationsSlackWebhook();
+    this.slackChannels[
+      SlackChannel.REVENUES
+    ] = configService.getRevenuesSlackWebhook();
   }
 
   async sendNotifcation(
