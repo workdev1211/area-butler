@@ -19,7 +19,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                             }) => {
 
     const {googleApiKey} = useContext(ConfigContext);
-    const [inputValue, setInputValue] = useState(value || '');
+    const [inputValue, setInputValue] = useState(value?.label || '');
 
     const [focus, setFocus] = useState(false);
 
