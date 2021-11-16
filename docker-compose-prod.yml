@@ -52,13 +52,13 @@ services:
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'
-      - 'traefik.http.routers.area-butler-http.entrypoints=web'
-      - 'traefik.http.routers.area-butler-http.middlewares=redirect'
-      - 'traefik.http.routers.area-butler-http.rule=Host(`app.area-butler.de`)'
-      - 'traefik.http.routers.area-butler.entrypoints=websecure'
-      - 'traefik.http.routers.area-butler.rule=Host(`app.area-butler.de`)'
-      - 'traefik.http.routers.area-butler.tls=true'
-      - 'traefik.http.routers.area-butler.tls.certresolver=le'
+      - 'traefik.http.routers.area-butler-prod-http.entrypoints=web'
+      - 'traefik.http.routers.area-butler-prod-http.middlewares=redirect'
+      - 'traefik.http.routers.area-butler-prod-http.rule=Host(`app.area-butler.de`)'
+      - 'traefik.http.routers.area-butler-prod.entrypoints=websecure'
+      - 'traefik.http.routers.area-butler-prod.rule=Host(`app.area-butler.de`)'
+      - 'traefik.http.routers.area-butler-prod.tls=true'
+      - 'traefik.http.routers.area-butler-prod.tls.certresolver=le'
       - 'traefik.port=8077'
 
     depends_on:
