@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  area-butler-db:
+  area-butler-db-prod:
     image: mongo:5.0.2
     container_name: area-butler-db-prod
     restart: always
@@ -16,7 +16,7 @@ services:
     labels:
       - 'traefik.enable=false'
 
-  area-butler:
+  area-butler-prod:
     image: "${PROJECT_NAME}-${CI_BUILD_REF_SLUG}:${CI_COMMIT_SHORT_SHA}"
     container_name: area-butler-app-prod
     restart: always
