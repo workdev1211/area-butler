@@ -219,9 +219,10 @@ export class UserService {
         existingMonthlyContingent.amount =
           subscription?.limits?.numberOfRequestsPerMonth;
       }
-
       const month = currentMonth.getMonth();
+      const year = currentMonth.getFullYear();
       currentMonth = new Date();
+      currentMonth.setFullYear(year);
       currentMonth.setMonth(month + 1);
     }
 
