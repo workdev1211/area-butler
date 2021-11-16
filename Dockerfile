@@ -1,6 +1,6 @@
 FROM node:14-alpine
 
-RUN apk --no-cache --virtual build-dependencies add python make g++
+RUN apk --no-cache --virtual build-dependencies add python3 py3-pip make g++
 
 USER node
 
