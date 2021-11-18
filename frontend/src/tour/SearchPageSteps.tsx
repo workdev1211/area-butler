@@ -13,8 +13,7 @@ const Steps: Step[] = [
       <>
         <h2 className="mb-5 font-bold">Willkommen beim Areabutler!</h2>
         <div>
-          Auf dieser Seite lässt sich die Umgebungsanalyse für einen
-          Interessenten durchführen
+          Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort mit beliebigen Kriterien durchführen.
         </div>
       </>
     ),
