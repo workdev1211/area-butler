@@ -24,13 +24,13 @@ import MapMenuCollapsable from "./MapMenuCollapsable";
 import CensusTable from "./CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./FederalElectionTable";
+import ParticlePollutionTable from "./ParticlePollutionTable";
 
 export interface MapMenuProps {
   censusData: ApiGeojsonFeature[];
   federalElectionData: FederalElectionDistrict;
-  particlePollution: boolean;
-  toggleParticlePollution: (active: boolean) => void;
   groupedEntries: EntityGroup[];
+  particlePollutionData: ApiGeojsonFeature[];
   toggleEntryGroup: (title: string) => void;
   highlightZoomEntity: (item: ResultEntity) => void;
   mobileMenuOpen: boolean;
@@ -88,8 +88,7 @@ const particlePollutionNotInSubscriptionPlanMessage = (
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   censusData,
   federalElectionData,
-  particlePollution,
-  toggleParticlePollution,
+  particlePollutionData,
   groupedEntries,
   toggleEntryGroup,
   highlightZoomEntity,
@@ -134,7 +133,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const particlePollutionInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
-    );
+    )!;
 
   useEffect(() => {
     if (Array.isArray(groupedEntries)) {
@@ -169,23 +168,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         <div className="collapse-title">Einblicke</div>
         <div className="collapse-content">
           <ul>
-            <li data-tour="partical-pollution-data-toggle">
-              <span>Feinstaubbelastung</span>
-              <label className="cursor-pointer label justify-start pl-0">
-                <input
-                  type="checkbox"
-                  checked={particlePollution}
-                  className="checkbox checkbox-primary checkbox-sm"
-                  onChange={(event) =>
-                    particlePollutionInSubscriptionPlan
-                      ? toggleParticlePollution(event.target.checked)
-                      : openUpgradeSubcriptionModal(
-                          particlePollutionNotInSubscriptionPlanMessage
-                        )
-                  }
-                />
-              </label>
-            </li>
             <li className="locality-option-li">
               <MapMenuCollapsable
                 title="Zensus Atlas"
@@ -212,6 +194,21 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 <FederalElectionTable
                   federalElectionData={federalElectionData}
                 ></FederalElectionTable>
+              </MapMenuCollapsable>
+            </li>
+            <li className="locality-option-li">
+              <MapMenuCollapsable
+                title="Feinstaubbelastung"
+                subscriptionCheck={() => particlePollutionInSubscriptionPlan}
+                openUpgradeSubcriptionModal={() =>
+                  openUpgradeSubcriptionModal(
+                    particlePollutionInSubscriptionPlan
+                  )
+                }
+              >
+                <ParticlePollutionTable
+                  particlePollutionData={particlePollutionData}
+                ></ParticlePollutionTable>
               </MapMenuCollapsable>
             </li>
           </ul>

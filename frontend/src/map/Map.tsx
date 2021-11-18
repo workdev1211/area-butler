@@ -1,6 +1,5 @@
 import center from "@turf/center";
-import {SearchContext, SearchContextActions} from "context/SearchContext";
-import {FederalElectionDistrict, FederalElectionResult} from "hooks/federalelectiondata";
+import { SearchContext, SearchContextActions } from "context/SearchContext";
 import html2canvas from 'html2canvas';
 import * as L from "leaflet";
 import "leaflet.markercluster";
@@ -8,8 +7,8 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
-import React, {useContext, useEffect} from "react";
-import {ApiRoute, ApiTransitRoute} from "../../../shared/types/routing";
+import React, { useContext, useEffect } from "react";
+import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
 import {
     ApiCoordinates,
     ApiGeojsonFeature,
@@ -18,13 +17,13 @@ import {
     OsmName
 } from "../../../shared/types/types";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
+import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
+import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
-import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
-import {ConfigContext} from "../context/ConfigContext";
-import {EntityGroup, EntityRoute, EntityTransitRoute, ResultEntity} from "../pages/SearchResultPage";
+import { ConfigContext } from "../context/ConfigContext";
+import { EntityGroup, EntityRoute, EntityTransitRoute, ResultEntity } from "../pages/SearchResultPage";
 import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,

@@ -351,8 +351,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                     <MapMenu mobileMenuOpen={mobileMenuOpen}
                              censusData={censusDataAvailable && searchContextState.censusData}
                              federalElectionData={federalElectionDataAvailable && searchContextState.federalElectionData}
-                             particlePollution={showParticlePollution}
-                             toggleParticlePollution={(active) => setShowParticlePollution(active)}
+                             particlePollutionData={particlePollutionDataAvailable && searchContextState.particlePollutionData}
                              groupedEntries={groupedEntries}
                              toggleEntryGroup={toggleEntityGroup}
                              highlightZoomEntity={highlightZoomEntity}
