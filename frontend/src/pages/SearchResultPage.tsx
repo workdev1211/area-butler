@@ -161,7 +161,6 @@ const SearchResultPage: React.FunctionComponent = () => {
     const [groupedEntries, setGroupedEntries] = useState<EntityGroup[]>([]);
     const [routes, setRoutes] = useState<EntityRoute[]>([])
     const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([])
-    const [showCensus, setShowCensus] = useState(false);
     const censusDataAvailable = !!searchContextState.censusData?.length;
     const [showFederalElection, setShowFederalElection] = useState(false);
     const federalElectionDataAvailable = !!searchContextState.federalElectionData;
@@ -343,8 +342,6 @@ const SearchResultPage: React.FunctionComponent = () => {
                             mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
                             printingActive={searchContextState.printingActive}
                             printingCheatsheetActive={searchContextState.printingCheatsheetActive}
-                            federalElectionData={showFederalElection && federalElectionDataAvailable && searchContextState.federalElectionData}
-                            censusData={showCensus && censusDataAvailable && searchContextState.censusData}
                             particlePollutionData={showParticlePollution && particlePollutionDataAvailable && searchContextState.particlePollutionData}
                             routes={routes}
                             transitRoutes={transitRoutes}
@@ -352,10 +349,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                     </div>
                     <MapMenuMobileBtn/>
                     <MapMenu mobileMenuOpen={mobileMenuOpen}
-                             census={showCensus}
-                             toggleCensus={(active) => setShowCensus(active)}
-                             federalElection={showFederalElection}
-                             toggleFederalElection={(active) => setShowFederalElection(active)}
+                             censusData={censusDataAvailable && searchContextState.censusData}
+                             federalElectionData={federalElectionDataAvailable && searchContextState.federalElectionData}
                              particlePollution={showParticlePollution}
                              toggleParticlePollution={(active) => setShowParticlePollution(active)}
                              groupedEntries={groupedEntries}

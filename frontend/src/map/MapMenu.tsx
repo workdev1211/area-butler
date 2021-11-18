@@ -10,7 +10,7 @@ import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import { ApiUser, OsmName } from "../../../shared/types/types";
+import { ApiGeojsonFeature, ApiUser, OsmName } from "../../../shared/types/types";
 import {
   deriveIconForOsmName,
   preferredLocationsIcon,
@@ -20,12 +20,14 @@ import {
 } from "../shared/shared.functions";
 import LocalityItem from "../components/LocalityItem";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "./MapMenuCollapsable";
+import CensusTable from "./CensusTable";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
+import FederalElectionTable from "./FederalElectionTable";
 
 export interface MapMenuProps {
-  census: boolean;
-  toggleCensus: (active: boolean) => void;
-  federalElection: boolean;
-  toggleFederalElection: (active: boolean) => void;
+  censusData: ApiGeojsonFeature[];
+  federalElectionData: FederalElectionDistrict;
   particlePollution: boolean;
   toggleParticlePollution: (active: boolean) => void;
   groupedEntries: EntityGroup[];
@@ -84,10 +86,8 @@ const particlePollutionNotInSubscriptionPlanMessage = (
 );
 
 const MapMenu: React.FunctionComponent<MapMenuProps> = ({
-  census,
-  toggleCensus,
-  federalElection,
-  toggleFederalElection,
+  censusData,
+  federalElectionData,
   particlePollution,
   toggleParticlePollution,
   groupedEntries,
@@ -124,12 +124,12 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const censusInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
-    );
+    )!;
 
   const federalElectionInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
-    );
+    )!;
 
   const particlePollutionInSubscriptionPlan =
     user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
@@ -166,43 +166,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           type="checkbox"
           onChange={(event) => setViewOptionsOpen(event.target.checked)}
         />
-        <div className="collapse-title">Anzeigeoptionen</div>
+        <div className="collapse-title">Einblicke</div>
         <div className="collapse-content">
           <ul>
-            <li data-tour="census-data-toggle">
-              <span>Zensus Atlas</span>
-              <label className="cursor-pointer label justify-start pl-0">
-                <input
-                  type="checkbox"
-                  checked={census}
-                  className="checkbox checkbox-primary checkbox-sm"
-                  onChange={(event) =>
-                    censusInSubscriptionPlan
-                      ? toggleCensus(event.target.checked)
-                      : openUpgradeSubcriptionModal(
-                          censusNotInSubscriptionPlanMessage
-                        )
-                  }
-                />
-              </label>
-            </li>
-            <li data-tour="federal-election-data-toggle">
-              <span>Bundestagswahl 2021</span>
-              <label className="cursor-pointer label justify-start pl-0">
-                <input
-                  type="checkbox"
-                  checked={federalElection}
-                  className="checkbox checkbox-primary checkbox-sm"
-                  onChange={(event) =>
-                    federalElectionInSubscriptionPlan
-                      ? toggleFederalElection(event.target.checked)
-                      : openUpgradeSubcriptionModal(
-                          federalElectionNotInSubscriptionPlanMessage
-                        )
-                  }
-                />
-              </label>
-            </li>
             <li data-tour="partical-pollution-data-toggle">
               <span>Feinstaubbelastung</span>
               <label className="cursor-pointer label justify-start pl-0">
@@ -219,6 +185,34 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                   }
                 />
               </label>
+            </li>
+            <li className="locality-option-li">
+              <MapMenuCollapsable
+                title="Zensus Atlas"
+                subscriptionCheck={() => censusInSubscriptionPlan}
+                openUpgradeSubcriptionModal={() =>
+                  openUpgradeSubcriptionModal(
+                    censusNotInSubscriptionPlanMessage
+                  )
+                }
+              >
+                <CensusTable censusData={censusData}></CensusTable>
+              </MapMenuCollapsable>
+            </li>
+            <li className="locality-option-li">
+              <MapMenuCollapsable
+                title="Bundestagswahl 2021"
+                subscriptionCheck={() => federalElectionInSubscriptionPlan}
+                openUpgradeSubcriptionModal={() =>
+                  openUpgradeSubcriptionModal(
+                    federalElectionNotInSubscriptionPlanMessage
+                  )
+                }
+              >
+                <FederalElectionTable
+                  federalElectionData={federalElectionData}
+                ></FederalElectionTable>
+              </MapMenuCollapsable>
             </li>
           </ul>
         </div>
@@ -338,13 +332,17 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                       item.coordinates.lng &&
                                     r.show
                                 )}
-                                onToggleTransitRoute={(item) => toggleTransitRoute(item)}
-                                transitRoute={transitRoutes?.find( (tr) =>
+                                onToggleTransitRoute={(item) =>
+                                  toggleTransitRoute(item)
+                                }
+                                transitRoute={transitRoutes?.find(
+                                  (tr) =>
                                     tr.coordinates.lat ===
-                                    item.coordinates.lat &&
+                                      item.coordinates.lat &&
                                     tr.coordinates.lng ===
-                                    item.coordinates.lng &&
-                                    tr.show)}
+                                      item.coordinates.lng &&
+                                    tr.show
+                                )}
                               />
                             ))}
                         {localityOpen.includes(ge.title) &&

@@ -36,8 +36,6 @@ import "./Map.css";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
-    censusData: ApiGeojsonFeature[];
-    federalElectionData: FederalElectionDistrict;
     particlePollutionData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
     groupedEntities: EntityGroup[];
@@ -93,7 +91,6 @@ const myLocationIconSize = new L.Point(32, 32);
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
-let censusGroup = L.layerGroup();
 let federalElectionGroup = L.layerGroup();
 let particlePollutionGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
@@ -108,13 +105,11 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
-    const censusDataEqual = JSON.stringify(prevProps.censusData) === JSON.stringify(nextProps.censusData);    
-    const federalElectionDataEqual = JSON.stringify(prevProps.federalElectionData) === JSON.stringify(nextProps.federalElectionData);    
     const particlePollutionDataEqual = JSON.stringify(prevProps.particlePollutionData) === JSON.stringify(nextProps.particlePollutionData);    
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
     const routesEqual = prevProps.routes === nextProps.routes;
     const transitRoutesEqual = prevProps.transitRoutes === nextProps.transitRoutes;
-    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && censusDataEqual && federalElectionDataEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual && transitRoutesEqual;
+    return responseEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual && transitRoutesEqual;
 }
 
 const WALK_COLOR = '#c91444';
@@ -134,8 +129,6 @@ const Map = React.memo<MapProps>(({
                                       mapCenter,
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
-                                      censusData,
-                                      federalElectionData,
                                       particlePollutionData,
                                       highlightId,
                                       routes,
@@ -345,39 +338,7 @@ const Map = React.memo<MapProps>(({
                }
             })
         }
-    }, [routes,transitRoutes, means, groupedEntities]);
-
-    // draw census
-    useEffect(() => {
-        if (currentMap && censusGroup) {
-            currentMap.removeLayer(censusGroup);
-        }
-        if (currentMap && censusData?.length) {
-            censusGroup = L.layerGroup();
-            currentMap.addLayer(censusGroup);
-            censusData.forEach((c: any) => {
-                const propertyTable = (p: { label: string, value: string, unit: string }) => `<tr><td>${p.label}</td><td>${p.value} ${p.unit}</td></tr>`;
-                const table = `<table><tbody>${c.properties.map(propertyTable).join("")}</tbody></table>`;
-                L.geoJSON(c).addTo(censusGroup!).bindTooltip(table);
-            })
-        }
-    }, [censusData]);
-
-    // draw federal election
-    useEffect(() => {
-        if (currentMap && federalElectionGroup) {
-            currentMap.removeLayer(federalElectionGroup);
-        }
-        if (currentMap && !!federalElectionData) {
-            federalElectionGroup = L.layerGroup();
-            currentMap.addLayer(federalElectionGroup);
-            const propertyTable = (p: FederalElectionResult) => `<tr><td>${p.party}</td><td>${p.percentage} %</td><td>${p.lastElectionPercentage} %</td></tr>`;
-            const table = `<h1>${federalElectionData.name}</h1><table><tbody>${federalElectionData.results.map(propertyTable).join("")}</tbody></table>`;
-
-            L.geoJSON(federalElectionData).addTo(federalElectionGroup!).bindTooltip(table);
-        }
-    }, [federalElectionData]);    
-    
+    }, [routes,transitRoutes, means, groupedEntities]);  
     
     // draw particle pollution
     useEffect(() => {
