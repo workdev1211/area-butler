@@ -58,7 +58,7 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
               </div>
             ))}
         </div>
-        {groupedEntries.map(group => (
+        {groupedEntries.filter(group => group.active).map(group => (
           <div className="flex gap-2" key={`entity-grid-item-${group.title}`}>
             <div className="w-48 bg-primary rounded p-2 text-white flex gap-2">
               <h5 className="text-xs">{group.title}</h5>

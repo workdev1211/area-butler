@@ -7,14 +7,14 @@ import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import React from "react";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiPersonaType } from "../../../../shared/types/persona";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { CensusSummary } from "../CensusSummary";
@@ -42,6 +42,8 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
+
+  const filteredGroups = groupedEntries.filter((group) => group.active);
 
   const mockData = {
     [ApiPersonaType.ACTIVE_SENIORS]: 5,
@@ -108,13 +110,20 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
       <PdfPage>
         <h1 className="text-3xl font-bold mb-5">Die nächsten Orte</h1>
         <div className="flex gap-6 flex-wrap">
-          {groupedEntries.map((group) => {
-            return (
-              <div className="text-xs w-72" key={"tab-content-" + group.title}>
-                <EntityList entityGroup={group} limit={3} />
-              </div>
-            );
-          })}
+          {filteredGroups.length === 0 ? (
+            <div>Keine Orte ausgewählt</div>
+          ) : (
+            filteredGroups.map((group) => {
+              return (
+                <div
+                  className="text-xs w-72"
+                  key={"tab-content-" + group.title}
+                >
+                  <EntityList entityGroup={group} limit={3} />
+                </div>
+              );
+            })
+          )}
         </div>
         {activePrinting && (
           <>
