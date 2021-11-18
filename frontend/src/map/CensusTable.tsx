@@ -25,11 +25,11 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
   }
 
   return (
-    <table className="table w-96 text-sm">
+    <table className="table w-full text-sm">
             <thead>
         <tr>
           <th>Name</th>
-          <th><span>Wert</span><br/><span>(Ø Deutschland)</span></th>
+          <th><span>Wert</span><br/><span>(Ø DE)</span></th>
         </tr>
       </thead>
       <tbody>
