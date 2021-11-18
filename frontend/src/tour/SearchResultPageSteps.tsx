@@ -19,7 +19,7 @@ const Steps: Step[] = [
     placement: "right",
     target: 'div[data-tour="map"]',
   },  {
-    content: 'Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Errecihbarkeit betrachten',
+    content: 'Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Erreichbarkeit betrachten',
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="map-menu"]',
@@ -34,7 +34,7 @@ const Steps: Step[] = [
     placement: "left",
     target: 'button[data-tour="reset-position"]',
   }, {
-    content: 'Über die Navigationsleiste lassen sich Ihre Objekte und die Wichtigen Adresse sowie die Bewegungsprofile ein- und ausblenden',
+    content: 'Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Zb. in Rot: was kann ich zu Fuß erreichen in der angegebenen Zeit',
     locale: defaultLocale,
     placement: "bottom",
     target: 'div[data-tour="map-navbar"]',
