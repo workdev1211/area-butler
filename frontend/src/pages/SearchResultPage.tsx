@@ -10,7 +10,7 @@ import {
 } from "../../../shared/types/types";
 import Map, {defaultMapZoom} from "../map/Map";
 import MapNavBar from "../map/MapNavBar";
-import {meansOfTransportations} from "../../../shared/constants/constants";
+import {localStorageSearchContext, meansOfTransportations} from "../../../shared/constants/constants";
 import {ApiPreferredLocation} from "../../../shared/types/potential-customer";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {useHistory} from "react-router-dom";
@@ -19,6 +19,7 @@ import {distanceInMeters, preferredLocationsTitle, realEstateListingsTitle} from
 import "./SearchResultPage.css";
 import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
+import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import BackButton from "../layout/BackButton";
@@ -162,7 +163,6 @@ const SearchResultPage: React.FunctionComponent = () => {
     const [routes, setRoutes] = useState<EntityRoute[]>([])
     const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([])
     const censusDataAvailable = !!searchContextState.censusData?.length;
-    const [showFederalElection, setShowFederalElection] = useState(false);
     const federalElectionDataAvailable = !!searchContextState.federalElectionData;
     const [showParticlePollution, setShowParticlePollution] = useState(false);
     const particlePollutionDataAvailable = !!searchContextState.particlePollutionData?.length;
@@ -298,8 +298,32 @@ const SearchResultPage: React.FunctionComponent = () => {
                     }}
                     className="btn btn-link"
                 >
-                    <img src={pdfIcon} alt="pdf-icon"/> Spickzettel PDF
+                    <img src={pdfIcon} alt="pdf-icon"/> Spickzekttel PDF
                 </button>
+            </li>
+            <li>
+                <a
+                    onClick={() => {
+                        window.localStorage.setItem(localStorageSearchContext, JSON.stringify(searchContextState));
+                    }}
+                    target="_blank"
+                    href="/potential-customers/from-result"
+                    className="btn btn-link"
+                >
+                    <img src={plusIcon} alt="pdf-icon" />  Interessent anlegen
+                </a>
+            </li>
+            <li>
+                <a
+                    onClick={() => {
+                        window.localStorage.setItem(localStorageSearchContext, JSON.stringify(searchContextState));
+                    }}
+                    target="_blank"
+                    href="/real-estates/from-result"
+                    className="btn btn-link"
+                >
+                    <img src={plusIcon} alt="pdf-icon" />  Objekt anlegen
+                </a>
             </li>
         </>)
     }

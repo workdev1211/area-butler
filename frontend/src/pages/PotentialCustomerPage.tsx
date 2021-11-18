@@ -7,12 +7,14 @@ import {PotentialCustomerActions, PotentialCustomerContext} from "../context/Pot
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import PotentialCustomerFormHandler from "../potential-customer/PotentialCustomerFormHandler";
 import BackButton from "../layout/BackButton";
+import { localStorageSearchContext } from "../../../shared/constants/constants";
+import { SearchContextState } from "context/SearchContext";
 
 export interface PotentialCustomerPageRouterProps {
     customerId: string;
 }
 
-const newCustomer: Partial<ApiPotentialCustomer> = {
+const defaultCustomer: Partial<ApiPotentialCustomer> = {
     name: 'Neuer Interessent',
     email: 'vorname.nachname@kudiba.net',
     preferredLocations: [],
@@ -21,8 +23,22 @@ const newCustomer: Partial<ApiPotentialCustomer> = {
 
 const PotentialCustomerPage: React.FunctionComponent = () => {
     const {customerId} = useParams<PotentialCustomerPageRouterProps>();
-    const isNewCustomer = customerId === 'new';
-    const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(newCustomer);
+    const isNewCustomer = customerId === 'new' || customerId === 'from-result';
+
+    let initialCustomer = {...defaultCustomer};
+
+    const searchContextFromLocalStorageString = window.localStorage.getItem(localStorageSearchContext);
+    if (customerId === 'from-result' && !!searchContextFromLocalStorageString) {
+        const searchContextFromLocalStorage = JSON.parse(searchContextFromLocalStorageString!) as SearchContextState;
+        initialCustomer = {
+            ...initialCustomer,
+            preferredLocations: searchContextFromLocalStorage.preferredLocations,
+            routingProfiles: searchContextFromLocalStorage.transportationParams,
+            preferredAmenities: searchContextFromLocalStorage.localityParams.map(l => l.name)
+        }
+    }
+
+    const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(initialCustomer);
     const [busy, setBusy] = useState(false);
 
     const {get} = useHttp();
@@ -41,9 +57,9 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
 
     useEffect(() => {
         if (!isNewCustomer) {
-            setCustomer(potentialCustomerState.customers.find((c: ApiPotentialCustomer) => c.id === customerId) ?? newCustomer);
+            setCustomer(potentialCustomerState.customers.find((c: ApiPotentialCustomer) => c.id === customerId) ?? initialCustomer);
         } else {
-            setCustomer(newCustomer);
+            setCustomer(initialCustomer);
         }
     }, [potentialCustomerState.customers, isNewCustomer, customerId, setCustomer]);
 

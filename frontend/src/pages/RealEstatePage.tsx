@@ -7,20 +7,35 @@ import BackButton from "../layout/BackButton";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import {RealEstateFormHandler} from "../real-estates/RealEstateFormHandler";
+import { localStorageSearchContext } from "../../../shared/constants/constants";
+import { SearchContextState } from "context/SearchContext";
 
 export interface RealEstatePageRouterProps {
     realEstateId: string;
 }
 
-const newRealEstate: Partial<ApiRealEstateListing> = {
+const defaultRealEstate: Partial<ApiRealEstateListing> = {
     name: 'Neues Objekt',
 
 }
 
 const RealEstatePage: React.FunctionComponent = () => {
     const {realEstateId} = useParams<RealEstatePageRouterProps>();
-    const isNewRealEstate = realEstateId === 'new';
-    const [realEstate, setRealEstate] = useState<Partial<ApiRealEstateListing>>(newRealEstate);
+    const isNewRealEstate = realEstateId === 'new' || realEstateId === 'from-result';
+
+    let initialRealEstate = {...defaultRealEstate};
+
+    const searchContextFromLocalStorageString = window.localStorage.getItem(localStorageSearchContext);
+    if (realEstateId === 'from-result' && !!searchContextFromLocalStorageString) {
+        const searchContextFromLocalStorage = JSON.parse(searchContextFromLocalStorageString!) as SearchContextState;
+        initialRealEstate = {
+            ...initialRealEstate,
+            address: searchContextFromLocalStorage.placesLocation?.label
+        }
+    }
+
+    
+    const [realEstate, setRealEstate] = useState<Partial<ApiRealEstateListing>>(initialRealEstate);
     const [busy, setBusy] = useState(false);
 
     const {get} = useHttp();
@@ -39,9 +54,9 @@ const RealEstatePage: React.FunctionComponent = () => {
 
     useEffect(() => {
         if (!isNewRealEstate) {
-            setRealEstate(realEstateState.listings.find((e: ApiRealEstateListing) => e.id === realEstateId) ?? newRealEstate);
+            setRealEstate(realEstateState.listings.find((e: ApiRealEstateListing) => e.id === realEstateId) ?? initialRealEstate);
         } else {
-            setRealEstate(newRealEstate);
+            setRealEstate(initialRealEstate);
         }
     }, [realEstateState.listings, isNewRealEstate, realEstateId, setRealEstate]);
 
