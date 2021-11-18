@@ -43,7 +43,7 @@
     color: var(--base-anthracite);
     padding: 18px var(--map-menu-pr) 20px 24px;
     background: white !important;
-    @apply text-xl font-medium cursor-pointer;
+    @apply text-lg font-medium cursor-pointer;
 }
 .map-menu input[type=checkbox] {
     cursor: pointer;
@@ -61,7 +61,7 @@
     background: var(--primary-gradient) !important;
 }
 .map-menu .view-option .collapse-title:after {
-    top: 25px;
+    top: 22px;
     right: 50px;
 }
 .map-menu .view-option > .collapse-content {
@@ -104,7 +104,7 @@
     transform: rotate(405deg) !important;
 }
 .map-menu .locality-option-li .collapse-child-open .collapse-title:after {
-    top: 30px;
+    top: 24px;
 }
 .map-menu .locality-option-li .collapse-child-open .collapse-content {
     max-height: 9000px;
