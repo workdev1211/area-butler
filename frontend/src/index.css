@@ -74,8 +74,8 @@ html {
   --h3-pt: 26px;
   --h3-pb: 14px;
 
-  --nav-height: 80px;
-  --nav-padding-y: 20px;
+  --nav-height: 70px;
+  --nav-padding-y: 10px;
   --nav-padding-x: 16px;
 
   --content-header-height: var(--nav-height);
