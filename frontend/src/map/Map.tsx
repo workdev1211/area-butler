@@ -32,6 +32,7 @@ import {
     toastSuccess
 } from "../shared/shared.functions";
 import "./Map.css";
+import "leaflet-touch-helper";
 
 export interface MapProps {
     searchResponse: ApiSearchResponse;
@@ -305,11 +306,13 @@ const Map = React.memo<MapProps>(({
             routes.filter(e => e.show).forEach(entityRoute => {
                 entityRoute.routes.filter(isActiveMeans).filter(isVisibleDestination).forEach( (r) => {
                     r.sections.forEach((s) => {
-                        L.geoJSON(s.geometry, {style: function (feature) {
+                        const line = L.geoJSON(s.geometry, {style: function (feature) {
                                 return {color: MEAN_COLORS[r.meansOfTransportation]};
                             }})
                             .bindPopup(`<h4 class="font-semibold">Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(r.meansOfTransportation)} alt="icon" /><span>${ r.sections.map(s => s.duration).reduce((p,c) => p + c) } min.</span></span></div>`)
                             .addTo(routesGroup)
+                        // @ts-ignore
+                        L.path.touchHelper(line).addTo(routesGroup)
                     })
                 })
             })
@@ -318,11 +321,13 @@ const Map = React.memo<MapProps>(({
                if (isVisibleDestination(route)) {
                    const popupContent = route.sections.map((s) => `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon"/><span>${s.duration} min.</span></span>`).join("➟");
                    route.sections.forEach((s) => {
-                       L.geoJSON(s.geometry, {style: function (feature) {
+                       const line = L.geoJSON(s.geometry, {style: function (feature) {
                                return {color: '#fcba03', dashArray: "8" };
                            }})
                            .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title}</h4><br/><div class="flex items-center gap-2">${popupContent}</div>`)
                            .addTo(routesGroup)
+                       // @ts-ignore
+                       L.path.touchHelper(line).addTo(routesGroup)
                    })
                }
             })

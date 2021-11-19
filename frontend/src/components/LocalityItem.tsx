@@ -34,12 +34,12 @@ const PreferredLocationItemContent: React.FunctionComponent<{item:ResultEntity, 
             <>
             <div className="locality-item-content">
                 <input type="checkbox"
-                       checked={route?.show}
+                       checked={route?.show || false}
                        onChange={(event) => onToggleRoute(item)}/>
                 <span className="ml-2">Routen & Zeiten anzeigen</span>
                 &nbsp;
                 <input type="checkbox"
-                       checked={transitRoute?.show}
+                       checked={transitRoute?.show || false}
                        onChange={(event) => onToggleTransitRoute(item)}/>
                 <span className="ml-2">ÖPNV Route anzeigen</span>
             </div>

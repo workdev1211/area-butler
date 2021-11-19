@@ -7561,6 +7561,11 @@ last-call-webpack-plugin@^3.0.0:
     lodash "^4.17.5"
     webpack-sources "^1.1.0"
 
+leaflet-touch-helper@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/leaflet-touch-helper/-/leaflet-touch-helper-2.0.0.tgz#d9f374da05bb79834c9e1516acf74d18c255c906"
+  integrity sha1-2fN02gW7eYNMnhUWrPdNGMJVyQY=
+
 leaflet.markercluster@^1.5.1:
   version "1.5.1"
   resolved "https://registry.yarnpkg.com/leaflet.markercluster/-/leaflet.markercluster-1.5.1.tgz#4e352c8cbb9508e6175a20ac29cf179601907c4c"
