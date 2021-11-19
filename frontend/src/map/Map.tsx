@@ -291,17 +291,6 @@ const Map = React.memo<MapProps>(({
                     return trainIcon;
         }};
 
-        const getDashArray = (transportMode: string) => {
-            switch(transportMode) {
-                case 'pedestrian':
-                    return "4";
-                case 'bus':
-                    return "2";
-                default:
-                    return "0";
-            }
-        }
-
         const isVisibleDestination = (r: ApiRoute | ApiTransitRoute) =>
             !!activeEntities.find(value => value.coordinates.lat === r.destination.lat
                && value.coordinates.lng === r.destination.lng);
@@ -327,11 +316,12 @@ const Map = React.memo<MapProps>(({
             transitRoutes.filter(e => e.show).forEach(entityRoute => {
                 const { route } = entityRoute;
                if (isVisibleDestination(route)) {
+                   const popupContent = route.sections.map((s) => `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon"/><span>${s.duration} min.</span></span>`).join("➟");
                    route.sections.forEach((s) => {
                        L.geoJSON(s.geometry, {style: function (feature) {
-                               return {color: '#fcba03', dashArray: getDashArray(s.transportMode) };
+                               return {color: '#fcba03', dashArray: "8" };
                            }})
-                           .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon" /><span>${s.duration} min.</span></span></div>`)
+                           .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title}</h4><br/><div class="flex items-center gap-2">${popupContent}</div>`)
                            .addTo(routesGroup)
                    })
                }

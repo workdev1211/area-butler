@@ -25,7 +25,7 @@ const FederalElectionTable: FunctionComponent<FederalElectionTableProps> = ({
         </tr>
       </thead>
       <tbody>
-        {federalElectionData.results.map((p: FederalElectionResult) => (
+        {federalElectionData?.results?.map((p: FederalElectionResult) => (
           <tr key={p.party}>
             <td>{p.party}</td>
             <td>
