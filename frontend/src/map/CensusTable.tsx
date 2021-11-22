@@ -25,7 +25,7 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
   }
 
   return (
-    <table className="table w-full text-sm">
+    <table className="table w-full text-sm lg:text-base">
             <thead>
         <tr>
           <th>Name</th>
