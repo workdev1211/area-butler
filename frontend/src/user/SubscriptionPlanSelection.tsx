@@ -82,7 +82,7 @@ const SubscriptionPlanSelection: React.FunctionComponent =
       <div className="mt-20 flex flex-col gap-5">
         <div>
           <h1 className="font-bold text-xl">
-            Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das passende Abonnement für Sie aus.
+            Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das passende Abonnement für sich aus.
           </h1>
 
             <div className="p-20 flex flex-col items-center justify-center">
