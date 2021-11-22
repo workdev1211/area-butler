@@ -16,8 +16,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                                 value = null,
                                                                                 setValue = () => {
                                                                                 }
-                                                                            }) => {
-
+                                                                            }) => {                                                                                
     const {googleApiKey} = useContext(ConfigContext);
     const [inputValue, setInputValue] = useState(value?.label || '');
 
@@ -61,7 +60,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             <label className="label">
                 <span>Adresse</span>
             </label>
-            <div className="google-input" onClick={() => !!value && !inputValue && setInputValue(value.label)}>
+            <div className="google-input" onClick={() => !!value && !inputValue && setInputValue(value?.label || value)}>
                 <GooglePlacesAutocomplete
                     apiOptions={{
                         language: "de",
