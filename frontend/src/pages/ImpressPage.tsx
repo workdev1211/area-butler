@@ -13,8 +13,8 @@ export const ImpressPage = () => {
             <h2>Vertreten durch:</h2>
             <p>Alexander Timper</p>
             <h2>Kontakt:</h2>
-            <p>E-Mail: info@area-butler.de</p>
-            <p>Phone: +49 157 5807 5423</p>
+            <p>E-Mail: info@area-butler.de<br/>
+               Phone: +49 157 5807 5423</p>
             <h2>Registereintrag:</h2>
             <p>Registergericht: {kudibaCompany.court}<br/>
                 Registernummer: {kudibaCompany.regNr}</p>
