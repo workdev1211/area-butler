@@ -40,11 +40,11 @@ const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({src, label = 'D
                 <label htmlFor="upload-button">
                     {label}:
                     {image ? (
-                        <div className="img-container">
+                        <div className="img-container mt-1">
                             <img src={image} alt="logo"/>
                         </div>
                     ) : (
-                        <div className="img-placeholder">
+                        <div className="img-placeholder mt-1">
                             <span>Logo Hochladen</span>
                         </div>
                     )}

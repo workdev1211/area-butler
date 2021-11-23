@@ -35,6 +35,9 @@ export class User {
     @Prop({required: false})
     logo: string;
 
+    @Prop({required: false})
+    color: string;
+
 }
 
 export const retrieveTotalRequestContingent = (

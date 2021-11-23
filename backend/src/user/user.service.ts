@@ -237,9 +237,9 @@ export class UserService {
         if (!existingUser) {
             throw new HttpException('Unknown User', 400);
         }
-        await this.subscriptionService.checkSubscriptionViolation(existingUser._id, subscription => !subscription.appFeatures.customLogo, 'Eigene Logos sind im aktuellen Abonnement nicht verfügbar.');
+        await this.subscriptionService.checkSubscriptionViolation(existingUser._id, subscription => !subscription.appFeatures.canCustomizeExport, 'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.');
 
-        Object.assign(existingUser, {logo: settings.logo});
+        Object.assign(existingUser, {logo: settings.logo, color: settings.color});
 
         return existingUser.save();
     }

@@ -68,12 +68,12 @@ export class UserController {
     public async settings(@Req() request, @Body() settings: ApiUserSettings): Promise<ApiUser> {
         const requestUser = request?.user;
 
-        const user = await this.userService.updateSettings(requestUser.email, settings);
 
         const mimeInfo = settings.logo.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
         if (!mimeInfo.includes('image/')) {
             throw new HttpException('Unsupported mime type', HttpStatus.BAD_REQUEST);
         }
+        const user = await this.userService.updateSettings(requestUser.email, settings);
 
         return mapUserToApiUser(user, await this.subscriptionService.findActiveByUserId(user._id));
     }

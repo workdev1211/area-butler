@@ -3,6 +3,8 @@ import ImageUpload from "../components/ImageUpload";
 import {UserActions, UserContext} from "../context/UserContext";
 import {useHttp} from "../hooks/http";
 import {ApiUser} from "../../../shared/types/types";
+import ColorPicker from "../components/ColorPicker";
+import {toastSuccess} from "../shared/shared.functions";
 
 const UserExportSettings: React.FunctionComponent = () => {
 
@@ -11,7 +13,14 @@ const UserExportSettings: React.FunctionComponent = () => {
 
     const updateLogo = async (logo: string) => {
         userDispatch({type: UserActions.SET_LOGO, payload: logo});
-        await post<ApiUser>("/api/users/me/settings", {logo});
+        await post<ApiUser>("/api/users/me/settings", {logo, color: userState.user.color});
+        toastSuccess('Logo gespeichert.');
+    }
+
+    const updateColor = async (color: string) => {
+        userDispatch({type: UserActions.SET_COLOR, payload: color});
+        await post<ApiUser>("/api/users/me/settings", {logo: userState.user.logo, color});
+        toastSuccess('Primärfarbe gespeichert.');
     }
 
     return (
@@ -19,7 +28,11 @@ const UserExportSettings: React.FunctionComponent = () => {
             <h1 className="font-bold text-xl mb-2">
                 Export-Einstellungen
             </h1>
+            <p>Die nachfolgenden Einstellungen verändern das enthaltene Logo und die verwendete Primärfarbe beim Export von Standortanalysen.</p>
             <ImageUpload src={userState.user.logo} onChange={updateLogo}/>
+            <div className="mt-5">
+                <ColorPicker value={userState.user.color} onChange={updateColor}/>
+            </div>
         </div>
     )
 }

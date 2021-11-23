@@ -31,7 +31,7 @@ const UserProfilePage: FunctionComponent = () => {
 
     const user: ApiUser = userState.user;
     const hasSubscription = !!user.subscriptionPlan;
-    const canUploadLogo = hasSubscription && user.subscriptionPlan!.config.appFeatures.customLogo;
+    const canCustomizeExport = hasSubscription && user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
 
     useEffect(() => {
         const fetchUser = async () => {
@@ -78,7 +78,7 @@ const UserProfilePage: FunctionComponent = () => {
                     postSubmit={postSubmit}
                 />
             </div>
-            {canUploadLogo &&
+            {canCustomizeExport &&
             <UserExportSettings/>}
             {hasSubscription ? (
                 <SubscriptionPlanLimits

@@ -40,7 +40,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
         requestIncreasePackage: 12,
         sendCustomerQuestionnaireRequest: false,
         dataSources: [ApiDataSource.OSM],
-        customLogo: false
+        canCustomizeExport: false
     },
 };
 
@@ -74,7 +74,7 @@ export const proSubscription: ApiSubscriptionPlan = {
         requestIncreasePackage: 50,
         sendCustomerQuestionnaireRequest: true,
         dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
-        customLogo: true
+        canCustomizeExport: true
     },
 };
 
@@ -106,7 +106,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
         requestIncreasePackage: 100,
         sendCustomerQuestionnaireRequest: true,
         dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS, ApiDataSource.FEDERAL_ELECTION, ApiDataSource.PARTICLE_POLLUTION],
-        customLogo: true
+        canCustomizeExport: true
     },
 };
 

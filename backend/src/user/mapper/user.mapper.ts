@@ -11,5 +11,6 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   consentGiven: user.consentGiven,
   requestContingents: retrieveTotalRequestContingent(user),
   showTour: user.showTour,
-  logo: user.logo
+  logo: user.logo,
+  color: user.color
 });

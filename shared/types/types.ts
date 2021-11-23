@@ -26,6 +26,7 @@ export interface ApiUser {
   requestContingents: ApiRequestContingent[];
   showTour: ApiShowTour;
   logo?: string;
+  color?: string;
 }
 
 export interface ApiUpsertUser {
@@ -34,6 +35,7 @@ export interface ApiUpsertUser {
 
 export interface ApiUserSettings {
   logo?: string;
+  color?: string;
 }
 
 export interface ApiConsent {
