@@ -141,17 +141,15 @@ const buildEntityData = (locationSearchResult: ApiSearchResponse): ResultEntity[
 const SearchResultPage: React.FunctionComponent = () => {
     const {fetchRoutes,fetchTransitRoutes } = useRouting();
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+
     const {realEstateState} = useContext(RealEstateContext);
     const {userState, userDispatch} = useContext(UserContext);
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const history = useHistory();
-    if (!searchContextState.searchResponse?.routingProfiles) {
-        history.push("/");
-    }
 
-    const routingKeys = Object.keys(searchContextState.searchResponse!.routingProfiles);
+    const routingKeys = Object.keys(searchContextState?.searchResponse?.routingProfiles || []);
     const availableMeans = meansOfTransportations.filter(mot => routingKeys.includes(mot.type)).map(mot => mot.type);
     const [activeMeans, setActiveMeans] = useState([...availableMeans]);
     const [showPreferredlocations, setShowPreferredLocations] = useState(true);
@@ -169,8 +167,13 @@ const SearchResultPage: React.FunctionComponent = () => {
 
     const searchResponseString = JSON.stringify(searchContextState.searchResponse);
     useEffect(() => {
-        const searchResponseParsed = JSON.parse(searchResponseString);
-        const centerOfSearch = searchResponseParsed.centerOfInterest.coordinates;
+        const searchResponseParsed = !!searchResponseString ? JSON.parse(searchResponseString) : null;
+
+        if (!searchResponseParsed) {
+            return;
+        }
+
+        const centerOfSearch = searchResponseParsed?.centerOfInterest?.coordinates;
         let entities = buildEntityData(searchResponseParsed);
         if (!!searchContextState.preferredLocations && showPreferredlocations) {
             entities?.push(...buildEntityDataFromPreferredLocations(centerOfSearch, searchContextState.preferredLocations));
@@ -206,6 +209,11 @@ const SearchResultPage: React.FunctionComponent = () => {
         }
 
     }, [searchResponseString, showPreferredlocations, searchContextState.preferredLocations, showMyObjects, realEstateState.listings])
+
+    if (!searchContextState.searchResponse?.routingProfiles) {
+        history.push("/");
+        return null;
+    }
 
     const toggleEntityGroup = (title: string) => {
         const newGroups = groupedEntries.map(ge => ge.title !== title ? ge : {
@@ -383,10 +391,10 @@ const SearchResultPage: React.FunctionComponent = () => {
                              routes={routes}
                              toggleTransitRoute={( item ) => toggleTransitRoutesToEntity(searchContextState.location, item)}
                              transitRoutes={transitRoutes}
-                             searchAddress={searchContextState.placesLocation.label}
+                             searchAddress={searchContextState?.placesLocation?.label}
                              resetPosition={() => searchContextDispatch({
                                  type: SearchContextActions.SET_MAP_CENTER,
-                                 payload: searchContextState.searchResponse.centerOfInterest.coordinates
+                                 payload: searchContextState?.searchResponse?.centerOfInterest?.coordinates
                              })}
                              user={userState.user}
                              openUpgradeSubcriptionModal={(message) => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message}})}
