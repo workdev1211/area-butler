@@ -7,6 +7,7 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.enableCors();
   app.use(json({
+    limit: '5mb',
     verify: (req: any, res, buf, encoding) => {
       if (req.headers['stripe-signature'] && Buffer.isBuffer(buf)) {
       	req.rawBody = cloneBuffer(buf);

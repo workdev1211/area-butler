@@ -10009,6 +10009,13 @@ react-google-places-autocomplete@^3.3.2:
     typescript "^3.9.7"
     use-debounce "^3.4.3"
 
+react-image-crop@^9.0.4:
+  version "9.0.4"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-9.0.4.tgz#411c383e0e6868cdda3f249fbb04a4f0de4fb00d"
+  integrity sha512-+pdmTxZaYrf0HBrmkmVYOW3TeeEh/pPxIcXYjDmmx1IblxiLbuRTlEUG9o7fTxsNwWL1i5ZazBjxrNUK13ji+w==
+  dependencies:
+    clsx "^1.1.1"
+
 react-input-autosize@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/react-input-autosize/-/react-input-autosize-3.0.0.tgz#6b5898c790d4478d69420b55441fcc31d5c50a85"

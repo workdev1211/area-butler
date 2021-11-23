@@ -22,7 +22,8 @@ export const initialState: UserState = {
 export enum UserActions {
   SET_USER = "SET_USER",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
-  SET_START_TOUR = "SET_START_TOUR"
+  SET_START_TOUR = "SET_START_TOUR",
+  SET_LOGO = "SET_LOGO"
 }
 
 const reducer: (
@@ -38,6 +39,9 @@ const reducer: (
     }
     case UserActions.SET_START_TOUR: {
       return { ...state, startTour: action.payload };
+    }
+    case UserActions.SET_LOGO: {
+      return { ...state, user: { ...state.user, logo: action.payload }};
     }
     default:
       return state;

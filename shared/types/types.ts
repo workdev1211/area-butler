@@ -25,10 +25,15 @@ export interface ApiUser {
   consentGiven?: Date;
   requestContingents: ApiRequestContingent[];
   showTour: ApiShowTour;
+  logo?: string;
 }
 
 export interface ApiUpsertUser {
   fullname: string;
+}
+
+export interface ApiUserSettings {
+  logo?: string;
 }
 
 export interface ApiConsent {

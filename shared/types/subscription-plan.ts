@@ -34,7 +34,8 @@ export interface ApiSubscriptionPlan {
     appFeatures: {
         requestIncreasePackage: number;
         sendCustomerQuestionnaireRequest: boolean,
-        dataSources: ApiDataSource[]
+        dataSources: ApiDataSource[],
+        customLogo: boolean
     }
 }
 

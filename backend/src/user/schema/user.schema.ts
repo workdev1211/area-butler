@@ -32,6 +32,9 @@ export class User {
     @Prop({type: Object, default: {...initialShowTour}})
     showTour: ApiShowTour;
 
+    @Prop({required: false})
+    logo: string;
+
 }
 
 export const retrieveTotalRequestContingent = (
