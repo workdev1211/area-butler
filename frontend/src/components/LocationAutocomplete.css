@@ -2,6 +2,18 @@
     color: var(--primary);
 }
 
+.powered-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    padding-right: 4px;
+    padding-bottom: 4px;
+}
+.powered-container img {
+    height: 12px;
+    width: auto;
+}
+
 .google-autocomplete__control {
     border: 1px solid var(--base-bright-silver) !important;
     border-radius: 8px !important;

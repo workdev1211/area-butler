@@ -1,8 +1,10 @@
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import {components} from "react-select";
 import React, {FunctionComponent, useContext, useState} from "react";
 import "./LocationAutocomplete.css";
 import {ConfigContext} from "../context/ConfigContext";
 import {deriveGeocodeByAddress} from "../shared/shared.functions";
+import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 
 export interface LocationAutocompleteProps {
     afterChange?: ({value, coordinates}: { value: any, coordinates?: any }) => void;
@@ -18,6 +20,18 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                                 }
                                                                             }) => {                                                                                
     const {googleApiKey} = useContext(ConfigContext);
+    const Menu = (props: any) => {
+        return (
+            <>
+                <components.Menu {...props}>
+                    {props.children}
+                    <div className="powered-container">
+                        <img src={poweredByGoogleIcon} alt="google-icon" />
+                    </div>
+                </components.Menu>
+            </>
+        );
+    };
     const [inputValue, setInputValue] = useState(value?.label || '');
 
     const [focus, setFocus] = useState(false);
@@ -73,6 +87,9 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                     }}
                     minLengthAutocomplete={5}
                     selectProps={{
+                        components: {
+                            Menu,
+                        },
                         value: selectValue,
                         inputValue: inputValue,
                         onInputChange: (v: any, {action} : any) => onInputChange(v, action),
