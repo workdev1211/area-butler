@@ -53,6 +53,7 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
 
       {groupedEntries.map((group) => (
         <div
+          key={'collapsable' + group.title}
           className={
             "collapse border collapse-arrow" +
             (localityOpen.includes(group.title)
@@ -61,6 +62,7 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
           }
         >
           <div
+            key={'collapsable-title' + group.title}
             className="collapse-title font-medium flex items-center gap-6"
             onClick={() =>
               toggleLocality(group.title, !localityOpen.includes(group.title))
@@ -80,8 +82,8 @@ const EntitySelection: FunctionComponent<EntitySelectionProps> = ({
             </span>
           </div>
           <div className="collapse-content bg-white">
-            {group.items.slice(0, limit).map((item: ResultEntity) => (
-              <div className="flex gap-5 my-3 overflow-y-scroll items-center">
+            {group.items.slice(0, limit).map((item: ResultEntity, index: number) => (
+              <div className="flex gap-5 my-3 overflow-y-scroll items-center" key={group.title+'-' + item.label + '-' + item.name + '-' + index}>
                 <input
                   type="checkbox"
                   checked={item.selected}

@@ -3,12 +3,15 @@ import {
   SearchContext,
   SearchContextActions,
 } from "context/SearchContext";
+import { UserContext } from "context/UserContext";
 import React, { useContext, useState } from "react";
-import { ApiGeojsonFeature } from "../../../shared/types/types";
+import { ApiDataSource, ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
+import { ApiGeojsonFeature, ApiUser } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
+import InsightsSelectionProps from "./InsightsSelection";
 import MapClippingSelection, {
   SelectedMapClipping,
 } from "./MapClippingSelection";
@@ -28,11 +31,18 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(
     JSON.stringify(groupedEntries)
-  ).filter((group: EntityGroup) => group.title !== "Meine Objekte");
+  ).filter((group: EntityGroup) => group.title !== "Meine Objekte").filter((group: EntityGroup) => group.items.length > 0);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const [filteredEntites, setFilteredEntities] =
     useState<EntityGroup[]>(groupCopy);
+  const {userState} = useContext(UserContext);
+  const user = userState.user as ApiUser;
+  const subscriptionPlan = user.subscriptionPlan?.config;
+
+  const [showFederalElection, setShowFederalElection] = useState(!!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.FEDERAL_ELECTION));
+  const [showCensus, setShowCensus] = useState(!!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.CENSUS));
+  const [showParticlePollution, setShowParticlePollution] = useState(!!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.PARTICLE_POLLUTION));
 
   const selectableClippings = (searchContextState.mapClippings || []).map(
     (c: MapClipping) => ({ selected: true, ...c })
@@ -70,6 +80,16 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
             </h1>
 
             <div className="overflow-y-scroll flex flex-col h-96">
+              <InsightsSelectionProps
+                showCensus={showCensus}
+                setShowCensus={setShowCensus}
+                showFederalElection={showFederalElection}
+                setShowFederalElection={setShowFederalElection}
+                showParticlePollution={showParticlePollution}
+                setShowParticlePollution={setShowParticlePollution}
+              >
+
+              </InsightsSelectionProps>
               <MapClippingSelection
                 selectedMapClippings={selectedMapClippings}
                 setSelectedMapClippings={setSelectedMapClippings}
@@ -89,28 +109,32 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                 <ExposeDownload
                   entities={entities}
                   groupedEntries={filteredEntites!}
-                  censusData={censusData}
+                  censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing}
                   downloadButtonDisabled={false}
                   mapClippings={selectedMapClippings}
-                  federalElectionData={searchContextState.federalElectionData}
-                  onAfterPrint={onClose}
+                  federalElectionData={showFederalElection ? searchContextState.federalElectionData : null}
+                  particlePollutionData={showParticlePollution ? searchContextState.particlePollutionData : null}
+                  onAfterPrint={() => {}}
+                  user={subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD ? user : null}
                 />
               ) : (
                 <CheatsheetDownload
                   entities={entities}
                   groupedEntries={filteredEntites!}
-                  censusData={censusData}
+                  censusData={showCensus ? censusData : []}
                   searchResponse={searchContextState.searchResponse!}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing}
                   downloadButtonDisabled={false}
                   mapClippings={selectedMapClippings}
-                  federalElectionData={searchContextState.federalElectionData}
+                  federalElectionData={showFederalElection ? searchContextState.federalElectionData : null}
+                  particlePollutionData={showParticlePollution ? searchContextState.particlePollutionData : null}
                   onAfterPrint={onClose}
+                  user={subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD ? user : null}
                 />
               )}
             </div>

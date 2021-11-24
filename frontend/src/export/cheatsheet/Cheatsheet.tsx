@@ -1,7 +1,7 @@
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { SelectedMapClipping } from "export/MapClippingSelection";
-import PersonaRanking from "export/PersonaRanking";
+import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import React from "react";
@@ -14,9 +14,9 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
+  ApiUser,
   TransportationParam,
 } from "../../../../shared/types/types";
-import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
@@ -25,6 +25,7 @@ export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
   censusData: ApiGeojsonFeature[];
+  particlePollutionData: ApiGeojsonFeature[];
   federalElectionData: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
@@ -32,16 +33,18 @@ export interface CheatsheetProps {
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
   mapClippings: SelectedMapClipping[];
+  user: ApiUser | null;
 }
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const groupedEntries = props.groupedEntries
     .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
     .filter((group) => group.active && group.items.length > 0);
-  const activePrinting = props.activePrinting;
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
+  const user = props.user;
+  const particlePollutionData = props.particlePollutionData;
 
   const filteredGroups = groupedEntries.filter((group) => group.active);
 
@@ -54,18 +57,17 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
     [ApiPersonaType.YOUNG_FAMILY]: 1,
   };
 
+  // TODO This can't be right
+  let page = 0;
+  const nextPageNumber = (() => {
+    page += 0.5;
+    return page < 9 ? '0' + page : '' + page; 
+  });
+
   return (
     <div className="hidden print:block" ref={ref as any}>
-      <PdfPage>
-        <div className="flex justify-center items-center flex-col mt-16">
-          <div className="bg-primary w-96 h-24">
-            <img src={AreaButlerLogo} alt="Logo" />
-          </div>
-          <h1 className="mx-10 mt-10 mb-40 text-3xl font-extrabold">
-            Alle Informationen auf einen Blick
-          </h1>
-        </div>
-        <div className="flex flex-col gap-6" style={{ width: "1600px" }}>
+      <PdfPage title="Zusammenfassung" logo={user?.logo} nextPageNumber={nextPageNumber}>
+        <div className="flex flex-col gap-6">
           {!!props.realEstateListing && (
             <>
               <h3 className="text-3xl w-56 font-bold">Objektdetails</h3>
@@ -100,15 +102,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
               )}
             </>
           )}
-          <h1 className="text-3xl mb-5 font-bold">Personengruppen</h1>
-          <PersonaRanking rankings={mockData} />
-          {!!censusData && censusData.length > 0 && (
-            <CensusSummary censusData={censusData} />
-          )}
         </div>
-      </PdfPage>
-      <PdfPage>
-        <h1 className="text-3xl font-bold mb-5">Die nächsten Orte</h1>
         <div className="flex gap-6 flex-wrap">
           {filteredGroups.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
@@ -125,20 +119,25 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             })
           )}
         </div>
-        {activePrinting && (
-          <>
-            <h1 className="my-5 text-3xl font-bold">Kartenausschnitte</h1>
-            <MapClippings mapClippings={mapClippings} />
-          </>
-        )}
       </PdfPage>
-      {!!federalElectionData && (
-        <PdfPage>
+      {mapClippings.length > 0 && <MapClippings mapClippings={mapClippings} logo={user?.logo} nextPageNumber={nextPageNumber} />}
+      <PdfPage title="Einblicke" logo={user?.logo} nextPageNumber={nextPageNumber}>
+        {!!censusData && censusData.length > 0 && (
+          <CensusSummary primaryColor={user?.color} censusData={censusData} />
+        )}
+        {!!federalElectionData && (
           <FederalElectionSummary
+            primaryColor={user?.color}
             federalElectionDistrict={federalElectionData}
           ></FederalElectionSummary>
-        </PdfPage>
-      )}
+        )}
+        {!!particlePollutionData && particlePollutionData.length > 0 && (
+          <ParticlePollutionSummary
+            primaryColor={user?.color}
+            particlePollutionData={particlePollutionData}
+          />
+        )}
+      </PdfPage>
     </div>
   );
 });

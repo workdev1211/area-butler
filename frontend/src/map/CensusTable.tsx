@@ -5,7 +5,7 @@ export interface CensusTableProps {
   censusData: ApiGeojsonFeature[];
 }
 
-const averageCensus = {
+export const averageCensus = {
   'Durchschnittsalter': 44,
   'Anteil der Ausländer': 8,
   'Einwohner': 4041,
@@ -18,7 +18,7 @@ const averageCensus = {
 } as any;
 
 const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
-  const censusCenter = censusData[0] as any;
+  const censusCenter = censusData.find(c => (c.properties as any).some((p : any) => p.value !== 'unbekannt') ) || censusData[0] as any;
 
   if (!censusCenter) {
     return null;

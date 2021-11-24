@@ -24,7 +24,10 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
   const [collapseOpen, setCollapseOpen] = useState(false);
 
   return (
-    <div className="mt-10">
+    <div>
+      <h1 className="my-5 font-bold">
+        Bilder 
+      </h1>
       <div
         className={
           "collapse border collapse-arrow" +

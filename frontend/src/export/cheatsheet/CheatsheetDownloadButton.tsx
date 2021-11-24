@@ -2,7 +2,7 @@ import {MapClipping} from "context/SearchContext";
 import React, {useRef, useState} from "react";
 import ReactToPrint from "react-to-print";
 import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
-import {ApiGeojsonFeature, ApiSearchResponse, TransportationParam} from "../../../../shared/types/types";
+import {ApiGeojsonFeature, ApiSearchResponse, ApiUser, TransportationParam} from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
 import {ResultEntity} from "../../pages/SearchResultPage";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
@@ -18,8 +18,10 @@ export interface CheatsheetDownloadProps {
     downloadButtonDisabled: boolean;
     mapClippings: SelectedMapClipping[];
     censusData: ApiGeojsonFeature[];
+    particlePollutionData: ApiGeojsonFeature[];
     federalElectionData: FederalElectionDistrict;
     onAfterPrint: () => void;
+    user: ApiUser | null;
 }
 
 export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps> =
@@ -34,6 +36,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
          mapClippings,
          censusData,
          federalElectionData,
+         particlePollutionData,
+         user,
          onAfterPrint
      }) => {
         const componentRef = useRef();
@@ -77,6 +81,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
                     mapClippings={mapClippings}
                     censusData={censusData}
                     federalElectionData={federalElectionData}
+                    particlePollutionData={particlePollutionData}
+                    user={user}
                 />
             </div>
         );

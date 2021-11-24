@@ -1,0 +1,28 @@
+table.entity-table {
+    border-collapse: collapse;
+    font-weight: 300;
+    @apply w-full;
+}
+
+table.entity-table th {
+    text-align: left;
+    padding-left: 8px;
+    border-collapse: collapse;
+}
+
+table.entity-table td {
+    padding-left: 8px;
+    height: 36px;
+    border: 1px solid #e1e4e5;
+    border-collapse: collapse;
+}
+
+table.entity-table thead tr {
+    height: 42px !important;
+    padding-left: 8px;
+    @apply text-white;
+}
+
+table.entity-table tbody tr:nth-child(odd) {
+    background-color: #f3f3f4;
+}

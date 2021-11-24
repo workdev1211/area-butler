@@ -36,8 +36,11 @@ export const useFederalElectionData = () => {
         const electionResultData = result[0];
 
 
-        const results : FederalElectionResult[] = electionResultData.properties.ERGEBNIS
-        .filter(data => data.Gruppenart === ApiFeatureElectionFeatureResultGroup.PARTY && data.Stimme === 2 && !!data.Prozent && !!data.VorpProzent && data.Prozent > 5)
+        const partiesWithFivePercent = electionResultData.properties.ERGEBNIS
+        .filter(data => data.Gruppenart === ApiFeatureElectionFeatureResultGroup.PARTY && data.Stimme === 2 && !!data.Prozent && !!data.VorpProzent && data.Prozent > 5);
+
+        const results : FederalElectionResult[] = partiesWithFivePercent
+        .filter(party => party.Anzahl === Math.max.apply(Math, partiesWithFivePercent.filter(p => p.Gruppenname === party.Gruppenname).map(p => p.Anzahl)))
         .sort((r1, r2) => r2.Prozent - r1.Prozent)
         .map(data => ({
            party: data.Gruppenname,

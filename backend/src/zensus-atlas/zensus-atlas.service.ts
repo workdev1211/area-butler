@@ -62,7 +62,7 @@ export class ZensusAtlasService {
       user._id,
       subscription =>
         !subscription?.appFeatures.dataSources.includes(ApiDataSource.CENSUS),
-      'Zensusdaten sind im aktuellem Abonnement nicht verfügbar',
+      'Der Zensus Atlas ist im aktuellem Abonnement nicht verfügbar',
     );
 
     return this.zensusAtlasModel.find({

@@ -315,7 +315,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                     }}
                     className="btn btn-link"
                 >
-                    <img src={pdfIcon} alt="pdf-icon"/> Spickzekttel PDF
+                    <img src={pdfIcon} alt="pdf-icon"/> Spickzettel PDF
                 </button>
             </li>
             <li>

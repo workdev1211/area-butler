@@ -1,4 +1,5 @@
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
+import "./EntityTable.css";
 import React from "react";
 import { calculateMinutesToMeters } from "../../../shared/constants/constants";
 import { MeansOfTransportation } from "../../../shared/types/types";
@@ -7,6 +8,7 @@ export interface EntityTableProps {
   entityGroup: EntityGroup;
   limit?: number;
   showRoutingColumns?: boolean;
+  primaryColor?: string;
 }
 const deriveMinutesFromMeters = (
   distanceInMeters: number,
@@ -23,6 +25,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
   entityGroup,
   limit = 10,
   showRoutingColumns = true,
+  primaryColor = '#aa0c54'
 }) => {
   const items = [...entityGroup.items].slice(0, limit);
   const hasNames = items.some((item) => item.name && item.name.length);
@@ -30,24 +33,27 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
   const byBike = items.some((item) => item.byBike);
   const byCar = items.some((item) => item.byCar);
 
+  const tableHeaderStyle = {
+    backgroundColor: primaryColor
+  }
+
   return (
     <div>
-      <h1 className="text-xl ml-2 font-bold">{entityGroup.title}</h1>
-      <table className="table w-full mt-5">
-        <thead>
-          <tr>
-            {hasNames && <th className="pr-4 py-1 text-left">Name</th>}
-            <th className={hasNames ? "px-4 py-1 text-left" : "py-1 text-left"}>
+      <table className="entity-table">
+        <thead >
+          <tr style={tableHeaderStyle}>
+            {hasNames && <th>Name</th>}
+            <th>
               Entfernung
             </th>
             {showRoutingColumns && byFoot && (
-              <th className="px-4 py-1 text-left">Zu Fuß</th>
+              <th>Zu Fuß</th>
             )}
             {showRoutingColumns && byBike && (
-              <th className="px-4 py-1 text-left">Fahrrad</th>
+              <th>Fahrrad</th>
             )}
             {showRoutingColumns && byCar && (
-              <th className="px-4 py-1 text-left">Auto</th>
+              <th>Auto</th>
             )}
           </tr>
         </thead>
@@ -62,14 +68,14 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                 item.distanceInMeters
               }
             >
-              {hasNames && <td className="pr-4 py-1">{item.name || entityGroup.title}</td>}
-              <td className={hasNames ? "px-4 py-1" : "py-1"}>
+              {hasNames && <td>{item.name || entityGroup.title}</td>}
+              <td>
                 {item.distanceInMeters
                   ? Math.trunc(item.distanceInMeters) + " m"
                   : "unbekannt"}
               </td>
               {showRoutingColumns && byFoot && (
-                <td className="px-4 py-1">
+                <td>
                   {item.byFoot
                     ? `${Math.trunc(
                         deriveMinutesFromMeters(
@@ -81,7 +87,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                 </td>
               )}
               {showRoutingColumns && byBike && (
-                <td className="px-4 py-1">
+                <td>
                   {item.byBike
                     ? `${Math.trunc(
                         deriveMinutesFromMeters(
@@ -93,7 +99,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                 </td>
               )}
               {showRoutingColumns && byCar && (
-                <td className="px-4 py-1">
+                <td>
                   {item.byCar
                     ? `${Math.trunc(
                         deriveMinutesFromMeters(

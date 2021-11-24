@@ -6,7 +6,7 @@ export interface ParticlePollutionTableProps {
 }
 
 
-interface PollutionData {
+export interface PollutionData {
     mean: number;
     daysAboveThreshold: number;
 }

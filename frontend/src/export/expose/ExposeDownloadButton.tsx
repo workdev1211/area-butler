@@ -1,12 +1,11 @@
-import {MapClipping} from "context/SearchContext";
-import React, {useRef, useState} from "react";
-import ReactToPrint from "react-to-print";
-import {ApiRealEstateListing} from "../../../../shared/types/real-estate";
-import {ApiGeojsonFeature, TransportationParam} from "../../../../shared/types/types";
-import Expose from "./Expose";
-import {ResultEntity} from "../../pages/SearchResultPage";
-import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { SelectedMapClipping } from "export/MapClippingSelection";
+import { FederalElectionDistrict } from "hooks/federalelectiondata";
+import React, { useRef, useState } from "react";
+import ReactToPrint from "react-to-print";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
+import { ApiGeojsonFeature, ApiUser, TransportationParam } from "../../../../shared/types/types";
+import { ResultEntity } from "../../pages/SearchResultPage";
+import Expose from "./Expose";
 
 export interface ExposeDownloadProps {
     entities: ResultEntity[];
@@ -17,7 +16,9 @@ export interface ExposeDownloadProps {
     downloadButtonDisabled: boolean;
     mapClippings: SelectedMapClipping[];
     censusData: ApiGeojsonFeature[];
+    particlePollutionData: ApiGeojsonFeature[];
     federalElectionData: FederalElectionDistrict;
+    user: ApiUser | null;
     onAfterPrint: () => void;
 }
 
@@ -40,6 +41,8 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
          mapClippings = [],
          censusData = [],
          federalElectionData,
+         particlePollutionData,
+         user,
          onAfterPrint
      }) => {
         const componentRef = useRef<HTMLDivElement>(null);
@@ -78,7 +81,9 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
                     mapClippings={mapClippings}
                     censusData={censusData}
                     federalElectionData={federalElectionData}
+                    particlePollutionData={particlePollutionData}
                     activePrinting={activePrinting}
+                    user={user}
                 />
             </div>
         );
