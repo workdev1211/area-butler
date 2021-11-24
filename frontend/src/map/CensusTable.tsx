@@ -18,11 +18,12 @@ export const averageCensus = {
 } as any;
 
 const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
-  const censusCenter = censusData.find(c => (c.properties as any).some((p : any) => p.value !== 'unbekannt') ) || censusData[0] as any;
 
-  if (!censusCenter) {
+  if (!censusData) {
     return null;
   }
+
+  const censusCenter = censusData.find(c => (c.properties as any).some((p : any) => p.value !== 'unbekannt') ) || censusData[0] as any;
 
   return (
     <table className="table w-full text-sm lg:text-base">
