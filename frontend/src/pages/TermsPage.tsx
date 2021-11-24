@@ -52,7 +52,6 @@ export const TermsPage = () => {
                         für die Dauer des Vertrags, wobei die damit ermöglichten Analysen zahlenmäßig auf die
                         vertraglich vereinbarte Anzahl entsprechend des Aboplans begrenzt sind,<br/>
                         b) die Einräumung von Speicherplatz auf den Servern von KuDiBa für die Dauer des Vertrags,<br/>
-                        c) weitere
                     </li>
                     <li data-start="2">
                         KuDiBa ist berechtigt, bei der Bereitstellung von Area Butler sowie der hierfür erforderlichen
@@ -167,13 +166,13 @@ export const TermsPage = () => {
                     </li>
                     <li data-start="5">
                         Der Nutzer bleibt in jedem Fall Alleinberechtigter an den von ihm selbst eingegebenen Daten und
-                        kann daher jederzeit deren einzelne oder teilweise Herausgabe verlangen.
+                        kann daher jederzeit deren teilweise Herausgabe verlangen.
                     </li>
                     <li data-start="5">
                         Im Übrigen gilt unsere <a className="link-primary" href="/privacy">Datenschutzerklärung</a>.
                     </li>
                 </ol>
-                <h2>$6 Vertragslaufzeit und -beendigung</h2>
+                <h2>§6 Vertragslaufzeit und -beendigung</h2>
                 <ol>
                     <li data-start="6">
                         Die Vertragslaufzeit richtet sich nach der für den jeweiligen Aboplan gewählten Laufzeitoption.
@@ -333,8 +332,8 @@ export const TermsPage = () => {
                         Preises.
                     </li>
                     <li data-start="13">
-                        Der Nutzer kann nach Erhalt der Mitteilung jederzeit auf die Frist gemäß Ziffer 14.1 verzichten.
-                        Die Stellung von Analyseanfragen auf Area Butler vor Ablauf der Frist gemäß Ziffer 14.1 gilt als
+                        Der Nutzer kann nach Erhalt der Mitteilung jederzeit auf die Frist gemäß Ziffer 13.1 verzichten.
+                        Die Stellung von Analyseanfragen auf Area Butler vor Ablauf der Frist gemäß Ziffer 13.1 gilt als
                         eindeutige bestätigende Handlung zu einem solchen Verzicht.
                     </li>
                 </ol>
