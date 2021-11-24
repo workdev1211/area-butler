@@ -17,8 +17,8 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                                 },
                                                                                 value = null,
                                                                                 setValue = () => {
-                                                                                }
-                                                                            }) => {                                                                                
+                                                                                },
+                                                                            }) => {
     const {googleApiKey} = useContext(ConfigContext);
     const Menu = (props: any) => {
         return (
@@ -26,12 +26,13 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                 <components.Menu {...props}>
                     {props.children}
                     <div className="powered-container">
-                        <img src={poweredByGoogleIcon} alt="google-icon" />
+                        <img src={poweredByGoogleIcon} alt="google-icon"/>
                     </div>
                 </components.Menu>
             </>
         );
     };
+
     const [inputValue, setInputValue] = useState(value?.label || '');
 
     const [focus, setFocus] = useState(false);
@@ -63,7 +64,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             if (value.value?.place_id) {
                 return value;
             }
-            return { label: value, value: { place_id: '123' }}
+            return {label: value, value: {place_id: '123'}}
         }
         return null;
     }
@@ -74,7 +75,8 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             <label className="label">
                 <span>Adresse</span>
             </label>
-            <div className="google-input" onClick={() => !!value && !inputValue && setInputValue(value?.label || value)}>
+            <div className="google-input"
+                 onClick={() => !!value && !inputValue && setInputValue(value?.label || value)}>
                 <GooglePlacesAutocomplete
                     apiOptions={{
                         language: "de",
@@ -92,7 +94,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         },
                         value: selectValue,
                         inputValue: inputValue,
-                        onInputChange: (v: any, {action} : any) => onInputChange(v, action),
+                        onInputChange: (v: any, {action}: any) => onInputChange(v, action),
                         onChange: deriveLangLat,
                         className: 'google-autocomplete',
                         classNamePrefix: 'google-autocomplete',
@@ -102,7 +104,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         onFocus: () => setFocus(true),
                         onBlur: () => setFocus(false),
                         menuPortalTarget: document.body,
-                        styles: { menuPortal: (base: any) => ({ ...base, zIndex: 99 }) }
+                        styles: {menuPortal: (base: any) => ({...base, zIndex: 99})}
                     }}
                     apiKey={googleApiKey}
                 />

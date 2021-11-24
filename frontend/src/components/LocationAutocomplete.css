@@ -48,7 +48,7 @@
 }
 
 .google-autocomplete__indicators {
-    display: none;
+    display: none !important;
 }
 
 .google-autocomplete__menu, .google-autocomplete__menu-list, .google-autocomplete__option {
