@@ -8,10 +8,12 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 import { UserContext } from "context/UserContext";
 
+const pathWithoutAuth = ['/terms', '/privacy', '/impress'];
+
 const Authenticated = withRouter<
   RouteComponentProps,
   FunctionComponent<RouteComponentProps>
->(({ history, children }) => {
+>(({ history, location, children }) => {
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { userState } = useContext(UserContext);
   const [isLoggedIn, setIsLoggedIn] = useState(isAuthenticated);
@@ -25,6 +27,7 @@ const Authenticated = withRouter<
       const idToken = await getIdTokenClaims();
 
       if (
+        !pathWithoutAuth.includes(location.pathname) &&
         !!userState?.user?.consentGiven &&
         !!idToken &&
         !!idToken.email_verified &&
