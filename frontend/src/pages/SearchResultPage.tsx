@@ -362,6 +362,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                         />
                         <Map
                             searchResponse={searchContextState.searchResponse}
+                            searchAddress={searchContextState?.placesLocation?.label}
                             entities={filteredEntites}
                             groupedEntities={groupedEntries}
                             highlightId={searchContextState.highlightId}
