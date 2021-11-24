@@ -7,7 +7,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {ApiRoute, ApiTransitRoute} from "../../../shared/types/routing";
 import {
     ApiCoordinates,
@@ -142,6 +142,12 @@ const Map = React.memo<MapProps>(({
 
     const {mapBoxAccessToken} = useContext(ConfigContext);
     const {searchContextDispatch} = useContext(SearchContext);
+
+    const [fullscreen, setFullscreen] = useState(false);
+
+    useEffect(() => {
+        document.body.classList.toggle('fullscreen', fullscreen);
+    }, [fullscreen]);
 
     // main map draw
     useEffect(() => {
@@ -466,10 +472,26 @@ const Map = React.memo<MapProps>(({
         });
     }
 
+    const toggleFullscreen = () => {
+        setFullscreen(!fullscreen);
+        if (currentMap) {
+            setTimeout(function(){ currentMap!.invalidateSize()}, 400);
+        }
+    }
+
     return (
         <div className='leaflet-container w-full' id={leafletMapId} data-tour="map">
             <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
                 <div className="leaflet-control-zoom leaflet-bar leaflet-control">
+                    <a data-tour="go-fullscreen" className="leaflet-control-zoom-in cursor-pointer" role="button"
+                       onClick={() => toggleFullscreen()}>
+                        <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
+                            <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z"/>
+                            <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z"/>
+                            <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z"/>
+                            <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z"/>
+                        </svg>
+                    </a>
                     <a data-tour="take-map-picture" className="leaflet-control-zoom-in cursor-pointer" role="button"
                        onClick={() => takePicture()}>📷</a>
                 </div>
