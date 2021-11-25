@@ -8,7 +8,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../../pages/SearchResultPage";
 import { CensusSummary } from "../CensusSummary";
@@ -50,38 +50,48 @@ export const Expose = React.forwardRef(
 
     // TODO This can't be right
     let page = 0;
-    const nextPageNumber = (() => {
+    const nextPageNumber = () => {
       page += 0.5;
-      return page < 9 ? '0' + page : '' + page; 
-    });
+      return page < 9 ? "0" + page : "" + page;
+    };
 
     return (
       <div className="hidden print:block" ref={ref}>
         {activePrinting && (
           <>
-            <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title="Überblick">
+            <PdfPage
+              nextPageNumber={nextPageNumber}
+              logo={user?.logo}
+              title="Überblick"
+            >
               <ExposeSummary
                 realEstateListing={props.realEstateListing}
-                filteredGroups={filteredGroups}
+                groupedEntries={groupedEntries}
                 transportationParams={transportationParams}
                 listingAddress={props.listingAddress}
+                primaryColor={user?.color}
               ></ExposeSummary>
             </PdfPage>
-            {(filteredGroups.length > 0 ||
-              !!importantEntites?.items?.length) && (
-              <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title="Umgebung">
-                <EntityGridSummary
-                  groupedEntries={groupedEntries}
-                  transportationParams={transportationParams}
-                  primaryColor={user?.color}
-                />
+            {!!importantEntites?.items?.length && (
+              <PdfPage
+                nextPageNumber={nextPageNumber}
+                logo={user?.logo}
+                title="Umgebung"
+              >
                 {!!importantEntites && importantEntites.items.length > 0 && (
-                  <EntityTable entityGroup={importantEntites!} primaryColor={user?.color}></EntityTable>
+                  <EntityTable
+                    entityGroup={importantEntites!}
+                    primaryColor={user?.color}
+                  ></EntityTable>
                 )}
               </PdfPage>
             )}
             {mapClippings.length > 0 && (
-                <MapClippings mapClippings={mapClippings} nextPageNumber={nextPageNumber} logo={user?.logo} />
+              <MapClippings
+                mapClippings={mapClippings}
+                nextPageNumber={nextPageNumber}
+                logo={user?.logo}
+              />
             )}
             {groupedEntries
               .filter(
@@ -91,29 +101,57 @@ export const Expose = React.forwardRef(
               )
               .map((entityGroup: EntityGroup) => {
                 return (
-                  <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title={entityGroup.title}>
+                  <PdfPage
+                    nextPageNumber={nextPageNumber}
+                    logo={user?.logo}
+                    title={entityGroup.title}
+                  >
                     <div
                       className="m-10"
                       key={"tab-content-" + entityGroup.title}
                     >
-                      <EntityTable entityGroup={entityGroup} primaryColor={user?.color}></EntityTable>
+                      <EntityTable
+                        entityGroup={entityGroup}
+                        primaryColor={user?.color}
+                      ></EntityTable>
                     </div>
                   </PdfPage>
                 );
               })}
             {!!censusData && censusData.length > 0 && (
-              <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title="Nachbarschaftsdemographie">
-                <CensusSummary primaryColor={user?.color} censusData={censusData} />
+              <PdfPage
+                nextPageNumber={nextPageNumber}
+                logo={user?.logo}
+                title="Nachbarschaftsdemographie"
+              >
+                <CensusSummary
+                  primaryColor={user?.color}
+                  censusData={censusData}
+                />
               </PdfPage>
             )}
             {!!federalElectionData && (
-              <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title="Bundestagswahl 2021">
-                <FederalElectionSummary primaryColor={user?.color} federalElectionDistrict={federalElectionData} />
+              <PdfPage
+                nextPageNumber={nextPageNumber}
+                logo={user?.logo}
+                title="Bundestagswahl 2021"
+              >
+                <FederalElectionSummary
+                  primaryColor={user?.color}
+                  federalElectionDistrict={federalElectionData}
+                />
               </PdfPage>
             )}
             {!!particlePollutionData && particlePollutionData.length > 0 && (
-              <PdfPage nextPageNumber={nextPageNumber} logo={user?.logo} title="Feinstaubbelastung">
-                <ParticlePollutionSummary primaryColor={user?.color} particlePollutionData={particlePollutionData} />
+              <PdfPage
+                nextPageNumber={nextPageNumber}
+                logo={user?.logo}
+                title="Feinstaubbelastung"
+              >
+                <ParticlePollutionSummary
+                  primaryColor={user?.color}
+                  particlePollutionData={particlePollutionData}
+                />
               </PdfPage>
             )}
           </>

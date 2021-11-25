@@ -24,7 +24,7 @@ const routingProfileOrder = [
 ];
 
 export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> =
-  ({ groupedEntries, transportationParams, primaryColor = '#aa0c54' }) => {
+  ({ groupedEntries, transportationParams, primaryColor = "#aa0c54" }) => {
     const byFootAvailable = transportationParams.some(
       (param) => param.type === MeansOfTransportation.WALK
     );
@@ -39,15 +39,17 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
 
     const tableHeaderStyle = {
       background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
-      color: colorPalette.textColor
-    }
+      color: colorPalette.textColor,
+      fontSize: '16px'
+    };
 
     return (
-      <div className="m-10">
+      <div className="mx-10 my-5">
         <table className="entity-table">
-          <thead style={{backgroundAttachment: 'fixed'}}>
+          <thead style={{ backgroundAttachment: "fixed" }}>
             <tr style={tableHeaderStyle}>
               <th />
+              <th>Nächster Ort</th>
               {transportationParams
                 .sort(
                   (t1, t2) =>
@@ -81,6 +83,12 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
                 <tr key={`entity-grid-item-${group.title}`}>
                   <td>
                     <h5 className="font-bold">{group.title}</h5>
+                  </td>
+                  <td>
+                    {Math.round(
+                      Math.min(...group.items.map((d) => d.distanceInMeters))
+                    )}{" "}
+                    m
                   </td>
                   {byFootAvailable && (
                     <td>
