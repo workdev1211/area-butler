@@ -151,6 +151,7 @@ const Map = React.memo<MapProps>(({
 
     // main map draw
     useEffect(() => {
+        localStorage.setItem('reactToMapChanges', 'true');
         const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
         const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
@@ -170,10 +171,12 @@ const Map = React.memo<MapProps>(({
 
         localMap.addEventListener("zoomend", (value) => {
             zoom = value.target._zoom;
-            searchContextDispatch({type: SearchContextActions.SET_MAP_ZOOM_LEVEL, payload: zoom})
+            if (localStorage.getItem('reactToMapChanges')) {
+                searchContextDispatch({type: SearchContextActions.SET_MAP_ZOOM_LEVEL, payload: zoom})
+            }
         });
         localMap.on('moveend', (event) => {
-            if (!!event?.target?.getCenter()) {
+            if (!!event?.target?.getCenter() && localStorage.getItem('reactToMapChanges')) {
                 const center = event.target.getCenter();
                 searchContextDispatch({type: SearchContextActions.SET_MAP_CENTER, payload: center});
             }
@@ -479,9 +482,54 @@ const Map = React.memo<MapProps>(({
         }
     }
 
+    const zoomToMeanBounds = (mean: MeansOfTransportation) => {
+        if (currentMap) {
+            const derivePolygonForMean = (mean: MeansOfTransportation) => {
+                const derivePositionForTransportationMean = (profile: MeansOfTransportation) => {
+                    return searchResponse.routingProfiles[profile].isochrone.features[0].geometry.coordinates[0].map((item: number[]) => {
+                        return [item[1], item[0]];
+                    });
+                }
+                if (mean === MeansOfTransportation.WALK) {
+                    return L.polygon(derivePositionForTransportationMean(MeansOfTransportation.WALK), {
+                        color: WALK_COLOR
+                    });
+                }
+                if (mean === MeansOfTransportation.BICYCLE) {
+                    return L.polygon(derivePositionForTransportationMean(MeansOfTransportation.BICYCLE), {
+                        color: BICYCLE_COLOR
+                    });
+                }
+                if (mean === MeansOfTransportation.CAR) {
+                    return L.polygon(derivePositionForTransportationMean(MeansOfTransportation.CAR), {
+                        color: CAR_COLOR
+                    });
+                }
+            }
+            const polygon = derivePolygonForMean(mean);
+            localStorage.removeItem('reactToMapChanges')
+            currentMap!.fitBounds(polygon!.getBounds(), {padding: L.point(10, 10)});
+            setTimeout(() => localStorage.setItem('reactToMapChanges', 'true'), 1000);
+        }
+    }
+
     return (
         <div className='leaflet-container w-full' id={leafletMapId} data-tour="map">
             <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
+                <div data-tour="zoom-to-bounds" className="leaflet-control-zoom leaflet-bar leaflet-control">
+                    {means.byFoot && <a data-tour="show-foot-bounds" className="leaflet-control-zoom-in cursor-pointer p-2" role="button"
+                       onClick={() => zoomToMeanBounds(MeansOfTransportation.WALK)}>
+                        <img src={walkIcon} alt="zoom to walk" />
+                    </a>}
+                    {means.byBike && <a data-tour="show-bike-bounds" className="leaflet-control-zoom-in cursor-pointer p-2" role="button"
+                                        onClick={() => zoomToMeanBounds(MeansOfTransportation.BICYCLE)}>
+                        <img src={bikeIcon} alt="zoom to bicycle" />
+                    </a>}
+                    {means.byCar && <a data-tour="show-car-bounds" className="leaflet-control-zoom-in cursor-pointer p-2" role="button"
+                                        onClick={() => zoomToMeanBounds(MeansOfTransportation.CAR)}>
+                        <img src={carIcon} alt="zoom to car" />
+                    </a>}
+                </div>
                 <div className="leaflet-control-zoom leaflet-bar leaflet-control">
                     <a data-tour="go-fullscreen" className="leaflet-control-zoom-in cursor-pointer" role="button"
                        onClick={() => toggleFullscreen()}>

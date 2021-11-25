@@ -44,6 +44,11 @@ const Steps: Step[] = [
         locale: defaultLocale,
         target: 'div[data-tour="actions-top"]',
     }, {
+        content: "Ein Klick zoomt und zentriert die Map auf das gewählte Fortbewegungsmittel",
+        locale: defaultLocale,
+        placement: "right",
+        target: 'div[data-tour="zoom-to-bounds"]'
+    }, {
         content: "Hier können Sie den Vollbildmodus aktivieren bzw. deaktivieren.",
         locale: defaultLocale,
         placement: "right",
