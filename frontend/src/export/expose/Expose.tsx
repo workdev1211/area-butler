@@ -56,104 +56,109 @@ export const Expose = React.forwardRef(
     };
 
     return (
-      <div className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block" ref={ref}>
-          <>
+      <div
+        className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
+        ref={ref}
+      >
+        <>
+          <PdfPage
+            nextPageNumber={nextPageNumber}
+            logo={user?.logo}
+            title="Überblick"
+          >
+            <ExposeSummary
+              realEstateListing={props.realEstateListing}
+              groupedEntries={groupedEntries}
+              transportationParams={transportationParams}
+              listingAddress={props.listingAddress}
+              primaryColor={user?.color}
+            ></ExposeSummary>
+          </PdfPage>
+          {!!importantEntites?.items?.length && (
             <PdfPage
               nextPageNumber={nextPageNumber}
               logo={user?.logo}
-              title="Überblick"
+              title="Umgebung"
             >
-              <ExposeSummary
-                realEstateListing={props.realEstateListing}
-                groupedEntries={groupedEntries}
-                transportationParams={transportationParams}
-                listingAddress={props.listingAddress}
-                primaryColor={user?.color}
-              ></ExposeSummary>
-            </PdfPage>
-            {!!importantEntites?.items?.length && (
-              <PdfPage
-                nextPageNumber={nextPageNumber}
-                logo={user?.logo}
-                title="Umgebung"
-              >
-                {!!importantEntites && importantEntites.items.length > 0 && (
+              {!!importantEntites && importantEntites.items.length > 0 && (
+                <div className="m-10">
                   <EntityTable
                     entityGroup={importantEntites!}
                     primaryColor={user?.color}
                   ></EntityTable>
-                )}
-              </PdfPage>
-            )}
-            {mapClippings.length > 0 && (
-              <MapClippings
-                mapClippings={mapClippings}
-                nextPageNumber={nextPageNumber}
-                logo={user?.logo}
-              />
-            )}
-            {groupedEntries
-              .filter(
-                (entityGroup) =>
-                  entityGroup.active &&
-                  entityGroup.items.filter((i) => i.selected).length > 0
-              )
-              .map((entityGroup: EntityGroup) => {
-                return (
-                  <PdfPage
-                    nextPageNumber={nextPageNumber}
-                    logo={user?.logo}
-                    title={entityGroup.title}
+                </div>
+              )}
+            </PdfPage>
+          )}
+          {mapClippings.length > 0 && (
+            <MapClippings
+              mapClippings={mapClippings}
+              nextPageNumber={nextPageNumber}
+              logo={user?.logo}
+            />
+          )}
+          {groupedEntries
+            .filter(
+              (entityGroup) =>
+                entityGroup.active &&
+                entityGroup.items.filter((i) => i.selected).length > 0
+            )
+            .map((entityGroup: EntityGroup) => {
+              return (
+                <PdfPage
+                  nextPageNumber={nextPageNumber}
+                  logo={user?.logo}
+                  title={entityGroup.title}
+                >
+                  <div
+                    className="m-10"
+                    key={"tab-content-" + entityGroup.title}
                   >
-                    <div
-                      className="m-10"
-                      key={"tab-content-" + entityGroup.title}
-                    >
-                      <EntityTable
-                        entityGroup={entityGroup}
-                        primaryColor={user?.color}
-                      ></EntityTable>
-                    </div>
-                  </PdfPage>
-                );
-              })}
-            {!!censusData && censusData.length > 0 && (
-              <PdfPage
-                nextPageNumber={nextPageNumber}
-                logo={user?.logo}
-                title="Nachbarschaftsdemographie"
-              >
-                <CensusSummary
-                  primaryColor={user?.color}
-                  censusData={censusData}
-                />
-              </PdfPage>
-            )}
-            {!!federalElectionData && (
-              <PdfPage
-                nextPageNumber={nextPageNumber}
-                logo={user?.logo}
-                title="Bundestagswahl 2021"
-              >
-                <FederalElectionSummary
-                  primaryColor={user?.color}
-                  federalElectionDistrict={federalElectionData}
-                />
-              </PdfPage>
-            )}
-            {!!particlePollutionData && particlePollutionData.length > 0 && (
-              <PdfPage
-                nextPageNumber={nextPageNumber}
-                logo={user?.logo}
-                title="Feinstaubbelastung"
-              >
-                <ParticlePollutionSummary
-                  primaryColor={user?.color}
-                  particlePollutionData={particlePollutionData}
-                />
-              </PdfPage>
-            )}
-          </>
+                    <EntityTable
+                      entityGroup={entityGroup}
+                      primaryColor={user?.color}
+                    ></EntityTable>
+                  </div>
+                </PdfPage>
+              );
+            })}
+          {!!censusData && censusData.length > 0 && (
+            <PdfPage
+              nextPageNumber={nextPageNumber}
+              logo={user?.logo}
+              title="Nachbarschaftsdemographie"
+            >
+              <CensusSummary
+                primaryColor={user?.color}
+                censusData={censusData}
+              />
+            </PdfPage>
+          )}
+          {!!federalElectionData && (
+            <PdfPage
+              nextPageNumber={nextPageNumber}
+              logo={user?.logo}
+              title="Bundestagswahl 2021"
+            >
+              <FederalElectionSummary
+                primaryColor={user?.color}
+                federalElectionDistrict={federalElectionData}
+              />
+            </PdfPage>
+          )}
+          {!!particlePollutionData && particlePollutionData.length > 0 && (
+            <PdfPage
+              nextPageNumber={nextPageNumber}
+              logo={user?.logo}
+              title="Feinstaubbelastung"
+            >
+              <ParticlePollutionSummary
+                primaryColor={user?.color}
+                particlePollutionData={particlePollutionData}
+              />
+            </PdfPage>
+          )}
+        </>
       </div>
     );
   }
