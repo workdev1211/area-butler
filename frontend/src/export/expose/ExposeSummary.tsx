@@ -31,7 +31,7 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
   const colorPalette = deriveColorPalette(primaryColor);
 
   const mobilityTypeStyle = {
-    background: `linear-gradient(to right, ${colorPalette.primaryColor}, ${colorPalette.primaryColorLight} 40%)`,
+    background: `linear-gradient(to right, ${colorPalette.primaryColor}, ${colorPalette.primaryColorDark} 40%)`,
     color: colorPalette.textColor,
   };
 
