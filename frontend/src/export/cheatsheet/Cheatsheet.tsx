@@ -60,7 +60,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   // TODO This can't be right
   let page = 0;
   const nextPageNumber = (() => {
-    page += 0.5;
+    page++;
     return page < 9 ? '0' + page : '' + page; 
   });
 
