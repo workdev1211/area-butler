@@ -68,6 +68,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
                         </button>
                     )}
                     content={() => componentRef.current!}
+                    bodyClass="font-serif"
                 />
                 <Cheatsheet
                     searchResponse={searchResponse}

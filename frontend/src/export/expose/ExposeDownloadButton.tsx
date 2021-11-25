@@ -70,6 +70,7 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
                         </button>
                     )}
                     content={() => componentRef.current!}
+                    bodyClass="font-serif"
                 />
                 <Expose
                     entities={entities}

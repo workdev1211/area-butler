@@ -65,7 +65,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   });
 
   return (
-    <div className="hidden print:block" ref={ref as any}>
+    <div className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block" ref={ref as any}>
       <PdfPage title="Zusammenfassung" logo={user?.logo} nextPageNumber={nextPageNumber}>
         <div className="m-10 flex flex-col gap-2">
           {!!props.realEstateListing && (

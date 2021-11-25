@@ -56,8 +56,7 @@ export const Expose = React.forwardRef(
     };
 
     return (
-      <div className="hidden print:block" ref={ref}>
-        {activePrinting && (
+      <div className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block" ref={ref}>
           <>
             <PdfPage
               nextPageNumber={nextPageNumber}
@@ -155,7 +154,6 @@ export const Expose = React.forwardRef(
               </PdfPage>
             )}
           </>
-        )}
       </div>
     );
   }
