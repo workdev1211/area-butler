@@ -3,6 +3,7 @@ import {
   FederalElectionResult,
 } from "hooks/federalelectiondata";
 import { FunctionComponent } from "react";
+import { deriveColorPalette } from "shared/shared.functions";
 import "./EntityTable.css";
 
 export interface FederalElectionSummaryProps {
@@ -12,15 +13,19 @@ export interface FederalElectionSummaryProps {
 
 const FederalElectionSummary: FunctionComponent<FederalElectionSummaryProps> =
   ({ federalElectionDistrict, primaryColor = "#aa0c54" }) => {
+
+    const colorPalette = deriveColorPalette(primaryColor);
+
     const tableHeaderStyle = {
-      backgroundColor: primaryColor,
-    };
+      background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
+      color: colorPalette.textColor
+    }
 
     return (
       <div className="p-10">
         {federalElectionDistrict && (
           <table className="entity-table">
-            <thead>
+            <thead style={{backgroundAttachment: 'fixed'}}>
               <tr style={tableHeaderStyle}>
                 <th>Partei</th>
                 <th>Ergebnis Zweitstimme (Prozent)</th>

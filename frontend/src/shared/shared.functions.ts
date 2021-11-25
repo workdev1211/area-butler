@@ -22,6 +22,15 @@ import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {toast} from "react-toastify";
 import {calculateMinutesToMeters} from "../../../shared/constants/constants";
+const tinyColor = require("tinycolor2");
+
+
+export interface ColorPalette {
+    primaryColor: string;
+    primaryColorLight: string;
+    primaryColorDark: string;
+    textColor: string;
+}
 
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
@@ -95,6 +104,16 @@ export const realEstateListingsIcon = {
     icon: realEstateListingIcon,
     color: '#c91444'
 }
+
+export const deriveColorPalette = (hexColor: string): ColorPalette => {
+  const hexColorTinyColor = new tinyColor(hexColor);
+  return {
+    primaryColor: hexColor,
+    primaryColorLight: hexColorTinyColor.desaturate(30).lighten(10).toHexString(),
+    primaryColorDark: hexColorTinyColor.saturate(30).darken(10).toHexString(),
+    textColor: hexColorTinyColor.isDark() ? "#FFFFFF" : "#000000",
+  };
+};
 
 export const deriveIconForOsmName = (osmName: OsmName): {icon: string, color: string} => {
     switch (osmName) {

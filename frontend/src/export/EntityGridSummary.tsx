@@ -9,6 +9,7 @@ import {
   MeansOfTransportation,
   TransportationParam,
 } from "../../../shared/types/types";
+import { deriveColorPalette } from "shared/shared.functions";
 
 export interface EntityGridSummaryProps {
   groupedEntries: EntityGroup[];
@@ -34,14 +35,17 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
       (param) => param.type === MeansOfTransportation.CAR
     );
 
+    const colorPalette = deriveColorPalette(primaryColor);
+
     const tableHeaderStyle = {
-      backgroundColor: primaryColor
+      background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
+      color: colorPalette.textColor
     }
 
     return (
       <div className="m-10">
         <table className="entity-table">
-          <thead>
+          <thead style={{backgroundAttachment: 'fixed'}}>
             <tr style={tableHeaderStyle}>
               <th />
               {transportationParams

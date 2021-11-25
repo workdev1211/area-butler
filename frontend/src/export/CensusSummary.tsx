@@ -2,6 +2,7 @@ import { ApiGeojsonFeature } from "../../../shared/types/types";
 import React from "react";
 import "./EntityTable.css";
 import { averageCensus } from "map/CensusTable";
+import { deriveColorPalette } from "shared/shared.functions";
 
 export interface CensusSummaryProps {
   censusData: ApiGeojsonFeature[];
@@ -13,15 +14,18 @@ export const CensusSummary: React.FunctionComponent<CensusSummaryProps> = ({
 }) => {
   const censusCenter = censusData.find(c => (c.properties as any).some((p : any) => p.value !== 'unbekannt') ) || censusData[0] as any;
 
+  const colorPalette = deriveColorPalette(primaryColor);
+
   const tableHeaderStyle = {
-    backgroundColor: primaryColor,
-  };
+    background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
+    color: colorPalette.textColor
+  }
 
   return (
     <div className="p-10">
       {censusCenter && (
         <table className="entity-table">
-          <thead>
+          <thead style={{backgroundAttachment: 'fixed'}}>
             <tr style={tableHeaderStyle}>
               <th>Beschreibung</th>
               <th>Wert</th>

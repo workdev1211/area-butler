@@ -3,6 +3,7 @@ import "./EntityTable.css";
 import React from "react";
 import { calculateMinutesToMeters } from "../../../shared/constants/constants";
 import { MeansOfTransportation } from "../../../shared/types/types";
+import { deriveColorPalette } from "shared/shared.functions";
 
 export interface EntityTableProps {
   entityGroup: EntityGroup;
@@ -33,14 +34,17 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
   const byBike = items.some((item) => item.byBike);
   const byCar = items.some((item) => item.byCar);
 
+  const colorPalette = deriveColorPalette(primaryColor);
+
   const tableHeaderStyle = {
-    backgroundColor: primaryColor
+    background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
+    color: colorPalette.textColor
   }
 
   return (
     <div>
       <table className="entity-table">
-        <thead >
+        <thead style={{backgroundAttachment: 'fixed'}}>
           <tr style={tableHeaderStyle}>
             {hasNames && <th>Name</th>}
             <th>

@@ -1,4 +1,5 @@
 import { averageParticlePollution, PollutionData } from "map/ParticlePollutionTable";
+import { deriveColorPalette } from "shared/shared.functions";
 import { ApiGeojsonFeature } from "../../../shared/types/types";
 import "./EntityTable.css";
 
@@ -9,9 +10,13 @@ export interface ParticlePollutionSummaryProps {
 
 const ParticlePollutionSummary: React.FunctionComponent<ParticlePollutionSummaryProps> =
   ({ particlePollutionData, primaryColor = "#aa0c54" }) => {
+
+    const colorPalette = deriveColorPalette(primaryColor);
+
     const tableHeaderStyle = {
-      backgroundColor: primaryColor,
-    };
+      background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
+      color: colorPalette.textColor
+    }
 
     const properties = particlePollutionData![0].properties as any;
 
@@ -24,7 +29,7 @@ const ParticlePollutionSummary: React.FunctionComponent<ParticlePollutionSummary
     return (
       <div className="p-10">
         <table className="entity-table">
-          <thead>
+          <thead style={{backgroundAttachment: 'fixed'}}>
             <tr style={tableHeaderStyle}>
               <th>Beschreibung</th>
               <th>Wert</th>
