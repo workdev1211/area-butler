@@ -67,10 +67,10 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   return (
     <div className="hidden print:block" ref={ref as any}>
       <PdfPage title="Zusammenfassung" logo={user?.logo} nextPageNumber={nextPageNumber}>
-        <div className="flex flex-col gap-6">
+        <div className="m-10 flex flex-col gap-2">
           {!!props.realEstateListing && (
             <>
-              <h3 className="text-3xl w-56 font-bold">Objektdetails</h3>
+              <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
 
               {!!props.realEstateListing?.costStructure?.type &&
@@ -103,17 +103,17 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             </>
           )}
         </div>
-        <div className="flex gap-6 flex-wrap">
+        <div className="mx-10 flex gap-6 flex-wrap">
           {filteredGroups.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
           ) : (
             filteredGroups.map((group) => {
               return (
                 <div
-                  className="text-xs w-72"
+                  className="text-xs"
                   key={"tab-content-" + group.title}
                 >
-                  <EntityList entityGroup={group} limit={3} />
+                  <EntityList entityGroup={group} limit={3} primaryColor={user?.color} />
                 </div>
               );
             })
@@ -123,19 +123,28 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
       {mapClippings.length > 0 && <MapClippings mapClippings={mapClippings} logo={user?.logo} nextPageNumber={nextPageNumber} />}
       <PdfPage title="Einblicke" logo={user?.logo} nextPageNumber={nextPageNumber}>
         {!!censusData && censusData.length > 0 && (
-          <CensusSummary primaryColor={user?.color} censusData={censusData} />
+          <>
+            <h4 className="mx-10 mt-5 text-xl w-56 font-bold">Nachbarschaftsdemographie</h4>
+            <CensusSummary primaryColor={user?.color} censusData={censusData} />
+          </>
         )}
         {!!federalElectionData && (
-          <FederalElectionSummary
-            primaryColor={user?.color}
-            federalElectionDistrict={federalElectionData}
-          ></FederalElectionSummary>
+          <>
+            <h4 className="mx-10 text-xl w-56 font-bold">Bundestagswahl 2021</h4>
+            <FederalElectionSummary
+              primaryColor={user?.color}
+              federalElectionDistrict={federalElectionData}
+            ></FederalElectionSummary>
+          </>
         )}
         {!!particlePollutionData && particlePollutionData.length > 0 && (
-          <ParticlePollutionSummary
-            primaryColor={user?.color}
-            particlePollutionData={particlePollutionData}
-          />
+          <>
+            <h4 className="mx-10 text-xl w-56 font-bold">Feinstaubbelastung</h4>
+            <ParticlePollutionSummary
+              primaryColor={user?.color}
+              particlePollutionData={particlePollutionData}
+            />
+          </>
         )}
       </PdfPage>
     </div>
