@@ -401,7 +401,7 @@ const Map = React.memo<MapProps>(({
                             className: 'cluster-icon'
                         });
                     },
-                    maxClusterRadius: 140,
+                    maxClusterRadius: 200,
                     disableClusteringAtZoom: 15,
                     spiderfyOnMaxZoom: false,
                     animate: false,
