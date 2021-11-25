@@ -1,4 +1,4 @@
-import { PollutionData } from "map/ParticlePollutionTable";
+import { averageParticlePollution, PollutionData } from "map/ParticlePollutionTable";
 import { ApiGeojsonFeature } from "../../../shared/types/types";
 import "./EntityTable.css";
 
@@ -26,14 +26,21 @@ const ParticlePollutionSummary: React.FunctionComponent<ParticlePollutionSummary
         <table className="entity-table">
           <thead>
             <tr style={tableHeaderStyle}>
-              <th>Durchschnittliche Belastung</th>
-              <th>Tage über Grenzwert (50 g/m2)</th>
+              <th>Beschreibung</th>
+              <th>Wert</th>
+              <th>Ø Deutschland</th>
             </tr>
           </thead>
           <tbody>
             <tr key="pollution-table-data-mean">
+              <td>Durchschnittliche Belastung</td>
               <td>{pollutionData.mean} g/m2</td>
+              <td>{averageParticlePollution.mean} g/m2</td>
+            </tr>
+            <tr key="pollution-table-days-above-threshold">
+              <td>Tage über Grenzwert (50 g/m2)</td>
               <td>{pollutionData.daysAboveThreshold}</td>
+              <td>{averageParticlePollution.daysAboveThreshold}</td>
             </tr>
           </tbody>
         </table>

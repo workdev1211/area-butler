@@ -6,31 +6,37 @@ export interface CensusTableProps {
 }
 
 export const averageCensus = {
-  'Durchschnittsalter': 44,
-  'Anteil der Ausländer': 8,
-  'Einwohner': 4041,
-  'Durchschnittliche Haushaltsgröße': 2,
-  'Anteil der leerstehenden Wohnungen': 0,
-  'Durchschnittliche Wohnfläche je Bewohner': 37,
-  'Durchschnittliche Wohnfläche je Wohnung': 68,
-  'Anteil der Bevölkerung ab 65 Jahre': 22,
-  'Anteil der Bevölkerung unter 18 Jahre': 15,
+  Durchschnittsalter: 44,
+  "Anteil der Ausländer": 8,
+  Einwohner: 4041,
+  "Durchschnittliche Haushaltsgröße": 2,
+  "Anteil der leerstehenden Wohnungen": 0,
+  "Durchschnittliche Wohnfläche je Bewohner": 37,
+  "Durchschnittliche Wohnfläche je Wohnung": 68,
+  "Anteil der Bevölkerung ab 65 Jahre": 22,
+  "Anteil der Bevölkerung unter 18 Jahre": 15,
 } as any;
 
 const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
-
   if (!censusData) {
     return null;
   }
 
-  const censusCenter = censusData.find(c => (c.properties as any).some((p : any) => p.value !== 'unbekannt') ) || censusData[0] as any;
+  const censusCenter =
+    censusData.find((c) =>
+      (c.properties as any).some((p: any) => p.value !== "unbekannt")
+    ) || (censusData[0] as any);
 
   return (
     <table className="table w-full text-sm lg:text-base">
-            <thead>
+      <thead>
         <tr>
           <th>Name</th>
-          <th><span>Wert</span><br/><span>(Ø DE)</span></th>
+          <th>
+            <span>Wert</span>
+            <br />
+            <span>(Ø DE)</span>
+          </th>
         </tr>
       </thead>
       <tbody>
@@ -39,8 +45,14 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
             <tr key={p.label}>
               <th>{p.label}</th>
               <td>
-                <span>{p.value} {p.unit}</span><br/>
-                <span>({averageCensus[p.label]}{!p.unit ? '': ' ' + p.unit})</span>
+                <span>
+                  {p.value} {p.unit}
+                </span>
+                <br />
+                <span>
+                  ({averageCensus[p.label]}
+                  {!p.unit ? "" : " " + p.unit})
+                </span>
               </td>
             </tr>
           )
