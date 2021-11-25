@@ -223,6 +223,15 @@ const SearchResultPage: React.FunctionComponent = () => {
         setGroupedEntries(newGroups);
     }
 
+    const toggleAllEntityGroups = () => {
+        const someActive = groupedEntries.some(ge => ge.active);
+        const newGroups = groupedEntries.map(ge => ({
+            ...ge,
+            active: !someActive
+        }));
+        setGroupedEntries(newGroups);
+    }
+
     const highlightZoomEntity = (item: ResultEntity) => {
         searchContextDispatch({
             type: SearchContextActions.CENTER_ZOOM_COORDINATES,
@@ -387,6 +396,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                              particlePollutionData={particlePollutionDataAvailable && searchContextState.particlePollutionData}
                              groupedEntries={groupedEntries}
                              toggleEntryGroup={toggleEntityGroup}
+                             toggleAllEntryGroups={toggleAllEntityGroups}
                              highlightZoomEntity={highlightZoomEntity}
                              toggleRoute={(item) => toggleRoutesToEntity(searchContextState.location, item)}
                              routes={routes}
@@ -398,7 +408,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                                  payload: searchContextState?.searchResponse?.centerOfInterest?.coordinates
                              })}
                              user={userState.user}
-                             openUpgradeSubcriptionModal={(message) => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message}})}
+                             openUpgradeSubscriptionModal={(message) => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message}})}
                     />
                 </div>
             </DefaultLayout>
