@@ -13,13 +13,13 @@ const UserExportSettings: React.FunctionComponent = () => {
 
     const updateLogo = async (logo: string) => {
         userDispatch({type: UserActions.SET_LOGO, payload: logo});
-        await post<ApiUser>("/api/users/me/settings", {logo, color: userState.user.color});
+        await post<ApiUser>("/api/users/me/settings", {logo});
         toastSuccess('Logo gespeichert.');
     }
 
     const updateColor = async (color: string) => {
         userDispatch({type: UserActions.SET_COLOR, payload: color});
-        await post<ApiUser>("/api/users/me/settings", {logo: userState.user.logo, color});
+        await post<ApiUser>("/api/users/me/settings", {color});
         toastSuccess('Primärfarbe gespeichert.');
     }
 

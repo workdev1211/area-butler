@@ -239,7 +239,12 @@ export class UserService {
         }
         await this.subscriptionService.checkSubscriptionViolation(existingUser._id, subscription => !subscription.appFeatures.canCustomizeExport, 'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.');
 
-        Object.assign(existingUser, {logo: settings.logo, color: settings.color});
+        if (settings.logo) {
+            Object.assign(existingUser, {logo: settings.logo});
+        }
+        if (settings.color) {
+            Object.assign(existingUser, {color: settings.color});
+        }
 
         return existingUser.save();
     }
