@@ -57,7 +57,6 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
     [ApiPersonaType.YOUNG_FAMILY]: 1,
   };
 
-  // TODO This can't be right
   let page = 0;
   const nextPageNumber = (() => {
     page++;

@@ -48,7 +48,6 @@ export const Expose = React.forwardRef(
     const user = props.user;
     const filteredGroups = groupedEntries.filter((group) => group.active);
 
-    // TODO This can't be right
     let page = 0;
     const nextPageNumber = () => {
       page++;
