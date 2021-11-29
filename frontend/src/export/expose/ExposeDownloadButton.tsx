@@ -73,7 +73,6 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> =
                     bodyClass="font-serif"
                 />
                 <Expose
-                    entities={entities}
                     groupedEntries={groupedEntries}
                     ref={componentRef}
                     transportationParams={transportationParams}

@@ -8,17 +8,15 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  TransportationParam,
+  TransportationParam
 } from "../../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../../pages/SearchResultPage";
 import { CensusSummary } from "../CensusSummary";
-import EntityGridSummary from "../EntityGridSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
 
 export interface ExposeProps {
-  entities: ResultEntity[];
   censusData: ApiGeojsonFeature[];
   federalElectionData: FederalElectionDistrict;
   particlePollutionData: ApiGeojsonFeature[];

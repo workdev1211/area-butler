@@ -12,6 +12,7 @@ import {
 import { ApiGeojsonFeature, ApiUser } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
+import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
 import InsightsSelectionProps from "./InsightsSelection";
@@ -23,7 +24,7 @@ export interface ExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
   censusData: ApiGeojsonFeature[];
-  exportType?: "CHEATSHEET" | "EXPOSE";
+  exportType?: "CHEATSHEET" | "EXPOSE" | "DOCX_EXPOSE";
 }
 
 const ExportModal: React.FunctionComponent<ExportModalProps> = ({
@@ -122,6 +123,30 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                 limit={exportType !== "CHEATSHEET" ? 10 : 3}
               ></EntitySelection>
             </div>
+
+            <DocxExpose
+                  groupedEntries={filteredEntites!}
+                  censusData={showCensus ? censusData : []}
+                  transportationParams={searchContextState.transportationParams}
+                  listingAddress={searchContextState.placesLocation.label}
+                  realEstateListing={searchContextState.realEstateListing}
+                  mapClippings={selectedMapClippings}
+                  federalElectionData={
+                    showFederalElection
+                      ? searchContextState.federalElectionData
+                      : null
+                  }
+                  particlePollutionData={
+                    showParticlePollution
+                      ? searchContextState.particlePollutionData
+                      : null
+                  }
+                  user={
+                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
+                      ? user
+                      : null
+                  }
+                />
 
             <div className="modal-action">
               <button type="button" onClick={onClose} className="btn btn-sm">

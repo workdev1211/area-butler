@@ -93,7 +93,7 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
           <h3 className="text-xl w-96 font-bold">Ihre Mobilitätskriterien</h3>
           <div className="flex gap-2">
             {transportationParams.map((routingProfile: TransportationParam) => (
-              <div className="mobility-type" style={mobilityTypeStyle}>
+              <div className="mobility-type" style={mobilityTypeStyle} key={routingProfile.type}>
                 <span>
                   {
                     meansOfTransportations.find(
