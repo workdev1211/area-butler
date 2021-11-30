@@ -224,7 +224,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                             .slice(0, localityPagination[geIndex])
                             .map((item, index) => (
                                 <LocalityItem
-                                    key={index}
+                                    key={`${ge.title}-${index}`}
                                     item={item}
                                     group={ge}
                                     onClickTitle={(item) =>
@@ -408,7 +408,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                     : deriveIconForOsmName(ge.items[0].type as OsmName);
                                             return (
                                                 <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo}
-                                                                 geIndex={geIndex} key={ge.title}/>
+                                                                 geIndex={geIndex} key={`map-menu-list-item-${ge.title}`}/>
                                             );
                                         })
                                     }

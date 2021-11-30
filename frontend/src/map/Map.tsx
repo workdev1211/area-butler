@@ -7,15 +7,9 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
-import React, {useContext, useEffect, useState} from "react";
+import React, {useCallback, useContext, useEffect, useState} from "react";
 import {ApiRoute, ApiTransitRoute} from "../../../shared/types/routing";
-import {
-    ApiCoordinates,
-    ApiGeojsonFeature,
-    ApiSearchResponse,
-    MeansOfTransportation,
-    OsmName
-} from "../../../shared/types/types";
+import {ApiCoordinates, ApiSearchResponse, MeansOfTransportation, OsmName} from "../../../shared/types/types";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
@@ -37,7 +31,6 @@ import "leaflet-touch-helper";
 export interface MapProps {
     searchResponse: ApiSearchResponse;
     searchAddress: string;
-    particlePollutionData: ApiGeojsonFeature[];
     entities: ResultEntity[] | null;
     groupedEntities: EntityGroup[];
     mapCenter?: ApiCoordinates;
@@ -92,8 +85,6 @@ const myLocationIconSize = new L.Point(46, 46);
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
-let federalElectionGroup = L.layerGroup();
-let particlePollutionGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
@@ -107,11 +98,10 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
     const printingActiveEqual = prevProps.printingActive === nextProps.printingActive;
     const printingCheatsheetActiveEqual = prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
-    const particlePollutionDataEqual = JSON.stringify(prevProps.particlePollutionData) === JSON.stringify(nextProps.particlePollutionData);
     const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
     const routesEqual = prevProps.routes === nextProps.routes;
     const transitRoutesEqual = prevProps.transitRoutes === nextProps.transitRoutes;
-    return responseEqual && searchAdressEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && particlePollutionDataEqual && highlightIdEqual && routesEqual && transitRoutesEqual;
+    return responseEqual && searchAdressEqual && entitiesEqual && entityGroupsEqual && meansEqual && mapCenterEqual && printingActiveEqual && printingCheatsheetActiveEqual && mapZoomLevelEqual && highlightIdEqual && routesEqual && transitRoutesEqual;
 }
 
 const WALK_COLOR = '#c91444';
@@ -132,7 +122,6 @@ const Map = React.memo<MapProps>(({
                                       mapCenter,
                                       mapZoomLevel,
                                       leafletMapId = 'mymap',
-                                      particlePollutionData,
                                       highlightId,
                                       routes,
                                       transitRoutes
@@ -151,7 +140,6 @@ const Map = React.memo<MapProps>(({
 
     // main map draw
     useEffect(() => {
-        localStorage.setItem('reactToMapChanges', 'true');
         const attribution = 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
         const url = 'https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}';
 
@@ -161,26 +149,12 @@ const Map = React.memo<MapProps>(({
         }
         const initialPosition: L.LatLngExpression = [lat, lng];
         const localMap = L.map(leafletMapId, {
-            scrollWheelZoom: false,
             preferCanvas: true,
             renderer: new L.Canvas(),
             tap: false,
             maxZoom: 18,
             zoomControl: false
         }).setView(initialPosition, zoom);
-
-        localMap.addEventListener("zoomend", (value) => {
-            zoom = value.target._zoom;
-            if (localStorage.getItem('reactToMapChanges')) {
-                searchContextDispatch({type: SearchContextActions.SET_MAP_ZOOM_LEVEL, payload: zoom})
-            }
-        });
-        localMap.on('moveend', (event) => {
-            if (!!event?.target?.getCenter() && localStorage.getItem('reactToMapChanges')) {
-                const center = event.target.getCenter();
-                searchContextDispatch({type: SearchContextActions.SET_MAP_CENTER, payload: center});
-            }
-        });
 
         const zoomControl = L.control.zoom({position: 'bottomleft'});
         zoomControl.addTo(localMap);
@@ -207,7 +181,7 @@ const Map = React.memo<MapProps>(({
         }).bindPopup(searchAddress).addTo(localMap);
 
         currentMap = localMap;
-    }, [lat, lng, leafletMapId, searchContextDispatch, mapBoxAccessToken]);
+    }, [lat, lng, leafletMapId, searchContextDispatch, mapBoxAccessToken, searchAddress]);
 
     // react on zoom and center change
     useEffect(() => {
@@ -328,7 +302,7 @@ const Map = React.memo<MapProps>(({
                 entityRoute.routes.filter(isActiveMeans).filter(isVisibleDestination).forEach((r) => {
                     r.sections.forEach((s) => {
                         const line = L.geoJSON(s.geometry, {
-                            style: function (feature) {
+                            style: function () {
                                 return {color: MEAN_COLORS[r.meansOfTransportation]};
                             }
                         })
@@ -346,7 +320,7 @@ const Map = React.memo<MapProps>(({
                     const fullDuration = route.sections.map(s => s.duration).reduce((p, c) => p + c);
                     route.sections.forEach((s) => {
                         const line = L.geoJSON(s.geometry, {
-                            style: function (feature) {
+                            style: function () {
                                 return {color: '#fcba03', dashArray: getDashArray(s.transportMode)};
                             }
                         })
@@ -359,19 +333,6 @@ const Map = React.memo<MapProps>(({
             })
         }
     }, [routes, transitRoutes, means, groupedEntities]);
-
-    // draw particle pollution
-    useEffect(() => {
-        if (currentMap && particlePollutionGroup) {
-            currentMap.removeLayer(particlePollutionGroup);
-        }
-        if (currentMap && !!particlePollutionData && particlePollutionData.length > 0) {
-            particlePollutionGroup = L.layerGroup();
-            currentMap.addLayer(particlePollutionGroup);
-
-            L.geoJSON(particlePollutionData[0]).addTo(particlePollutionGroup!);
-        }
-    }, [particlePollutionData]);
 
     const entitiesStringified = JSON.stringify(entities);
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
@@ -386,7 +347,7 @@ const Map = React.memo<MapProps>(({
         };
         const parsedEntities: ResultEntity[] | null = JSON.parse(entitiesStringified);
         const parsedEntityGroups: EntityGroup[] = JSON.parse(groupedEntitiesStringified);
-        const drawAmenityMarkers = (localZoom: number) => {
+        const drawAmenityMarkers = () => {
             if (currentMap) {
                 currentMap.removeLayer(amenityMarkerGroup);
                 amenityMarkerGroup = L.markerClusterGroup({
@@ -443,7 +404,7 @@ const Map = React.memo<MapProps>(({
             }
         }
         if (currentMap) {
-            drawAmenityMarkers(zoom);
+            drawAmenityMarkers();
         }
     }, [entitiesStringified, groupedEntitiesStringified, searchContextDispatch]);
 
@@ -469,11 +430,26 @@ const Map = React.memo<MapProps>(({
             });
             toastSuccess('Kartenausschnitt erfolgreich gespeichert!');
             for (let i = 0; i < bottomElements.length; i++) {
-                const className = bottomElements[i].className.replace('hidden', '');
-                bottomElements[i].className = className;
+                bottomElements[i].className = bottomElements[i].className.replace('hidden', '');
             }
         });
     }
+
+    const escFunction = useCallback((event) => {
+        if(event.keyCode === 27) {
+            if (currentMap && fullscreen) {
+                setFullscreen(false);
+                setTimeout(function(){ currentMap!.invalidateSize()}, 400);
+            }
+        }
+    }, [fullscreen]);
+    useEffect(() => {
+        document.addEventListener("keydown", escFunction, false);
+        return () => {
+            document.removeEventListener("keydown", escFunction, false);
+        };
+    }, [escFunction]);
+
 
     const toggleFullscreen = () => {
         setFullscreen(!fullscreen);
@@ -507,11 +483,9 @@ const Map = React.memo<MapProps>(({
                 }
             }
             const polygon = derivePolygonForMean(mean);
-            localStorage.removeItem('reactToMapChanges')
             currentMap!.fitBounds(polygon!.getBounds(), {padding: L.point(10, 10)});
             setTimeout(() => {
                 searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {zoom: currentMap?.getZoom(), center: searchResponse.centerOfInterest.coordinates}});
-                localStorage.setItem('reactToMapChanges', 'true');
             }, 1000);
         }
     }
