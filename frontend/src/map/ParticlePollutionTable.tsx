@@ -11,8 +11,8 @@ export interface PollutionData {
 }
 
 export const averageParticlePollution: PollutionData = {
-  mean: 3,
-  daysAboveThreshold: 2,
+  mean: 10.78,
+  daysAboveThreshold: 0.14,
 };
 
 const ParticlePollutionTable: FunctionComponent<ParticlePollutionTableProps> =

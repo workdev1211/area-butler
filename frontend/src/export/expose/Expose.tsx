@@ -119,42 +119,45 @@ export const Expose = React.forwardRef(
                 </PdfPage>
               );
             })}
-          {!!censusData && censusData.length > 0 && (
-            <PdfPage
-              nextPageNumber={nextPageNumber}
-              logo={user?.logo}
-              title="Nachbarschaftsdemographie"
-            >
-              <CensusSummary
-                primaryColor={user?.color}
-                censusData={censusData}
-              />
-            </PdfPage>
-          )}
-          {!!federalElectionData && (
-            <PdfPage
-              nextPageNumber={nextPageNumber}
-              logo={user?.logo}
-              title="Bundestagswahl 2021"
-            >
-              <FederalElectionSummary
-                primaryColor={user?.color}
-                federalElectionDistrict={federalElectionData}
-              />
-            </PdfPage>
-          )}
-          {!!particlePollutionData && particlePollutionData.length > 0 && (
-            <PdfPage
-              nextPageNumber={nextPageNumber}
-              logo={user?.logo}
-              title="Feinstaubbelastung"
-            >
-              <ParticlePollutionSummary
-                primaryColor={user?.color}
-                particlePollutionData={particlePollutionData}
-              />
-            </PdfPage>
-          )}
+          <PdfPage
+            title="Einblicke"
+            logo={user?.logo}
+            nextPageNumber={nextPageNumber}
+          >
+            {!!censusData && censusData.length > 0 && (
+              <>
+                <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
+                  Nachbarschaftsdemographie
+                </h4>
+                <CensusSummary
+                  primaryColor={user?.color}
+                  censusData={censusData}
+                />
+              </>
+            )}
+            {!!federalElectionData && (
+              <>
+                <h4 className="mx-10 text-xl w-56 font-bold">
+                  Bundestagswahl 2021
+                </h4>
+                <FederalElectionSummary
+                  primaryColor={user?.color}
+                  federalElectionDistrict={federalElectionData}
+                ></FederalElectionSummary>
+              </>
+            )}
+            {!!particlePollutionData && particlePollutionData.length > 0 && (
+              <>
+                <h4 className="mx-10 text-xl w-56 font-bold">
+                  Feinstaubbelastung
+                </h4>
+                <ParticlePollutionSummary
+                  primaryColor={user?.color}
+                  particlePollutionData={particlePollutionData}
+                />
+              </>
+            )}
+          </PdfPage>
         </>
       </div>
     );

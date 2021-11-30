@@ -384,7 +384,6 @@ const SearchResultPage: React.FunctionComponent = () => {
                             mapZoomLevel={searchContextState.mapZoomLevel ?? defaultMapZoom}
                             printingActive={searchContextState.printingActive}
                             printingCheatsheetActive={searchContextState.printingCheatsheetActive}
-                            particlePollutionData={showParticlePollution && particlePollutionDataAvailable && searchContextState.particlePollutionData}
                             routes={routes}
                             transitRoutes={transitRoutes}
                         />
