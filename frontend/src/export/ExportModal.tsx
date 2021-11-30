@@ -1,13 +1,13 @@
 import {
   MapClipping,
   SearchContext,
-  SearchContextActions,
+  SearchContextActions
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import React, { useContext, useState } from "react";
 import {
   ApiDataSource,
-  ApiSubscriptionPlanType,
+  ApiSubscriptionPlanType
 } from "../../../shared/types/subscription-plan";
 import { ApiGeojsonFeature, ApiUser } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
@@ -17,7 +17,7 @@ import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
 import InsightsSelectionProps from "./InsightsSelection";
 import MapClippingSelection, {
-  SelectedMapClipping,
+  SelectedMapClipping
 } from "./MapClippingSelection";
 
 export interface ExportModalProps {
@@ -70,7 +70,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
     useState<SelectedMapClipping[]>(selectableClippings);
 
   const buttonTitle =
-    exportType === "EXPOSE"
+    exportType !== "CHEATSHEET"
       ? "Umgebungsanalyse exportieren"
       : "Spickzettel exportieren";
 

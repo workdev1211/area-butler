@@ -1,28 +1,21 @@
 import {
-  Table,
-  TableRow,
-  TableCell,
-  TextRun,
-  Paragraph,
-  WidthType,
-  ShadingType,
   HeadingLevel,
-  PageBreak,
+  PageBreak, Paragraph, ShadingType, Table, TableCell, TableRow, TextRun
 } from "docx";
 import {
   FederalElectionDistrict,
-  FederalElectionResult,
+  FederalElectionResult
 } from "hooks/federalelectiondata";
 import { averageCensus } from "map/CensusTable";
 import {
   averageParticlePollution,
-  PollutionData,
+  PollutionData
 } from "map/ParticlePollutionTable";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import { deriveMinutesFromMeters } from "shared/shared.functions";
 import {
   ApiGeojsonFeature,
-  MeansOfTransportation,
+  MeansOfTransportation
 } from "../../../../../shared/types/types";
 
 export interface TableProps {
