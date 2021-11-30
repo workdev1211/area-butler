@@ -6,8 +6,18 @@ import {
   Paragraph,
   WidthType,
   ShadingType,
+  HeadingLevel,
+  PageBreak,
 } from "docx";
+import {
+  FederalElectionDistrict,
+  FederalElectionResult,
+} from "hooks/federalelectiondata";
 import { averageCensus } from "map/CensusTable";
+import {
+  averageParticlePollution,
+  PollutionData,
+} from "map/ParticlePollutionTable";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import { deriveMinutesFromMeters } from "shared/shared.functions";
 import {
@@ -20,6 +30,8 @@ export interface TableProps {
   columnWidths: number[];
   headerColor: string;
   headerTextColor: string;
+  pageBreak?: boolean;
+  title?: string;
 }
 
 export const createTable = ({
@@ -27,53 +39,81 @@ export const createTable = ({
   columnWidths,
   headerColor,
   headerTextColor,
+  title,
+  pageBreak = true,
 }: TableProps) => {
-  return new Table({
-    columnWidths,
-    rows: [
-      new TableRow({
-        cantSplit: true,
-        tableHeader: true,
-        children: data.header.map(
-          (h) =>
-            new TableCell({
-              shading: {
-                type: ShadingType.PERCENT_10,
-                fill: headerColor,
-                color: headerTextColor,
-              },
-              children: [
-                new Paragraph({
-                  children: [
-                    new TextRun({
-                      color: headerTextColor,
-                      bold: true,
-                      text: h,
-                      font: "Arial",
-                    }),
-                  ],
-                }),
-              ],
+  const titleParagraph = title
+    ? [
+        new Paragraph({
+          spacing: { before: 500, after: 500 },
+          heading: HeadingLevel.HEADING_1,
+          text: title,
+        }),
+      ]
+    : [];
+
+  const pageBreakParagraph = pageBreak
+    ? [new Paragraph({ children: [new PageBreak()] })]
+    : [];
+
+  return [
+    ...pageBreakParagraph,
+    ...titleParagraph,
+    new Table({
+      columnWidths,
+      rows: [
+        new TableRow({
+          cantSplit: true,
+          tableHeader: true,
+          children: data.header.map(
+            (h) =>
+              new TableCell({
+                shading: {
+                  type: ShadingType.PERCENT_10,
+                  fill: headerColor,
+                  color: headerTextColor,
+                },
+                children: [
+                  new Paragraph({
+                    children: [
+                      new TextRun({
+                        color: headerTextColor,
+                        bold: true,
+                        text: h,
+                        font: "Arial",
+                      }),
+                    ],
+                  }),
+                ],
+              })
+          ),
+        }),
+        ...data.body.map(
+          (b, i) =>
+            new TableRow({
+              children: b.map(
+                (bv) =>
+                  new TableCell({
+                    shading:
+                      i % 2 === 0
+                        ? {
+                            type: ShadingType.PERCENT_10,
+                            fill: "f3f3f4",
+                            color: "f3f3f4",
+                          }
+                        : undefined,
+                    children: [
+                      new Paragraph({
+                        children: [new TextRun({ text: bv, font: "Arial" })],
+                      }),
+                    ],
+                  })
+              ),
             })
         ),
-      }),
-      ...data.body.map(
-        (b) =>
-          new TableRow({
-            children: b.map(
-              (bv) =>
-                new TableCell({
-                  children: [
-                    new Paragraph({
-                      children: [new TextRun({ text: bv, font: "Arial" })],
-                    }),
-                  ],
-                })
-            ),
-          })
-      ),
-    ],
-  });
+      ],
+    }),
+  ];
 };
 
 export const mapTableDataFromEntityGroup = (
@@ -150,6 +190,61 @@ export const mapTableDataFromCensusData = (
           `${averageCensus[p.label]}${!p.unit ? "" : " " + p.unit}`,
         ]
       ),
+    },
+  };
+};
+
+export const mapTableDataFromFederalElectionData = (
+  federalElectionDistrict: FederalElectionDistrict
+): { data: { header: string[]; body: string[][] } } => {
+  const header = [];
+  header.push("Partei");
+  header.push("Ergebnis Zweitstimme (Prozent)");
+  header.push("Ergebnis bei der letzten Wahl");
+
+  return {
+    data: {
+      header,
+      body: federalElectionDistrict.results.map((p: FederalElectionResult) => [
+        p.party,
+        p.percentage + " %",
+        p.lastElectionPercentage + " %",
+      ]),
+    },
+  };
+};
+
+export const mapTableDataFromParticlePollutiondata = (
+  particlePollutionData?: ApiGeojsonFeature[]
+): { data: { header: string[]; body: string[][] } } => {
+  const properties = particlePollutionData![0].properties as any;
+
+  const pollutionData: PollutionData = {
+    mean: properties.MEAN || 0,
+    daysAboveThreshold:
+      properties["Tage mit Tagesmittelwerten > 50 �g/m�"] || 0,
+  };
+
+  const header = [];
+  header.push("Beschreibung");
+  header.push("Wert");
+  header.push("Ø Deutschland");
+
+  return {
+    data: {
+      header,
+      body: [
+        [
+          "Durchschnittliche Belastung",
+          pollutionData.mean + " g/m2",
+          averageParticlePollution.mean + " g/m2",
+        ],
+        [
+          "Tage über Grenzwert (50 g/m2)",
+          pollutionData.daysAboveThreshold + "",
+          averageParticlePollution.daysAboveThreshold + "",
+        ],
+      ],
     },
   };
 };

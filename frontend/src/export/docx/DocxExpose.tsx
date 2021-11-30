@@ -1,21 +1,19 @@
 import {
   Document,
   Packer,
-  Header,
   Paragraph,
-  TextRun,
-  ImageRun,
-  AlignmentType,
+  PageBreak
 } from "docx";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { saveAs } from "file-saver";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
+import { EntityGroup } from "pages/SearchResultPage";
+import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  TransportationParam,
+  TransportationParam
 } from "../../../../shared/types/types";
 import { createFooter } from "./creator/footer.creator";
 import { createHeader } from "./creator/header.creator";
@@ -24,6 +22,8 @@ import {
   createTable,
   mapTableDataFromCensusData,
   mapTableDataFromEntityGroup,
+  mapTableDataFromFederalElectionData,
+  mapTableDataFromParticlePollutiondata
 } from "./creator/table.creator";
 
 export interface DocxExposeProps {
@@ -42,14 +42,22 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   groupedEntries,
   mapClippings,
   censusData,
+  federalElectionData,
+  particlePollutionData,
   user,
 }) => {
+
+
+  const colorPalette = deriveColorPalette(!!user?.color ? user.color! : "#AA0C54")
+
   const generate = async () => {
+
     const tables = groupedEntries.map((group) =>
       createTable({
+        title: group.title,
         columnWidths: [5000, 2000, 1500, 1500, 1500],
-        headerColor: user ? user.color! : "#AA0C54",
-        headerTextColor: "#FFFFFF",
+        headerColor: colorPalette.primaryColor,
+        headerTextColor: colorPalette.textColor,
         ...mapTableDataFromEntityGroup(group),
       })
     );
@@ -58,10 +66,40 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       !!censusData && censusData.length > 0
         ? [
             createTable({
+              pageBreak: false,
+              title: "Nachbarschaftsdemographie",
               columnWidths: [5000, 2000, 3000],
-              headerColor: user ? user.color! : "#AA0C54",
-              headerTextColor: "#FFFFFF",
+              headerColor: colorPalette.primaryColor,
+              headerTextColor: colorPalette.textColor,
               ...mapTableDataFromCensusData(censusData),
+            }),
+          ]
+        : [];
+
+    const federalElectionTable =
+      !!federalElectionData 
+        ? [
+            createTable({
+              pageBreak: false,
+              title: "Bundestagswahl 2021",
+              columnWidths: [2000, 5000, 5000],
+              headerColor: colorPalette.primaryColor,
+              headerTextColor: colorPalette.textColor,
+              ...mapTableDataFromFederalElectionData(federalElectionData),
+            }),
+          ]
+        : [];
+
+    const particlePollutionTable =
+      !!federalElectionData 
+        ? [
+            createTable({
+              pageBreak: false,
+              title: "Feinstaubbelastung",
+              columnWidths: [5000, 2000, 3000],
+              headerColor: colorPalette.primaryColor,
+              headerTextColor: colorPalette.textColor,
+              ...mapTableDataFromParticlePollutiondata(particlePollutionData),
             }),
           ]
         : [];
@@ -80,7 +118,14 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
           headers: {
             ...createHeader(imageBase64Data),
           },
-          children: [...tables, ...images, ...censusTable],
+          children: [
+            ...tables.flatMap(t => t), 
+            new Paragraph({children: [new PageBreak()]}),
+            ...images, 
+            new Paragraph({children: [new PageBreak()]}),
+            ...censusTable.flatMap(t => t), 
+            ...federalElectionTable.flatMap(t => t), 
+            ...particlePollutionTable.flatMap(t => t)],
           footers: {
             ...createFooter(),
           },
