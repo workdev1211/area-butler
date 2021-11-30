@@ -1,4 +1,4 @@
-import { Document, Packer, Paragraph, PageBreak } from "docx";
+import { Document, Packer, Paragraph, PageBreak, HeadingLevel } from "docx";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { saveAs } from "file-saver";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
@@ -96,11 +96,23 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         ]
       : [];
 
-    const images = mapClippings
+    let images = mapClippings
       .filter((c) => c.selected)
       .map((c) =>
         createImage(c.mapClippingDataUrl.replace("data:image/jpeg;base64,", ""))
       );
+
+
+    if (images.length > 0) {
+      images = [
+        new Paragraph({ children: [new PageBreak()] }),
+        new Paragraph({
+          spacing: { before: 500, after: 500 },
+          heading: HeadingLevel.HEADING_1,
+          text: "Kartenausschnitte",
+        }),
+        ...images];
+    }
 
     const imageBase64Data = user?.logo!.replace("data:image/png;base64,", "")!;
 
@@ -112,7 +124,6 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
           },
           children: [
             ...tables.flatMap((t) => t),
-            new Paragraph({ children: [new PageBreak()] }),
             ...images,
             new Paragraph({ children: [new PageBreak()] }),
             ...censusTable.flatMap((t) => t),
