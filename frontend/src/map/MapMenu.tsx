@@ -110,9 +110,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
 
     const allLocalitiesActive = groupedEntries.some(ge => ge.active);
 
-    const toggleLocality = (title: string, open: boolean) => {
+    const toggleLocality = (title: string) => {
         const filtered = [...localityOpen.filter((l) => l !== title)];
-        if (open) {
+        if (!localityOpen.some(l =>  l === title)) {
             filtered.push(title);
         }
         setLocalityOpen(filtered);
@@ -165,8 +165,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 >
                     <input
                         type="checkbox"
-                        onChange={(event) =>
-                            toggleLocality(ge.title, event.target.checked)
+                        onChange={() =>
+                            toggleLocality(ge.title)
                         }
                     />
                     <div className="collapse-title">
@@ -174,7 +174,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                             onClick={() =>
                                 toggleLocality(
                                     ge.title,
-                                    !localityOpen.includes(ge.title)
                                 )
                             }
                         >
@@ -186,7 +185,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                     src={groupIconInfo.icon}
                                     alt="group-icon"
                                     onClick={() =>
-                                        toggleLocality(ge.title, !ge.active)
+                                        toggleLocality(ge.title)
                                     }
                                 />
                             </div>
@@ -385,9 +384,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                     : deriveIconForOsmName(ge.items[0].type as OsmName);
                             return (
                                 <>
-                                    <li className="locality-option-heading" key={ge.title}>
-                                    </li>
-                                    <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo} geIndex={geIndex} key={ge.title}/>
+                                    <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo} geIndex={geIndex} key={`map-menu-list-item-${ge.title}`}/>
                                 </>
                             )
                         })}
