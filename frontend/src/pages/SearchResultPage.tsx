@@ -308,6 +308,17 @@ const SearchResultPage: React.FunctionComponent = () => {
                 <button
                     type="button"
                     onClick={() => {
+                        searchContextDispatch({type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE, payload: true});
+                    }}
+                    className="btn btn-link"
+                >
+                    <img src={pdfIcon} alt="pdf-icon"/> Umgebungsanalyse Docx
+                </button>
+            </li>
+            <li>
+                <button
+                    type="button"
+                    onClick={() => {
                         searchContextDispatch({
                             type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
                             payload: true
@@ -417,6 +428,9 @@ const SearchResultPage: React.FunctionComponent = () => {
             {searchContextState.printingCheatsheetActive &&
             <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
                          censusData={searchContextState.censusData!} exportType="CHEATSHEET"/>}
+            {searchContextState.printingDocxActive &&
+            <ExportModal entities={filteredEntites} groupedEntries={groupedEntries}
+                         censusData={searchContextState.censusData!} exportType="EXPOSE_DOCX"/>}
         </>
     )
 }

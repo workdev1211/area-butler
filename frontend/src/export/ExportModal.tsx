@@ -24,7 +24,7 @@ export interface ExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
   censusData: ApiGeojsonFeature[];
-  exportType?: "CHEATSHEET" | "EXPOSE" | "DOCX_EXPOSE";
+  exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX";
 }
 
 const ExportModal: React.FunctionComponent<ExportModalProps> = ({
@@ -83,12 +83,17 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
       type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
       payload: false,
     });
+    searchContextDispatch({
+      type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE,
+      payload: false,
+    });
   };
 
   return (
     <>
       {(searchContextState.printingActive ||
-        searchContextState.printingCheatsheetActive) && (
+        searchContextState.printingCheatsheetActive ||
+        searchContextState.printingDocxActive) && (
         <div id="expose-modal" className="modal modal-open z-2000">
           <div className="modal-box">
             <h1 className="text-xl text-bold">{buttonTitle}</h1>
@@ -124,35 +129,11 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               ></EntitySelection>
             </div>
 
-            <DocxExpose
-                  groupedEntries={filteredEntites!}
-                  censusData={showCensus ? censusData : []}
-                  transportationParams={searchContextState.transportationParams}
-                  listingAddress={searchContextState.placesLocation.label}
-                  realEstateListing={searchContextState.realEstateListing}
-                  mapClippings={selectedMapClippings}
-                  federalElectionData={
-                    showFederalElection
-                      ? searchContextState.federalElectionData
-                      : null
-                  }
-                  particlePollutionData={
-                    showParticlePollution
-                      ? searchContextState.particlePollutionData
-                      : null
-                  }
-                  user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
-                      ? user
-                      : null
-                  }
-                />
-
             <div className="modal-action">
               <button type="button" onClick={onClose} className="btn btn-sm">
                 Schließen
               </button>
-              {exportType !== "CHEATSHEET" ? (
+              {exportType === "EXPOSE" && (
                 <ExposeDownload
                   entities={entities}
                   groupedEntries={filteredEntites!}
@@ -179,7 +160,9 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       : null
                   }
                 />
-              ) : (
+              )}
+
+              {exportType === "CHEATSHEET" && (
                 <CheatsheetDownload
                   entities={entities}
                   groupedEntries={filteredEntites!}
@@ -201,6 +184,32 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       : null
                   }
                   onAfterPrint={onClose}
+                  user={
+                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
+                      ? user
+                      : null
+                  }
+                />
+              )}
+
+              {exportType === "EXPOSE_DOCX" && (
+                <DocxExpose
+                  groupedEntries={filteredEntites!}
+                  censusData={showCensus ? censusData : []}
+                  transportationParams={searchContextState.transportationParams}
+                  listingAddress={searchContextState.placesLocation.label}
+                  realEstateListing={searchContextState.realEstateListing}
+                  mapClippings={selectedMapClippings}
+                  federalElectionData={
+                    showFederalElection
+                      ? searchContextState.federalElectionData
+                      : null
+                  }
+                  particlePollutionData={
+                    showParticlePollution
+                      ? searchContextState.particlePollutionData
+                      : null
+                  }
                   user={
                     subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
                       ? user

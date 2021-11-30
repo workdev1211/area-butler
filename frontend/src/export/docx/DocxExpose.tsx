@@ -1,9 +1,4 @@
-import {
-  Document,
-  Packer,
-  Paragraph,
-  PageBreak
-} from "docx";
+import { Document, Packer, Paragraph, PageBreak } from "docx";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { saveAs } from "file-saver";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
@@ -13,7 +8,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import { createFooter } from "./creator/footer.creator";
 import { createHeader } from "./creator/header.creator";
@@ -23,7 +18,7 @@ import {
   mapTableDataFromCensusData,
   mapTableDataFromEntityGroup,
   mapTableDataFromFederalElectionData,
-  mapTableDataFromParticlePollutiondata
+  mapTableDataFromParticlePollutiondata,
 } from "./creator/table.creator";
 
 export interface DocxExposeProps {
@@ -46,12 +41,11 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   particlePollutionData,
   user,
 }) => {
-
-
-  const colorPalette = deriveColorPalette(!!user?.color ? user.color! : "#AA0C54")
+  const colorPalette = deriveColorPalette(
+    !!user?.color ? user.color! : "#AA0C54"
+  );
 
   const generate = async () => {
-
     const tables = groupedEntries.map((group) =>
       createTable({
         title: group.title,
@@ -76,33 +70,31 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
           ]
         : [];
 
-    const federalElectionTable =
-      !!federalElectionData 
-        ? [
-            createTable({
-              pageBreak: false,
-              title: "Bundestagswahl 2021",
-              columnWidths: [2000, 5000, 5000],
-              headerColor: colorPalette.primaryColor,
-              headerTextColor: colorPalette.textColor,
-              ...mapTableDataFromFederalElectionData(federalElectionData),
-            }),
-          ]
-        : [];
+    const federalElectionTable = !!federalElectionData
+      ? [
+          createTable({
+            pageBreak: false,
+            title: "Bundestagswahl 2021",
+            columnWidths: [2000, 5000, 5000],
+            headerColor: colorPalette.primaryColor,
+            headerTextColor: colorPalette.textColor,
+            ...mapTableDataFromFederalElectionData(federalElectionData),
+          }),
+        ]
+      : [];
 
-    const particlePollutionTable =
-      !!federalElectionData 
-        ? [
-            createTable({
-              pageBreak: false,
-              title: "Feinstaubbelastung",
-              columnWidths: [5000, 2000, 3000],
-              headerColor: colorPalette.primaryColor,
-              headerTextColor: colorPalette.textColor,
-              ...mapTableDataFromParticlePollutiondata(particlePollutionData),
-            }),
-          ]
-        : [];
+    const particlePollutionTable = !!federalElectionData
+      ? [
+          createTable({
+            pageBreak: false,
+            title: "Feinstaubbelastung",
+            columnWidths: [5000, 2000, 3000],
+            headerColor: colorPalette.primaryColor,
+            headerTextColor: colorPalette.textColor,
+            ...mapTableDataFromParticlePollutiondata(particlePollutionData),
+          }),
+        ]
+      : [];
 
     const images = mapClippings
       .filter((c) => c.selected)
@@ -119,13 +111,14 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             ...createHeader(imageBase64Data),
           },
           children: [
-            ...tables.flatMap(t => t), 
-            new Paragraph({children: [new PageBreak()]}),
-            ...images, 
-            new Paragraph({children: [new PageBreak()]}),
-            ...censusTable.flatMap(t => t), 
-            ...federalElectionTable.flatMap(t => t), 
-            ...particlePollutionTable.flatMap(t => t)],
+            ...tables.flatMap((t) => t),
+            new Paragraph({ children: [new PageBreak()] }),
+            ...images,
+            new Paragraph({ children: [new PageBreak()] }),
+            ...censusTable.flatMap((t) => t),
+            ...federalElectionTable.flatMap((t) => t),
+            ...particlePollutionTable.flatMap((t) => t),
+          ],
           footers: {
             ...createFooter(),
           },

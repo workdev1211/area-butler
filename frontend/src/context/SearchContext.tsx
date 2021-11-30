@@ -34,6 +34,7 @@ export interface SearchContextState {
     highlightId?: number;
     printingActive: boolean;
     printingCheatsheetActive: boolean;
+    printingDocxActive: boolean;
     mapClippings: MapClipping[];
 }
 
@@ -46,6 +47,7 @@ export const initialState: SearchContextState = {
     searchBusy: false,
     printingActive: false,
     printingCheatsheetActive: false,
+    printingDocxActive: false,
     mapClippings: [],
 };
 
@@ -65,6 +67,7 @@ export enum SearchContextActions {
     CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
     SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
     SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
+    SET_PRINTING_DOCX_ACTIVE = 'SET_PRINTING_DOCX_ACTIVE',
     SET_PRINTING_CHEATSHEET_ACTIVE = 'SET_PRINTING_CHEATSHEET_ACTIVE',
     ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
     CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
@@ -134,6 +137,13 @@ const reducer: (
             return {
                 ...state,
                 printingCheatsheetActive: action.payload,
+                mapCenter: state.searchResponse?.centerOfInterest.coordinates
+            };
+        }
+        case SearchContextActions.SET_PRINTING_DOCX_ACTIVE: {
+            return {
+                ...state,
+                printingDocxActive: action.payload,
                 mapCenter: state.searchResponse?.centerOfInterest.coordinates
             };
         }
