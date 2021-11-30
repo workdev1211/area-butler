@@ -509,7 +509,10 @@ const Map = React.memo<MapProps>(({
             const polygon = derivePolygonForMean(mean);
             localStorage.removeItem('reactToMapChanges')
             currentMap!.fitBounds(polygon!.getBounds(), {padding: L.point(10, 10)});
-            setTimeout(() => localStorage.setItem('reactToMapChanges', 'true'), 1000);
+            setTimeout(() => {
+                searchContextDispatch({type: SearchContextActions.CENTER_ZOOM_COORDINATES, payload: {zoom: currentMap?.getZoom(), center: searchResponse.centerOfInterest.coordinates}});
+                localStorage.setItem('reactToMapChanges', 'true');
+            }, 1000);
         }
     }
 
