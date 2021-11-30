@@ -142,6 +142,141 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         }
     }, [groupedEntries, setLocalityPagination]);
 
+
+    interface MapMenuListItemProps {
+        ge: EntityGroup;
+        groupIconInfo: any;
+        geIndex: number;
+    }
+
+    const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({ge, groupIconInfo, geIndex}) => {
+        return (
+            <li
+                className="locality-option-li"
+                key={`grouped-entry-${ge.title}`}
+            >
+                <div
+                    className={
+                        "collapse collapse-arrow locality-option" +
+                        (localityOpen.includes(ge.title)
+                            ? " collapse-child-open"
+                            : " collapse-child-closed")
+                    }
+                >
+                    <input
+                        type="checkbox"
+                        onChange={(event) =>
+                            toggleLocality(ge.title, event.target.checked)
+                        }
+                    />
+                    <div className="collapse-title">
+                        <div
+                            onClick={() =>
+                                toggleLocality(
+                                    ge.title,
+                                    !localityOpen.includes(ge.title)
+                                )
+                            }
+                        >
+                            <div
+                                className="img-container"
+                                style={{background: groupIconInfo.color}}
+                            >
+                                <img
+                                    src={groupIconInfo.icon}
+                                    alt="group-icon"
+                                    onClick={() =>
+                                        toggleLocality(ge.title, !ge.active)
+                                    }
+                                />
+                            </div>
+                            {ge.title} [{ge.items.length}]
+                        </div>
+                        <label className="cursor-pointer label justify-start pl-0">
+                            <input
+                                type="checkbox"
+                                checked={ge.active}
+                                className="checkbox checkbox-primary checkbox-sm"
+                                onChange={() => toggleEntryGroup(ge.title)}
+                            />
+                        </label>
+                    </div>
+                    <div className="collapse-content">
+                        <div className="mean-items">
+                            <div className="item">
+                                <img src={distanceIcon} alt="icon-distance"/>
+                                Distanz
+                            </div>
+                            <div className="item">
+                                <img src={walkIcon} alt="icon-walk"/>
+                                Fußweg
+                            </div>
+                            <div className="item">
+                                <img src={bicycleIcon} alt="icon-bicycle"/>
+                                Fahrrad
+                            </div>
+                            <div className="item">
+                                <img src={carIcon} alt="icon-car"/>
+                                Auto
+                            </div>
+                        </div>
+                        {localityOpen.includes(ge.title) &&
+                        ge.items
+                            .slice(0, localityPagination[geIndex])
+                            .map((item, index) => (
+                                <LocalityItem
+                                    key={index}
+                                    item={item}
+                                    group={ge}
+                                    onClickTitle={(item) =>
+                                        highlightZoomEntity(item)
+                                    }
+                                    onToggleRoute={(item) => toggleRoute(item)}
+                                    route={routes?.find(
+                                        (r) =>
+                                            r.coordinates.lat ===
+                                            item.coordinates.lat &&
+                                            r.coordinates.lng ===
+                                            item.coordinates.lng &&
+                                            r.show
+                                    )}
+                                    onToggleTransitRoute={(item) =>
+                                        toggleTransitRoute(item)
+                                    }
+                                    transitRoute={transitRoutes?.find(
+                                        (tr) =>
+                                            tr.coordinates.lat ===
+                                            item.coordinates.lat &&
+                                            tr.coordinates.lng ===
+                                            item.coordinates.lng &&
+                                            tr.show
+                                    )}
+                                />
+                            ))}
+                        {localityOpen.includes(ge.title) &&
+                        ge.items.length > localityPagination[geIndex] && (
+                            <button
+                                type="button"
+                                className="btn btn-link"
+                                onClick={() =>
+                                    setLocalityPagination(
+                                        localityPagination.map((lp, index) =>
+                                            index !== geIndex
+                                                ? lp
+                                                : lp + localityPaginationSize
+                                        )
+                                    )
+                                }
+                            >
+                                Mehr anzeigen
+                            </button>
+                        )}
+                    </div>
+                </div>
+            </li>
+        )
+    }
+
     return (
         <div className={mobileMenuButtonClasses} data-tour="map-menu">
             <div className="heading">
@@ -238,14 +373,33 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 </div>
                 <div className="collapse-content">
                     <ul>
+                        {groupedEntries.filter(ge => ge.items.length && ['Wichtige Adressen', 'Meine Objekte'].includes(ge.title)).map((ge, geIndex) => {
+                            const isRealEstateListing =
+                                ge.items[0].label === realEstateListingsTitle;
+                            const isPreferredLocation =
+                                ge.items[0].label === preferredLocationsTitle;
+                            const groupIconInfo = isRealEstateListing
+                                ? realEstateListingsIcon
+                                : isPreferredLocation
+                                    ? preferredLocationsIcon
+                                    : deriveIconForOsmName(ge.items[0].type as OsmName);
+                            return (
+                                <>
+                                    <li className="locality-option-heading" key={ge.title}>
+                                    </li>
+                                    <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo} geIndex={geIndex} key={ge.title}/>
+                                </>
+                            )
+                        })}
                         {Object.entries(ApiOsmEntityCategory).sort().map(([categoryLabel, category]) => {
                             return (
                                 <>
-                                {groupedEntries.some(ge => ge.items.length && osmEntityTypes.some(oet => oet.label === ge.title && oet.category === category)) && <li className="locality-option-heading" key={category}>
+                                    {groupedEntries.some(ge => ge.items.length && (osmEntityTypes.some(oet => oet.label === ge.title && oet.category === category))) &&
+                                    <li className="locality-option-heading" key={category}>
                                         <h4>{category}</h4>
                                     </li>}
                                     {groupedEntries.filter(ge => ge.items.length && osmEntityTypes.some(oet => oet.label === ge.title && oet.category === category))
-                                    .sort().map((ge, geIndex) => {
+                                        .sort().map((ge, geIndex) => {
                                             const isRealEstateListing =
                                                 ge.items[0].label === realEstateListingsTitle;
                                             const isPreferredLocation =
@@ -256,129 +410,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                     ? preferredLocationsIcon
                                                     : deriveIconForOsmName(ge.items[0].type as OsmName);
                                             return (
-                                                <li
-                                                    className="locality-option-li"
-                                                    key={`grouped-entry-${ge.title}`}
-                                                >
-                                                    <div
-                                                        className={
-                                                            "collapse collapse-arrow locality-option" +
-                                                            (localityOpen.includes(ge.title)
-                                                                ? " collapse-child-open"
-                                                                : " collapse-child-closed")
-                                                        }
-                                                    >
-                                                        <input
-                                                            type="checkbox"
-                                                            onChange={(event) =>
-                                                                toggleLocality(ge.title, event.target.checked)
-                                                            }
-                                                        />
-                                                        <div className="collapse-title">
-                                                            <div
-                                                                onClick={() =>
-                                                                    toggleLocality(
-                                                                        ge.title,
-                                                                        !localityOpen.includes(ge.title)
-                                                                    )
-                                                                }
-                                                            >
-                                                                <div
-                                                                    className="img-container"
-                                                                    style={{background: groupIconInfo.color}}
-                                                                >
-                                                                    <img
-                                                                        src={groupIconInfo.icon}
-                                                                        alt="group-icon"
-                                                                        onClick={() =>
-                                                                            toggleLocality(ge.title, !ge.active)
-                                                                        }
-                                                                    />
-                                                                </div>
-                                                                {ge.title} [{ge.items.length}]
-                                                            </div>
-                                                            <label className="cursor-pointer label justify-start pl-0">
-                                                                <input
-                                                                    type="checkbox"
-                                                                    checked={ge.active}
-                                                                    className="checkbox checkbox-primary checkbox-sm"
-                                                                    onChange={() => toggleEntryGroup(ge.title)}
-                                                                />
-                                                            </label>
-                                                        </div>
-                                                        <div className="collapse-content">
-                                                            <div className="mean-items">
-                                                                <div className="item">
-                                                                    <img src={distanceIcon} alt="icon-distance"/>
-                                                                    Distanz
-                                                                </div>
-                                                                <div className="item">
-                                                                    <img src={walkIcon} alt="icon-walk"/>
-                                                                    Fußweg
-                                                                </div>
-                                                                <div className="item">
-                                                                    <img src={bicycleIcon} alt="icon-bicycle"/>
-                                                                    Fahrrad
-                                                                </div>
-                                                                <div className="item">
-                                                                    <img src={carIcon} alt="icon-car"/>
-                                                                    Auto
-                                                                </div>
-                                                            </div>
-                                                            {localityOpen.includes(ge.title) &&
-                                                            ge.items
-                                                                .slice(0, localityPagination[geIndex])
-                                                                .map((item, index) => (
-                                                                    <LocalityItem
-                                                                        key={index}
-                                                                        item={item}
-                                                                        group={ge}
-                                                                        onClickTitle={(item) =>
-                                                                            highlightZoomEntity(item)
-                                                                        }
-                                                                        onToggleRoute={(item) => toggleRoute(item)}
-                                                                        route={routes?.find(
-                                                                            (r) =>
-                                                                                r.coordinates.lat ===
-                                                                                item.coordinates.lat &&
-                                                                                r.coordinates.lng ===
-                                                                                item.coordinates.lng &&
-                                                                                r.show
-                                                                        )}
-                                                                        onToggleTransitRoute={(item) =>
-                                                                            toggleTransitRoute(item)
-                                                                        }
-                                                                        transitRoute={transitRoutes?.find(
-                                                                            (tr) =>
-                                                                                tr.coordinates.lat ===
-                                                                                item.coordinates.lat &&
-                                                                                tr.coordinates.lng ===
-                                                                                item.coordinates.lng &&
-                                                                                tr.show
-                                                                        )}
-                                                                    />
-                                                                ))}
-                                                            {localityOpen.includes(ge.title) &&
-                                                            ge.items.length > localityPagination[geIndex] && (
-                                                                <button
-                                                                    type="button"
-                                                                    className="btn btn-link"
-                                                                    onClick={() =>
-                                                                        setLocalityPagination(
-                                                                            localityPagination.map((lp, index) =>
-                                                                                index !== geIndex
-                                                                                    ? lp
-                                                                                    : lp + localityPaginationSize
-                                                                            )
-                                                                        )
-                                                                    }
-                                                                >
-                                                                    Mehr anzeigen
-                                                                </button>
-                                                            )}
-                                                        </div>
-                                                    </div>
-                                                </li>
+                                                <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo}
+                                                                 geIndex={geIndex} key={ge.title}/>
                                             );
                                         })
                                     }
