@@ -14,8 +14,6 @@ export const allSubscriptionTypes: {
 export const standardSubscription: ApiSubscriptionPlan = {
     type: ApiSubscriptionPlanType.STANDARD,
     limits: {
-        numberOfRealEstates: 5,
-        numberOfCustomers: 5,
         numberOfRequestsPerMonth: 20
     },
     priceIds: {
@@ -32,7 +30,7 @@ export const standardSubscription: ApiSubscriptionPlan = {
     },
     properties: [
         'bis zu 20 Umgebungsanalysen im Monat',
-        'Daten von bis zu 5 Interessenten & Objekten hinterlegen',
+        'Unbegrenzte Anzahl von Interessenten & Objekten hinterlegen',
         'vollautomatisiertes Exposé',
         'Analyse basierend auf OSM-Daten',
     ],
@@ -47,8 +45,6 @@ export const standardSubscription: ApiSubscriptionPlan = {
 export const proSubscription: ApiSubscriptionPlan = {
     type: ApiSubscriptionPlanType.PRO,
     limits: {
-        numberOfRealEstates: 20,
-        numberOfCustomers: 20,
         numberOfRequestsPerMonth: 100
     },
     priceIds: {
@@ -65,7 +61,7 @@ export const proSubscription: ApiSubscriptionPlan = {
     },
     properties: [
         'bis zu 100 Umgebungsanalysen im Monat',
-        'Daten von bis zu 20 Interessenten & Objekten hinterlegen',
+        'Unbegrenzte Anzahl von Interessenten & Objekten hinterlegen',
         'vollautomatisiertes Exposé',
         'Analyse basierend auf OSM- und Zensus-Daten',
         'Versand von Fragebögen'
@@ -97,7 +93,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     },
     properties: [
         'bis zu 500 Umgebungsanalysen im Monat',
-        'Beliebig viele Interessenten & Objekte hinterlegen',
+        'Unbegrenzte Anzahl von Interessenten & Objekte hinterlegen',
         'vollautomatisiertes Exposé',
         'Analyse basierend auf allen Geo-Daten',
         'Versand von Fragebögen',
