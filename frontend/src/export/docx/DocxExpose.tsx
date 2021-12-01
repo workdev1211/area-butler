@@ -16,6 +16,7 @@ import { createImage } from "./creator/image.creator";
 import {
   createTable,
   mapTableDataFromCensusData,
+  mapTableDataFromEntityGrid,
   mapTableDataFromEntityGroup,
   mapTableDataFromFederalElectionData,
   mapTableDataFromParticlePollutiondata,
@@ -39,6 +40,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
+  transportationParams,
   user,
 }) => {
   const colorPalette = deriveColorPalette(
@@ -46,6 +48,17 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   );
 
   const generate = async () => {
+
+
+    const gridSummary = createTable({
+      title: "Die Umgebung",
+      pageBreak: false,
+      columnWidths: [4000, 3000, 3000, 3000, 3000],
+      headerColor: colorPalette.primaryColor,
+      headerTextColor: colorPalette.textColor,
+      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams),
+    })
+
     const tables = groupedEntries.map((group) =>
       createTable({
         title: group.title,
@@ -102,7 +115,6 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         createImage(c.mapClippingDataUrl.replace("data:image/jpeg;base64,", ""))
       );
 
-
     if (images.length > 0) {
       images = [
         new Paragraph({ children: [new PageBreak()] }),
@@ -111,18 +123,35 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
           heading: HeadingLevel.HEADING_1,
           text: "Kartenausschnitte",
         }),
-        ...images];
+        ...images,
+      ];
     }
 
     const imageBase64Data = user?.logo!.replace("data:image/png;base64,", "")!;
 
     const doc = new Document({
+      styles: {
+        paragraphStyles: [
+          {
+            id: "Heading1",
+            name: "Heading 1",
+            basedOn: "Normal",
+            next: "Normal",
+            run: {
+              font: 'Arial',
+              size: 32,
+              color: "000000",
+            },
+          },
+        ],
+      },
       sections: [
         {
           headers: {
             ...createHeader(imageBase64Data),
           },
           children: [
+            ...gridSummary,
             ...tables.flatMap((t) => t),
             ...images,
             new Paragraph({ children: [new PageBreak()] }),

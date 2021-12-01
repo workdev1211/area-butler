@@ -17,7 +17,7 @@ export interface EntityGridSummaryProps {
   primaryColor?: string;
 }
 
-const routingProfileOrder = [
+export const routingProfileOrder = [
   MeansOfTransportation.WALK,
   MeansOfTransportation.BICYCLE,
   MeansOfTransportation.CAR,

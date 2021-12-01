@@ -1,21 +1,33 @@
 import {
   HeadingLevel,
-  PageBreak, Paragraph, ShadingType, Table, TableCell, TableRow, TextRun
+  PageBreak,
+  Paragraph,
+  ShadingType,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
 } from "docx";
+import { routingProfileOrder } from "export/EntityGridSummary";
 import {
   FederalElectionDistrict,
-  FederalElectionResult
+  FederalElectionResult,
 } from "hooks/federalelectiondata";
 import { averageCensus } from "map/CensusTable";
 import {
   averageParticlePollution,
-  PollutionData
+  PollutionData,
 } from "map/ParticlePollutionTable";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import { deriveMinutesFromMeters } from "shared/shared.functions";
 import {
+  meansOfTransportations,
+  unitsOfTransportation,
+} from "../../../../../shared/constants/constants";
+import {
   ApiGeojsonFeature,
-  MeansOfTransportation
+  MeansOfTransportation,
+  TransportationParam,
 } from "../../../../../shared/types/types";
 
 export interface TableProps {
@@ -238,6 +250,76 @@ export const mapTableDataFromParticlePollutiondata = (
           averageParticlePollution.daysAboveThreshold + "",
         ],
       ],
+    },
+  };
+};
+
+export const mapTableDataFromEntityGrid = (
+  groupedEntries: EntityGroup[],
+  transportationParams: TransportationParam[]
+): { data: { header: string[]; body: string[][] } } => {
+  const byFootAvailable = transportationParams.some(
+    (param) => param.type === MeansOfTransportation.WALK
+  );
+  const byBikeAvailable = transportationParams.some(
+    (param) => param.type === MeansOfTransportation.BICYCLE
+  );
+  const byCarAvailable = transportationParams.some(
+    (param) => param.type === MeansOfTransportation.CAR
+  );
+
+  const header = [];
+  header.push("");
+  header.push("Nächster Ort");
+
+  transportationParams
+    .sort(
+      (t1, t2) =>
+        routingProfileOrder.indexOf(t1.type) -
+        routingProfileOrder.indexOf(t2.type)
+    )
+    .forEach((t) => {
+      const meansLabel = meansOfTransportations.find(
+        (means) => means.type === t.type
+      )?.label;
+      const meansUnit = unitsOfTransportation.find(
+        (unit) => unit.type === t.unit
+      )?.label;
+      header.push(`${meansLabel} (${t.amount} ${meansUnit})`);
+    });
+
+  return {
+    data: {
+      header,
+      body: groupedEntries
+        .filter((g) => g.active)
+        .map((g) => {
+          const data: string[] = [];
+
+          data.push(g.title);
+          data.push(
+            Math.round(Math.min(...g.items.map((d) => d.distanceInMeters))) +
+              " m"
+          );
+
+          if (byFootAvailable) {
+            data.push(
+              g.items.filter((d: ResultEntity) => d.byFoot).length + ""
+            );
+          }
+
+          if (byBikeAvailable) {
+            data.push(
+              g.items.filter((d: ResultEntity) => d.byBike).length + ""
+            );
+          }
+
+          if (byCarAvailable) {
+            data.push(g.items.filter((d: ResultEntity) => d.byCar).length + "");
+          }
+
+          return data;
+        }),
     },
   };
 };

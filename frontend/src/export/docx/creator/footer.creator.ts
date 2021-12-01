@@ -8,6 +8,7 @@ export const createFooter = () => {
           alignment: AlignmentType.DISTRIBUTE,   
           children: [
             new TextRun("Umgebungsanalyse"),
+            new TextRun("\t"),
             new TextRun({
               children: ["Seite ", PageNumber.CURRENT],
             }),
