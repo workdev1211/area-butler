@@ -1,7 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from 'src/user/user.module';
-import { RealEstateListingListener } from './listener/real-estate-listing.listener';
 import { RealEstateListingController } from './real-estate-listing.controller';
 import { RealEstateListingService } from './real-estate-listing.service';
 import {
@@ -16,7 +15,7 @@ import {
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
-  providers: [RealEstateListingService, RealEstateListingListener],
+  providers: [RealEstateListingService],
   controllers: [RealEstateListingController],
 })
 export class RealEstateListingModule {}
