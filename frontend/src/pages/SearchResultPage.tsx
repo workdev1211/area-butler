@@ -5,6 +5,7 @@ import {
     ApiAddress,
     ApiCoordinates,
     ApiSearchResponse,
+    ApiUser,
     MeansOfTransportation,
     OsmName
 } from "../../../shared/types/types";
@@ -63,6 +64,8 @@ export interface EntityTransitRoute {
     show: boolean,
     route: ApiTransitRoute
 }
+
+const subscriptionUpgradeFullyCustomizableExpose = "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
 const buildEntityDataFromPreferredLocations = (
     centerCoordinates: ApiCoordinates,
@@ -144,6 +147,9 @@ const SearchResultPage: React.FunctionComponent = () => {
 
     const {realEstateState} = useContext(RealEstateContext);
     const {userState, userDispatch} = useContext(UserContext);
+
+    const user : ApiUser = userState.user;
+    const hasFullyCustomizableExpose = user.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -308,7 +314,15 @@ const SearchResultPage: React.FunctionComponent = () => {
                 <button
                     type="button"
                     onClick={() => {
-                        searchContextDispatch({type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE, payload: true});
+                        hasFullyCustomizableExpose ? 
+                            searchContextDispatch({type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE, payload: true}) :
+                            userDispatch({
+                                type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                                payload: {
+                                open: true,
+                                message: subscriptionUpgradeFullyCustomizableExpose,
+                                },
+                            })
                     }}
                     className="btn btn-link"
                 >
