@@ -49,26 +49,26 @@ const PreferredLocationItemContent: React.FunctionComponent<{item:ResultEntity, 
         <>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Distanz</span>
-            <span>{Math.round(item.distanceInMeters)}m</span>
+            <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
         </div>
 
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Fußweg</span>
-            <span>{byFootDuration} Min.</span>
+            <span>{Number.isNaN(byFootDuration) ? byFootDuration : timeToHumanReadable(byFootDuration as number)}</span>
         </div>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Fahrrad</span>
-            <span>{byBicycleDuration} Min.</span>
+            <span>{Number.isNaN(byBicycleDuration) ? byBicycleDuration : timeToHumanReadable(byBicycleDuration as number)}</span>
         </div>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Auto</span>
-            <span>{byCarDuration} Min.</span>
+            <span>{Number.isNaN(byCarDuration) ? byCarDuration : timeToHumanReadable(byCarDuration as number)}</span>
         </div>
         </>}
         {transitRoute?.show &&
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">ÖPNV</span>
-            <span>{transitDuration} Min.</span>
+            <span>{Number.isNaN(transitDuration) ? transitDuration : timeToHumanReadable(transitDuration as number)}</span>
         </div>
 
         }
