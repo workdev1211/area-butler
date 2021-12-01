@@ -39,7 +39,7 @@ export const calculateMinutesToMeters = [
 
 export const unitsOfTransportation = [
     {label: 'Minuten', type: UnitsOfTransportation.MINUTES},
-    {label: 'Metern', type: UnitsOfTransportation.METERS}
+    {label: 'Kilometern', type: UnitsOfTransportation.KILOMETERS}
 ]
 
 export const meansOfTransportations = [

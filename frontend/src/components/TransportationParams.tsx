@@ -79,7 +79,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
             if (value.type !== mean) {
                 return value;
             }
-            const unit = Object.values(UnitsOfTransportation).find(uot => uot === newValue) ?? UnitsOfTransportation.METERS;
+            const unit = Object.values(UnitsOfTransportation).find(uot => uot === newValue) ?? UnitsOfTransportation.KILOMETERS;
             return {
                 ...value,
                 amount: unit === UnitsOfTransportation.MINUTES ? Math.min(value.amount, 60) : value.amount,
@@ -107,7 +107,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                     type="checkbox"
                                     className="toggle toggle-primary"
                                     checked={isActive}
-                                    onChange={(e) => {
+                                    onChange={() => {
                                         if (!isActive) {
                                             handleOnChange([
                                                 ...values,
@@ -134,17 +134,17 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                 label="Erreichbar in" type="number"
                                 value={currentValue?.amount ?? 1}
                                 min={1}
-                                max={10000}
+                                max={1000}
                                 onChange={(event) => setMeanValue(event.target.value, currentValue?.unit, mean.type)}
                                 className="input input-bordered flex"
-                                placeholder={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'Minuten' : 'Meter'}/>
+                                placeholder={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'Minuten' : 'Kilometer'}/>
                             <div className="form-control min-flex">
                                 <label className="label">
                                     <span>Einheit</span>
                                 </label>
                                 <select className="select select-bordered flex" value={currentValue?.unit}
                                         onChange={(event) => setMeanUnit(event.target.value, mean.type)}>
-                                    <option value={UnitsOfTransportation.METERS}>Meter</option>
+                                    <option value={UnitsOfTransportation.KILOMETERS}>Kilometer</option>
                                     <option value={UnitsOfTransportation.MINUTES}>Minuten</option>
                                 </select>
                             </div>

@@ -154,7 +154,7 @@ export interface TransportationParam {
 
 export enum UnitsOfTransportation {
   MINUTES = "MINUTES",
-  METERS = "METERS",
+  KILOMETERS = "KILOMETERS",
 }
 
 export enum MeansOfTransportation {

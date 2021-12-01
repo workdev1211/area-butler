@@ -9,7 +9,7 @@ import { PotentialCustomerService } from '../potential-customer.service';
 const createInitialPotentialCustomer: () => ApiUpsertPotentialCustomer = () => ({
     name: 'Max Mustermann',
     email: 'man.mustermann@area-butler.de',
-    routingProfiles: [{type: MeansOfTransportation.BICYCLE, amount: 1000, unit: UnitsOfTransportation.METERS}],
+    routingProfiles: [{type: MeansOfTransportation.BICYCLE, amount: 2, unit: UnitsOfTransportation.KILOMETERS}],
     preferredAmenities: [OsmName.bar, OsmName.chemist, OsmName.kiosk, OsmName.doctors],
     realEstateCharacteristics: {
       numberOfRooms: 3,

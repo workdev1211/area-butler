@@ -21,7 +21,7 @@ export class IsochroneService {
     unit: UnitsOfTransportation,
   ): Promise<ApiIsochrone> {
     const contour =
-      unit === UnitsOfTransportation.METERS
+      unit === UnitsOfTransportation.KILOMETERS
         ? 'contours_meters'
         : 'contours_minutes';
     const routingProfile =
@@ -31,6 +31,7 @@ export class IsochroneService {
     const params = {
       [contour]: `${limit}`,
       polygons: true,
+      // eslint-disable-next-line @typescript-eslint/camelcase
       access_token: configService.getMapBoxAccessToken(),
     };
 
