@@ -1,14 +1,11 @@
-import { FunctionComponent } from "react";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiUser } from "../../../shared/types/types";
-import {
-  allSubscriptionTypes,
-  standardSubscription,
-} from "../../../shared/constants/subscription-plan";
+import {FunctionComponent} from "react";
+import {ApiRealEstateListing} from "../../../shared/types/real-estate";
+import {ApiUser} from "../../../shared/types/types";
+import {allSubscriptionTypes,} from "../../../shared/constants/subscription-plan";
 import RequestContingentDropDown from "./RequestContingentDropdown";
-import { deriveTotalRequestContingent } from "shared/shared.functions";
-import { useHttp } from "hooks/http";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import {deriveTotalRequestContingent} from "shared/shared.functions";
+import {useHttp} from "hooks/http";
+import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -18,7 +15,6 @@ export interface SubscriptionPlanLimitsProps {
 
 const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
   ({ user, realEstates, customers }) => {
-    const hasSubcription = !!user.subscriptionPlan;
 
     const subscriptionLabel =
       allSubscriptionTypes.find(
@@ -30,10 +26,9 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
     const { post } = useHttp();
 
     const forwardToCustomerPortal = async () => {
-      const customerPortalUrl = (
-        await post<string>("/api/billing/create-customer-portal-link", {})
+        window.location.href = (
+          await post<string>("/api/billing/create-customer-portal-link", {})
       ).data;
-      window.location.href = customerPortalUrl;
     };
 
     return (
@@ -75,41 +70,13 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> =
           key="real-estate-contingent"
           className="flex flex-wrap gap-6 items-center"
         >
-          {!user.subscriptionPlan?.config.limits.numberOfRealEstates ? (
             <div>Unlimitierte Objekte</div>
-          ) : (
-            <>
-              <span className="w-64">
-                Objekte angelegt {realEstates.length}/
-                {user.subscriptionPlan?.config.limits.numberOfRealEstates}:
-              </span>
-              <progress
-                value={realEstates.length}
-                max={user.subscriptionPlan?.config.limits.numberOfRealEstates}
-                className="w-96 progress progress-primary"
-              ></progress>
-            </>
-          )}
         </div>
         <div
           key="customer-contingent"
           className="flex flex-wrap gap-6 items-center"
         >
-          {!user.subscriptionPlan?.config.limits.numberOfCustomers ? (
             <div>Unlimitierte Interessenten</div>
-          ) : (
-            <>
-              <span className="w-64">
-                Interessenten angelegt {customers.length}/
-                {user.subscriptionPlan?.config.limits.numberOfCustomers}:
-              </span>
-              <progress
-                value={customers.length}
-                max={user.subscriptionPlan?.config.limits.numberOfCustomers}
-                className="w-96 progress progress-primary"
-              ></progress>
-            </>
-          )}
         </div>
       </div>
     );
