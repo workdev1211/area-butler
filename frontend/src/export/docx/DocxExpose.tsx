@@ -122,10 +122,12 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         ]
       : [];
 
+    const base64PrefixRegex = /data:.+;base64,/;  
+
     let images = mapClippings
       .filter((c) => c.selected)
       .map((c) =>
-        createImage(c.mapClippingDataUrl.replace("data:image/jpeg;base64,", ""))
+        createImage(c.mapClippingDataUrl.replace(base64PrefixRegex, ""))
       );
 
     if (images.length > 0) {
@@ -140,7 +142,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       ];
     }
 
-    const imageBase64Data = !!user?.logo ? user?.logo!.replace("data:image/png;base64,", "")! : await (await fetch(AreaButlerLogo)).blob();
+    const imageBase64Data = !!user?.logo ? user?.logo!.replace(base64PrefixRegex, "")! : await (await fetch(AreaButlerLogo)).blob();
 
     console.log(imageBase64Data);
 
