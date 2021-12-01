@@ -144,8 +144,6 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
 
     const imageBase64Data = !!user?.logo ? user?.logo!.replace(base64PrefixRegex, "")! : await (await fetch(AreaButlerLogo)).blob();
 
-    console.log(imageBase64Data);
-
     const doc = new Document({
       styles: {
         paragraphStyles: [
