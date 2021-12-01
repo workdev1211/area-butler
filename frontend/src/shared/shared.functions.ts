@@ -70,6 +70,28 @@ export const deriveMinutesFromMeters = (distanceInMeters: number, mean: MeansOfT
     return Math.round(distanceInMeters / (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator || 1));
 }
 
+export const distanceToHumanReadable = (distanceInMeters: number): string => {
+    if (distanceInMeters < 1000) {
+        return `${Math.floor(distanceInMeters)}m`;
+    }
+    if (distanceInMeters % 1000 === 0) {
+        return `${Math.floor(distanceInMeters / 1000)}km`;
+    } else {
+        return `${Math.floor(distanceInMeters / 1000)}.${Math.ceil((distanceInMeters % 1000) / 100)}km`;
+    }
+}
+
+export const timeToHumanReadable = (timeInMinutes: number): string => {
+    if (timeInMinutes < 60) {
+        return `${Math.floor(timeInMinutes)} Min.`;
+    }
+    if (timeInMinutes % 60 === 0) {
+        return `${Math.floor(timeInMinutes / 60)} Std.`;
+    } else {
+        return `${Math.floor(timeInMinutes / 60)} Std. ${timeInMinutes % 60} Min.`;
+    }
+}
+
 export const toastSuccess = (message: string) => {
     toast.success(message, {
         position: "top-right",

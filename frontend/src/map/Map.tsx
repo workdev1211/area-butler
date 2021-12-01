@@ -22,7 +22,7 @@ import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
     preferredLocationsIcon,
-    realEstateListingsIcon,
+    realEstateListingsIcon, timeToHumanReadable,
     toastSuccess
 } from "../shared/shared.functions";
 import "./Map.css";
@@ -69,9 +69,9 @@ export class IdMarker extends L.Marker {
         if (!this.getPopup()) {
             const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
             const street = this.entity.address.street && this.entity.address.street !== 'undefined' ? this.entity.address.street : null;
-            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK)} min.</span></span>` : '';
-            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE)} min.</span></span>` : '';
-            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR)} min.</span></span>` : '';
+            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK))}</span></span>` : '';
+            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE))}</span></span>` : '';
+            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR))}</span></span>` : '';
             this.bindPopup(`<span class="font-semibold">${title}</span><br />${street ? '<div>' + street + '</div><br />' : ''}<div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
         }
         this.openPopup();

@@ -112,7 +112,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
 
     const toggleLocality = (title: string) => {
         const filtered = [...localityOpen.filter((l) => l !== title)];
-        if (!localityOpen.some(l =>  l === title)) {
+        if (!localityOpen.some(l => l === title)) {
             filtered.push(title);
         }
         setLocalityOpen(filtered);
@@ -303,7 +303,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 <div className="collapse-title">Einblicke</div>
                 <div className="collapse-content">
                     <ul>
-                        <li className="locality-option-li">
+                        <li className="locality-option-li" key="list-item-zensus">
                             <MapMenuCollapsable
                                 title="Zensus Atlas"
                                 subscriptionCheck={() => censusInSubscriptionPlan}
@@ -313,10 +313,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                     )
                                 }
                             >
-                                <CensusTable censusData={censusData}></CensusTable>
+                                <CensusTable censusData={censusData}/>
                             </MapMenuCollapsable>
                         </li>
-                        <li className="locality-option-li">
+                        <li className="locality-option-li" key="list-item-btw">
                             <MapMenuCollapsable
                                 title="Bundestagswahl 2021"
                                 subscriptionCheck={() => federalElectionInSubscriptionPlan}
@@ -328,10 +328,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                             >
                                 <FederalElectionTable
                                     federalElectionData={federalElectionData}
-                                ></FederalElectionTable>
+                                />
                             </MapMenuCollapsable>
                         </li>
-                        <li className="locality-option-li">
+                        <li className="locality-option-li" key="list-item-zensus-feinstaub">
                             <MapMenuCollapsable
                                 title="Feinstaubbelastung"
                                 subscriptionCheck={() => particlePollutionInSubscriptionPlan}
@@ -343,7 +343,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                             >
                                 <ParticlePollutionTable
                                     particlePollutionData={particlePollutionData}
-                                ></ParticlePollutionTable>
+                                />
                             </MapMenuCollapsable>
                         </li>
                     </ul>
@@ -384,7 +384,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                     : deriveIconForOsmName(ge.items[0].type as OsmName);
                             return (
                                 <>
-                                    <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo} geIndex={geIndex} key={`map-menu-list-item-${ge.title}`}/>
+                                    <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo} geIndex={geIndex}
+                                                     key={`${ge.title}-${geIndex}-map-menu-list-item-top`}/>
                                 </>
                             )
                         })}
@@ -408,7 +409,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                                                     : deriveIconForOsmName(ge.items[0].type as OsmName);
                                             return (
                                                 <MapMenuListItem ge={ge} groupIconInfo={groupIconInfo}
-                                                                 geIndex={geIndex} key={`map-menu-list-item-${ge.title}`}/>
+                                                                 geIndex={geIndex}
+                                                                 key={`${ge.title}-${geIndex}-map-menu-list-item`}/>
                                             );
                                         })
                                     }
