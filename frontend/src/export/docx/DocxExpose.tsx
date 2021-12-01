@@ -21,6 +21,7 @@ import {
   mapTableDataFromFederalElectionData,
   mapTableDataFromParticlePollutiondata,
 } from "./creator/table.creator";
+import AreaButlerLogo from "../../assets/img/logo.jpg";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -42,14 +43,26 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   particlePollutionData,
   transportationParams,
   user,
+  realEstateListing,
+  listingAddress,
 }) => {
   const colorPalette = deriveColorPalette(
     !!user?.color ? user.color! : "#AA0C54"
   );
 
+  let documentTitle = "MeinStandort_AreaButler";
+
+  if (!!realEstateListing?.name) {
+    documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
+  }
+
+  if (!!listingAddress) {
+    documentTitle = `${
+      listingAddress.replace(/\s/g, "").split(",")[0]
+    }_AreaButler`;
+  }
+
   const generate = async () => {
-
-
     const gridSummary = createTable({
       title: "Die Umgebung",
       pageBreak: false,
@@ -57,7 +70,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       headerColor: colorPalette.primaryColor,
       headerTextColor: colorPalette.textColor,
       ...mapTableDataFromEntityGrid(groupedEntries, transportationParams),
-    })
+    });
 
     const tables = groupedEntries.map((group) =>
       createTable({
@@ -127,7 +140,9 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       ];
     }
 
-    const imageBase64Data = user?.logo!.replace("data:image/png;base64,", "")!;
+    const imageBase64Data = !!user?.logo ? user?.logo!.replace("data:image/png;base64,", "")! : await (await fetch(AreaButlerLogo)).blob();
+
+    console.log(imageBase64Data);
 
     const doc = new Document({
       styles: {
@@ -138,7 +153,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             basedOn: "Normal",
             next: "Normal",
             run: {
-              font: 'Arial',
+              font: "Arial",
               size: 32,
               color: "000000",
             },
@@ -167,7 +182,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
     });
 
     Packer.toBlob(doc).then((blob) => {
-      saveAs(blob, "Umgebungsanalyse.docx");
+      saveAs(blob, `${documentTitle}.docx`);
     });
   };
 

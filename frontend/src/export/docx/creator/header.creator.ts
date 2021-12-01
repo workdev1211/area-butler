@@ -2,7 +2,7 @@ import {
   Header, ImageRun, Paragraph, Table, TableCell, TableRow
 } from "docx";
 
-export const createHeader = (imageData: string) => {
+export const createHeader = (imageData: string | Blob ) => {
   return {
     default: new Header({
       children: [
@@ -19,11 +19,11 @@ export const createHeader = (imageData: string) => {
                     new Paragraph({
                       children: [
                         new ImageRun({
-                          data: Uint8Array.from(atob(imageData), (c) =>
+                          data: typeof imageData === 'string' ?  Uint8Array.from(atob(imageData), (c) =>
                             c.charCodeAt(0)
-                          ),
+                          ) : imageData as any as Buffer,
                           transformation: {
-                            width: 200,
+                            width: 300,
                             height: 100,
                           },
                         }),
