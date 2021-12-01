@@ -3,7 +3,7 @@ import "./EntityTable.css";
 import React from "react";
 import { calculateMinutesToMeters } from "../../../shared/constants/constants";
 import { MeansOfTransportation } from "../../../shared/types/types";
-import { deriveColorPalette } from "shared/shared.functions";
+import {deriveColorPalette, distanceToHumanReadable, timeToHumanReadable} from "shared/shared.functions";
 
 export interface EntityTableProps {
   entityGroup: EntityGroup;
@@ -75,42 +75,42 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
               {hasNames && <td>{item.name || entityGroup.title}</td>}
               <td>
                 {item.distanceInMeters
-                  ? Math.trunc(item.distanceInMeters) + " m"
+                  ? distanceToHumanReadable(item.distanceInMeters)
                   : "unbekannt"}
               </td>
               {showRoutingColumns && byFoot && (
                 <td>
                   {item.byFoot
-                    ? `${Math.trunc(
+                    ? `${timeToHumanReadable(
                         deriveMinutesFromMeters(
                           item.distanceInMeters,
                           MeansOfTransportation.WALK
                         )
-                      )} min`
+                      )}`
                     : ""}
                 </td>
               )}
               {showRoutingColumns && byBike && (
                 <td>
                   {item.byBike
-                    ? `${Math.trunc(
+                    ? `${timeToHumanReadable(
                         deriveMinutesFromMeters(
                           item.distanceInMeters,
                           MeansOfTransportation.BICYCLE
                         )
-                      )} min`
+                      )}`
                     : ""}
                 </td>
               )}
               {showRoutingColumns && byCar && (
                 <td>
                   {item.byCar
-                    ? `${Math.trunc(
+                    ? `${timeToHumanReadable(
                         deriveMinutesFromMeters(
                           item.distanceInMeters,
                           MeansOfTransportation.CAR
                         )
-                      )} min`
+                      )}`
                     : ""}
                 </td>
               )}

@@ -68,7 +68,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
             }
             return {
                 ...value,
-                amount: unit === UnitsOfTransportation.MINUTES ? Math.min(parseInt(newValue), 60) : parseInt(newValue)
+                amount: unit === UnitsOfTransportation.MINUTES ? Math.min(parseInt(newValue), 60) : parseFloat(newValue)
             }
         });
         handleOnChange(newParams);
@@ -132,9 +132,10 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
                                 name="distance"
                                 icon={distanceIcon}
                                 label="Erreichbar in" type="number"
+                                step={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'any' : '.1'}
                                 value={currentValue?.amount ?? 1}
-                                min={1}
-                                max={1000}
+                                min={currentValue?.unit === UnitsOfTransportation.MINUTES ? 1 : 0.1}
+                                max={currentValue?.unit === UnitsOfTransportation.MINUTES ? 1000 : 100}
                                 onChange={(event) => setMeanValue(event.target.value, currentValue?.unit, mean.type)}
                                 className="input input-bordered flex"
                                 placeholder={currentValue?.unit === UnitsOfTransportation.MINUTES ? 'Minuten' : 'Kilometer'}/>

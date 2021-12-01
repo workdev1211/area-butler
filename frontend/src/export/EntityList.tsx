@@ -1,6 +1,6 @@
 import { EntityGroup } from "pages/SearchResultPage";
 import React from "react";
-import { deriveColorPalette } from "shared/shared.functions";
+import {deriveColorPalette, distanceToHumanReadable} from "shared/shared.functions";
 import "./EntityList.css";
 
 export interface EntityListProps {
@@ -30,7 +30,7 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
         {items.map((item, index: number) => (
           <li className="my-2">
             <div className="entity-list-item" style={entityListItemStyle}>
-                {`${index + 1}. ${item.name ? item.name : entityGroup.title} (${Math.round(item.distanceInMeters)}m)`}
+                {`${index + 1}. ${item.name ? item.name : entityGroup.title} (${distanceToHumanReadable(item.distanceInMeters)})`}
             </div>
           </li>
         ))}
