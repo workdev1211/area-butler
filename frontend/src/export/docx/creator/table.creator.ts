@@ -19,7 +19,11 @@ import {
   PollutionData,
 } from "map/ParticlePollutionTable";
 import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
-import { deriveMinutesFromMeters } from "shared/shared.functions";
+import {
+  deriveMinutesFromMeters,
+  distanceToHumanReadable,
+  timeToHumanReadable,
+} from "shared/shared.functions";
 import {
   meansOfTransportations,
   unitsOfTransportation,
@@ -140,31 +144,37 @@ export const mapTableDataFromEntityGroup = (
           return [
             item.name || group.title,
             item.distanceInMeters
-              ? Math.trunc(item.distanceInMeters) + " m"
+              ? distanceToHumanReadable(Math.trunc(item.distanceInMeters))
               : "unbekannt",
             item.byFoot
-              ? `${Math.trunc(
-                  deriveMinutesFromMeters(
-                    item.distanceInMeters,
-                    MeansOfTransportation.WALK
+              ? timeToHumanReadable(
+                  Math.trunc(
+                    deriveMinutesFromMeters(
+                      item.distanceInMeters,
+                      MeansOfTransportation.WALK
+                    )
                   )
-                )} min`
+                )
               : "",
             item.byBike
-              ? `${Math.trunc(
-                  deriveMinutesFromMeters(
-                    item.distanceInMeters,
-                    MeansOfTransportation.BICYCLE
+              ? timeToHumanReadable(
+                  Math.trunc(
+                    deriveMinutesFromMeters(
+                      item.distanceInMeters,
+                      MeansOfTransportation.BICYCLE
+                    )
                   )
-                )} min`
+                )
               : "",
             item.byCar
-              ? `${Math.trunc(
-                  deriveMinutesFromMeters(
-                    item.distanceInMeters,
-                    MeansOfTransportation.CAR
+              ? timeToHumanReadable(
+                  Math.trunc(
+                    deriveMinutesFromMeters(
+                      item.distanceInMeters,
+                      MeansOfTransportation.CAR
+                    )
                   )
-                )} min`
+                )
               : "",
           ];
         }),
@@ -298,8 +308,9 @@ export const mapTableDataFromEntityGrid = (
 
           data.push(g.title);
           data.push(
-            Math.round(Math.min(...g.items.map((d) => d.distanceInMeters))) +
-              " m"
+            distanceToHumanReadable(
+              Math.round(Math.min(...g.items.map((d) => d.distanceInMeters)))
+            )
           );
 
           if (byFootAvailable) {
