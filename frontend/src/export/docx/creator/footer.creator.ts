@@ -5,11 +5,11 @@ export const createFooter = () => {
     default: new Footer({
       children: [
         new Paragraph({
-          alignment: AlignmentType.DISTRIBUTE,   
           children: [
-            new TextRun("Umgebungsanalyse"),
-            new TextRun("\t"),
+            new TextRun({ font: "Arial", children: ["Umgebungsanalyse"] }),
+            new TextRun("\t\t\t\t\t\t\t\t\t"),
             new TextRun({
+              font: "Arial",
               children: ["Seite ", PageNumber.CURRENT],
             }),
           ],

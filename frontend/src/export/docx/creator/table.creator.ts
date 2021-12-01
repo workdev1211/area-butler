@@ -7,6 +7,7 @@ import {
   TableCell,
   TableRow,
   TextRun,
+  WidthType
 } from "docx";
 import { routingProfileOrder } from "export/EntityGridSummary";
 import {
@@ -69,7 +70,10 @@ export const createTable = ({
     ...pageBreakParagraph,
     ...titleParagraph,
     new Table({
-      columnWidths,
+      width: {
+        size: 100,
+        type: WidthType.PERCENTAGE
+      },
       rows: [
         new TableRow({
           cantSplit: true,
@@ -78,7 +82,7 @@ export const createTable = ({
             (h) =>
               new TableCell({
                 shading: {
-                  type: ShadingType.PERCENT_10,
+                  type: ShadingType.CLEAR,
                   fill: headerColor,
                   color: headerTextColor,
                 },

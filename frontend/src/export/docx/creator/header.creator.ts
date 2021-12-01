@@ -1,5 +1,5 @@
 import {
-  Header, ImageRun, Paragraph, Table, TableCell, TableRow
+  Header, ImageRun, Paragraph, Table, TableCell, TableRow, WidthType, AlignmentType, BorderStyle
 } from "docx";
 
 export const createHeader = (imageData: string | Blob ) => {
@@ -7,16 +7,31 @@ export const createHeader = (imageData: string | Blob ) => {
     default: new Header({
       children: [
         new Table({
-          columnWidths: [8000, 1000],
+          width: {
+            size: 100,
+            type: WidthType.PERCENTAGE
+          },
+          borders: {
+            top: {
+              style: BorderStyle.NONE
+            },
+            bottom: {
+              style: BorderStyle.NONE
+            },
+            left: {
+              style: BorderStyle.NONE
+            },
+            right: {
+              style: BorderStyle.NONE
+            }
+          },
           rows: [
             new TableRow({
               children: [
                 new TableCell({
-                  children: [new Paragraph("")],
-                }),
-                new TableCell({
                   children: [
                     new Paragraph({
+                      alignment: AlignmentType.RIGHT,
                       children: [
                         new ImageRun({
                           data: typeof imageData === 'string' ?  Uint8Array.from(atob(imageData), (c) =>
