@@ -52,7 +52,7 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
                         return (<button className={activeMeans.includes(mean) ? 'btn btn-link active' : 'btn btn-link'}
                                 onClick={() => toggleMean(mean)} key={`mean-${mean}`}>
                             <span className={deriveBackgroundClass(mean)}/>
-                            {meansOfTransportations.find(mot => mot.type === mean)?.label} ({param?.amount} {param?.unit === UnitsOfTransportation.METERS ? 'm' : 'min'})
+                            {meansOfTransportations.find(mot => mot.type === mean)?.label} ({param?.amount} {param?.unit === UnitsOfTransportation.KILOMETERS ? 'km' : 'min'})
                         </button>);
                     }
                 )}

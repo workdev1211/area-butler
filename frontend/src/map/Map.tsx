@@ -22,7 +22,7 @@ import {
     deriveIconForOsmName,
     deriveMinutesFromMeters,
     preferredLocationsIcon,
-    realEstateListingsIcon,
+    realEstateListingsIcon, timeToHumanReadable,
     toastSuccess
 } from "../shared/shared.functions";
 import "./Map.css";
@@ -69,9 +69,9 @@ export class IdMarker extends L.Marker {
         if (!this.getPopup()) {
             const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
             const street = this.entity.address.street && this.entity.address.street !== 'undefined' ? this.entity.address.street : null;
-            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK)} min.</span></span>` : '';
-            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE)} min.</span></span>` : '';
-            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR)} min.</span></span>` : '';
+            const byFoot = this.entity.byFoot ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.WALK))}</span></span>` : '';
+            const byBike = this.entity.byBike ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.BICYCLE))}</span></span>` : '';
+            const byCar = this.entity.byCar ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(deriveMinutesFromMeters(this.entity.distanceInMeters, MeansOfTransportation.CAR))}</span></span>` : '';
             this.bindPopup(`<span class="font-semibold">${title}</span><br />${street ? '<div>' + street + '</div><br />' : ''}<div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`);
         }
         this.openPopup();
@@ -301,12 +301,13 @@ const Map = React.memo<MapProps>(({
             routes.filter(e => e.show).forEach(entityRoute => {
                 entityRoute.routes.filter(isActiveMeans).filter(isVisibleDestination).forEach((r) => {
                     r.sections.forEach((s) => {
+                        const durationInMinutes = r.sections.map(s => s.duration).reduce((p, c) => p + c);
                         const line = L.geoJSON(s.geometry, {
                             style: function () {
                                 return {color: MEAN_COLORS[r.meansOfTransportation]};
                             }
                         })
-                            .bindPopup(`<h4 class="font-semibold">Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(r.meansOfTransportation)} alt="icon" /><span>${r.sections.map(s => s.duration).reduce((p, c) => p + c)} min.</span></span></div>`)
+                            .bindPopup(`<h4 class="font-semibold">Route zu ${entityRoute.title}</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(r.meansOfTransportation)} alt="icon" /><span>${Number.isNaN(durationInMinutes) ? durationInMinutes : timeToHumanReadable(durationInMinutes)}</span></span></div>`)
                             .addTo(routesGroup)
                         // @ts-ignore
                         L.path.touchHelper(line).addTo(routesGroup)
@@ -316,7 +317,7 @@ const Map = React.memo<MapProps>(({
             transitRoutes.filter(e => e.show).forEach(entityRoute => {
                 const {route} = entityRoute;
                 if (isVisibleDestination(route)) {
-                    const popupContent = route.sections.map((s) => `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon"/><span>${s.duration} min.</span></span>`).join("➟");
+                    const popupContent = route.sections.map((s) => `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(s.transportMode)} alt="icon"/><span>${Number.isNaN(s.duration) ? s.duration : timeToHumanReadable(s.duration)}</span></span>`).join("➟");
                     const fullDuration = route.sections.map(s => s.duration).reduce((p, c) => p + c);
                     route.sections.forEach((s) => {
                         const line = L.geoJSON(s.geometry, {
@@ -324,7 +325,7 @@ const Map = React.memo<MapProps>(({
                                 return {color: '#fcba03', dashArray: getDashArray(s.transportMode)};
                             }
                         })
-                            .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title} (${fullDuration} Min.)</h4><br/><div class="flex items-center gap-2">${popupContent}</div>`)
+                            .bindPopup(`<h4 class="font-semibold">ÖPNV Route zu ${entityRoute.title} (${Number.isNaN(fullDuration) ? fullDuration : timeToHumanReadable(fullDuration)})</h4><br/><div class="flex items-center gap-2">${popupContent}</div>`)
                             .addTo(routesGroup)
                         // @ts-ignore
                         L.path.touchHelper(line).addTo(routesGroup)

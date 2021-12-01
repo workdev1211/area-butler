@@ -1,7 +1,7 @@
 import React from "react";
 import {EntityGroup, EntityRoute, EntityTransitRoute, ResultEntity} from "../pages/SearchResultPage";
 import {MeansOfTransportation, OsmName} from "../../../shared/types/types";
-import {deriveMinutesFromMeters} from "../shared/shared.functions";
+import {deriveMinutesFromMeters, distanceToHumanReadable, timeToHumanReadable} from "../shared/shared.functions";
 
 export interface LocalityItemProps {
     item: ResultEntity,
@@ -49,26 +49,26 @@ const PreferredLocationItemContent: React.FunctionComponent<{item:ResultEntity, 
         <>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Distanz</span>
-            <span>{Math.round(item.distanceInMeters)}m</span>
+            <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
         </div>
 
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Fußweg</span>
-            <span>{byFootDuration} Min.</span>
+            <span>{Number.isNaN(byFootDuration) ? byFootDuration : timeToHumanReadable(byFootDuration as number)}</span>
         </div>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Fahrrad</span>
-            <span>{byBicycleDuration} Min.</span>
+            <span>{Number.isNaN(byBicycleDuration) ? byBicycleDuration : timeToHumanReadable(byBicycleDuration as number)}</span>
         </div>
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">Auto</span>
-            <span>{byCarDuration} Min.</span>
+            <span>{Number.isNaN(byCarDuration) ? byCarDuration : timeToHumanReadable(byCarDuration as number)}</span>
         </div>
         </>}
         {transitRoute?.show &&
         <div className="locality-item-cell">
             <span className="locality-item-cell-label">ÖPNV</span>
-            <span>{transitDuration} Min.</span>
+            <span>{Number.isNaN(transitDuration) ? transitDuration : timeToHumanReadable(transitDuration as number)}</span>
         </div>
 
         }
@@ -83,19 +83,19 @@ const LocalityItemContent: React.FunctionComponent<{item:ResultEntity}> = ({item
             <div className="locality-item-content">
                 <div className="locality-item-cell">
                     <span className="locality-item-cell-label">Distanz</span>
-                    <span>{Math.round(item.distanceInMeters)}m</span>
+                    <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
                 </div>
                 <div className="locality-item-cell">
                     <span className="locality-item-cell-label">Fußweg</span>
-                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.WALK)} Min.</span>
+                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.WALK))}</span>
                 </div>
                 <div className="locality-item-cell">
                     <span className="locality-item-cell-label">Fahrrad</span>
-                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.BICYCLE)} Min.</span>
+                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.BICYCLE))}</span>
                 </div>
                 <div className="locality-item-cell">
                     <span className="locality-item-cell-label">Auto</span>
-                    <span>{deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.CAR)} Min.</span>
+                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.CAR))}</span>
                 </div>
             </div>
     )

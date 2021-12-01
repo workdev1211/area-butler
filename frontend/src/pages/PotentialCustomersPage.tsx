@@ -1,283 +1,256 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, {useContext, useEffect, useState} from "react";
 import DefaultLayout from "../layout/defaultLayout";
-import { useHttp } from "../hooks/http";
-import {
-  PotentialCustomerActions,
-  PotentialCustomerContext,
-} from "../context/PotentialCustomerContext";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import {
-  allFurnishing,
-  allRealEstateCostTypes,
-} from "../../../shared/constants/real-estate";
+import {useHttp} from "../hooks/http";
+import {PotentialCustomerActions, PotentialCustomerContext,} from "../context/PotentialCustomerContext";
+import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
+import {allFurnishing, allRealEstateCostTypes,} from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import {Link, useHistory, useLocation} from "react-router-dom";
 import FormModal from "../components/FormModal";
-import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
+import {PotentialCustomerFormDeleteHandler} from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
-import { UserActions, UserContext } from "context/UserContext";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
-import { ApiUser } from "../../../shared/types/types";
+import {UserActions, UserContext} from "context/UserContext";
+import {osmEntityTypes} from "../../../shared/constants/constants";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
+import {ApiUser} from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 
 const deleteCustomerModalConfig = {
-  modalTitle: "Interessent löschen",
-  submitButtonTitle: "Löschen",
+    modalTitle: "Interessent löschen",
+    submitButtonTitle: "Löschen",
 };
 
 const createCustomerQuestionnaireModalConfig = {
-  modalTitle: "Fragebogen versenden",
-  submitButtonTitle: "Senden",
+    modalTitle: "Fragebogen versenden",
+    submitButtonTitle: "Senden",
 };
 
 const subscriptionUpgradeSendCustomerRequestMessage = (
-  <div>
-    <p className="my-5">
-      Der Versand eines Fragebogens ist in Ihrem aktuellen Abonnement nicht
-      verfügbar.
-    </p>
-    <p className="my-5">
-      Keine Zeit und Lust die Kriterien Ihrer Interessenten selbst einzugeben?
-    </p>
-    <p className="my-5">
-      Mit dem automatisch versendeten Fragebogen erfasst Ihr Area Butler die
-      Mobilitätspräferenz und die persönlichen Kriterien Ihrer Interessenten.
-      Sie müssen diese so nicht mehr manuell eingeben. Ein noch persönlicheres
-      Betreuungserlebnis für ihre Interessenten.
-    </p>
-  </div>
+    <div>
+        <p className="my-5">
+            Der Versand eines Fragebogens ist in Ihrem aktuellen Abonnement nicht
+            verfügbar.
+        </p>
+        <p className="my-5">
+            Keine Zeit und Lust die Kriterien Ihrer Interessenten selbst einzugeben?
+        </p>
+        <p className="my-5">
+            Mit dem automatisch versendeten Fragebogen erfasst Ihr Area Butler die
+            Mobilitätspräferenz und die persönlichen Kriterien Ihrer Interessenten.
+            Sie müssen diese so nicht mehr manuell eingeben. Ein noch persönlicheres
+            Betreuungserlebnis für ihre Interessenten.
+        </p>
+    </div>
 );
 
 const noFurtherCustomersUpgradeSubscriptionMessage =
-  "In Ihrem aktuellen Abonnement können Sie keine weiteren Interessenten anlegen.";
+    "In Ihrem aktuellen Abonnement können Sie keine weiteren Interessenten anlegen.";
 
 const PotentialCustomersPage: React.FunctionComponent = () => {
-  const { get } = useHttp();
-  const history = useHistory();
-  const queryParams = new URLSearchParams(useLocation().search);
-  const customerHighlightId = queryParams.get("id");
-  const { potentialCustomerState, potentialCustomerDispatch } = useContext(
-    PotentialCustomerContext
-  );
-
-  const { searchContextDispatch } = useContext(SearchContext);
-
-  const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
-  const { userState, userDispatch } = useContext(UserContext);
-  const user: ApiUser = userState.user;
-  const subscriptionPlan = user.subscriptionPlan?.config;
-  const canSendCustomerRequest =
-    subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
-  const canCreateNewCustomer =
-    !subscriptionPlan?.limits.numberOfCustomers ||
-    potentialCustomerState.customers.length <
-      subscriptionPlan?.limits.numberOfCustomers;
-
-  const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
-    const localityParams = osmEntityTypes.filter((entity) =>
-      customer.preferredAmenities.includes(entity.name)
+    const {get} = useHttp();
+    const history = useHistory();
+    const queryParams = new URLSearchParams(useLocation().search);
+    const customerHighlightId = queryParams.get("id");
+    const {potentialCustomerState, potentialCustomerDispatch} = useContext(
+        PotentialCustomerContext
     );
-    searchContextDispatch({
-      type: SearchContextActions.SET_LOCALITY_PARAMS,
-      payload: localityParams,
-    });
-    searchContextDispatch({
-      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
-      payload: customer.routingProfiles,
-    });
-    searchContextDispatch({
-      type: SearchContextActions.SET_PREFERRED_LOCATIONS,
-      payload: customer.preferredLocations,
-    });
-    history.push("/");
-  };
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      const response = await get<ApiPotentialCustomer[]>(
-        "/api/potential-customers"
-      );
-      potentialCustomerDispatch({
-        type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data,
-      });
+    const {searchContextDispatch} = useContext(SearchContext);
+
+    const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
+    const {userState, userDispatch} = useContext(UserContext);
+    const user: ApiUser = userState.user;
+    const subscriptionPlan = user.subscriptionPlan?.config;
+    const canSendCustomerRequest =
+        subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
+
+    const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
+        const localityParams = osmEntityTypes.filter((entity) =>
+            customer.preferredAmenities.includes(entity.name)
+        );
+        searchContextDispatch({
+            type: SearchContextActions.SET_LOCALITY_PARAMS,
+            payload: localityParams,
+        });
+        searchContextDispatch({
+            type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+            payload: customer.routingProfiles,
+        });
+        searchContextDispatch({
+            type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+            payload: customer.preferredLocations,
+        });
+        history.push("/");
     };
-    fetchCustomers();
-  }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const ActionsTop: React.FunctionComponent = () => {
-    return (
-      <>
-        <li>
-          {canCreateNewCustomer ? (
-            <Link to="/potential-customers/new" className="btn btn-link">
-              <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
-            </Link>
-          ) : (
-            <button
-              className="btn btn-link"
-              onClick={() =>
-                userDispatch({
-                  type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
-                  payload: {
-                    open: true,
-                    message: noFurtherCustomersUpgradeSubscriptionMessage,
-                  },
-                })
-              }
-            >
-              <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
-            </button>
-          )}
-        </li>
-        <li>
-          <button
-            type="button"
-            className="btn btn-link"
-            onClick={() =>
-              canSendCustomerRequest
-                ? setQuestionnaireModalOpen(true)
-                : userDispatch({
-                    type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
-                    payload: {
-                      open: true,
-                      message: subscriptionUpgradeSendCustomerRequestMessage,
-                    },
-                  })
-            }
-          >
-            <img src={plusIcon} alt="pdf-icon" /> Fragebogen versenden
-          </button>
-        </li>
-      </>
-    );
-  };
+    useEffect(() => {
+        const fetchCustomers = async () => {
+            const response = await get<ApiPotentialCustomer[]>(
+                "/api/potential-customers"
+            );
+            potentialCustomerDispatch({
+                type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+                payload: response.data,
+            });
+        };
+        fetchCustomers();
+    }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const questionnaireModalConfig = {
-    ...createCustomerQuestionnaireModalConfig,
-    modalOpen: questionnaireModalOpen,
-    postSubmit: () => setQuestionnaireModalOpen(false),
-  };
-
-  return (
-    <DefaultLayout
-      title="Meine Interessenten"
-      withHorizontalPadding={false}
-      actionTop={<ActionsTop />}
-    >
-      <TourStarter tour='customers' />
-      <FormModal modalConfig={questionnaireModalConfig}>
-        <QuestionnaireRequestFormHandler
-          postSubmit={() => setQuestionnaireModalOpen(false)}
-        />
-      </FormModal>
-      <div className="overflow-x-auto" data-tour="customers-table">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>E-Mail</th>
-              <th>Wichtige Adressen</th>
-              <th>Wohnvorstellung</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {potentialCustomerState.customers.map(
-              (customer: ApiPotentialCustomer, index: number) => (
-                <tr
-                  key={customer.id}
-                  className={
-                    customer.id === customerHighlightId ? "active" : ""
-                  }
-                >
-                  <th>{customer.name}</th>
-                  <td>
-                    <a
-                      href={`mailto:${customer.email}`}
-                      className="link-primary"
-                    >
-                      {customer.email}
-                    </a>
-                  </td>
-                  <td style={{ width: "25%", whiteSpace: "pre-wrap" }}>
-                    {Array.isArray(customer.preferredLocations) &&
-                    customer.preferredLocations.length
-                      ? customer.preferredLocations
-                          .map((location) => location.title || "")
-                          .join(", ")
-                      : "-"}
-                  </td>
-                  <td>
-                    {!!customer?.realEstateCostStructure?.type &&
-                    !!customer?.realEstateCostStructure.price
-                      ? `${customer?.realEstateCostStructure.price.amount} € (${
-                          allRealEstateCostTypes.find(
-                            (t) =>
-                              t.type === customer?.realEstateCostStructure?.type
-                          )?.label
-                        })`
-                      : ""}
-                    <br />
-                    {customer?.realEstateCharacteristics?.furnishing &&
-                      allFurnishing
-                        .filter((f) =>
-                          customer?.realEstateCharacteristics?.furnishing.includes(
-                            f.type
-                          )
-                        )
-                        .map((f) => f.label)
-                        .join(", ")}
-                  </td>
-                  <td>
-                    <div className="flex gap-4">
-                      <img
-                        src={searchIcon}
-                        alt="icon-search"
-                        className="cursor-pointer"
-                        onClick={() => startSearchFromCustomer(customer)}
-                        data-tour={'customers-table-item-search-button-' + index}
-                      />
-                      <img
-                        src={editIcon}
-                        alt="icon-edit"
-                        className="cursor-pointer"
+    const ActionsTop: React.FunctionComponent = () => {
+        return (
+            <>
+                <li>
+                    <Link to="/potential-customers/new" className="btn btn-link">
+                        <img src={plusIcon} alt="pdf-icon"/> Interessent anlegen
+                    </Link>
+                </li>
+                <li>
+                    <button
+                        type="button"
+                        className="btn btn-link"
                         onClick={() =>
-                          history.push(`/potential-customers/${customer.id}`)
+                            canSendCustomerRequest
+                                ? setQuestionnaireModalOpen(true)
+                                : userDispatch({
+                                    type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                                    payload: {
+                                        open: true,
+                                        message: subscriptionUpgradeSendCustomerRequestMessage,
+                                    },
+                                })
                         }
-                        data-tour={'customers-table-item-edit-button-' + index}
-                      />
-                      <FormModal
-                        modalConfig={{
-                          ...deleteCustomerModalConfig,
-                          modalButton: (
-                            <img
-                              src={deleteIcon}
-                              alt="icon-delete"
-                              className="cursor-pointer"
-                              data-tour={'customers-table-item-delete-button-' + index}
-                            />
-                          ),
-                        }}
-                      >
-                        <PotentialCustomerFormDeleteHandler
-                          potentialCustomer={customer}
-                        />
-                      </FormModal>
-                    </div>
-                  </td>
-                </tr>
-              )
-            )}
-          </tbody>
-        </table>
-      </div>
-    </DefaultLayout>
-  );
+                    >
+                        <img src={plusIcon} alt="pdf-icon"/> Fragebogen versenden
+                    </button>
+                </li>
+            </>
+        );
+    };
+
+    const questionnaireModalConfig = {
+        ...createCustomerQuestionnaireModalConfig,
+        modalOpen: questionnaireModalOpen,
+        postSubmit: () => setQuestionnaireModalOpen(false),
+    };
+
+    return (
+        <DefaultLayout
+            title="Meine Interessenten"
+            withHorizontalPadding={false}
+            actionTop={<ActionsTop/>}
+        >
+            <TourStarter tour='customers'/>
+            <FormModal modalConfig={questionnaireModalConfig}>
+                <QuestionnaireRequestFormHandler
+                    postSubmit={() => setQuestionnaireModalOpen(false)}
+                />
+            </FormModal>
+            <div className="overflow-x-auto" data-tour="customers-table">
+                <table className="table w-full">
+                    <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>E-Mail</th>
+                        <th>Wichtige Adressen</th>
+                        <th>Wohnvorstellung</th>
+                        <th/>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {potentialCustomerState.customers.map(
+                        (customer: ApiPotentialCustomer, index: number) => (
+                            <tr
+                                key={customer.id}
+                                className={
+                                    customer.id === customerHighlightId ? "active" : ""
+                                }
+                            >
+                                <th>{customer.name}</th>
+                                <td>
+                                    <a
+                                        href={`mailto:${customer.email}`}
+                                        className="link-primary"
+                                    >
+                                        {customer.email}
+                                    </a>
+                                </td>
+                                <td style={{width: "25%", whiteSpace: "pre-wrap"}}>
+                                    {Array.isArray(customer.preferredLocations) &&
+                                    customer.preferredLocations.length
+                                        ? customer.preferredLocations
+                                            .map((location) => location.title || "")
+                                            .join(", ")
+                                        : "-"}
+                                </td>
+                                <td>
+                                    {!!customer?.realEstateCostStructure?.type &&
+                                    !!customer?.realEstateCostStructure.price
+                                        ? `${customer?.realEstateCostStructure.price.amount} € (${
+                                            allRealEstateCostTypes.find(
+                                                (t) =>
+                                                    t.type === customer?.realEstateCostStructure?.type
+                                            )?.label
+                                        })`
+                                        : ""}
+                                    <br/>
+                                    {customer?.realEstateCharacteristics?.furnishing &&
+                                    allFurnishing
+                                        .filter((f) =>
+                                            customer?.realEstateCharacteristics?.furnishing.includes(
+                                                f.type
+                                            )
+                                        )
+                                        .map((f) => f.label)
+                                        .join(", ")}
+                                </td>
+                                <td>
+                                    <div className="flex gap-4">
+                                        <img
+                                            src={searchIcon}
+                                            alt="icon-search"
+                                            className="cursor-pointer"
+                                            onClick={() => startSearchFromCustomer(customer)}
+                                            data-tour={'customers-table-item-search-button-' + index}
+                                        />
+                                        <img
+                                            src={editIcon}
+                                            alt="icon-edit"
+                                            className="cursor-pointer"
+                                            onClick={() =>
+                                                history.push(`/potential-customers/${customer.id}`)
+                                            }
+                                            data-tour={'customers-table-item-edit-button-' + index}
+                                        />
+                                        <FormModal
+                                            modalConfig={{
+                                                ...deleteCustomerModalConfig,
+                                                modalButton: (
+                                                    <img
+                                                        src={deleteIcon}
+                                                        alt="icon-delete"
+                                                        className="cursor-pointer"
+                                                        data-tour={'customers-table-item-delete-button-' + index}
+                                                    />
+                                                ),
+                                            }}
+                                        >
+                                            <PotentialCustomerFormDeleteHandler
+                                                potentialCustomer={customer}
+                                            />
+                                        </FormModal>
+                                    </div>
+                                </td>
+                            </tr>
+                        )
+                    )}
+                    </tbody>
+                </table>
+            </div>
+        </DefaultLayout>
+    );
 };
 
 export default PotentialCustomersPage;

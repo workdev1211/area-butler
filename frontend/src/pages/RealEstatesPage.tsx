@@ -11,10 +11,10 @@ import FormModal from "../components/FormModal";
 import {RealEstateActions, RealEstateContext} from "../context/RealEstateContext";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import {RealEstateDeleteHandler} from "../real-estates/RealEstateDeleteHandler";
-import { UserActions, UserContext } from "context/UserContext";
-import { deriveGeocodeByAddress } from "shared/shared.functions";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
-import { ApiUser } from "../../../shared/types/types";
+import {UserContext} from "context/UserContext";
+import {deriveGeocodeByAddress} from "shared/shared.functions";
+import {SearchContext, SearchContextActions} from "context/SearchContext";
+import {ApiUser} from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 
 const deleteRealEstateModalConfig = {
@@ -35,8 +35,6 @@ const RealEstatesPage: React.FunctionComponent = () => {
 
     const realEstates = realEstateState.listings || [];
     const user: ApiUser = userState.user;
-    const subscriptionPlan = user.subscriptionPlan?.config;
-    const canCreateNewRealEstate = !subscriptionPlan?.limits.numberOfRealEstates || realEstateState.listings.length < subscriptionPlan?.limits.numberOfRealEstates;
 
     const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
         const result = await deriveGeocodeByAddress(listing.address);
@@ -71,29 +69,20 @@ const RealEstatesPage: React.FunctionComponent = () => {
     }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
     const ActionsTop: React.FunctionComponent = () => {
-      return (
-        <>
-          <li>
-            {canCreateNewRealEstate ? (
-              <Link to="/real-estates/new" className="btn btn-link">
-                <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
-              </Link>
-            ) : (
-              <button className="btn btn-link"
-                onClick={() => userDispatch({type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS, payload: {open: true, message: noFurtherRealEstatesUpgradeSubscriptionMessage}})}
-              
-              >
-                <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
-              </button>
-            )}
-          </li>
-        </>
-      );
+        return (
+            <>
+                <li>
+                    <Link to="/real-estates/new" className="btn btn-link">
+                        <img src={plusIcon} alt="pdf-icon"/> Objekt anlegen
+                    </Link>
+                </li>
+            </>
+        );
     };
 
     return (
         <DefaultLayout title="Meine Objekte" withHorizontalPadding={false} actionTop={<ActionsTop/>}>
-            <TourStarter tour='realEstates' />
+            <TourStarter tour='realEstates'/>
             <div className="overflow-x-auto" data-tour="real-estates-table">
                 <table className="table w-full">
                     <thead>
@@ -132,12 +121,15 @@ const RealEstatesPage: React.FunctionComponent = () => {
                             <td>
                                 <div className="flex gap-4">
                                     <img src={searchIcon} alt="icon-search" className="cursor-pointer"
-                                          onClick={() => startSearchFromRealEstate(realEstate)} data-tour={'real-estates-table-item-search-button-' + index} />
-                                    <img src={editIcon} alt="icon-edit" className="cursor-pointer" data-tour={'real-estates-table-item-edit-button-' + index} 
+                                         onClick={() => startSearchFromRealEstate(realEstate)}
+                                         data-tour={'real-estates-table-item-search-button-' + index}/>
+                                    <img src={editIcon} alt="icon-edit" className="cursor-pointer"
+                                         data-tour={'real-estates-table-item-edit-button-' + index}
                                          onClick={() => history.push(`/real-estates/${realEstate.id}`)}/>
                                     <FormModal modalConfig={{
                                         ...deleteRealEstateModalConfig,
-                                        modalButton: <img src={deleteIcon} alt="icon-delete" data-tour={'real-estates-table-item-delete-button-' + index} 
+                                        modalButton: <img src={deleteIcon} alt="icon-delete"
+                                                          data-tour={'real-estates-table-item-delete-button-' + index}
                                                           className="cursor-pointer"/>
                                     }}>
                                         <RealEstateDeleteHandler realEstate={realEstate}/>
