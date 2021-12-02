@@ -21,6 +21,7 @@ import { useHistory } from "react-router-dom";
 import MapMenu from "../map/MapMenu";
 import {
   distanceInMeters,
+  entityIncludesMean,
   preferredLocationsTitle,
   realEstateListingsTitle
 } from "shared/shared.functions";
@@ -190,8 +191,6 @@ const SearchResultPage: React.FunctionComponent = () => {
     .filter(mot => routingKeys.includes(mot.type))
     .map(mot => mot.type);
   const [activeMeans, setActiveMeans] = useState([...availableMeans]);
-  const [showPreferredlocations, setShowPreferredLocations] = useState(true);
-  const [showMyObjects, setShowMyObjects] = useState(true);
 
   const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
   const [groupedEntries, setGroupedEntries] = useState<EntityGroup[]>([]);
@@ -215,8 +214,10 @@ const SearchResultPage: React.FunctionComponent = () => {
     }
 
     const centerOfSearch = searchResponseParsed?.centerOfInterest?.coordinates;
-    let entities = buildEntityData(searchResponseParsed);
-    if (!!searchContextState.preferredLocations && showPreferredlocations) {
+    let entities = buildEntityData(searchResponseParsed)?.filter(entity =>
+      entityIncludesMean(entity, activeMeans)
+    );
+    if (!!searchContextState.preferredLocations) {
       entities?.push(
         ...buildEntityDataFromPreferredLocations(
           centerOfSearch,
@@ -224,7 +225,7 @@ const SearchResultPage: React.FunctionComponent = () => {
         )
       );
     }
-    if (!!realEstateState.listings && showMyObjects) {
+    if (!!realEstateState.listings) {
       entities?.push(
         ...buildEntityDataFromRealEstateListings(
           centerOfSearch,
@@ -281,10 +282,9 @@ const SearchResultPage: React.FunctionComponent = () => {
     }
   }, [
     searchResponseString,
-    showPreferredlocations,
     searchContextState.preferredLocations,
-    showMyObjects,
-    realEstateState.listings
+    realEstateState.listings,
+    activeMeans
   ]);
 
   if (!searchContextState.searchResponse?.routingProfiles) {
@@ -531,12 +531,6 @@ const SearchResultPage: React.FunctionComponent = () => {
               activeMeans={activeMeans}
               availableMeans={availableMeans}
               onMeansChange={newValues => setActiveMeans(newValues)}
-              showPreferredLocations={showPreferredlocations}
-              onToggleShowPreferredLocations={active =>
-                setShowPreferredLocations(active)
-              }
-              showMyObjects={showMyObjects}
-              onToggleShowMyObjects={active => setShowMyObjects(active)}
             />
             <Map
               searchResponse={searchContextState.searchResponse}
