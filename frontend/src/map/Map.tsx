@@ -464,7 +464,7 @@ const Map = React.memo<MapProps>(
                       Number.isNaN(fullDuration)
                         ? fullDuration
                         : timeToHumanReadable(fullDuration)
-                    })</h4><br/><div class="flex items-center gap-2">${popupContent}</div>`
+                    })</h4><br/><div class="flex flex-wrap items-center gap-2">${popupContent}</div>`
                   )
                   .addTo(routesGroup);
                 // @ts-ignore
