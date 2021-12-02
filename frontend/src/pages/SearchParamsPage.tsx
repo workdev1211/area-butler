@@ -1,7 +1,7 @@
 import FormModal, { ModalConfig } from "components/FormModal";
 import LatestUserRequestsDropDown from "components/LatestUserRequestsDropDown";
 import {
-  PotentialCustomerActions,
+  PotentialCustomerActionTypes,
   PotentialCustomerContext
 } from "context/PotentialCustomerContext";
 import {
@@ -76,7 +76,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         "/api/potential-customers"
       );
       potentialCustomerDispatch({
-        type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+        type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
         payload: response.data
       });
     };

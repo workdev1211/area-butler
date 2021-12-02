@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import {
-  PotentialCustomerActions,
+  PotentialCustomerActionTypes,
   PotentialCustomerContext
 } from "../context/PotentialCustomerContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
@@ -95,7 +95,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
         "/api/potential-customers"
       );
       potentialCustomerDispatch({
-        type: PotentialCustomerActions.SET_POTENTIAL_CUSTOMERS,
+        type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
         payload: response.data
       });
     };
