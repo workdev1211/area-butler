@@ -25,7 +25,7 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
   const items = [...entityGroup.items].filter(item => item.selected).slice(0, limit);
   return (
     <>
-      <h1 className="text-xl ml-2 font-bold">{entityGroup.title}</h1>
+      <h1 className="text-base ml-2 font-bold">{entityGroup.title}</h1>
       <ol>
         {items.map((item, index: number) => (
           <li className="my-2">

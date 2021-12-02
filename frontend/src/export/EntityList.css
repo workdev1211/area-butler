@@ -1,8 +1,8 @@
 ol li div.entity-list-item {
-    width: 160px;
+    width: 180px;
     opacity: 0.8;
-    padding: 8px 6px;
+    padding: 4px 6px;
     border-radius: 12px;
-    font-size: 10px;
+    font-size: 8px;
     font-weight: 500;
 }

@@ -66,7 +66,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   return (
     <div className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block" ref={ref as any}>
       <PdfPage title="Zusammenfassung" logo={user?.logo} nextPageNumber={nextPageNumber}>
-        <div className="m-10 flex flex-col gap-2">
+        <div className="m-5 flex flex-col gap-2">
           {!!props.realEstateListing && (
             <>
               <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
@@ -102,7 +102,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             </>
           )}
         </div>
-        <div className="mx-10 flex gap-6 flex-wrap">
+        <div className="mx-5 flex gap-2 flex-wrap">
           {filteredGroups.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
           ) : (
