@@ -1,3 +1,4 @@
+import { ApiPreferredLocation } from "./potential-customer";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 
 export interface RollbarConfig {
@@ -38,6 +39,10 @@ export interface ApiUserSettings {
   color?: string;
 }
 
+export interface ApiUserRequests {
+  requests: ApiSearch[];
+}
+
 export interface ApiConsent {
   inviteCode?: string;
 }
@@ -71,6 +76,7 @@ export interface ApiMoneyAmount {
 export interface ApiSearch {
   searchTitle?: string;
   coordinates: ApiCoordinates;
+  preferredLocations?: ApiPreferredLocation[];
   meansOfTransportation: TransportationParam[];
   preferredAmenities: OsmName[];
 }

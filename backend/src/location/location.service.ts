@@ -4,6 +4,7 @@ import {
     ApiOsmLocation,
     ApiSearch,
     ApiSearchResponse,
+    ApiUserRequests,
     MeansOfTransportation,
     OsmName,
     OsmType,
@@ -17,6 +18,7 @@ import {IsochroneService} from 'src/client/isochrone/isochrone.service';
 import {OverpassService} from 'src/client/overpass/overpass.service';
 import {LocationSearch, LocationSearchDocument,} from './schema/location-search.schema';
 import {calculateMinutesToMeters} from '../../../shared/constants/constants';
+import {groupBy} from '../../../shared/functions/shared.functions';
 import {UserService} from 'src/user/user.service';
 import {retrieveTotalRequestContingent, UserDocument} from 'src/user/schema/user.schema';
 import {SubscriptionService} from "../user/subscription.service";
@@ -124,6 +126,20 @@ export class LocationService {
             },
             routingProfiles: routingProfiles as Record<MeansOfTransportation,
                 { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }>,
+        };
+    }
+
+    async latestUserRequests(user: UserDocument): Promise<ApiUserRequests> {
+        const requests = (await this.locationModel.find({userId: user._id}).sort({createdAt: -1})).map(d => d.locationSearch);
+
+        const grouped = groupBy(
+            requests,
+            (request: ApiSearch) => `${request.coordinates.lat}${request.coordinates.lng}`
+          );
+
+
+        return {
+            requests: Object.values(grouped).map(g => g[0])
         };
     }
 }

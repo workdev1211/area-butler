@@ -15,6 +15,9 @@ import {
   localStorageSearchContext,
   meansOfTransportations
 } from "../../../shared/constants/constants";
+import {
+  groupBy,
+} from "../../../shared/functions/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { useHistory } from "react-router-dom";
@@ -235,15 +238,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     }
     if (entities) {
       setFilteredEntities(entities);
-      // eslint-disable-next-line no-sequences
-      const groupBy = (xs: any, f: any): Record<string, any> =>
-        xs.reduce(
-          (r: any, v: any, i: any, a: any, k = f(v)) => (
-            // eslint-disable-next-line no-sequences
-            (r[k] || (r[k] = [])).push(v), r
-          ),
-          {}
-        );
+
       const newGroupedEntries: any[] = Object.entries(
         groupBy(entities, (item: ResultEntity) => item.label)
       );

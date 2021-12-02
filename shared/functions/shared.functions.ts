@@ -1,0 +1,8 @@
+export const groupBy = (xs: any, f: any): Record<string, any> =>
+  xs.reduce(
+    (r: any, v: any, i: any, a: any, k = f(v)) => (
+      // eslint-disable-next-line no-sequences
+      (r[k] || (r[k] = [])).push(v), r
+    ),
+    {}
+  );

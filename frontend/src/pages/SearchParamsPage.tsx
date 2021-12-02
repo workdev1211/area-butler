@@ -131,6 +131,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                 const search: ApiSearch = {
                     searchTitle: searchContextState?.placesLocation?.label || 'Mein Standort',
                     coordinates: searchContextState.location!,
+                    preferredLocations: searchContextState.preferredLocations || [],
                     meansOfTransportation: searchContextState.transportationParams,
                     preferredAmenities: searchContextState.localityParams.map((l: ApiOsmEntity) => l.name),
                 };

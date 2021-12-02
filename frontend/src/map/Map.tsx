@@ -15,6 +15,9 @@ import {
   MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
+import {
+  groupBy,
+} from "../../../shared/functions/shared.functions";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
@@ -477,12 +480,6 @@ const Map = React.memo<MapProps>(
 
     // draw amenities
     useEffect(() => {
-      const groupBy = (xs: any, key: any) => {
-        return xs.reduce(function(rv: any, x: any) {
-          (rv[x[key]] = rv[x[key]] || []).push(x);
-          return rv;
-        }, {});
-      };
       const parsedEntities: ResultEntity[] | null = JSON.parse(
         entitiesStringified
       );
@@ -496,7 +493,7 @@ const Map = React.memo<MapProps>(
             iconCreateFunction: function(cluster) {
               const groupedMarkers = groupBy(
                 cluster.getAllChildMarkers().map(m => m.getIcon().options),
-                "className"
+                (i: any) => i.className
               );
               const countedMarkers = Object.entries(groupedMarkers)
                 .map(([key, value]) => ({
