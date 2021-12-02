@@ -6,6 +6,10 @@ export type LocationSearchDocument = LocationSearch & Document;
 
 @Schema()
 export class LocationSearch {
+
+  @Prop()
+  userId: string;
+
   @Prop({ type: Object })
   locationSearch: ApiSearch;
 

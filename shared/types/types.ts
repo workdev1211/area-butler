@@ -69,6 +69,7 @@ export interface ApiMoneyAmount {
   currency: string;
 }
 export interface ApiSearch {
+  searchTitle?: string;
   coordinates: ApiCoordinates;
   meansOfTransportation: TransportationParam[];
   preferredAmenities: OsmName[];

@@ -129,6 +129,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             try {
                 searchContextDispatch({type: SearchContextActions.SET_SEARCH_BUSY, payload: true});
                 const search: ApiSearch = {
+                    searchTitle: searchContextState?.placesLocation?.label || 'Mein Standort',
                     coordinates: searchContextState.location!,
                     meansOfTransportation: searchContextState.transportationParams,
                     preferredAmenities: searchContextState.localityParams.map((l: ApiOsmEntity) => l.name),

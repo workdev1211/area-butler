@@ -105,7 +105,7 @@ export class LocationService {
             };
         }
 
-        await new this.locationModel({locationSearch: search}).save();
+        await new this.locationModel({userId: user._id, locationSearch: search}).save();
         await this.userService.incrementExecutedRequestCount(user.id);
 
         return {
