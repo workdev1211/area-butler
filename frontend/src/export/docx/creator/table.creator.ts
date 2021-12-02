@@ -195,7 +195,7 @@ export const mapTableDataFromCensusData = (
     ) || (censusData[0] as any);
 
   const header = [];
-  header.push("Beschreibung");
+  header.push("Beschreibung (pro km2)");
   header.push("Wert");
   header.push("Ø Deutschland");
 

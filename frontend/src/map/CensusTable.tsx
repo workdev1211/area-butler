@@ -31,7 +31,7 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
     <table className="table w-full text-sm lg:text-base">
       <thead>
         <tr>
-          <th>Name</th>
+          <th>Beschreibung (pro km2)</th>
           <th>
             <span>Wert</span>
             <br />

@@ -27,7 +27,7 @@ export const CensusSummary: React.FunctionComponent<CensusSummaryProps> = ({
         <table className="entity-table">
           <thead style={{backgroundAttachment: 'fixed'}}>
             <tr style={tableHeaderStyle}>
-              <th>Beschreibung</th>
+              <th>Beschreibung (pro km2)</th>
               <th>Wert</th>
               <th>Ø Deutschland</th>
             </tr>
