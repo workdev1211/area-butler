@@ -1,104 +1,234 @@
 import React from "react";
-import {EntityGroup, EntityRoute, EntityTransitRoute, ResultEntity} from "../pages/SearchResultPage";
-import {MeansOfTransportation, OsmName} from "../../../shared/types/types";
-import {deriveMinutesFromMeters, distanceToHumanReadable, timeToHumanReadable} from "../shared/shared.functions";
+import {
+  EntityGroup,
+  EntityRoute,
+  EntityTransitRoute,
+  ResultEntity,
+} from "../pages/SearchResultPage";
+import { MeansOfTransportation, OsmName } from "../../../shared/types/types";
+import {
+  deriveMinutesFromMeters,
+  distanceToHumanReadable,
+  timeToHumanReadable,
+} from "../shared/shared.functions";
 
 export interface LocalityItemProps {
-    item: ResultEntity,
-    group: EntityGroup,
-    onClickTitle: (item: ResultEntity) => void;
-    onToggleRoute: (item: ResultEntity) => void;
-    route?: EntityRoute;
-    onToggleTransitRoute: (item: ResultEntity) => void;
-    transitRoute?: EntityTransitRoute;
+  item: ResultEntity;
+  group: EntityGroup;
+  onClickTitle: (item: ResultEntity) => void;
+  onToggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
+  route?: EntityRoute;
+  onToggleTransitRoute: (item: ResultEntity) => void;
+  transitRoute?: EntityTransitRoute;
 }
 
-const LocalityItem: React.FunctionComponent<LocalityItemProps> = ({item, group, onClickTitle, onToggleRoute, route, onToggleTransitRoute, transitRoute}) => {
-    return (
-        <div
-            className="locality-item"
-            key={`locality-item-${group.title}-${item.id}`}>
-            <h4 className="locality-item-title cursor-pointer"
-                onClick={() => onClickTitle(item)}>{item.name ?? group.title}</h4>
-            {item.type === OsmName.favorite ?  <PreferredLocationItemContent item={item} onToggleRoute={() => onToggleRoute(item)} onToggleTransitRoute={() => onToggleTransitRoute(item)} route={route} transitRoute={transitRoute}/> : <LocalityItemContent item={item} />}
-        </div>
-    )
-}
-const PreferredLocationItemContent: React.FunctionComponent<{item:ResultEntity, onToggleRoute: (item: ResultEntity) => void, route?: EntityRoute, onToggleTransitRoute: (item: ResultEntity) => void, transitRoute?: EntityTransitRoute }> = ({item, onToggleRoute, route, onToggleTransitRoute, transitRoute}) => {
-        const byFootDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.WALK)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
-        const byCarDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.CAR)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
-        const byBicycleDuration = route?.routes.find(r => r.meansOfTransportation === MeansOfTransportation.BICYCLE)?.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
-        const transitDuration = transitRoute?.route.sections.map(s => s.duration).reduce((p,c) => p + c) ?? '-';
-
-        return (
-            <>
-            <div className="locality-item-content">
-                <input type="checkbox"
-                       checked={route?.show || false}
-                       onChange={(event) => onToggleRoute(item)}/>
-                <span className="ml-2">Routen & Zeiten anzeigen</span>
-                &nbsp;
-                <input type="checkbox"
-                       checked={transitRoute?.show || false}
-                       onChange={(event) => onToggleTransitRoute(item)}/>
-                <span className="ml-2">ÖPNV Route anzeigen</span>
-            </div>
-
-    <div className="locality-item-content">
-        {route?.show &&
-        <>
-        <div className="locality-item-cell">
-            <span className="locality-item-cell-label">Distanz</span>
-            <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
-        </div>
-
-        <div className="locality-item-cell">
-            <span className="locality-item-cell-label">Fußweg</span>
-            <span>{Number.isNaN(byFootDuration) ? byFootDuration : timeToHumanReadable(byFootDuration as number)}</span>
-        </div>
-        <div className="locality-item-cell">
-            <span className="locality-item-cell-label">Fahrrad</span>
-            <span>{Number.isNaN(byBicycleDuration) ? byBicycleDuration : timeToHumanReadable(byBicycleDuration as number)}</span>
-        </div>
-        <div className="locality-item-cell">
-            <span className="locality-item-cell-label">Auto</span>
-            <span>{Number.isNaN(byCarDuration) ? byCarDuration : timeToHumanReadable(byCarDuration as number)}</span>
-        </div>
-        </>}
-        {transitRoute?.show &&
-        <div className="locality-item-cell">
-            <span className="locality-item-cell-label">ÖPNV</span>
-            <span>{Number.isNaN(transitDuration) ? transitDuration : timeToHumanReadable(transitDuration as number)}</span>
-        </div>
-
-        }
+const LocalityItem: React.FunctionComponent<LocalityItemProps> = ({
+  item,
+  group,
+  onClickTitle,
+  onToggleRoute,
+  route,
+  onToggleTransitRoute,
+  transitRoute,
+}) => {
+  return (
+    <div
+      className="locality-item"
+      key={`locality-item-${group.title}-${item.id}`}
+    >
+      <h4
+        className="locality-item-title cursor-pointer"
+        onClick={() => onClickTitle(item)}
+      >
+        {item.name ?? group.title}
+      </h4>
+      {item.type === OsmName.favorite ? (
+        <PreferredLocationItemContent
+          item={item}
+          onToggleRoute={(item, mean) => onToggleRoute(item, mean)}
+          onToggleTransitRoute={() => onToggleTransitRoute(item)}
+          route={route}
+          transitRoute={transitRoute}
+        />
+      ) : (
+        <LocalityItemContent item={item} />
+      )}
     </div>
+  );
+};
+const PreferredLocationItemContent: React.FunctionComponent<{
+  item: ResultEntity;
+  onToggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
+  route?: EntityRoute;
+  onToggleTransitRoute: (item: ResultEntity) => void;
+  transitRoute?: EntityTransitRoute;
+}> = ({ item, onToggleRoute, route, onToggleTransitRoute, transitRoute }) => {
+  const byFootDuration =
+    route?.routes
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.WALK)
+      ?.sections.map((s) => s.duration)
+      .reduce((p, c) => p + c) ?? "-";
+  const byCarDuration =
+    route?.routes
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.CAR)
+      ?.sections.map((s) => s.duration)
+      .reduce((p, c) => p + c) ?? "-";
+  const byBicycleDuration =
+    route?.routes
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.BICYCLE)
+      ?.sections.map((s) => s.duration)
+      .reduce((p, c) => p + c) ?? "-";
+  const transitDuration =
+    transitRoute?.route.sections
+      .map((s) => s.duration)
+      .reduce((p, c) => p + c) ?? "-";
 
-            </>
-        )
-}
-
-const LocalityItemContent: React.FunctionComponent<{item:ResultEntity}> = ({item}) => {
-    return (
-            <div className="locality-item-content">
-                <div className="locality-item-cell">
-                    <span className="locality-item-cell-label">Distanz</span>
-                    <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
-                </div>
-                <div className="locality-item-cell">
-                    <span className="locality-item-cell-label">Fußweg</span>
-                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.WALK))}</span>
-                </div>
-                <div className="locality-item-cell">
-                    <span className="locality-item-cell-label">Fahrrad</span>
-                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.BICYCLE))}</span>
-                </div>
-                <div className="locality-item-cell">
-                    <span className="locality-item-cell-label">Auto</span>
-                    <span>{timeToHumanReadable(deriveMinutesFromMeters(item.distanceInMeters, MeansOfTransportation.CAR))}</span>
-                </div>
+  return (
+    <>
+      <div className="locality-item-content">
+        <div className="flex flex-col gap-3">
+          <div className="font-bold">Routen & Zeiten</div>
+          <div className="flex flex-wrap gap-3">
+            <div>
+              <input
+                type="checkbox"
+                checked={route?.show.includes(MeansOfTransportation.WALK)}
+                onChange={(event) =>
+                  onToggleRoute(item, MeansOfTransportation.WALK)
+                }
+              />
+              <span className="ml-2">Zu Fuß</span>
             </div>
-    )
-}
+            <div>
+              <input
+                type="checkbox"
+                checked={route?.show.includes(MeansOfTransportation.BICYCLE)}
+                onChange={(event) =>
+                  onToggleRoute(item, MeansOfTransportation.BICYCLE)
+                }
+              />
+              <span className="ml-2">Fahrrad</span>
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                checked={route?.show.includes(MeansOfTransportation.CAR)}
+                onChange={(event) =>
+                  onToggleRoute(item, MeansOfTransportation.CAR)
+                }
+              />
+              <span className="ml-2">Auto</span>
+            </div>
+            <div>
+              <input
+                type="checkbox"
+                checked={transitRoute?.show || false}
+                onChange={(event) => onToggleTransitRoute(item)}
+              />
+              <span className="ml-2">ÖPNV</span>
+            </div>
+          </div>
+        </div>
+      </div>
 
-export default LocalityItem
+      <div className="locality-item-content">
+        {(route?.show.length || []) > 0 && (
+          <>
+            <div className="locality-item-cell">
+              <span className="locality-item-cell-label">Distanz</span>
+              <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
+            </div>
+            {route?.show.includes(MeansOfTransportation.WALK) && (
+              <div className="locality-item-cell">
+                <span className="locality-item-cell-label">Fußweg</span>
+                <span>
+                  {Number.isNaN(byFootDuration)
+                    ? byFootDuration
+                    : timeToHumanReadable(byFootDuration as number)}
+                </span>
+              </div>
+            )}
+            {route?.show.includes(MeansOfTransportation.BICYCLE) && (
+              <div className="locality-item-cell">
+                <span className="locality-item-cell-label">Fahrrad</span>
+                <span>
+                  {Number.isNaN(byBicycleDuration)
+                    ? byBicycleDuration
+                    : timeToHumanReadable(byBicycleDuration as number)}
+                </span>
+              </div>
+            )}
+            {route?.show.includes(MeansOfTransportation.CAR) && (
+              <div className="locality-item-cell">
+                <span className="locality-item-cell-label">Auto</span>
+                <span>
+                  {Number.isNaN(byCarDuration)
+                    ? byCarDuration
+                    : timeToHumanReadable(byCarDuration as number)}
+                </span>
+              </div>
+            )}
+          </>
+        )}
+        {transitRoute?.show && (
+          <div className="locality-item-cell">
+            <span className="locality-item-cell-label">ÖPNV</span>
+            <span>
+              {Number.isNaN(transitDuration)
+                ? transitDuration
+                : timeToHumanReadable(transitDuration as number)}
+            </span>
+          </div>
+        )}
+      </div>
+    </>
+  );
+};
+
+const LocalityItemContent: React.FunctionComponent<{ item: ResultEntity }> = ({
+  item,
+}) => {
+  return (
+    <div className="locality-item-content">
+      <div className="locality-item-cell">
+        <span className="locality-item-cell-label">Distanz</span>
+        <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
+      </div>
+      <div className="locality-item-cell">
+        <span className="locality-item-cell-label">Fußweg</span>
+        <span>
+          {timeToHumanReadable(
+            deriveMinutesFromMeters(
+              item.distanceInMeters,
+              MeansOfTransportation.WALK
+            )
+          )}
+        </span>
+      </div>
+      <div className="locality-item-cell">
+        <span className="locality-item-cell-label">Fahrrad</span>
+        <span>
+          {timeToHumanReadable(
+            deriveMinutesFromMeters(
+              item.distanceInMeters,
+              MeansOfTransportation.BICYCLE
+            )
+          )}
+        </span>
+      </div>
+      <div className="locality-item-cell">
+        <span className="locality-item-cell-label">Auto</span>
+        <span>
+          {timeToHumanReadable(
+            deriveMinutesFromMeters(
+              item.distanceInMeters,
+              MeansOfTransportation.CAR
+            )
+          )}
+        </span>
+      </div>
+    </div>
+  );
+};
+
+export default LocalityItem;

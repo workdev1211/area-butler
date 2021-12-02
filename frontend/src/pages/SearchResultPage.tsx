@@ -68,7 +68,7 @@ export interface EntityGroup {
 export interface EntityRoute {
   title: string;
   coordinates: ApiCoordinates;
-  show: boolean;
+  show: MeansOfTransportation[];
   routes: ApiRoute[];
 }
 
@@ -341,7 +341,8 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   const toggleRoutesToEntity = async (
     origin: ApiCoordinates,
-    item: ResultEntity
+    item: ResultEntity,
+    mean: MeansOfTransportation
   ) => {
     const existing = routes.find(
       r =>
@@ -349,6 +350,14 @@ const SearchResultPage: React.FunctionComponent = () => {
         r.coordinates.lng === item.coordinates.lng
     );
     if (existing) {
+
+      let newRoutes = [...existing.show];
+      if (newRoutes.includes(mean)) {
+        newRoutes = newRoutes.filter(r => r !== mean);
+      } else {
+        newRoutes.push(mean);
+      }
+
       setRoutes(prevState => [
         ...prevState.filter(
           r =>
@@ -357,7 +366,7 @@ const SearchResultPage: React.FunctionComponent = () => {
         ),
         {
           ...existing,
-          show: !existing.show
+          show: newRoutes
         }
       ]);
     } else {
@@ -380,7 +389,7 @@ const SearchResultPage: React.FunctionComponent = () => {
         {
           routes: routesResult[0].routes,
           title: routesResult[0].title,
-          show: true,
+          show: [mean],
           coordinates: item.coordinates
         }
       ]);
@@ -591,8 +600,8 @@ const SearchResultPage: React.FunctionComponent = () => {
             toggleEntryGroup={toggleEntityGroup}
             toggleAllEntryGroups={toggleAllEntityGroups}
             highlightZoomEntity={highlightZoomEntity}
-            toggleRoute={item =>
-              toggleRoutesToEntity(searchContextState.location!, item)
+            toggleRoute={(item, mean) =>
+              toggleRoutesToEntity(searchContextState.location!, item, mean)
             }
             routes={routes}
             toggleTransitRoute={item =>

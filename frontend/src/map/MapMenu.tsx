@@ -15,6 +15,7 @@ import {
   ApiGeojsonFeature,
   ApiOsmEntityCategory,
   ApiUser,
+  MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
 import {
@@ -46,7 +47,7 @@ export interface MapMenuProps {
   toggleAllEntryGroups: () => void;
   highlightZoomEntity: (item: ResultEntity) => void;
   mobileMenuOpen: boolean;
-  toggleRoute: (item: ResultEntity) => void;
+  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
   toggleTransitRoute: (item: ResultEntity) => void;
   transitRoutes: EntityTransitRoute[];
@@ -222,7 +223,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     item={item}
                     group={ge}
                     onClickTitle={item => highlightZoomEntity(item)}
-                    onToggleRoute={item => toggleRoute(item)}
+                    onToggleRoute={(item, mean) => toggleRoute(item, mean)}
                     route={routes?.find(
                       r =>
                         r.coordinates.lat === item.coordinates.lat &&

@@ -395,9 +395,9 @@ const Map = React.memo<MapProps>(
         routesGroup = L.layerGroup();
         currentMap.addLayer(routesGroup);
         routes
-          .filter(e => e.show)
+          .filter(e => e.show.length > 0)
           .forEach(entityRoute => {
-            entityRoute.routes.filter(isVisibleDestination).forEach(r => {
+            entityRoute.routes.filter(r => entityRoute.show.includes(r.meansOfTransportation)).filter(isVisibleDestination).forEach(r => {
               r.sections.forEach(s => {
                 const durationInMinutes = r.sections
                   .map(s => s.duration)
