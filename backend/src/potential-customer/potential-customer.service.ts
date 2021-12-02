@@ -44,8 +44,7 @@ export class PotentialCustomerService {
         subscriptionCheck &&
         (await this.subscriptionService.checkSubscriptionViolation(
             user._id,
-            subscription =>
-                !!subscription,
+            subscription => !subscription,
             'Weitere Interessentenerstellung ist im aktuellen Plan nicht mehr möglich',
         ));
 
