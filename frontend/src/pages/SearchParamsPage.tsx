@@ -5,7 +5,7 @@ import {
   PotentialCustomerContext
 } from "context/PotentialCustomerContext";
 import {
-  RealEstateActions,
+  RealEstateActionTypes,
   RealEstateContext
 } from "context/RealEstateContext";
 import { UserContext } from "context/UserContext";
@@ -89,7 +89,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         "/api/real-estate-listings"
       );
       realEstateDispatch({
-        type: RealEstateActions.SET_REAL_ESTATES,
+        type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: response.data
       });
     };

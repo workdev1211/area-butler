@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Dispatch } from "react";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface RealEstateState {
@@ -6,27 +6,37 @@ export interface RealEstateState {
 }
 
 export const initialState: RealEstateState = {
-  listings: [],
+  listings: []
 };
 
-export enum RealEstateActions {
+export enum RealEstateActionTypes {
   SET_REAL_ESTATES = "SET_REAL_ESTATES",
   PUT_REAL_ESTATE = "PUT_REAL_ESTATE",
-  DELETE_REAL_ESTATE = "DELETE_REAL",
+  DELETE_REAL_ESTATE = "DELETE_REAL"
 }
 
-const reducer: (
+type RealEstateActionsPayload = {
+  [RealEstateActionTypes.SET_REAL_ESTATES]: ApiRealEstateListing[];
+  [RealEstateActionTypes.PUT_REAL_ESTATE]: ApiRealEstateListing;
+  [RealEstateActionTypes.DELETE_REAL_ESTATE]: Partial<ApiRealEstateListing>;
+};
+
+export type RealEstateActions = ActionMap<
+  RealEstateActionsPayload
+>[keyof ActionMap<RealEstateActionsPayload>];
+
+const realEstateReducer = (
   state: RealEstateState,
-  action: { type: RealEstateActions; payload?: any }
-) => RealEstateState = (state, action) => {
+  action: RealEstateActions
+): RealEstateState => {
   switch (action.type) {
-    case RealEstateActions.SET_REAL_ESTATES: {
+    case RealEstateActionTypes.SET_REAL_ESTATES: {
       return { ...state, listings: action.payload };
     }
-    case RealEstateActions.PUT_REAL_ESTATE: {
+    case RealEstateActionTypes.PUT_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
       const listings = [...state.listings];
-      const listingIndex = listings.map((l) => l.id).indexOf(listing.id);
+      const listingIndex = listings.map(l => l.id).indexOf(listing.id);
       if (listingIndex !== -1) {
         listings[listingIndex] = listing;
       } else {
@@ -34,9 +44,9 @@ const reducer: (
       }
       return { ...state, listings };
     }
-    case RealEstateActions.DELETE_REAL_ESTATE: {
+    case RealEstateActionTypes.DELETE_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
-      const listings = [...state.listings].filter((l) => l.id !== listing.id);
+      const listings = [...state.listings].filter(l => l.id !== listing.id);
       return { ...state, listings };
     }
     default:
@@ -45,19 +55,17 @@ const reducer: (
 };
 
 export const RealEstateContext = React.createContext<{
-  realEstateState: any;
-  realEstateDispatch: (action: {
-    type: RealEstateActions;
-    payload?: any;
-  }) => void;
-}>({ realEstateState: initialState, realEstateDispatch: () => {} });
+  realEstateState: RealEstateState;
+  realEstateDispatch: Dispatch<RealEstateActions>;
+}>({
+  realEstateState: initialState,
+  realEstateDispatch: () => undefined
+});
 
-export const RealEstateContextProvider = ({
-  children,
-}: {
-  children: any;
+export const RealEstateContextProvider: React.FunctionComponent = ({
+  children
 }) => {
-  const [state, dispatch] = React.useReducer<any>(reducer, initialState);
+  const [state, dispatch] = React.useReducer(realEstateReducer, initialState);
 
   return (
     <RealEstateContext.Provider

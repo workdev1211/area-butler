@@ -12,7 +12,7 @@ import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import { Link, useHistory, useLocation } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {
-  RealEstateActions,
+  RealEstateActionTypes,
   RealEstateContext
 } from "../context/RealEstateContext";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -63,7 +63,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
         "/api/real-estate-listings"
       );
       realEstateDispatch({
-        type: RealEstateActions.SET_REAL_ESTATES,
+        type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: response.data
       });
     };

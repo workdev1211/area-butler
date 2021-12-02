@@ -6,7 +6,7 @@ import { useHttp } from "../hooks/http";
 import BackButton from "../layout/BackButton";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
-  RealEstateActions,
+  RealEstateActionTypes,
   RealEstateContext
 } from "../context/RealEstateContext";
 import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
@@ -55,7 +55,7 @@ const RealEstatePage: React.FunctionComponent = () => {
         "/api/real-estate-listings"
       );
       realEstateDispatch({
-        type: RealEstateActions.SET_REAL_ESTATES,
+        type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: response.data
       });
     };
