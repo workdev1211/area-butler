@@ -10,12 +10,13 @@ import {
   allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import { TransportationParam } from "../../../../shared/types/types";
+import { MeansOfTransportation, TransportationParam } from "../../../../shared/types/types";
 import "./ExposeSummary.css";
 
 export interface ExposeSummaryProps {
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
+  activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   primaryColor?: string;
@@ -26,6 +27,7 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
   listingAddress,
   groupedEntries,
   transportationParams,
+  activeMeans,
   primaryColor = "#aa0c54",
 }) => {
   const colorPalette = deriveColorPalette(primaryColor);
@@ -117,6 +119,7 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
         <h3 className="text-xl w-96 font-bold mx-10">Die Umgebung</h3>
         <EntityGridSummary
           groupedEntries={groupedEntries}
+          activeMeans={activeMeans}
           transportationParams={transportationParams}
           primaryColor={primaryColor}
         />

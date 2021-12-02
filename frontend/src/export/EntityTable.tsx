@@ -7,6 +7,7 @@ import {deriveColorPalette, distanceToHumanReadable, timeToHumanReadable} from "
 
 export interface EntityTableProps {
   entityGroup: EntityGroup;
+  activeMeans: MeansOfTransportation[];
   limit?: number;
   showRoutingColumns?: boolean;
   primaryColor?: string;
@@ -25,6 +26,7 @@ const deriveMinutesFromMeters = (
 export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
   entityGroup,
   limit = 10,
+  activeMeans,
   showRoutingColumns = true,
   primaryColor = '#aa0c54'
 }) => {
@@ -50,13 +52,13 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
             <th>
               Entfernung
             </th>
-            {showRoutingColumns && byFoot && (
+            {showRoutingColumns && byFoot && activeMeans.includes(MeansOfTransportation.WALK) && (
               <th>Zu Fuß</th>
             )}
-            {showRoutingColumns && byBike && (
+            {showRoutingColumns && byBike && activeMeans.includes(MeansOfTransportation.BICYCLE) && (
               <th>Fahrrad</th>
             )}
-            {showRoutingColumns && byCar && (
+            {showRoutingColumns && byCar && activeMeans.includes(MeansOfTransportation.CAR) && (
               <th>Auto</th>
             )}
           </tr>
@@ -78,7 +80,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                   ? distanceToHumanReadable(item.distanceInMeters)
                   : "unbekannt"}
               </td>
-              {showRoutingColumns && byFoot && (
+              {showRoutingColumns && byFoot && activeMeans.includes(MeansOfTransportation.WALK) && (
                 <td>
                   {item.byFoot
                     ? `${timeToHumanReadable(
@@ -90,7 +92,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                     : ""}
                 </td>
               )}
-              {showRoutingColumns && byBike && (
+              {showRoutingColumns && byBike && activeMeans.includes(MeansOfTransportation.BICYCLE) && (
                 <td>
                   {item.byBike
                     ? `${timeToHumanReadable(
@@ -102,7 +104,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                     : ""}
                 </td>
               )}
-              {showRoutingColumns && byCar && (
+              {showRoutingColumns && byCar && activeMeans.includes(MeansOfTransportation.CAR) && (
                 <td>
                   {item.byCar
                     ? `${timeToHumanReadable(

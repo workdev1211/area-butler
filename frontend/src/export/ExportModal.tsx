@@ -9,7 +9,7 @@ import {
   ApiDataSource,
   ApiSubscriptionPlanType
 } from "../../../shared/types/subscription-plan";
-import { ApiGeojsonFeature, ApiUser } from "../../../shared/types/types";
+import { ApiGeojsonFeature, ApiUser, MeansOfTransportation } from "../../../shared/types/types";
 import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
@@ -24,6 +24,7 @@ export interface ExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
   censusData: ApiGeojsonFeature[];
+  activeMeans: MeansOfTransportation[];
   exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX";
 }
 
@@ -31,6 +32,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   entities,
   groupedEntries,
   censusData,
+  activeMeans,
   exportType = "EXPOSE"
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
@@ -141,6 +143,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   groupedEntries={filteredEntites!}
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
+                  activeMeans={activeMeans}
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
@@ -196,6 +199,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
 
               {exportType === "EXPOSE_DOCX" && (
                 <DocxExpose
+                  activeMeans={activeMeans}
                   groupedEntries={filteredEntites!}
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}

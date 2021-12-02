@@ -6,6 +6,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
+  MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
 import { ResultEntity } from "../../pages/SearchResultPage";
@@ -15,6 +16,7 @@ export interface ExposeDownloadProps {
   entities: ResultEntity[];
   groupedEntries: any;
   transportationParams: TransportationParam[];
+  activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
@@ -35,6 +37,7 @@ export class ComponentToPrint extends React.PureComponent {
 export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
   groupedEntries = [],
   transportationParams = [],
+  activeMeans,
   listingAddress,
   realEstateListing,
   entities = [],
@@ -87,6 +90,7 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
         groupedEntries={groupedEntries}
         ref={componentRef}
         transportationParams={transportationParams}
+        activeMeans={activeMeans}
         listingAddress={listingAddress}
         realEstateListing={realEstateListing}
         mapClippings={mapClippings}

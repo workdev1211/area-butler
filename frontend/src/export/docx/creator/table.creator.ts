@@ -7,7 +7,7 @@ import {
   TableCell,
   TableRow,
   TextRun,
-  WidthType
+  WidthType,
 } from "docx";
 import { routingProfileOrder } from "export/EntityGridSummary";
 import {
@@ -72,7 +72,7 @@ export const createTable = ({
     new Table({
       width: {
         size: 100,
-        type: WidthType.PERCENTAGE
+        type: WidthType.PERCENTAGE,
       },
       rows: [
         new TableRow({
@@ -130,14 +130,23 @@ export const createTable = ({
 };
 
 export const mapTableDataFromEntityGroup = (
-  group: EntityGroup
+  group: EntityGroup,
+  activeMeans: MeansOfTransportation[]
 ): { data: { header: string[]; body: string[][] } } => {
   const header = [];
   header.push("Name");
   header.push("Entfernung");
-  header.push("Zu Fuß");
-  header.push("Fahrrad");
-  header.push("Auto");
+
+  if (activeMeans.includes(MeansOfTransportation.WALK)) {
+    header.push("Zu Fuß");
+  }
+
+  if (activeMeans.includes(MeansOfTransportation.BICYCLE)) {
+    header.push("Fahrrad");
+  }
+  if (activeMeans.includes(MeansOfTransportation.CAR)) {
+    header.push("Auto");
+  }
 
   return {
     data: {
@@ -145,42 +154,60 @@ export const mapTableDataFromEntityGroup = (
       body: group.items
         .filter((item: ResultEntity) => item.selected)
         .map((item) => {
-          return [
-            item.name || group.title,
+          const values = [];
+
+          values.push(item.name || group.title);
+          values.push(
             item.distanceInMeters
               ? distanceToHumanReadable(Math.trunc(item.distanceInMeters))
-              : "unbekannt",
-            item.byFoot
-              ? timeToHumanReadable(
-                  Math.trunc(
-                    deriveMinutesFromMeters(
-                      item.distanceInMeters,
-                      MeansOfTransportation.WALK
+              : "unbekannt"
+          );
+
+          if (activeMeans.includes(MeansOfTransportation.WALK)) {
+            values.push(
+              item.byFoot
+                ? timeToHumanReadable(
+                    Math.trunc(
+                      deriveMinutesFromMeters(
+                        item.distanceInMeters,
+                        MeansOfTransportation.WALK
+                      )
                     )
                   )
-                )
-              : "",
-            item.byBike
-              ? timeToHumanReadable(
-                  Math.trunc(
-                    deriveMinutesFromMeters(
-                      item.distanceInMeters,
-                      MeansOfTransportation.BICYCLE
+                : ""
+            );
+          }
+
+          if (activeMeans.includes(MeansOfTransportation.BICYCLE)) {
+            values.push(
+              item.byBike
+                ? timeToHumanReadable(
+                    Math.trunc(
+                      deriveMinutesFromMeters(
+                        item.distanceInMeters,
+                        MeansOfTransportation.BICYCLE
+                      )
                     )
                   )
-                )
-              : "",
-            item.byCar
-              ? timeToHumanReadable(
-                  Math.trunc(
-                    deriveMinutesFromMeters(
-                      item.distanceInMeters,
-                      MeansOfTransportation.CAR
+                : ""
+            );
+          }
+          if (activeMeans.includes(MeansOfTransportation.CAR)) {
+            values.push(
+              item.byCar
+                ? timeToHumanReadable(
+                    Math.trunc(
+                      deriveMinutesFromMeters(
+                        item.distanceInMeters,
+                        MeansOfTransportation.CAR
+                      )
                     )
                   )
-                )
-              : "",
-          ];
+                : ""
+            );
+          }
+
+          return values;
         }),
     },
   };
@@ -270,16 +297,23 @@ export const mapTableDataFromParticlePollutiondata = (
 
 export const mapTableDataFromEntityGrid = (
   groupedEntries: EntityGroup[],
-  transportationParams: TransportationParam[]
+  transportationParams: TransportationParam[],
+  activeMeans: MeansOfTransportation[]
 ): { data: { header: string[]; body: string[][] } } => {
   const byFootAvailable = transportationParams.some(
-    (param) => param.type === MeansOfTransportation.WALK
+    (param) =>
+      param.type === MeansOfTransportation.WALK &&
+      activeMeans.includes(param.type)
   );
   const byBikeAvailable = transportationParams.some(
-    (param) => param.type === MeansOfTransportation.BICYCLE
+    (param) =>
+      param.type === MeansOfTransportation.BICYCLE &&
+      activeMeans.includes(param.type)
   );
   const byCarAvailable = transportationParams.some(
-    (param) => param.type === MeansOfTransportation.CAR
+    (param) =>
+      param.type === MeansOfTransportation.CAR &&
+      activeMeans.includes(param.type)
   );
 
   const header = [];
@@ -287,6 +321,7 @@ export const mapTableDataFromEntityGrid = (
   header.push("Nächster Ort");
 
   transportationParams
+    .filter((t) => activeMeans.includes(t.type))
     .sort(
       (t1, t2) =>
         routingProfileOrder.indexOf(t1.type) -

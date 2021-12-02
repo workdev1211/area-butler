@@ -8,6 +8,7 @@ import {deriveColorPalette, distanceToHumanReadable} from "shared/shared.functio
 export interface EntityGridSummaryProps {
     groupedEntries: EntityGroup[];
     transportationParams: TransportationParam[];
+    activeMeans: MeansOfTransportation[];
     primaryColor?: string;
 }
 
@@ -18,15 +19,15 @@ export const routingProfileOrder = [
 ];
 
 export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> =
-    ({groupedEntries, transportationParams, primaryColor = "#aa0c54"}) => {
+    ({groupedEntries, transportationParams, primaryColor = "#aa0c54", activeMeans}) => {
         const byFootAvailable = transportationParams.some(
-            (param) => param.type === MeansOfTransportation.WALK
+            (param) => param.type === MeansOfTransportation.WALK && activeMeans.includes(param.type)
         );
         const byBikeAvailable = transportationParams.some(
-            (param) => param.type === MeansOfTransportation.BICYCLE
+            (param) => param.type === MeansOfTransportation.BICYCLE && activeMeans.includes(param.type)
         );
         const byCarAvailable = transportationParams.some(
-            (param) => param.type === MeansOfTransportation.CAR
+            (param) => param.type === MeansOfTransportation.CAR && activeMeans.includes(param.type)
         );
 
         const colorPalette = deriveColorPalette(primaryColor);
@@ -45,6 +46,7 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
                         <th/>
                         <th>Nächster Ort</th>
                         {transportationParams
+                            .filter(t => activeMeans.includes(t.type))
                             .sort(
                                 (t1, t2) =>
                                     routingProfileOrder.indexOf(t1.type) -

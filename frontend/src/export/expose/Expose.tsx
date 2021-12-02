@@ -8,6 +8,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
+  MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
 import { EntityGroup } from "../../pages/SearchResultPage";
@@ -22,6 +23,7 @@ export interface ExposeProps {
   particlePollutionData: ApiGeojsonFeature[];
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
+  activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
@@ -42,6 +44,7 @@ export const Expose = React.forwardRef(
     const censusData = props.censusData;
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
+    const activeMeans = props.activeMeans;
     const user = props.user;
 
     let page = 0;
@@ -65,6 +68,7 @@ export const Expose = React.forwardRef(
               realEstateListing={props.realEstateListing}
               groupedEntries={groupedEntries}
               transportationParams={transportationParams}
+              activeMeans={activeMeans}
               listingAddress={props.listingAddress}
               primaryColor={user?.color}
             />
@@ -78,6 +82,7 @@ export const Expose = React.forwardRef(
               {!!importantEntites && importantEntites.items.length > 0 && (
                 <div className="m-10">
                   <EntityTable
+                    activeMeans={activeMeans}
                     entityGroup={importantEntites!}
                     primaryColor={user?.color}
                   />
@@ -110,6 +115,7 @@ export const Expose = React.forwardRef(
                     key={"tab-content-" + entityGroup.title}
                   >
                     <EntityTable
+                      activeMeans={activeMeans}
                       entityGroup={entityGroup}
                       primaryColor={user?.color}
                     />

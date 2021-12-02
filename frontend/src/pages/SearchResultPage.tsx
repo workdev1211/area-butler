@@ -619,6 +619,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       </DefaultLayout>
       {searchContextState.printingActive && (
         <ExportModal
+          activeMeans={activeMeans}
           entities={filteredEntites}
           groupedEntries={groupedEntries}
           censusData={searchContextState.censusData!}
@@ -626,6 +627,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       )}
       {searchContextState.printingCheatsheetActive && (
         <ExportModal
+          activeMeans={activeMeans}
           entities={filteredEntites}
           groupedEntries={groupedEntries}
           censusData={searchContextState.censusData!}
@@ -634,6 +636,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       )}
       {searchContextState.printingDocxActive && (
         <ExportModal
+          activeMeans={activeMeans}
           entities={filteredEntites}
           groupedEntries={groupedEntries}
           censusData={searchContextState.censusData!}

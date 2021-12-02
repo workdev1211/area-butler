@@ -8,6 +8,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
+  MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
 import { createFooter } from "./creator/footer.creator";
@@ -29,6 +30,7 @@ export interface DocxExposeProps {
   particlePollutionData?: ApiGeojsonFeature[];
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
+  activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   mapClippings: SelectedMapClipping[];
@@ -42,6 +44,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   federalElectionData,
   particlePollutionData,
   transportationParams,
+  activeMeans,
   user,
   realEstateListing,
   listingAddress
@@ -69,7 +72,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       columnWidths: [4000, 3000, 3000, 3000, 3000],
       headerColor: colorPalette.primaryColor,
       headerTextColor: colorPalette.textColor,
-      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams)
+      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams, activeMeans)
     });
 
     const tables = groupedEntries.map(group =>
@@ -78,7 +81,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         columnWidths: [5000, 2000, 1500, 1500, 1500],
         headerColor: colorPalette.primaryColor,
         headerTextColor: colorPalette.textColor,
-        ...mapTableDataFromEntityGroup(group)
+        ...mapTableDataFromEntityGroup(group, activeMeans)
       })
     );
 
