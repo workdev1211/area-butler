@@ -1,7 +1,7 @@
 import {
   MapClipping,
   SearchContext,
-  SearchContextActions
+  SearchContextActionTypes
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import React, { useContext, useState } from "react";
@@ -78,15 +78,15 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
 
   const onClose = () => {
     searchContextDispatch({
-      type: SearchContextActions.SET_PRINTING_ACTIVE,
+      type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
       payload: false
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
+      type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
       payload: false
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE,
+      type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
       payload: false
     });
   };
@@ -142,18 +142,18 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
-                  realEstateListing={searchContextState.realEstateListing}
+                  realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
                   mapClippings={selectedMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData
-                      : null
+                      : undefined
                   }
                   particlePollutionData={
                     showParticlePollution
                       ? searchContextState.particlePollutionData
-                      : null
+                      : undefined
                   }
                   onAfterPrint={onClose}
                   user={
@@ -172,18 +172,18 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   searchResponse={searchContextState.searchResponse!}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
-                  realEstateListing={searchContextState.realEstateListing}
+                  realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
                   mapClippings={selectedMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData
-                      : null
+                      : undefined
                   }
                   particlePollutionData={
                     showParticlePollution
                       ? searchContextState.particlePollutionData
-                      : null
+                      : undefined
                   }
                   onAfterPrint={onClose}
                   user={
@@ -200,17 +200,17 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
-                  realEstateListing={searchContextState.realEstateListing}
+                  realEstateListing={searchContextState.realEstateListing!}
                   mapClippings={selectedMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData
-                      : null
+                      : undefined
                   }
                   particlePollutionData={
                     showParticlePollution
                       ? searchContextState.particlePollutionData
-                      : null
+                      : undefined
                   }
                   user={
                     subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD

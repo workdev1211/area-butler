@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import DefaultLayout from "../layout/defaultLayout";
-import { SearchContext, SearchContextActions } from "../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes
+} from "../context/SearchContext";
 import {
   ApiAddress,
   ApiCoordinates,
@@ -327,11 +330,11 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   const highlightZoomEntity = (item: ResultEntity) => {
     searchContextDispatch({
-      type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+      type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
       payload: { center: item.coordinates, zoom: 18 }
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_HIGHLIGHT_ID,
+      type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
       payload: item.id
     });
   };
@@ -435,7 +438,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             type="button"
             onClick={() => {
               searchContextDispatch({
-                type: SearchContextActions.SET_PRINTING_ACTIVE,
+                type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
                 payload: true
               });
             }}
@@ -450,7 +453,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               hasFullyCustomizableExpose
                 ? searchContextDispatch({
-                    type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE,
+                    type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
                     payload: true
                   })
                 : userDispatch({
@@ -471,7 +474,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             type="button"
             onClick={() => {
               searchContextDispatch({
-                type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
+                type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
                 payload: true
               });
             }}
@@ -570,34 +573,37 @@ const SearchResultPage: React.FunctionComponent = () => {
           <MapMenuMobileBtn />
           <MapMenu
             mobileMenuOpen={mobileMenuOpen}
-            censusData={censusDataAvailable && searchContextState.censusData}
+            censusData={
+              censusDataAvailable ? searchContextState.censusData : undefined
+            }
             federalElectionData={
-              federalElectionDataAvailable &&
-              searchContextState.federalElectionData
+              federalElectionDataAvailable
+                ? searchContextState.federalElectionData
+                : undefined
             }
             particlePollutionData={
-              particlePollutionDataAvailable &&
-              searchContextState.particlePollutionData
+              particlePollutionDataAvailable
+                ? searchContextState.particlePollutionData
+                : undefined
             }
             groupedEntries={groupedEntries}
             toggleEntryGroup={toggleEntityGroup}
             toggleAllEntryGroups={toggleAllEntityGroups}
             highlightZoomEntity={highlightZoomEntity}
             toggleRoute={item =>
-              toggleRoutesToEntity(searchContextState.location, item)
+              toggleRoutesToEntity(searchContextState.location!, item)
             }
             routes={routes}
             toggleTransitRoute={item =>
-              toggleTransitRoutesToEntity(searchContextState.location, item)
+              toggleTransitRoutesToEntity(searchContextState.location!, item)
             }
             transitRoutes={transitRoutes}
             searchAddress={searchContextState?.placesLocation?.label}
             resetPosition={() =>
               searchContextDispatch({
-                type: SearchContextActions.SET_MAP_CENTER,
-                payload:
-                  searchContextState?.searchResponse?.centerOfInterest
-                    ?.coordinates
+                type: SearchContextActionTypes.SET_MAP_CENTER,
+                payload: searchContextState?.searchResponse?.centerOfInterest
+                  ?.coordinates!
               })
             }
             user={userState.user!}

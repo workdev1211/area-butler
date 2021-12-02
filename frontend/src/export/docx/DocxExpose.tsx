@@ -8,7 +8,7 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  TransportationParam,
+  TransportationParam
 } from "../../../../shared/types/types";
 import { createFooter } from "./creator/footer.creator";
 import { createHeader } from "./creator/header.creator";
@@ -19,14 +19,14 @@ import {
   mapTableDataFromEntityGrid,
   mapTableDataFromEntityGroup,
   mapTableDataFromFederalElectionData,
-  mapTableDataFromParticlePollutiondata,
+  mapTableDataFromParticlePollutiondata
 } from "./creator/table.creator";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
-  federalElectionData: FederalElectionDistrict;
-  particlePollutionData: ApiGeojsonFeature[];
+  federalElectionData?: FederalElectionDistrict;
+  particlePollutionData?: ApiGeojsonFeature[];
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
   listingAddress: string;
@@ -44,7 +44,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   transportationParams,
   user,
   realEstateListing,
-  listingAddress,
+  listingAddress
 }) => {
   const colorPalette = deriveColorPalette(
     !!user?.color ? user.color! : "#AA0C54"
@@ -69,16 +69,16 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       columnWidths: [4000, 3000, 3000, 3000, 3000],
       headerColor: colorPalette.primaryColor,
       headerTextColor: colorPalette.textColor,
-      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams),
+      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams)
     });
 
-    const tables = groupedEntries.map((group) =>
+    const tables = groupedEntries.map(group =>
       createTable({
         title: group.title,
         columnWidths: [5000, 2000, 1500, 1500, 1500],
         headerColor: colorPalette.primaryColor,
         headerTextColor: colorPalette.textColor,
-        ...mapTableDataFromEntityGroup(group),
+        ...mapTableDataFromEntityGroup(group)
       })
     );
 
@@ -91,8 +91,8 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
               columnWidths: [5000, 2000, 3000],
               headerColor: colorPalette.primaryColor,
               headerTextColor: colorPalette.textColor,
-              ...mapTableDataFromCensusData(censusData),
-            }),
+              ...mapTableDataFromCensusData(censusData)
+            })
           ]
         : [];
 
@@ -104,8 +104,8 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             columnWidths: [2000, 5000, 5000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromFederalElectionData(federalElectionData),
-          }),
+            ...mapTableDataFromFederalElectionData(federalElectionData)
+          })
         ]
       : [];
 
@@ -117,16 +117,16 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromParticlePollutiondata(particlePollutionData),
-          }),
+            ...mapTableDataFromParticlePollutiondata(particlePollutionData)
+          })
         ]
       : [];
 
-    const base64PrefixRegex = /data:.+;base64,/;  
+    const base64PrefixRegex = /data:.+;base64,/;
 
     let images = mapClippings
-      .filter((c) => c.selected)
-      .map((c) =>
+      .filter(c => c.selected)
+      .map(c =>
         createImage(c.mapClippingDataUrl.replace(base64PrefixRegex, ""))
       );
 
@@ -136,13 +136,15 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         new Paragraph({
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: "Kartenausschnitte",
+          text: "Kartenausschnitte"
         }),
-        ...images,
+        ...images
       ];
     }
 
-    const imageBase64Data = !!user?.logo ? user?.logo!.replace(base64PrefixRegex, "")! : await (await fetch(AreaButlerLogo)).blob();
+    const imageBase64Data = !!user?.logo
+      ? user?.logo!.replace(base64PrefixRegex, "")!
+      : await (await fetch(AreaButlerLogo)).blob();
 
     const doc = new Document({
       styles: {
@@ -155,33 +157,33 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             run: {
               font: "Arial",
               size: 32,
-              color: "000000",
-            },
-          },
-        ],
+              color: "000000"
+            }
+          }
+        ]
       },
       sections: [
         {
           headers: {
-            ...createHeader(imageBase64Data),
+            ...createHeader(imageBase64Data)
           },
           children: [
             ...gridSummary,
-            ...tables.flatMap((t) => t),
+            ...tables.flatMap(t => t),
             ...images,
             new Paragraph({ children: [new PageBreak()] }),
-            ...censusTable.flatMap((t) => t),
-            ...federalElectionTable.flatMap((t) => t),
-            ...particlePollutionTable.flatMap((t) => t),
+            ...censusTable.flatMap(t => t),
+            ...federalElectionTable.flatMap(t => t),
+            ...particlePollutionTable.flatMap(t => t)
           ],
           footers: {
-            ...createFooter(),
-          },
-        },
-      ],
+            ...createFooter()
+          }
+        }
+      ]
     });
 
-    Packer.toBlob(doc).then((blob) => {
+    Packer.toBlob(doc).then(blob => {
       saveAs(blob, `${documentTitle}.docx`);
     });
   };

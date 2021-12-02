@@ -32,12 +32,13 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./FederalElectionTable";
 import ParticlePollutionTable from "./ParticlePollutionTable";
 import { osmEntityTypes } from "../../../shared/constants/constants";
+import { CensusData } from "../hooks/censusdata";
 
 export interface MapMenuProps {
-  censusData: ApiGeojsonFeature[];
-  federalElectionData: FederalElectionDistrict;
+  censusData?: CensusData[];
+  federalElectionData?: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
-  particlePollutionData: ApiGeojsonFeature[];
+  particlePollutionData?: ApiGeojsonFeature[];
   toggleEntryGroup: (title: string) => void;
   toggleAllEntryGroups: () => void;
   highlightZoomEntity: (item: ResultEntity) => void;
@@ -291,7 +292,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                   )
                 }
               >
-                <CensusTable censusData={censusData} />
+                <CensusTable censusData={censusData!} />
               </MapMenuCollapsable>
             </li>
             <li className="locality-option-li" key="list-item-btw">
@@ -305,7 +306,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 }
               >
                 <FederalElectionTable
-                  federalElectionData={federalElectionData}
+                  federalElectionData={federalElectionData!}
                 />
               </MapMenuCollapsable>
             </li>
@@ -320,7 +321,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 }
               >
                 <ParticlePollutionTable
-                  particlePollutionData={particlePollutionData}
+                  particlePollutionData={particlePollutionData!}
                 />
               </MapMenuCollapsable>
             </li>

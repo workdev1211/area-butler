@@ -1,11 +1,11 @@
 import { RealEstateContext } from "context/RealEstateContext";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
 import React, { useContext, useRef, useState } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiSearch } from "../../../shared/types/types";
+import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
 
 const LatestUserRequestsDropDown: React.FunctionComponent = () => {
   const { userState } = useContext(UserContext);
@@ -26,11 +26,11 @@ const LatestUserRequestsDropDown: React.FunctionComponent = () => {
   const fillSearchParamsFromLatestRequest = (request: ApiSearch) => {
     const { lat, lng } = request.coordinates;
     searchContextDispatch({
-      type: SearchContextActions.SET_PLACES_LOCATION,
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: { label: request.searchTitle!, value: { place_id: "123" } }
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_LOCATION,
+      type: SearchContextActionTypes.SET_LOCATION,
       payload: {
         lat,
         lng
@@ -44,24 +44,25 @@ const LatestUserRequestsDropDown: React.FunctionComponent = () => {
     );
     if (!!existingListing) {
       searchContextDispatch({
-        type: SearchContextActions.SET_REAL_ESTATE_LISTING,
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
         payload: existingListing
       });
     }
 
     searchContextDispatch({
-      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+      type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
       payload: request.meansOfTransportation
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+      type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
       payload: request.preferredLocations || []
     });
+    const localityParams = request.preferredAmenities
+      .map(name => osmEntityTypes.find(entity => entity.name === name))
+      .filter(Boolean) as ApiOsmEntity[];
     searchContextDispatch({
-      type: SearchContextActions.SET_LOCALITY_PARAMS,
-      payload: request.preferredAmenities.map(name =>
-        osmEntityTypes.find(entity => entity.name === name)
-      )
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+      payload: localityParams
     });
   };
 
@@ -91,7 +92,7 @@ const LatestUserRequestsDropDown: React.FunctionComponent = () => {
                   request.coordinates.lat +
                   request.coordinates.lng
                 }
-                onClick={e => {
+                onClick={() => {
                   fillSearchParamsFromLatestRequest(request);
                   setShowMenu(false);
                 }}

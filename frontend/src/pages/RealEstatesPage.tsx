@@ -18,7 +18,7 @@ import {
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import TourStarter from "tour/TourStarter";
 
 const deleteRealEstateModalConfig = {
@@ -40,15 +40,15 @@ const RealEstatesPage: React.FunctionComponent = () => {
     const result = await deriveGeocodeByAddress(listing.address);
     const { lat, lng } = result;
     searchContextDispatch({
-      type: SearchContextActions.SET_PLACES_LOCATION,
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: { label: listing.address, value: { place_id: "123" } }
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_REAL_ESTATE_LISTING,
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
       payload: listing
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_LOCATION,
+      type: SearchContextActionTypes.SET_LOCATION,
       payload: {
         lat,
         lng

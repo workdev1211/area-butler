@@ -20,7 +20,7 @@ import { PotentialCustomerFormDeleteHandler } from "../potential-customer/Potent
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiUser } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 
@@ -75,15 +75,15 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
       customer.preferredAmenities.includes(entity.name)
     );
     searchContextDispatch({
-      type: SearchContextActions.SET_LOCALITY_PARAMS,
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
       payload: localityParams
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+      type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
       payload: customer.routingProfiles
     });
     searchContextDispatch({
-      type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+      type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
       payload: customer.preferredLocations
     });
     history.push("/");

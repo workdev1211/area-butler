@@ -1,5 +1,5 @@
 import center from "@turf/center";
-import { SearchContext, SearchContextActions } from "context/SearchContext";
+import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
 import "leaflet.markercluster";
@@ -15,9 +15,7 @@ import {
   MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
-import {
-  groupBy,
-} from "../../../shared/functions/shared.functions";
+import { groupBy } from "../../../shared/functions/shared.functions";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
@@ -57,7 +55,7 @@ export interface MapProps {
     byBike: boolean;
     byCar: boolean;
   };
-  highlightId?: string;
+  highlightId?: string | null | undefined;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
 }
@@ -294,7 +292,7 @@ const Map = React.memo<MapProps>(
               setTimeout(() => {
                 marker.createOpenPopup();
                 searchContextDispatch({
-                  type: SearchContextActions.SET_HIGHLIGHT_ID,
+                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
                   payload: null
                 });
               }, 1200);
@@ -399,34 +397,32 @@ const Map = React.memo<MapProps>(
         routes
           .filter(e => e.show)
           .forEach(entityRoute => {
-            entityRoute.routes
-              .filter(isVisibleDestination)
-              .forEach(r => {
-                r.sections.forEach(s => {
-                  const durationInMinutes = r.sections
-                    .map(s => s.duration)
-                    .reduce((p, c) => p + c);
-                  const line = L.geoJSON(s.geometry, {
-                    style: function() {
-                      return { color: MEAN_COLORS[r.meansOfTransportation] };
-                    }
-                  })
-                    .bindPopup(
-                      `<h4 class="font-semibold">Route zu ${
-                        entityRoute.title
-                      }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
-                        r.meansOfTransportation
-                      )} alt="icon" /><span>${
-                        Number.isNaN(durationInMinutes)
-                          ? durationInMinutes
-                          : timeToHumanReadable(durationInMinutes)
-                      }</span></span></div>`
-                    )
-                    .addTo(routesGroup);
-                  // @ts-ignore
-                  L.path.touchHelper(line).addTo(routesGroup);
-                });
+            entityRoute.routes.filter(isVisibleDestination).forEach(r => {
+              r.sections.forEach(s => {
+                const durationInMinutes = r.sections
+                  .map(s => s.duration)
+                  .reduce((p, c) => p + c);
+                const line = L.geoJSON(s.geometry, {
+                  style: function() {
+                    return { color: MEAN_COLORS[r.meansOfTransportation] };
+                  }
+                })
+                  .bindPopup(
+                    `<h4 class="font-semibold">Route zu ${
+                      entityRoute.title
+                    }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
+                      r.meansOfTransportation
+                    )} alt="icon" /><span>${
+                      Number.isNaN(durationInMinutes)
+                        ? durationInMinutes
+                        : timeToHumanReadable(durationInMinutes)
+                    }</span></span></div>`
+                  )
+                  .addTo(routesGroup);
+                // @ts-ignore
+                L.path.touchHelper(line).addTo(routesGroup);
               });
+            });
           });
         transitRoutes
           .filter(e => e.show)
@@ -557,9 +553,12 @@ const Map = React.memo<MapProps>(
           amenityMarkerGroup.on("clusterclick", function(a) {
             const centerOfGroup = center(a.layer.toGeoJSON());
             searchContextDispatch({
-              type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+              type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
               payload: {
-                center: centerOfGroup.geometry.coordinates.reverse(),
+                center: {
+                  lat: centerOfGroup.geometry.coordinates.reverse()[1],
+                  lng: centerOfGroup.geometry.coordinates.reverse()[0]
+                },
                 zoom: 17
               }
             });
@@ -589,7 +588,7 @@ const Map = React.memo<MapProps>(
       }).then(canvas => {
         const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
         searchContextDispatch({
-          type: SearchContextActions.ADD_MAP_CLIPPING,
+          type: SearchContextActionTypes.ADD_MAP_CLIPPING,
           payload: {
             zoomLevel: mapZoomLevel || zoom,
             mapClippingDataUrl
@@ -681,9 +680,9 @@ const Map = React.memo<MapProps>(
         });
         setTimeout(() => {
           searchContextDispatch({
-            type: SearchContextActions.CENTER_ZOOM_COORDINATES,
+            type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
             payload: {
-              zoom: currentMap?.getZoom(),
+              zoom: currentMap?.getZoom()!,
               center: searchResponse.centerOfInterest.coordinates
             }
           });

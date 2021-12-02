@@ -22,8 +22,8 @@ export interface CheatsheetDownloadProps {
   downloadButtonDisabled: boolean;
   mapClippings: SelectedMapClipping[];
   censusData: ApiGeojsonFeature[];
-  particlePollutionData: ApiGeojsonFeature[];
-  federalElectionData: FederalElectionDistrict;
+  particlePollutionData?: ApiGeojsonFeature[];
+  federalElectionData?: FederalElectionDistrict;
   onAfterPrint: () => void;
   user: ApiUser | null;
 }
@@ -92,8 +92,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
         realEstateListing={realEstateListing}
         mapClippings={mapClippings}
         censusData={censusData}
-        federalElectionData={federalElectionData}
-        particlePollutionData={particlePollutionData}
+        federalElectionData={federalElectionData!}
+        particlePollutionData={particlePollutionData!}
         user={user}
       />
     </div>

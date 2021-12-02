@@ -1,188 +1,231 @@
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import React from "react";
+import React, { Dispatch } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
-    ApiCoordinates,
-    ApiGeojsonFeature,
-    ApiGeometry,
-    ApiOsmEntity,
-    ApiSearchResponse,
-    OsmName,
-    TransportationParam
+  ApiCoordinates,
+  ApiGeojsonFeature,
+  ApiOsmEntity,
+  ApiSearchResponse,
+  OsmName,
+  TransportationParam
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { CensusData } from "../hooks/censusdata";
 
 export interface MapClipping {
-    zoomLevel: number;
-    mapClippingDataUrl: string;
+  zoomLevel: number;
+  mapClippingDataUrl: string;
 }
 
 export interface SearchContextState {
-    placesLocation?: any;
-    location?: ApiCoordinates;
-    transportationParams: TransportationParam[];
-    preferredLocations?: ApiPreferredLocation[];
-    localityParams: ApiOsmEntity[];
-    searchBusy: boolean;
-    searchResponse?: ApiSearchResponse;
-    censusData?: ApiGeometry[];
-    federalElectionData?: FederalElectionDistrict;
-    particlePollutionData?: ApiGeojsonFeature[];
-    mapCenter?: ApiCoordinates;
-    mapZoomLevel?: number;
-    highlightId?: number;
-    printingActive: boolean;
-    printingCheatsheetActive: boolean;
-    printingDocxActive: boolean;
-    mapClippings: MapClipping[];
+  placesLocation?: any;
+  location?: ApiCoordinates;
+  transportationParams: TransportationParam[];
+  preferredLocations?: ApiPreferredLocation[];
+  localityParams: ApiOsmEntity[];
+  searchBusy: boolean;
+  searchResponse?: ApiSearchResponse;
+  censusData?: CensusData[];
+  federalElectionData?: FederalElectionDistrict;
+  particlePollutionData?: ApiGeojsonFeature[];
+  mapCenter?: ApiCoordinates;
+  mapZoomLevel?: number;
+  highlightId?: string | null;
+  printingActive: boolean;
+  printingCheatsheetActive: boolean;
+  printingDocxActive: boolean;
+  mapClippings: MapClipping[];
+  realEstateListing?: ApiRealEstateListing;
 }
 
 export const initialState: SearchContextState = {
-    transportationParams: [...defaultTransportationParams],
-    localityParams: osmEntityTypes.filter(entity =>
-        [
-            OsmName.fuel, OsmName.park, OsmName.kiosk, OsmName.supermarket, OsmName.school, OsmName.restaurant
-        ].includes(entity.name)),
-    searchBusy: false,
-    printingActive: false,
-    printingCheatsheetActive: false,
-    printingDocxActive: false,
-    mapClippings: [],
+  transportationParams: [...defaultTransportationParams],
+  localityParams: osmEntityTypes.filter(entity =>
+    [
+      OsmName.fuel,
+      OsmName.park,
+      OsmName.kiosk,
+      OsmName.supermarket,
+      OsmName.school,
+      OsmName.restaurant
+    ].includes(entity.name)
+  ),
+  searchBusy: false,
+  printingActive: false,
+  printingCheatsheetActive: false,
+  printingDocxActive: false,
+  mapClippings: []
 };
 
-export enum SearchContextActions {
-    SET_PLACES_LOCATION = 'SET_PLACES_LOCATION',
-    SET_LOCATION = 'SET_LOCATION',
-    SET_TRANSPORTATION_PARAMS = 'SET_TRANSPORTATION_PARAMS',
-    SET_PREFERRED_LOCATIONS = 'SET_PREFERRED_LOCATIONS',
-    SET_LOCALITY_PARAMS = 'SET_LOCALITY_PARAMS',
-    SET_SEARCH_BUSY = 'SET_SEARCH_BUSY',
-    SET_SEARCH_RESPONSE = 'SET_SEARCH_RESPONSE',
-    SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
-    SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
-    SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
-    SET_MAP_CENTER = 'SET_MAP_CENTER',
-    SET_MAP_ZOOM_LEVEL = 'SET_MAP_ZOOM_LEVEL',
-    CENTER_ZOOM_COORDINATES = 'CENTER_ZOOM_COORDINATES',
-    SET_HIGHLIGHT_ID = 'SET_HIGHLIGHT_ID',
-    SET_PRINTING_ACTIVE = 'SET_PRINTING_ACTIVE',
-    SET_PRINTING_DOCX_ACTIVE = 'SET_PRINTING_DOCX_ACTIVE',
-    SET_PRINTING_CHEATSHEET_ACTIVE = 'SET_PRINTING_CHEATSHEET_ACTIVE',
-    ADD_MAP_CLIPPING = 'ADD_MAP_CLIPPING',
-    CLEAR_MAP_CLIPPINGS = 'CLEAR_MAP_CLIPPINGS',
-    SET_REAL_ESTATE_LISTING = 'SET_REAL_ESTATE_LISTING',
+export enum SearchContextActionTypes {
+  SET_PLACES_LOCATION = "SET_PLACES_LOCATION",
+  SET_LOCATION = "SET_LOCATION",
+  SET_TRANSPORTATION_PARAMS = "SET_TRANSPORTATION_PARAMS",
+  SET_PREFERRED_LOCATIONS = "SET_PREFERRED_LOCATIONS",
+  SET_LOCALITY_PARAMS = "SET_LOCALITY_PARAMS",
+  SET_SEARCH_BUSY = "SET_SEARCH_BUSY",
+  SET_SEARCH_RESPONSE = "SET_SEARCH_RESPONSE",
+  SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+  SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
+  SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
+  SET_MAP_CENTER = "SET_MAP_CENTER",
+  SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
+  CENTER_ZOOM_COORDINATES = "CENTER_ZOOM_COORDINATES",
+  SET_HIGHLIGHT_ID = "SET_HIGHLIGHT_ID",
+  SET_PRINTING_ACTIVE = "SET_PRINTING_ACTIVE",
+  SET_PRINTING_CHEATSHEET_ACTIVE = "SET_PRINTING_CHEATSHEET_ACTIVE",
+  SET_PRINTING_DOCX_ACTIVE = "SET_PRINTING_DOCX_ACTIVE",
+  ADD_MAP_CLIPPING = "ADD_MAP_CLIPPING",
+  CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
+  SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING"
 }
 
-const reducer: (
-    state: SearchContextState,
-    action: { type: SearchContextActions; payload?: any }
-) => SearchContextState = (state, action) => {
-    switch (action.type) {
-        case SearchContextActions.SET_PLACES_LOCATION: {
-            return {...state, placesLocation: {...action.payload}};
-        }
-        case SearchContextActions.SET_LOCATION: {
-            return {...state, location: {...action.payload}};
-        }
-        case SearchContextActions.SET_TRANSPORTATION_PARAMS: {
-            return {...state, transportationParams: [...action.payload]}
-        }
-        case SearchContextActions.SET_PREFERRED_LOCATIONS: {
-            return {...state, preferredLocations: [...action.payload]};
-        }
-        case SearchContextActions.SET_LOCALITY_PARAMS: {
-            return {...state, localityParams: [...action.payload]};
-        }
-        case SearchContextActions.SET_SEARCH_BUSY: {
-            return {...state, searchBusy: action.payload}
-        }
-        case SearchContextActions.SET_SEARCH_RESPONSE: {
-            return {
-                ...state,
-                searchResponse: {...action.payload},
-                location: action.payload.centerOfInterest.coordinates,
-                mapCenter: action.payload.centerOfInterest.coordinates
-            }
-        }
-        case SearchContextActions.SET_ZENSUS_DATA: {
-            return {...state, censusData: [...action.payload]}
-        }
-        case SearchContextActions.SET_FEDERAL_ELECTION_DATA: {
-            return {...state, federalElectionData: {...action.payload}}
-        }
-        case SearchContextActions.SET_PARTICLE_POLLUTION_ELECTION_DATA: {
-            return {...state, particlePollutionData: [...action.payload]}
-        }
-        case SearchContextActions.SET_MAP_ZOOM_LEVEL: {
-            return {...state, mapZoomLevel: action.payload};
-        }
-        case SearchContextActions.SET_MAP_CENTER: {
-            return {...state, mapCenter: action.payload}
-        }
-        case SearchContextActions.CENTER_ZOOM_COORDINATES: {
-            return {...state, mapZoomLevel: action.payload.zoom, mapCenter: action.payload.center}
-        }
-        case SearchContextActions.SET_HIGHLIGHT_ID: {
-            return {...state, highlightId: action.payload}
-        }
-        case SearchContextActions.SET_PRINTING_ACTIVE: {
-            return {
-                ...state,
-                printingActive: action.payload,
-                mapCenter: state.searchResponse?.centerOfInterest.coordinates
-            };
-        }
-        case SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE: {
-            return {
-                ...state,
-                printingCheatsheetActive: action.payload,
-                mapCenter: state.searchResponse?.centerOfInterest.coordinates
-            };
-        }
-        case SearchContextActions.SET_PRINTING_DOCX_ACTIVE: {
-            return {
-                ...state,
-                printingDocxActive: action.payload,
-                mapCenter: state.searchResponse?.centerOfInterest.coordinates
-            };
-        }
-        case SearchContextActions.ADD_MAP_CLIPPING: {
-            const newMapClippings = [...(state.mapClippings || [])];
-            newMapClippings.push(action.payload);
-            return {...state, mapClippings: newMapClippings};
-        }
-        case SearchContextActions.CLEAR_MAP_CLIPPINGS: {
-            return {...state, mapClippings: []};
-        }
-        case SearchContextActions.SET_REAL_ESTATE_LISTING: {
-            return {...state, realEstateListing: {...action.payload}};
-        }
-        default:
-            return state;
+type SearchContextActionsPayload = {
+  [SearchContextActionTypes.SET_PLACES_LOCATION]: Record<string, any>;
+  [SearchContextActionTypes.SET_LOCATION]: ApiCoordinates;
+  [SearchContextActionTypes.SET_TRANSPORTATION_PARAMS]: TransportationParam[];
+  [SearchContextActionTypes.SET_PREFERRED_LOCATIONS]: ApiPreferredLocation[];
+  [SearchContextActionTypes.SET_LOCALITY_PARAMS]: ApiOsmEntity[];
+  [SearchContextActionTypes.SET_SEARCH_BUSY]: boolean;
+  [SearchContextActionTypes.SET_SEARCH_RESPONSE]: ApiSearchResponse;
+  [SearchContextActionTypes.SET_ZENSUS_DATA]: CensusData[];
+  [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
+  [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
+  [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
+  [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
+  [SearchContextActionTypes.CENTER_ZOOM_COORDINATES]: {
+    zoom: number;
+    center: ApiCoordinates;
+  };
+  [SearchContextActionTypes.SET_HIGHLIGHT_ID]: string | null;
+  [SearchContextActionTypes.SET_PRINTING_ACTIVE]: boolean;
+  [SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE]: boolean;
+  [SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE]: boolean;
+  [SearchContextActionTypes.ADD_MAP_CLIPPING]: MapClipping;
+  [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
+  [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]: ApiRealEstateListing;
+};
+
+export type SearchContextActions = ActionMap<
+  SearchContextActionsPayload
+>[keyof ActionMap<SearchContextActionsPayload>];
+
+export const searchContextReducer = (
+  state: SearchContextState,
+  action: SearchContextActions
+): SearchContextState => {
+  switch (action.type) {
+    case SearchContextActionTypes.SET_PLACES_LOCATION: {
+      return { ...state, placesLocation: { ...action.payload } };
     }
+    case SearchContextActionTypes.SET_LOCATION: {
+      return { ...state, location: { ...action.payload } };
+    }
+    case SearchContextActionTypes.SET_TRANSPORTATION_PARAMS: {
+      return { ...state, transportationParams: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_PREFERRED_LOCATIONS: {
+      return { ...state, preferredLocations: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_LOCALITY_PARAMS: {
+      return { ...state, localityParams: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_SEARCH_BUSY: {
+      return { ...state, searchBusy: action.payload };
+    }
+    case SearchContextActionTypes.SET_SEARCH_RESPONSE: {
+      return {
+        ...state,
+        searchResponse: { ...action.payload },
+        location: action.payload.centerOfInterest.coordinates,
+        mapCenter: action.payload.centerOfInterest.coordinates
+      };
+    }
+    case SearchContextActionTypes.SET_ZENSUS_DATA: {
+      return { ...state, censusData: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA: {
+      return { ...state, federalElectionData: { ...action.payload } };
+    }
+    case SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA: {
+      return { ...state, particlePollutionData: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_MAP_ZOOM_LEVEL: {
+      return { ...state, mapZoomLevel: action.payload };
+    }
+    case SearchContextActionTypes.SET_MAP_CENTER: {
+      return { ...state, mapCenter: action.payload };
+    }
+    case SearchContextActionTypes.CENTER_ZOOM_COORDINATES: {
+      return {
+        ...state,
+        mapZoomLevel: action.payload.zoom,
+        mapCenter: action.payload.center
+      };
+    }
+    case SearchContextActionTypes.SET_HIGHLIGHT_ID: {
+      return { ...state, highlightId: action.payload };
+    }
+    case SearchContextActionTypes.SET_PRINTING_ACTIVE: {
+      return {
+        ...state,
+        printingActive: action.payload,
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+      };
+    }
+    case SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE: {
+      return {
+        ...state,
+        printingCheatsheetActive: action.payload,
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+      };
+    }
+    case SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE: {
+      return {
+        ...state,
+        printingDocxActive: action.payload,
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+      };
+    }
+    case SearchContextActionTypes.ADD_MAP_CLIPPING: {
+      const newMapClippings = [...(state.mapClippings || [])];
+      newMapClippings.push(action.payload);
+      return { ...state, mapClippings: newMapClippings };
+    }
+    case SearchContextActionTypes.CLEAR_MAP_CLIPPINGS: {
+      return { ...state, mapClippings: [] };
+    }
+    case SearchContextActionTypes.SET_REAL_ESTATE_LISTING: {
+      return { ...state, realEstateListing: { ...action.payload } };
+    }
+    default:
+      return state;
+  }
 };
 
 export const SearchContext = React.createContext<{
-    searchContextState: any;
-    searchContextDispatch: (action: { type: SearchContextActions, payload?: any }) => void;
+  searchContextState: SearchContextState;
+  searchContextDispatch: Dispatch<SearchContextActions>;
 }>({
-    searchContextState: initialState, searchContextDispatch: () => {
-    }
+  searchContextState: initialState,
+  searchContextDispatch: () => undefined
 });
 
-export const SearchContextProvider = ({
-                                          children,
-                                      }: {
-    children: any;
+export const SearchContextProvider: React.FunctionComponent = ({
+  children
 }) => {
-    const [state, dispatch] = React.useReducer<any>(reducer, initialState);
+  const [state, dispatch] = React.useReducer(
+    searchContextReducer,
+    initialState
+  );
 
-    return (
-        <SearchContext.Provider
-            value={{searchContextState: state, searchContextDispatch: dispatch}}
-        >
-            {children}
-        </SearchContext.Provider>
-    );
+  return (
+    <SearchContext.Provider
+      value={{ searchContextState: state, searchContextDispatch: dispatch }}
+    >
+      {children}
+    </SearchContext.Provider>
+  );
 };

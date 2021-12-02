@@ -40,7 +40,10 @@ import LocalityParams from "../components/LocalityParams";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";
 import TransportationParams from "../components/TransportationParams";
-import { SearchContext, SearchContextActions } from "../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes
+} from "../context/SearchContext";
 import { useCensusData } from "../hooks/censusdata";
 import { useHttp } from "../hooks/http";
 import DefaultLayout from "../layout/defaultLayout";
@@ -98,12 +101,12 @@ const SearchParamsPage: React.FunctionComponent = () => {
 
   const onLocationAutocompleteChange = (payload: any) => {
     searchContextDispatch({
-      type: SearchContextActions.SET_PLACES_LOCATION,
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: payload.value
     });
     if (payload.coordinates) {
       searchContextDispatch({
-        type: SearchContextActions.SET_LOCATION,
+        type: SearchContextActionTypes.SET_LOCATION,
         payload: payload.coordinates
       });
     }
@@ -111,7 +114,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
 
   const onMyLocationChange = async (coordinates: ApiCoordinates) => {
     searchContextDispatch({
-      type: SearchContextActions.SET_LOCATION,
+      type: SearchContextActionTypes.SET_LOCATION,
       payload: {
         ...coordinates
       }
@@ -121,7 +124,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
       value: { place_id: "123" }
     };
     searchContextDispatch({
-      type: SearchContextActions.SET_PLACES_LOCATION,
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: place
     });
   };
@@ -167,7 +170,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     const performLocationSearch = async () => {
       try {
         searchContextDispatch({
-          type: SearchContextActions.SET_SEARCH_BUSY,
+          type: SearchContextActionTypes.SET_SEARCH_BUSY,
           payload: true
         });
         const search: ApiSearch = {
@@ -185,7 +188,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
           search
         );
         searchContextDispatch({
-          type: SearchContextActions.SET_SEARCH_RESPONSE,
+          type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
           payload: result.data
         });
         if (
@@ -194,11 +197,11 @@ const SearchParamsPage: React.FunctionComponent = () => {
           )
         ) {
           const federalElectionData = await fetchElectionData(
-            searchContextState.location
+            searchContextState.location!
           );
           searchContextDispatch({
-            type: SearchContextActions.SET_FEDERAL_ELECTION_DATA,
-            payload: federalElectionData
+            type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
+            payload: federalElectionData!
           });
         }
         if (
@@ -207,10 +210,10 @@ const SearchParamsPage: React.FunctionComponent = () => {
           )
         ) {
           const particlePollutionData = await fetchParticlePollutionData(
-            searchContextState.location
+            searchContextState.location!
           );
           searchContextDispatch({
-            type: SearchContextActions.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+            type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
             payload: particlePollutionData
           });
         }
@@ -219,14 +222,14 @@ const SearchParamsPage: React.FunctionComponent = () => {
             ApiDataSource.CENSUS
           )
         ) {
-          const zensusData = await fetchNearData(searchContextState.location);
+          const zensusData = await fetchNearData(searchContextState.location!);
           searchContextDispatch({
-            type: SearchContextActions.SET_ZENSUS_DATA,
-            payload: zensusData
+            type: SearchContextActionTypes.SET_ZENSUS_DATA,
+            payload: zensusData!
           });
         }
         searchContextDispatch({
-          type: SearchContextActions.CLEAR_MAP_CLIPPINGS
+          type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS
         });
         history.push("/search-result");
       } catch (error) {
@@ -236,7 +239,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
         console.error(error);
       } finally {
         searchContextDispatch({
-          type: SearchContextActions.SET_SEARCH_BUSY,
+          type: SearchContextActionTypes.SET_SEARCH_BUSY,
           payload: false
         });
       }
@@ -315,7 +318,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
               values={searchContextState.transportationParams}
               onChange={newParams =>
                 searchContextDispatch({
-                  type: SearchContextActions.SET_TRANSPORTATION_PARAMS,
+                  type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
                   payload: newParams
                 })
               }
@@ -328,7 +331,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
               inputValues={searchContextState.preferredLocations}
               onChange={importantAdresses =>
                 searchContextDispatch({
-                  type: SearchContextActions.SET_PREFERRED_LOCATIONS,
+                  type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
                   payload: importantAdresses
                 })
               }
@@ -339,7 +342,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             values={searchContextState.localityParams}
             onChange={newValues =>
               searchContextDispatch({
-                type: SearchContextActions.SET_LOCALITY_PARAMS,
+                type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
                 payload: newValues
               })
             }
