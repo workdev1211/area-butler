@@ -4,12 +4,12 @@ import {toastError} from "../shared/shared.functions";
 
 export interface ImageUploadProps {
     label?: string;
-    src?: string;
+    image: string | undefined;
+    setImage: (image: string | undefined) => void;
     onChange: (logo: string) => void;
 }
 
-const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({src, label = 'Dein Logo', onChange}) => {
-    const [image, setImage] = useState(src || '');
+const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({image, setImage, label = 'Dein Logo', onChange}) => {
 
     const getBase64 = (event: React.ChangeEvent<HTMLInputElement>) => {
         let file = event.target.files![0];

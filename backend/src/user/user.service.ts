@@ -241,9 +241,14 @@ export class UserService {
 
         if (settings.logo) {
             Object.assign(existingUser, {logo: settings.logo});
+        } else if (settings.logo === null) {
+            Object.assign(existingUser, {logo: null});
         }
+        
         if (settings.color) {
             Object.assign(existingUser, {color: settings.color});
+        } else if (settings.color === null) {
+            Object.assign(existingUser, {color: null});
         }
 
         return existingUser.save();

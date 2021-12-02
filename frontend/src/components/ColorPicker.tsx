@@ -5,17 +5,18 @@ import useOnClickOutside from "../hooks/onclickoutside";
 
 export interface ColorPickerProps {
     label?: string;
-    value?: string;
+    color?: string;
+    setColor: (color: string) => void;
     onChange: (color: string) => void;
 }
 
 const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
-                                                                    value = '#FFFFFF',
+                                                                    color,
+                                                                    setColor,
                                                                     label = 'Deine Primärfarbe',
                                                                     onChange
                                                                 }) => {
     const pickerRef = useRef(null);
-    const [color, setColor] = useState(value || '');
     const [showPopover, setShowPopover] = useState(false);
 
     const handleChange = (newColor: string) => {
@@ -23,7 +24,7 @@ const ColorPicker: React.FunctionComponent<ColorPickerProps> = ({
     };
 
     useOnClickOutside(pickerRef, () => {
-        onChange(color);
+        onChange(color!);
         setShowPopover(false);
     });
 
