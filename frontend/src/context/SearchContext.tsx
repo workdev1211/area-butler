@@ -42,16 +42,7 @@ export interface SearchContextState {
 
 export const initialState: SearchContextState = {
   transportationParams: [...defaultTransportationParams],
-  localityParams: osmEntityTypes.filter(entity =>
-    [
-      OsmName.fuel,
-      OsmName.park,
-      OsmName.kiosk,
-      OsmName.supermarket,
-      OsmName.school,
-      OsmName.restaurant
-    ].includes(entity.name)
-  ),
+  localityParams: [...osmEntityTypes],
   searchBusy: false,
   printingActive: false,
   printingCheatsheetActive: false,
