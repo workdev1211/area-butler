@@ -62,10 +62,10 @@ const censusNotInSubscriptionPlanMessage = (
       Der Zensus Atlas beinhaltet ökonomische und soziale Daten zB:
       <br />
       <ul className="list-disc ml-5 mt-5">
-        <li>Bevölkerungsdichte</li>
-        <li>Durchschnittsalter</li>
-        <li>Durchschnittliche Wohnfläche pro Wohnung</li>
-        <li>u.v.m.</li>
+        <li key="Bevölkerungsdichte">Bevölkerungsdichte</li>
+        <li key="Durchschnittsalter">Durchschnittsalter</li>
+        <li key="Wohnfläche">Durchschnittliche Wohnfläche pro Wohnung</li>
+        <li key="uvm">u.v.m.</li>
       </ul>
     </p>
     <p className="my-5">
@@ -152,7 +152,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     geIndex
   }) => {
     return (
-      <li className="locality-option-li" key={`grouped-entry-${ge.title}`}>
+      <li
+        className="locality-option-li"
+        key={`grouped-entry-${ge.title}-${geIndex}`}
+      >
         <div
           className={
             "collapse collapse-arrow locality-option" +
@@ -364,21 +367,19 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                   ? preferredLocationsIcon
                   : deriveIconForOsmName(ge.items[0].type as OsmName);
                 return (
-                  <>
-                    <MapMenuListItem
-                      ge={ge}
-                      groupIconInfo={groupIconInfo}
-                      geIndex={geIndex}
-                      key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
-                    />
-                  </>
+                  <MapMenuListItem
+                    ge={ge}
+                    groupIconInfo={groupIconInfo}
+                    geIndex={geIndex}
+                    key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
+                  />
                 );
               })}
             {Object.entries(ApiOsmEntityCategory)
               .sort()
               .map(([_, category]) => {
                 return (
-                  <>
+                  <div key={`container-${category}`}>
                     {groupedEntries.some(
                       ge =>
                         ge.items.length &&
@@ -421,7 +422,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                           />
                         );
                       })}
-                  </>
+                  </div>
                 );
               })}
           </ul>
