@@ -46,8 +46,9 @@ const MapClippingsCollapsable: React.FunctionComponent<MapClippingsCollapsablePr
         {clippings.map((c, i) => (
           <div className="flex items-center lg:gap-10 gap-5">
             <img
+              onClick={() => downloadClipping(c, i)}
               src={c.mapClippingDataUrl}
-              className="lg:w-96 w-80"
+              className="lg:w-96 w-80 cursor-pointer"
               alt="img-clipping"
             />
             <div className="flex gap-5 flex-wrap">
