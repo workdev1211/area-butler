@@ -354,13 +354,6 @@ const Map = React.memo<MapProps>(
       const activeEntities = groupedEntities
         ?.filter(ge => ge.active)
         .flatMap(value => value.items);
-      const isActiveMeans = (r: ApiRoute) =>
-        (r.meansOfTransportation === MeansOfTransportation.WALK &&
-          means.byFoot) ||
-        (r.meansOfTransportation === MeansOfTransportation.CAR &&
-          means.byCar) ||
-        (r.meansOfTransportation === MeansOfTransportation.BICYCLE &&
-          means.byBike);
       const getIcon = (m: MeansOfTransportation | string) => {
         switch (m) {
           case MeansOfTransportation.CAR:
@@ -404,7 +397,6 @@ const Map = React.memo<MapProps>(
           .filter(e => e.show)
           .forEach(entityRoute => {
             entityRoute.routes
-              .filter(isActiveMeans)
               .filter(isVisibleDestination)
               .forEach(r => {
                 r.sections.forEach(s => {
