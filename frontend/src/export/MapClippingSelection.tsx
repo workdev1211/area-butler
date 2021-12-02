@@ -14,7 +14,7 @@ export interface MapClippingSelectionProps {
 
 const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
   selectedMapClippings,
-  setSelectedMapClippings,
+  setSelectedMapClippings
 }) => {
   const onSelectionChange = (mapClipping: SelectedMapClipping) => {
     mapClipping.selected = !mapClipping.selected;
@@ -25,9 +25,7 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
 
   return (
     <div>
-      <h1 className="my-5 font-bold">
-        Bilder 
-      </h1>
+      <h1 className="my-5 font-bold">Bilder</h1>
       <div
         className={
           "collapse border collapse-arrow" +
@@ -38,10 +36,15 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
           className="collapse-title font-medium flex items-center gap-6"
           onClick={() => setCollapseOpen(!collapseOpen)}
         >
-          {selectedMapClippings.length > 0 ? <span>Ausgewählte Bilder {selectedMapClippings.filter(c => c.selected).length}/{selectedMapClippings.length}</span> :
-          <span>Keine Kartenausschnitte gespeichert</span>
-          }
-          
+          {selectedMapClippings.length > 0 ? (
+            <span>
+              Ausgewählte Bilder{" "}
+              {selectedMapClippings.filter(c => c.selected).length}/
+              {selectedMapClippings.length}
+            </span>
+          ) : (
+            <span>Keine Kartenausschnitte gespeichert</span>
+          )}
         </div>
         <div className="collapse-content bg-white flex flex-col">
           {selectedMapClippings.map((item: SelectedMapClipping) => (
@@ -52,7 +55,11 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
                 onChange={() => onSelectionChange(item)}
                 className="checkbox checkbox-primary"
               />
-              <img src={item.mapClippingDataUrl} className="w-80" />
+              <img
+                src={item.mapClippingDataUrl}
+                className="w-80"
+                alt="img-clipping"
+              />
             </div>
           ))}
         </div>

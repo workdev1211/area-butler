@@ -15,7 +15,7 @@ import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
-import InsightsSelectionProps from "./InsightsSelection";
+import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
   SelectedMapClipping
 } from "./MapClippingSelection";
@@ -31,29 +31,30 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   entities,
   groupedEntries,
   censusData,
-  exportType = "EXPOSE",
+  exportType = "EXPOSE"
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
     .filter((group: EntityGroup) => group.title !== "Meine Objekte")
     .filter((group: EntityGroup) => group.items.length > 0);
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-  const [filteredEntites, setFilteredEntities] =
-    useState<EntityGroup[]>(groupCopy);
+  const { searchContextState, searchContextDispatch } = useContext(
+    SearchContext
+  );
+  const [filteredEntites, setFilteredEntities] = useState<EntityGroup[]>(
+    groupCopy
+  );
   const { userState } = useContext(UserContext);
   const user = userState.user as ApiUser;
   const subscriptionPlan = user.subscriptionPlan?.config;
 
-  const hasFederalElectionInSubscription =
-    !!subscriptionPlan?.appFeatures.dataSources.includes(
-      ApiDataSource.FEDERAL_ELECTION
-    );
-  const hasCensusElectionInSubscription =
-    !!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
-  const hasParticlePollutionElectionInSubscription =
-    !!subscriptionPlan?.appFeatures.dataSources.includes(
-      ApiDataSource.PARTICLE_POLLUTION
-    );
+  const hasFederalElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
+    ApiDataSource.FEDERAL_ELECTION
+  );
+  const hasCensusElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
+    ApiDataSource.CENSUS
+  );
+  const hasParticlePollutionElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
+    ApiDataSource.PARTICLE_POLLUTION
+  );
 
   const [showFederalElection, setShowFederalElection] = useState(
     hasFederalElectionInSubscription
@@ -63,11 +64,12 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
     hasParticlePollutionElectionInSubscription
   );
 
-  const selectableClippings = (searchContextState.mapClippings || []).map(
-    (c: MapClipping) => ({ selected: true, ...c })
-  );
-  const [selectedMapClippings, setSelectedMapClippings] =
-    useState<SelectedMapClipping[]>(selectableClippings);
+  const selectableClippings = (
+    searchContextState.mapClippings || []
+  ).map((c: MapClipping) => ({ selected: true, ...c }));
+  const [selectedMapClippings, setSelectedMapClippings] = useState<
+    SelectedMapClipping[]
+  >(selectableClippings);
 
   const buttonTitle =
     exportType !== "CHEATSHEET"
@@ -77,15 +79,15 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   const onClose = () => {
     searchContextDispatch({
       type: SearchContextActions.SET_PRINTING_ACTIVE,
-      payload: false,
+      payload: false
     });
     searchContextDispatch({
       type: SearchContextActions.SET_PRINTING_CHEATSHEET_ACTIVE,
-      payload: false,
+      payload: false
     });
     searchContextDispatch({
       type: SearchContextActions.SET_PRINTING_DOCX_ACTIVE,
-      payload: false,
+      payload: false
     });
   };
 
@@ -102,7 +104,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               {(hasCensusElectionInSubscription ||
                 hasFederalElectionInSubscription ||
                 hasParticlePollutionElectionInSubscription) && (
-                <InsightsSelectionProps
+                <InsightsSelection
                   showCensus={showCensus}
                   setShowCensus={setShowCensus}
                   showFederalElection={showFederalElection}
@@ -121,12 +123,12 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               <MapClippingSelection
                 selectedMapClippings={selectedMapClippings}
                 setSelectedMapClippings={setSelectedMapClippings}
-              ></MapClippingSelection>
+              />
               <EntitySelection
                 groupedEntries={filteredEntites}
                 setGroupedEntries={setFilteredEntities}
                 limit={exportType !== "CHEATSHEET" ? 10 : 3}
-              ></EntitySelection>
+              />
             </div>
 
             <div className="modal-action">

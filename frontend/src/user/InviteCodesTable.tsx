@@ -17,7 +17,8 @@ const InviteCodesTable: React.FunctionComponent = () => {
     };
 
     fetchUserCodes();
-  }, [true]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const copyCodeToClipBoard = (code: string) => {
     const success = copy(code);
@@ -36,7 +37,7 @@ const InviteCodesTable: React.FunctionComponent = () => {
           </tr>
         </thead>
         <tbody>
-          {inviteCodes.map((inviteCode) => (
+          {inviteCodes.map(inviteCode => (
             <tr className={!!inviteCode.used ? "inactive" : ""}>
               <th className="uppercase flex items-end">
                 <span

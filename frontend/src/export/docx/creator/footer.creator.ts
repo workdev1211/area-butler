@@ -1,4 +1,4 @@
-import { Paragraph, TextRun, PageNumber, Footer, AlignmentType } from "docx";
+import { Footer, PageNumber, Paragraph, TextRun } from "docx";
 
 export const createFooter = () => {
   return {
@@ -10,11 +10,11 @@ export const createFooter = () => {
             new TextRun("\t\t\t\t\t\t\t\t\t"),
             new TextRun({
               font: "Arial",
-              children: ["Seite ", PageNumber.CURRENT],
-            }),
-          ],
-        }),
-      ],
-    }),
+              children: ["Seite ", PageNumber.CURRENT]
+            })
+          ]
+        })
+      ]
+    })
   };
 };

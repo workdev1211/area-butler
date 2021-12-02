@@ -10,7 +10,7 @@ import {
   ApiUser,
   TransportationParam
 } from "../../../../shared/types/types";
-import { EntityGroup, ResultEntity } from "../../pages/SearchResultPage";
+import { EntityGroup } from "../../pages/SearchResultPage";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
@@ -32,19 +32,17 @@ export interface ExposeProps {
 export const Expose = React.forwardRef(
   (props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
     const groupedEntries = props.groupedEntries
-      .filter((group) => group.title !== "Wichtige Adressen")
-      .filter((group) => group.active && group.items.length > 0);
+      .filter(group => group.title !== "Wichtige Adressen")
+      .filter(group => group.active && group.items.length > 0);
     const importantEntites = props.groupedEntries.find(
-      (group) => group.active && group.title === "Wichtige Adressen"
+      group => group.active && group.title === "Wichtige Adressen"
     );
     const transportationParams = props.transportationParams;
-    const activePrinting = props.activePrinting;
     const mapClippings = props.mapClippings;
     const censusData = props.censusData;
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
     const user = props.user;
-    const filteredGroups = groupedEntries.filter((group) => group.active);
 
     let page = 0;
     const nextPageNumber = () => {
@@ -69,7 +67,7 @@ export const Expose = React.forwardRef(
               transportationParams={transportationParams}
               listingAddress={props.listingAddress}
               primaryColor={user?.color}
-            ></ExposeSummary>
+            />
           </PdfPage>
           {!!importantEntites?.items?.length && (
             <PdfPage
@@ -82,7 +80,7 @@ export const Expose = React.forwardRef(
                   <EntityTable
                     entityGroup={importantEntites!}
                     primaryColor={user?.color}
-                  ></EntityTable>
+                  />
                 </div>
               )}
             </PdfPage>
@@ -96,9 +94,9 @@ export const Expose = React.forwardRef(
           )}
           {groupedEntries
             .filter(
-              (entityGroup) =>
+              entityGroup =>
                 entityGroup.active &&
-                entityGroup.items.filter((i) => i.selected).length > 0
+                entityGroup.items.filter(i => i.selected).length > 0
             )
             .map((entityGroup: EntityGroup) => {
               return (
@@ -114,7 +112,7 @@ export const Expose = React.forwardRef(
                     <EntityTable
                       entityGroup={entityGroup}
                       primaryColor={user?.color}
-                    ></EntityTable>
+                    />
                   </div>
                 </PdfPage>
               );
@@ -143,7 +141,7 @@ export const Expose = React.forwardRef(
                 <FederalElectionSummary
                   primaryColor={user?.color}
                   federalElectionDistrict={federalElectionData}
-                ></FederalElectionSummary>
+                />
               </>
             )}
             {!!particlePollutionData && particlePollutionData.length > 0 && (

@@ -7,8 +7,10 @@ import UpgradeSubscriptionHandler from "./UpgradeSubscriptionHandler";
 const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
 
-  const [upgradeSubscriptionModalOpen, setUpgradeSubcriptionModalOpen] =
-    useState(false);
+  const [
+    upgradeSubscriptionModalOpen,
+    setUpgradeSubcriptionModalOpen
+  ] = useState(false);
 
   const history = useHistory();
 
@@ -16,6 +18,7 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
     setUpgradeSubcriptionModalOpen(
       userState.upgradeSubscriptionModalProps.open
     );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [JSON.stringify(userState.upgradeSubscriptionModalProps)]);
 
   const upgradeSubscriptionModalConfig: ModalConfig = {
@@ -25,25 +28,31 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
     postSubmit: () => {
       userDispatch({
         type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
-        payload: { open: false, message: "" },
+        payload: {
+          open: false,
+          message: ""
+        }
       });
-    },
+    }
   };
 
-  return (
-    upgradeSubscriptionModalOpen ? <FormModal modalConfig={upgradeSubscriptionModalConfig}>
+  return upgradeSubscriptionModalOpen ? (
+    <FormModal modalConfig={upgradeSubscriptionModalConfig}>
       <UpgradeSubscriptionHandler
         onSubmit={() => {
           history.push("profile");
           userDispatch({
             type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
-            payload: { open: false, message: "" },
+            payload: {
+              open: false,
+              message: ""
+            }
           });
         }}
         message={userState.upgradeSubscriptionModalProps.message}
-      ></UpgradeSubscriptionHandler>
-    </FormModal> : null
-  );
+      />
+    </FormModal>
+  ) : null;
 };
 
 export default UpgradeSubscriptionHandlerContainer;

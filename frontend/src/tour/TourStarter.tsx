@@ -1,12 +1,6 @@
 import { UserActions, UserContext } from "context/UserContext";
 import { useContext, useEffect, useState } from "react";
-import Joyride, {
-  CallBackProps,
-  STATUS,
-  Step,
-  StoreHelpers,
-  Styles,
-} from "react-joyride";
+import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 import { ApiTour, ApiUser } from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
@@ -22,14 +16,14 @@ export interface TourStarterProps {
 export const defaultStyles: Styles = {
   options: {
     zIndex: 10000,
-    primaryColor: "#c91444",
+    primaryColor: "#c91444"
   },
   spotlight: {
-    backgroundColor: "white",
+    backgroundColor: "white"
   },
   overlay: {
-    mixBlendMode: "darken",
-  },
+    mixBlendMode: "darken"
+  }
 };
 
 const tourSteps: Record<ApiTour, Step[]> = {
@@ -37,7 +31,7 @@ const tourSteps: Record<ApiTour, Step[]> = {
   result: SearchResulSteps,
   realEstates: RealEstatesSteps,
   customers: CustomersSteps,
-  profile: ProfileSteps,
+  profile: ProfileSteps
 };
 
 const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
@@ -50,18 +44,15 @@ const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
   useEffect(() => {
     if (!!userState.startTour) {
       setRunTour(true);
-      userDispatch({ type: UserActions.SET_START_TOUR, payload: false });
+      userDispatch({
+        type: UserActions.SET_START_TOUR,
+        payload: false
+      });
     }
-  }, [userState.startTour]);
-
-  const [helpers, setHelpers] = useState<StoreHelpers | undefined>();
-
-  const getHelpers = (helpers: StoreHelpers) => {
-    setHelpers(helpers);
-  };
+  }, [userDispatch, userState.startTour]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
-    const { status, type } = data;
+    const { status } = data;
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status)) {
@@ -79,13 +70,14 @@ const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
       <Joyride
         callback={handleJoyrideCallback}
         continuous={true}
-        getHelpers={getHelpers}
         run={runTour}
         scrollToFirstStep={true}
         showProgress={true}
         showSkipButton={true}
         steps={tourSteps[tour]}
-        styles={{ ...defaultStyles }}
+        styles={{
+          ...defaultStyles
+        }}
       />
     </div>
   );
