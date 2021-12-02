@@ -586,6 +586,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                 ? searchContextState.particlePollutionData
                 : undefined
             }
+            clippings={searchContextState.mapClippings}
             groupedEntries={groupedEntries}
             toggleEntryGroup={toggleEntityGroup}
             toggleAllEntryGroups={toggleAllEntityGroups}

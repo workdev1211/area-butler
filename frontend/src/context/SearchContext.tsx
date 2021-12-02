@@ -78,6 +78,7 @@ export enum SearchContextActionTypes {
   SET_PRINTING_CHEATSHEET_ACTIVE = "SET_PRINTING_CHEATSHEET_ACTIVE",
   SET_PRINTING_DOCX_ACTIVE = "SET_PRINTING_DOCX_ACTIVE",
   ADD_MAP_CLIPPING = "ADD_MAP_CLIPPING",
+  REMOVE_MAP_CLIPPING = "REMOVE_MAP_CLIPPING",
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING"
 }
@@ -104,6 +105,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE]: boolean;
   [SearchContextActionTypes.ADD_MAP_CLIPPING]: MapClipping;
+  [SearchContextActionTypes.REMOVE_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
   [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]: ApiRealEstateListing;
 };
@@ -192,6 +194,11 @@ export const searchContextReducer = (
     case SearchContextActionTypes.ADD_MAP_CLIPPING: {
       const newMapClippings = [...(state.mapClippings || [])];
       newMapClippings.push(action.payload);
+      return { ...state, mapClippings: newMapClippings };
+    }
+    case SearchContextActionTypes.REMOVE_MAP_CLIPPING: {
+      const newMapClippings = [...(state.mapClippings || [])]
+        .filter(c => c.mapClippingDataUrl !== action.payload.mapClippingDataUrl);
       return { ...state, mapClippings: newMapClippings };
     }
     case SearchContextActionTypes.CLEAR_MAP_CLIPPINGS: {

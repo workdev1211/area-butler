@@ -32,13 +32,16 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./FederalElectionTable";
 import ParticlePollutionTable from "./ParticlePollutionTable";
 import { osmEntityTypes } from "../../../shared/constants/constants";
-import { CensusData } from "../hooks/censusdata";
+import { MapClipping } from "context/SearchContext";
+import MapClippingsCollapsable from "./MapClippingsCollapsable";
+import { CensusData } from "hooks/censusdata";
 
 export interface MapMenuProps {
   censusData?: CensusData[];
   federalElectionData?: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
   particlePollutionData?: ApiGeojsonFeature[];
+  clippings: MapClipping[];
   toggleEntryGroup: (title: string) => void;
   toggleAllEntryGroups: () => void;
   highlightZoomEntity: (item: ResultEntity) => void;
@@ -89,6 +92,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
+  clippings = [],
   groupedEntries,
   toggleEntryGroup,
   toggleAllEntryGroups,
@@ -104,6 +108,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   openUpgradeSubscriptionModal
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
+  const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
   const [localitiesOpen, setLocalitiesOpen] = useState(true);
   const [localityOpen, setLocalityOpen] = useState<string[]>([]);
   const [localityPagination, setLocalityPagination] = useState<number[]>(
@@ -269,6 +274,21 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           {searchAddress}
         </button>
       </div>
+      {clippings.length > 0 && (<div
+        className={
+          "collapse collapse-arrow view-option" +
+          (mapClippingsOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <input
+          type="checkbox"
+          onChange={(event) => setMapClippingsOpen(event.target.checked)}
+        />
+        <div className="collapse-title">Kartenausschnitte</div>
+        <div className="collapse-content">
+          <MapClippingsCollapsable searchAddress={searchAddress} clippings={clippings} />
+        </div>
+      </div>)}
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -277,7 +297,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={event => setViewOptionsOpen(event.target.checked)}
+          onChange={(event) => setViewOptionsOpen(event.target.checked)}
         />
         <div className="collapse-title">Einblicke</div>
         <div className="collapse-content">
@@ -336,7 +356,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={event => setLocalitiesOpen(event.target.checked)}
+          onChange={(event) => setLocalitiesOpen(event.target.checked)}
         />
         <div className="collapse-title flex justify-between">
           Lokalitäten
@@ -353,7 +373,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           <ul>
             {groupedEntries
               .filter(
-                ge =>
+                (ge) =>
                   ge.items.length &&
                   ["Wichtige Adressen", "Meine Objekte"].includes(ge.title)
               )
@@ -382,10 +402,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 return (
                   <div key={`container-${category}`}>
                     {groupedEntries.some(
-                      ge =>
+                      (ge) =>
                         ge.items.length &&
                         osmEntityTypes.some(
-                          oet =>
+                          (oet) =>
                             oet.label === ge.title && oet.category === category
                         )
                     ) && (
@@ -395,10 +415,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     )}
                     {groupedEntries
                       .filter(
-                        ge =>
+                        (ge) =>
                           ge.items.length &&
                           osmEntityTypes.some(
-                            oet =>
+                            (oet) =>
                               oet.label === ge.title &&
                               oet.category === category
                           )
