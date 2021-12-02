@@ -7,7 +7,7 @@ import {Form, Formik} from "formik";
 import { useFederalElectionData } from "hooks/federalelectiondata";
 import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
-import React, {useContext, useEffect} from "react";
+import React, {useContext, useEffect, useState} from "react";
 import {useHistory} from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
@@ -20,7 +20,7 @@ import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandle
 import {ApiPotentialCustomer} from "../../../shared/types/potential-customer";
 import {ApiRealEstateListing} from "../../../shared/types/real-estate";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
-import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser} from "../../../shared/types/types";
+import {ApiCoordinates, ApiOsmEntity, ApiSearch, ApiSearchResponse, ApiUser, ApiUserRequests} from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import ImportantAddresses from "../components/ImportantAddresses";
 import Input from "../components/Input";
@@ -42,6 +42,17 @@ const SearchParamsPage: React.FunctionComponent = () => {
     const {searchContextState, searchContextDispatch} = useContext(SearchContext);
     const {potentialCustomerDispatch} = useContext(PotentialCustomerContext);
     const {realEstateDispatch} = useContext(RealEstateContext);
+    const [newRequest, setNewRequest] = useState(true);
+
+
+    useEffect( () => {
+        const latestUserRequests: ApiUserRequests = userState.latestUserRequests;
+        const coordinates = searchContextState.location;
+        if (!!coordinates) {
+            setNewRequest(!latestUserRequests.requests.some(r => JSON.stringify(r.coordinates) === JSON.stringify(coordinates)));
+        }
+        
+    }, [searchContextState])
 
     useEffect(() => {
         const fetchCustomers = async () => {
@@ -107,7 +118,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             data-tour="start-search"
             className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
         >
-            Analyse Starten{" "}
+            {newRequest ? 'Analyse Starten ' : 'Analyse aktualisieren '}
             <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
         </button>
     );
@@ -184,7 +195,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
             onClick={performLocationSearch}
             className={searchContextState.searchBusy ? `${classes} loading` : classes}
         >
-            Analyse starten <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
+            {newRequest ? 'Analyse Starten ' : 'Analyse aktualisieren '}<img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next"/>
         </button>
     }
 
@@ -193,10 +204,10 @@ const SearchParamsPage: React.FunctionComponent = () => {
             title="Umgebungsanalyse"
             withHorizontalPadding={true}
             actionBottom={[
-                !requestLimitExceeded ? (
-                    <SearchButton key="search-button"/>
-                ) : (
+                newRequest && requestLimitExceeded ? (
                     <IncreaseLimitModal key="search-button"/>
+                    ) : (
+                    <SearchButton key="search-button"/>
                 ),
             ]}
         >

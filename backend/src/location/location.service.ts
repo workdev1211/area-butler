@@ -40,11 +40,15 @@ export class LocationService {
 
     async searchLocation(user: UserDocument, search: ApiSearch): Promise<ApiSearchResponse> {
 
-        await this.subscriptionService.checkSubscriptionViolation(
-            user._id,
-            _ => user.requestsExecuted + 1 > retrieveTotalRequestContingent(user).map(c => c.amount).reduce((acc, inc) => acc + inc),
-            'Im aktuellen Monat sind keine weiteren Abfragen möglich',
-        );
+        const newRequest = (await this.locationModel.count({userId: user._id, 'locationSearch.coordinates': search.coordinates})) === 0;
+    
+        if (newRequest) {
+            await this.subscriptionService.checkSubscriptionViolation(
+                user._id,
+                _ => user.requestsExecuted + 1 > retrieveTotalRequestContingent(user).map(c => c.amount).reduce((acc, inc) => acc + inc),
+                'Im aktuellen Monat sind keine weiteren Abfragen möglich',
+            );
+        }
 
         const coordinates = search.coordinates;
         const preferredAmenities = search.preferredAmenities;
@@ -108,7 +112,10 @@ export class LocationService {
         }
 
         await new this.locationModel({userId: user._id, locationSearch: search}).save();
-        await this.userService.incrementExecutedRequestCount(user.id);
+
+        if (newRequest) {
+            await this.userService.incrementExecutedRequestCount(user.id);
+        }
 
         return {
             centerOfInterest: {
