@@ -18,7 +18,7 @@ import { Link, useHistory, useLocation } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
-import { UserActions, UserContext } from "context/UserContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { SearchContext, SearchContextActions } from "context/SearchContext";
 import { ApiUser } from "../../../shared/types/types";
@@ -65,7 +65,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
 
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
-  const user: ApiUser = userState.user;
+  const user: ApiUser = userState.user!;
   const subscriptionPlan = user.subscriptionPlan?.config;
   const canSendCustomerRequest =
     subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
@@ -118,7 +118,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
               canSendCustomerRequest
                 ? setQuestionnaireModalOpen(true)
                 : userDispatch({
-                    type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
                       message: subscriptionUpgradeSendCustomerRequestMessage

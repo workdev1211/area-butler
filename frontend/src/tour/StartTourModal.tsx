@@ -1,4 +1,4 @@
-import { UserActions, UserContext } from "context/UserContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { useContext, useState } from "react";
 import { toastError } from "shared/shared.functions";
@@ -10,7 +10,7 @@ const tourDescriptions: Record<ApiTour, string> = {
   customers:
     "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
   realEstates: "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
-  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
+  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?"
 };
 
 export interface StartTourModalProps {
@@ -22,11 +22,11 @@ export interface StartTourModalProps {
 const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
   tour,
   showTour,
-  onShowTour = () => {},
+  onShowTour = () => {}
 }) => {
   const [showModal, setShowModal] = useState(showTour[tour]);
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
-  const {userDispatch} = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
   const { post } = useHttp();
 
@@ -40,9 +40,11 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
         } else {
           user = (await post<ApiUser>(`/api/users/me/hide-tour`, {})).data;
         }
-        userDispatch({ type: UserActions.SET_USER, payload: user });
+        userDispatch({
+          type: UserActionTypes.SET_USER,
+          payload: user as ApiUser
+        });
         setShowModal(false);
-
       } catch (err) {
         console.log(err);
         toastError("Fehler beim Beenden der Tour");
@@ -65,7 +67,7 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
                 type="checkbox"
                 checked={showNoMoreTips}
                 className="checkbox checkbox-primary checkbox-sm"
-                onChange={(event) => setShowNoMoreTips(event.target.checked)}
+                onChange={event => setShowNoMoreTips(event.target.checked)}
               />
               <span className="text-sm font-bold ml-5">
                 Ich möchte keine weiteren Tipps angezeigt bekommen

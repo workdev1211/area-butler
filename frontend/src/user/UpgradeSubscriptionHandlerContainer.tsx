@@ -1,5 +1,5 @@
 import FormModal, { ModalConfig } from "components/FormModal";
-import { UserActions, UserContext } from "context/UserContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router";
 import UpgradeSubscriptionHandler from "./UpgradeSubscriptionHandler";
@@ -27,7 +27,7 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
     modalTitle: "Zeit für Mehr!",
     postSubmit: () => {
       userDispatch({
-        type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+        type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
         payload: {
           open: false,
           message: ""
@@ -42,7 +42,7 @@ const UpgradeSubscriptionHandlerContainer: FunctionComponent = () => {
         onSubmit={() => {
           history.push("profile");
           userDispatch({
-            type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+            type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
             payload: {
               open: false,
               message: ""

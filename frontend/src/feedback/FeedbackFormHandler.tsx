@@ -1,5 +1,5 @@
 import { FormModalData } from "components/FormModal";
-import { UserActions, UserContext } from "context/UserContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { useContext } from "react";
 import { ApiInsertFeedback } from "../../../shared/types/types";
@@ -8,14 +8,14 @@ import FeedbackForm from "./FeedbackForm";
 const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
   formId,
   beforeSubmit = () => {},
-  postSubmit = () => {},
+  postSubmit = () => {}
 }) => {
   const { post } = useHttp();
 
   const { userDispatch } = useContext(UserContext);
 
   const onStartTour = () => {
-    userDispatch({ type: UserActions.SET_START_TOUR, payload: true });
+    userDispatch({ type: UserActionTypes.SET_START_TOUR, payload: true });
     postSubmit(true);
   };
 

@@ -16,9 +16,7 @@ import {
   localStorageSearchContext,
   meansOfTransportations
 } from "../../../shared/constants/constants";
-import {
-  groupBy,
-} from "../../../shared/functions/shared.functions";
+import { groupBy } from "../../../shared/functions/shared.functions";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { useHistory } from "react-router-dom";
@@ -40,7 +38,7 @@ import { RealEstateContext } from "context/RealEstateContext";
 import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
 import { useRouting } from "../hooks/routing";
 import { v4 } from "uuid";
-import { UserActions, UserContext } from "context/UserContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
 import TourStarter from "tour/TourStarter";
 import { useHttp } from "hooks/http";
 
@@ -185,14 +183,20 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   useEffect(() => {
     const fetchUserRequests = async () => {
-      const latestUserRequests: ApiUserRequests = (await get<ApiUserRequests>("/api/location/latest-user-requests")).data;
-      userDispatch({type: UserActions.SET_LATEST_USER_REQUESTS, payload: latestUserRequests});
-    }
+      const latestUserRequests: ApiUserRequests = (
+        await get<ApiUserRequests>("/api/location/latest-user-requests")
+      ).data;
+      userDispatch({
+        type: UserActionTypes.SET_LATEST_USER_REQUESTS,
+        payload: latestUserRequests
+      });
+    };
 
     fetchUserRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 
-  const user: ApiUser = userState.user;
+  const user: ApiUser = userState.user!;
   const hasFullyCustomizableExpose =
     user.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
 
@@ -450,7 +454,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                     payload: true
                   })
                 : userDispatch({
-                    type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
                       message: subscriptionUpgradeFullyCustomizableExpose
@@ -596,10 +600,10 @@ const SearchResultPage: React.FunctionComponent = () => {
                     ?.coordinates
               })
             }
-            user={userState.user}
+            user={userState.user!}
             openUpgradeSubscriptionModal={message =>
               userDispatch({
-                type: UserActions.SET_SUBSCRIPTION_MODAL_PROPS,
+                type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                 payload: { open: true, message }
               })
             }

@@ -1,5 +1,5 @@
-import { UserActions, UserContext } from "context/UserContext";
-import { useContext, useEffect, useState } from "react";
+import { UserActionTypes, UserContext } from "context/UserContext";
+import React, { useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 import { ApiTour, ApiUser } from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
@@ -37,15 +37,15 @@ const tourSteps: Record<ApiTour, Step[]> = {
 const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
   const [runTour, setRunTour] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
-  const user: ApiUser = userState.user;
+  const user: ApiUser = userState.user!;
 
   const onShowTour = () => setRunTour(true);
 
   useEffect(() => {
-    if (!!userState.startTour) {
+    if (userState.startTour) {
       setRunTour(true);
       userDispatch({
-        type: UserActions.SET_START_TOUR,
+        type: UserActionTypes.SET_START_TOUR,
         payload: false
       });
     }
