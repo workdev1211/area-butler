@@ -1,4 +1,5 @@
 import FormModal, {ModalConfig} from "components/FormModal";
+import LatestUserRequestsDropDown from "components/LatestUserRequestsDropDown";
 import {PotentialCustomerActions, PotentialCustomerContext} from "context/PotentialCustomerContext";
 import {RealEstateActions, RealEstateContext} from "context/RealEstateContext";
 import {UserContext} from "context/UserContext";
@@ -236,7 +237,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
                             />
                         </div>
                     </div>
-                    <RealEstateDropDown/>
+                    <LatestUserRequestsDropDown />
 
                     <h2>Mobilität</h2>
                     <div className="sub-content">

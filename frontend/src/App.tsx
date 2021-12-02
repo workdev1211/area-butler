@@ -14,7 +14,7 @@ import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 import {UserActions, UserContext} from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import {useAuth0} from "@auth0/auth0-react";
-import {ApiConsent, ApiUser} from "../../shared/types/types";
+import {ApiConsent, ApiUser, ApiUserRequests} from "../../shared/types/types";
 import {localStorageInvitationCodeKey} from "../../shared/constants/constants";
 import {useHttp} from "./hooks/http";
 
@@ -103,6 +103,8 @@ function App() {
             const fetchUser = async () => {
                 const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
                 userDispatch({type: UserActions.SET_USER, payload: user});
+                const latestUserRequests: ApiUserRequests = (await get<ApiUserRequests>("/api/location/latest-user-requests")).data;
+                userDispatch({type: UserActions.SET_LATEST_USER_REQUESTS, payload: latestUserRequests});
             };
 
             validateEmailVerified();

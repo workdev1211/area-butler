@@ -6,6 +6,7 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiUser,
+  ApiUserRequests,
   MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
@@ -41,6 +42,7 @@ import { useRouting } from "../hooks/routing";
 import { v4 } from "uuid";
 import { UserActions, UserContext } from "context/UserContext";
 import TourStarter from "tour/TourStarter";
+import { useHttp } from "hooks/http";
 
 export interface ResultEntity {
   name?: string;
@@ -178,6 +180,17 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
+
+  const { get } = useHttp();
+
+  useEffect(() => {
+    const fetchUserRequests = async () => {
+      const latestUserRequests: ApiUserRequests = (await get<ApiUserRequests>("/api/location/latest-user-requests")).data;
+      userDispatch({type: UserActions.SET_LATEST_USER_REQUESTS, payload: latestUserRequests});
+    }
+
+    fetchUserRequests();
+  }, [true]);
 
   const user: ApiUser = userState.user;
   const hasFullyCustomizableExpose =

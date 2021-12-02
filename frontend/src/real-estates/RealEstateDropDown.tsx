@@ -43,7 +43,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> =
         return realEstateState.listings?.length > 0 ? (
             <div className={dropdownClasses} ref={dropDownRef}>
                 <div className={buttonStyles} onClick={() => setShowMenu(!showMenu)} data-tour='my-real-estates'>
-                    + Meine Objekte
+                    Meine Objekte
                 </div>
                 {showMenu && (<ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
                     {realEstateState.listings.map(

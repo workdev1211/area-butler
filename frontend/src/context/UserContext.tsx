@@ -1,8 +1,9 @@
 import React from "react";
-import { ApiUser } from "../../../shared/types/types";
+import { ApiUser, ApiUserRequests } from "../../../shared/types/types";
 
 export interface UserState {
   user?: ApiUser;
+  latestUserRequests?: ApiUserRequests;
   upgradeSubscriptionModalProps: {
     open: boolean,
     message?: string
@@ -12,6 +13,7 @@ export interface UserState {
 
 export const initialState: UserState = {
   user: undefined,
+  latestUserRequests: {requests: []},
   upgradeSubscriptionModalProps: {
     open: false,
     message: ''
@@ -21,6 +23,7 @@ export const initialState: UserState = {
 
 export enum UserActions {
   SET_USER = "SET_USER",
+  SET_LATEST_USER_REQUESTS = "SET_LATEST_USER_REQUESTS",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
   SET_START_TOUR = "SET_START_TOUR",
   SET_LOGO = "SET_LOGO",
@@ -34,6 +37,9 @@ const reducer: (
   switch (action.type) {
     case UserActions.SET_USER: {
       return { ...state, user: action.payload };
+    }
+    case UserActions.SET_LATEST_USER_REQUESTS: {
+      return { ...state, latestUserRequests: action.payload };
     }
     case UserActions.SET_SUBSCRIPTION_MODAL_PROPS: {
       return { ...state, upgradeSubscriptionModalProps: action.payload };
