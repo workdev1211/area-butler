@@ -120,7 +120,7 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
   if (timeInMinutes % 60 === 0) {
     return `${Math.floor(timeInMinutes / 60)} Std.`;
   } else {
-    return `${Math.floor(timeInMinutes / 60)} Std. ${timeInMinutes % 60} Min.`;
+    return `${Math.floor(timeInMinutes / 60)} Std. ${Math.floor(timeInMinutes % 60)} Min.`;
   }
 };
 
