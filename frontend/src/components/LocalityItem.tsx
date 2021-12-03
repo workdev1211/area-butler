@@ -89,44 +89,60 @@ const PreferredLocationItemContent: React.FunctionComponent<{
         <div className="flex flex-col gap-3">
           <div className="font-bold">Routen & Zeiten</div>
           <div className="flex flex-wrap gap-3">
-            <div>
+            <label
+              className="cursor-pointer label justify-start gap-3"
+              key="census-data-checkbox-selection"
+            >
               <input
                 type="checkbox"
                 checked={route?.show.includes(MeansOfTransportation.WALK)}
                 onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.WALK)
                 }
-              />
-              <span className="ml-2">Zu Fuß</span>
-            </div>
-            <div>
+                className="checkbox checkbox-primary checkbox-xs"
+              />{" "}
+              <span className="label-text">Zu Fuß</span>
+            </label>
+            <label
+              className="cursor-pointer label justify-start gap-3"
+              key="census-data-checkbox-selection"
+            >
               <input
                 type="checkbox"
                 checked={route?.show.includes(MeansOfTransportation.BICYCLE)}
                 onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.BICYCLE)
                 }
-              />
-              <span className="ml-2">Fahrrad</span>
-            </div>
-            <div>
+                className="checkbox checkbox-accent checkbox-xs"
+              />{" "}
+              <span className="label-text">Fahrrad</span>
+            </label>
+            <label
+              className="cursor-pointer label justify-start gap-3"
+              key="census-data-checkbox-selection"
+            >
               <input
                 type="checkbox"
                 checked={route?.show.includes(MeansOfTransportation.CAR)}
                 onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.CAR)
                 }
-              />
-              <span className="ml-2">Auto</span>
-            </div>
-            <div>
+                className="checkbox checkbox-xs"
+              />{" "}
+              <span className="label-text">Auto</span>
+            </label>
+            <label
+              className="cursor-pointer label justify-start gap-3"
+              key="census-data-checkbox-selection"
+            >
               <input
                 type="checkbox"
                 checked={transitRoute?.show || false}
                 onChange={(event) => onToggleTransitRoute(item)}
-              />
-              <span className="ml-2">ÖPNV</span>
-            </div>
+                className="checkbox checkbox-secondary checkbox-xs"
+              />{" "}
+              <span className="label-text">ÖPNV</span>
+            </label>
           </div>
         </div>
       </div>
