@@ -16,6 +16,7 @@ import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
+import AreaButlerLogo from "../../assets/img/logo.jpg";
 
 export interface ExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -45,7 +46,11 @@ export const Expose = React.forwardRef(
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
     const activeMeans = props.activeMeans;
+
+
     const user = props.user;
+    const color = user?.color || "#aa0c54";
+    const logo = user?.logo || AreaButlerLogo;
 
     let page = 0;
     const nextPageNumber = () => {
@@ -61,7 +66,7 @@ export const Expose = React.forwardRef(
         <>
           <PdfPage
             nextPageNumber={nextPageNumber}
-            logo={user?.logo}
+            logo={logo}
             title="Überblick"
           >
             <ExposeSummary
@@ -70,13 +75,13 @@ export const Expose = React.forwardRef(
               transportationParams={transportationParams}
               activeMeans={activeMeans}
               listingAddress={props.listingAddress}
-              primaryColor={user?.color}
+              primaryColor={user?.color || "#aa0c54"}
             />
           </PdfPage>
           {!!importantEntites?.items?.length && (
             <PdfPage
               nextPageNumber={nextPageNumber}
-              logo={user?.logo}
+              logo={logo}
               title="Umgebung"
             >
               {!!importantEntites && importantEntites.items.length > 0 && (
@@ -84,7 +89,7 @@ export const Expose = React.forwardRef(
                   <EntityTable
                     activeMeans={activeMeans}
                     entityGroup={importantEntites!}
-                    primaryColor={user?.color}
+                    primaryColor={color}
                   />
                 </div>
               )}
@@ -107,7 +112,7 @@ export const Expose = React.forwardRef(
               return (
                 <PdfPage
                   nextPageNumber={nextPageNumber}
-                  logo={user?.logo}
+                  logo={logo}
                   title={entityGroup.title}
                 >
                   <div
@@ -134,7 +139,7 @@ export const Expose = React.forwardRef(
                   Nachbarschaftsdemographie
                 </h4>
                 <CensusSummary
-                  primaryColor={user?.color}
+                  primaryColor={color}
                   censusData={censusData}
                 />
               </>
@@ -145,7 +150,7 @@ export const Expose = React.forwardRef(
                   Bundestagswahl 2021
                 </h4>
                 <FederalElectionSummary
-                  primaryColor={user?.color}
+                  primaryColor={color}
                   federalElectionDistrict={federalElectionData}
                 />
               </>
@@ -156,7 +161,7 @@ export const Expose = React.forwardRef(
                   Feinstaubbelastung
                 </h4>
                 <ParticlePollutionSummary
-                  primaryColor={user?.color}
+                  primaryColor={color}
                   particlePollutionData={particlePollutionData}
                 />
               </>

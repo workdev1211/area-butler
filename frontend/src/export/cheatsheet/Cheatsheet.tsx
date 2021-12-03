@@ -19,6 +19,7 @@ import {
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
+import AreaButlerLogo from "../../assets/img/logo.jpg";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -43,6 +44,8 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
   const user = props.user;
+  const color = user?.color || "#aa0c54";
+  const logo = user?.logo || AreaButlerLogo;
   const particlePollutionData = props.particlePollutionData;
 
   const filteredGroups = groupedEntries.filter(group => group.active);
@@ -60,7 +63,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
     >
       <PdfPage
         title="Zusammenfassung"
-        logo={user?.logo}
+        logo={logo}
         nextPageNumber={nextPageNumber}
       >
         <div className="m-10 flex flex-col gap-2">
@@ -109,7 +112,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
                   <EntityList
                     entityGroup={group}
                     limit={3}
-                    primaryColor={user?.color}
+                    primaryColor={color}
                   />
                 </div>
               );
@@ -120,13 +123,13 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
       {mapClippings.length > 0 && (
         <MapClippings
           mapClippings={mapClippings}
-          logo={user?.logo}
+          logo={logo}
           nextPageNumber={nextPageNumber}
         />
       )}
       <PdfPage
         title="Einblicke"
-        logo={user?.logo}
+        logo={logo}
         nextPageNumber={nextPageNumber}
       >
         {!!censusData && censusData.length > 0 && (
@@ -134,7 +137,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
               Nachbarschaftsdemographie
             </h4>
-            <CensusSummary primaryColor={user?.color} censusData={censusData} />
+            <CensusSummary primaryColor={color} censusData={censusData} />
           </>
         )}
         {!!federalElectionData && (
@@ -143,7 +146,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
               Bundestagswahl 2021
             </h4>
             <FederalElectionSummary
-              primaryColor={user?.color}
+              primaryColor={color}
               federalElectionDistrict={federalElectionData}
             />
           </>
@@ -152,7 +155,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           <>
             <h4 className="mx-10 text-xl w-56 font-bold">Feinstaubbelastung</h4>
             <ParticlePollutionSummary
-              primaryColor={user?.color}
+              primaryColor={color}
               particlePollutionData={particlePollutionData}
             />
           </>

@@ -19,7 +19,7 @@ export interface ExposeSummaryProps {
   activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
-  primaryColor?: string;
+  primaryColor: string;
 }
 
 const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
@@ -28,7 +28,7 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
   groupedEntries,
   transportationParams,
   activeMeans,
-  primaryColor = "#aa0c54",
+  primaryColor,
 }) => {
   const colorPalette = deriveColorPalette(primaryColor);
 

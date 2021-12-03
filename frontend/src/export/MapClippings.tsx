@@ -1,7 +1,6 @@
 import React from "react";
 import { SelectedMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
-import AreaButlerLogo from "../assets/img/logo.jpg";
 
 export interface MapClippingsProps {
   mapClippings: SelectedMapClipping[];
@@ -11,7 +10,7 @@ export interface MapClippingsProps {
 
 export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
   mapClippings,
-  logo = AreaButlerLogo,
+  logo,
   nextPageNumber = () => "01",
 }) => {
   const imageSize = {
