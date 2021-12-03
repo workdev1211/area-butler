@@ -7,7 +7,6 @@ import {
   ApiGeojsonFeature,
   ApiOsmEntity,
   ApiSearchResponse,
-  OsmName,
   TransportationParam
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
@@ -188,8 +187,9 @@ export const searchContextReducer = (
       return { ...state, mapClippings: newMapClippings };
     }
     case SearchContextActionTypes.REMOVE_MAP_CLIPPING: {
-      const newMapClippings = [...(state.mapClippings || [])]
-        .filter(c => c.mapClippingDataUrl !== action.payload.mapClippingDataUrl);
+      const newMapClippings = [...(state.mapClippings || [])].filter(
+        c => c.mapClippingDataUrl !== action.payload.mapClippingDataUrl
+      );
       return { ...state, mapClippings: newMapClippings };
     }
     case SearchContextActionTypes.CLEAR_MAP_CLIPPINGS: {
