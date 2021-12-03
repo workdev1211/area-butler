@@ -86,11 +86,11 @@ const PreferredLocationItemContent: React.FunctionComponent<{
   return (
     <>
       <div className="locality-item-content">
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-2">
           <div className="font-bold">Routen & Zeiten</div>
-          <div className="flex flex-wrap gap-3">
+          <div className="flex flex-wrap gap-2 items-center">
             <label
-              className="cursor-pointer label justify-start gap-3"
+              className="cursor-pointer label justify-start gap-2 items-center"
               key="census-data-checkbox-selection"
             >
               <input
@@ -104,7 +104,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
               <span className="label-text">Zu Fuß</span>
             </label>
             <label
-              className="cursor-pointer label justify-start gap-3"
+              className="cursor-pointer label justify-start gap-2 items-center"
               key="census-data-checkbox-selection"
             >
               <input
@@ -118,7 +118,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
               <span className="label-text">Fahrrad</span>
             </label>
             <label
-              className="cursor-pointer label justify-start gap-3"
+              className="cursor-pointer label justify-start gap-2 items-center"
               key="census-data-checkbox-selection"
             >
               <input
@@ -132,7 +132,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
               <span className="label-text">Auto</span>
             </label>
             <label
-              className="cursor-pointer label justify-start gap-3"
+              className="cursor-pointer label justify-start gap-2 items-center"
               key="census-data-checkbox-selection"
             >
               <input
