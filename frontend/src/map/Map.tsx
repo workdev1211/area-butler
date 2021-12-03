@@ -88,6 +88,10 @@ export class IdMarker extends L.Marker {
         this.entity.address.street && this.entity.address.street !== "undefined"
           ? this.entity.address.street
           : null;
+      const isRealEstateListing = this.entity.type === "property";
+      const isPreferredLocation = this.entity.type === "favorite";
+      const isRealEstateListingOrPreferredAdress =
+        isPreferredLocation || isRealEstateListing;
       const byFoot = this.entity.byFoot
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
             deriveMinutesFromMeters(
@@ -115,7 +119,11 @@ export class IdMarker extends L.Marker {
       this.bindPopup(
         `<span class="font-semibold">${title}</span><br />${
           street ? "<div>" + street + "</div><br />" : ""
-        }<div class="flex gap-6">${byFoot}${byBike}${byCar}</div>`
+        }<div class="flex gap-6">${
+          !isRealEstateListingOrPreferredAdress ? byFoot : ""
+        }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
+          !isRealEstateListingOrPreferredAdress ? byCar : ""
+        }</div>`
       );
     }
     this.openPopup();
@@ -397,32 +405,35 @@ const Map = React.memo<MapProps>(
         routes
           .filter(e => e.show.length > 0)
           .forEach(entityRoute => {
-            entityRoute.routes.filter(r => entityRoute.show.includes(r.meansOfTransportation)).filter(isVisibleDestination).forEach(r => {
-              r.sections.forEach(s => {
-                const durationInMinutes = r.sections
-                  .map(s => s.duration)
-                  .reduce((p, c) => p + c);
-                const line = L.geoJSON(s.geometry, {
-                  style: function() {
-                    return { color: MEAN_COLORS[r.meansOfTransportation] };
-                  }
-                })
-                  .bindPopup(
-                    `<h4 class="font-semibold">Route zu ${
-                      entityRoute.title
-                    }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
-                      r.meansOfTransportation
-                    )} alt="icon" /><span>${
-                      Number.isNaN(durationInMinutes)
-                        ? durationInMinutes
-                        : timeToHumanReadable(durationInMinutes)
-                    }</span></span></div>`
-                  )
-                  .addTo(routesGroup);
-                // @ts-ignore
-                L.path.touchHelper(line).addTo(routesGroup);
+            entityRoute.routes
+              .filter(r => entityRoute.show.includes(r.meansOfTransportation))
+              .filter(isVisibleDestination)
+              .forEach(r => {
+                r.sections.forEach(s => {
+                  const durationInMinutes = r.sections
+                    .map(s => s.duration)
+                    .reduce((p, c) => p + c);
+                  const line = L.geoJSON(s.geometry, {
+                    style: function() {
+                      return { color: MEAN_COLORS[r.meansOfTransportation] };
+                    }
+                  })
+                    .bindPopup(
+                      `<h4 class="font-semibold">Route zu ${
+                        entityRoute.title
+                      }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
+                        r.meansOfTransportation
+                      )} alt="icon" /><span>${
+                        Number.isNaN(durationInMinutes)
+                          ? durationInMinutes
+                          : timeToHumanReadable(durationInMinutes)
+                      }</span></span></div>`
+                    )
+                    .addTo(routesGroup);
+                  // @ts-ignore
+                  L.path.touchHelper(line).addTo(routesGroup);
+                });
               });
-            });
           });
         transitRoutes
           .filter(e => e.show)
@@ -498,7 +509,6 @@ const Map = React.memo<MapProps>(
                   count: (value as any).length
                 }))
                 .sort((a, b) => b.count - a.count);
-              // const markerIcons = countedMarkers.map(cm => '<div style="display: flex;"><img class="' + cm.key + '" src="' + cm.icon + '" />' + cm.count + '</div>');
               const markerIcons = countedMarkers.map(
                 cm =>
                   '<div class="flex items-center gap-0.5">' +
