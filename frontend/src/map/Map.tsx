@@ -562,12 +562,14 @@ const Map = React.memo<MapProps>(
           });
           amenityMarkerGroup.on("clusterclick", function(a) {
             const centerOfGroup = center(a.layer.toGeoJSON());
+            const lat = centerOfGroup.geometry.coordinates[1];
+            const lng = centerOfGroup.geometry.coordinates[0];
             searchContextDispatch({
               type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
               payload: {
                 center: {
-                  lat: centerOfGroup.geometry.coordinates.reverse()[1],
-                  lng: centerOfGroup.geometry.coordinates.reverse()[0]
+                  lat,
+                  lng
                 },
                 zoom: 17
               }
