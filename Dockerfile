@@ -28,6 +28,8 @@ COPY --chown=node:node . .
 
 WORKDIR /home/node/app/frontend
 
+RUN yarn build-embed
+
 RUN yarn build
 
 WORKDIR /home/node/app/backend

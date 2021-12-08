@@ -2,6 +2,7 @@
   "name": "redesign",
   "version": "0.1.0",
   "private": true,
+  "homepage": ".",
   "dependencies": {
     "@auth0/auth0-react": "^1.6.0",
     "@laststance/use-app-state": "^1.2.14",
@@ -55,7 +56,7 @@
     "start": "TAILWIND_MODE=watch PORT=3001 craco start",
     "start-embed": "TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
     "build": "craco build",
-    "build-embed": "craco build --config craco-embed.config.js",
+    "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
     "test": "craco test"
   },
   "eslintConfig": {

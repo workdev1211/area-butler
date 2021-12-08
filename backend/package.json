@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "copyfe": "mkdir -p dist/static && cp -R ../frontend/build/* dist/static",
+    "copyfe": "mkdir -p dist/static && mkdir -p dist/static/embed && cp -R ../frontend/build/* dist/static && cp -R ../frontend/build-embed/* dist/static/embed",
     "prebuild": "rimraf dist",
     "build": "nest build && npm run copyfe",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
