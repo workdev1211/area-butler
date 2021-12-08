@@ -44,6 +44,7 @@ import { v4 } from "uuid";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import TourStarter from "tour/TourStarter";
 import { useHttp } from "hooks/http";
+import { ConfigContext } from "../context/ConfigContext";
 
 export interface ResultEntity {
   name?: string;
@@ -179,6 +180,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     SearchContext
   );
 
+  const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
 
@@ -350,7 +352,6 @@ const SearchResultPage: React.FunctionComponent = () => {
         r.coordinates.lng === item.coordinates.lng
     );
     if (existing) {
-
       let newRoutes = [...existing.show];
       if (newRoutes.includes(mean)) {
         newRoutes = newRoutes.filter(r => r !== mean);
@@ -557,6 +558,8 @@ const SearchResultPage: React.FunctionComponent = () => {
               onMeansChange={newValues => setActiveMeans(newValues)}
             />
             <Map
+              mapBoxAccessToken={mapBoxAccessToken}
+              searchContextDispatch={searchContextDispatch}
               searchResponse={searchContextState.searchResponse}
               searchAddress={searchContextState?.placesLocation?.label}
               entities={filteredEntites}

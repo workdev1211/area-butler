@@ -1,5 +1,8 @@
 import center from "@turf/center";
-import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
+import {
+  SearchContextActions,
+  SearchContextActionTypes
+} from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
 import "leaflet.markercluster";
@@ -7,7 +10,7 @@ import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
 import {
   ApiCoordinates,
@@ -22,7 +25,6 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import { ConfigContext } from "../context/ConfigContext";
 import {
   EntityGroup,
   EntityRoute,
@@ -41,6 +43,8 @@ import "./Map.css";
 import "leaflet-touch-helper";
 
 export interface MapProps {
+  mapBoxAccessToken: string;
+  searchContextDispatch: (action: SearchContextActions) => void;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   entities: ResultEntity[] | null;
@@ -141,6 +145,8 @@ let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
+  const mapboxKeyEqual =
+    prevProps.mapBoxAccessToken === nextProps.mapBoxAccessToken;
   const responseEqual =
     JSON.stringify(prevProps.searchResponse) ===
     JSON.stringify(nextProps.searchResponse);
@@ -166,6 +172,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const transitRoutesEqual =
     prevProps.transitRoutes === nextProps.transitRoutes;
   return (
+    mapboxKeyEqual &&
     responseEqual &&
     searchAdressEqual &&
     entitiesEqual &&
@@ -192,6 +199,8 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
 };
 const Map = React.memo<MapProps>(
   ({
+    mapBoxAccessToken,
+    searchContextDispatch,
     searchResponse,
     searchAddress,
     entities,
@@ -205,9 +214,6 @@ const Map = React.memo<MapProps>(
     transitRoutes
   }) => {
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
-
-    const { mapBoxAccessToken } = useContext(ConfigContext);
-    const { searchContextDispatch } = useContext(SearchContext);
 
     const [fullscreen, setFullscreen] = useState(false);
 
