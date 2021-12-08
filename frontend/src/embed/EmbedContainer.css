@@ -1,0 +1,25 @@
+.embed-container {
+    height: 100vh;
+    max-height: 100vh;
+    @apply flex relative w-full;
+}
+
+@media screen(lg) {
+    .embed-container {
+        grid-template-columns: 5fr 2fr;
+        @apply grid;
+    }
+}
+
+.mobile-menu-btn {
+    top: 20px;
+    right: 10px;
+    z-index: 9999;
+    @apply btn btn-primary absolute;
+}
+
+@media screen(lg) {
+    .mobile-menu-btn {
+        display: none;
+    }
+}

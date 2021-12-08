@@ -53,8 +53,9 @@ export interface MapMenuProps {
   transitRoutes: EntityTransitRoute[];
   searchAddress: string;
   resetPosition: () => void;
-  user: ApiUser;
-  openUpgradeSubscriptionModal: (message: React.ReactNode) => void;
+  user?: ApiUser;
+  openUpgradeSubscriptionModal?: (message: React.ReactNode) => void;
+  showInsights?: boolean;
 }
 
 const localityPaginationSize = 5;
@@ -106,7 +107,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   searchAddress,
   resetPosition,
   user,
-  openUpgradeSubscriptionModal
+  openUpgradeSubscriptionModal,
+  showInsights = true
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
@@ -275,80 +277,93 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           {searchAddress}
         </button>
       </div>
-      {clippings.length > 0 && (<div
-        className={
-          "collapse collapse-arrow view-option" +
-          (mapClippingsOpen ? " collapse-open" : " collapse-closed")
-        }
-      >
-        <input
-          type="checkbox"
-          onChange={(event) => setMapClippingsOpen(event.target.checked)}
-        />
-        <div className="collapse-title">Kartenausschnitte</div>
-        <div className="collapse-content">
-          <MapClippingsCollapsable searchAddress={searchAddress} clippings={clippings} />
+      {clippings.length > 0 && (
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (mapClippingsOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <input
+            type="checkbox"
+            onChange={event => setMapClippingsOpen(event.target.checked)}
+          />
+          <div className="collapse-title">Kartenausschnitte</div>
+          <div className="collapse-content">
+            <MapClippingsCollapsable
+              searchAddress={searchAddress}
+              clippings={clippings}
+            />
+          </div>
         </div>
-      </div>)}
-      <div
-        className={
-          "collapse collapse-arrow view-option" +
-          (viewOptionsOpen ? " collapse-open" : " collapse-closed")
-        }
-      >
-        <input
-          type="checkbox"
-          onChange={(event) => setViewOptionsOpen(event.target.checked)}
-        />
-        <div className="collapse-title">Einblicke</div>
-        <div className="collapse-content">
-          <ul>
-            <li className="locality-option-li" key="list-item-zensus">
-              <MapMenuCollapsable
-                title="Zensus Atlas"
-                subscriptionCheck={() => censusInSubscriptionPlan}
-                openUpgradeSubcriptionModal={() =>
-                  openUpgradeSubscriptionModal(
-                    censusNotInSubscriptionPlanMessage
-                  )
-                }
+      )}
+      {showInsights && (
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (viewOptionsOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <input
+            type="checkbox"
+            onChange={event => setViewOptionsOpen(event.target.checked)}
+          />
+          <div className="collapse-title">Einblicke</div>
+          <div className="collapse-content">
+            <ul>
+              <li className="locality-option-li" key="list-item-zensus">
+                <MapMenuCollapsable
+                  title="Zensus Atlas"
+                  subscriptionCheck={() => censusInSubscriptionPlan}
+                  openUpgradeSubcriptionModal={() =>
+                    !!openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(
+                      censusNotInSubscriptionPlanMessage
+                    )
+                  }
+                >
+                  <CensusTable censusData={censusData!} />
+                </MapMenuCollapsable>
+              </li>
+              <li className="locality-option-li" key="list-item-btw">
+                <MapMenuCollapsable
+                  title="Bundestagswahl 2021"
+                  subscriptionCheck={() => federalElectionInSubscriptionPlan}
+                  openUpgradeSubcriptionModal={() =>
+                    !!openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(
+                      federalElectionNotInSubscriptionPlanMessage
+                    )
+                  }
+                >
+                  <FederalElectionTable
+                    federalElectionData={federalElectionData!}
+                  />
+                </MapMenuCollapsable>
+              </li>
+              <li
+                className="locality-option-li"
+                key="list-item-zensus-feinstaub"
               >
-                <CensusTable censusData={censusData!} />
-              </MapMenuCollapsable>
-            </li>
-            <li className="locality-option-li" key="list-item-btw">
-              <MapMenuCollapsable
-                title="Bundestagswahl 2021"
-                subscriptionCheck={() => federalElectionInSubscriptionPlan}
-                openUpgradeSubcriptionModal={() =>
-                  openUpgradeSubscriptionModal(
-                    federalElectionNotInSubscriptionPlanMessage
-                  )
-                }
-              >
-                <FederalElectionTable
-                  federalElectionData={federalElectionData!}
-                />
-              </MapMenuCollapsable>
-            </li>
-            <li className="locality-option-li" key="list-item-zensus-feinstaub">
-              <MapMenuCollapsable
-                title="Feinstaubbelastung"
-                subscriptionCheck={() => particlePollutionInSubscriptionPlan}
-                openUpgradeSubcriptionModal={() =>
-                  openUpgradeSubscriptionModal(
-                    particlePollutionInSubscriptionPlan
-                  )
-                }
-              >
-                <ParticlePollutionTable
-                  particlePollutionData={particlePollutionData!}
-                />
-              </MapMenuCollapsable>
-            </li>
-          </ul>
+                <MapMenuCollapsable
+                  title="Feinstaubbelastung"
+                  subscriptionCheck={() => particlePollutionInSubscriptionPlan}
+                  openUpgradeSubcriptionModal={() =>
+                    !!openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(
+                      particlePollutionInSubscriptionPlan
+                    )
+                  }
+                >
+                  <ParticlePollutionTable
+                    particlePollutionData={particlePollutionData!}
+                  />
+                </MapMenuCollapsable>
+              </li>
+            </ul>
+          </div>
         </div>
-      </div>
+      )}
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -357,7 +372,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={(event) => setLocalitiesOpen(event.target.checked)}
+          onChange={event => setLocalitiesOpen(event.target.checked)}
         />
         <div className="collapse-title flex justify-between">
           Lokalitäten
@@ -374,7 +389,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           <ul>
             {groupedEntries
               .filter(
-                (ge) =>
+                ge =>
                   ge.items.length &&
                   ["Wichtige Adressen", "Meine Objekte"].includes(ge.title)
               )
@@ -403,10 +418,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 return (
                   <div key={`container-${category}`}>
                     {groupedEntries.some(
-                      (ge) =>
+                      ge =>
                         ge.items.length &&
                         osmEntityTypes.some(
-                          (oet) =>
+                          oet =>
                             oet.label === ge.title && oet.category === category
                         )
                     ) && (
@@ -416,10 +431,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     )}
                     {groupedEntries
                       .filter(
-                        (ge) =>
+                        ge =>
                           ge.items.length &&
                           osmEntityTypes.some(
-                            (oet) =>
+                            oet =>
                               oet.label === ge.title &&
                               oet.category === category
                           )

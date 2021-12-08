@@ -7,28 +7,22 @@ import {
 import {
   ApiAddress,
   ApiCoordinates,
-  ApiSearchResponse,
   ApiUser,
   ApiUserRequests,
-  MeansOfTransportation,
-  OsmName
+  MeansOfTransportation
 } from "../../../shared/types/types";
 import Map, { defaultMapZoom } from "../map/Map";
 import MapNavBar from "../map/MapNavBar";
-import {
-  localStorageSearchContext,
-  meansOfTransportations
-} from "../../../shared/constants/constants";
-import { groupBy } from "../../../shared/functions/shared.functions";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { localStorageSearchContext } from "../../../shared/constants/constants";
 import { useHistory } from "react-router-dom";
 import MapMenu from "../map/MapMenu";
 import {
-  distanceInMeters,
-  entityIncludesMean,
-  preferredLocationsTitle,
-  realEstateListingsTitle
+  buildCombinedGroupedEntries,
+  buildEntityData,
+  buildEntityDataFromPreferredLocations,
+  buildEntityDataFromRealEstateListings,
+  deriveAvailableMeansFromResponse,
+  entityIncludesMean
 } from "shared/shared.functions";
 import "./SearchResultPage.css";
 import ExportModal from "export/ExportModal";
@@ -40,7 +34,6 @@ import BackButton from "../layout/BackButton";
 import { RealEstateContext } from "context/RealEstateContext";
 import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
 import { useRouting } from "../hooks/routing";
-import { v4 } from "uuid";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import TourStarter from "tour/TourStarter";
 import { useHttp } from "hooks/http";
@@ -83,97 +76,6 @@ export interface EntityTransitRoute {
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
-const buildEntityDataFromPreferredLocations = (
-  centerCoordinates: ApiCoordinates,
-  preferredLocations: ApiPreferredLocation[]
-): ResultEntity[] => {
-  return preferredLocations
-    .filter(preferredLocation => !!preferredLocation.coordinates)
-    .map(preferredLocation => ({
-      id: v4(),
-      name: `${preferredLocation.title} (${preferredLocation.address})`,
-      label: preferredLocationsTitle,
-      type: OsmName.favorite,
-      distanceInMeters: distanceInMeters(
-        centerCoordinates,
-        preferredLocation.coordinates!
-      ), // Calc distance
-      coordinates: preferredLocation.coordinates!,
-      address: { street: preferredLocation.address },
-      byFoot: true,
-      byBike: true,
-      byCar: true,
-      selected: false
-    }));
-};
-
-const buildEntityDataFromRealEstateListings = (
-  centerCoordinates: ApiCoordinates,
-  realEstateListings: ApiRealEstateListing[]
-): ResultEntity[] => {
-  return realEstateListings
-    .filter(realEstateListing => !!realEstateListing.coordinates)
-    .map(realEstateListing => ({
-      id: v4(),
-      name: `${realEstateListing.name} (${realEstateListing.address})`,
-      label: realEstateListingsTitle,
-      type: OsmName.property,
-      distanceInMeters: distanceInMeters(
-        centerCoordinates,
-        realEstateListing.coordinates!
-      ), // Calc distance
-      coordinates: realEstateListing.coordinates!,
-      address: { street: realEstateListing.address },
-      byFoot: true,
-      byBike: true,
-      byCar: true,
-      selected: false
-    }));
-};
-
-const buildEntityData = (
-  locationSearchResult: ApiSearchResponse
-): ResultEntity[] | null => {
-  if (!locationSearchResult) {
-    return null;
-  }
-  const allLocations = Object.values(locationSearchResult.routingProfiles)
-    .map(a =>
-      a.locationsOfInterest.sort(
-        (a, b) => a.distanceInMeters - b.distanceInMeters
-      )
-    )
-    .flat();
-  const allLocationIds = new Set(
-    allLocations.map(location => location.entity.id)
-  );
-  return Array.from(allLocationIds).map(locationId => {
-    const location = allLocations.find(l => l.entity.id === locationId)!;
-    return {
-      id: locationId!,
-      name: location.entity.name,
-      label: location.entity.label,
-      type: location.entity.type,
-      distanceInMeters: location.distanceInMeters,
-      coordinates: location.coordinates,
-      address: location.address,
-      byFoot:
-        locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
-        ) ?? false,
-      byBike:
-        locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
-        ) ?? false,
-      byCar:
-        locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
-        ) ?? false,
-      selected: false
-    };
-  });
-};
-
 const SearchResultPage: React.FunctionComponent = () => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
   const { searchContextState, searchContextDispatch } = useContext(
@@ -184,7 +86,7 @@ const SearchResultPage: React.FunctionComponent = () => {
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
 
-  const { get } = useHttp();
+  const { get, post } = useHttp();
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -209,12 +111,9 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   const history = useHistory();
 
-  const routingKeys = Object.keys(
-    searchContextState?.searchResponse?.routingProfiles || []
+  const availableMeans = deriveAvailableMeansFromResponse(
+    searchContextState.searchResponse
   );
-  const availableMeans = meansOfTransportations
-    .filter(mot => routingKeys.includes(mot.type))
-    .map(mot => mot.type);
   const [activeMeans, setActiveMeans] = useState([...availableMeans]);
 
   const [filteredEntites, setFilteredEntities] = useState<ResultEntity[]>([]);
@@ -261,41 +160,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     if (entities) {
       setFilteredEntities(entities);
 
-      const newGroupedEntries: any[] = Object.entries(
-        groupBy(entities, (item: ResultEntity) => item.label)
-      );
-
-      const combinedGroupEntries = [
-        {
-          title: preferredLocationsTitle,
-          active: true,
-          items: newGroupedEntries
-            .filter(([label, _]) => label === preferredLocationsTitle)
-            .map(([_, items]) => items)
-            .flat()
-        },
-        {
-          title: realEstateListingsTitle,
-          active: true,
-          items: newGroupedEntries
-            .filter(([label, _]) => label === realEstateListingsTitle)
-            .map(([_, items]) => items)
-            .flat()
-        },
-        ...newGroupedEntries
-          .filter(
-            ([label, _]) =>
-              label !== preferredLocationsTitle &&
-              label !== realEstateListingsTitle
-          )
-          .map(([title, items]) => ({
-            title,
-            active: true,
-            items
-          }))
-      ];
-
-      setGroupedEntries(combinedGroupEntries);
+      setGroupedEntries(buildCombinedGroupedEntries(entities));
     }
   }, [
     searchResponseString,
@@ -521,6 +386,22 @@ const SearchResultPage: React.FunctionComponent = () => {
             className="btn btn-link"
           >
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
+          </a>
+        </li>
+        <li>
+          <a
+            onClick={async () => {
+              await post("/api/location/snapshot", {
+                placesLocation: searchContextState.placesLocation,
+                location: searchContextState.location,
+                transportationParams: searchContextState.transportationParams,
+                localityParams: searchContextState.localityParams,
+                searchResponse: searchContextState.searchResponse
+              });
+            }}
+            className="btn btn-link"
+          >
+            <img src={plusIcon} alt="pdf-icon" /> Snapshot anlegen
           </a>
         </li>
       </>

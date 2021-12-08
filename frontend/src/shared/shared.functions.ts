@@ -5,6 +5,7 @@ import {
 } from "react-google-places-autocomplete";
 import {
   ApiCoordinates,
+  ApiSearchResponse,
   ApiUser,
   MeansOfTransportation,
   OsmName
@@ -30,8 +31,15 @@ import sportIcon from "../assets/icons/icons-20-x-20-outline-ic-sport.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import { toast } from "react-toastify";
-import { calculateMinutesToMeters } from "../../../shared/constants/constants";
+import {
+  calculateMinutesToMeters,
+  meansOfTransportations
+} from "../../../shared/constants/constants";
 import { ResultEntity } from "../pages/SearchResultPage";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { v4 } from "uuid";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { groupBy } from "../../../shared/functions/shared.functions";
 
 const tinyColor = require("tinycolor2");
 
@@ -120,7 +128,9 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
   if (timeInMinutes % 60 === 0) {
     return `${Math.floor(timeInMinutes / 60)} Std.`;
   } else {
-    return `${Math.floor(timeInMinutes / 60)} Std. ${Math.floor(timeInMinutes % 60)} Min.`;
+    return `${Math.floor(timeInMinutes / 60)} Std. ${Math.floor(
+      timeInMinutes % 60
+    )} Min.`;
   }
 };
 
@@ -299,3 +309,138 @@ export const deriveTotalRequestContingent = (user: ApiUser) =>
   user?.requestContingents?.length > 0
     ? user.requestContingents.map(c => c.amount).reduce((acc, inc) => acc + inc)
     : 0;
+
+export const deriveAvailableMeansFromResponse = (
+  searchResponse?: ApiSearchResponse
+) => {
+  const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
+  return meansOfTransportations
+    .filter(mot => routingKeys.includes(mot.type))
+    .map(mot => mot.type);
+};
+
+export const buildEntityData = (
+  locationSearchResult: ApiSearchResponse
+): ResultEntity[] | null => {
+  if (!locationSearchResult) {
+    return null;
+  }
+  const allLocations = Object.values(locationSearchResult.routingProfiles)
+    .map(a =>
+      a.locationsOfInterest.sort(
+        (a, b) => a.distanceInMeters - b.distanceInMeters
+      )
+    )
+    .flat();
+  const allLocationIds = new Set(
+    allLocations.map(location => location.entity.id)
+  );
+  return Array.from(allLocationIds).map(locationId => {
+    const location = allLocations.find(l => l.entity.id === locationId)!;
+    return {
+      id: locationId!,
+      name: location.entity.name,
+      label: location.entity.label,
+      type: location.entity.type,
+      distanceInMeters: location.distanceInMeters,
+      coordinates: location.coordinates,
+      address: location.address,
+      byFoot:
+        locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(
+          l => l.entity.id === locationId
+        ) ?? false,
+      byBike:
+        locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(
+          l => l.entity.id === locationId
+        ) ?? false,
+      byCar:
+        locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(
+          l => l.entity.id === locationId
+        ) ?? false,
+      selected: false
+    };
+  });
+};
+
+export const buildEntityDataFromPreferredLocations = (
+  centerCoordinates: ApiCoordinates,
+  preferredLocations: ApiPreferredLocation[]
+): ResultEntity[] => {
+  return preferredLocations
+    .filter(preferredLocation => !!preferredLocation.coordinates)
+    .map(preferredLocation => ({
+      id: v4(),
+      name: `${preferredLocation.title} (${preferredLocation.address})`,
+      label: preferredLocationsTitle,
+      type: OsmName.favorite,
+      distanceInMeters: distanceInMeters(
+        centerCoordinates,
+        preferredLocation.coordinates!
+      ), // Calc distance
+      coordinates: preferredLocation.coordinates!,
+      address: { street: preferredLocation.address },
+      byFoot: true,
+      byBike: true,
+      byCar: true,
+      selected: false
+    }));
+};
+
+export const buildEntityDataFromRealEstateListings = (
+  centerCoordinates: ApiCoordinates,
+  realEstateListings: ApiRealEstateListing[]
+): ResultEntity[] => {
+  return realEstateListings
+    .filter(realEstateListing => !!realEstateListing.coordinates)
+    .map(realEstateListing => ({
+      id: v4(),
+      name: `${realEstateListing.name} (${realEstateListing.address})`,
+      label: realEstateListingsTitle,
+      type: OsmName.property,
+      distanceInMeters: distanceInMeters(
+        centerCoordinates,
+        realEstateListing.coordinates!
+      ), // Calc distance
+      coordinates: realEstateListing.coordinates!,
+      address: { street: realEstateListing.address },
+      byFoot: true,
+      byBike: true,
+      byCar: true,
+      selected: false
+    }));
+};
+
+export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
+  const newGroupedEntries: any[] = Object.entries(
+    groupBy(entities, (item: ResultEntity) => item.label)
+  );
+
+  return [
+    {
+      title: preferredLocationsTitle,
+      active: true,
+      items: newGroupedEntries
+        .filter(([label, _]) => label === preferredLocationsTitle)
+        .map(([_, items]) => items)
+        .flat()
+    },
+    {
+      title: realEstateListingsTitle,
+      active: true,
+      items: newGroupedEntries
+        .filter(([label, _]) => label === realEstateListingsTitle)
+        .map(([_, items]) => items)
+        .flat()
+    },
+    ...newGroupedEntries
+      .filter(
+        ([label, _]) =>
+          label !== preferredLocationsTitle && label !== realEstateListingsTitle
+      )
+      .map(([title, items]) => ({
+        title,
+        active: true,
+        items
+      }))
+  ];
+};

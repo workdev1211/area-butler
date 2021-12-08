@@ -62,6 +62,7 @@ export interface MapProps {
   highlightId?: string | null | undefined;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
+  embedMode?: boolean;
 }
 
 export class IdMarker extends L.Marker {
@@ -211,7 +212,8 @@ const Map = React.memo<MapProps>(
     leafletMapId = "mymap",
     highlightId,
     routes,
-    transitRoutes
+    transitRoutes,
+    embedMode = false
   }) => {
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
@@ -753,37 +755,44 @@ const Map = React.memo<MapProps>(
               </a>
             )}
           </div>
-          <div className="leaflet-control-zoom leaflet-bar leaflet-control">
-            <a
-              href="/"
-              data-tour="go-fullscreen"
-              className="leaflet-control-zoom-in cursor-pointer"
-              role="button"
-              onClick={event => {
-                event.preventDefault();
-                toggleFullscreen();
-              }}
-            >
-              <svg height="100%" version="1.1" viewBox="0 0 36 36" width="100%">
-                <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
-                <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
-                <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
-                <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
-              </svg>
-            </a>
-            <a
-              href="/"
-              data-tour="take-map-picture"
-              className="leaflet-control-zoom-in cursor-pointer"
-              role="button"
-              onClick={event => {
-                event.preventDefault();
-                takePicture();
-              }}
-            >
-              📷
-            </a>
-          </div>
+          {!embedMode && (
+            <div className="leaflet-control-zoom leaflet-bar leaflet-control">
+              <a
+                href="/"
+                data-tour="go-fullscreen"
+                className="leaflet-control-zoom-in cursor-pointer"
+                role="button"
+                onClick={event => {
+                  event.preventDefault();
+                  toggleFullscreen();
+                }}
+              >
+                <svg
+                  height="100%"
+                  version="1.1"
+                  viewBox="0 0 36 36"
+                  width="100%"
+                >
+                  <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
+                  <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
+                  <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
+                  <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
+                </svg>
+              </a>
+              <a
+                href="/"
+                data-tour="take-map-picture"
+                className="leaflet-control-zoom-in cursor-pointer"
+                role="button"
+                onClick={event => {
+                  event.preventDefault();
+                  takePicture();
+                }}
+              >
+                📷
+              </a>
+            </div>
+          )}
         </div>
       </div>
     );
