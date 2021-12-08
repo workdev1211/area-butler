@@ -4,8 +4,8 @@ import { LocationService } from "./location.service";
 
 
 
-@Controller('api/locaiton/snapshot')
-export class LocationController {
+@Controller('api/location/snapshot')
+export class SearchResultSnapshotController {
 
 
     constructor(private locationService: LocationService) {}

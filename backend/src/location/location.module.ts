@@ -11,6 +11,7 @@ import {
 } from './schema/location-search.schema';
 import {DataProvisionModule} from "../data-provision/data-provision.module";
 import { SearchResultSnapshot, SearchResultSnapshotSchema } from './schema/search-result-snapshot.schema';
+import { SearchResultSnapshotController } from './search-result-snapshot.controller';
 
 @Module({
   imports: [
@@ -23,7 +24,7 @@ import { SearchResultSnapshot, SearchResultSnapshotSchema } from './schema/searc
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
-  controllers: [LocationController],
+  controllers: [LocationController, SearchResultSnapshotController],
   providers: [LocationService],
 })
 export class LocationModule {}
