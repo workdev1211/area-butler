@@ -206,3 +206,18 @@ export enum OsmName {
   favorite = "favorite",
   property = "property",
 }
+
+
+export interface ApiSearchResultSnapshot {
+  placesLocation: any;
+  location: ApiCoordinates;
+  transportationParams: TransportationParam[];
+  localityParams: ApiOsmEntity[];
+  searchResponse: ApiSearchResponse;
+}
+
+export interface ApiSearchResultSnapshotResponse {
+  mapboxToken: string;
+  token: string;
+  snapshot: ApiSearchResultSnapshot;
+}

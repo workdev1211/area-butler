@@ -1,4 +1,4 @@
-import { ApiSearch, ApiSearchResponse, ApiUserRequests } from '@area-butler-types/types';
+import { ApiSearch, ApiSearchResponse, ApiSearchResultSnapshot, ApiSearchResultSnapshotResponse, ApiUserRequests } from '@area-butler-types/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
@@ -19,6 +19,13 @@ export class LocationController extends AuthenticatedController {
     return this.locationService.searchLocation(user, search);
   }
 
+  @Post('snapshot')
+  async createSnapshot(
+    @InjectUser() user: UserDocument,
+    @Body() snapshot: ApiSearchResultSnapshot,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return this.locationService.createSearchResultSnapshot(user, snapshot);
+  }
 
   @Get('latest-user-requests')
   async latestUserRequests(

@@ -10,6 +10,7 @@ import {
   LocationSearchschema,
 } from './schema/location-search.schema';
 import {DataProvisionModule} from "../data-provision/data-provision.module";
+import { SearchResultSnapshot, SearchResultSnapshotSchema } from './schema/search-result-snapshot.schema';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import {DataProvisionModule} from "../data-provision/data-provision.module";
     DataProvisionModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchschema },
+      { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
   controllers: [LocationController],
