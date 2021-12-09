@@ -25,7 +25,14 @@
     padding: 6px 12px;
     border-radius: 16px !important;
     color: var(--base-anthracite);
-    @apply font-medium text-base border-none;
+    font-size: 12px !important;
+    @apply font-medium border-none;
+}
+
+@media screen(md) {
+    .map-nav-bar .btn-link {
+        font-size: 1rem !important;
+    }
 }
 
 .map-nav-bar .btn-link.active {

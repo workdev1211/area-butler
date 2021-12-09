@@ -41,7 +41,7 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
   return (
     <div className="map-nav-bar-container" data-tour="map-navbar">
       <div className="map-nav-bar">
-        <div className="flex gap-4 items-center">
+        <div className="flex flex-col sm:flex-row gap-4 items-center">
           {availableMeans.map(mean => {
             const param = transportationParams.find(tp => tp.type === mean);
             return (
