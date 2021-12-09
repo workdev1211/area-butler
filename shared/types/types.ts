@@ -220,4 +220,5 @@ export interface ApiSearchResultSnapshotResponse {
   mapboxToken: string;
   token: string;
   snapshot: ApiSearchResultSnapshot;
+  createdAt: Date;
 }

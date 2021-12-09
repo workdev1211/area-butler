@@ -195,11 +195,12 @@ export class LocationService {
     user: UserDocument,
     snapshot: ApiSearchResultSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
-
     const token = crypto.randomBytes(60).toString('hex');
-    const { mapboxAccessToken } = await this.userService.createMapboxAccessToken(user);
+    const {
+      mapboxAccessToken,
+    } = await this.userService.createMapboxAccessToken(user);
 
-    await new this.searchResultSnapshotModel({
+    const doc = await new this.searchResultSnapshotModel({
       userId: user.id,
       token,
       mapboxAccessToken,
@@ -210,12 +211,13 @@ export class LocationService {
       token,
       snapshot,
       mapboxToken: mapboxAccessToken,
+      createdAt: doc.createdAt
     };
   }
 
   async fetchSearchResultSnapshot(
     token: string,
-  ): Promise<ApiSearchResultSnapshotResponse> {
+  ): Promise<SearchResultSnapshot> {
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       token,
     });
@@ -224,10 +226,12 @@ export class LocationService {
       throw new Error('Unknown token');
     }
 
-    return {
-      token: snapshotDoc.token,
-      snapshot: snapshotDoc.snapshot,
-      mapboxToken: snapshotDoc.mapboxAccessToken,
-    };
+    return snapshotDoc;
+  }
+
+  async fetchEmbeddableMaps(
+    user: UserDocument,
+  ): Promise<SearchResultSnapshot[]> {
+    return this.searchResultSnapshotModel.find({ userId: user.id });
   }
 }

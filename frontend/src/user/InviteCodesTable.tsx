@@ -38,7 +38,7 @@ const InviteCodesTable: React.FunctionComponent = () => {
         </thead>
         <tbody>
           {inviteCodes.map(inviteCode => (
-            <tr className={!!inviteCode.used ? "inactive" : ""}>
+            <tr className={!!inviteCode.used ? "inactive" : ""} key={`invite-code-${inviteCode.code}`}>
               <th className="uppercase flex items-end">
                 <span
                   className={

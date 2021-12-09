@@ -9,15 +9,19 @@ import React, {
   FunctionComponent,
   useContext,
   useEffect,
-  useState
+  useState,
 } from "react";
 import TourStarter from "tour/TourStarter";
+import EmbeddableMapsTable from "user/EmbeddableMapsTable";
 import InviteCodesTable from "user/InviteCodesTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { v4 as uuid } from "uuid";
-import { ApiUser } from "../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotResponse,
+  ApiUser,
+} from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 
 const UserProfilePage: FunctionComponent = () => {
@@ -40,13 +44,28 @@ const UserProfilePage: FunctionComponent = () => {
     hasSubscription &&
     user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
 
+  const embedddableMaps = userState.embeddableMaps || [];
+
   useEffect(() => {
     const fetchUser = async () => {
       const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
     };
 
+    const fetchEmbeddableMaps = async () => {
+      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
+        await get<ApiSearchResultSnapshotResponse[]>(
+          "/api/location/user-embeddable-maps"
+        )
+      ).data;
+      userDispatch({
+        type: UserActionTypes.SET_EMBEDDABLE_MAPS,
+        payload: embeddableMaps,
+      });
+    };
+
     fetchUser();
+    fetchEmbeddableMaps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
 
@@ -73,7 +92,7 @@ const UserProfilePage: FunctionComponent = () => {
       withHorizontalPadding={true}
       actionBottom={[
         <BackButton to="/" key="user-profile-back" />,
-        <SubmitButton key="user-profile-submit" />
+        <SubmitButton key="user-profile-submit" />,
       ]}
     >
       {hasSubscription && <TourStarter tour="profile" />}
@@ -86,6 +105,12 @@ const UserProfilePage: FunctionComponent = () => {
         />
       </div>
       {canCustomizeExport && <UserExportSettings />}
+      {hasSubscription && embedddableMaps.length && (
+        <div className="my-10">
+          <h1 className="text-lg font-bold mb-5">Ihre Karten Snippets</h1>
+          <EmbeddableMapsTable embeddableMaps={embedddableMaps} />
+        </div>
+      )}
       {hasSubscription ? (
         <SubscriptionPlanLimits
           realEstates={realEstateState.listings}

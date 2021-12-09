@@ -1,9 +1,16 @@
-import { ApiSearch, ApiSearchResponse, ApiSearchResultSnapshot, ApiSearchResultSnapshotResponse, ApiUserRequests } from '@area-butler-types/types';
+import {
+  ApiSearch,
+  ApiSearchResponse,
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotResponse,
+  ApiUserRequests,
+} from '@area-butler-types/types';
 import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
 import { LocationService } from './location.service';
+import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
 
 @Controller('api/location')
 export class LocationController extends AuthenticatedController {
@@ -34,4 +41,12 @@ export class LocationController extends AuthenticatedController {
     return this.locationService.latestUserRequests(user);
   }
 
+  @Get('user-embeddable-maps')
+  async getEmbeddableMaps(
+    @InjectUser() user: UserDocument,
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
+    return (await this.locationService.fetchEmbeddableMaps(user)).map(r =>
+      mapSearchResultSnapshotToApiEmbeddableMap(r),
+    );
+  }
 }
