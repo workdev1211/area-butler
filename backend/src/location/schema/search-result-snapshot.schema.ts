@@ -12,12 +12,14 @@ export class SearchResultSnapshot {
   @Prop()
   token: string;
 
+  @Prop()
+  mapboxAccessToken: string;
+
   @Prop({ type: Object })
   snapshot: ApiSearchResultSnapshot;
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
-
 
 }
 

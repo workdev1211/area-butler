@@ -195,18 +195,21 @@ export class LocationService {
     user: UserDocument,
     snapshot: ApiSearchResultSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    const token = crypto.randomBytes(60).toString('hex');
 
-    const snapshotDocument = await new this.searchResultSnapshotModel({
+    const token = crypto.randomBytes(60).toString('hex');
+    const { mapboxAccessToken } = await this.userService.createMapboxAccessToken(user);
+
+    await new this.searchResultSnapshotModel({
       userId: user.id,
       token,
+      mapboxAccessToken,
       snapshot,
     }).save();
 
     return {
       token,
       snapshot,
-      mapboxToken: configService.getMapBoxAccessToken(),
+      mapboxToken: mapboxAccessToken,
     };
   }
 
@@ -224,7 +227,7 @@ export class LocationService {
     return {
       token: snapshotDoc.token,
       snapshot: snapshotDoc.snapshot,
-      mapboxToken: configService.getMapBoxAccessToken(),
+      mapboxToken: snapshotDoc.mapboxAccessToken,
     };
   }
 }

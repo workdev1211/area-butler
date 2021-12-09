@@ -10,6 +10,7 @@ import {User, UserDocument} from './schema/user.schema';
 import {configService} from '../config/config.service';
 import {SubscriptionService} from './subscription.service';
 import {InviteCodeService} from './invite-code.service';
+import { MapboxService } from 'src/client/mapbox/mapbox.service';
 
 @Injectable()
 export class UserService {
@@ -20,6 +21,7 @@ export class UserService {
         private subscriptionService: SubscriptionService,
         private inviteCodeService: InviteCodeService,
         private eventEmitter: EventEmitter2,
+        private mapboxService: MapboxService
     ) {
         this.inviteCodeNeeded = configService.IsInviteCodeNeeded();
     }
@@ -252,5 +254,14 @@ export class UserService {
         }
 
         return existingUser.save();
+    }
+
+    async createMapboxAccessToken(user: UserDocument): Promise<UserDocument> {
+        if (!user.mapboxAccessToken) {
+            const token = await this.mapboxService.createAccessToken(user.id);
+            user.mapboxAccessToken = token;
+            return await user.save();
+        }
+        return user;
     }
 }

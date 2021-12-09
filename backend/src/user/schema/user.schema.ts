@@ -37,6 +37,12 @@ export class User {
 
     @Prop({required: false})
     color: string;
+    
+    @Prop({required: false})
+    mapboxAccessToken: string;
+    
+    @Prop({required: false, type: Array, default: []})
+    allowedUrls: string[];
 
 }
 

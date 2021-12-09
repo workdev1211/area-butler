@@ -32,6 +32,10 @@ class ConfigService {
   public getMapBoxAccessToken(): string {
     return this.getValue('MAPBOX_ACCESS_TOKEN');
   }
+  
+  public getMapBoxCreateToken(): string {
+    return this.getValue('MAPBOX_CREATE_TOKEN');
+  }
 
   public getAuthConfig(): { domain: string; audience: string } {
     return {
