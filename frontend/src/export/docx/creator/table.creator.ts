@@ -7,33 +7,36 @@ import {
   TableCell,
   TableRow,
   TextRun,
-  WidthType,
+  WidthType
 } from "docx";
 import { routingProfileOrder } from "export/EntityGridSummary";
 import {
   FederalElectionDistrict,
-  FederalElectionResult,
+  FederalElectionResult
 } from "hooks/federalelectiondata";
 import { averageCensus } from "map/CensusTable";
 import {
   averageParticlePollution,
-  PollutionData,
+  PollutionData
 } from "map/ParticlePollutionTable";
-import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
-  timeToHumanReadable,
+  timeToHumanReadable
 } from "shared/shared.functions";
 import {
   meansOfTransportations,
-  unitsOfTransportation,
+  unitsOfTransportation
 } from "../../../../../shared/constants/constants";
 import {
   ApiGeojsonFeature,
   MeansOfTransportation,
-  TransportationParam,
+  TransportationParam
 } from "../../../../../shared/types/types";
+import {
+  EntityGroup,
+  ResultEntity
+} from "../../../components/SearchResultContainer";
 
 export interface TableProps {
   data: { header: string[]; body: string[][] };
@@ -50,15 +53,15 @@ export const createTable = ({
   headerColor,
   headerTextColor,
   title,
-  pageBreak = true,
+  pageBreak = true
 }: TableProps) => {
   const titleParagraph = title
     ? [
         new Paragraph({
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: title,
-        }),
+          text: title
+        })
       ]
     : [];
 
@@ -72,19 +75,19 @@ export const createTable = ({
     new Table({
       width: {
         size: 100,
-        type: WidthType.PERCENTAGE,
+        type: WidthType.PERCENTAGE
       },
       rows: [
         new TableRow({
           cantSplit: true,
           tableHeader: true,
           children: data.header.map(
-            (h) =>
+            h =>
               new TableCell({
                 shading: {
                   type: ShadingType.CLEAR,
                   fill: headerColor,
-                  color: headerTextColor,
+                  color: headerTextColor
                 },
                 children: [
                   new Paragraph({
@@ -93,39 +96,39 @@ export const createTable = ({
                         color: headerTextColor,
                         bold: true,
                         text: h,
-                        font: "Arial",
-                      }),
-                    ],
-                  }),
-                ],
+                        font: "Arial"
+                      })
+                    ]
+                  })
+                ]
               })
-          ),
+          )
         }),
         ...data.body.map(
           (b, i) =>
             new TableRow({
               children: b.map(
-                (bv) =>
+                bv =>
                   new TableCell({
                     shading:
                       i % 2 === 0
                         ? {
                             type: ShadingType.PERCENT_10,
                             fill: "f3f3f4",
-                            color: "f3f3f4",
+                            color: "f3f3f4"
                           }
                         : undefined,
                     children: [
                       new Paragraph({
-                        children: [new TextRun({ text: bv, font: "Arial" })],
-                      }),
-                    ],
+                        children: [new TextRun({ text: bv, font: "Arial" })]
+                      })
+                    ]
                   })
-              ),
+              )
             })
-        ),
-      ],
-    }),
+        )
+      ]
+    })
   ];
 };
 
@@ -153,7 +156,7 @@ export const mapTableDataFromEntityGroup = (
       header,
       body: group.items
         .filter((item: ResultEntity) => item.selected)
-        .map((item) => {
+        .map(item => {
           const values = [];
 
           values.push(item.name || group.title);
@@ -208,8 +211,8 @@ export const mapTableDataFromEntityGroup = (
           }
 
           return values;
-        }),
-    },
+        })
+    }
   };
 };
 
@@ -217,7 +220,7 @@ export const mapTableDataFromCensusData = (
   censusData: ApiGeojsonFeature[]
 ): { data: { header: string[]; body: string[][] } } => {
   const censusCenter =
-    censusData.find((c) =>
+    censusData.find(c =>
       (c.properties as any).some((p: any) => p.value !== "unbekannt")
     ) || (censusData[0] as any);
 
@@ -233,10 +236,10 @@ export const mapTableDataFromCensusData = (
         (p: { label: string; value: string; unit: string }) => [
           p.label,
           `${p.value} ${p.unit}`,
-          `${averageCensus[p.label]}${!p.unit ? "" : " " + p.unit}`,
+          `${averageCensus[p.label]}${!p.unit ? "" : " " + p.unit}`
         ]
-      ),
-    },
+      )
+    }
   };
 };
 
@@ -254,9 +257,9 @@ export const mapTableDataFromFederalElectionData = (
       body: federalElectionDistrict.results.map((p: FederalElectionResult) => [
         p.party,
         p.percentage + " %",
-        p.lastElectionPercentage + " %",
-      ]),
-    },
+        p.lastElectionPercentage + " %"
+      ])
+    }
   };
 };
 
@@ -267,8 +270,7 @@ export const mapTableDataFromParticlePollutiondata = (
 
   const pollutionData: PollutionData = {
     mean: properties.MEAN || 0,
-    daysAboveThreshold:
-      properties["Tage mit Tagesmittelwerten > 50 �g/m�"] || 0,
+    daysAboveThreshold: properties["Tage mit Tagesmittelwerten > 50 �g/m�"] || 0
   };
 
   const header = [];
@@ -283,15 +285,15 @@ export const mapTableDataFromParticlePollutiondata = (
         [
           "Durchschnittliche Belastung",
           pollutionData.mean + " g/m2",
-          averageParticlePollution.mean + " g/m2",
+          averageParticlePollution.mean + " g/m2"
         ],
         [
           "Tage über Grenzwert (50 g/m2)",
           pollutionData.daysAboveThreshold + "",
-          averageParticlePollution.daysAboveThreshold + "",
-        ],
-      ],
-    },
+          averageParticlePollution.daysAboveThreshold + ""
+        ]
+      ]
+    }
   };
 };
 
@@ -301,17 +303,17 @@ export const mapTableDataFromEntityGrid = (
   activeMeans: MeansOfTransportation[]
 ): { data: { header: string[]; body: string[][] } } => {
   const byFootAvailable = transportationParams.some(
-    (param) =>
+    param =>
       param.type === MeansOfTransportation.WALK &&
       activeMeans.includes(param.type)
   );
   const byBikeAvailable = transportationParams.some(
-    (param) =>
+    param =>
       param.type === MeansOfTransportation.BICYCLE &&
       activeMeans.includes(param.type)
   );
   const byCarAvailable = transportationParams.some(
-    (param) =>
+    param =>
       param.type === MeansOfTransportation.CAR &&
       activeMeans.includes(param.type)
   );
@@ -321,19 +323,18 @@ export const mapTableDataFromEntityGrid = (
   header.push("Nächster Ort");
 
   transportationParams
-    .filter((t) => activeMeans.includes(t.type))
+    .filter(t => activeMeans.includes(t.type))
     .sort(
       (t1, t2) =>
         routingProfileOrder.indexOf(t1.type) -
         routingProfileOrder.indexOf(t2.type)
     )
-    .forEach((t) => {
+    .forEach(t => {
       const meansLabel = meansOfTransportations.find(
-        (means) => means.type === t.type
+        means => means.type === t.type
       )?.label;
-      const meansUnit = unitsOfTransportation.find(
-        (unit) => unit.type === t.unit
-      )?.label;
+      const meansUnit = unitsOfTransportation.find(unit => unit.type === t.unit)
+        ?.label;
       header.push(`${meansLabel} (${t.amount} ${meansUnit})`);
     });
 
@@ -341,14 +342,14 @@ export const mapTableDataFromEntityGrid = (
     data: {
       header,
       body: groupedEntries
-        .filter((g) => g.active)
-        .map((g) => {
+        .filter(g => g.active)
+        .map(g => {
           const data: string[] = [];
 
           data.push(g.title);
           data.push(
             distanceToHumanReadable(
-              Math.round(Math.min(...g.items.map((d) => d.distanceInMeters)))
+              Math.round(Math.min(...g.items.map(d => d.distanceInMeters)))
             )
           );
 
@@ -369,7 +370,7 @@ export const mapTableDataFromEntityGrid = (
           }
 
           return data;
-        }),
-    },
+        })
+    }
   };
 };

@@ -9,8 +9,8 @@ import {
   MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
-import { ResultEntity } from "../../pages/SearchResultPage";
 import Expose from "./Expose";
+import { ResultEntity } from "../../components/SearchResultContainer";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];

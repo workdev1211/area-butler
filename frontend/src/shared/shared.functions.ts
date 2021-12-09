@@ -35,7 +35,7 @@ import {
   calculateMinutesToMeters,
   meansOfTransportations
 } from "../../../shared/constants/constants";
-import { ResultEntity } from "../pages/SearchResultPage";
+import { ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { v4 } from "uuid";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";

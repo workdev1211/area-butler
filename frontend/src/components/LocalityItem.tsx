@@ -1,16 +1,16 @@
 import React from "react";
-import {
-  EntityGroup,
-  EntityRoute,
-  EntityTransitRoute,
-  ResultEntity
-} from "../pages/SearchResultPage";
 import { MeansOfTransportation, OsmName } from "../../../shared/types/types";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
   timeToHumanReadable
 } from "../shared/shared.functions";
+import {
+  EntityGroup,
+  EntityRoute,
+  EntityTransitRoute,
+  ResultEntity
+} from "./SearchResultContainer";
 
 export interface LocalityItemProps {
   item: ResultEntity;

@@ -11,21 +11,15 @@ export interface MapClippingsProps {
 export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
   mapClippings,
   logo,
-  nextPageNumber = () => "01",
+  nextPageNumber = () => "01"
 }) => {
   const imageSize = {
     width: "auto",
-    height: "400px",
-  };
-
-  const imagePosition = {
-    "object-fit": "cover",
-    height: "100%",
-    width: "100%",
+    height: "400px"
   };
 
   const mapClippingPairs: SelectedMapClipping[][] = mapClippings
-    .filter((c) => c.selected)
+    .filter(c => c.selected)
     .reduce(
       (
         result: SelectedMapClipping[][],
@@ -41,14 +35,22 @@ export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
 
   return (
     <>
-      {mapClippingPairs.map((pairs) => (
-        <PdfPage nextPageNumber={nextPageNumber} logo={logo} title="Kartenausschnitte">
+      {mapClippingPairs.map(pairs => (
+        <PdfPage
+          nextPageNumber={nextPageNumber}
+          logo={logo}
+          title="Kartenausschnitte"
+        >
           <div className="m-10 flex flex-col gap-12" id="expose-map-clippings">
-            {pairs.map((clipping) => (
+            {pairs.map(clipping => (
               <div className="flex-1">
                 <div className="mt-5" style={imageSize}>
                   <img
-                    style={imagePosition}
+                    style={{
+                      objectFit: "cover",
+                      height: "100%",
+                      width: "100%"
+                    }}
                     src={clipping.mapClippingDataUrl}
                     alt="img-clipping"
                   />

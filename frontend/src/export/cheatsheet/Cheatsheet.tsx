@@ -3,7 +3,6 @@ import FederalElectionSummary from "export/FederalElectionSummary";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { EntityGroup, ResultEntity } from "pages/SearchResultPage";
 import React from "react";
 import {
   allFurnishing,
@@ -20,6 +19,10 @@ import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
+import {
+  EntityGroup,
+  ResultEntity
+} from "../../components/SearchResultContainer";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -127,11 +130,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           nextPageNumber={nextPageNumber}
         />
       )}
-      <PdfPage
-        title="Einblicke"
-        logo={logo}
-        nextPageNumber={nextPageNumber}
-      >
+      <PdfPage title="Einblicke" logo={logo} nextPageNumber={nextPageNumber}>
         {!!censusData && censusData.length > 0 && (
           <>
             <h4 className="mx-10 mt-5 text-xl w-56 font-bold">

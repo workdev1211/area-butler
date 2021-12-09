@@ -11,12 +11,12 @@ import {
   MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
-import { EntityGroup } from "../../pages/SearchResultPage";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
+import { EntityGroup } from "../../components/SearchResultContainer";
 
 export interface ExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -46,7 +46,6 @@ export const Expose = React.forwardRef(
     const federalElectionData = props.federalElectionData;
     const particlePollutionData = props.particlePollutionData;
     const activeMeans = props.activeMeans;
-
 
     const user = props.user;
     const color = user?.color || "#aa0c54";
@@ -138,10 +137,7 @@ export const Expose = React.forwardRef(
                 <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
                   Nachbarschaftsdemographie
                 </h4>
-                <CensusSummary
-                  primaryColor={color}
-                  censusData={censusData}
-                />
+                <CensusSummary primaryColor={color} censusData={censusData} />
               </>
             )}
             {!!federalElectionData && (

@@ -5,12 +5,7 @@ import {
   SearchContextActionTypes
 } from "../context/SearchContext";
 import {
-  EntityGroup,
-  EntityRoute,
-  EntityTransitRoute,
-  ResultEntity
-} from "../pages/SearchResultPage";
-import {
+  ApiAddress,
   ApiCoordinates,
   ApiSearchResponse,
   ApiUser,
@@ -20,6 +15,8 @@ import {
 import {
   buildCombinedGroupedEntries,
   buildEntityData,
+  buildEntityDataFromPreferredLocations,
+  buildEntityDataFromRealEstateListings,
   deriveAvailableMeansFromResponse,
   entityIncludesMean
 } from "../shared/shared.functions";
@@ -31,6 +28,43 @@ import MapMenu from "../map/MapMenu";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
+import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+
+export interface ResultEntity {
+  name?: string;
+  type: string;
+  label: string;
+  id: string;
+  coordinates: ApiCoordinates;
+  address: ApiAddress;
+  byFoot: boolean;
+  byBike: boolean;
+  byCar: boolean;
+  distanceInMeters: number;
+  selected?: boolean;
+}
+
+export interface EntityGroup {
+  title: string;
+  active: boolean;
+  items: ResultEntity[];
+}
+
+export interface EntityRoute {
+  title: string;
+  coordinates: ApiCoordinates;
+  show: MeansOfTransportation[];
+  routes: ApiRoute[];
+}
+
+export interface EntityTransitRoute {
+  title: string;
+  coordinates: ApiCoordinates;
+  show: boolean;
+  route: ApiTransitRoute;
+}
 
 export interface SearchResultContainerProps {
   mapBoxToken: string;
@@ -38,19 +72,23 @@ export interface SearchResultContainerProps {
   transportationParams: TransportationParam[];
   placesLocation: any;
   location: ApiCoordinates;
-  highlightId: string;
-  mapZoomLevel: number;
+  highlightId?: string;
+  mapZoomLevel?: number;
   printingActive?: boolean;
   printingCheatsheetActive?: boolean;
-  routes?: EntityRoute[];
-  transitRoutes?: EntityTransitRoute[];
+  printingDocxActive?: boolean;
   censusData?: any;
   federalElectionData?: any;
   particlePollutionData?: any;
   mapClippings?: MapClipping[];
   user?: ApiUser;
+  preferredLocations?: ApiPreferredLocation[];
+  listings?: ApiRealEstateListing[];
   searchContextDispatch: (action: SearchContextActions) => void;
   userDispatch?: (action: UserActions) => void;
+  onEntitiesChange?: (entities: ResultEntity[]) => void;
+  onGroupedEntitiesChange?: (entities: EntityGroup[]) => void;
+  onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
 }
 
@@ -60,17 +98,23 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   transportationParams = [],
   placesLocation,
   location,
-  highlightId,
+  highlightId = "",
   mapZoomLevel = defaultMapZoom,
   printingActive = false,
   printingCheatsheetActive = false,
+  printingDocxActive = false,
   censusData,
   federalElectionData,
   particlePollutionData,
   mapClippings = [],
   user,
+  preferredLocations,
+  listings,
   searchContextDispatch = () => null,
   userDispatch = () => null,
+  onActiveMeansChange = () => null,
+  onEntitiesChange = () => null,
+  onGroupedEntitiesChange = () => null,
   embedMode = false
 }) => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
@@ -83,6 +127,21 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  const updateEntities = (entities: ResultEntity[]) => {
+    setEntities(entities);
+    onEntitiesChange(entities);
+  };
+
+  const updateGroupedEntities = (entities: EntityGroup[]) => {
+    setGroupedEntities(entities);
+    onGroupedEntitiesChange(entities);
+  };
+
+  const updateActiveMeans = (means: MeansOfTransportation[]) => {
+    setActiveMeans(means);
+    onActiveMeansChange(means);
+  };
+
   // consume search response
   useEffect(() => {
     if (!!searchResponse) {
@@ -90,21 +149,37 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         searchResponse
       );
       setAvailableMeans(meansFromResponse);
-      setActiveMeans(meansFromResponse);
+      updateActiveMeans(meansFromResponse);
     }
-  }, [searchResponse, setAvailableMeans, setActiveMeans]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchResponse]);
 
   // react to active means change
   useEffect(() => {
-    const entitiesIncludedInActiveMeans =
+    let entitiesIncludedInActiveMeans =
       buildEntityData(searchResponse)?.filter(entity =>
         entityIncludesMean(entity, activeMeans)
       ) ?? [];
-    setEntities(entitiesIncludedInActiveMeans);
-    setGroupedEntities(
+    const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
+    if (!!preferredLocations) {
+      entities?.push(
+        ...buildEntityDataFromPreferredLocations(
+          centerOfSearch,
+          preferredLocations
+        )
+      );
+    }
+    if (!!listings) {
+      entities?.push(
+        ...buildEntityDataFromRealEstateListings(centerOfSearch, listings)
+      );
+    }
+    updateEntities(entitiesIncludedInActiveMeans);
+    updateGroupedEntities(
       buildCombinedGroupedEntries(entitiesIncludedInActiveMeans)
     );
-  }, [searchResponse, activeMeans, setEntities, setGroupedEntities]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchResponse, activeMeans]);
 
   const toggleEntityGroup = (title: string) => {
     const newGroups = groupedEntities.map(ge =>
@@ -115,7 +190,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             active: !ge.active
           }
     );
-    setGroupedEntities(newGroups);
+    updateGroupedEntities(newGroups);
   };
 
   const toggleAllEntityGroups = () => {
@@ -124,7 +199,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       ...ge,
       active: !someActive
     }));
-    setGroupedEntities(newGroups);
+    updateGroupedEntities(newGroups);
   };
 
   const highlightZoomEntity = (item: ResultEntity) => {
@@ -256,68 +331,74 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   }
 
   return (
-    <div className="search-result-container">
-      <div className="relative flex-1">
-        <MapNavBar
-          transportationParams={transportationParams}
-          activeMeans={activeMeans}
-          availableMeans={availableMeans}
-          onMeansChange={newValues => setActiveMeans(newValues)}
-        />
-        <Map
-          mapBoxAccessToken={mapBoxToken}
-          searchContextDispatch={searchContextDispatch}
-          searchResponse={searchResponse}
-          searchAddress={placesLocation?.label}
-          entities={entities}
-          groupedEntities={groupedEntities}
-          highlightId={highlightId}
-          means={{
-            byFoot: activeMeans.includes(MeansOfTransportation.WALK),
-            byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
-            byCar: activeMeans.includes(MeansOfTransportation.CAR)
-          }}
-          mapCenter={location}
-          mapZoomLevel={mapZoomLevel}
-          printingActive={printingActive}
-          printingCheatsheetActive={printingCheatsheetActive}
+    <>
+      <div className="search-result-container">
+        <div className="relative flex-1">
+          <MapNavBar
+            transportationParams={transportationParams}
+            activeMeans={activeMeans}
+            availableMeans={availableMeans}
+            onMeansChange={newValues => setActiveMeans(newValues)}
+          />
+          <Map
+            mapBoxAccessToken={mapBoxToken}
+            searchContextDispatch={searchContextDispatch}
+            searchResponse={searchResponse}
+            searchAddress={placesLocation?.label}
+            entities={entities}
+            groupedEntities={groupedEntities}
+            highlightId={highlightId}
+            means={{
+              byFoot: activeMeans.includes(MeansOfTransportation.WALK),
+              byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
+              byCar: activeMeans.includes(MeansOfTransportation.CAR)
+            }}
+            mapCenter={location}
+            mapZoomLevel={mapZoomLevel}
+            printingActive={printingActive}
+            printingCheatsheetActive={printingCheatsheetActive}
+            routes={routes}
+            transitRoutes={transitRoutes}
+            embedMode={embedMode}
+          />
+        </div>
+        <MapMenuMobileBtn />
+        <MapMenu
+          mobileMenuOpen={mobileMenuOpen}
+          censusData={censusData}
+          federalElectionData={federalElectionData}
+          particlePollutionData={particlePollutionData}
+          clippings={mapClippings}
+          groupedEntries={groupedEntities}
+          toggleEntryGroup={toggleEntityGroup}
+          toggleAllEntryGroups={toggleAllEntityGroups}
+          highlightZoomEntity={highlightZoomEntity}
+          toggleRoute={(item, mean) =>
+            toggleRoutesToEntity(location, item, mean)
+          }
           routes={routes}
+          toggleTransitRoute={item =>
+            toggleTransitRoutesToEntity(location, item)
+          }
           transitRoutes={transitRoutes}
-          embedMode={embedMode}
+          searchAddress={placesLocation?.label}
+          resetPosition={() =>
+            searchContextDispatch({
+              type: SearchContextActionTypes.SET_MAP_CENTER,
+              payload: searchResponse?.centerOfInterest?.coordinates!
+            })
+          }
+          user={user}
+          openUpgradeSubscriptionModal={message =>
+            userDispatch({
+              type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+              payload: { open: true, message }
+            })
+          }
+          showInsights={!embedMode}
         />
       </div>
-      <MapMenuMobileBtn />
-      <MapMenu
-        mobileMenuOpen={mobileMenuOpen}
-        censusData={censusData}
-        federalElectionData={federalElectionData}
-        particlePollutionData={particlePollutionData}
-        clippings={mapClippings}
-        groupedEntries={groupedEntities}
-        toggleEntryGroup={toggleEntityGroup}
-        toggleAllEntryGroups={toggleAllEntityGroups}
-        highlightZoomEntity={highlightZoomEntity}
-        toggleRoute={(item, mean) => toggleRoutesToEntity(location, item, mean)}
-        routes={routes}
-        toggleTransitRoute={item => toggleTransitRoutesToEntity(location, item)}
-        transitRoutes={transitRoutes}
-        searchAddress={placesLocation?.label}
-        resetPosition={() =>
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_MAP_CENTER,
-            payload: searchResponse?.centerOfInterest?.coordinates!
-          })
-        }
-        user={user}
-        openUpgradeSubscriptionModal={message =>
-          userDispatch({
-            type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-            payload: { open: true, message }
-          })
-        }
-        showInsights={!embedMode}
-      />
-    </div>
+    </>
   );
 };
 

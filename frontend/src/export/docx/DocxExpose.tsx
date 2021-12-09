@@ -2,7 +2,6 @@ import { Document, Packer, Paragraph, PageBreak, HeadingLevel } from "docx";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { saveAs } from "file-saver";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { EntityGroup } from "pages/SearchResultPage";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
@@ -23,6 +22,7 @@ import {
   mapTableDataFromParticlePollutiondata
 } from "./creator/table.creator";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
+import { EntityGroup } from "../../components/SearchResultContainer";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -72,7 +72,11 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       columnWidths: [4000, 3000, 3000, 3000, 3000],
       headerColor: colorPalette.primaryColor,
       headerTextColor: colorPalette.textColor,
-      ...mapTableDataFromEntityGrid(groupedEntries, transportationParams, activeMeans)
+      ...mapTableDataFromEntityGrid(
+        groupedEntries,
+        transportationParams,
+        activeMeans
+      )
     });
 
     const tables = groupedEntries.map(group =>

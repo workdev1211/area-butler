@@ -8,9 +8,9 @@ import {
   TransportationParam
 } from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
-import { ResultEntity } from "../../pages/SearchResultPage";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ResultEntity } from "../../components/SearchResultContainer";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];

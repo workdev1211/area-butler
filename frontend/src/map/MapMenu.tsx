@@ -5,7 +5,7 @@ import {
   EntityRoute,
   EntityTransitRoute,
   ResultEntity
-} from "../pages/SearchResultPage";
+} from "../components/SearchResultContainer";
 import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
 import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";

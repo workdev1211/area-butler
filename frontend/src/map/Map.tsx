@@ -30,7 +30,7 @@ import {
   EntityRoute,
   EntityTransitRoute,
   ResultEntity
-} from "../pages/SearchResultPage";
+} from "../components/SearchResultContainer";
 import {
   deriveIconForOsmName,
   deriveMinutesFromMeters,

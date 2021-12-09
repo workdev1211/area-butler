@@ -9,8 +9,11 @@ import {
   ApiDataSource,
   ApiSubscriptionPlanType
 } from "../../../shared/types/subscription-plan";
-import { ApiGeojsonFeature, ApiUser, MeansOfTransportation } from "../../../shared/types/types";
-import { EntityGroup, ResultEntity } from "../pages/SearchResultPage";
+import {
+  ApiGeojsonFeature,
+  ApiUser,
+  MeansOfTransportation
+} from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";
@@ -19,6 +22,7 @@ import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
   SelectedMapClipping
 } from "./MapClippingSelection";
+import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 
 export interface ExportModalProps {
   entities: ResultEntity[];

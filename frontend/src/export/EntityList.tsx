@@ -1,7 +1,10 @@
-import { EntityGroup } from "pages/SearchResultPage";
 import React from "react";
-import {deriveColorPalette, distanceToHumanReadable} from "shared/shared.functions";
+import {
+  deriveColorPalette,
+  distanceToHumanReadable
+} from "shared/shared.functions";
 import "./EntityList.css";
+import { EntityGroup } from "../components/SearchResultContainer";
 
 export interface EntityListProps {
   entityGroup: EntityGroup;
@@ -12,17 +15,18 @@ export interface EntityListProps {
 export const EntityList: React.FunctionComponent<EntityListProps> = ({
   entityGroup,
   limit = 3,
-  primaryColor = "#aa0c54",
+  primaryColor = "#aa0c54"
 }) => {
-
   const colorPalette = deriveColorPalette(primaryColor);
 
   const entityListItemStyle = {
     background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
-    color: colorPalette.textColor,
+    color: colorPalette.textColor
   };
 
-  const items = [...entityGroup.items].filter(item => item.selected).slice(0, limit);
+  const items = [...entityGroup.items]
+    .filter(item => item.selected)
+    .slice(0, limit);
   return (
     <>
       <h1 className="text-base ml-2 font-bold">{entityGroup.title}</h1>
@@ -30,7 +34,9 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
         {items.map((item, index: number) => (
           <li className="my-2">
             <div className="entity-list-item" style={entityListItemStyle}>
-                {`${index + 1}. ${item.name ? item.name : entityGroup.title} (${distanceToHumanReadable(item.distanceInMeters)})`}
+              {`${index + 1}. ${
+                item.name ? item.name : entityGroup.title
+              } (${distanceToHumanReadable(item.distanceInMeters)})`}
             </div>
           </li>
         ))}
