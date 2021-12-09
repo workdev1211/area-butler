@@ -6,7 +6,7 @@
     top: 0;
     right: 0;
     bottom: 0;
-    width: 1px;
+    width: 0;
     transition: width 0.2s;
     @apply h-full flex flex-col absolute bg-white;
     --map-menu-pr: 80px;

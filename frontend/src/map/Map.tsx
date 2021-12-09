@@ -219,6 +219,9 @@ const Map = React.memo<MapProps>(
     useEffect(() => {
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+      const attributionEmbedded =
+        'Powered by &copy; <a href="https://area-butler.de">AreaButler</a> ' +
+        attribution;
       const url =
         "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
 
@@ -239,7 +242,7 @@ const Map = React.memo<MapProps>(
       zoomControl.addTo(localMap);
 
       L.tileLayer(url, {
-        attribution,
+        attribution: embedMode ? attributionEmbedded : attribution,
         id: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
         zoomOffset: -1,
         accessToken: mapBoxAccessToken,
@@ -267,7 +270,8 @@ const Map = React.memo<MapProps>(
       leafletMapId,
       searchContextDispatch,
       mapBoxAccessToken,
-      searchAddress
+      searchAddress,
+      embedMode
     ]);
 
     // react on zoom and center change

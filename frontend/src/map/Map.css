@@ -6,6 +6,10 @@
     margin-bottom: 18px !important;
 }
 
+.leaflet-control-attribution {
+    font-size: 10px;
+}
+
 .cluster-icon {
     width: 120px !important;
     height: auto !important;
