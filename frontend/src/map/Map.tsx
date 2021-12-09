@@ -220,7 +220,7 @@ const Map = React.memo<MapProps>(
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
       const attributionEmbedded =
-        'Powered by &copy; <a href="https://area-butler.de">AreaButler</a> ' +
+        'Powered by &copy; <a href="https://area-butler.de">AreaButler</a>, ' +
         attribution;
       const url =
         "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
