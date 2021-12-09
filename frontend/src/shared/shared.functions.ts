@@ -444,3 +444,15 @@ export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
       }))
   ];
 };
+
+
+export const createCodeSnippet = (token: string) => {
+  return `  
+<iframe
+  width="100%"
+  height="100%"
+  src="${window.location.origin}/embed?token=${token}"
+  title="Area Butler Map Snippet"
+></iframe>
+  `;
+};

@@ -1,22 +1,12 @@
+import CodeSnippetModal from "components/CodeSnippetModal";
 import copy from "copy-to-clipboard";
 import { useState } from "react";
-import { toastSuccess } from "shared/shared.functions";
+import { createCodeSnippet, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
 export interface EmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
-
-const createCodeSnippet = (token: string) => {
-  return `  
-<iframe
-  width="100%"
-  height="100%"
-  src="${window.location.origin}/embed?token=${token}"
-  title="Area Butler Map Snippet"
-></iframe>
-  `;
-};
 
 const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
   ({ embeddableMaps }) => {
@@ -35,34 +25,9 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
       setShowModal(true);
     };
 
-    const CodeSnippetModal: React.FunctionComponent = () => (
-      <div className="modal modal-open">
-        <div className="modal-box">
-          Ihr Karten-Snippet
-          <div className="my-2">
-            <code className="break-all text-sm">{codeSnippet}</code>
-          </div>
-          <div className="modal-action">
-          <button
-              className="btn btn-sm btn-primary"
-              onClick={() => copyCodeToClipBoard(codeSnippet)}
-            >
-              Kopieren
-            </button>
-            <button
-              className="btn btn-sm btn-primary"
-              onClick={() => setShowModal(false)}
-            >
-              Schließen
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-
     return (
       <div className="overflow-x-auto">
-        {showModal && <CodeSnippetModal />}
+        <CodeSnippetModal showModal={showModal} setShowModal={setShowModal} codeSnippet={codeSnippet} />
         <table className="table w-full table-compact">
           <thead>
             <tr>

@@ -5,6 +5,7 @@ import {
   SearchContextActionTypes
 } from "../context/SearchContext";
 import {
+  ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
   MeansOfTransportation
@@ -24,6 +25,8 @@ import SearchResultContainer, {
   EntityGroup,
   ResultEntity
 } from "../components/SearchResultContainer";
+import { createCodeSnippet, toastSuccess } from "shared/shared.functions";
+import CodeSnippetModal from "components/CodeSnippetModal";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -40,6 +43,8 @@ const SearchResultPage: React.FunctionComponent = () => {
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
+  const [showCodeSnippetModal, setShowCodeSnippetModal] = useState(false);
+  const [codeSnippet, setCodeSnippet] = useState('');
 
   const { get, post } = useHttp();
 
@@ -156,17 +161,22 @@ const SearchResultPage: React.FunctionComponent = () => {
           <button
             type="button"
             onClick={async () => {
-              await post("/api/location/snapshot", {
+              const response :  ApiSearchResultSnapshotResponse = (await post<ApiSearchResultSnapshotResponse>("/api/location/snapshot", {
                 placesLocation: searchContextState.placesLocation,
                 location: searchContextState.location,
                 transportationParams: searchContextState.transportationParams,
                 localityParams: searchContextState.localityParams,
                 searchResponse: searchContextState.searchResponse
-              });
+              })).data;
+
+              toastSuccess('Karten Snippet erfolgreich gespeichert!')
+              setCodeSnippet(createCodeSnippet(response.token));
+              setShowCodeSnippetModal(true);
+
             }}
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Snapshot anlegen
+            <img src={plusIcon} alt="pdf-icon" /> Karten Snippet speichern
           </button>
         </li>
       </>
@@ -175,6 +185,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   return (
     <>
+      <CodeSnippetModal codeSnippet={codeSnippet} showModal={showCodeSnippetModal} setShowModal={setShowCodeSnippetModal}/>
       <DefaultLayout
         title="Umgebungsanalyse"
         withHorizontalPadding={false}
