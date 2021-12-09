@@ -197,9 +197,6 @@ const SearchResultPage: React.FunctionComponent = () => {
           federalElectionData={searchContextState.federalElectionData}
           particlePollutionData={searchContextState.particlePollutionData}
           mapClippings={searchContextState.mapClippings}
-          printingActive={searchContextState.printingActive}
-          printingCheatsheetActive={searchContextState.printingCheatsheetActive}
-          printingDocxActive={searchContextState.printingDocxActive}
           user={user}
           userDispatch={userDispatch}
           listings={realEstateState.listings}

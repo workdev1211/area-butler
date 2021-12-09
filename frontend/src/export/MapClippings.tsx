@@ -42,8 +42,8 @@ export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
           title="Kartenausschnitte"
         >
           <div className="m-10 flex flex-col gap-12" id="expose-map-clippings">
-            {pairs.map(clipping => (
-              <div className="flex-1">
+            {pairs.map((clipping, index) => (
+              <div className="flex-1" key={index}>
                 <div className="mt-5" style={imageSize}>
                   <img
                     style={{

@@ -47,8 +47,11 @@ const MapClippingSelection: FunctionComponent<MapClippingSelectionProps> = ({
           )}
         </div>
         <div className="collapse-content bg-white flex flex-col">
-          {selectedMapClippings.map((item: SelectedMapClipping) => (
-            <div className="flex gap-5 items-center mt-10 justify-between">
+          {selectedMapClippings.map((item: SelectedMapClipping, index) => (
+            <div
+              className="flex gap-5 items-center mt-10 justify-between"
+              key={index}
+            >
               <input
                 type="checkbox"
                 checked={item.selected}

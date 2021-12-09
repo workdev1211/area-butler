@@ -74,9 +74,6 @@ export interface SearchResultContainerProps {
   location: ApiCoordinates;
   highlightId?: string;
   mapZoomLevel?: number;
-  printingActive?: boolean;
-  printingCheatsheetActive?: boolean;
-  printingDocxActive?: boolean;
   censusData?: any;
   federalElectionData?: any;
   particlePollutionData?: any;
@@ -100,9 +97,6 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   location,
   highlightId = "",
   mapZoomLevel = defaultMapZoom,
-  printingActive = false,
-  printingCheatsheetActive = false,
-  printingDocxActive = false,
   censusData,
   federalElectionData,
   particlePollutionData,
@@ -355,8 +349,6 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             }}
             mapCenter={location}
             mapZoomLevel={mapZoomLevel}
-            printingActive={printingActive}
-            printingCheatsheetActive={printingCheatsheetActive}
             routes={routes}
             transitRoutes={transitRoutes}
             embedMode={embedMode}

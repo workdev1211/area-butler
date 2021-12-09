@@ -113,6 +113,7 @@ export const Expose = React.forwardRef(
                   nextPageNumber={nextPageNumber}
                   logo={logo}
                   title={entityGroup.title}
+                  key={entityGroup.title}
                 >
                   <div
                     className="m-10"

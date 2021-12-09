@@ -32,7 +32,7 @@ export const EntityList: React.FunctionComponent<EntityListProps> = ({
       <h1 className="text-base ml-2 font-bold">{entityGroup.title}</h1>
       <ol>
         {items.map((item, index: number) => (
-          <li className="my-2">
+          <li className="my-2" key={item.id}>
             <div className="entity-list-item" style={entityListItemStyle}>
               {`${index + 1}. ${
                 item.name ? item.name : entityGroup.title

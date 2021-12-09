@@ -52,8 +52,6 @@ export interface MapProps {
   mapCenter?: ApiCoordinates;
   mapZoomLevel?: number;
   leafletMapId?: string;
-  printingActive?: boolean;
-  printingCheatsheetActive?: boolean;
   means: {
     byFoot: boolean;
     byBike: boolean;
@@ -164,10 +162,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const mapCenterEqual =
     JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
   const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
-  const printingActiveEqual =
-    prevProps.printingActive === nextProps.printingActive;
-  const printingCheatsheetActiveEqual =
-    prevProps.printingCheatsheetActive === nextProps.printingCheatsheetActive;
   const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
   const routesEqual = prevProps.routes === nextProps.routes;
   const transitRoutesEqual =
@@ -180,8 +174,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     entityGroupsEqual &&
     meansEqual &&
     mapCenterEqual &&
-    printingActiveEqual &&
-    printingCheatsheetActiveEqual &&
     mapZoomLevelEqual &&
     highlightIdEqual &&
     routesEqual &&
