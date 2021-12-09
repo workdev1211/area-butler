@@ -24,7 +24,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
   }
 
   return (
-    <div className="modal modal-open">
+    <div className="modal modal-open z-9999">
       <div className="modal-box">
         Ihr Karten-Snippet
         <div className="my-2">

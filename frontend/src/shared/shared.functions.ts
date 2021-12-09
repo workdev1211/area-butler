@@ -449,6 +449,7 @@ export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
 export const createCodeSnippet = (token: string) => {
   return `  
 <iframe
+  style="border: none"
   width="100%"
   height="100%"
   src="${window.location.origin}/embed?token=${token}"
