@@ -284,11 +284,11 @@ export const mapTableDataFromParticlePollutiondata = (
       body: [
         [
           "Durchschnittliche Belastung",
-          pollutionData.mean + " g/m2",
-          averageParticlePollution.mean + " g/m2"
+          pollutionData.mean + " g/m3",
+          averageParticlePollution.mean + " g/m3"
         ],
         [
-          "Tage über Grenzwert (50 g/m2)",
+          "Tage über Grenzwert (50 g/m3)",
           pollutionData.daysAboveThreshold + "",
           averageParticlePollution.daysAboveThreshold + ""
         ]

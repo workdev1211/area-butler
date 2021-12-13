@@ -45,12 +45,12 @@ const ParticlePollutionTable: FunctionComponent<ParticlePollutionTableProps> =
           <tr key="pollution-table-data-mean">
             <th>Durchschnittliche Belastung</th>
             <td>
-              {pollutionData.mean} g/m2 <br />
-              ({averageParticlePollution.mean} g/m2)
+              {pollutionData.mean} g/m3 <br />
+              ({averageParticlePollution.mean} g/m3)
             </td>
           </tr>
           <tr key="pollution-table-data-above-threshold">
-            <th>Tage über Grenzwert (50 g/m2)</th>
+            <th>Tage über Grenzwert (50 g/m3)</th>
             <td>
               {pollutionData.daysAboveThreshold} <br />
               ({averageParticlePollution.daysAboveThreshold})
