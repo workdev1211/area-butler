@@ -13,6 +13,9 @@ const scopes = [
 export class MapboxService {
   tokenCreateUrl = 'https://api.mapbox.com/tokens/v2/kudiba-tech';
 
+
+  tileCache: any = {};
+
   constructor(private http: HttpService) {}
 
   async createAccessToken(
@@ -40,5 +43,19 @@ export class MapboxService {
     } catch (e) {
         console.error(e);
     }
+  }
+
+  async fetchTile(path: string) {
+
+    const url = `https://api.mapbox.com/${path}`;
+    const cachedTile = this.tileCache[path];
+
+    if (!!cachedTile) {
+      return cachedTile;
+    }
+
+    const response = await this.http.get(url, { responseType: 'arraybuffer' }).toPromise();
+    this.tileCache[path] = response.data;
+    return response.data;
   }
 }

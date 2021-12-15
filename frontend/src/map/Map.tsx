@@ -215,6 +215,7 @@ const Map = React.memo<MapProps>(
       document.body.classList.toggle("fullscreen", fullscreen);
     }, [fullscreen]);
 
+
     // main map draw
     useEffect(() => {
       const attribution =
@@ -222,7 +223,7 @@ const Map = React.memo<MapProps>(
       const attributionEmbedded =
         'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
         attribution;
-      const url =
+      const url = embedMode ? `${process.env.REACT_APP_BASE_URL || ''}/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}` :
         "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
 
       if (currentMap !== undefined) {

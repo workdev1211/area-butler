@@ -12,6 +12,7 @@ import {
 import {DataProvisionModule} from "../data-provision/data-provision.module";
 import { SearchResultSnapshot, SearchResultSnapshotSchema } from './schema/search-result-snapshot.schema';
 import { SearchResultSnapshotController } from './search-result-snapshot.controller';
+import { TilesController } from './tiles.controller';
 
 @Module({
   imports: [
@@ -24,7 +25,7 @@ import { SearchResultSnapshotController } from './search-result-snapshot.control
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
-  controllers: [LocationController, SearchResultSnapshotController],
+  controllers: [LocationController, SearchResultSnapshotController, TilesController],
   providers: [LocationService],
 })
 export class LocationModule {}
