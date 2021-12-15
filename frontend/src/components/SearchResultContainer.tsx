@@ -156,7 +156,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       ) ?? [];
     const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
     if (!!preferredLocations) {
-      entities?.push(
+      entitiesIncludedInActiveMeans?.push(
         ...buildEntityDataFromPreferredLocations(
           centerOfSearch,
           preferredLocations
@@ -164,7 +164,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
     }
     if (!!listings) {
-      entities?.push(
+      entitiesIncludedInActiveMeans?.push(
         ...buildEntityDataFromRealEstateListings(centerOfSearch, listings)
       );
     }
@@ -173,7 +173,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       buildCombinedGroupedEntries(entitiesIncludedInActiveMeans)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, activeMeans]);
+  }, [searchResponse, activeMeans, preferredLocations, listings]);
 
   const toggleEntityGroup = (title: string) => {
     const newGroups = groupedEntities.map(ge =>
