@@ -74,7 +74,7 @@ export const Expose = React.forwardRef(
               transportationParams={transportationParams}
               activeMeans={activeMeans}
               listingAddress={props.listingAddress}
-              primaryColor={user?.color || "#aa0c54"}
+              primaryColor={color}
             />
           </PdfPage>
           {!!importantEntites?.items?.length && (
@@ -98,7 +98,7 @@ export const Expose = React.forwardRef(
             <MapClippings
               mapClippings={mapClippings}
               nextPageNumber={nextPageNumber}
-              logo={user?.logo}
+              logo={logo}
             />
           )}
           {groupedEntries
@@ -122,7 +122,7 @@ export const Expose = React.forwardRef(
                     <EntityTable
                       activeMeans={activeMeans}
                       entityGroup={entityGroup}
-                      primaryColor={user?.color}
+                      primaryColor={color}
                     />
                   </div>
                 </PdfPage>
@@ -130,7 +130,7 @@ export const Expose = React.forwardRef(
             })}
           <PdfPage
             title="Einblicke"
-            logo={user?.logo}
+            logo={logo}
             nextPageNumber={nextPageNumber}
           >
             {!!censusData && censusData.length > 0 && (
