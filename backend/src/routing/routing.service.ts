@@ -1,8 +1,9 @@
-import {HttpService, Injectable, Logger} from '@nestjs/common';
+import {HttpService, Injectable, InternalServerErrorException, Logger} from '@nestjs/common';
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "@area-butler-types/types";
 import {configService} from "../config/config.service";
 import {ApiRoute, ApiTransitRoute} from "@area-butler-types/routing";
 import * as poly from "@liberty-rider/flexpolyline";
+import {InternalCoreModule} from "@nestjs/core/injector/internal-core-module";
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
@@ -119,7 +120,9 @@ export class RoutingService {
             this.logger.error(`Invalid route response: ${JSON.stringify(data)}`)
         } catch (e) {
             this.logger.error("Could not fetch route", e)
+            throw e
         }
+        throw Error("Invalid Route Response");
     }
 
     async getTransitRoute(origin: ApiCoordinates, destination: ApiCoordinates): Promise<ApiTransitRoute | undefined> {
@@ -151,7 +154,9 @@ export class RoutingService {
             // we should already have returned
             this.logger.error(`Invalid route response: ${JSON.stringify(data)}`)
         } catch (e) {
-            this.logger.error("Could not fetch route", e)
+            this.logger.error("Could not fetch transit route", e)
+            throw e
         }
+        throw Error("Invalid Route Response");
     }
 }

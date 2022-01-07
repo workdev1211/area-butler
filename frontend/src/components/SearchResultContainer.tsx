@@ -294,15 +294,17 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           }
         ]
       });
-      setTransitRoutes(prev => [
-        ...prev,
-        {
-          route: routesResult[0].route,
-          title: routesResult[0].title,
-          show: true,
-          coordinates: item.coordinates
-        }
-      ]);
+      if (routesResult.length) {
+        setTransitRoutes(prev => [
+          ...prev,
+          {
+            route: routesResult[0].route,
+            title: routesResult[0].title,
+            show: true,
+            coordinates: item.coordinates
+          }
+        ]);
+      }
     }
   };
 
