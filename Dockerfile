@@ -1,5 +1,5 @@
 FROM node:14-alpine
-
+RUN apk add jq
 RUN apk --no-cache --virtual build-dependencies add python3 py3-pip make g++
 
 USER node
@@ -28,8 +28,10 @@ COPY --chown=node:node . .
 
 WORKDIR /home/node/app/frontend
 
+RUN tmp=$(mktemp); jq '.homepage = "/embed"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-embed
 
+RUN tmp=$(mktemp); jq '.homepage = "/"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build
 
 WORKDIR /home/node/app/backend
