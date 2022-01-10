@@ -2,7 +2,6 @@
   "name": "redesign",
   "version": "0.1.0",
   "private": true,
-  "homepage": ".",
   "dependencies": {
     "@auth0/auth0-react": "^1.6.0",
     "@laststance/use-app-state": "^1.2.14",
