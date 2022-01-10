@@ -55,7 +55,7 @@
     "start": "TAILWIND_MODE=watch PORT=3001 craco start",
     "start-embed": "TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
     "build": "craco build",
-    "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
+    "build-embed": "PUBLIC_URL=embed craco build --config craco-embed.config.js && mv build build-embed",
     "test": "craco test"
   },
   "eslintConfig": {
