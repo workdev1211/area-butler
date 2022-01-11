@@ -25,7 +25,7 @@ import { ErrorBoundary, Provider } from '@rollbar/react';
 const baseUrl = process.env.REACT_APP_BASE_URL || '';
 
 fetch(`${baseUrl}/api/config`).then(async result => {
-  const { auth, googleApiKey, mapBoxAccessToken, stripeEnv, inviteCodeNeeded, rollbarConfig } = await result.json() as ApiConfig;
+  const { auth, googleApiKey, mapBoxAccessToken, stripeEnv, rollbarConfig } = await result.json() as ApiConfig;
   ReactDOM.render(
     <Provider config={rollbarConfig}>
       <React.StrictMode>
@@ -40,7 +40,6 @@ fetch(`${baseUrl}/api/config`).then(async result => {
               googleApiKey,
               mapBoxAccessToken,
               stripeEnv,
-              inviteCodeNeeded,
               rollbarConfig
             }}>
               <UserContextProvider>

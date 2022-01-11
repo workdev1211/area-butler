@@ -1,22 +1,22 @@
+import { useAuth0 } from "@auth0/auth0-react";
+import FormModal, { ModalConfig } from "components/FormModal";
+import { UserActionTypes, UserContext } from "context/UserContext";
+import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 import React, { lazy, Suspense, useContext, useEffect } from "react";
-import "./App.css";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
-import Nav from "./layout/Nav";
-import Footer from "./layout/Footer";
-import { SearchContextProvider } from "./context/SearchContext";
-import Authenticated from "./auth/authenticated";
-import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { RealEstateContextProvider } from "./context/RealEstateContext";
-import FormModal, { ModalConfig } from "components/FormModal";
-import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import { UserActionTypes, UserContext } from "context/UserContext";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
-import { useAuth0 } from "@auth0/auth0-react";
-import { ApiConsent, ApiUser, ApiUserRequests } from "../../shared/types/types";
-import { localStorageInvitationCodeKey } from "../../shared/constants/constants";
+import { localStorageConsentGivenKey } from "../../shared/constants/constants";
+import { ApiUser, ApiUserRequests } from "../../shared/types/types";
+import "./App.css";
+import Authenticated from "./auth/authenticated";
+import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
+import { RealEstateContextProvider } from "./context/RealEstateContext";
+import { SearchContextProvider } from "./context/SearchContext";
 import { useHttp } from "./hooks/http";
+import Footer from "./layout/Footer";
+import Nav from "./layout/Nav";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -89,19 +89,16 @@ function App() {
           history.push("/verify");
         }
       };
-      const consumeInvitationCode = async () => {
-        const payload: ApiConsent = {
-          inviteCode: localStorage.getItem(localStorageInvitationCodeKey)!
-        };
+      const consumeConsentGiven = async () => {
         try {
           const updatedUser = (
-            await post<ApiUser>("/api/users/me/consent", payload)
+            await post<ApiUser>("/api/users/me/consent", {})
           ).data;
           userDispatch({
             type: UserActionTypes.SET_USER,
             payload: updatedUser
           });
-          localStorage.removeItem(localStorageInvitationCodeKey);
+          localStorage.removeItem(localStorageConsentGivenKey);
         } catch (error) {
           console.error(error);
         }
@@ -119,8 +116,9 @@ function App() {
       };
 
       validateEmailVerified();
-      if (localStorage.getItem(localStorageInvitationCodeKey)) {
-        consumeInvitationCode();
+      if (localStorage.getItem(localStorageConsentGivenKey) === 'true') {
+        console.log('consume');
+        consumeConsentGiven();
       } else {
         fetchUser();
       }

@@ -1,4 +1,3 @@
-import { ConfigContext } from "context/ConfigContext";
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
@@ -13,7 +12,6 @@ import React, {
 } from "react";
 import TourStarter from "tour/TourStarter";
 import EmbeddableMapsTable from "user/EmbeddableMapsTable";
-import InviteCodesTable from "user/InviteCodesTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
@@ -27,7 +25,6 @@ import UserExportSettings from "../user/UserExportSettings";
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const { get } = useHttp();
-  const { inviteCodeNeeded } = useContext(ConfigContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { potentialCustomerState } = useContext(PotentialCustomerContext);
@@ -119,12 +116,6 @@ const UserProfilePage: FunctionComponent = () => {
         />
       ) : (
         <SubscriptionPlanSelection />
-      )}
-      {hasSubscription && inviteCodeNeeded && (
-        <div className="my-10">
-          <h1 className="text-lg font-bold mb-5">Ihre Einladungscodes</h1>
-          <InviteCodesTable />
-        </div>
       )}
     </DefaultLayout>
   );

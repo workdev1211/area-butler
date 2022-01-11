@@ -113,10 +113,6 @@ class ConfigService {
     return JSON.parse(this.getValue('USE_OVERPASS_DB'));
   }
 
-  public IsInviteCodeNeeded(): boolean {
-    return this.getValue('INVITE_CODE_NEEDED') === 'true' ? true : false;
-  }
-
   public getHereTransitRouterApiUrl() {
     return this.getValue('HERE_TRANSIT_ROUTER_API_URL');
   }

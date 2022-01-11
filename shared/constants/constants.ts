@@ -28,7 +28,7 @@ export const initialShowTour: ApiShowTour = {
   profile: true
 }
 
-export const localStorageInvitationCodeKey = "ab-ic";
+export const localStorageConsentGivenKey = "ab-cg";
 export const localStorageSearchContext = "ab-sc";
 
 export const calculateMinutesToMeters = [

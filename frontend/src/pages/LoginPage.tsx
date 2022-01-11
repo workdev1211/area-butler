@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
-import DefaultLayout from "../layout/defaultLayout";
 import { useAuth0 } from "@auth0/auth0-react";
+import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
+import DefaultLayout from "../layout/defaultLayout";
 
 export const LoginPage: React.FunctionComponent = () => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
