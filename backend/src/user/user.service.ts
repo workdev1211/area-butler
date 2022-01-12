@@ -1,5 +1,5 @@
 import {ApiRequestContingentType,} from '@area-butler-types/subscription-plan';
-import {ApiConsent, ApiTour, ApiUpsertUser, ApiUserSettings} from '@area-butler-types/types';
+import {ApiTour, ApiUpsertUser, ApiUserSettings} from '@area-butler-types/types';
 import {HttpException, Injectable} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {EventEmitter2} from 'eventemitter2';
@@ -9,21 +9,16 @@ import {allSubscriptions} from '../../../shared/constants/subscription-plan';
 import {User, UserDocument} from './schema/user.schema';
 import {configService} from '../config/config.service';
 import {SubscriptionService} from './subscription.service';
-import {InviteCodeService} from './invite-code.service';
 import { MapboxService } from 'src/client/mapbox/mapbox.service';
 
 @Injectable()
 export class UserService {
-    inviteCodeNeeded = true;
-
     constructor(
         @InjectModel(User.name) private userModel: Model<UserDocument>,
         private subscriptionService: SubscriptionService,
-        private inviteCodeService: InviteCodeService,
         private eventEmitter: EventEmitter2,
         private mapboxService: MapboxService
     ) {
-        this.inviteCodeNeeded = configService.IsInviteCodeNeeded();
     }
 
     public async upsertUser(
@@ -61,15 +56,11 @@ export class UserService {
         return existingUser.save();
     }
 
-    public async giveConsent(email: string, apiConsent: ApiConsent) {
+    public async giveConsent(email: string) {
         const existingUser = await this.upsertUser(email, email);
 
         if (!existingUser) {
             throw new HttpException('Unknown User', 400);
-        }
-
-        if (!!this.inviteCodeNeeded) {
-            await this.inviteCodeService.consumeInviteCode(existingUser._id, apiConsent.inviteCode);
         }
 
         if (!existingUser.consentGiven) {

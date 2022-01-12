@@ -1,15 +1,11 @@
-import {ApiConsent, ApiInviteCode, ApiTour, ApiUpsertUser, ApiUser, ApiUserSettings} from '@area-butler-types/types';
-import {Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards} from '@nestjs/common';
-import {AuthGuard} from '@nestjs/passport';
-import {mapUserToApiUser} from './mapper/user.mapper';
-import {UserService} from './user.service';
-import {SubscriptionService} from "./subscription.service";
-import {mapSubscriptionToApiSubscription} from './mapper/subscription.mapper';
-import {ApiUserSubscription} from '@area-butler-types/subscription-plan';
-import {InviteCodeService} from './invite-code.service';
-import {mapInviteCodeToApiInvitecode} from './mapper/invite-code.mapper';
-import {configService} from 'src/config/config.service';
-import {Role} from 'src/auth/roles.decorator';
+import { ApiUserSubscription } from '@area-butler-types/subscription-plan';
+import { ApiTour, ApiUpsertUser, ApiUser, ApiUserSettings } from '@area-butler-types/types';
+import { Body, Controller, Get, HttpException, HttpStatus, Param, Post, Req, UseGuards } from '@nestjs/common';
+import { AuthGuard } from '@nestjs/passport';
+import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
+import { mapUserToApiUser } from './mapper/user.mapper';
+import { SubscriptionService } from "./subscription.service";
+import { UserService } from './user.service';
 
 @Controller('api/users')
 @UseGuards(AuthGuard('jwt'))
@@ -17,7 +13,6 @@ export class UserController {
     constructor(
         private userService: UserService,
         private subscriptionService: SubscriptionService,
-        private inviteCodeService: InviteCodeService,
     ) {
     }
 
@@ -81,13 +76,11 @@ export class UserController {
 
     @Post('me/consent')
     public async giveConsent(
-        @Req() request,
-        @Body() apiConsent: ApiConsent,
+        @Req() request
     ): Promise<ApiUser> {
         const requestUser = request?.user;
         const user = await this.userService.giveConsent(
-            requestUser.email,
-            apiConsent,
+            requestUser.email
         );
         return mapUserToApiUser(
             user,
@@ -115,39 +108,4 @@ export class UserController {
         );
     }
 
-    @Get('me/invite-codes')
-    public async fetchUserInviteCodes(@Req() request): Promise<ApiInviteCode[]> {
-        const requestUser = request?.user;
-        const user = await this.userService.upsertUser(
-            requestUser.email,
-            requestUser.email,
-        );
-        return (await this.inviteCodeService.fetchInviteCodes(user._id)).map(code =>
-            mapInviteCodeToApiInvitecode(code),
-        );
-    }
-
-    @Post(':id/invite-codes/:count')
-    public async generateInviteCodes(
-        @Req() request,
-        @Param('id') userId: string,
-        @Param('count') numberOfInviteCodes: string,
-    ): Promise<ApiInviteCode[]> {
-        const user = request.user;
-        if (!user[configService.getJwtRolesClaim()]?.includes(Role.Admin)) {
-            throw new HttpException('Unallowed Access', 400);
-        }
-
-        const inviteCodes = [];
-
-        if (!inviteCodes || inviteCodes.length === 0) {
-            for (const _ of Array(+numberOfInviteCodes).fill(0)) {
-                inviteCodes.push(await this.inviteCodeService.createInviteCode(userId));
-            }
-        }
-
-        return inviteCodes.map(inviteCode =>
-            mapInviteCodeToApiInvitecode(inviteCode),
-        );
-    }
 }

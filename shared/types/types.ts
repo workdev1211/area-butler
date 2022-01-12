@@ -15,7 +15,6 @@ export interface ApiConfig {
   googleApiKey: string;
   mapBoxAccessToken: string;
   stripeEnv: 'dev' | 'prod';
-  inviteCodeNeeded: boolean;
   rollbarConfig: RollbarConfig;
 }
 export interface ApiUser {
@@ -41,15 +40,6 @@ export interface ApiUserSettings {
 
 export interface ApiUserRequests {
   requests: ApiSearch[];
-}
-
-export interface ApiConsent {
-  inviteCode?: string;
-}
-
-export interface ApiInviteCode {
-  code: string,
-  used: Date
 }
 
 export type ApiTour = 'search' | 'result' | 'realEstates' | 'customers' | 'profile';

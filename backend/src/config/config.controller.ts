@@ -10,7 +10,6 @@ export class ConfigController {
     const googleApiKey = configService.getGoogleApiKey();
     const mapBoxAccessToken = configService.getMapBoxAccessToken();
     const stripeEnv = configService.getStripeEnv();
-    const inviteCodeNeeded = configService.IsInviteCodeNeeded();
     const rollbarConfig = configService.getRollbarConfig();
     return {
       auth: {
@@ -20,7 +19,6 @@ export class ConfigController {
       googleApiKey,
       mapBoxAccessToken,
       stripeEnv,
-      inviteCodeNeeded,
       rollbarConfig,
     };
   }
