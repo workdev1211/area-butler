@@ -50,6 +50,13 @@ export interface ColorPalette {
   textColor: string;
 }
 
+export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
+  const oneDay = 24 * 60 * 60 * 1000;
+  d1.setHours(0,0,0);
+  d2.setHours(0,0,0);
+  return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
+};
+
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
   return await getLatLng(latlngResults[0]);

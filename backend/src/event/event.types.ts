@@ -3,12 +3,13 @@ import { UserDocument } from "src/user/schema/user.schema";
 
 export enum EventType {
     USER_CREATED_EVENT = 'USER_CREATED_EVENT',
+    USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
     SUBSCRIPTION_UPSERTED_EVENT = 'SUBSCRIPTION_UPSERTED_EVENT',
     SUBSCRIPTION_RENEWED_EVENT = 'SUBSCRIPTION_RENEWED_EVENT',
     REQUEST_CONTINGENT_INCREASED_EVENT = 'REQUEST_CONTINGENT_INCREASED_EVENT',
 }
 
-export interface UserCreatedEvent {
+export interface UserEvent {
     user: UserDocument;
 }
 

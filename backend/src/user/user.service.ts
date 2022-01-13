@@ -1,15 +1,14 @@
-import {ApiRequestContingentType,} from '@area-butler-types/subscription-plan';
-import {ApiTour, ApiUpsertUser, ApiUserSettings} from '@area-butler-types/types';
-import {HttpException, Injectable} from '@nestjs/common';
-import {InjectModel} from '@nestjs/mongoose';
-import {EventEmitter2} from 'eventemitter2';
-import {Model, Types} from 'mongoose';
-import {EventType, UserCreatedEvent} from 'src/event/event.types';
-import {allSubscriptions} from '../../../shared/constants/subscription-plan';
-import {User, UserDocument} from './schema/user.schema';
-import {configService} from '../config/config.service';
-import {SubscriptionService} from './subscription.service';
+import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
+import { ApiTour, ApiUpsertUser, ApiUserSettings } from '@area-butler-types/types';
+import { HttpException, Injectable } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { EventEmitter2 } from 'eventemitter2';
+import { Model, Types } from 'mongoose';
 import { MapboxService } from 'src/client/mapbox/mapbox.service';
+import { EventType, UserEvent } from 'src/event/event.types';
+import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import { User, UserDocument } from './schema/user.schema';
+import { SubscriptionService } from './subscription.service';
 
 @Injectable()
 export class UserService {
@@ -34,7 +33,7 @@ export class UserService {
                 fullname,
                 consentGiven: null,
             }).save();
-            const event: UserCreatedEvent = {
+            const event: UserEvent = {
                 user: newUser,
             };
 
@@ -57,7 +56,7 @@ export class UserService {
     }
 
     public async giveConsent(email: string) {
-        const existingUser = await this.upsertUser(email, email);
+        let existingUser = await this.upsertUser(email, email);
 
         if (!existingUser) {
             throw new HttpException('Unknown User', 400);
@@ -67,7 +66,15 @@ export class UserService {
             existingUser.consentGiven = new Date();
         }
 
-        return existingUser.save();
+        existingUser = await existingUser.save();
+
+        const event: UserEvent = {
+            user: existingUser,
+        };
+
+        this.eventEmitter.emitAsync(EventType.USER_CONSENT_EVENT, event);
+
+        return existingUser;
     }
 
     public async hideTour(email: string, tour?: ApiTour) {

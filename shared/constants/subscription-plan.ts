@@ -9,6 +9,7 @@ export const allSubscriptionTypes: {
     {type: ApiSubscriptionPlanType.STANDARD, label: "Standard"},
     {type: ApiSubscriptionPlanType.PRO, label: "Pro"},
     {type: ApiSubscriptionPlanType.BUSINESS_PLUS, label: "Business+"},
+    {type: ApiSubscriptionPlanType.TRIAL, label: "Kostenfreie Testversion"},
 ];
 
 export const standardSubscription: ApiSubscriptionPlan = {
@@ -109,9 +110,18 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     },
 };
 
+export const trialSubscription : ApiSubscriptionPlan = {
+    ...businessPlusSubscription,
+    type: ApiSubscriptionPlanType.TRIAL,
+    limits: {
+        numberOfRequestsPerMonth: 20
+    },
+}
+
 export const allSubscriptions: Record<ApiSubscriptionPlanType,
     ApiSubscriptionPlan> = {
     [ApiSubscriptionPlanType.STANDARD]: standardSubscription,
     [ApiSubscriptionPlanType.PRO]: proSubscription,
     [ApiSubscriptionPlanType.BUSINESS_PLUS]: businessPlusSubscription,
+    [ApiSubscriptionPlanType.TRIAL]: trialSubscription,
 };

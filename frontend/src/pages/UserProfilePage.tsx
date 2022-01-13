@@ -10,12 +10,14 @@ import React, {
   useEffect,
   useState,
 } from "react";
+import { dateDiffInDays } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import EmbeddableMapsTable from "user/EmbeddableMapsTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { v4 as uuid } from "uuid";
+import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
@@ -83,6 +85,8 @@ const UserProfilePage: FunctionComponent = () => {
     );
   };
 
+  const remainingDays = !!user?.subscriptionPlan?.endsAt ? dateDiffInDays(new Date(user?.subscriptionPlan?.endsAt)) : 0;
+
   return (
     <DefaultLayout
       title="Ihr Profil"
@@ -93,6 +97,9 @@ const UserProfilePage: FunctionComponent = () => {
       ]}
     >
       {hasSubscription && <TourStarter tour="profile" />}
+      {user?.subscriptionPlan?.type === ApiSubscriptionPlanType.TRIAL && (
+        <h3 className="mb-5 font-bold">Sie nutzen aktuell die kostenfreie Testphase. Diese endet {remainingDays === 1 ? ' Morgen.' : ' in ' + remainingDays + ' Tagen.'}</h3>
+      )}
       <div className="mt-10" data-tour="profile-form">
         <ProfileFormHandler
           user={userState.user!}

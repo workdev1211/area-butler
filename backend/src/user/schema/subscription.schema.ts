@@ -10,7 +10,7 @@ export class Subscription {
     @Prop({
         type: String,
         required: true,
-        enum: [ApiSubscriptionPlanType.STANDARD, ApiSubscriptionPlanType.PRO, ApiSubscriptionPlanType.BUSINESS_PLUS]
+        enum: [ApiSubscriptionPlanType.STANDARD, ApiSubscriptionPlanType.PRO, ApiSubscriptionPlanType.BUSINESS_PLUS, ApiSubscriptionPlanType.TRIAL]
     })
     type: ApiSubscriptionPlanType;
 

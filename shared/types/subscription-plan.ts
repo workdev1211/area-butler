@@ -9,7 +9,8 @@ export interface ApiUserSubscription {
 export enum ApiSubscriptionPlanType {
     STANDARD = 'STANDARD',
     PRO = 'PRO',
-    BUSINESS_PLUS = 'BUSINESS_PLUS'
+    BUSINESS_PLUS = 'BUSINESS_PLUS',
+    TRIAL = 'TRIAL',
     // ENTERPRISE = 'ENTERPRISE' TODO coming soon
 }
 

@@ -91,13 +91,6 @@ const SubscriptionPlanSelection: React.FunctionComponent = () => {
             </ul>
           </div>
           <p className="text-sm">
-            Die ersten 14 Tage sind kostenlos. Danach {price}€/
-            {intervall === PlanInterval.INTERVALL_MONTHLY
-              ? "Monat "
-              : "Jahr "}{" "}
-            zzgl. USt.
-          </p>
-          <p className="text-sm">
             Wird der Vertrag nicht innerhalb von 14 Tagen nach Vertragsschluss
             gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit
             dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über.
