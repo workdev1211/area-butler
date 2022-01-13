@@ -45,7 +45,7 @@ const SubscriptionPlanLimits: FunctionComponent<
           className="btn bg-primary-gradient btn-primary"
           data-tour="manage-subscription"
         >
-          Zahlung und Abonnement verwalten {}
+          Zahlung und Abonnement verwalten
         </button>
       </div>
       <div
