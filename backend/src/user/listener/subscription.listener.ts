@@ -18,14 +18,6 @@ export class SubscriptionListener {
     constructor(private userService: UserService, private subscriptionService: SubscriptionService, private stripeService: StripeService) {
     }
 
-    @OnEvent(EventType.USER_CONSENT_EVENT, {async: true})
-    private async handleUserConsentGivenEvent({user}: UserEvent) {
-        this.logger.log('User has given consent');
-        const endsAt = new Date();
-        endsAt.setDate(new Date().getDate() + 14);
-        await this.subscriptionService.upsertForUserId(user._id, ApiSubscriptionPlanType.TRIAL, 'trialSubcription', 'trialSubscription', endsAt, endsAt);
-        await this.userService.addMonthlyRequestContingents(user, endsAt);
-    }
 
     @OnEvent(EventType.SUBSCRIPTION_UPSERTED_EVENT, {async: true})
     private async handleSubscriptionUpsertedEvent({

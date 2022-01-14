@@ -1,4 +1,4 @@
-import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
+import { ApiRequestContingentType, ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { ApiTour, ApiUpsertUser, ApiUserSettings } from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -64,17 +64,13 @@ export class UserService {
 
         if (!existingUser.consentGiven) {
             existingUser.consentGiven = new Date();
+            const endsAt = new Date();
+            endsAt.setDate(new Date().getDate() + 14);
+            await this.subscriptionService.upsertForUserId(existingUser._id, ApiSubscriptionPlanType.TRIAL, 'trialSubcription', 'trialSubscription', endsAt, endsAt);
+            await this.addMonthlyRequestContingents(existingUser, endsAt);
         }
-
-        existingUser = await existingUser.save();
-
-        const event: UserEvent = {
-            user: existingUser,
-        };
-
-        this.eventEmitter.emitAsync(EventType.USER_CONSENT_EVENT, event);
-
-        return existingUser;
+        
+        return await existingUser.save();
     }
 
     public async hideTour(email: string, tour?: ApiTour) {
