@@ -1,4 +1,4 @@
-import {HttpException, Injectable} from '@nestjs/common';
+import {HttpException, Injectable, Logger} from '@nestjs/common';
 import {InjectModel} from '@nestjs/mongoose';
 import {Model} from 'mongoose';
 import {Subscription, SubscriptionDocument} from "./schema/subscription.schema";
@@ -8,6 +8,9 @@ import {allSubscriptions} from "../../../shared/constants/subscription-plan";
 
 @Injectable()
 export class SubscriptionService {
+
+    private logger: Logger = new Logger(SubscriptionService.name);
+
     constructor(
         @InjectModel(Subscription.name) private subscriptionModel: Model<SubscriptionDocument>
     ) {
@@ -72,7 +75,8 @@ export class SubscriptionService {
             subscription.type = type;
             subscription.endsAt = endsAt;
             subscription.trialEndsAt = trialEndsAt;
-            return subscription.save();
+            this.logger.log(`Create subscription for ${userId}, ${type}`);
+            return await subscription.save();
         } else {
             if (await this.findActiveByUserId(userId)) {
                 throw new HttpException("user has already an active subscription", 400);
