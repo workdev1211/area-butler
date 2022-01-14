@@ -1,5 +1,5 @@
 import { ApiSubscriptionPlanType } from "@area-butler-types/subscription-plan";
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { OnEvent } from "@nestjs/event-emitter";
 import {
     EventType,
@@ -12,11 +12,15 @@ import { UserService } from "../user.service";
 
 @Injectable()
 export class SubscriptionListener {
+
+    private logger: Logger = new Logger(SubscriptionListener.name);
+
     constructor(private userService: UserService, private subscriptionService: SubscriptionService, private stripeService: StripeService) {
     }
 
     @OnEvent(EventType.USER_CONSENT_EVENT, {async: true})
     private async handleUserConsentGivenEvent({user}: UserEvent) {
+        this.logger.log('User has given consent');
         const endsAt = new Date();
         endsAt.setDate(new Date().getDate() + 14);
         await this.subscriptionService.upsertForUserId(user._id, ApiSubscriptionPlanType.TRIAL, 'trialSubcription', 'trialSubscription', endsAt, endsAt);

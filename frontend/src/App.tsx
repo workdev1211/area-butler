@@ -117,7 +117,6 @@ function App() {
 
       validateEmailVerified();
       if (localStorage.getItem(localStorageConsentGivenKey) === 'true') {
-        console.log('consume');
         consumeConsentGiven();
       } else {
         fetchUser();

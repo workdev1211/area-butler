@@ -114,7 +114,7 @@ export const trialSubscription : ApiSubscriptionPlan = {
     ...businessPlusSubscription,
     type: ApiSubscriptionPlanType.TRIAL,
     limits: {
-        numberOfRequestsPerMonth: 20
+        numberOfRequestsPerMonth: 100
     },
 }
 
