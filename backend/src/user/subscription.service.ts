@@ -68,6 +68,21 @@ export class SubscriptionService {
 
     public async upsertForUserId(userId: string, type: ApiSubscriptionPlanType, stripeSubscriptionId = 'unverified-new', stripePriceId: string, endsAt: Date, trialEndsAt: Date): Promise<SubscriptionDocument> {
 
+        if (type === ApiSubscriptionPlanType.TRIAL) {
+            if (await this.findActiveByUserId(userId)) {
+                throw new HttpException("user has already an active subscription", 400);
+            }
+
+            return await new this.subscriptionModel({
+                userId,
+                type,
+                stripePriceId,
+                endsAt,
+                trialEndsAt,
+                stripeSubscriptionId
+            }).save();
+        }
+
         const subscription = await this.findByStripeSubscriptionId(stripeSubscriptionId);
 
         if (!!subscription) {
