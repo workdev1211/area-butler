@@ -41,6 +41,7 @@ import {
 } from "../shared/shared.functions";
 import "./Map.css";
 import "leaflet-touch-helper";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -86,11 +87,19 @@ export class IdMarker extends L.Marker {
   createOpenPopup() {
     this.unbindPopup();
     if (!this.getPopup()) {
-      const title = `<h4>${this.entity.name || this.entity.label}</h4>`;
+      const entityTitle = this.entity.name || this.entity.label;
       const street =
-        this.entity.address.street && this.entity.address.street !== "undefined"
-          ? this.entity.address.street
-          : null;
+      this.entity.address.street && this.entity.address.street !== "undefined"
+      ? this.entity.address.street
+      : null;
+
+      const searchString = [
+        osmEntityTypes.find(t => t.name === this.entity.type)?.label,
+        entityTitle,
+        this.entity?.address?.street !== "undefined" ? this.entity.address?.street : "", 
+        this.entity?.address?.city ? this.entity?.address?.city : ""
+      ].join(" ");
+      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(searchString)}">${entityTitle}</a></h4>`;
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
