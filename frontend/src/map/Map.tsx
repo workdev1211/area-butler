@@ -25,6 +25,7 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import googleIcon from "../assets/icons/google.svg";
 import {
   EntityGroup,
   EntityRoute,
@@ -105,7 +106,7 @@ export class IdMarker extends L.Marker {
         this.entity?.address?.street !== "undefined" ? this.entity.address?.street : "", 
         this.entity?.address?.city ? this.entity?.address?.city : cityFromSearch.trim()
       ].join(" ");
-      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(searchString)}">${entityTitle}</a></h4>`;
+      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(searchString)}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`;
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
@@ -135,7 +136,8 @@ export class IdMarker extends L.Marker {
           )}</span></span>`
         : "";
       this.bindPopup(
-        `<span class="font-semibold">${title}</span><br />${
+        `<span class="font-semibold">${entityTitle}</span><br /><br />
+        <span class="font-semibold mt-2">${title}</span><br />${
           street ? "<div>" + street + "</div><br />" : ""
         }<div class="flex gap-6">${
           !isRealEstateListingOrPreferredAdress ? byFoot : ""
