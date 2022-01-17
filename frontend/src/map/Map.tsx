@@ -66,14 +66,17 @@ export interface MapProps {
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
+  searchAddress: string;
 
   constructor(
     latLng: L.LatLngExpression,
     entity: ResultEntity,
+    searchAddress: string,
     options?: L.MarkerOptions
   ) {
     super(latLng, options);
     this.entity = entity;
+    this.searchAddress = searchAddress;
   }
 
   getEntity() {
@@ -93,11 +96,14 @@ export class IdMarker extends L.Marker {
       ? this.entity.address.street
       : null;
 
+      const searchAddressParts = this.searchAddress.split(',');
+      const cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
+
       const searchString = [
         osmEntityTypes.find(t => t.name === this.entity.type)?.label,
         entityTitle,
         this.entity?.address?.street !== "undefined" ? this.entity.address?.street : "", 
-        this.entity?.address?.city ? this.entity?.address?.city : ""
+        this.entity?.address?.city ? this.entity?.address?.city : cityFromSearch.trim()
       ].join(" ");
       const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(searchString)}">${entityTitle}</a></h4>`;
       const isRealEstateListing = this.entity.type === "property";
@@ -565,7 +571,7 @@ const Map = React.memo<MapProps>(
                 className: "locality-marker-wrapper icon-" + entity.type,
                 html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
               });
-              const marker = new IdMarker(entity.coordinates, entity, {
+              const marker = new IdMarker(entity.coordinates, entity, searchAddress, {
                 icon
               }).on("click", function(e) {
                 const marker = e.target;
