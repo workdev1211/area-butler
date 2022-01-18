@@ -108,13 +108,13 @@ const UserProfilePage: FunctionComponent = () => {
           postSubmit={postSubmit}
         />
       </div>
-      {canCustomizeExport && <UserExportSettings />}
       {(hasSubscription && embedddableMaps.length > 0) && (
         <div className="my-10">
-          <h1 className="text-lg font-bold mb-5">Ihre Karten Snippets</h1>
+          <h1 className="text-xl font-bold mb-5">Ihre Karten Snippets</h1>
           <EmbeddableMapsTable embeddableMaps={embedddableMaps} />
         </div>
       )}
+      {canCustomizeExport && <UserExportSettings />}
       {hasSubscription ? (
         <SubscriptionPlanLimits
           realEstates={realEstateState.listings}
