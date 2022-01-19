@@ -128,14 +128,15 @@ export class LocationService {
             preferredAmenities,
           );
 
-      const isochrone = await this.isochroneService.fetchIsochrone(
+      const withIsochrone = search.withIsochrone === false ? false : true;    
+      const isochrone = withIsochrone ? (await this.isochroneService.fetchIsochrone(
         routingProfile.type,
         coordinates,
         routingProfile.unit === UnitsOfTransportation.KILOMETERS
           ? routingProfile.amount * 1000
           : routingProfile.amount, // convert KM to M
         routingProfile.unit,
-      );
+      )) : null;
 
       routingProfiles[routingProfile.type] = {
         locationsOfInterest,

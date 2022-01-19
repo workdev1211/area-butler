@@ -65,6 +65,7 @@ export interface ApiMoneyAmount {
 }
 export interface ApiSearch {
   searchTitle?: string;
+  withIsochrone?: boolean;
   coordinates: ApiCoordinates;
   preferredLocations?: ApiPreferredLocation[];
   meansOfTransportation: TransportationParam[];
