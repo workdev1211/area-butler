@@ -9,16 +9,17 @@ import {
 } from "../types/types";
 
 export const kudibaCompany = {
-  name: 'KuDiBa GmbH',
-  address: 'Nobistor 16',
-  zip: '22767',
-  city: 'Hamburg',
-  mail: 'info@area-butler.de',
-  formattedAddress: () => `${kudibaCompany.name}<br />${kudibaCompany.address}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
-  court: 'Amtsgericht Hamburg',
-  regNr: 'HRB 171915',
-  vat: 'VAT12343434'
-}
+  name: "KuDiBa GmbH",
+  address: "Nobistor 16",
+  zip: "22767",
+  city: "Hamburg",
+  mail: "info@area-butler.de",
+  formattedAddress: () =>
+    `${kudibaCompany.name}<br />${kudibaCompany.address}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
+  court: "Amtsgericht Hamburg",
+  regNr: "HRB 171915",
+  vat: "DE349350290"
+};
 
 export const initialShowTour: ApiShowTour = {
   search: true,
@@ -26,33 +27,33 @@ export const initialShowTour: ApiShowTour = {
   realEstates: true,
   customers: true,
   profile: true
-}
+};
 
 export const localStorageConsentGivenKey = "ab-cg";
 export const localStorageSearchContext = "ab-sc";
 
 export const calculateMinutesToMeters = [
-    {mean: MeansOfTransportation.WALK, multiplicator: 83},
-    {mean: MeansOfTransportation.BICYCLE, multiplicator: 233},
-    {mean: MeansOfTransportation.CAR, multiplicator: 338},
-]
+  { mean: MeansOfTransportation.WALK, multiplicator: 83 },
+  { mean: MeansOfTransportation.BICYCLE, multiplicator: 233 },
+  { mean: MeansOfTransportation.CAR, multiplicator: 338 }
+];
 
 export const unitsOfTransportation = [
-    {label: 'Minuten', type: UnitsOfTransportation.MINUTES},
-    {label: 'Kilometern', type: UnitsOfTransportation.KILOMETERS}
-]
+  { label: "Minuten", type: UnitsOfTransportation.MINUTES },
+  { label: "Kilometern", type: UnitsOfTransportation.KILOMETERS }
+];
 
 export const meansOfTransportations = [
-    {label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking"},
-    {label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling"},
-    {label: "Auto", type: MeansOfTransportation.CAR, mode: "driving"},
+  { label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking" },
+  { label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling" },
+  { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" }
 ];
 
 export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.leisure,
     name: OsmName.sports_centre,
-    label: 'Sportcenter',
+    label: "Sportcenter",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueTreshold: 0.5
@@ -60,7 +61,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.leisure,
     name: OsmName.sports_hall,
-    label: 'Sporthalle',
+    label: "Sporthalle",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueTreshold: 0.5
@@ -68,7 +69,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.leisure,
     name: OsmName.swimming_pool,
-    label: 'Schwimmbad',
+    label: "Schwimmbad",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueTreshold: 0.5
@@ -76,7 +77,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.leisure,
     name: OsmName.fitness_centre,
-    label: 'Fitness',
+    label: "Fitness",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueTreshold: 0.5
@@ -95,7 +96,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Park",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 200,
-    uniqueTreshold: 0.5,
+    uniqueTreshold: 0.5
   },
   {
     type: OsmType.amenity,
@@ -116,7 +117,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.amenity,
     name: OsmName.university,
-    label: 'Universität',
+    label: "Universität",
     category: ApiOsmEntityCategory.EDUCATION,
     uniqueRadius: 400,
     uniqueTreshold: 0.5
@@ -240,5 +241,5 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 100,
     uniqueTreshold: 0.8
-  },
+  }
 ];
