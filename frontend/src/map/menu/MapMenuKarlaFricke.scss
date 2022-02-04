@@ -1,0 +1,43 @@
+.map-menu-kf {
+    position: absolute;
+    right: 10%;
+    top: 16px;
+    bottom: 0;
+    z-index: 999;
+
+    .menu-desktop {
+        li {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 26px;
+            background: white;
+            margin-top: 6px;
+            padding: 10px 60px 10px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            -webkit-box-shadow: 0 4px 6px 1px rgb(0,0,0,0.3);
+            box-shadow: 0 2px 6px 1px rgba(0,0,0,0.3);
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.active {
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: var(--primary);
+                }
+            }
+
+            img {
+                height: 21px;
+            }
+        }
+    }
+}

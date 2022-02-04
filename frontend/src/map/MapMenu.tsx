@@ -36,6 +36,7 @@ import { osmEntityTypes } from "../../../shared/constants/constants";
 import { MapClipping } from "context/SearchContext";
 import MapClippingsCollapsable from "./MapClippingsCollapsable";
 import { CensusData } from "hooks/censusdata";
+import MapMenuKarlaFricke from "./menu/MapMenuKarlaFricke";
 
 export interface MapMenuProps {
   censusData?: CensusData[];
@@ -56,6 +57,7 @@ export interface MapMenuProps {
   user?: ApiUser;
   openUpgradeSubscriptionModal?: (message: React.ReactNode) => void;
   showInsights?: boolean;
+  embedTheme?: string;
 }
 
 const localityPaginationSize = 5;
@@ -108,7 +110,8 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   resetPosition,
   user,
   openUpgradeSubscriptionModal,
-  showInsights = true
+  showInsights = true,
+  embedTheme
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
@@ -262,6 +265,22 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       </li>
     );
   };
+
+  if (embedTheme) {
+    switch (embedTheme) {
+      case "kf":
+      default:
+        return (
+          <MapMenuKarlaFricke
+            groupedEntries={groupedEntries
+              .filter(ge => ge.items.length)
+              .sort((a, b) => (a.title > b.title ? 1 : -1))}
+            toggleEntryGroup={title => toggleEntryGroup(title)}
+            mobileMenuOpen={false}
+          />
+        );
+    }
+  }
 
   return (
     <div className={mobileMenuButtonClasses} data-tour="map-menu">

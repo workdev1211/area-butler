@@ -18,20 +18,21 @@ const EmbedContainer: React.FunctionComponent = () => {
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [mapBoxMapId, setMapBoxMapId] = useState<string | undefined>(undefined);
 
+  const getQueryVariable = (variable: string) => {
+    var query = window.location.search.substring(1);
+    var vars = query.split("&");
+    for (var i = 0; i < vars.length; i++) {
+      var pair = vars[i].split("=");
+      if (pair[0] === variable) {
+        return pair[1];
+      }
+    }
+    return undefined;
+  };
+
   // fetch saved response
   useEffect(() => {
     const fetchData = async () => {
-      const getQueryVariable = (variable: string) => {
-        var query = window.location.search.substring(1);
-        var vars = query.split("&");
-        for (var i = 0; i < vars.length; i++) {
-          var pair = vars[i].split("=");
-          if (pair[0] === variable) {
-            return pair[1];
-          }
-        }
-        return false;
-      };
       const baseUrl = process.env.REACT_APP_BASE_URL || "";
       const response = (
         await axios.get<ApiSearchResultSnapshotResponse>(
@@ -93,6 +94,7 @@ const EmbedContainer: React.FunctionComponent = () => {
       mapZoomLevel={searchContextState.mapZoomLevel!}
       searchContextDispatch={searchContextDispatch}
       embedMode={true}
+      embedTheme={getQueryVariable("theme")}
     />
   );
 };

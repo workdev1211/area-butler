@@ -52,8 +52,8 @@ export interface ColorPalette {
 
 export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
   const oneDay = 24 * 60 * 60 * 1000;
-  d1.setHours(0,0,0);
-  d2.setHours(0,0,0);
+  d1.setHours(0, 0, 0);
+  d2.setHours(0, 0, 0);
   return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
 };
 
@@ -417,7 +417,10 @@ export const buildEntityDataFromRealEstateListings = (
     }));
 };
 
-export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
+export const buildCombinedGroupedEntries = (
+  entities: ResultEntity[],
+  active = true
+) => {
   const newGroupedEntries: any[] = Object.entries(
     groupBy(entities, (item: ResultEntity) => item.label)
   );
@@ -425,7 +428,7 @@ export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
   return [
     {
       title: preferredLocationsTitle,
-      active: true,
+      active,
       items: newGroupedEntries
         .filter(([label, _]) => label === preferredLocationsTitle)
         .map(([_, items]) => items)
@@ -433,7 +436,7 @@ export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
     },
     {
       title: realEstateListingsTitle,
-      active: true,
+      active,
       items: newGroupedEntries
         .filter(([label, _]) => label === realEstateListingsTitle)
         .map(([_, items]) => items)
@@ -446,12 +449,11 @@ export const buildCombinedGroupedEntries = (entities: ResultEntity[]) => {
       )
       .map(([title, items]) => ({
         title,
-        active: true,
+        active,
         items
       }))
   ];
 };
-
 
 export const createCodeSnippet = (token: string) => {
   return `  

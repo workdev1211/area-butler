@@ -9,6 +9,12 @@
         grid-template-columns: 5fr 2fr;
         @apply grid;
     }
+    .search-result-container.kf {
+        @apply block;
+    }
+    .search-result-container > div:first-child {
+        @apply w-full h-full;
+    }
 }
 
 .mobile-menu-btn {

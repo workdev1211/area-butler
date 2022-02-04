@@ -88,6 +88,7 @@ export interface SearchResultContainerProps {
   onGroupedEntitiesChange?: (entities: EntityGroup[]) => void;
   onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
+  embedTheme?: string;
 }
 
 const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
@@ -111,7 +112,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   onActiveMeansChange = () => null,
   onEntitiesChange = () => null,
   onGroupedEntitiesChange = () => null,
-  embedMode = false
+  embedMode = false,
+  embedTheme
 }) => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
@@ -171,21 +173,34 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
     }
     updateEntities(entitiesIncludedInActiveMeans);
+    const defaultActive = embedTheme !== "kf";
     updateGroupedEntities(
-      buildCombinedGroupedEntries(entitiesIncludedInActiveMeans)
+      buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse, activeMeans, preferredLocations, listings]);
 
   const toggleEntityGroup = (title: string) => {
-    const newGroups = groupedEntities.map(ge =>
-      ge.title !== title
-        ? ge
-        : {
+    let newGroups: EntityGroup[] = [];
+    if (embedTheme) {
+      switch (embedTheme) {
+        case "kf":
+        default:
+          newGroups = groupedEntities.map(ge => ({
             ...ge,
-            active: !ge.active
-          }
-    );
+            active: ge.title === title
+          }));
+      }
+    } else {
+      newGroups = groupedEntities.map(ge =>
+        ge.title !== title
+          ? ge
+          : {
+              ...ge,
+              active: !ge.active
+            }
+      );
+    }
     updateGroupedEntities(newGroups);
   };
 
@@ -328,9 +343,11 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     return <div>Loading...</div>;
   }
 
+  const containerClasses = `search-result-container ${embedTheme}`;
+
   return (
     <>
-      <div className="search-result-container">
+      <div className={containerClasses}>
         <div className="relative flex-1">
           <MapNavBar
             transportationParams={transportationParams}
@@ -393,6 +410,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             })
           }
           showInsights={!embedMode}
+          embedTheme={embedTheme}
         />
       </div>
     </>
