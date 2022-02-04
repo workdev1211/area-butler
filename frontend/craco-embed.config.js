@@ -25,7 +25,20 @@ module.exports = {
   },
   style: {
     postcss: {
-      plugins: [require("tailwindcss"), require("autoprefixer")]
+      plugins: [
+        require("postcss-import"),
+        require("tailwindcss/nesting"),
+        require("tailwindcss"),
+        require("autoprefixer")
+      ]
+    },
+    sass: {
+      loaderOptions: {
+        // Prefer 'sass' (dart-sass) over 'node-sass' if both packages are installed.
+        implementation: require("sass"),
+        // Workaround for this bug: https://github.com/webpack-contrib/sass-loader/issues/804
+        webpackImporter: false
+      }
     }
   }
 };

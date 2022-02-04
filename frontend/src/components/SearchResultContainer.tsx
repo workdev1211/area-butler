@@ -147,7 +147,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         searchResponse
       );
       setAvailableMeans(meansFromResponse);
-      updateActiveMeans(meansFromResponse);
+      updateActiveMeans(
+        embedTheme === "kf" ? [MeansOfTransportation.WALK] : meansFromResponse
+      );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse]);
