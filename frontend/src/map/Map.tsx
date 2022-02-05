@@ -267,19 +267,21 @@ const Map = React.memo<MapProps>(
         tileSize: 512,
         maxZoom: 18
       }).addTo(localMap);
-      const positionIcon = L.Icon.extend({
-        options: {
-          iconUrl: mylocationIcon,
-          shadowUrl: leafletShadow,
-          shadowSize: [0, 0],
-          iconSize: myLocationIconSize
-        }
-      });
-      L.marker([lat, lng], {
-        icon: new positionIcon()
-      })
-        .bindPopup(searchAddress)
-        .addTo(localMap);
+      if (!embedMode || !!searchAddress) {
+        const positionIcon = L.Icon.extend({
+          options: {
+            iconUrl: mylocationIcon,
+            shadowUrl: leafletShadow,
+            shadowSize: [0, 0],
+            iconSize: myLocationIconSize
+          }
+        });
+        L.marker([lat, lng], {
+          icon: new positionIcon()
+        })
+          .bindPopup(searchAddress)
+          .addTo(localMap);
+      }
 
       currentMap = localMap;
     }, [

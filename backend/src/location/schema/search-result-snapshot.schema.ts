@@ -1,4 +1,4 @@
-import { ApiSearchResultSnapshot } from "@area-butler-types/types";
+import { ApiSearchResultSnapshot, ApiSearchResultSnapshotConfig } from "@area-butler-types/types";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
@@ -14,6 +14,9 @@ export class SearchResultSnapshot {
 
   @Prop()
   mapboxAccessToken: string;
+
+  @Prop({ type: Object, required: false })
+  config: ApiSearchResultSnapshotConfig;
 
   @Prop({ type: Object })
   snapshot: ApiSearchResultSnapshot;

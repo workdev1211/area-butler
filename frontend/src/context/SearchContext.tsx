@@ -131,8 +131,8 @@ export const searchContextReducer = (
       return {
         ...state,
         searchResponse: { ...action.payload },
-        location: action.payload.centerOfInterest.coordinates,
-        mapCenter: action.payload.centerOfInterest.coordinates
+        location: action.payload?.centerOfInterest?.coordinates,
+        mapCenter: action.payload?.centerOfInterest?.coordinates
       };
     }
     case SearchContextActionTypes.SET_ZENSUS_DATA: {

@@ -207,9 +207,14 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
 }
 
+export interface ApiSearchResultSnapshotConfig {
+  showLocation: boolean;
+}
+
 export interface ApiSearchResultSnapshotResponse {
   mapboxToken: string;
   token: string;
+  config?: ApiSearchResultSnapshotConfig;
   snapshot: ApiSearchResultSnapshot;
   createdAt: Date;
 }
