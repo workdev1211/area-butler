@@ -54,6 +54,7 @@ export interface MapProps {
   mapCenter?: ApiCoordinates;
   mapZoomLevel?: number;
   leafletMapId?: string;
+  mapboxMapId?: string;
   means: {
     byFoot: boolean;
     byBike: boolean;
@@ -222,7 +223,8 @@ const Map = React.memo<MapProps>(
     highlightId,
     routes,
     transitRoutes,
-    embedMode = false
+    embedMode = false,
+    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
   }) => {
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
@@ -261,7 +263,7 @@ const Map = React.memo<MapProps>(
 
       L.tileLayer(url, {
         attribution: embedMode ? attributionEmbedded : attribution,
-        id: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+        id: mapboxMapId,
         zoomOffset: -1,
         accessToken: mapBoxAccessToken,
         tileSize: 512,

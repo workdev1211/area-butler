@@ -68,6 +68,7 @@ export interface EntityTransitRoute {
 
 export interface SearchResultContainerProps {
   mapBoxToken: string;
+  mapBoxMapId?: string;
   searchResponse: ApiSearchResponse;
   transportationParams: TransportationParam[];
   placesLocation: any;
@@ -91,6 +92,7 @@ export interface SearchResultContainerProps {
 
 const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
   mapBoxToken,
+  mapBoxMapId,
   searchResponse,
   transportationParams = [],
   placesLocation,
@@ -338,6 +340,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           />
           <Map
             mapBoxAccessToken={mapBoxToken}
+            mapboxMapId={mapBoxMapId}
             searchContextDispatch={searchContextDispatch}
             searchResponse={searchResponse}
             searchAddress={placesLocation?.label}

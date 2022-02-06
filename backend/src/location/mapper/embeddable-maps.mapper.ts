@@ -14,6 +14,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
     searchResultSnapshot.snapshot,
     searchResultSnapshot.config,
   ),
+  config: searchResultSnapshot.config,
   token: searchResultSnapshot.token,
   mapboxToken: searchResultSnapshot.mapboxAccessToken,
   createdAt: searchResultSnapshot.createdAt,

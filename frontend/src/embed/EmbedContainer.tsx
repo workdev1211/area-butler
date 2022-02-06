@@ -16,6 +16,7 @@ const EmbedContainer: React.FunctionComponent = () => {
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
 
   const [mapBoxToken, setMapBoxToken] = useState("");
+  const [mapBoxMapId, setMapBoxMapId] = useState<string | undefined>(undefined);
 
   // fetch saved response
   useEffect(() => {
@@ -38,6 +39,7 @@ const EmbedContainer: React.FunctionComponent = () => {
         )
       ).data;
       setMapBoxToken(response.mapboxToken);
+      setMapBoxMapId(response.config?.mapBoxMapId);
       setResult(response);
     };
     fetchData();
@@ -82,6 +84,7 @@ const EmbedContainer: React.FunctionComponent = () => {
   return (
     <SearchResultContainer
       mapBoxToken={mapBoxToken}
+      mapBoxMapId={mapBoxMapId}
       searchResponse={searchContextState.searchResponse}
       transportationParams={searchContextState.transportationParams}
       placesLocation={searchContextState.placesLocation}

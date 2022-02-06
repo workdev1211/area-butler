@@ -209,6 +209,7 @@ export interface ApiSearchResultSnapshot {
 
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
+  mapBoxMapId: string;
 }
 
 export interface ApiSearchResultSnapshotResponse {
