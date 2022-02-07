@@ -44,6 +44,7 @@ import {
 import "./Map.scss";
 import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
+import { PointExpression } from "leaflet";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -274,6 +275,17 @@ const Map = React.memo<MapProps>(
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
 
+      localMap.on("zoomend", function() {
+        if (config && config.groupItems === false) {
+          const container = document.querySelector(".leaflet-container");
+          if (localMap.getZoom() < 15) {
+            container?.classList.add("no-group");
+          } else {
+            container?.classList.remove("no-group");
+          }
+        }
+      });
+
       L.tileLayer(url, {
         attribution: embedMode ? attributionEmbedded : attribution,
         id: mapboxMapId,
@@ -297,7 +309,6 @@ const Map = React.memo<MapProps>(
           .bindPopup(searchAddress)
           .addTo(localMap);
       }
-
       currentMap = localMap;
     }, [
       lat,

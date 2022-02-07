@@ -47,6 +47,14 @@
     @apply bg-white justify-center items-center;
 }
 
+.leaflet-container.no-group {
+    .locality-marker-wrapper {
+        height: 22px !important;
+        width: 22px !important;
+        padding: 1px;
+    }
+}
+
 .locality-marker {
     display: flex;
     padding: 4px;

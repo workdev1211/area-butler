@@ -41,7 +41,6 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     group,
     toggleEntryGroup
   }) => {
-    console.log("render item " + group.title);
     const isRealEstateListing =
       group.items[0].label === realEstateListingsTitle;
     const isPreferredLocation =
