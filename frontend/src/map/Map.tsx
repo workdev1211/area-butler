@@ -44,7 +44,6 @@ import {
 import "./Map.scss";
 import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
-import { PointExpression } from "leaflet";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -101,8 +100,11 @@ export class IdMarker extends L.Marker {
           ? this.entity.address.street
           : null;
 
-      const searchAddressParts = this.searchAddress.split(",");
-      const cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
+      let cityFromSearch = "";
+      if (this.searchAddress) {
+        const searchAddressParts = this.searchAddress.split(",");
+        cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
+      }
 
       const searchString = [
         osmEntityTypes.find(t => t.name === this.entity.type)?.label,
@@ -282,6 +284,11 @@ const Map = React.memo<MapProps>(
             container?.classList.add("no-group");
           } else {
             container?.classList.remove("no-group");
+          }
+          if (localMap.getZoom() < 13) {
+            container?.classList.add("small-markers");
+          } else {
+            container?.classList.remove("small-markers");
           }
         }
       });

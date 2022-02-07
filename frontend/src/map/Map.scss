@@ -53,6 +53,13 @@
         width: 22px !important;
         padding: 1px;
     }
+    &.small-markers {
+        .locality-marker-wrapper {
+            height: 16px !important;
+            width: 16px !important;
+            padding: 1px;
+        }
+    }
 }
 
 .locality-marker {

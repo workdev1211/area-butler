@@ -9,7 +9,6 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotConfigTheme,
   ApiUser,
   MeansOfTransportation,
   TransportationParam
@@ -133,7 +132,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   };
 
   const updateGroupedEntities = (entities: EntityGroup[]) => {
-    setGroupedEntities(entities);
+    if (!groupedEntities.some(ge => ge.active)) {
+      setGroupedEntities(
+        entities.map((e, index) => (index === 0 ? { ...e, active: true } : e))
+      );
+    } else {
+      setGroupedEntities(entities);
+    }
     onGroupedEntitiesChange(entities);
   };
 
