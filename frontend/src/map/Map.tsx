@@ -15,6 +15,7 @@ import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
 import {
   ApiCoordinates,
   ApiSearchResponse,
+  ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
@@ -40,7 +41,7 @@ import {
   timeToHumanReadable,
   toastSuccess
 } from "../shared/shared.functions";
-import "./Map.css";
+import "./Map.scss";
 import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 
@@ -64,6 +65,7 @@ export interface MapProps {
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   embedMode?: boolean;
+  config?: ApiSearchResultSnapshotConfig;
 }
 
 export class IdMarker extends L.Marker {
@@ -94,20 +96,26 @@ export class IdMarker extends L.Marker {
     if (!this.getPopup()) {
       const entityTitle = this.entity.name || this.entity.label;
       const street =
-      this.entity.address.street && this.entity.address.street !== "undefined"
-      ? this.entity.address.street
-      : null;
+        this.entity.address.street && this.entity.address.street !== "undefined"
+          ? this.entity.address.street
+          : null;
 
-      const searchAddressParts = this.searchAddress.split(',');
+      const searchAddressParts = this.searchAddress.split(",");
       const cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
 
       const searchString = [
         osmEntityTypes.find(t => t.name === this.entity.type)?.label,
         entityTitle,
-        this.entity?.address?.street !== "undefined" ? this.entity.address?.street : "", 
-        this.entity?.address?.city ? this.entity?.address?.city : cityFromSearch.trim()
+        this.entity?.address?.street !== "undefined"
+          ? this.entity.address?.street
+          : "",
+        this.entity?.address?.city
+          ? this.entity?.address?.city
+          : cityFromSearch.trim()
       ].join(" ");
-      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(searchString)}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`;
+      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
+        searchString
+      )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`;
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
@@ -184,6 +192,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const routesEqual = prevProps.routes === nextProps.routes;
   const transitRoutesEqual =
     prevProps.transitRoutes === nextProps.transitRoutes;
+  const configEqual =
+    JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config);
   return (
     mapboxKeyEqual &&
     responseEqual &&
@@ -195,7 +205,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     mapZoomLevelEqual &&
     highlightIdEqual &&
     routesEqual &&
-    transitRoutesEqual
+    transitRoutesEqual &&
+    configEqual
   );
 };
 
@@ -224,6 +235,7 @@ const Map = React.memo<MapProps>(
     routes,
     transitRoutes,
     embedMode = false,
+    config,
     mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
   }) => {
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
@@ -234,7 +246,6 @@ const Map = React.memo<MapProps>(
       document.body.classList.toggle("fullscreen", fullscreen);
     }, [fullscreen]);
 
-
     // main map draw
     useEffect(() => {
       const attribution =
@@ -242,8 +253,10 @@ const Map = React.memo<MapProps>(
       const attributionEmbedded =
         'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
         attribution;
-      const url = embedMode ? `${process.env.REACT_APP_BASE_URL || ''}/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}` :
-        "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
+      const url = embedMode
+        ? `${process.env.REACT_APP_BASE_URL ||
+            ""}/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
+        : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
 
       if (currentMap !== undefined) {
         currentMap.off();
@@ -551,7 +564,7 @@ const Map = React.memo<MapProps>(
               });
             },
             maxClusterRadius: 200,
-            disableClusteringAtZoom: 15,
+            disableClusteringAtZoom: config?.groupItems ? 15 : 1,
             spiderfyOnMaxZoom: false,
             animate: false,
             zoomToBoundsOnClick: false
@@ -577,9 +590,14 @@ const Map = React.memo<MapProps>(
                 className: "locality-marker-wrapper icon-" + entity.type,
                 html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
               });
-              const marker = new IdMarker(entity.coordinates, entity, searchAddress, {
-                icon
-              }).on("click", function(e) {
+              const marker = new IdMarker(
+                entity.coordinates,
+                entity,
+                searchAddress,
+                {
+                  icon
+                }
+              ).on("click", function(e) {
                 const marker = e.target;
                 marker.createOpenPopup();
               });
@@ -730,11 +748,11 @@ const Map = React.memo<MapProps>(
 
     return (
       <div
-        className="leaflet-container w-full"
+        className={`leaflet-container leaflet-container-${config?.theme} w-full`}
         id={leafletMapId}
         data-tour="map"
       >
-        <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
+        <div className={`leaflet-bottom leaflet-left mb-20 cursor-pointer`}>
           <div
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"
@@ -774,7 +792,7 @@ const Map = React.memo<MapProps>(
             )}
           </div>
           {!embedMode && (
-            <div className="leaflet-control-zoom leaflet-bar leaflet-control">
+            <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
               <a
                 href="/"
                 data-tour="go-fullscreen"

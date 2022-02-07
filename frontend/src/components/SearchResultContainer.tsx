@@ -380,6 +380,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             routes={routes}
             transitRoutes={transitRoutes}
             embedMode={embedMode}
+            config={config}
           />
         </div>
         <MapMenuMobileBtn />

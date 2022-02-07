@@ -227,6 +227,7 @@ export interface ApiSearchResultSnapshotConfig {
   mapBoxMapId: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
+  groupItems: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {
