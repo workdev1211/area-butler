@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from "react";
 import "./EmbedContainer.css";
-import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotResponse
+} from "../../../shared/types/types";
 import axios from "axios";
 import {
   SearchContext,
@@ -16,7 +19,9 @@ const EmbedContainer: React.FunctionComponent = () => {
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
 
   const [mapBoxToken, setMapBoxToken] = useState("");
-  const [mapBoxMapId, setMapBoxMapId] = useState<string | undefined>(undefined);
+  const [searchConfig, setSearchConfig] = useState<
+    ApiSearchResultSnapshotConfig
+  >();
 
   const getQueryVariable = (variable: string) => {
     var query = window.location.search.substring(1);
@@ -40,8 +45,8 @@ const EmbedContainer: React.FunctionComponent = () => {
         )
       ).data;
       setMapBoxToken(response.mapboxToken);
-      setMapBoxMapId(response.config?.mapBoxMapId);
       setResult(response);
+      setSearchConfig(response.config);
     };
     fetchData();
   }, [setMapBoxToken, searchContextDispatch]);
@@ -85,7 +90,7 @@ const EmbedContainer: React.FunctionComponent = () => {
   return (
     <SearchResultContainer
       mapBoxToken={mapBoxToken}
-      mapBoxMapId={mapBoxMapId}
+      mapBoxMapId={searchConfig?.mapBoxMapId}
       searchResponse={searchContextState.searchResponse}
       transportationParams={searchContextState.transportationParams}
       placesLocation={searchContextState.placesLocation}
@@ -94,7 +99,7 @@ const EmbedContainer: React.FunctionComponent = () => {
       mapZoomLevel={searchContextState.mapZoomLevel!}
       searchContextDispatch={searchContextDispatch}
       embedMode={true}
-      embedTheme={getQueryVariable("theme")}
+      config={searchConfig}
     />
   );
 };

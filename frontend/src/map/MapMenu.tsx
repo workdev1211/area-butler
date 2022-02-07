@@ -14,6 +14,7 @@ import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg"
 import {
   ApiGeojsonFeature,
   ApiOsmEntityCategory,
+  ApiSearchResultSnapshotConfig,
   ApiUser,
   MeansOfTransportation,
   OsmName
@@ -57,7 +58,7 @@ export interface MapMenuProps {
   user?: ApiUser;
   openUpgradeSubscriptionModal?: (message: React.ReactNode) => void;
   showInsights?: boolean;
-  embedTheme?: string;
+  config?: ApiSearchResultSnapshotConfig;
 }
 
 const localityPaginationSize = 5;
@@ -111,7 +112,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   user,
   openUpgradeSubscriptionModal,
   showInsights = true,
-  embedTheme
+  config
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
@@ -266,9 +267,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     );
   };
 
-  if (embedTheme) {
-    switch (embedTheme) {
-      case "kf":
+  if (config?.theme) {
+    switch (config?.theme) {
+      case "KF":
       default:
         return (
           <MapMenuKarlaFricke
@@ -286,15 +287,17 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
       <div className="heading">
         <span className="heading">Ergebnisse</span>
-        {searchAddress && <button
-          type="button"
-          className="btn btn-link"
-          onClick={() => resetPosition()}
-          data-tour="reset-position"
-        >
-          <img className="mr-1" src={positionIcon} alt="icon-position" />
-          {searchAddress}
-        </button>}
+        {searchAddress && (
+          <button
+            type="button"
+            className="btn btn-link"
+            onClick={() => resetPosition()}
+            data-tour="reset-position"
+          >
+            <img className="mr-1" src={positionIcon} alt="icon-position" />
+            {searchAddress}
+          </button>
+        )}
       </div>
       {clippings.length > 0 && (
         <div

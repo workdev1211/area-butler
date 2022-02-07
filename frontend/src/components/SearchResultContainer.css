@@ -9,7 +9,7 @@
         grid-template-columns: 5fr 2fr;
         @apply grid;
     }
-    .search-result-container.kf {
+    .search-result-container.theme-kf {
         @apply block;
     }
     .search-result-container > div:first-child {

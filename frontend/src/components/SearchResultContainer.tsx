@@ -8,6 +8,8 @@ import {
   ApiAddress,
   ApiCoordinates,
   ApiSearchResponse,
+  ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotConfigTheme,
   ApiUser,
   MeansOfTransportation,
   TransportationParam
@@ -88,7 +90,7 @@ export interface SearchResultContainerProps {
   onGroupedEntitiesChange?: (entities: EntityGroup[]) => void;
   onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
-  embedTheme?: string;
+  config?: ApiSearchResultSnapshotConfig;
 }
 
 const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
@@ -113,7 +115,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   onEntitiesChange = () => null,
   onGroupedEntitiesChange = () => null,
   embedMode = false,
-  embedTheme
+  config
 }) => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
@@ -148,7 +150,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
       setAvailableMeans(meansFromResponse);
       updateActiveMeans(
-        embedTheme === "kf" ? [MeansOfTransportation.WALK] : meansFromResponse
+        config && config.defaultActiveMeans
+          ? [...config.defaultActiveMeans]
+          : meansFromResponse
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -175,7 +179,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
     }
     updateEntities(entitiesIncludedInActiveMeans);
-    const defaultActive = embedTheme !== "kf";
+    const theme = config?.theme;
+    const defaultActive = theme !== "KF";
     updateGroupedEntities(
       buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
     );
@@ -183,25 +188,24 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   }, [searchResponse, activeMeans, preferredLocations, listings]);
 
   const toggleEntityGroup = (title: string) => {
+    const theme = config?.theme;
     let newGroups: EntityGroup[] = [];
-    if (embedTheme) {
-      switch (embedTheme) {
-        case "kf":
-        default:
-          newGroups = groupedEntities.map(ge => ({
-            ...ge,
-            active: ge.title === title
-          }));
-      }
-    } else {
-      newGroups = groupedEntities.map(ge =>
-        ge.title !== title
-          ? ge
-          : {
-              ...ge,
-              active: !ge.active
-            }
-      );
+    switch (theme) {
+      case "KF":
+        newGroups = groupedEntities.map(ge => ({
+          ...ge,
+          active: ge.title === title
+        }));
+        break;
+      default:
+        newGroups = groupedEntities.map(ge =>
+          ge.title !== title
+            ? ge
+            : {
+                ...ge,
+                active: !ge.active
+              }
+        );
     }
     updateGroupedEntities(newGroups);
   };
@@ -345,7 +349,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     return <div>Loading...</div>;
   }
 
-  const containerClasses = `search-result-container ${embedTheme}`;
+  const containerClasses = `search-result-container theme-${config?.theme}`;
 
   return (
     <>
@@ -412,7 +416,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             })
           }
           showInsights={!embedMode}
-          embedTheme={embedTheme}
+          config={config}
         />
       </div>
     </>

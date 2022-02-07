@@ -14,7 +14,7 @@ export interface ApiConfig {
   };
   googleApiKey: string;
   mapBoxAccessToken: string;
-  stripeEnv: 'dev' | 'prod';
+  stripeEnv: "dev" | "prod";
   rollbarConfig: RollbarConfig;
 }
 export interface ApiUser {
@@ -42,14 +42,19 @@ export interface ApiUserRequests {
   requests: ApiSearch[];
 }
 
-export type ApiTour = 'search' | 'result' | 'realEstates' | 'customers' | 'profile';
+export type ApiTour =
+  | "search"
+  | "result"
+  | "realEstates"
+  | "customers"
+  | "profile";
 
 export interface ApiShowTour {
   search: boolean;
   result: boolean;
   realEstates: boolean;
   customers: boolean;
-  profile: boolean
+  profile: boolean;
 }
 
 export interface ApiInsertFeedback {
@@ -57,7 +62,7 @@ export interface ApiInsertFeedback {
   type: FeedbackType;
 }
 
-export type FeedbackType = 'ERROR' | 'IMPROVEMENT' | 'OTHER';
+export type FeedbackType = "ERROR" | "IMPROVEMENT" | "OTHER";
 
 export interface ApiMoneyAmount {
   amount?: number;
@@ -102,12 +107,12 @@ export interface ApiOsmLocation {
 }
 
 export enum ApiOsmEntityCategory {
-  'LEISURE' = 'Freizeit',
-  'SPORT' = 'Sport',
-  'TRAFFIC' = 'Verkehr',
-  'SUPPLIES' = 'Nahversorgung',
-  'HEALTH' = 'Gesundheit',
-  'EDUCATION' = 'Bildung'
+  "LEISURE" = "Freizeit",
+  "SPORT" = "Sport",
+  "TRAFFIC" = "Verkehr",
+  "SUPPLIES" = "Nahversorgung",
+  "HEALTH" = "Gesundheit",
+  "EDUCATION" = "Bildung"
 }
 
 export interface ApiOsmEntity {
@@ -131,7 +136,16 @@ export interface ApiCoordinates {
   lng: number;
 }
 
-export type ApiGeojsonType = "Polygon" | "MultiPolygon" | "Point" | "MultiPoint" | "LineString" | "MultiLineString" | "GeometryCollection" | "Feature" | "FeatureCollection";
+export type ApiGeojsonType =
+  | "Polygon"
+  | "MultiPolygon"
+  | "Point"
+  | "MultiPoint"
+  | "LineString"
+  | "MultiLineString"
+  | "GeometryCollection"
+  | "Feature"
+  | "FeatureCollection";
 
 export interface ApiGeometry {
   type: ApiGeojsonType;
@@ -141,7 +155,7 @@ export interface ApiGeometry {
 export interface ApiGeojsonFeature {
   type: ApiGeojsonType;
   properties: object;
-  geometry: ApiGeometry
+  geometry: ApiGeometry;
 }
 
 export interface TransportationParam {
@@ -152,13 +166,13 @@ export interface TransportationParam {
 
 export enum UnitsOfTransportation {
   MINUTES = "MINUTES",
-  KILOMETERS = "KILOMETERS",
+  KILOMETERS = "KILOMETERS"
 }
 
 export enum MeansOfTransportation {
   WALK = "WALK",
   CAR = "CAR",
-  BICYCLE = "BICYCLE",
+  BICYCLE = "BICYCLE"
 }
 
 export enum OsmType {
@@ -166,7 +180,7 @@ export enum OsmType {
   amenity = "amenity",
   shop = "shop",
   public_transport = "public_transport",
-  highway = "highway",
+  highway = "highway"
 }
 
 export enum OsmName {
@@ -195,9 +209,8 @@ export enum OsmName {
   swimming_pool = "swimming_pool",
   fitness_centre = "fitness_centre",
   favorite = "favorite",
-  property = "property",
+  property = "property"
 }
-
 
 export interface ApiSearchResultSnapshot {
   placesLocation: any;
@@ -207,9 +220,13 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
 }
 
+export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
+
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
   mapBoxMapId: string;
+  theme?: ApiSearchResultSnapshotConfigTheme;
+  defaultActiveMeans?: MeansOfTransportation[];
 }
 
 export interface ApiSearchResultSnapshotResponse {
