@@ -267,7 +267,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
       <div className="heading">
         <span className="heading">Ergebnisse</span>
-        <button
+        {searchAddress && <button
           type="button"
           className="btn btn-link"
           onClick={() => resetPosition()}
@@ -275,7 +275,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         >
           <img className="mr-1" src={positionIcon} alt="icon-position" />
           {searchAddress}
-        </button>
+        </button>}
       </div>
       {clippings.length > 0 && (
         <div
