@@ -388,7 +388,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             config={config}
           />
         </div>
-        <MapMenuMobileBtn />
+        {config?.theme !== "KF" && <MapMenuMobileBtn />}
         <MapMenu
           mobileMenuOpen={mobileMenuOpen}
           censusData={censusData}

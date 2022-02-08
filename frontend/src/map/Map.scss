@@ -84,8 +84,11 @@
     height: 100vh;
     max-height: 100vh;
 }
-.leaflet-container-KF {
-    .leaflet-left {
-        left: 10%;
+
+@media (min-width: 1024px) {
+    .leaflet-container-KF {
+        .leaflet-left {
+            left: 10% !important;
+        }
     }
 }

@@ -28,7 +28,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupedEntries.length]);
 
-  const mobileMenuButtonClasses = `map-menu-kf ${
+  const mobileMenuButtonClasses = `map-menu-KF ${
     mobileMenuOpen ? "mobile-open" : ""
   }`;
 

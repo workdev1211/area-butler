@@ -1,8 +1,8 @@
-.map-menu-kf {
+.map-menu-KF {
     position: absolute;
-    right: 10%;
     top: 24px;
     bottom: 0;
+    right: 1%;
     z-index: 999;
     overflow-y: scroll;
 
@@ -40,5 +40,11 @@
                 height: 21px;
             }
         }
+    }
+}
+
+@media (min-width: 1024px) {
+    .map-menu-KF {
+        right: 10%;
     }
 }
