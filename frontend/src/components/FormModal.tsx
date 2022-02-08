@@ -62,6 +62,7 @@ export const FormModal: React.FunctionComponent<{ modalConfig: ModalConfig }> = 
                             key="submit"
                             type="submit"
                             disabled={busy}
+                            onClick={() => modalConfig.postSubmit && modalConfig.postSubmit(true)}
                             className={busy ? 'loading btn btn-primary btn-sm' : 'btn btn-primary btn-sm'}
                         >
                             {props.modalConfig.submitButtonTitle || 'Speichern'}

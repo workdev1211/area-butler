@@ -10,6 +10,7 @@ export interface LocationAutocompleteProps {
     afterChange?: ({value, coordinates}: { value: any, coordinates?: any }) => void;
     value: any;
     setValue: any;
+    menuZIndex?: number
 }
 
 const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
@@ -18,6 +19,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                                                                                 value = null,
                                                                                 setValue = () => {
                                                                                 },
+                                                                                menuZIndex = 99
                                                                             }) => {
     const {googleApiKey} = useContext(ConfigContext);
     const Menu = (props: any) => {
@@ -104,7 +106,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
                         onFocus: () => setFocus(true),
                         onBlur: () => setFocus(false),
                         menuPortalTarget: document.body,
-                        styles: {menuPortal: (base: any) => ({...base, zIndex: 99})}
+                        styles: {menuPortal: (base: any) => ({...base, zIndex: menuZIndex})}
                     }}
                     apiKey={googleApiKey}
                 />

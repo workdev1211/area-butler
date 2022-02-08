@@ -6,7 +6,9 @@ import {
   ApiCoordinates,
   ApiGeojsonFeature,
   ApiOsmEntity,
+  ApiOsmLocation,
   ApiSearchResponse,
+  OsmName,
   TransportationParam
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
@@ -16,6 +18,18 @@ import { CensusData } from "../hooks/censusdata";
 export interface MapClipping {
   zoomLevel: number;
   mapClippingDataUrl: string;
+}
+
+export interface Poi {
+  address: {street: string},
+  coordinates: ApiCoordinates,
+  distanceInMeters: number,
+  entity: {
+    id: string,
+    name: string,
+    label: string,
+    type: OsmName
+  }
 }
 
 export interface SearchContextState {
@@ -70,7 +84,8 @@ export enum SearchContextActionTypes {
   ADD_MAP_CLIPPING = "ADD_MAP_CLIPPING",
   REMOVE_MAP_CLIPPING = "REMOVE_MAP_CLIPPING",
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
-  SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING"
+  SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
+  ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE"
 }
 
 type SearchContextActionsPayload = {
@@ -98,6 +113,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.REMOVE_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
   [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]: ApiRealEstateListing;
+  [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: Poi;
 };
 
 export type SearchContextActions = ActionMap<
@@ -197,6 +213,17 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_REAL_ESTATE_LISTING: {
       return { ...state, realEstateListing: { ...action.payload } };
+    }
+    case SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE: {
+
+      const poi : Poi = action.payload;
+
+      const searchResponse = JSON.parse(JSON.stringify(state.searchResponse)) as ApiSearchResponse;
+      searchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+      searchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+      searchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+
+      return { ...state, searchResponse};
     }
     default:
       return state;
