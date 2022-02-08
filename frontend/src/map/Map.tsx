@@ -1,7 +1,7 @@
 import center from "@turf/center";
 import {
   SearchContextActions,
-  SearchContextActionTypes,
+  SearchContextActionTypes
 } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
@@ -17,7 +17,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
-  OsmName,
+  OsmName
 } from "../../../shared/types/types";
 import { groupBy } from "../../../shared/functions/shared.functions";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
@@ -31,7 +31,7 @@ import {
   EntityGroup,
   EntityRoute,
   EntityTransitRoute,
-  ResultEntity,
+  ResultEntity
 } from "../components/SearchResultContainer";
 import {
   deriveAddressFromCoordinates,
@@ -40,7 +40,7 @@ import {
   preferredLocationsIcon,
   realEstateListingsIcon,
   timeToHumanReadable,
-  toastSuccess,
+  toastSuccess
 } from "../shared/shared.functions";
 import "./Map.scss";
 import "leaflet-touch-helper";
@@ -110,14 +110,14 @@ export class IdMarker extends L.Marker {
       }
 
       const searchString = [
-        osmEntityTypes.find((t) => t.name === this.entity.type)?.label,
+        osmEntityTypes.find(t => t.name === this.entity.type)?.label,
         entityTitle,
         this.entity?.address?.street !== "undefined"
           ? this.entity.address?.street
           : "",
         this.entity?.address?.city
           ? this.entity?.address?.city
-          : cityFromSearch.trim(),
+          : cityFromSearch.trim()
       ].join(" ");
       const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
         searchString
@@ -223,7 +223,7 @@ const CAR_COLOR = "#1f2937";
 const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
   [MeansOfTransportation.CAR]: CAR_COLOR,
   [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
-  [MeansOfTransportation.WALK]: WALK_COLOR,
+  [MeansOfTransportation.WALK]: WALK_COLOR
 };
 const Map = React.memo<MapProps>(
   ({
@@ -242,22 +242,18 @@ const Map = React.memo<MapProps>(
     transitRoutes,
     embedMode = false,
     config,
-    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
-    const [addPoiCoordinates, setAddPoiCoordinates] = useState<
-      ApiCoordinates | undefined
-    >();
+    const [addPoiCoordinates, setAddPoiCoordinates] = useState<ApiCoordinates | undefined>();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
 
-    let addPoiModalOpenConfig: ModalConfig = {
-      modalTitle: "Neuen Ort hinzufügen",
-      submitButtonTitle: "Hinzufügen",
+    let addPoiModalOpenConfig : ModalConfig = {
+      modalTitle: 'Neuen Ort hinzufügen',
+      submitButtonTitle: 'Hinzufügen',
       modalOpen: addPoiModalOpen,
-      postSubmit: () => {
-        setAddPoiModalOpen(false);
-      },
-    };
+      postSubmit: () => { setAddPoiModalOpen(false) }
+    };  
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
@@ -275,9 +271,8 @@ const Map = React.memo<MapProps>(
         'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
         attribution;
       const url = embedMode
-        ? `${
-            process.env.REACT_APP_BASE_URL || ""
-          }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
+        ? `${process.env.REACT_APP_BASE_URL ||
+            ""}/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
         : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
 
       if (currentMap !== undefined) {
@@ -290,13 +285,13 @@ const Map = React.memo<MapProps>(
         renderer: new L.Canvas(),
         tap: false,
         maxZoom: 18,
-        zoomControl: false,
+        zoomControl: false
       }).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
 
-      localMap.on("zoomend", function () {
+      localMap.on("zoomend", function() {
         if (config && config.groupItems === false) {
           const container = document.querySelector(".leaflet-container");
           if (localMap.getZoom() < 15) {
@@ -313,16 +308,16 @@ const Map = React.memo<MapProps>(
       });
 
       if (!embedMode) {
-        localMap.on("contextmenu", async (e: any) => {
-          const coordinates: ApiCoordinates = e.latlng;
+        localMap.on('contextmenu', async (e: any)  => {
+          const coordinates : ApiCoordinates = e.latlng;
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
             label: "Mein Standort",
-            value: { place_id: "123" },
+            value: { place_id: "123" }
           };
-
+      
           setAddPoiCoordinates(coordinates);
-          setAddPoiAddress(place);
-
+          setAddPoiAddress(place)
+      
           setAddPoiModalOpen(true);
         });
       }
@@ -333,7 +328,7 @@ const Map = React.memo<MapProps>(
         zoomOffset: -1,
         accessToken: mapBoxAccessToken,
         tileSize: 512,
-        maxZoom: 18,
+        maxZoom: 18
       }).addTo(localMap);
       if (!embedMode || !!searchAddress) {
         const positionIcon = L.Icon.extend({
@@ -341,11 +336,11 @@ const Map = React.memo<MapProps>(
             iconUrl: mylocationIcon,
             shadowUrl: leafletShadow,
             shadowSize: [0, 0],
-            iconSize: myLocationIconSize,
-          },
+            iconSize: myLocationIconSize
+          }
         });
         L.marker([lat, lng], {
-          icon: new positionIcon(),
+          icon: new positionIcon()
         })
           .bindPopup(searchAddress)
           .addTo(localMap);
@@ -358,7 +353,7 @@ const Map = React.memo<MapProps>(
       searchContextDispatch,
       mapBoxAccessToken,
       searchAddress,
-      embedMode,
+      embedMode
     ]);
 
     // react on zoom and center change
@@ -372,29 +367,27 @@ const Map = React.memo<MapProps>(
           if (markers.length) {
             const currentSize = markers[0].getIcon().options.iconSize;
             if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
-              markers.forEach((marker) => {
+              markers.forEach(marker => {
                 const icon = marker.getIcon();
                 icon.options.iconSize = new L.Point(25, 25);
                 marker.setIcon(icon);
               });
             }
             if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
-              markers.forEach((marker) => {
+              markers.forEach(marker => {
                 const icon = marker.getIcon();
                 icon.options.iconSize = defaultAmenityIconSize;
                 marker.setIcon(icon);
               });
             }
-            const marker = markers.find(
-              (m) => m.getEntity().id === highlightId
-            );
+            const marker = markers.find(m => m.getEntity().id === highlightId);
             if (marker) {
               // use timeout to wait for de-spider animation of cluster
               setTimeout(() => {
                 marker.createOpenPopup();
                 searchContextDispatch({
                   type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                  payload: null,
+                  payload: null
                 });
               }, 1200);
             }
@@ -428,7 +421,7 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.WALK),
             {
-              color: WALK_COLOR,
+              color: WALK_COLOR
             }
           ).addTo(meansGroup);
         }
@@ -436,7 +429,7 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.BICYCLE),
             {
-              color: BICYCLE_COLOR,
+              color: BICYCLE_COLOR
             }
           ).addTo(meansGroup);
         }
@@ -444,7 +437,7 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.CAR),
             {
-              color: CAR_COLOR,
+              color: CAR_COLOR
             }
           ).addTo(meansGroup);
         }
@@ -454,8 +447,8 @@ const Map = React.memo<MapProps>(
     // draw routes
     useEffect(() => {
       const activeEntities = groupedEntities
-        ?.filter((ge) => ge.active)
-        .flatMap((value) => value.items);
+        ?.filter(ge => ge.active)
+        .flatMap(value => value.items);
       const getIcon = (m: MeansOfTransportation | string) => {
         switch (m) {
           case MeansOfTransportation.CAR:
@@ -484,7 +477,7 @@ const Map = React.memo<MapProps>(
 
       const isVisibleDestination = (r: ApiRoute | ApiTransitRoute) =>
         !!activeEntities.find(
-          (value) =>
+          value =>
             value.coordinates.lat === r.destination.lat &&
             value.coordinates.lng === r.destination.lng
         );
@@ -496,20 +489,20 @@ const Map = React.memo<MapProps>(
         routesGroup = L.layerGroup();
         currentMap.addLayer(routesGroup);
         routes
-          .filter((e) => e.show.length > 0)
-          .forEach((entityRoute) => {
+          .filter(e => e.show.length > 0)
+          .forEach(entityRoute => {
             entityRoute.routes
-              .filter((r) => entityRoute.show.includes(r.meansOfTransportation))
+              .filter(r => entityRoute.show.includes(r.meansOfTransportation))
               .filter(isVisibleDestination)
-              .forEach((r) => {
-                r.sections.forEach((s) => {
+              .forEach(r => {
+                r.sections.forEach(s => {
                   const durationInMinutes = r.sections
-                    .map((s) => s.duration)
+                    .map(s => s.duration)
                     .reduce((p, c) => p + c);
                   const line = L.geoJSON(s.geometry, {
-                    style: function () {
+                    style: function() {
                       return { color: MEAN_COLORS[r.meansOfTransportation] };
-                    },
+                    }
                   })
                     .bindPopup(
                       `<h4 class="font-semibold">Route zu ${
@@ -529,13 +522,13 @@ const Map = React.memo<MapProps>(
               });
           });
         transitRoutes
-          .filter((e) => e.show)
-          .forEach((entityRoute) => {
+          .filter(e => e.show)
+          .forEach(entityRoute => {
             const { route } = entityRoute;
             if (isVisibleDestination(route)) {
               const popupContent = route.sections
                 .map(
-                  (s) =>
+                  s =>
                     `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
                       s.transportMode
                     )} alt="icon"/><span>${
@@ -546,16 +539,16 @@ const Map = React.memo<MapProps>(
                 )
                 .join("➟");
               const fullDuration = route.sections
-                .map((s) => s.duration)
+                .map(s => s.duration)
                 .reduce((p, c) => p + c);
-              route.sections.forEach((s) => {
+              route.sections.forEach(s => {
                 const line = L.geoJSON(s.geometry, {
-                  style: function () {
+                  style: function() {
                     return {
                       color: "#fcba03",
-                      dashArray: getDashArray(s.transportMode),
+                      dashArray: getDashArray(s.transportMode)
                     };
-                  },
+                  }
                 })
                   .bindPopup(
                     `<h4 class="font-semibold">ÖPNV Route zu ${
@@ -580,8 +573,9 @@ const Map = React.memo<MapProps>(
 
     // draw amenities
     useEffect(() => {
-      const parsedEntities: ResultEntity[] | null =
-        JSON.parse(entitiesStringified);
+      const parsedEntities: ResultEntity[] | null = JSON.parse(
+        entitiesStringified
+      );
       const parsedEntityGroups: EntityGroup[] = JSON.parse(
         groupedEntitiesStringified
       );
@@ -589,20 +583,20 @@ const Map = React.memo<MapProps>(
         if (currentMap) {
           currentMap.removeLayer(amenityMarkerGroup);
           amenityMarkerGroup = L.markerClusterGroup({
-            iconCreateFunction: function (cluster) {
+            iconCreateFunction: function(cluster) {
               const groupedMarkers = groupBy(
-                cluster.getAllChildMarkers().map((m) => m.getIcon().options),
+                cluster.getAllChildMarkers().map(m => m.getIcon().options),
                 (i: any) => i.className
               );
               const countedMarkers = Object.entries(groupedMarkers)
                 .map(([key, value]) => ({
                   key,
                   icon: (value as any)[0].html,
-                  count: (value as any).length,
+                  count: (value as any).length
                 }))
                 .sort((a, b) => b.count - a.count);
               const markerIcons = countedMarkers.map(
-                (cm) =>
+                cm =>
                   '<div class="flex items-center gap-0.5">' +
                   cm.icon +
                   cm.count +
@@ -613,19 +607,19 @@ const Map = React.memo<MapProps>(
                   '<div class="cluster-icon-wrapper">' +
                   markerIcons.join("") +
                   "</div>",
-                className: "cluster-icon",
+                className: "cluster-icon"
               });
             },
             maxClusterRadius: 200,
             disableClusteringAtZoom: config?.groupItems ? 15 : 1,
             spiderfyOnMaxZoom: false,
             animate: false,
-            zoomToBoundsOnClick: false,
+            zoomToBoundsOnClick: false
           });
-          parsedEntities?.forEach((entity) => {
+          parsedEntities?.forEach(entity => {
             if (
               parsedEntityGroups.some(
-                (eg) => eg.title === entity.label && eg.active
+                eg => eg.title === entity.label && eg.active
               )
             ) {
               const isRealEstateListing = entity.type === "property";
@@ -641,23 +635,23 @@ const Map = React.memo<MapProps>(
                 shadowSize: [0, 0],
                 iconSize: defaultAmenityIconSize,
                 className: "locality-marker-wrapper icon-" + entity.type,
-                html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
+                html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
               });
               const marker = new IdMarker(
                 entity.coordinates,
                 entity,
                 searchAddress,
                 {
-                  icon,
+                  icon
                 }
-              ).on("click", function (e) {
+              ).on("click", function(e) {
                 const marker = e.target;
                 marker.createOpenPopup();
               });
               amenityMarkerGroup.addLayer(marker);
             }
           });
-          amenityMarkerGroup.on("clusterclick", function (a) {
+          amenityMarkerGroup.on("clusterclick", function(a) {
             const centerOfGroup = center(a.layer.toGeoJSON());
             const lat = centerOfGroup.geometry.coordinates[1];
             const lng = centerOfGroup.geometry.coordinates[0];
@@ -666,10 +660,10 @@ const Map = React.memo<MapProps>(
               payload: {
                 center: {
                   lat,
-                  lng,
+                  lng
                 },
-                zoom: 17,
-              },
+                zoom: 17
+              }
             });
           });
           currentMap.addLayer(amenityMarkerGroup);
@@ -681,7 +675,7 @@ const Map = React.memo<MapProps>(
     }, [
       entitiesStringified,
       groupedEntitiesStringified,
-      searchContextDispatch,
+      searchContextDispatch
     ]);
 
     const takePicture = () => {
@@ -693,15 +687,15 @@ const Map = React.memo<MapProps>(
 
       html2canvas(document.querySelector("#mymap")!, {
         allowTaint: true,
-        useCORS: true,
-      }).then((canvas) => {
+        useCORS: true
+      }).then(canvas => {
         const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
         searchContextDispatch({
           type: SearchContextActionTypes.ADD_MAP_CLIPPING,
           payload: {
             zoomLevel: mapZoomLevel || zoom,
-            mapClippingDataUrl,
-          },
+            mapClippingDataUrl
+          }
         });
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
         for (let i = 0; i < bottomElements.length; i++) {
@@ -714,11 +708,11 @@ const Map = React.memo<MapProps>(
     };
 
     const escFunction = useCallback(
-      (event) => {
+      event => {
         if (event.keyCode === 27) {
           if (currentMap && fullscreen) {
             setFullscreen(false);
-            setTimeout(function () {
+            setTimeout(function() {
               currentMap!.invalidateSize();
             }, 400);
           }
@@ -736,7 +730,7 @@ const Map = React.memo<MapProps>(
     const toggleFullscreen = () => {
       setFullscreen(!fullscreen);
       if (currentMap) {
-        setTimeout(function () {
+        setTimeout(function() {
           currentMap!.invalidateSize();
         }, 400);
       }
@@ -760,7 +754,7 @@ const Map = React.memo<MapProps>(
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.WALK),
               {
-                color: WALK_COLOR,
+                color: WALK_COLOR
               }
             );
           }
@@ -770,7 +764,7 @@ const Map = React.memo<MapProps>(
                 MeansOfTransportation.BICYCLE
               ),
               {
-                color: BICYCLE_COLOR,
+                color: BICYCLE_COLOR
               }
             );
           }
@@ -778,22 +772,22 @@ const Map = React.memo<MapProps>(
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.CAR),
               {
-                color: CAR_COLOR,
+                color: CAR_COLOR
               }
             );
           }
         };
         const polygon = derivePolygonForMean(mean);
         currentMap!.fitBounds(polygon!.getBounds(), {
-          padding: L.point(10, 10),
+          padding: L.point(10, 10)
         });
         setTimeout(() => {
           searchContextDispatch({
             type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
             payload: {
               zoom: currentMap?.getZoom()!,
-              center: searchResponse.centerOfInterest.coordinates,
-            },
+              center: searchResponse.centerOfInterest.coordinates
+            }
           });
         }, 1000);
       }
