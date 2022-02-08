@@ -6,6 +6,9 @@ import {
   TransportationParam,
   UnitsOfTransportation
 } from "../../../shared/types/types";
+import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 
 export interface MapNavBarProps {
   transportationParams: TransportationParam[];
@@ -55,8 +58,16 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
                 key={`mean-${mean}`}
               >
                 <span className={deriveBackgroundClass(mean)} />
-                {meansOfTransportations.find(mot => mot.type === mean)?.label} (
-                {param?.amount}{" "}
+                {mean === MeansOfTransportation.WALK && (
+                  <img src={walkIcon} alt="iconwalk" />
+                )}
+                {mean === MeansOfTransportation.BICYCLE && (
+                  <img src={bicycleIcon} alt="iconbycicle" />
+                )}
+                {mean === MeansOfTransportation.CAR && (
+                  <img src={carIcon} alt="iconcar" />
+                )}
+                ({param?.amount}{" "}
                 {param?.unit === UnitsOfTransportation.KILOMETERS
                   ? "km"
                   : "min"}

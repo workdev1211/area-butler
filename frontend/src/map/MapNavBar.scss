@@ -37,6 +37,12 @@
         }
     }
 
+    img {
+        width: 18px !important;
+        height: auto;
+        margin-right: 6px;
+    }
+
     .checkboxes {
         @apply flex gap-4 items-center pl-3;
         label {
