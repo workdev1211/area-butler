@@ -1,10 +1,8 @@
 .map-menu-KF {
     position: absolute;
-    top: 20px;
-    bottom: 0;
-    right: 1%;
+    top: 18px;
+    right: 10px;
     z-index: 999;
-    overflow-y: scroll;
 
     .menu-desktop {
         display: none;
@@ -44,13 +42,66 @@
     }
 
     .menu-mobile {
+        &.open {
+            bottom: 0;
+        }
 
+        .dropdown-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            grid-gap: 12px;
+            width: 370px;
+        }
+
+        li {
+            position: relative;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            gap: 26px;
+            background: white;
+            margin-top: 6px;
+            padding: 10px 20px 10px 10px;
+            font-size: 14px;
+            font-weight: 500;
+            -webkit-box-shadow: 0 4px 6px 1px rgb(0,0,0,0.3);
+            box-shadow: 0 2px 6px 1px rgba(0,0,0,0.3);
+
+            &:hover {
+                cursor: pointer;
+            }
+
+            &.active {
+                &::after {
+                    content: '';
+                    position: absolute;
+                    bottom: 0;
+                    left: 0;
+                    right: 0;
+                    height: 4px;
+                    background: var(--primary);
+                }
+            }
+
+            img {
+                height: 21px;
+            }
+            .dropdown-triangle {
+                font-size: 12px;
+                opacity: 0.3;
+                position: absolute;
+                right: 10px;
+                bottom: 10px;
+            }
+        }
     }
 }
 
 @media (min-width: 1024px) {
     .map-menu-KF {
         right: 10%;
+        bottom: 0;
+        overflow-y: scroll;
         .menu-desktop {
             display: block;
         }

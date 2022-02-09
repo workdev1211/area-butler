@@ -85,6 +85,10 @@
     max-height: 100vh;
 }
 
+.leaflet-left {
+    bottom: 20px !important;
+}
+
 @media (min-width: 1024px) {
     .leaflet-container-KF {
         .leaflet-left {

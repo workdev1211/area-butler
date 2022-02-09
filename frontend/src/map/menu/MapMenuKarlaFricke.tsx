@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import "./MapMenuKarlaFricke.scss";
 import {
@@ -33,11 +33,13 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   interface ListItemProps {
     group: EntityGroup;
     toggleEntryGroup: (title: string) => void;
+    dropdown?: boolean;
   }
 
   const ListItem: React.FunctionComponent<ListItemProps> = ({
     group,
-    toggleEntryGroup
+    toggleEntryGroup,
+    dropdown = false
   }) => {
     const isRealEstateListing =
       group.items[0].label === realEstateListingsTitle;
@@ -55,6 +57,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
       >
         <img src={groupIconInfo.icon} alt="group-icon" />
         {group.title}
+        {dropdown && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );
   };
@@ -88,11 +91,49 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     );
   };
 
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+
   const MobileMenu: React.FunctionComponent<MenuProps> = ({
     groupedEntries,
     toggleEntryGroup
   }) => {
-    return <div className="menu-mobile">mobile</div>;
+    const activeEntry = groupedEntries.find(ge => ge.active);
+    return (
+      <div className={`menu-mobile ${dropdownOpen && "open"}`}>
+        {groupedEntries.length && (
+          <div
+            className={`dropdown dropdown-end ${dropdownOpen &&
+              "dropdown-open"}`}
+            onClick={() => setDropdownOpen(!dropdownOpen)}
+          >
+            <div tabIndex={0} className="w-52">
+              {activeEntry && (
+                <ul>
+                  <ListItemMemo
+                    group={activeEntry}
+                    toggleEntryGroup={() => null}
+                    dropdown={true}
+                  />
+                </ul>
+              )}
+              {!activeEntry && "Bitte auswählen"}
+            </div>
+            <ul
+              tabIndex={0}
+              className="p-2 menu dropdown-content bg-transparent"
+            >
+              {groupedEntries.map(ge => (
+                <ListItemMemo
+                  key={ge.title}
+                  group={ge}
+                  toggleEntryGroup={title => toggleEntryGroup(title)}
+                />
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
+    );
   };
 
   return (
