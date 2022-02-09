@@ -1,12 +1,13 @@
 .map-menu-KF {
     position: absolute;
-    top: 24px;
+    top: 20px;
     bottom: 0;
     right: 1%;
     z-index: 999;
     overflow-y: scroll;
 
     .menu-desktop {
+        display: none;
         li {
             position: relative;
             display: flex;
@@ -41,10 +42,20 @@
             }
         }
     }
+
+    .menu-mobile {
+
+    }
 }
 
 @media (min-width: 1024px) {
     .map-menu-KF {
         right: 10%;
+        .menu-desktop {
+            display: block;
+        }
+        .menu-mobile {
+            display: none;
+        }
     }
 }

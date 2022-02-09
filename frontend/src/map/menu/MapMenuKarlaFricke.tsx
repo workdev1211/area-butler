@@ -28,9 +28,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [groupedEntries.length]);
 
-  const mobileMenuButtonClasses = `map-menu-KF ${
-    mobileMenuOpen ? "mobile-open" : ""
-  }`;
+  const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
 
   interface ListItemProps {
     group: EntityGroup;
@@ -68,12 +66,12 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   };
   const ListItemMemo = React.memo(ListItem, listItemPropsAreEqual);
 
-  interface DesktopMenuProps {
+  interface MenuProps {
     groupedEntries: EntityGroup[];
     toggleEntryGroup: (title: string) => void;
   }
 
-  const DesktopMenu: React.FunctionComponent<DesktopMenuProps> = ({
+  const DesktopMenu: React.FunctionComponent<MenuProps> = ({
     groupedEntries,
     toggleEntryGroup
   }) => {
@@ -90,8 +88,19 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     );
   };
 
+  const MobileMenu: React.FunctionComponent<MenuProps> = ({
+    groupedEntries,
+    toggleEntryGroup
+  }) => {
+    return <div className="menu-mobile">mobile</div>;
+  };
+
   return (
-    <div className={mobileMenuButtonClasses}>
+    <div className={menuClasses}>
+      <MobileMenu
+        groupedEntries={groupedEntries}
+        toggleEntryGroup={title => toggleEntryGroup(title)}
+      />
       <DesktopMenu
         groupedEntries={groupedEntries}
         toggleEntryGroup={title => toggleEntryGroup(title)}

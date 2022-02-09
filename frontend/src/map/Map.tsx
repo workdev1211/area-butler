@@ -47,6 +47,8 @@ import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import FormModal, { FormModalData, ModalConfig } from "components/FormModal";
 import AddPoiFormHandler from "./AddPoiFormHandler";
+import { GestureHandling } from "leaflet-gesture-handling";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -244,16 +246,22 @@ const Map = React.memo<MapProps>(
     config,
     mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
   }) => {
+    L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
-    const [addPoiCoordinates, setAddPoiCoordinates] = useState<ApiCoordinates | undefined>();
+    const [addPoiCoordinates, setAddPoiCoordinates] = useState<
+      ApiCoordinates | undefined
+    >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
 
-    let addPoiModalOpenConfig : ModalConfig = {
-      modalTitle: 'Neuen Ort hinzufügen',
-      submitButtonTitle: 'Hinzufügen',
+    let addPoiModalOpenConfig: ModalConfig = {
+      modalTitle: "Neuen Ort hinzufügen",
+      submitButtonTitle: "Hinzufügen",
       modalOpen: addPoiModalOpen,
-      postSubmit: () => { setAddPoiModalOpen(false) }
-    };  
+      postSubmit: () => {
+        setAddPoiModalOpen(false);
+      }
+    };
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
@@ -285,8 +293,16 @@ const Map = React.memo<MapProps>(
         renderer: new L.Canvas(),
         tap: false,
         maxZoom: 18,
-        zoomControl: false
-      }).setView(initialPosition, zoom);
+        zoomControl: false,
+        gestureHandling: true,
+        gestureHandlingOptions: {
+          text: {
+            touch: "Karte mit zwei Fingern verschieben",
+            scroll: "Zoom mit Strg + Mausrad",
+            scrollMac: "Zoom mit \u2318 + Mausrad"
+          }
+        }
+      } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
@@ -308,16 +324,16 @@ const Map = React.memo<MapProps>(
       });
 
       if (!embedMode) {
-        localMap.on('contextmenu', async (e: any)  => {
-          const coordinates : ApiCoordinates = e.latlng;
+        localMap.on("contextmenu", async (e: any) => {
+          const coordinates: ApiCoordinates = e.latlng;
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
             label: "Mein Standort",
             value: { place_id: "123" }
           };
-      
+
           setAddPoiCoordinates(coordinates);
-          setAddPoiAddress(place)
-      
+          setAddPoiAddress(place);
+
           setAddPoiModalOpen(true);
         });
       }
@@ -851,7 +867,7 @@ const Map = React.memo<MapProps>(
                 data-tour="go-fullscreen"
                 className="leaflet-control-zoom-in cursor-pointer"
                 role="button"
-                onClick={(event) => {
+                onClick={event => {
                   event.preventDefault();
                   toggleFullscreen();
                 }}
@@ -873,7 +889,7 @@ const Map = React.memo<MapProps>(
                 data-tour="take-map-picture"
                 className="leaflet-control-zoom-in cursor-pointer"
                 role="button"
-                onClick={(event) => {
+                onClick={event => {
                   event.preventDefault();
                   takePicture();
                 }}

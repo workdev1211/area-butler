@@ -2,7 +2,7 @@
 
 .map-nav-bar-container {
     z-index: 999;
-    left: 0;
+    left: 10px;
     right: 80px;
     top: 24px;
     @apply absolute flex;
@@ -11,7 +11,7 @@
 
 .map-nav-bar {
     z-index: 999;
-    @apply mx-auto flex flex-wrap justify-between;
+    @apply md:mx-auto flex flex-wrap justify-between;
 
     .btn-link {
         height: 32px !important;
@@ -61,6 +61,7 @@
 @media (min-width: 1024px) {
     .map-nav-bar-container {
         right: 0;
+        left: 0;
     }
     .map-nav-bar .checkboxes {
         @apply pl-20;
