@@ -5,7 +5,9 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
   MeansOfTransportation,
   OsmName,
@@ -15,7 +17,7 @@ import {
 } from '@area-butler-types/types';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { IsochroneService } from 'src/client/isochrone/isochrone.service';
 import { OverpassService } from 'src/client/overpass/overpass.service';
 import {
@@ -201,14 +203,21 @@ export class LocationService {
       mapboxAccessToken,
     } = await this.userService.createMapboxAccessToken(user);
 
-    const doc = await new this.searchResultSnapshotModel({
+    const config : ApiSearchResultSnapshotConfig = {
+      showLocation: true,
+      groupItems: true
+    }
+
+    const doc  = await new this.searchResultSnapshotModel({
       userId: user.id,
       token,
       mapboxAccessToken,
       snapshot,
+      config
     }).save();
 
     return {
+      id: doc.id,
       token,
       snapshot,
       mapboxToken: mapboxAccessToken,
@@ -218,7 +227,7 @@ export class LocationService {
 
   async fetchSearchResultSnapshot(
     token: string,
-  ): Promise<SearchResultSnapshot> {
+  ): Promise<SearchResultSnapshotDocument> {
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       token,
     });
@@ -230,9 +239,30 @@ export class LocationService {
     return snapshotDoc;
   }
 
+  async updateSearchResultSnapshot(
+    user: UserDocument,
+    id: string,
+    {snapshot, config}: ApiUpdateSearchResultSnapshot
+  ) : Promise<SearchResultSnapshot> {
+    const snapshotDoc : SearchResultSnapshotDocument = await this.fetchEmbeddableMap(user, id);
+
+    snapshotDoc.snapshot = snapshot;
+    snapshotDoc.config = config;
+    
+    return await snapshotDoc.save();
+  }
+
   async fetchEmbeddableMaps(
     user: UserDocument,
-  ): Promise<SearchResultSnapshot[]> {
+  ): Promise<SearchResultSnapshotDocument[]> {
     return this.searchResultSnapshotModel.find({ userId: user.id });
+  }
+
+  async fetchEmbeddableMap(
+    user: UserDocument,
+    id: string
+  ): Promise<SearchResultSnapshotDocument> {
+    const oid = new Types.ObjectId(id);
+    return this.searchResultSnapshotModel.findOne({ userId: user.id, _id: oid });
   }
 }

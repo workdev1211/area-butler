@@ -5,11 +5,12 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
-import { SearchResultSnapshot } from '../schema/search-result-snapshot.schema';
+import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
-  searchResultSnapshot: SearchResultSnapshot,
+  searchResultSnapshot: SearchResultSnapshotDocument,
 ): ApiSearchResultSnapshotResponse => ({
+  id: searchResultSnapshot.id,
   snapshot: mapSearchResultSnapshot(
     searchResultSnapshot.snapshot,
     searchResultSnapshot.config,

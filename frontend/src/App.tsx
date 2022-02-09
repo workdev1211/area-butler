@@ -56,6 +56,8 @@ const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
 const CallbackPage = lazy(() => import("./pages/CallbackPage"));
 
+const SnippetEditorPage = lazy(() => import("./pages/SnippetEditorPage"));
+
 const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
   buttonStyle:
@@ -183,6 +185,11 @@ function App() {
                   <Route path="/search-result">
                     <Authenticated>
                       <SearchResultPage />
+                    </Authenticated>
+                  </Route>                  
+                  <Route path="/snippet-editor/:snapshotId">
+                    <Authenticated>
+                      <SnippetEditorPage />
                     </Authenticated>
                   </Route>
                   <Route path="/potential-customers/:customerId">

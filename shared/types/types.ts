@@ -212,6 +212,11 @@ export enum OsmName {
   property = "property"
 }
 
+export interface ApiUpdateSearchResultSnapshot {
+  snapshot: ApiSearchResultSnapshot;
+  config: ApiSearchResultSnapshotConfig
+}
+
 export interface ApiSearchResultSnapshot {
   placesLocation: any;
   location: ApiCoordinates;
@@ -224,13 +229,14 @@ export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
 
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
-  mapBoxMapId: string;
+  mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
   groupItems: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {
+  id: string;
   mapboxToken: string;
   token: string;
   config?: ApiSearchResultSnapshotConfig;

@@ -1,5 +1,6 @@
 import { ApiSearchResultSnapshot, ApiSearchResultSnapshotConfig } from "@area-butler-types/types";
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Document } from 'mongoose';
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 

@@ -169,14 +169,12 @@ const SearchResultPage: React.FunctionComponent = () => {
                 searchResponse: searchContextState.searchResponse
               })).data;
 
-              toastSuccess('Karten Snippet erfolgreich gespeichert!')
-              setCodeSnippet(createCodeSnippet(response.token));
-              setShowCodeSnippetModal(true);
+              history.push(`snippet-editor/${response.id}`);
 
             }}
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Karten Snippet speichern
+            <img src={plusIcon} alt="pdf-icon" /> Karten-Editor öffnen
           </button>
         </li>
       </>

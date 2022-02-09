@@ -1,6 +1,7 @@
 import CodeSnippetModal from "components/CodeSnippetModal";
 import copy from "copy-to-clipboard";
 import { useState } from "react";
+import { useHistory } from "react-router-dom";
 import { createCodeSnippet, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
@@ -12,6 +13,7 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
   ({ embeddableMaps }) => {
     const [showModal, setShowModal] = useState(false);
     const [codeSnippet, setCodeSnippet] = useState("");
+    const history = useHistory();
 
     const copyCodeToClipBoard = (codeSnippet: string) => {
       const success = copy(codeSnippet);
@@ -56,6 +58,15 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
                     )}
                   </td>
                   <td>
+                  <button
+                      className="ml-5 rounded btn-xs btn-primary"
+                      onClick={(e) => {
+                        history.push(`snippet-editor/${embeddableMap.id}`)
+                        e.stopPropagation();
+                      }}
+                    >
+                      Bearbeiten
+                    </button>
                     <button
                       className="ml-5 rounded btn-xs btn-primary"
                       onClick={(e) => {

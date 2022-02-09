@@ -1,0 +1,158 @@
+import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
+import { ConfigContext } from "context/ConfigContext";
+import { useHttp } from "hooks/http";
+import BackButton from "layout/BackButton";
+import DefaultLayout from "layout/defaultLayout";
+import EditorMapMenu from "map/EditorMapMenu";
+import { useContext, useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import {
+  buildCombinedGroupedEntries,
+  buildEntityData, deriveAvailableMeansFromResponse,
+  entityIncludesMean
+} from "shared/shared.functions";
+import {
+  ApiSearchResponse,
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotResponse,
+  MeansOfTransportation
+} from "../../../shared/types/types";
+import Map from "../map/Map";
+import './SnippetEditorPage.css';
+
+export interface SnippetEditorRouterProps {
+  snapshotId: string;
+}
+
+const SnippetEditorPage: React.FunctionComponent = () => {
+  const { snapshotId } = useParams<SnippetEditorRouterProps>();
+  const { get, put } = useHttp();
+  const { mapBoxAccessToken } = useContext(ConfigContext);
+  const [config, setConfig] = useState<
+    ApiSearchResultSnapshotConfig | undefined
+  >();
+  const [snapshot, setSnapshot] = useState<
+    ApiSearchResultSnapshot | undefined
+  >();
+  const [searchResponse, setSearchResponse] = useState<
+    ApiSearchResponse | undefined
+  >();
+
+  useEffect(() => {
+    const fetchSnapshot = async () => {
+      const snapshotResponse = (
+        await get<ApiSearchResultSnapshotResponse>(
+          `/api/location/user-embeddable-maps/${snapshotId}`
+        )
+      ).data;
+
+      setConfig(snapshotResponse.config);
+      setSnapshot(snapshotResponse.snapshot);
+      setSearchResponse(snapshotResponse.snapshot.searchResponse);
+    };
+
+    fetchSnapshot();
+  }, [snapshotId]);
+
+  const [entities, setEntities] = useState<ResultEntity[]>([]);
+  const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
+  const [availableMeans, setAvailableMeans] = useState<any>([]);
+  const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
+
+  const updateEntities = (entities: ResultEntity[]) => {
+    setEntities(entities);
+  };
+
+  const updateGroupedEntities = (entities: EntityGroup[]) => {
+    if (!groupedEntities.some((ge) => ge.active)) {
+      setGroupedEntities(
+        entities.map((e, index) => (index === 0 ? { ...e, active: true } : e))
+      );
+    } else {
+      setGroupedEntities(entities);
+    }
+  };
+
+  const updateActiveMeans = (means: MeansOfTransportation[]) => {
+    setActiveMeans(means);
+  };
+
+  // consume search response
+  useEffect(() => {
+    if (!!searchResponse) {
+      const meansFromResponse =
+        deriveAvailableMeansFromResponse(searchResponse);
+      setAvailableMeans(meansFromResponse);
+      updateActiveMeans(
+        config && config.defaultActiveMeans
+          ? [...config.defaultActiveMeans]
+          : meansFromResponse
+      );
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchResponse]);
+
+  // react to active means change
+  useEffect(() => {
+    let entitiesIncludedInActiveMeans =
+      buildEntityData(snapshot?.searchResponse!)?.filter((entity) =>
+        entityIncludesMean(entity, activeMeans)
+      ) ?? [];
+
+    updateEntities(entitiesIncludedInActiveMeans);
+    const theme = config?.theme;
+    const defaultActive = theme !== "KF";
+    updateGroupedEntities(
+      buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
+    );
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [searchResponse, activeMeans]);
+
+  const onConfigChange = (config: ApiSearchResultSnapshotConfig) => {
+    setConfig(config);
+  };
+
+  const ActionsTop: React.FunctionComponent = () => {
+    return (
+      <>
+        <li>
+          <button type="button" onClick={() => {}} className="btn btn-link">
+            Karte veröffentlichen
+          </button>
+        </li>
+      </>
+    );
+  };
+
+  if (!snapshot) {
+    return <div>Lade Daten...</div>;
+  }
+
+  return (
+    <DefaultLayout
+      title="Karten Editor"
+      withHorizontalPadding={false}
+      actionTop={<ActionsTop />}
+      actionBottom={[<BackButton key="back-button" to="/" />]}
+    >
+      <div className="editor-container">
+        <Map
+          mapBoxAccessToken={mapBoxAccessToken}
+          searchContextDispatch={() => {}}
+          searchResponse={snapshot?.searchResponse!}
+          searchAddress={""}
+          entities={entities}
+          groupedEntities={groupedEntities}
+          means={availableMeans}
+          routes={[]}
+          transitRoutes={[]}
+          config={config}
+        ></Map>
+        <EditorMapMenu groupedEntries={groupedEntities} config={config!} onConfigChange={onConfigChange}></EditorMapMenu>
+      </div>
+    </DefaultLayout>
+  );
+};
+
+export default SnippetEditorPage;
