@@ -58,7 +58,8 @@ const EmbedContainer: React.FunctionComponent = () => {
         transportationParams,
         localityParams,
         location,
-        placesLocation
+        placesLocation,
+        preferredLocations
       } = result.snapshot;
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
@@ -80,6 +81,10 @@ const EmbedContainer: React.FunctionComponent = () => {
         type: SearchContextActionTypes.SET_LOCATION,
         payload: location
       });
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
+        payload: preferredLocations
+      });
     }
   }, [result, searchContextDispatch]);
 
@@ -97,6 +102,7 @@ const EmbedContainer: React.FunctionComponent = () => {
       location={searchContextState.mapCenter ?? searchContextState.location!}
       highlightId={searchContextState.highlightId!}
       mapZoomLevel={searchContextState.mapZoomLevel!}
+      preferredLocations={searchContextState.preferredLocations}
       searchContextDispatch={searchContextDispatch}
       embedMode={true}
       config={searchConfig}

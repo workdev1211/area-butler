@@ -222,6 +222,7 @@ export interface ApiSearchResultSnapshot {
   location: ApiCoordinates;
   transportationParams: TransportationParam[];
   localityParams: ApiOsmEntity[];
+  preferredLocations: ApiPreferredLocation[];
   searchResponse: ApiSearchResponse;
 }
 

@@ -166,7 +166,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                 location: searchContextState.location,
                 transportationParams: searchContextState.transportationParams,
                 localityParams: searchContextState.localityParams,
-                searchResponse: searchContextState.searchResponse
+                searchResponse: searchContextState.searchResponse,
+                preferredLocations: searchContextState.preferredLocations
               })).data;
 
               history.push(`snippet-editor/${response.id}`);
