@@ -1,5 +1,6 @@
 import center from "@turf/center";
 import {
+  Poi,
   SearchContextActions,
   SearchContextActionTypes
 } from "context/SearchContext";
@@ -71,6 +72,7 @@ export interface MapProps {
   transitRoutes: EntityTransitRoute[];
   embedMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
+  onPoiAdd?: (poi: Poi) => void;
 }
 
 export class IdMarker extends L.Marker {
@@ -244,7 +246,8 @@ const Map = React.memo<MapProps>(
     transitRoutes,
     embedMode = false,
     config,
-    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
+    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    onPoiAdd
   }) => {
     L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
@@ -323,7 +326,7 @@ const Map = React.memo<MapProps>(
         }
       });
 
-      if (!embedMode) {
+      if (!embedMode && !!onPoiAdd) {
         localMap.on("contextmenu", async (e: any) => {
           const coordinates: ApiCoordinates = e.latlng;
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
@@ -815,12 +818,14 @@ const Map = React.memo<MapProps>(
         id={leafletMapId}
         data-tour="map"
       >
-        <FormModal modalConfig={addPoiModalOpenConfig}>
+        {!!onPoiAdd && <FormModal modalConfig={addPoiModalOpenConfig}>
           <AddPoiFormHandler
+            centerCoordinates={searchResponse.centerOfInterest.coordinates}
             coordinates={addPoiCoordinates}
             address={addPoiAddress}
+            onPoiAdd={onPoiAdd}
           ></AddPoiFormHandler>
-        </FormModal>
+        </FormModal>}
         <div className={`leaflet-bottom leaflet-left mb-20 cursor-pointer`}>
           <div
             data-tour="zoom-to-bounds"

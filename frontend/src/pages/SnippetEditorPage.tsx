@@ -1,6 +1,6 @@
 import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
-import { SearchContext } from "context/SearchContext";
+import { Poi, SearchContext } from "context/SearchContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
@@ -16,6 +16,7 @@ import {
   toastSuccess,
 } from "shared/shared.functions";
 import {
+  ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
@@ -118,6 +119,18 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     setConfig(config);
   };
 
+  const onPoiAdd = (poi: Poi) => {
+    
+    const copiedSearchResponse = JSON.parse(JSON.stringify(searchResponse)) as ApiSearchResponse;
+    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+
+    setSnapshot({...snapshot!, searchResponse: copiedSearchResponse});
+    setSearchResponse({...copiedSearchResponse});
+
+  }
+
   const ActionsTop: React.FunctionComponent = () => {
     return (
       <>
@@ -170,6 +183,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           routes={[]}
           transitRoutes={[]}
           config={config}
+          onPoiAdd={onPoiAdd}
         ></Map>
         <EditorMapMenu
           groupedEntries={groupedEntities}

@@ -1,34 +1,37 @@
 import { FormModalData } from "components/FormModal";
-import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
+import { Poi, SearchContext } from "context/SearchContext";
 import { useContext } from "react";
 import { distanceInMeters, toastError, toastSuccess } from "shared/shared.functions";
+import { v4 as uuid } from 'uuid';
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiCoordinates } from "../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
-import {v4 as uuid} from 'uuid';
 
 export interface AddPoiFormHandlerProps extends FormModalData {
+  centerCoordinates: ApiCoordinates;
   coordinates?: ApiCoordinates;
   address?: string;
+  onPoiAdd: (poi: Poi) => void;
 }
 
 const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
+  centerCoordinates,
   coordinates,
   address,
+  onPoiAdd
 }) => {
 
-  const {searchContextState, searchContextDispatch} = useContext(SearchContext);
+  
 
   const onSubmit = async (values: any) => {
     try {
       beforeSubmit();
 
       const coordinates = values.coordinates;
-      const centerOfInterest = searchContextState.searchResponse?.centerOfInterest;
-      const distanceInMeter = distanceInMeters(centerOfInterest?.coordinates!, coordinates);
+      const distanceInMeter = distanceInMeters(centerCoordinates, coordinates);
 
       const entityType = osmEntityTypes.find(e => e.name === values.type)!;
       const poi = {
@@ -43,8 +46,7 @@ const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
           category: entityType.category
         }
       }
-
-      searchContextDispatch({type: SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE, payload: poi})
+      onPoiAdd(poi);
       postSubmit(true);
       toastSuccess("Objekt erfolgreich hinzugefügt!");
     } catch (err) {
