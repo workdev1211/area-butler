@@ -1,5 +1,6 @@
 import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
+import { SearchContext } from "context/SearchContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
@@ -29,6 +30,7 @@ export interface SnippetEditorRouterProps {
 }
 
 const SnippetEditorPage: React.FunctionComponent = () => {
+  const {searchContextDispatch} = useContext(SearchContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { mapBoxAccessToken } = useContext(ConfigContext);
@@ -153,16 +155,21 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       <div className="editor-container">
         <Map
           mapBoxAccessToken={mapBoxAccessToken}
-          searchContextDispatch={() => {}}
+          mapboxMapId={config?.mapBoxMapId}
+          searchContextDispatch={searchContextDispatch}
           searchResponse={snapshot?.searchResponse!}
-          searchAddress={""}
+          searchAddress={''}
           entities={entities}
           groupedEntities={groupedEntities}
-          means={availableMeans}
+          means={{
+            byFoot: activeMeans.includes(MeansOfTransportation.WALK),
+            byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
+            byCar: activeMeans.includes(MeansOfTransportation.CAR)
+          }}
+          mapCenter={snapshot?.location}
           routes={[]}
           transitRoutes={[]}
           config={config}
-          mapboxMapId={config?.mapBoxMapId}
         ></Map>
         <EditorMapMenu
           groupedEntries={groupedEntities}

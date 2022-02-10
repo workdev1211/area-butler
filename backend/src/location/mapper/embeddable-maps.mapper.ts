@@ -9,11 +9,13 @@ import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.s
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
+  embed = false
 ): ApiSearchResultSnapshotResponse => ({
   id: searchResultSnapshot.id,
   snapshot: mapSearchResultSnapshot(
     searchResultSnapshot.snapshot,
     searchResultSnapshot.config,
+    embed
   ),
   config: searchResultSnapshot.config,
   token: searchResultSnapshot.token,
@@ -24,8 +26,9 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
 const mapSearchResultSnapshot = (
   snapshot: ApiSearchResultSnapshot,
   config: ApiSearchResultSnapshotConfig,
+  embed : boolean
 ): ApiSearchResultSnapshot => {
-  if (!config || config.showLocation !== false) {
+  if (!embed || !config || config.showLocation !== false) {
     return snapshot;
   }
 

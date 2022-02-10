@@ -12,6 +12,6 @@ export class SearchResultSnapshotController {
   async fetchSnapshot(
     @Param('token') token: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return mapSearchResultSnapshotToApiEmbeddableMap( await this.locationService.fetchSearchResultSnapshot(token));
+    return mapSearchResultSnapshotToApiEmbeddableMap( await this.locationService.fetchSearchResultSnapshot(token), true);
   }
 }
