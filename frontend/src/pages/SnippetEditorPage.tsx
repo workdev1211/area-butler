@@ -8,18 +8,21 @@ import { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import {
   buildCombinedGroupedEntries,
-  buildEntityData, deriveAvailableMeansFromResponse,
-  entityIncludesMean
+  buildEntityData,
+  deriveAvailableMeansFromResponse,
+  entityIncludesMean,
+  toastError,
+  toastSuccess,
 } from "shared/shared.functions";
 import {
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../shared/types/types";
 import Map from "../map/Map";
-import './SnippetEditorPage.css';
+import "./SnippetEditorPage.css";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -117,7 +120,18 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     return (
       <>
         <li>
-          <button type="button" onClick={() => {}} className="btn btn-link">
+          <button
+            type="button"
+            onClick={async () => {
+              try {
+                await put(`/api/location/snapshot/${snapshotId}`, { config, snapshot });
+                toastSuccess("Karten Snippet erfolgreich veröffentlicht!");
+              } catch (e) {
+                toastError("Fehler beim Veröffentlichen der Karte");
+              }
+            }}
+            className="btn btn-link"
+          >
             Karte veröffentlichen
           </button>
         </li>
@@ -148,8 +162,13 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           routes={[]}
           transitRoutes={[]}
           config={config}
+          mapboxMapId={config?.mapBoxMapId}
         ></Map>
-        <EditorMapMenu groupedEntries={groupedEntities} config={config!} onConfigChange={onConfigChange}></EditorMapMenu>
+        <EditorMapMenu
+          groupedEntries={groupedEntities}
+          config={config!}
+          onConfigChange={onConfigChange}
+        ></EditorMapMenu>
       </div>
     </DefaultLayout>
   );

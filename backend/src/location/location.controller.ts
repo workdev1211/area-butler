@@ -3,9 +3,10 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotResponse,
+  ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
 } from '@area-butler-types/types';
-import { Body, Controller, Get, Param, Post } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
@@ -34,6 +35,17 @@ export class LocationController extends AuthenticatedController {
     return this.locationService.createSearchResultSnapshot(user, snapshot);
   }
 
+  @Put('snapshot/:id')
+  async updateSnapshot(
+    @InjectUser() user: UserDocument,
+    @Param('id') id: string,
+    @Body() body: ApiUpdateSearchResultSnapshot,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return mapSearchResultSnapshotToApiEmbeddableMap(
+      await this.locationService.updateSearchResultSnapshot(user, id, body),
+    );
+  }
+
   @Get('latest-user-requests')
   async latestUserRequests(
     @InjectUser() user: UserDocument,
@@ -55,6 +67,8 @@ export class LocationController extends AuthenticatedController {
     @InjectUser() user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return mapSearchResultSnapshotToApiEmbeddableMap(await this.locationService.fetchEmbeddableMap(user, id));
+    return mapSearchResultSnapshotToApiEmbeddableMap(
+      await this.locationService.fetchEmbeddableMap(user, id),
+    );
   }
 }

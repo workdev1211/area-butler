@@ -243,7 +243,7 @@ export class LocationService {
     user: UserDocument,
     id: string,
     {snapshot, config}: ApiUpdateSearchResultSnapshot
-  ) : Promise<SearchResultSnapshot> {
+  ) : Promise<SearchResultSnapshotDocument> {
     const snapshotDoc : SearchResultSnapshotDocument = await this.fetchEmbeddableMap(user, id);
 
     snapshotDoc.snapshot = snapshot;
