@@ -51,7 +51,7 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
                   className="cursor-pointer"
                   onClick={() => openCodeSnippetModal(embeddableMap.token)}
                 >
-                  <th>{embeddableMap.snapshot.placesLocation.label}</th>
+                  <th>{embeddableMap?.snapshot?.placesLocation?.label}</th>
                   <td>
                     {new Date(embeddableMap.createdAt).toLocaleDateString(
                       "de-DE"
