@@ -29,11 +29,11 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   const changeShowLocation = () => {
-    onConfigChange({ ...config, showLocation: !config.showLocation });
+    onConfigChange({ ...config, showLocation: !config?.showLocation });
   };
 
   const changeGroupItems = () => {
-    onConfigChange({ ...config, groupItems: !config.groupItems });
+    onConfigChange({ ...config, groupItems: !config?.groupItems });
   };
 
   return (
@@ -58,7 +58,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   <input
                     type="radio"
                     name="theme"
-                    checked={!config.theme || config.theme === "DEFAULT"}
+                    checked={!config?.theme || config?.theme === "DEFAULT"}
                     onChange={() => changeTheme("DEFAULT")}
                     className="radio radio-sm radio-primary mr-2"
                   />
@@ -68,7 +68,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   <input
                     type="radio"
                     name="theme"
-                    checked={config.theme === "KF"}
+                    checked={config?.theme === "KF"}
                     onChange={() => changeTheme("KF")}
                     className="radio radio-sm radio-primary mr-2"
                   />
@@ -84,8 +84,8 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     type="radio"
                     name="mapboxMap"
                     checked={
-                      !config.mapBoxMapId ||
-                      config.mapBoxMapId ===
+                      !config?.mapBoxMapId ||
+                      config?.mapBoxMapId ===
                         "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
                     }
                     onChange={() =>
@@ -100,7 +100,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     type="radio"
                     name="mapboxMap"
                     checked={
-                      config.mapBoxMapId ===
+                      config?.mapBoxMapId ===
                       "kudiba-tech/ckzbqgya2000414li19g3p9u1"
                     }
                     onChange={() =>
@@ -118,7 +118,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   <input
                     type="checkbox"
                     name="showLocation"
-                    checked={!!config.showLocation}
+                    checked={!!config?.showLocation}
                     onChange={() => changeShowLocation()}
                     className="checkbox checkbox-sm checkbox-primary mr-2"
                   />
@@ -132,7 +132,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   <input
                     type="checkbox"
                     name="showLocation"
-                    checked={!!config.groupItems}
+                    checked={!!config?.groupItems}
                     onChange={() => changeGroupItems()}
                     className="checkbox checkbox-sm checkbox-primary mr-2"
                   />
