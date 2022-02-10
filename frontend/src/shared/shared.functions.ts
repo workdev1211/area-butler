@@ -419,7 +419,8 @@ export const buildEntityDataFromRealEstateListings = (
 
 export const buildCombinedGroupedEntries = (
   entities: ResultEntity[],
-  active = true
+  active = true,
+  oldActiveGroups: string[] = []
 ) => {
   const newGroupedEntries: any[] = Object.entries(
     groupBy(entities, (item: ResultEntity) => item.label)
@@ -428,7 +429,7 @@ export const buildCombinedGroupedEntries = (
   return [
     {
       title: preferredLocationsTitle,
-      active,
+      active: active || oldActiveGroups.includes(preferredLocationsTitle),
       items: newGroupedEntries
         .filter(([label, _]) => label === preferredLocationsTitle)
         .map(([_, items]) => items)
@@ -436,7 +437,7 @@ export const buildCombinedGroupedEntries = (
     },
     {
       title: realEstateListingsTitle,
-      active,
+      active: active || oldActiveGroups.includes(realEstateListingsTitle),
       items: newGroupedEntries
         .filter(([label, _]) => label === realEstateListingsTitle)
         .map(([_, items]) => items)
@@ -449,7 +450,7 @@ export const buildCombinedGroupedEntries = (
       )
       .map(([title, items]) => ({
         title,
-        active,
+        active: active || oldActiveGroups.includes(title),
         items
       }))
   ];

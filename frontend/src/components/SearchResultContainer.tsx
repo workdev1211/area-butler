@@ -184,10 +184,17 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
     }
     updateEntities(entitiesIncludedInActiveMeans);
+    const oldActiveEntityGroups = groupedEntities
+      .filter(ge => ge.active)
+      .map(ge => ge.title);
     const theme = config?.theme;
     const defaultActive = theme !== "KF";
     updateGroupedEntities(
-      buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
+      buildCombinedGroupedEntries(
+        entitiesIncludedInActiveMeans,
+        defaultActive,
+        oldActiveEntityGroups
+      )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse, activeMeans, preferredLocations, listings]);

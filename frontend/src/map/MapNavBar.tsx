@@ -1,6 +1,5 @@
 import React from "react";
 import "./MapNavBar.scss";
-import { meansOfTransportations } from "../../../shared/constants/constants";
 import {
   MeansOfTransportation,
   TransportationParam,

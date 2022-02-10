@@ -22,7 +22,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   toggleEntryGroup
 }) => {
   useEffect(() => {
-    if (groupedEntries.length) {
+    if (groupedEntries.length && !groupedEntries.some(ge => ge.active)) {
       toggleEntryGroup(groupedEntries[0].title);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
