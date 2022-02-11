@@ -1,4 +1,5 @@
 import { ApiPreferredLocation } from "./potential-customer";
+import { EntityRoute, EntityTransitRoute } from "./routing";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 
 export interface RollbarConfig {
@@ -224,6 +225,8 @@ export interface ApiSearchResultSnapshot {
   localityParams: ApiOsmEntity[];
   preferredLocations: ApiPreferredLocation[];
   searchResponse: ApiSearchResponse;
+  routes: EntityRoute[];
+  transitRoutes: EntityTransitRoute[];
 }
 
 export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";

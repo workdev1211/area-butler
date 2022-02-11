@@ -29,7 +29,7 @@ import MapMenu from "../map/MapMenu";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
-import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
+import { ApiRoute, ApiTransitRoute, EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
@@ -51,20 +51,6 @@ export interface EntityGroup {
   title: string;
   active: boolean;
   items: ResultEntity[];
-}
-
-export interface EntityRoute {
-  title: string;
-  coordinates: ApiCoordinates;
-  show: MeansOfTransportation[];
-  routes: ApiRoute[];
-}
-
-export interface EntityTransitRoute {
-  title: string;
-  coordinates: ApiCoordinates;
-  show: boolean;
-  route: ApiTransitRoute;
 }
 
 export interface SearchResultContainerProps {
@@ -90,6 +76,8 @@ export interface SearchResultContainerProps {
   onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
+  initialRoutes?: EntityRoute[],
+  initialTransitRoutes?: EntityTransitRoute[]
 }
 
 const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
@@ -114,7 +102,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   onEntitiesChange = () => null,
   onGroupedEntitiesChange = () => null,
   embedMode = false,
-  config
+  config,
+  initialRoutes = [],
+  initialTransitRoutes = []
 }) => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
@@ -122,8 +112,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [availableMeans, setAvailableMeans] = useState<any>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
-  const [routes, setRoutes] = useState<EntityRoute[]>([]);
-  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([]);
+  const [routes, setRoutes] = useState<EntityRoute[]>(initialRoutes);
+  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>(initialTransitRoutes);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const updateEntities = (entities: ResultEntity[]) => {

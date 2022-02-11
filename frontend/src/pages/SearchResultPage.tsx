@@ -1,40 +1,41 @@
+import CodeSnippetModal from "components/CodeSnippetModal";
+import { RealEstateContext } from "context/RealEstateContext";
+import { UserActionTypes, UserContext } from "context/UserContext";
+import ExportModal from "export/ExportModal";
+import { useHttp } from "hooks/http";
+import { useRouting } from "hooks/routing";
 import React, { useContext, useEffect, useState } from "react";
-import DefaultLayout from "../layout/defaultLayout";
-import {
-  SearchContext,
-  SearchContextActionTypes
-} from "../context/SearchContext";
+import { useHistory } from "react-router-dom";
+import TourStarter from "tour/TourStarter";
+import { localStorageSearchContext } from "../../../shared/constants/constants";
+import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../shared/types/types";
-import { localStorageSearchContext } from "../../../shared/constants/constants";
-import { useHistory } from "react-router-dom";
-import ExportModal from "export/ExportModal";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
-import BackButton from "../layout/BackButton";
-import { RealEstateContext } from "context/RealEstateContext";
-import { UserActionTypes, UserContext } from "context/UserContext";
-import TourStarter from "tour/TourStarter";
-import { useHttp } from "hooks/http";
-import { ConfigContext } from "../context/ConfigContext";
 import SearchResultContainer, {
   EntityGroup,
-  ResultEntity
+  ResultEntity,
 } from "../components/SearchResultContainer";
-import { createCodeSnippet, toastSuccess } from "shared/shared.functions";
-import CodeSnippetModal from "components/CodeSnippetModal";
+import { ConfigContext } from "../context/ConfigContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
+import BackButton from "../layout/BackButton";
+import DefaultLayout from "../layout/defaultLayout";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
 const SearchResultPage: React.FunctionComponent = () => {
-  const { searchContextState, searchContextDispatch } = useContext(
-    SearchContext
-  );
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
 
   const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
@@ -44,9 +45,10 @@ const SearchResultPage: React.FunctionComponent = () => {
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
   const [showCodeSnippetModal, setShowCodeSnippetModal] = useState(false);
-  const [codeSnippet, setCodeSnippet] = useState('');
+  const [codeSnippet, setCodeSnippet] = useState("");
 
   const { get, post } = useHttp();
+  const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -55,7 +57,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       ).data;
       userDispatch({
         type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-        payload: latestUserRequests
+        payload: latestUserRequests,
       });
     };
 
@@ -83,7 +85,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                payload: true
+                payload: true,
               });
             }}
             className="btn btn-link"
@@ -98,14 +100,14 @@ const SearchResultPage: React.FunctionComponent = () => {
               hasFullyCustomizableExpose
                 ? searchContextDispatch({
                     type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                    payload: true
+                    payload: true,
                   })
                 : userDispatch({
                     type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
-                      message: subscriptionUpgradeFullyCustomizableExpose
-                    }
+                      message: subscriptionUpgradeFullyCustomizableExpose,
+                    },
                   });
             }}
             className="btn btn-link"
@@ -119,7 +121,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                payload: true
+                payload: true,
               });
             }}
             className="btn btn-link"
@@ -161,17 +163,69 @@ const SearchResultPage: React.FunctionComponent = () => {
           <button
             type="button"
             onClick={async () => {
-              const response :  ApiSearchResultSnapshotResponse = (await post<ApiSearchResultSnapshotResponse>("/api/location/snapshot", {
-                placesLocation: searchContextState.placesLocation,
-                location: searchContextState.location,
-                transportationParams: searchContextState.transportationParams,
-                localityParams: searchContextState.localityParams,
-                searchResponse: searchContextState.searchResponse,
-                preferredLocations: searchContextState.preferredLocations
-              })).data;
+              const routes: EntityRoute[] = [];
+              const transitRoutes: EntityTransitRoute[] = [];
+              const location = searchContextState.location!;
+              const preferredLocations: ApiPreferredLocation[] =
+                searchContextState.preferredLocations || [];
+
+              for (const preferredLocation of preferredLocations) {
+                const routesResult = await fetchRoutes({
+                  meansOfTransportation: [
+                    MeansOfTransportation.BICYCLE,
+                    MeansOfTransportation.CAR,
+                    MeansOfTransportation.WALK,
+                  ],
+                  origin: location,
+                  destinations: [
+                    {
+                      title: preferredLocation.title,
+                      coordinates: preferredLocation.coordinates!,
+                    },
+                  ],
+                });
+                routes.push({
+                  routes: routesResult[0].routes,
+                  title: routesResult[0].title,
+                  show: [],
+                  coordinates: preferredLocation.coordinates!,
+                });
+
+                const transitRoutesResult = await fetchTransitRoutes({
+                  origin: location,
+                  destinations: [
+                    {
+                      title: preferredLocation.title,
+                      coordinates: preferredLocation.coordinates!,
+                    },
+                  ],
+                });
+                transitRoutes.push({
+                  route: transitRoutesResult[0].route,
+                  title: transitRoutesResult[0].title,
+                  show: false,
+                  coordinates: preferredLocation.coordinates!,
+                });
+              }
+
+              const response: ApiSearchResultSnapshotResponse = (
+                await post<ApiSearchResultSnapshotResponse>(
+                  "/api/location/snapshot",
+                  {
+                    placesLocation: searchContextState.placesLocation,
+                    location,
+                    transportationParams:
+                      searchContextState.transportationParams,
+                    localityParams: searchContextState.localityParams,
+                    searchResponse: searchContextState.searchResponse,
+                    preferredLocations,
+                    routes,
+                    transitRoutes,
+                  }
+                )
+              ).data;
 
               history.push(`snippet-editor/${response.id}`);
-
             }}
             className="btn btn-link"
           >
@@ -184,7 +238,11 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <CodeSnippetModal codeSnippet={codeSnippet} showModal={showCodeSnippetModal} setShowModal={setShowCodeSnippetModal}/>
+      <CodeSnippetModal
+        codeSnippet={codeSnippet}
+        showModal={showCodeSnippetModal}
+        setShowModal={setShowCodeSnippetModal}
+      />
       <DefaultLayout
         title="Umgebungsanalyse"
         withHorizontalPadding={false}

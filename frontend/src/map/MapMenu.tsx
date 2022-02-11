@@ -2,8 +2,6 @@ import React, { useEffect, useState } from "react";
 import "./MapMenu.css";
 import {
   EntityGroup,
-  EntityRoute,
-  EntityTransitRoute,
   ResultEntity
 } from "../components/SearchResultContainer";
 import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
@@ -38,6 +36,7 @@ import { MapClipping } from "context/SearchContext";
 import MapClippingsCollapsable from "./MapClippingsCollapsable";
 import { CensusData } from "hooks/censusdata";
 import MapMenuKarlaFricke from "./menu/MapMenuKarlaFricke";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 
 export interface MapMenuProps {
   censusData?: CensusData[];

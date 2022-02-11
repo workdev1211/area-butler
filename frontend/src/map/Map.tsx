@@ -12,7 +12,7 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import React, { useCallback, useEffect, useState } from "react";
-import { ApiRoute, ApiTransitRoute } from "../../../shared/types/routing";
+import { ApiRoute, ApiTransitRoute, EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import {
   ApiCoordinates,
   ApiSearchResponse,
@@ -30,8 +30,6 @@ import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.sv
 import googleIcon from "../assets/icons/google.svg";
 import {
   EntityGroup,
-  EntityRoute,
-  EntityTransitRoute,
   ResultEntity
 } from "../components/SearchResultContainer";
 import {

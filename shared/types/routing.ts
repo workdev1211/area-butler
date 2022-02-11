@@ -1,5 +1,21 @@
 import {ApiCoordinates, ApiGeometry, MeansOfTransportation} from "./types";
 
+
+
+export interface EntityRoute {
+    title: string;
+    coordinates: ApiCoordinates;
+    show: MeansOfTransportation[];
+    routes: ApiRoute[];
+  }
+  
+  export interface EntityTransitRoute {
+    title: string;
+    coordinates: ApiCoordinates;
+    show: boolean;
+    route: ApiTransitRoute;
+  }
+
 export interface ApiRoute {
     sections: {
         duration: number;

@@ -1,4 +1,5 @@
 import React from "react";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { MeansOfTransportation, OsmName } from "../../../shared/types/types";
 import {
   deriveMinutesFromMeters,
@@ -7,8 +8,6 @@ import {
 } from "../shared/shared.functions";
 import {
   EntityGroup,
-  EntityRoute,
-  EntityTransitRoute,
   ResultEntity
 } from "./SearchResultContainer";
 

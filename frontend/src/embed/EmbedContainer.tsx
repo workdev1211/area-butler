@@ -10,6 +10,7 @@ import {
   SearchContextActionTypes
 } from "../context/SearchContext";
 import SearchResultContainer from "../components/SearchResultContainer";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 
 const EmbedContainer: React.FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } = useContext(
@@ -17,6 +18,8 @@ const EmbedContainer: React.FunctionComponent = () => {
   );
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
+  const [routes, setRoutes] = useState<EntityRoute[]>([]);
+  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([]);
 
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [searchConfig, setSearchConfig] = useState<
@@ -59,7 +62,9 @@ const EmbedContainer: React.FunctionComponent = () => {
         localityParams,
         location,
         placesLocation,
-        preferredLocations
+        preferredLocations,
+        routes,
+        transitRoutes
       } = result.snapshot;
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
@@ -85,6 +90,8 @@ const EmbedContainer: React.FunctionComponent = () => {
         type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
         payload: preferredLocations
       });
+      setRoutes(routes);
+      setTransitRoutes(transitRoutes);
     }
   }, [result, searchContextDispatch]);
 
@@ -106,6 +113,8 @@ const EmbedContainer: React.FunctionComponent = () => {
       searchContextDispatch={searchContextDispatch}
       embedMode={true}
       config={searchConfig}
+      initialRoutes={routes}
+      initialTransitRoutes={transitRoutes}
     />
   );
 };
