@@ -270,7 +270,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   if (config?.theme) {
     switch (config?.theme) {
       case "KF":
-      default:
         return (
           <MapMenuKarlaFricke
             groupedEntries={groupedEntries
@@ -280,6 +279,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
             mobileMenuOpen={false}
           />
         );
+      default:
     }
   }
 
