@@ -1,4 +1,3 @@
-import CodeSnippetModal from "components/CodeSnippetModal";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import ExportModal from "export/ExportModal";
@@ -14,18 +13,18 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
-  MeansOfTransportation,
+  MeansOfTransportation
 } from "../../../shared/types/types";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import SearchResultContainer, {
   EntityGroup,
-  ResultEntity,
+  ResultEntity
 } from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
   SearchContext,
-  SearchContextActionTypes,
+  SearchContextActionTypes
 } from "../context/SearchContext";
 import BackButton from "../layout/BackButton";
 import DefaultLayout from "../layout/defaultLayout";
@@ -44,9 +43,6 @@ const SearchResultPage: React.FunctionComponent = () => {
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
-  const [showCodeSnippetModal, setShowCodeSnippetModal] = useState(false);
-  const [codeSnippet, setCodeSnippet] = useState("");
-
   const { get, post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
@@ -238,11 +234,6 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   return (
     <>
-      <CodeSnippetModal
-        codeSnippet={codeSnippet}
-        showModal={showCodeSnippetModal}
-        setShowModal={setShowCodeSnippetModal}
-      />
       <DefaultLayout
         title="Umgebungsanalyse"
         withHorizontalPadding={false}

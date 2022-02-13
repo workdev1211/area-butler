@@ -1,3 +1,4 @@
+import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
   ResultEntity,
@@ -13,6 +14,7 @@ import { useParams } from "react-router-dom";
 import {
   buildCombinedGroupedEntries,
   buildEntityData,
+  createCodeSnippet,
   deriveAvailableMeansFromResponse,
   entityIncludesMean,
   toastError,
@@ -34,6 +36,8 @@ export interface SnippetEditorRouterProps {
 }
 
 const SnippetEditorPage: React.FunctionComponent = () => {
+  const [showModal, setShowModal] = useState(false);
+  const [codeSnippet, setCodeSnippet] = useState("");
   const { searchContextDispatch } = useContext(SearchContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
@@ -59,6 +63,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       setConfig(snapshotResponse.config);
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
+      setCodeSnippet(createCodeSnippet(snapshotResponse.token));
     };
 
     fetchSnapshot();
@@ -100,7 +105,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       );
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse]);
+  }, [searchResponse, config]);
 
   // react to active means change
   useEffect(() => {
@@ -116,7 +121,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, activeMeans]);
+  }, [searchResponse, activeMeans, config]);
 
   const onConfigChange = (config: ApiSearchResultSnapshotConfig) => {
     setConfig(config);
@@ -152,6 +157,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
                   config,
                   snapshot,
                 });
+                setShowModal(true);
                 toastSuccess("Karten Snippet erfolgreich veröffentlicht!");
               } catch (e) {
                 toastError("Fehler beim Veröffentlichen der Karte");
@@ -177,6 +183,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       actionTop={<ActionsTop />}
       actionBottom={[<BackButton key="back-button" to="/" />]}
     >
+      <CodeSnippetModal showModal={showModal} setShowModal={setShowModal} codeSnippet={codeSnippet} />
       <div className="editor-container">
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
