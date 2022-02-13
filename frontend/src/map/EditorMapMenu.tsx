@@ -1,12 +1,10 @@
 import { EntityGroup } from "components/SearchResultContainer";
-import { config } from "process";
 import { useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotConfigTheme,
+  ApiSearchResultSnapshotConfigTheme
 } from "../../../shared/types/types";
-import "./MapMenu.css";
-import MapMenuCollapsable from "./MapMenuCollapsable";
+import "./EditorMapMenu.css";
 
 export interface EditorMapMenuProps {
   groupedEntries: EntityGroup[];
@@ -37,7 +35,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   return (
-    <div className="map-menu z-9000">
+    <div className="editor-map-menu z-9000">
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -120,7 +118,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     name="showLocation"
                     checked={!!config?.showLocation}
                     onChange={() => changeShowLocation()}
-                    className="checkbox checkbox-sm checkbox-primary mr-2"
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">Objekt auf Karte anzeigen</span>
                 </label>
@@ -134,7 +132,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     name="showLocation"
                     checked={!!config?.groupItems}
                     onChange={() => changeGroupItems()}
-                    className="checkbox checkbox-sm checkbox-primary mr-2"
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">Objekte gruppieren beim Rauszoomen</span>
                 </label>

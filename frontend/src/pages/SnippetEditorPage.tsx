@@ -1,4 +1,7 @@
-import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
+import SearchResultContainer, {
+  EntityGroup,
+  ResultEntity,
+} from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import { Poi, SearchContext } from "context/SearchContext";
 import { useHttp } from "hooks/http";
@@ -31,7 +34,7 @@ export interface SnippetEditorRouterProps {
 }
 
 const SnippetEditorPage: React.FunctionComponent = () => {
-  const {searchContextDispatch} = useContext(SearchContext);
+  const { searchContextDispatch } = useContext(SearchContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { mapBoxAccessToken } = useContext(ConfigContext);
@@ -120,16 +123,22 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   };
 
   const onPoiAdd = (poi: Poi) => {
-    
-    const copiedSearchResponse = JSON.parse(JSON.stringify(searchResponse)) as ApiSearchResponse;
-    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
-    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
-    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
+    const copiedSearchResponse = JSON.parse(
+      JSON.stringify(searchResponse)
+    ) as ApiSearchResponse;
+    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
 
-    setSnapshot({...snapshot!, searchResponse: copiedSearchResponse});
-    setSearchResponse({...copiedSearchResponse});
-
-  }
+    setSnapshot({ ...snapshot!, searchResponse: copiedSearchResponse });
+    setSearchResponse({ ...copiedSearchResponse });
+  };
 
   const ActionsTop: React.FunctionComponent = () => {
     return (
@@ -139,7 +148,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             type="button"
             onClick={async () => {
               try {
-                await put(`/api/location/snapshot/${snapshotId}`, { config, snapshot });
+                await put(`/api/location/snapshot/${snapshotId}`, {
+                  config,
+                  snapshot,
+                });
                 toastSuccess("Karten Snippet erfolgreich veröffentlicht!");
               } catch (e) {
                 toastError("Fehler beim Veröffentlichen der Karte");
@@ -166,25 +178,20 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       actionBottom={[<BackButton key="back-button" to="/" />]}
     >
       <div className="editor-container">
-        <Map
-          mapBoxAccessToken={mapBoxAccessToken}
-          mapboxMapId={config?.mapBoxMapId}
+        <SearchResultContainer
+          mapBoxToken={mapBoxAccessToken}
+          mapBoxMapId={config?.mapBoxMapId}
           searchContextDispatch={searchContextDispatch}
           searchResponse={snapshot?.searchResponse!}
-          searchAddress={''}
-          entities={entities}
-          groupedEntities={groupedEntities}
-          means={{
-            byFoot: activeMeans.includes(MeansOfTransportation.WALK),
-            byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
-            byCar: activeMeans.includes(MeansOfTransportation.CAR)
-          }}
-          mapCenter={snapshot?.location}
-          routes={[]}
-          transitRoutes={[]}
-          config={config}
+          placesLocation={snapshot.placesLocation}
           onPoiAdd={onPoiAdd}
-        ></Map>
+          embedMode={true}
+          initialRoutes={[]}
+          initialTransitRoutes={[]}
+          config={config}
+          transportationParams={snapshot.transportationParams}
+          location={snapshot?.location}
+        ></SearchResultContainer>
         <EditorMapMenu
           groupedEntries={groupedEntities}
           config={config!}

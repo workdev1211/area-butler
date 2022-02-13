@@ -202,6 +202,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     prevProps.transitRoutes === nextProps.transitRoutes;
   const configEqual =
     JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config);
+  const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
   return (
     mapboxKeyEqual &&
     responseEqual &&
@@ -214,7 +215,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     highlightIdEqual &&
     routesEqual &&
     transitRoutesEqual &&
-    configEqual
+    configEqual && 
+    mapboxMapIdEqual
   );
 };
 
@@ -324,7 +326,7 @@ const Map = React.memo<MapProps>(
         }
       });
 
-      if (!embedMode && !!onPoiAdd) {
+      if (!!onPoiAdd) {
         localMap.on("contextmenu", async (e: any) => {
           const coordinates: ApiCoordinates = e.latlng;
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
@@ -370,7 +372,8 @@ const Map = React.memo<MapProps>(
       searchContextDispatch,
       mapBoxAccessToken,
       searchAddress,
-      embedMode
+      embedMode,
+      mapboxMapId
     ]);
 
     // react on zoom and center change

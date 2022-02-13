@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import {
   MapClipping,
+  Poi,
   SearchContextActions,
   SearchContextActionTypes
 } from "../context/SearchContext";
@@ -77,7 +78,8 @@ export interface SearchResultContainerProps {
   embedMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
   initialRoutes?: EntityRoute[],
-  initialTransitRoutes?: EntityTransitRoute[]
+  initialTransitRoutes?: EntityTransitRoute[],
+  onPoiAdd?: (poi: Poi) => void;
 }
 
 const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
@@ -104,7 +106,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   embedMode = false,
   config,
   initialRoutes = [],
-  initialTransitRoutes = []
+  initialTransitRoutes = [],
+  onPoiAdd
 }) => {
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
@@ -383,6 +386,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             transitRoutes={transitRoutes}
             embedMode={embedMode}
             config={config}
+            onPoiAdd={onPoiAdd}
           />
         </div>
         {config?.theme !== "KF" && <MapMenuMobileBtn />}
