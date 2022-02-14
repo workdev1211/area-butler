@@ -1,3 +1,4 @@
+import BusyModal from "components/BusyModal";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import ExportModal from "export/ExportModal";
@@ -5,6 +6,7 @@ import { useHttp } from "hooks/http";
 import { useRouting } from "hooks/routing";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import { toastError } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -45,6 +47,7 @@ const SearchResultPage: React.FunctionComponent = () => {
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
   const { get, post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
+  const [busyModalOpen, setBusyModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserRequests = async () => {
@@ -159,69 +162,78 @@ const SearchResultPage: React.FunctionComponent = () => {
           <button
             type="button"
             onClick={async () => {
-              const routes: EntityRoute[] = [];
-              const transitRoutes: EntityTransitRoute[] = [];
-              const location = searchContextState.location!;
-              const preferredLocations: ApiPreferredLocation[] =
-                searchContextState.preferredLocations || [];
 
-              for (const preferredLocation of preferredLocations) {
-                const routesResult = await fetchRoutes({
-                  meansOfTransportation: [
-                    MeansOfTransportation.BICYCLE,
-                    MeansOfTransportation.CAR,
-                    MeansOfTransportation.WALK,
-                  ],
-                  origin: location,
-                  destinations: [
-                    {
-                      title: preferredLocation.title,
-                      coordinates: preferredLocation.coordinates!,
-                    },
-                  ],
-                });
-                routes.push({
-                  routes: routesResult[0].routes,
-                  title: routesResult[0].title,
-                  show: [],
-                  coordinates: preferredLocation.coordinates!,
-                });
+              setBusyModalOpen(true);
 
-                const transitRoutesResult = await fetchTransitRoutes({
-                  origin: location,
-                  destinations: [
+              try {
+                const routes: EntityRoute[] = [];
+                const transitRoutes: EntityTransitRoute[] = [];
+                const location = searchContextState.location!;
+                const preferredLocations: ApiPreferredLocation[] =
+                  searchContextState.preferredLocations || [];
+  
+                for (const preferredLocation of preferredLocations) {
+                  const routesResult = await fetchRoutes({
+                    meansOfTransportation: [
+                      MeansOfTransportation.BICYCLE,
+                      MeansOfTransportation.CAR,
+                      MeansOfTransportation.WALK,
+                    ],
+                    origin: location,
+                    destinations: [
+                      {
+                        title: preferredLocation.title,
+                        coordinates: preferredLocation.coordinates!,
+                      },
+                    ],
+                  });
+                  routes.push({
+                    routes: routesResult[0].routes,
+                    title: routesResult[0].title,
+                    show: [],
+                    coordinates: preferredLocation.coordinates!,
+                  });
+  
+                  const transitRoutesResult = await fetchTransitRoutes({
+                    origin: location,
+                    destinations: [
+                      {
+                        title: preferredLocation.title,
+                        coordinates: preferredLocation.coordinates!,
+                      },
+                    ],
+                  });
+                  transitRoutes.push({
+                    route: transitRoutesResult[0].route,
+                    title: transitRoutesResult[0].title,
+                    show: false,
+                    coordinates: preferredLocation.coordinates!,
+                  });
+                }
+  
+                const response: ApiSearchResultSnapshotResponse = (
+                  await post<ApiSearchResultSnapshotResponse>(
+                    "/api/location/snapshot",
                     {
-                      title: preferredLocation.title,
-                      coordinates: preferredLocation.coordinates!,
-                    },
-                  ],
-                });
-                transitRoutes.push({
-                  route: transitRoutesResult[0].route,
-                  title: transitRoutesResult[0].title,
-                  show: false,
-                  coordinates: preferredLocation.coordinates!,
-                });
+                      placesLocation: searchContextState.placesLocation,
+                      location,
+                      transportationParams:
+                        searchContextState.transportationParams,
+                      localityParams: searchContextState.localityParams,
+                      searchResponse: searchContextState.searchResponse,
+                      preferredLocations,
+                      routes,
+                      transitRoutes,
+                    }
+                  )
+                ).data;
+                history.push(`snippet-editor/${response.id}`);
+
+              } catch (e) {
+                toastError('Fehler beim Öffnen des Editors');
+              }  finally {
+                setBusyModalOpen(false);
               }
-
-              const response: ApiSearchResultSnapshotResponse = (
-                await post<ApiSearchResultSnapshotResponse>(
-                  "/api/location/snapshot",
-                  {
-                    placesLocation: searchContextState.placesLocation,
-                    location,
-                    transportationParams:
-                      searchContextState.transportationParams,
-                    localityParams: searchContextState.localityParams,
-                    searchResponse: searchContextState.searchResponse,
-                    preferredLocations,
-                    routes,
-                    transitRoutes,
-                  }
-                )
-              ).data;
-
-              history.push(`snippet-editor/${response.id}`);
             }}
             className="btn btn-link"
           >
@@ -241,6 +253,7 @@ const SearchResultPage: React.FunctionComponent = () => {
         actionBottom={[<BackButton key="back-button" to="/" />]}
       >
         <TourStarter tour="result" />
+        <BusyModal open={busyModalOpen} title="Öffne Editor..."></BusyModal>
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
           searchResponse={searchContextState.searchResponse}
