@@ -126,36 +126,6 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
-                    name="showLocation"
-                    checked={!!config?.showLocation}
-                    onChange={() => changeShowLocation()}
-                    className="checkbox checkbox-xs checkbox-primary mr-2"
-                  />
-                  <span className="label-text">Objekt auf Karte anzeigen</span>
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center gap-6 py-1">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
-                    name="showLocation"
-                    checked={!!config?.groupItems}
-                    onChange={() => changeGroupItems()}
-                    className="checkbox checkbox-xs checkbox-primary mr-2"
-                  />
-                  <span className="label-text">
-                    Objekte gruppieren beim Rauszoomen
-                  </span>
-                </label>
-              </div>
-            </li>
-            <li>
               <div className="flex flex-col">
                 <h4 className="font-bold">Vorausgewählte Profile</h4>
                 <div className="flex items-center gap-6 py-1">
@@ -219,6 +189,36 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     </label>
                   )}
                 </div>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="showLocation"
+                    checked={!!config?.showLocation}
+                    onChange={() => changeShowLocation()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Objekt auf Karte anzeigen</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="showLocation"
+                    checked={!!config?.groupItems}
+                    onChange={() => changeGroupItems()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Objekte gruppieren beim Rauszoomen
+                  </span>
+                </label>
               </div>
             </li>
           </ul>
