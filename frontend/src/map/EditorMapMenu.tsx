@@ -2,11 +2,13 @@ import { EntityGroup } from "components/SearchResultContainer";
 import { useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotConfigTheme
+  ApiSearchResultSnapshotConfigTheme,
+  MeansOfTransportation,
 } from "../../../shared/types/types";
 import "./EditorMapMenu.css";
 
 export interface EditorMapMenuProps {
+  availableMeans: MeansOfTransportation[];
   groupedEntries: EntityGroup[];
   config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
@@ -15,6 +17,7 @@ export interface EditorMapMenuProps {
 const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   config,
   onConfigChange,
+  availableMeans = [],
 }) => {
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
 
@@ -32,6 +35,18 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 
   const changeGroupItems = () => {
     onConfigChange({ ...config, groupItems: !config?.groupItems });
+  };
+
+  const changeDefaultActiveMeans = (activeMeans: MeansOfTransportation) => {
+    let defaultActiveMeans = config.defaultActiveMeans || [];
+    if (defaultActiveMeans.includes(activeMeans)) {
+      defaultActiveMeans = [
+        ...defaultActiveMeans.filter((a) => a !== activeMeans),
+      ];
+    } else {
+      defaultActiveMeans.push(activeMeans);
+    }
+    onConfigChange({ ...config, defaultActiveMeans });
   };
 
   return (
@@ -134,8 +149,76 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     onChange={() => changeGroupItems()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Objekte gruppieren beim Rauszoomen</span>
+                  <span className="label-text">
+                    Objekte gruppieren beim Rauszoomen
+                  </span>
                 </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex flex-col">
+                <h4 className="font-bold">Vorausgewählte Profile</h4>
+                <div className="flex items-center gap-6 py-1">
+                  {availableMeans.includes(MeansOfTransportation.WALK) && (
+                    <label className="cursor-pointer label">
+                      <input
+                        type="checkbox"
+                        name="defaultActiveMeansWalk"
+                        checked={
+                          !config?.defaultActiveMeans ||
+                          config.defaultActiveMeans.includes(
+                            MeansOfTransportation.WALK
+                          )
+                        }
+                        onChange={() =>
+                          changeDefaultActiveMeans(MeansOfTransportation.WALK)
+                        }
+                        className="checkbox checkbox-xs checkbox-primary mr-2"
+                      />
+                      <span className="label-text">Zu Fuß</span>
+                    </label>
+                  )}
+                  {availableMeans.includes(MeansOfTransportation.BICYCLE) && (
+                    <label className="cursor-pointer label">
+                      <input
+                        type="checkbox"
+                        name="defaultActiveMeansBike"
+                        checked={
+                          !config?.defaultActiveMeans ||
+                          config.defaultActiveMeans.includes(
+                            MeansOfTransportation.BICYCLE
+                          )
+                        }
+                        onChange={() =>
+                          changeDefaultActiveMeans(
+                            MeansOfTransportation.BICYCLE
+                          )
+                        }
+                        className="checkbox checkbox-xs checkbox-primary mr-2"
+                      />
+                      <span className="label-text">Fahrrad</span>
+                    </label>
+                  )}
+                  {availableMeans.includes(MeansOfTransportation.CAR) && (
+                    <label className="cursor-pointer label">
+                      <input
+                        type="checkbox"
+                        name="defaultActiveMeansCar"
+                        checked={
+                          !config?.defaultActiveMeans ||
+                          config.defaultActiveMeans.includes(
+                            MeansOfTransportation.CAR
+                          )
+                        }
+                        onChange={() =>
+                          changeDefaultActiveMeans(MeansOfTransportation.CAR)
+                        }
+                        className="checkbox checkbox-xs checkbox-primary mr-2"
+                      />
+                      <span className="label-text">Auto</span>
+                    </label>
+                  )}
+                </div>
               </div>
             </li>
           </ul>

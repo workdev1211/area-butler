@@ -319,7 +319,7 @@ export const deriveTotalRequestContingent = (user: ApiUser) =>
 
 export const deriveAvailableMeansFromResponse = (
   searchResponse?: ApiSearchResponse
-) => {
+) : MeansOfTransportation[] => {
   const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
   return meansOfTransportations
     .filter(mot => routingKeys.includes(mot.type))

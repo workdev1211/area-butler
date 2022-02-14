@@ -72,7 +72,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
 
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
-  const [availableMeans, setAvailableMeans] = useState<any>([]);
+  const [availableMeans, setAvailableMeans] = useState<MeansOfTransportation[]>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
 
   const updateEntities = (entities: ResultEntity[]) => {
@@ -221,6 +221,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           location={snapshot?.location}
         ></SearchResultContainer>
         <EditorMapMenu
+          availableMeans={availableMeans}
           groupedEntries={groupedEntities}
           config={config!}
           onConfigChange={onConfigChange}
