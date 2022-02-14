@@ -10,6 +10,7 @@ import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import EditorMapMenu from "map/EditorMapMenu";
 import { useContext, useEffect, useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useParams } from "react-router-dom";
 import {
   buildCombinedGroupedEntries,
@@ -41,7 +42,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const { searchContextDispatch } = useContext(SearchContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
-  const { mapBoxAccessToken } = useContext(ConfigContext);
+  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
   const [config, setConfig] = useState<
     ApiSearchResultSnapshotConfig | undefined
   >();
@@ -183,7 +184,27 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       actionTop={<ActionsTop />}
       actionBottom={[<BackButton key="back-button" to="/" />]}
     >
-      <CodeSnippetModal showModal={showModal} setShowModal={setShowModal} codeSnippet={codeSnippet} />
+      <div className="hidden">
+        <GooglePlacesAutocomplete
+          apiOptions={{
+            language: "de",
+            region: "de",
+          }}
+          autocompletionRequest={{
+            componentRestrictions: {
+              country: ["de"],
+            },
+          }}
+          minLengthAutocomplete={5}
+          selectProps={{}}
+          apiKey={googleApiKey}
+        />
+      </div>
+      <CodeSnippetModal
+        showModal={showModal}
+        setShowModal={setShowModal}
+        codeSnippet={codeSnippet}
+      />
       <div className="editor-container">
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
