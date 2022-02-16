@@ -62,9 +62,9 @@ const EmbedContainer: React.FunctionComponent = () => {
         localityParams,
         location,
         placesLocation,
-        preferredLocations,
-        routes,
-        transitRoutes
+        preferredLocations = [],
+        routes = [],
+        transitRoutes = []
       } = result.snapshot;
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
