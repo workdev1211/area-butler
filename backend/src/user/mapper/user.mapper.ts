@@ -12,5 +12,6 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   requestContingents: retrieveTotalRequestContingent(user),
   showTour: user.showTour,
   logo: user.logo,
-  color: user.color
+  color: user.color,
+  additionalMapBoxStyles: user.additionalMapBoxStyles
 });

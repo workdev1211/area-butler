@@ -12,14 +12,22 @@ export interface EditorMapMenuProps {
   groupedEntries: EntityGroup[];
   config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
+  additionalMapBoxStyles?: { key: string; label: string }[];
 }
 
 const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   config,
   onConfigChange,
   availableMeans = [],
+  additionalMapBoxStyles = [],
 }) => {
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
+
+  const mapStyles: { key: string; label: string }[] = [
+    { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
+    { key: "kudiba-tech/ckzbqgya2000414li19g3p9u1", label: "Highlight" },
+    ...additionalMapBoxStyles,
+  ];
 
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme) => {
     onConfigChange({ ...config, theme: value });
@@ -92,37 +100,18 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
             <li>
               <div className="flex items-center gap-6 py-1">
                 <h4 className="w-12 font-bold">Karte</h4>
-                <label className="cursor-pointer label">
-                  <input
-                    type="radio"
-                    name="mapboxMap"
-                    checked={
-                      !config?.mapBoxMapId ||
-                      config?.mapBoxMapId ===
-                        "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
-                    }
-                    onChange={() =>
-                      changeMapboxMap("kudiba-tech/ckvu0ltho2j9214p847jp4t4m")
-                    }
-                    className="radio radio-sm radio-primary mr-2"
-                  />
-                  <span className="label-text">Classic</span>
-                </label>
-                <label className="cursor-pointer label">
-                  <input
-                    type="radio"
-                    name="mapboxMap"
-                    checked={
-                      config?.mapBoxMapId ===
-                      "kudiba-tech/ckzbqgya2000414li19g3p9u1"
-                    }
-                    onChange={() =>
-                      changeMapboxMap("kudiba-tech/ckzbqgya2000414li19g3p9u1")
-                    }
-                    className="radio radio-sm radio-primary mr-2"
-                  />
-                  <span className="label-text">Highlight</span>
-                </label>
+                <select
+                  className="select select-bordered select-sm w-full flex"
+                  value={
+                    config?.mapBoxMapId ||
+                    "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
+                  }
+                  onChange={(event) => changeMapboxMap(event.target.value)}
+                >
+                  {mapStyles.map((style) => (
+                    <option value={style.key}>{style.label}</option>
+                  ))}
+                </select>
               </div>
             </li>
             <li>

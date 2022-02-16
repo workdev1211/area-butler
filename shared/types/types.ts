@@ -28,6 +28,7 @@ export interface ApiUser {
   showTour: ApiShowTour;
   logo?: string;
   color?: string;
+  additionalMapBoxStyles: {key: string, label: string}[];
 }
 
 export interface ApiUpsertUser {

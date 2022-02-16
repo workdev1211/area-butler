@@ -5,6 +5,7 @@ import SearchResultContainer, {
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import { Poi, SearchContext } from "context/SearchContext";
+import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
@@ -40,6 +41,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const { searchContextDispatch } = useContext(SearchContext);
+  const { userState } = useContext(UserContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
@@ -225,6 +227,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           groupedEntries={groupedEntities}
           config={config!}
           onConfigChange={onConfigChange}
+          additionalMapBoxStyles={userState?.user?.additionalMapBoxStyles || []}
         ></EditorMapMenu>
       </div>
     </DefaultLayout>

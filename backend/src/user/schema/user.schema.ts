@@ -44,6 +44,9 @@ export class User {
     @Prop({required: false, type: Array, default: []})
     allowedUrls: string[];
 
+    @Prop({required: false, type: Array, default: []})
+    additionalMapBoxStyles: {key: string, label: string}[];
+
 }
 
 export const retrieveTotalRequestContingent = (
