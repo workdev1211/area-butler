@@ -28,7 +28,7 @@ export interface ApiUser {
   showTour: ApiShowTour;
   logo?: string;
   color?: string;
-  additionalMapBoxStyles: {key: string, label: string}[];
+  additionalMapBoxStyles: { key: string; label: string }[];
 }
 
 export interface ApiUpsertUser {
@@ -216,7 +216,7 @@ export enum OsmName {
 
 export interface ApiUpdateSearchResultSnapshot {
   snapshot: ApiSearchResultSnapshot;
-  config: ApiSearchResultSnapshotConfig
+  config: ApiSearchResultSnapshotConfig;
 }
 
 export interface ApiSearchResultSnapshot {
@@ -232,12 +232,18 @@ export interface ApiSearchResultSnapshot {
 
 export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
 
+export interface ApiSnippetEntitVisiblity {
+  id: string;
+  excluded?: boolean;
+}
+
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
   groupItems: boolean;
+  entityVisiblity?: ApiSnippetEntitVisiblity[];
 }
 
 export interface ApiSearchResultSnapshotResponse {

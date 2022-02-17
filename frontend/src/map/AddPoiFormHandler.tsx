@@ -1,8 +1,12 @@
 import { FormModalData } from "components/FormModal";
-import { Poi, SearchContext } from "context/SearchContext";
-import { useContext } from "react";
-import { distanceInMeters, toastError, toastSuccess } from "shared/shared.functions";
-import { v4 as uuid } from 'uuid';
+import { Poi } from "context/SearchContext";
+import React from "react";
+import {
+  distanceInMeters,
+  toastError,
+  toastSuccess
+} from "shared/shared.functions";
+import { v4 as uuid } from "uuid";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiCoordinates } from "../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
@@ -23,9 +27,6 @@ const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
   address,
   onPoiAdd
 }) => {
-
-  
-
   const onSubmit = async (values: any) => {
     try {
       beforeSubmit();
@@ -35,7 +36,7 @@ const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
 
       const entityType = osmEntityTypes.find(e => e.name === values.type)!;
       const poi = {
-        address: {street: values.address.label},
+        address: { street: values.address.label },
         coordinates: values.coordinates,
         distanceInMeters: distanceInMeter,
         entity: {
@@ -45,7 +46,7 @@ const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
           type: entityType.name,
           category: entityType.category
         }
-      }
+      };
       onPoiAdd(poi);
       postSubmit(true);
       toastSuccess("Objekt erfolgreich hinzugefügt!");

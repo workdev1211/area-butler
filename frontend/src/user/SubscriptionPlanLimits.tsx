@@ -6,7 +6,6 @@ import RequestContingentDropDown from "./RequestContingentDropdown";
 import { deriveTotalRequestContingent } from "shared/shared.functions";
 import { useHttp } from "hooks/http";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -14,13 +13,13 @@ export interface SubscriptionPlanLimitsProps {
   customers: ApiPotentialCustomer[];
 }
 
-const SubscriptionPlanLimits: FunctionComponent<
-  SubscriptionPlanLimitsProps
-> = ({ user }) => {
+const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> = ({
+  user
+}) => {
   const subscription = user.subscriptionPlan;
 
   const subscriptionLabel =
-    allSubscriptionTypes.find((item) => subscription?.type === item.type)
+    allSubscriptionTypes.find(item => subscription?.type === item.type)
       ?.label || "Unbekannt";
 
   const totalRequestContingent = deriveTotalRequestContingent(user);

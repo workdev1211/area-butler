@@ -1,7 +1,7 @@
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
-  ResultEntity,
+  ResultEntity
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import { Poi, SearchContext } from "context/SearchContext";
@@ -10,7 +10,7 @@ import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import EditorMapMenu from "map/EditorMapMenu";
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useParams } from "react-router-dom";
 import {
@@ -20,7 +20,7 @@ import {
   deriveAvailableMeansFromResponse,
   entityIncludesMean,
   toastError,
-  toastSuccess,
+  toastSuccess
 } from "shared/shared.functions";
 import {
   ApiOsmLocation,
@@ -28,9 +28,8 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  MeansOfTransportation,
+  MeansOfTransportation
 } from "../../../shared/types/types";
-import Map from "../map/Map";
 import "./SnippetEditorPage.css";
 
 export interface SnippetEditorRouterProps {
@@ -70,11 +69,14 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     };
 
     fetchSnapshot();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
-  const [availableMeans, setAvailableMeans] = useState<MeansOfTransportation[]>([]);
+  const [availableMeans, setAvailableMeans] = useState<MeansOfTransportation[]>(
+    []
+  );
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
 
   const updateEntities = (entities: ResultEntity[]) => {
@@ -82,7 +84,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   };
 
   const updateGroupedEntities = (entities: EntityGroup[]) => {
-    if (!groupedEntities.some((ge) => ge.active)) {
+    if (!groupedEntities.some(ge => ge.active)) {
       setGroupedEntities(
         entities.map((e, index) => (index === 0 ? { ...e, active: true } : e))
       );
@@ -98,8 +100,9 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   // consume search response
   useEffect(() => {
     if (!!searchResponse) {
-      const meansFromResponse =
-        deriveAvailableMeansFromResponse(searchResponse);
+      const meansFromResponse = deriveAvailableMeansFromResponse(
+        searchResponse
+      );
       setAvailableMeans(meansFromResponse);
       updateActiveMeans(
         config && config.defaultActiveMeans
@@ -113,7 +116,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   // react to active means change
   useEffect(() => {
     let entitiesIncludedInActiveMeans =
-      buildEntityData(snapshot?.searchResponse!)?.filter((entity) =>
+      buildEntityData(snapshot?.searchResponse!)?.filter(entity =>
         entityIncludesMean(entity, activeMeans)
       ) ?? [];
 
@@ -135,13 +138,13 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       JSON.stringify(searchResponse)
     ) as ApiSearchResponse;
     copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
+      (poi as any) as ApiOsmLocation
     );
     copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
+      (poi as any) as ApiOsmLocation
     );
     copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
+      (poi as any) as ApiOsmLocation
     );
 
     setSnapshot({ ...snapshot!, searchResponse: copiedSearchResponse });
@@ -158,7 +161,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
               try {
                 await put(`/api/location/snapshot/${snapshotId}`, {
                   config,
-                  snapshot,
+                  snapshot
                 });
                 setShowModal(true);
                 toastSuccess("Karten Snippet erfolgreich veröffentlicht!");
@@ -190,12 +193,12 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         <GooglePlacesAutocomplete
           apiOptions={{
             language: "de",
-            region: "de",
+            region: "de"
           }}
           autocompletionRequest={{
             componentRestrictions: {
-              country: ["de"],
-            },
+              country: ["de"]
+            }
           }}
           minLengthAutocomplete={5}
           selectProps={{}}
@@ -221,14 +224,14 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           config={config}
           transportationParams={snapshot.transportationParams}
           location={snapshot?.location}
-        ></SearchResultContainer>
+        />
         <EditorMapMenu
           availableMeans={availableMeans}
           groupedEntries={groupedEntities}
           config={config!}
           onConfigChange={onConfigChange}
           additionalMapBoxStyles={userState?.user?.additionalMapBoxStyles || []}
-        ></EditorMapMenu>
+        />
       </div>
     </DefaultLayout>
   );

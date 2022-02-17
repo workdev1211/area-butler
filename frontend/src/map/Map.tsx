@@ -12,7 +12,12 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import React, { useCallback, useEffect, useState } from "react";
-import { ApiRoute, ApiTransitRoute, EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
+import {
+  ApiRoute,
+  ApiTransitRoute,
+  EntityRoute,
+  EntityTransitRoute
+} from "../../../shared/types/routing";
 import {
   ApiCoordinates,
   ApiSearchResponse,
@@ -28,10 +33,7 @@ import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.sv
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import googleIcon from "../assets/icons/google.svg";
-import {
-  EntityGroup,
-  ResultEntity
-} from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import {
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
@@ -44,7 +46,7 @@ import {
 import "./Map.scss";
 import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
-import FormModal, { FormModalData, ModalConfig } from "components/FormModal";
+import FormModal, { ModalConfig } from "components/FormModal";
 import AddPoiFormHandler from "./AddPoiFormHandler";
 import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
@@ -215,7 +217,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     highlightIdEqual &&
     routesEqual &&
     transitRoutesEqual &&
-    configEqual && 
+    configEqual &&
     mapboxMapIdEqual
   );
 };
@@ -365,6 +367,7 @@ const Map = React.memo<MapProps>(
           .addTo(localMap);
       }
       currentMap = localMap;
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       lat,
       lng,
@@ -692,6 +695,7 @@ const Map = React.memo<MapProps>(
       if (currentMap) {
         drawAmenityMarkers();
       }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       entitiesStringified,
       groupedEntitiesStringified,
@@ -819,14 +823,16 @@ const Map = React.memo<MapProps>(
         id={leafletMapId}
         data-tour="map"
       >
-        {!!onPoiAdd && <FormModal modalConfig={addPoiModalOpenConfig}>
-          <AddPoiFormHandler
-            centerCoordinates={searchResponse.centerOfInterest.coordinates}
-            coordinates={addPoiCoordinates}
-            address={addPoiAddress}
-            onPoiAdd={onPoiAdd}
-          ></AddPoiFormHandler>
-        </FormModal>}
+        {!!onPoiAdd && (
+          <FormModal modalConfig={addPoiModalOpenConfig}>
+            <AddPoiFormHandler
+              centerCoordinates={searchResponse.centerOfInterest.coordinates}
+              coordinates={addPoiCoordinates}
+              address={addPoiAddress}
+              onPoiAdd={onPoiAdd}
+            ></AddPoiFormHandler>
+          </FormModal>
+        )}
         <div className={`leaflet-bottom leaflet-left mb-20 cursor-pointer`}>
           <div
             data-tour="zoom-to-bounds"

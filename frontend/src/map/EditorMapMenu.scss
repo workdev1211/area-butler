@@ -88,13 +88,13 @@
   @apply w-full flex flex-col;
 }
 
-.editor-map-menu .view-option .collapse-content ul li {
+.editor-map-menu .view-option .collapse-content > ul > li {
   padding: 4px 80px 4px 24px;
   border-bottom: 1px solid var(--base-bright-silver);
   @apply w-full flex justify-between items-center;
 }
 
-.editor-map-menu .collapse-content ul li > span {
+.editor-map-menu .collapse-content > ul > li > span {
   color: var(--base-anthracite);
   @apply font-medium text-lg;
 }
@@ -108,7 +108,7 @@
   height: 0;
 }
 
-.editor-map-menu .locality-option-li .collapse-child-closed .collapse-title:after {
+.editor-map-menu .collapse-closed .collapse-title:after {
   transform: rotate(405deg) !important;
 }
 
@@ -197,29 +197,29 @@
 }
 
 .editor-map-menu
-  .locality-option
-  .locality-item
-  .locality-item-content
-  .locality-item-cell {
+.locality-option
+.locality-item
+.locality-item-content
+.locality-item-cell {
   width: 120px;
   border-right: 1px solid var(--base-bright-silver);
   @apply flex flex-col font-medium text-base pl-6;
 }
 
 .editor-map-menu
-  .locality-option
-  .locality-item
-  .locality-item-content
-  .locality-item-cell:first-of-type {
+.locality-option
+.locality-item
+.locality-item-content
+.locality-item-cell:first-of-type {
   @apply pl-0;
 }
 
 .editor-map-menu
-  .locality-option
-  .locality-item
-  .locality-item-content
-  .locality-item-cell
-  .locality-item-cell-label {
+.locality-option
+.locality-item
+.locality-item-content
+.locality-item-cell
+.locality-item-cell-label {
   color: var(--base-silver);
   font-size: 9px;
 
@@ -232,14 +232,30 @@
 
 .checkbox-white:checked {
   background-image: linear-gradient(-45deg, transparent 65%, #ffffff 0),
-    linear-gradient(45deg, transparent 75%, #ffffff 0),
-    linear-gradient(-45deg, #ffffff 40%, transparent 0),
-    linear-gradient(
-      44deg,
-      #ffffff 30%,
-      var(--primary) 0,
-      var(--primary) 40%,
-      transparent 0
-    ),
-    linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+  linear-gradient(45deg, transparent 75%, #ffffff 0),
+  linear-gradient(-45deg, #ffffff 40%, transparent 0),
+  linear-gradient(
+                  44deg,
+                  #ffffff 30%,
+                  var(--primary) 0,
+                  var(--primary) 40%,
+                  transparent 0
+  ),
+  linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
+}
+
+.editor-map-menu .group-items li {
+  @apply flex flex-col py-2;
+
+  .item-title {
+    @apply flex flex-row justify-items-center items-center;
+
+    span {
+      max-width: 300px;
+      overflow-x: hidden;
+      text-overflow: ellipsis;
+      @apply pl-2 text-base;
+    }
+  }
+
 }

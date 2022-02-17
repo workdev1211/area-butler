@@ -30,7 +30,7 @@ import MapMenu from "../map/MapMenu";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
-import { ApiRoute, ApiTransitRoute, EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
@@ -77,8 +77,8 @@ export interface SearchResultContainerProps {
   onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
-  initialRoutes?: EntityRoute[],
-  initialTransitRoutes?: EntityTransitRoute[],
+  initialRoutes?: EntityRoute[];
+  initialTransitRoutes?: EntityTransitRoute[];
   onPoiAdd?: (poi: Poi) => void;
 }
 
@@ -116,7 +116,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   const [availableMeans, setAvailableMeans] = useState<any>([]);
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
   const [routes, setRoutes] = useState<EntityRoute[]>(initialRoutes);
-  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>(initialTransitRoutes);
+  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>(
+    initialTransitRoutes
+  );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const updateEntities = (entities: ResultEntity[]) => {

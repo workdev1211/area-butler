@@ -186,40 +186,6 @@
     @apply pr-1;
 }
 
-.map-menu .locality-option .locality-item {
-    border-bottom: 2px solid var(--base-bright-silver);
-}
-
-.map-menu .locality-option .locality-item .locality-item-title {
-    max-width: 100%;
-    padding: 10px 80px 10px 0 !important;
-    margin-left: 24px;
-    border-bottom: 1px solid var(--base-bright-silver);
-    @apply w-full font-medium text-lg;
-}
-
-.map-menu .locality-option .locality-item .locality-item-content {
-    padding: 10px 80px 10px 24px !important;
-    @apply w-full flex items-center font-medium text-base;
-}
-
-.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell {
-    width: 120px;
-    border-right: 1px solid var(--base-bright-silver);
-    @apply flex flex-col font-medium text-base pl-6;
-}
-
-.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell:first-of-type {
-    @apply pl-0;
-}
-
-.map-menu .locality-option .locality-item .locality-item-content .locality-item-cell .locality-item-cell-label {
-    color: var(--base-silver);
-    font-size: 9px;
-
-    @apply font-medium;
-}
-
 .checkbox-white {
     border-color: white;
 }

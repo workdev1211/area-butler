@@ -6,10 +6,8 @@ import {
   distanceToHumanReadable,
   timeToHumanReadable
 } from "../shared/shared.functions";
-import {
-  EntityGroup,
-  ResultEntity
-} from "./SearchResultContainer";
+import { EntityGroup, ResultEntity } from "./SearchResultContainer";
+import "./LocalityItem.scss";
 
 export interface LocalityItemProps {
   item: ResultEntity;
@@ -199,9 +197,9 @@ const PreferredLocationItemContent: React.FunctionComponent<{
   );
 };
 
-const LocalityItemContent: React.FunctionComponent<{ item: ResultEntity }> = ({
-  item
-}) => {
+export const LocalityItemContent: React.FunctionComponent<{
+  item: ResultEntity;
+}> = ({ item }) => {
   return (
     <div className="locality-item-content">
       <div className="locality-item-cell">
