@@ -127,6 +127,10 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       const r = document.getElementById("search-result-container");
       r?.style.setProperty("--primary", config.primaryColor);
       r?.style.setProperty("--custom-primary", config.primaryColor);
+    } else {
+      const r = document.getElementById("search-result-container");
+      r?.style.setProperty("--primary", '#c91444');
+      r?.style.setProperty("--custom-primary", '#c91444');
     }
   }, [config]);
 
