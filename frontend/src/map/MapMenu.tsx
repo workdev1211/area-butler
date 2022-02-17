@@ -294,7 +294,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const background =
     config?.primaryColor || "var(--primary-gradient)";
 
-  const checkboxPrimaryClasses = config?.primaryColor ? 'checkbox checkbox-custom checkbox-sm' : 'checkbox checkbox-primary checkbox-sm'; 
+  const checkboxPrimaryClasses = !!config?.primaryColor ? 'checkbox checkbox-custom checkbox-sm' : 'checkbox checkbox-primary checkbox-sm'; 
 
   return (
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
