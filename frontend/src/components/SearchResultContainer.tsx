@@ -121,6 +121,15 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
+  // Customize primary color
+  useEffect(() => {
+    if (!!config?.primaryColor) {
+      const r = document.getElementById("search-result-container");
+      r?.style.setProperty("--primary", config.primaryColor);
+      r?.style.setProperty("--custom-primary", config.primaryColor);
+    }
+  }, [config]);
+
   const updateEntities = (entities: ResultEntity[]) => {
     setEntities(entities);
     onEntitiesChange(entities);
@@ -360,7 +369,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
 
   return (
     <>
-      <div className={containerClasses}>
+      <div className={containerClasses} id="search-result-container">
         <div className="relative flex-1">
           <MapNavBar
             transportationParams={transportationParams}

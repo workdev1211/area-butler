@@ -21,7 +21,8 @@
     top: 20px;
     right: 10px;
     z-index: 9999;
-    @apply btn btn-primary absolute;
+    background-color: var(--primary) !important;
+    @apply btn absolute;
 }
 
 @media screen(lg) {

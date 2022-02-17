@@ -146,15 +146,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       ApiDataSource.PARTICLE_POLLUTION
     )!;
 
-  // Customize primary color
-  useEffect(() => {
-    if (!!config?.primaryColor) {
-      const r = document.getElementById("root");
-      r?.style.setProperty("--primary", config.primaryColor);
-      r?.style.setProperty("--custom-primary", config.primaryColor);
-    }
-  }, [config]);
-
   useEffect(() => {
     if (Array.isArray(groupedEntries)) {
       setLocalityPagination(groupedEntries.map(() => localityPaginationSize));
@@ -291,10 +282,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     }
   }
 
-  const background =
-    config?.primaryColor || "var(--primary-gradient)";
+  const background = config?.primaryColor || "var(--primary-gradient)";
 
-  const checkboxPrimaryClasses = !!config?.primaryColor ? 'checkbox checkbox-custom checkbox-sm' : 'checkbox checkbox-primary checkbox-sm'; 
+  const checkboxPrimaryClasses = !!config?.primaryColor
+    ? "checkbox checkbox-custom checkbox-sm"
+    : "checkbox checkbox-primary checkbox-sm";
 
   return (
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
@@ -343,7 +335,20 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
             type="checkbox"
             onChange={(event) => setViewOptionsOpen(event.target.checked)}
           />
-          <div className="collapse-title">Einblicke</div>
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              if (!!node) {
+                if (node.parentElement?.classList.contains('collapse-open')) {
+                  node.style.setProperty("background", background, "important");
+                } else {
+                  node.style.setProperty("background", '#FFFFFF', "important");
+                }
+              }
+            }}
+          >
+            Einblicke
+          </div>
           <div className="collapse-content">
             <ul>
               <li className="locality-option-li" key="list-item-zensus">
@@ -413,7 +418,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           className="collapse-title flex justify-between"
           ref={(node) => {
             if (!!node) {
-              node.style.setProperty("background", background, "important");
+              if (node.parentElement?.classList.contains('collapse-open')) {
+                node.style.setProperty("background", background, "important");
+              } else {
+                node.style.setProperty("background", '#FFFFFF', "important");
+              }
             }
           }}
         >
