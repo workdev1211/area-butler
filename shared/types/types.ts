@@ -243,7 +243,7 @@ export interface ApiSearchResultSnapshotConfig {
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
   groupItems: boolean;
-  entityVisiblity?: ApiSnippetEntitVisiblity[];
+  entityVisibility?: ApiSnippetEntitVisiblity[];
 }
 
 export interface ApiSearchResultSnapshotResponse {

@@ -6,6 +6,7 @@ import {
 import {
   ApiCoordinates,
   ApiSearchResponse,
+  ApiSearchResultSnapshotConfig,
   ApiUser,
   MeansOfTransportation,
   OsmName
@@ -319,7 +320,7 @@ export const deriveTotalRequestContingent = (user: ApiUser) =>
 
 export const deriveAvailableMeansFromResponse = (
   searchResponse?: ApiSearchResponse
-) : MeansOfTransportation[] => {
+): MeansOfTransportation[] => {
   const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
   return meansOfTransportations
     .filter(mot => routingKeys.includes(mot.type))
@@ -327,7 +328,8 @@ export const deriveAvailableMeansFromResponse = (
 };
 
 export const buildEntityData = (
-  locationSearchResult: ApiSearchResponse
+  locationSearchResult: ApiSearchResponse,
+  config?: ApiSearchResultSnapshotConfig
 ): ResultEntity[] | null => {
   if (!locationSearchResult) {
     return null;
@@ -339,10 +341,16 @@ export const buildEntityData = (
       )
     )
     .flat();
-  const allLocationIds = new Set(
-    allLocations.map(location => location.entity.id)
+  let allLocationIds = Array.from(
+    new Set(allLocations.map(location => location.entity.id))
   );
-  return Array.from(allLocationIds).map(locationId => {
+  if (config && config.entityVisibility) {
+    const { entityVisibility = [] } = config;
+    allLocationIds = allLocationIds.filter(
+      id => !entityVisibility.some(ev => ev.id === id && ev.excluded)
+    );
+  }
+  return allLocationIds.map(locationId => {
     const location = allLocations.find(l => l.entity.id === locationId)!;
     return {
       id: locationId!,

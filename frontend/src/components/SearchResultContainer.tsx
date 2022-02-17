@@ -161,7 +161,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   // react to active means change
   useEffect(() => {
     let entitiesIncludedInActiveMeans =
-      buildEntityData(searchResponse)?.filter(entity =>
+      buildEntityData(searchResponse, config)?.filter(entity =>
         entityIncludesMean(entity, activeMeans)
       ) ?? [];
     const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
@@ -192,7 +192,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, activeMeans, preferredLocations, listings]);
+  }, [searchResponse, config, activeMeans, preferredLocations, listings]);
 
   const toggleEntityGroup = (title: string) => {
     const theme = config?.theme;

@@ -50,7 +50,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   const changeEntityVisiblity = (visiblity: ApiSnippetEntitVisiblity[]) => {
-    onConfigChange({ ...config, entityVisiblity: [...visiblity] });
+    onConfigChange({ ...config, entityVisibility: [...visiblity] });
   };
 
   const changeDefaultActiveMeans = (activeMeans: MeansOfTransportation) => {
@@ -68,12 +68,12 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   const isGroupHidden = (group: EntityGroup) => {
     const groupEntityIds = group.items.map(i => i.id);
     return groupEntityIds.every(id =>
-      (config.entityVisiblity || []).some(ev => ev.id === id && ev.excluded)
+      (config.entityVisibility || []).some(ev => ev.id === id && ev.excluded)
     );
   };
 
   const toggleGroupVisibility = (group: EntityGroup) => {
-    const visiblityWithoutGroup = (config.entityVisiblity || []).filter(
+    const visiblityWithoutGroup = (config.entityVisibility || []).filter(
       ev => !group.items.some(i => i.id === ev.id)
     );
     const wasGroupHidden = isGroupHidden(group);
@@ -88,14 +88,14 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   const isEntityHidden = (entity: ResultEntity) => {
-    return (config.entityVisiblity || []).some(
+    return (config.entityVisibility || []).some(
       ev => ev.id === entity.id && ev.excluded
     );
   };
 
   const toggleEntityVisibility = (entity: ResultEntity) => {
     const newGroup = [
-      ...(config.entityVisiblity || []).filter(ev => ev.id !== entity.id),
+      ...(config.entityVisibility || []).filter(ev => ev.id !== entity.id),
       {
         id: entity.id,
         excluded: !isEntityHidden(entity)
