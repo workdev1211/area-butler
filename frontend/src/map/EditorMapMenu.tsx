@@ -26,6 +26,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 }) => {
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
   const [poiVisibilityOpen, setPoiVisibilityOpen] = useState<boolean>(true);
+  const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
 
   const mapStyles: { key: string; label: string }[] = [
     { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
@@ -63,6 +64,18 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
       defaultActiveMeans.push(activeMeans);
     }
     onConfigChange({ ...config, defaultActiveMeans });
+  };
+
+  const isGroupOpen = (group: EntityGroup) => {
+    return poiGroupsOpen.includes(group.title);
+  };
+
+  const toggleGroupOpen = (group: EntityGroup) => {
+    if (isGroupOpen(group)) {
+      setPoiGroupsOpen(poiGroupsOpen.filter(g => g !== group.title));
+    } else {
+      setPoiGroupsOpen([...poiGroupsOpen, group.title]);
+    }
   };
 
   const isGroupHidden = (group: EntityGroup) => {
@@ -273,42 +286,50 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
           onChange={event => setPoiVisibilityOpen(event.target.checked)}
         />
         <div className="collapse-title">POI Sichtbarkeit</div>
-        <div className="collapse-content">
+        <div className="collapse-content entity-groups">
           <ul>
             {groupedEntries
               .filter(ge => ge.items.length)
               .map(group => (
                 <li key={group.title}>
                   <div className="flex flex-col">
-                    <div className="flex py-4">
+                    <div className="flex items-center py-4">
                       <input
                         type="checkbox"
                         checked={!isGroupHidden(group)}
                         className="checkbox checkbox-primary"
                         onChange={() => toggleGroupVisibility(group)}
                       />
-                      <h4 className="font-medium text-xl pl-2">
-                        {group.title}
+                      <h4 className="font-medium pl-2 cursor-pointer">
+                        {group.title}{" "}
                       </h4>
+                      <button
+                        className="btn-sm btn-link"
+                        onClick={() => toggleGroupOpen(group)}
+                      >
+                        {isGroupOpen(group) ? "Schließen" : "Öffnen"}
+                      </button>
                     </div>
-                    <div className="group-items flex flex-col pl-2">
-                      <ul>
-                        {group.items.map(item => (
-                          <li key={item.id}>
-                            <div className="item-title">
-                              <input
-                                type="checkbox"
-                                checked={!isEntityHidden(item)}
-                                className="checkbox checkbox-xs"
-                                onChange={() => toggleEntityVisibility(item)}
-                              />{" "}
-                              <span>{item.name ?? item.label}</span>
-                            </div>
-                            <LocalityItemContent item={item} />
-                          </li>
-                        ))}
-                      </ul>
-                    </div>
+                    {isGroupOpen(group) && (
+                      <div className="group-items flex flex-col pl-2">
+                        <ul>
+                          {group.items.map(item => (
+                            <li key={item.id}>
+                              <div className="item-title">
+                                <input
+                                  type="checkbox"
+                                  checked={!isEntityHidden(item)}
+                                  className="checkbox checkbox-xs"
+                                  onChange={() => toggleEntityVisibility(item)}
+                                />{" "}
+                                <span>{item.name ?? item.label}</span>
+                              </div>
+                              <LocalityItemContent item={item} />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                 </li>
               ))}

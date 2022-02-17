@@ -244,18 +244,22 @@
   linear-gradient(-45deg, var(--primary) 50%, #ffffff 0);
 }
 
-.editor-map-menu .group-items li {
-  @apply flex flex-col py-2;
+.editor-map-menu {
+  .entity-groups li {
+    padding-right: 10px !important;
+  }
+  .group-items li {
+    @apply flex flex-col py-2;
 
-  .item-title {
-    @apply flex flex-row justify-items-center items-center;
+    .item-title {
+      @apply flex flex-row justify-items-center items-center;
 
-    span {
-      max-width: 300px;
-      overflow-x: hidden;
-      text-overflow: ellipsis;
-      @apply pl-2 text-base;
+      span {
+        max-width: 300px;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        @apply pl-2 text-base;
+      }
     }
   }
-
-}
+  }
