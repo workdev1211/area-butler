@@ -38,6 +38,7 @@ export class StripeService {
             mode,
             payment_method_types: ['card'],
             billing_address_collection: 'required',
+            allow_promotion_codes: true,
             locale: "de",
             subscription_data: {
                 trial_period_days: trialPeriod
