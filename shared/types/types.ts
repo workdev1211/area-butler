@@ -244,6 +244,7 @@ export interface ApiSearchResultSnapshotConfig {
   defaultActiveMeans?: MeansOfTransportation[];
   groupItems: boolean;
   entityVisibility?: ApiSnippetEntitVisiblity[];
+  primaryColor?: string;
 }
 
 export interface ApiSearchResultSnapshotResponse {
