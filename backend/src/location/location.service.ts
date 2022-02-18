@@ -15,7 +15,7 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { IsochroneService } from 'src/client/isochrone/isochrone.service';
@@ -233,7 +233,7 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new Error('Unknown token');
+      throw new HttpException('Unknown token', 404);
     }
 
     return snapshotDoc;

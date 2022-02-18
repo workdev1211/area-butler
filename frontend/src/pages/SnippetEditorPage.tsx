@@ -62,7 +62,14 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         )
       ).data;
 
-      setConfig(snapshotResponse.config);
+      const user = userState.user;
+      let snapshotConfig = (snapshotResponse.config || {}) as any as ApiSearchResultSnapshotConfig;
+
+      if (!!user?.color && !('primaryColor' in snapshotConfig)) {
+        snapshotConfig['primaryColor'] = user.color;
+      }
+
+      setConfig(snapshotConfig);
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
