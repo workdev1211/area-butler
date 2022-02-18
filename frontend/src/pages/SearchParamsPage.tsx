@@ -293,7 +293,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
               />
             </div>
           </div>
-          <div className="flex flex-wrap sm:gap-5">
+          <div className="flex flex-wrap sm:gap-4">
             <LatestUserRequestsDropDown />
             <RealEstateDropDown />
           </div>
