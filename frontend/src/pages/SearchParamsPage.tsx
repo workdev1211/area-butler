@@ -15,6 +15,7 @@ import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
+import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
   deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates,
   deriveTotalRequestContingent,
@@ -278,7 +279,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
       <TourStarter tour="search" />
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
-          <h2>Standort</h2>
+          <h2>Lage</h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
             <LocationAutocomplete
               value={searchContextState.placesLocation}
@@ -286,31 +287,16 @@ const SearchParamsPage: React.FunctionComponent = () => {
               afterChange={onLocationAutocompleteChange}
             />
             <div className="flex flex-wrap items-end gap-4">
-              <Input
-                label="Lat"
-                type="text"
-                name="lat"
-                readOnly={true}
-                value={searchContextState.location?.lat || "-"}
-                className="input input-bordered w-full"
-                placeholder="Latitude"
-              />
-              <Input
-                label="Long"
-                type="text"
-                name="long"
-                readOnly={true}
-                value={searchContextState.location?.lng || "-"}
-                className="input input-bordered w-full"
-                placeholder="Longitude"
-              />
               <MyLocationButton
                 classes="btn bg-primary-gradient w-full sm:w-auto"
                 onComplete={onMyLocationChange}
               />
             </div>
           </div>
-          <LatestUserRequestsDropDown />
+          <div className="flex flex-wrap sm:gap-5">
+            <LatestUserRequestsDropDown />
+            <RealEstateDropDown />
+          </div>
 
           <h2>Mobilität</h2>
           <div className="sub-content">
