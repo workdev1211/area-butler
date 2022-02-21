@@ -43,6 +43,9 @@ const UserProfilePage: FunctionComponent = () => {
     hasSubscription &&
     user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
 
+  const hasHtmlSnippet =
+    hasSubscription && user.subscriptionPlan!.config.appFeatures.htmlSnippet;
+
   const embedddableMaps = userState.embeddableMaps || [];
 
   useEffect(() => {
@@ -51,22 +54,30 @@ const UserProfilePage: FunctionComponent = () => {
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
     };
 
-    const fetchEmbeddableMaps = async () => {
-      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-        await get<ApiSearchResultSnapshotResponse[]>(
-          "/api/location/user-embeddable-maps"
-        )
-      ).data;
-      userDispatch({
-        type: UserActionTypes.SET_EMBEDDABLE_MAPS,
-        payload: embeddableMaps,
-      });
-    };
-
     fetchUser();
-    fetchEmbeddableMaps();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
+
+  useEffect(() => {
+    if (!!user) {
+      const fetchEmbeddableMaps = async () => {
+        const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
+          await get<ApiSearchResultSnapshotResponse[]>(
+            "/api/location/user-embeddable-maps"
+          )
+        ).data;
+        userDispatch({
+          type: UserActionTypes.SET_EMBEDDABLE_MAPS,
+          payload: embeddableMaps,
+        });
+      };
+
+      if (hasHtmlSnippet) {
+        fetchEmbeddableMaps();
+      }
+    }
+  }, [user]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
@@ -85,7 +96,9 @@ const UserProfilePage: FunctionComponent = () => {
     );
   };
 
-  const remainingDays = !!user?.subscriptionPlan?.endsAt ? dateDiffInDays(new Date(user?.subscriptionPlan?.endsAt)) : 0;
+  const remainingDays = !!user?.subscriptionPlan?.endsAt
+    ? dateDiffInDays(new Date(user?.subscriptionPlan?.endsAt))
+    : 0;
 
   return (
     <DefaultLayout
@@ -98,7 +111,12 @@ const UserProfilePage: FunctionComponent = () => {
     >
       {hasSubscription && <TourStarter tour="profile" />}
       {user?.subscriptionPlan?.type === ApiSubscriptionPlanType.TRIAL && (
-        <h3 className="mb-5 font-bold">Sie nutzen aktuell die kostenfreie Testphase. Diese endet {remainingDays === 1 ? ' Morgen.' : ' in ' + remainingDays + ' Tagen.'}</h3>
+        <h3 className="mb-5 font-bold">
+          Sie nutzen aktuell die kostenfreie Testphase. Diese endet{" "}
+          {remainingDays === 1
+            ? " Morgen."
+            : " in " + remainingDays + " Tagen."}
+        </h3>
       )}
       <div className="mt-10" data-tour="profile-form">
         <ProfileFormHandler
@@ -108,7 +126,7 @@ const UserProfilePage: FunctionComponent = () => {
           postSubmit={postSubmit}
         />
       </div>
-      {(hasSubscription && embedddableMaps.length > 0) && (
+      {hasSubscription && hasHtmlSnippet && embedddableMaps.length > 0 && (
         <div className="my-10">
           <h1 className="text-xl font-bold mb-5">Ihre Karten Snippets</h1>
           <EmbeddableMapsTable embeddableMaps={embedddableMaps} />

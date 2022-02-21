@@ -35,7 +35,8 @@ export interface ApiSubscriptionPlan {
         sendCustomerQuestionnaireRequest: boolean,
         dataSources: ApiDataSource[],
         canCustomizeExport: boolean,
-        fullyCustomizableExpose: boolean
+        fullyCustomizableExpose: boolean,
+        htmlSnippet: boolean
     }
 }
 

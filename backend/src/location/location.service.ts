@@ -244,6 +244,13 @@ export class LocationService {
     id: string,
     {snapshot, config}: ApiUpdateSearchResultSnapshot
   ) : Promise<SearchResultSnapshotDocument> {
+
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription => !subscription.appFeatures.htmlSnippet,
+      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
     const snapshotDoc : SearchResultSnapshotDocument = await this.fetchEmbeddableMap(user, id);
 
     snapshotDoc.snapshot = snapshot;
@@ -255,6 +262,13 @@ export class LocationService {
   async fetchEmbeddableMaps(
     user: UserDocument,
   ): Promise<SearchResultSnapshotDocument[]> {
+
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription => !subscription.appFeatures.htmlSnippet,
+      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
     return this.searchResultSnapshotModel.find({ userId: user.id });
   }
 
@@ -262,6 +276,13 @@ export class LocationService {
     user: UserDocument,
     id: string
   ): Promise<SearchResultSnapshotDocument> {
+
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription => !subscription.appFeatures.htmlSnippet,
+      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
     const oid = new Types.ObjectId(id);
     return this.searchResultSnapshotModel.findOne({ userId: user.id, _id: oid });
   }

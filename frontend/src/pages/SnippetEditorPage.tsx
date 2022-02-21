@@ -12,7 +12,7 @@ import DefaultLayout from "layout/defaultLayout";
 import EditorMapMenu from "map/EditorMapMenu";
 import React, { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useParams } from "react-router-dom";
+import { useHistory, useParams } from "react-router-dom";
 import {
   buildCombinedGroupedEntries,
   buildEntityData,
@@ -39,6 +39,7 @@ export interface SnippetEditorRouterProps {
 const SnippetEditorPage: React.FunctionComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
+  const history = useHistory();
   const { searchContextDispatch } = useContext(SearchContext);
   const { userState } = useContext(UserContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
@@ -55,6 +56,13 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   >();
 
   useEffect(() => {
+    const user = userState.user;
+
+    if (!user?.subscriptionPlan?.config.appFeatures.htmlSnippet) {
+      toastError('Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors.');
+      history.push('/profile');
+    }
+
     const fetchSnapshot = async () => {
       const snapshotResponse = (
         await get<ApiSearchResultSnapshotResponse>(
@@ -62,7 +70,6 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         )
       ).data;
 
-      const user = userState.user;
       let snapshotConfig = (snapshotResponse.config || {}) as any as ApiSearchResultSnapshotConfig;
 
       if (!!user?.color && !('primaryColor' in snapshotConfig)) {
