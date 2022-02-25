@@ -118,11 +118,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         searchResponse
       );
       setAvailableMeans(meansFromResponse);
-      updateActiveMeans(
-        config && config.defaultActiveMeans
-          ? [...config.defaultActiveMeans]
-          : meansFromResponse
-      );
+      updateActiveMeans(meansFromResponse);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse, config]);
