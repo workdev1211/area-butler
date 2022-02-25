@@ -240,6 +240,12 @@ export class UserService {
         } else if (settings.logo === null) {
             Object.assign(existingUser, {logo: null});
         }
+
+        if (settings.mapIcon) {
+            Object.assign(existingUser, {mapIcon: settings.mapIcon});
+        } else if (settings.logo === null) {
+            Object.assign(existingUser, {mapIcon: null});
+        }
         
         if (settings.color) {
             Object.assign(existingUser, {color: settings.color});

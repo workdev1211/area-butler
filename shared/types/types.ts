@@ -27,6 +27,7 @@ export interface ApiUser {
   requestContingents: ApiRequestContingent[];
   showTour: ApiShowTour;
   logo?: string;
+  mapIcon?: string;
   color?: string;
   additionalMapBoxStyles: { key: string; label: string }[];
 }
@@ -37,6 +38,7 @@ export interface ApiUpsertUser {
 
 export interface ApiUserSettings {
   logo?: string;
+  mapIcon?: string;
   color?: string;
 }
 

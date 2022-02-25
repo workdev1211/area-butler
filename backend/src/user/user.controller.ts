@@ -64,14 +64,21 @@ export class UserController {
         const requestUser = request?.user;
 
         if (settings.logo) {
-            const mimeInfo = settings.logo.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
-            if (!mimeInfo.includes('image/')) {
-                throw new HttpException('Unsupported mime type', HttpStatus.BAD_REQUEST);
-            }
+            this.checkMimeType(settings.logo);
+        }
+        if (settings.mapIcon) {
+            this.checkMimeType(settings.mapIcon);
         }
         const user = await this.userService.updateSettings(requestUser.email, settings);
 
         return mapUserToApiUser(user, await this.subscriptionService.findActiveByUserId(user._id));
+    }
+
+    private checkMimeType(base64EncodedImage: string) {
+        const mimeInfo = base64EncodedImage.match(/[^:]\w+\/[\w-+\d.]+(?=;|,)/)[0];
+        if (!mimeInfo.includes('image/')) {
+            throw new HttpException('Unsupported mime type', HttpStatus.BAD_REQUEST);
+        }
     }
 
     @Post('me/consent')

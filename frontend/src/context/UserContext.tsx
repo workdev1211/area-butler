@@ -30,6 +30,7 @@ export enum UserActionTypes {
   SET_EMBEDDABLE_MAPS = "SET_EMBEDDABLE_MAPS",
   SET_START_TOUR = "SET_START_TOUR",
   SET_LOGO = "SET_LOGO",
+  SET_MAP_ICON = "SET_MAP_ICON",
   SET_COLOR = "SET_COLOR"
 }
 
@@ -43,6 +44,7 @@ type UserActionsPayload = {
   };
   [UserActionTypes.SET_START_TOUR]: boolean;
   [UserActionTypes.SET_LOGO]: string | undefined;
+  [UserActionTypes.SET_MAP_ICON]: string | undefined;
   [UserActionTypes.SET_COLOR]: string | undefined;
 };
 
@@ -72,6 +74,9 @@ export const userReducer = (
     }
     case UserActionTypes.SET_LOGO: {
       return { ...state, user: { ...state.user!, logo: action.payload } };
+    }
+    case UserActionTypes.SET_MAP_ICON: {
+      return { ...state, user: { ...state.user!, mapIcon: action.payload } };
     }
     case UserActionTypes.SET_COLOR: {
       return { ...state, user: { ...state.user!, color: action.payload } };

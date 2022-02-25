@@ -4,7 +4,9 @@ import { toastError } from "../shared/shared.functions";
 
 export interface ImageUploadProps {
   label?: string;
+  uploadLabel?: string
   image: string | undefined;
+  inputId?: string;
   setImage: (image: string | undefined) => void;
   onChange: (logo: string) => void;
 }
@@ -13,6 +15,8 @@ const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({
   image,
   setImage,
   label = "Dein Logo",
+  uploadLabel = "Logo hochladen",
+  inputId = "upload-button",
   onChange
 }) => {
   const getBase64 = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -41,7 +45,7 @@ const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({
   return (
     <div className="img-upload">
       <div>
-        <label htmlFor="upload-button">
+        <label htmlFor={inputId}>
           {label}:
           {image ? (
             <div className="img-container mt-1">
@@ -49,19 +53,19 @@ const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({
             </div>
           ) : (
             <div className="img-placeholder mt-1">
-              <span>Logo Hochladen</span>
+              <span>{uploadLabel}</span>
             </div>
           )}
         </label>
         <input
           type="file"
-          id="upload-button"
+          id={inputId}
           accept="image/*"
           style={{ display: "none" }}
           onChange={handleChange}
         />
       </div>
-      <small>Unterstützte Formate: png, jpg, maximale Größe: 5MB</small>
+      <small>Unterstützte Formate: png, jpg, svg, maximale Größe: 5MB</small>
     </div>
   );
 };

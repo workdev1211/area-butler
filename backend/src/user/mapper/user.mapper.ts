@@ -12,6 +12,7 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   requestContingents: retrieveTotalRequestContingent(user),
   showTour: user.showTour,
   logo: user.logo,
+  mapIcon: user.mapIcon,
   color: user.color,
   additionalMapBoxStyles: user.additionalMapBoxStyles
 });

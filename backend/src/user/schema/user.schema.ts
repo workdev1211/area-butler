@@ -36,6 +36,9 @@ export class User {
     logo: string;
 
     @Prop({required: false})
+    mapIcon: string;
+
+    @Prop({required: false})
     color: string;
     
     @Prop({required: false})
