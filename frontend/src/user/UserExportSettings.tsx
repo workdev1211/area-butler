@@ -40,9 +40,11 @@ const UserExportSettings: React.FunctionComponent = () => {
   const rollbackSettings = async () => {
     userDispatch({ type: UserActionTypes.SET_LOGO, payload: undefined });
     userDispatch({ type: UserActionTypes.SET_COLOR, payload: undefined });
+    userDispatch({ type: UserActionTypes.SET_MAP_ICON, payload: undefined });
     setImage(undefined);
     setColor(undefined);
-    await post<ApiUser>("/api/users/me/settings", { color: null, logo: null });
+    setMapIcon(undefined);
+    await post<ApiUser>("/api/users/me/settings", { color: null, logo: null, mapIcon: null });
     toastSuccess("Export Einstellungen zurückgesetzt.");
   };
 
@@ -65,7 +67,7 @@ const UserExportSettings: React.FunctionComponent = () => {
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
       </div>
-      {(!!userState.user!.logo || !!userState.user!.color) && (
+      {(!!userState.user!.logo || !!userState.user!.color || !!userState.user!.mapIcon) && (
         <div className="mt-5">
           <button
             className="btn btn-sm btn-primary"
