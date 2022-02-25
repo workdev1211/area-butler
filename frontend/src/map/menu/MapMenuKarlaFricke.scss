@@ -100,8 +100,13 @@
 @media (min-width: 1024px) {
     .map-menu-KF {
         right: 10%;
-        bottom: 0;
-        overflow-y: scroll;
+        bottom: 20px;
+        overflow-y: hidden;
+
+        &:hover {
+            overflow-y: auto;
+        }
+
         .menu-desktop {
             display: block;
         }
