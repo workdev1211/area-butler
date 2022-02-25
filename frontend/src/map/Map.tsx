@@ -354,7 +354,7 @@ const Map = React.memo<MapProps>(
       if (!embedMode || !!searchAddress) {
         const positionIcon = L.Icon.extend({
           options: {
-            iconUrl: mylocationIcon,
+            iconUrl: config?.mapIcon || mylocationIcon,
             shadowUrl: leafletShadow,
             shadowSize: [0, 0],
             iconSize: myLocationIconSize

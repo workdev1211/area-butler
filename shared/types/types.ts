@@ -247,6 +247,7 @@ export interface ApiSearchResultSnapshotConfig {
   groupItems: boolean;
   entityVisibility?: ApiSnippetEntitVisiblity[];
   primaryColor?: string;
+  mapIcon?: string;
 }
 
 export interface ApiSearchResultSnapshotResponse {

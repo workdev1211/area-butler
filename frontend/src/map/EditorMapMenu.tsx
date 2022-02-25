@@ -9,6 +9,7 @@ import {
 import "./EditorMapMenu.scss";
 import { LocalityItemContent } from "../components/LocalityItem";
 import ColorPicker from "components/ColorPicker";
+import ImageUpload from "components/ImageUpload";
 
 export interface EditorMapMenuProps {
   availableMeans: MeansOfTransportation[];
@@ -30,6 +31,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
 
   const [color, setColor] = useState(config?.primaryColor);
+  const [mapIcon, setMapIcon] = useState(config?.mapIcon);
 
   const mapStyles: { key: string; label: string }[] = [
     { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
@@ -60,6 +62,11 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   const changeColor = (color: string | undefined) => {
     setColor(color);
     onConfigChange({ ...config, primaryColor: color });
+  };
+
+  const changeMapIcon = (mapIcon: string | undefined) => {
+    setMapIcon(mapIcon);
+    onConfigChange({ ...config, mapIcon: mapIcon });
   };
 
   const changeDefaultActiveMeans = (activeMeans: MeansOfTransportation) => {
@@ -289,6 +296,19 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   onChange={(color) => changeColor(color)}
                 ></ColorPicker>
                 {config?.primaryColor && <button className="text-sm" onClick={() => changeColor(undefined)}>Farbe Zurücksetzen</button> }
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                  <ImageUpload
+                    label="Karten Icon"
+                    uploadLabel="Icon hochladen"
+                    inputId="map-icon-upload-button"
+                    image={mapIcon}
+                    setImage={setMapIcon}
+                    onChange={(mapIcon) => changeMapIcon(mapIcon)}
+                  ></ImageUpload>
+                {config?.mapIcon && <button className="text-sm" onClick={() => changeMapIcon(undefined)}>Icon Zurücksetzen</button> }
               </div>
             </li>
           </ul>

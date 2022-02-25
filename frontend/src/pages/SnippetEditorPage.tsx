@@ -76,6 +76,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         snapshotConfig['primaryColor'] = user.color;
       }
 
+      if (!!user?.mapIcon && !('mapIcon' in snapshotConfig)) {
+        snapshotConfig['mapIcon'] = user.mapIcon;
+      }
+
       setConfig(snapshotConfig);
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
