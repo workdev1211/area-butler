@@ -120,7 +120,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
             </div>
             <ul
               tabIndex={0}
-              className="p-2 menu dropdown-content bg-transparent"
+              className="p-2 pr-0.5 menu dropdown-content bg-transparent"
             >
               {groupedEntries.map(ge => (
                 <ListItemMemo
