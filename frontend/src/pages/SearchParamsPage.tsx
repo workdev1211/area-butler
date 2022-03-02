@@ -36,7 +36,6 @@ import {
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import ImportantAddresses from "../components/ImportantAddresses";
-import Input from "../components/Input";
 import LocalityParams from "../components/LocalityParams";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";

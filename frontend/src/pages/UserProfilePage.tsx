@@ -8,7 +8,7 @@ import React, {
   FunctionComponent,
   useContext,
   useEffect,
-  useState,
+  useState
 } from "react";
 import { dateDiffInDays } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
@@ -20,7 +20,7 @@ import { v4 as uuid } from "uuid";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 import {
   ApiSearchResultSnapshotResponse,
-  ApiUser,
+  ApiUser
 } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 
@@ -69,7 +69,7 @@ const UserProfilePage: FunctionComponent = () => {
         ).data;
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAPS,
-          payload: embeddableMaps,
+          payload: embeddableMaps
         });
       };
 
@@ -77,6 +77,7 @@ const UserProfilePage: FunctionComponent = () => {
         fetchEmbeddableMaps();
       }
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
@@ -106,7 +107,7 @@ const UserProfilePage: FunctionComponent = () => {
       withHorizontalPadding={true}
       actionBottom={[
         <BackButton to="/" key="user-profile-back" />,
-        <SubmitButton key="user-profile-submit" />,
+        <SubmitButton key="user-profile-submit" />
       ]}
     >
       {hasSubscription && <TourStarter tour="profile" />}

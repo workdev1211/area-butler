@@ -46,6 +46,7 @@ export interface ResultEntity {
   byCar: boolean;
   distanceInMeters: number;
   selected?: boolean;
+  externalUrl?: string;
 }
 
 export interface EntityGroup {
@@ -129,8 +130,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       r?.style.setProperty("--custom-primary", config.primaryColor);
     } else {
       const r = document.getElementById("search-result-container");
-      r?.style.setProperty("--primary", '#c91444');
-      r?.style.setProperty("--custom-primary", '#c91444');
+      r?.style.setProperty("--primary", "#c91444");
+      r?.style.setProperty("--custom-primary", "#c91444");
     }
   }, [config]);
 
@@ -188,7 +189,11 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     }
     if (!!listings) {
       entitiesIncludedInActiveMeans?.push(
-        ...buildEntityDataFromRealEstateListings(centerOfSearch, listings)
+        ...buildEntityDataFromRealEstateListings(
+          centerOfSearch,
+          listings,
+          config
+        )
       );
     }
     updateEntities(entitiesIncludedInActiveMeans);

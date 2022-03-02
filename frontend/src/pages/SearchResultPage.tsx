@@ -35,8 +35,9 @@ const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
 const SearchResultPage: React.FunctionComponent = () => {
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
+  const { searchContextState, searchContextDispatch } = useContext(
+    SearchContext
+  );
 
   const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
@@ -56,7 +57,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       ).data;
       userDispatch({
         type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-        payload: latestUserRequests,
+        payload: latestUserRequests
       });
     };
 
@@ -84,7 +85,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                payload: true,
+                payload: true
               });
             }}
             className="btn btn-link"
@@ -99,14 +100,14 @@ const SearchResultPage: React.FunctionComponent = () => {
               hasFullyCustomizableExpose
                 ? searchContextDispatch({
                     type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                    payload: true,
+                    payload: true
                   })
                 : userDispatch({
                     type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
-                      message: subscriptionUpgradeFullyCustomizableExpose,
-                    },
+                      message: subscriptionUpgradeFullyCustomizableExpose
+                    }
                   });
             }}
             className="btn btn-link"
@@ -120,7 +121,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                payload: true,
+                payload: true
               });
             }}
             className="btn btn-link"
@@ -162,7 +163,6 @@ const SearchResultPage: React.FunctionComponent = () => {
           <button
             type="button"
             onClick={async () => {
-
               setBusyModalOpen(true);
 
               try {
@@ -171,46 +171,46 @@ const SearchResultPage: React.FunctionComponent = () => {
                 const location = searchContextState.location!;
                 const preferredLocations: ApiPreferredLocation[] =
                   searchContextState.preferredLocations || [];
-  
+
                 for (const preferredLocation of preferredLocations) {
                   const routesResult = await fetchRoutes({
                     meansOfTransportation: [
                       MeansOfTransportation.BICYCLE,
                       MeansOfTransportation.CAR,
-                      MeansOfTransportation.WALK,
+                      MeansOfTransportation.WALK
                     ],
                     origin: location,
                     destinations: [
                       {
                         title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!,
-                      },
-                    ],
+                        coordinates: preferredLocation.coordinates!
+                      }
+                    ]
                   });
                   routes.push({
                     routes: routesResult[0].routes,
                     title: routesResult[0].title,
                     show: [],
-                    coordinates: preferredLocation.coordinates!,
+                    coordinates: preferredLocation.coordinates!
                   });
-  
+
                   const transitRoutesResult = await fetchTransitRoutes({
                     origin: location,
                     destinations: [
                       {
                         title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!,
-                      },
-                    ],
+                        coordinates: preferredLocation.coordinates!
+                      }
+                    ]
                   });
                   transitRoutes.push({
                     route: transitRoutesResult[0].route,
                     title: transitRoutesResult[0].title,
                     show: false,
-                    coordinates: preferredLocation.coordinates!,
+                    coordinates: preferredLocation.coordinates!
                   });
                 }
-  
+
                 const response: ApiSearchResultSnapshotResponse = (
                   await post<ApiSearchResultSnapshotResponse>(
                     "/api/location/snapshot",
@@ -221,17 +221,17 @@ const SearchResultPage: React.FunctionComponent = () => {
                         searchContextState.transportationParams,
                       localityParams: searchContextState.localityParams,
                       searchResponse: searchContextState.searchResponse,
+                      realEstateListings: realEstateState.listings,
                       preferredLocations,
                       routes,
-                      transitRoutes,
+                      transitRoutes
                     }
                   )
                 ).data;
                 history.push(`snippet-editor/${response.id}`);
-
               } catch (e) {
-                toastError('Fehler beim Öffnen des Editors');
-              }  finally {
+                toastError("Fehler beim Öffnen des Editors");
+              } finally {
                 setBusyModalOpen(false);
               }
             }}

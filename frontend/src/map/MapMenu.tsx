@@ -12,7 +12,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiUser,
   MeansOfTransportation,
-  OsmName,
+  OsmName
 } from "../../../shared/types/types";
 import {
   deriveIconForOsmName,
@@ -20,6 +20,7 @@ import {
   preferredLocationsTitle,
   realEstateListingsIcon,
   realEstateListingsTitle,
+  realEstateListingsTitleEmbed
 } from "../shared/shared.functions";
 import LocalityItem from "../components/LocalityItem";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
@@ -108,7 +109,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   user,
   openUpgradeSubscriptionModal,
   showInsights = true,
-  config,
+  config
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
@@ -118,11 +119,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     groupedEntries.map(() => localityPaginationSize)
   );
 
-  const allLocalitiesActive = groupedEntries.some((ge) => ge.active);
+  const allLocalitiesActive = groupedEntries.some(ge => ge.active);
 
   const toggleLocality = (title: string) => {
-    const filtered = [...localityOpen.filter((l) => l !== title)];
-    if (!localityOpen.some((l) => l === title)) {
+    const filtered = [...localityOpen.filter(l => l !== title)];
+    if (!localityOpen.some(l => l === title)) {
       filtered.push(title);
     }
     setLocalityOpen(filtered);
@@ -131,20 +132,17 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const mobileMenuButtonClasses = `map-menu ${
     mobileMenuOpen ? "mobile-open" : ""
   }`;
-  const censusInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
-      ApiDataSource.CENSUS
-    )!;
+  const censusInSubscriptionPlan = user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+    ApiDataSource.CENSUS
+  )!;
 
-  const federalElectionInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
-      ApiDataSource.FEDERAL_ELECTION
-    )!;
+  const federalElectionInSubscriptionPlan = user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+    ApiDataSource.FEDERAL_ELECTION
+  )!;
 
-  const particlePollutionInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
-      ApiDataSource.PARTICLE_POLLUTION
-    )!;
+  const particlePollutionInSubscriptionPlan = user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+    ApiDataSource.PARTICLE_POLLUTION
+  )!;
 
   useEffect(() => {
     if (Array.isArray(groupedEntries)) {
@@ -161,7 +159,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
     ge,
     groupIconInfo,
-    geIndex,
+    geIndex
   }) => {
     return (
       <li
@@ -189,7 +187,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                   onClick={() => toggleLocality(ge.title)}
                 />
               </div>
-              {ge.title} [{ge.items.length}]
+              {ge.title === realEstateListingsTitle
+                ? realEstateListingsTitleEmbed
+                : ge.title}{" "}
+              [{ge.items.length}]
             </div>
             <label className="cursor-pointer label justify-start pl-0">
               <input
@@ -227,17 +228,17 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     key={`${ge.title}-${index}`}
                     item={item}
                     group={ge}
-                    onClickTitle={(item) => highlightZoomEntity(item)}
+                    onClickTitle={item => highlightZoomEntity(item)}
                     onToggleRoute={(item, mean) => toggleRoute(item, mean)}
                     route={routes?.find(
-                      (r) =>
+                      r =>
                         r.coordinates.lat === item.coordinates.lat &&
                         r.coordinates.lng === item.coordinates.lng &&
                         r.show
                     )}
-                    onToggleTransitRoute={(item) => toggleTransitRoute(item)}
+                    onToggleTransitRoute={item => toggleTransitRoute(item)}
                     transitRoute={transitRoutes?.find(
-                      (tr) =>
+                      tr =>
                         tr.coordinates.lat === item.coordinates.lat &&
                         tr.coordinates.lng === item.coordinates.lng &&
                         tr.show
@@ -272,9 +273,11 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         return (
           <MapMenuKarlaFricke
             groupedEntries={groupedEntries
-              .filter((ge) => ge.items.length)
+              .filter(
+                ge => ge.items.length && ge.title !== realEstateListingsTitle
+              )
               .sort((a, b) => (a.title > b.title ? 1 : -1))}
-            toggleEntryGroup={(title) => toggleEntryGroup(title)}
+            toggleEntryGroup={title => toggleEntryGroup(title)}
             mobileMenuOpen={false}
           />
         );
@@ -313,7 +316,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         >
           <input
             type="checkbox"
-            onChange={(event) => setMapClippingsOpen(event.target.checked)}
+            onChange={event => setMapClippingsOpen(event.target.checked)}
           />
           <div className="collapse-title">Kartenausschnitte</div>
           <div className="collapse-content">
@@ -333,16 +336,16 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
         >
           <input
             type="checkbox"
-            onChange={(event) => setViewOptionsOpen(event.target.checked)}
+            onChange={event => setViewOptionsOpen(event.target.checked)}
           />
           <div
             className="collapse-title"
-            ref={(node) => {
+            ref={node => {
               if (!!node) {
-                if (node.parentElement?.classList.contains('collapse-open')) {
+                if (node.parentElement?.classList.contains("collapse-open")) {
                   node.style.setProperty("background", background, "important");
                 } else {
-                  node.style.setProperty("background", '#FFFFFF', "important");
+                  node.style.setProperty("background", "#FFFFFF", "important");
                 }
               }
             }}
@@ -412,16 +415,16 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={(event) => setLocalitiesOpen(event.target.checked)}
+          onChange={event => setLocalitiesOpen(event.target.checked)}
         />
         <div
           className="collapse-title flex justify-between"
-          ref={(node) => {
+          ref={node => {
             if (!!node) {
-              if (node.parentElement?.classList.contains('collapse-open')) {
+              if (node.parentElement?.classList.contains("collapse-open")) {
                 node.style.setProperty("background", background, "important");
               } else {
-                node.style.setProperty("background", '#FFFFFF', "important");
+                node.style.setProperty("background", "#FFFFFF", "important");
               }
             }
           }}
@@ -440,7 +443,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           <ul>
             {groupedEntries
               .filter(
-                (ge) =>
+                ge =>
                   ge.items.length &&
                   ["Wichtige Adressen", "Meine Objekte"].includes(ge.title)
               )
@@ -469,10 +472,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 return (
                   <div key={`container-${category}`}>
                     {groupedEntries.some(
-                      (ge) =>
+                      ge =>
                         ge.items.length &&
                         osmEntityTypes.some(
-                          (oet) =>
+                          oet =>
                             oet.label === ge.title && oet.category === category
                         )
                     ) && (
@@ -482,10 +485,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     )}
                     {groupedEntries
                       .filter(
-                        (ge) =>
+                        ge =>
                           ge.items.length &&
                           osmEntityTypes.some(
-                            (oet) =>
+                            oet =>
                               oet.label === ge.title &&
                               oet.category === category
                           )

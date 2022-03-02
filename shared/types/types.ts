@@ -1,6 +1,7 @@
 import { ApiPreferredLocation } from "./potential-customer";
 import { EntityRoute, EntityTransitRoute } from "./routing";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
+import { ApiRealEstateListing } from "./real-estate";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -230,6 +231,7 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
+  realEstateListings: ApiRealEstateListing[];
 }
 
 export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";

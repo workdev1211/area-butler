@@ -1,7 +1,6 @@
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
-  EntityGroup,
-  ResultEntity
+  EntityGroup
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import { Poi, SearchContext } from "context/SearchContext";
@@ -16,6 +15,7 @@ import { useHistory, useParams } from "react-router-dom";
 import {
   buildCombinedGroupedEntries,
   buildEntityData,
+  buildEntityDataFromRealEstateListings,
   createCodeSnippet,
   deriveAvailableMeansFromResponse,
   entityIncludesMean,
@@ -59,8 +59,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     const user = userState.user;
 
     if (!user?.subscriptionPlan?.config.appFeatures.htmlSnippet) {
-      toastError('Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors.');
-      history.push('/profile');
+      toastError(
+        "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors."
+      );
+      history.push("/profile");
     }
 
     const fetchSnapshot = async () => {
@@ -70,14 +72,15 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         )
       ).data;
 
-      let snapshotConfig = (snapshotResponse.config || {}) as any as ApiSearchResultSnapshotConfig;
+      let snapshotConfig = ((snapshotResponse.config ||
+        {}) as any) as ApiSearchResultSnapshotConfig;
 
-      if (!!user?.color && !('primaryColor' in snapshotConfig)) {
-        snapshotConfig['primaryColor'] = user.color;
+      if (!!user?.color && !("primaryColor" in snapshotConfig)) {
+        snapshotConfig["primaryColor"] = user.color;
       }
 
-      if (!!user?.mapIcon && !('mapIcon' in snapshotConfig)) {
-        snapshotConfig['mapIcon'] = user.mapIcon;
+      if (!!user?.mapIcon && !("mapIcon" in snapshotConfig)) {
+        snapshotConfig["mapIcon"] = user.mapIcon;
       }
 
       setConfig(snapshotConfig);
@@ -90,16 +93,11 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
-  const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [availableMeans, setAvailableMeans] = useState<MeansOfTransportation[]>(
     []
   );
   const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
-
-  const updateEntities = (entities: ResultEntity[]) => {
-    setEntities(entities);
-  };
 
   const updateGroupedEntities = (entities: EntityGroup[]) => {
     if (!groupedEntities.some(ge => ge.active)) {
@@ -133,8 +131,15 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       buildEntityData(snapshot?.searchResponse!)?.filter(entity =>
         entityIncludesMean(entity, activeMeans)
       ) ?? [];
-
-    updateEntities(entitiesIncludedInActiveMeans);
+    const centerOfSearch = searchResponse?.centerOfInterest?.coordinates!;
+    if (!!snapshot?.realEstateListings) {
+      entitiesIncludedInActiveMeans?.push(
+        ...buildEntityDataFromRealEstateListings(
+          centerOfSearch,
+          snapshot?.realEstateListings
+        )
+      );
+    }
     const theme = config?.theme;
     const defaultActive = theme !== "KF";
     updateGroupedEntities(
@@ -238,6 +243,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           config={config}
           transportationParams={snapshot.transportationParams}
           location={snapshot?.location}
+          listings={snapshot?.realEstateListings}
         />
         <EditorMapMenu
           availableMeans={availableMeans}

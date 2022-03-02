@@ -172,6 +172,7 @@ export const preferredLocationsIcon = {
   color: "#c91444"
 };
 export const realEstateListingsTitle = "Meine Objekte";
+export const realEstateListingsTitleEmbed = "Weitere Objekte";
 export const realEstateListingsIcon = {
   icon: realEstateListingIcon,
   color: "#c91444"
@@ -403,12 +404,13 @@ export const buildEntityDataFromPreferredLocations = (
 
 export const buildEntityDataFromRealEstateListings = (
   centerCoordinates: ApiCoordinates,
-  realEstateListings: ApiRealEstateListing[]
+  realEstateListings: ApiRealEstateListing[],
+  config?: ApiSearchResultSnapshotConfig
 ): ResultEntity[] => {
-  return realEstateListings
+  const mappedRealEstateListings = realEstateListings
     .filter(realEstateListing => !!realEstateListing.coordinates)
     .map(realEstateListing => ({
-      id: v4(),
+      id: realEstateListing.id ?? v4(),
       name: `${realEstateListing.name} (${realEstateListing.address})`,
       label: realEstateListingsTitle,
       type: OsmName.property,
@@ -421,8 +423,16 @@ export const buildEntityDataFromRealEstateListings = (
       byFoot: true,
       byBike: true,
       byCar: true,
-      selected: false
+      selected: false,
+      externalUrl: realEstateListing.externalUrl
     }));
+  if (config && config.entityVisibility) {
+    const { entityVisibility = [] } = config;
+    return mappedRealEstateListings.filter(
+      rel => !entityVisibility.some(ev => ev.id === rel.id && ev.excluded)
+    );
+  }
+  return mappedRealEstateListings;
 };
 
 export const buildCombinedGroupedEntries = (
