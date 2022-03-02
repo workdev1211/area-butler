@@ -83,7 +83,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         snapshotConfig["mapIcon"] = user.mapIcon;
       }
 
-      setConfig(snapshotConfig);
+      setConfig({
+        ...snapshotConfig,
+        fixedRealEstates: snapshotConfig.fixedRealEstates ?? true
+      });
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));

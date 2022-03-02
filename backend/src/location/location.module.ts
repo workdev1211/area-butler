@@ -16,12 +16,14 @@ import {
 } from './schema/search-result-snapshot.schema';
 import { SearchResultSnapshotController } from './search-result-snapshot.controller';
 import { TilesController } from './tiles.controller';
+import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 
 @Module({
   imports: [
     ClientModule,
     AuthModule,
     UserModule,
+    RealEstateListingModule,
     DataProvisionModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchschema },

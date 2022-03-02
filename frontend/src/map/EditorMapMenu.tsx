@@ -59,6 +59,10 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     onConfigChange({ ...config, groupItems: !config?.groupItems });
   };
 
+  const changeFixedRealEstates = () => {
+    onConfigChange({ ...config, fixedRealEstates: !config?.fixedRealEstates });
+  };
+
   const changeEntityVisiblity = (visiblity: ApiSnippetEntitVisiblity[]) => {
     onConfigChange({ ...config, entityVisibility: [...visiblity] });
   };
@@ -287,6 +291,22 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   />
                   <span className="label-text">
                     Objekte gruppieren beim Rauszoomen
+                  </span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="fixedRealEstates"
+                    checked={!config?.fixedRealEstates}
+                    onChange={() => changeFixedRealEstates()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Neue Einträge in "Meine Objekte" automatisch einfügen
                   </span>
                 </label>
               </div>

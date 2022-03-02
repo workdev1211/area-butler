@@ -12,10 +12,14 @@ import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
 import { LocationService } from './location.service';
 import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 @Controller('api/location')
 export class LocationController extends AuthenticatedController {
-  constructor(private locationService: LocationService) {
+  constructor(
+    private locationService: LocationService,
+    private realEstateListingService: RealEstateListingService,
+  ) {
     super();
   }
 
@@ -67,8 +71,14 @@ export class LocationController extends AuthenticatedController {
     @InjectUser() user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
+    const map = await this.locationService.fetchEmbeddableMap(user, id);
+    const realEstateListings = await this.realEstateListingService.getRealEstateListings(
+      user,
+    );
     return mapSearchResultSnapshotToApiEmbeddableMap(
-      await this.locationService.fetchEmbeddableMap(user, id),
+      map,
+      false,
+      realEstateListings,
     );
   }
 }

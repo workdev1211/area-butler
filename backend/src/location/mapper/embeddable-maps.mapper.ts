@@ -6,22 +6,48 @@ import {
   ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
+import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
+import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
   embed = false,
-): ApiSearchResultSnapshotResponse => ({
-  id: searchResultSnapshot.id,
-  snapshot: mapSearchResultSnapshot(
-    searchResultSnapshot.snapshot,
-    searchResultSnapshot.config,
-    embed,
-  ),
-  config: searchResultSnapshot.config,
-  token: searchResultSnapshot.token,
-  mapboxToken: searchResultSnapshot.mapboxAccessToken,
-  createdAt: searchResultSnapshot.createdAt,
-});
+  realEstateListings: RealEstateListingDocument[] = [],
+): ApiSearchResultSnapshotResponse => {
+  // filter / hide real estate listings
+  const mappedListings = realEstateListings.map(r =>
+    mapRealEstateListingToApiRealEstateListing(r),
+  );
+  const { config, snapshot } = searchResultSnapshot;
+  if (config && config.fixedRealEstates) {
+    const { entityVisibility = [] } = config;
+    config.entityVisibility = [
+      ...entityVisibility,
+      ...mappedListings
+        .filter(l => !snapshot.realEstateListings.some(rel => rel.id === l.id))
+        .map(l => ({
+          id: l.id,
+          excluded: true,
+        })),
+    ];
+  }
+
+  return {
+    id: searchResultSnapshot.id,
+    snapshot: mapSearchResultSnapshot(
+      {
+        ...searchResultSnapshot.snapshot,
+        realEstateListings: mappedListings,
+      },
+      searchResultSnapshot.config,
+      embed,
+    ),
+    config: searchResultSnapshot.config,
+    token: searchResultSnapshot.token,
+    mapboxToken: searchResultSnapshot.mapboxAccessToken,
+    createdAt: searchResultSnapshot.createdAt,
+  };
+};
 
 const mapSearchResultSnapshot = (
   snapshot: ApiSearchResultSnapshot,

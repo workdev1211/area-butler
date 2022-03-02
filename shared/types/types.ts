@@ -250,6 +250,7 @@ export interface ApiSearchResultSnapshotConfig {
   entityVisibility?: ApiSnippetEntitVisiblity[];
   primaryColor?: string;
   mapIcon?: string;
+  fixedRealEstates?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {

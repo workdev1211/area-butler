@@ -17,5 +17,6 @@ import {
   ],
   providers: [RealEstateListingService],
   controllers: [RealEstateListingController],
+  exports: [RealEstateListingService],
 })
 export class RealEstateListingModule {}
