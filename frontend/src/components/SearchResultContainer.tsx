@@ -32,7 +32,7 @@ import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { ApiRealEstateCharacteristics, ApiRealEstateCost, ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface ResultEntity {
   name?: string;
@@ -45,6 +45,10 @@ export interface ResultEntity {
   byBike: boolean;
   byCar: boolean;
   distanceInMeters: number;
+  realEstateData?: {
+    costStructure?: ApiRealEstateCost,
+    characteristics?: ApiRealEstateCharacteristics
+  }
   selected?: boolean;
   externalUrl?: string;
 }

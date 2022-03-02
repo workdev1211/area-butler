@@ -418,6 +418,10 @@ export const buildEntityDataFromRealEstateListings = (
         centerCoordinates,
         realEstateListing.coordinates!
       ), // Calc distance
+      realEstateData: {
+        costStructure: realEstateListing.costStructure,
+        characteristics: realEstateListing.characteristics
+      },
       coordinates: realEstateListing.coordinates!,
       address: { street: realEstateListing.address },
       byFoot: true,
