@@ -124,9 +124,12 @@ export class IdMarker extends L.Marker {
           ? this.entity?.address?.city
           : cityFromSearch.trim()
       ].join(" ");
-      const title = `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
-        searchString
-      )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`;
+      const title =
+        this.entity.type !== "property"
+          ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
+              searchString
+            )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
+          : `<h4><a target="_blank" href="${this.entity.externalUrl}">${this.entity.name}</a></h4>`;
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
@@ -155,16 +158,22 @@ export class IdMarker extends L.Marker {
             )
           )}</span></span>`
         : "";
-      this.bindPopup(
-        `<span class="font-semibold">${entityTitle}</span><br /><br />
+      if (this.entity.type === "property") {
+        this.bindPopup(
+          `<a target="_blank" href="${this.entity.externalUrl}"<span class="font-semibold mt-2">${title}</span></a>`
+        );
+      } else {
+        this.bindPopup(
+          `<span class="font-semibold">${entityTitle}</span><br /><br />
         <span class="font-semibold mt-2">${title}</span><br />${
-          street ? "<div>" + street + "</div><br />" : ""
-        }<div class="flex gap-6">${
-          !isRealEstateListingOrPreferredAdress ? byFoot : ""
-        }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
-          !isRealEstateListingOrPreferredAdress ? byCar : ""
-        }</div>`
-      );
+            street ? "<div>" + street + "</div><br />" : ""
+          }<div class="flex gap-6">${
+            !isRealEstateListingOrPreferredAdress ? byFoot : ""
+          }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
+            !isRealEstateListingOrPreferredAdress ? byCar : ""
+          }</div>`
+        );
+      }
     }
     this.openPopup();
   }
@@ -661,7 +670,12 @@ const Map = React.memo<MapProps>(
               const isRealEstateListing = entity.type === "property";
               const isPreferredLocation = entity.type === "favorite";
               const markerIcon = isRealEstateListing
-                ? realEstateListingsIcon
+                ? config?.mapIcon
+                  ? {
+                      icon: config?.mapIcon,
+                      color: config.primaryColor ?? realEstateListingsIcon.color
+                    }
+                  : realEstateListingsIcon
                 : isPreferredLocation
                 ? preferredLocationsIcon
                 : deriveIconForOsmName(entity.type as OsmName);
