@@ -45,6 +45,9 @@
     height: 32px !important;
     width: 32px !important;
     @apply bg-white justify-center items-center;
+    &.locality-marker-wrapper-custom {
+        @apply bg-transparent;
+    }
 }
 
 .leaflet-container.no-group {

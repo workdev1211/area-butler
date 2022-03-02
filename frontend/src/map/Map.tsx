@@ -166,15 +166,24 @@ export class IdMarker extends L.Marker {
         if (!!realEstateData?.costStructure?.price?.amount) {
           const costStructure = realEstateData.costStructure;
           const moneyAmount = `${realEstateData?.costStructure.price.amount} ${realEstateData?.costStructure.price.currency}`;
-          const costType = allRealEstateCostTypes.find(costType => costStructure.type === costType.type)?.label || '';
-          realEstateInformationParts.push(`<span class="font-semibold mt-2">Angebot: </span> ${moneyAmount} (${costType})`);
+          const costType =
+            allRealEstateCostTypes.find(
+              costType => costStructure.type === costType.type
+            )?.label || "";
+          realEstateInformationParts.push(
+            `<span class="font-semibold mt-2">Angebot: </span> ${moneyAmount} (${costType})`
+          );
         }
 
         if (!!realEstateData?.characteristics?.propertySizeInSquareMeters) {
-          realEstateInformationParts.push(`<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} m2`);
+          realEstateInformationParts.push(
+            `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} m2`
+          );
         }
 
-        const realEstateInformation = realEstateInformationParts.join('<br /><br />');
+        const realEstateInformation = realEstateInformationParts.join(
+          "<br /><br />"
+        );
 
         this.bindPopup(
           `<a target="_blank" href="${this.entity.externalUrl}"<span class="font-semibold mt-2">${title}</span></a><br />
@@ -381,16 +390,25 @@ const Map = React.memo<MapProps>(
         maxZoom: 18
       }).addTo(localMap);
       if (!embedMode || !!searchAddress) {
-        const positionIcon = L.Icon.extend({
-          options: {
-            iconUrl: config?.mapIcon || mylocationIcon,
-            shadowUrl: leafletShadow,
-            shadowSize: [0, 0],
-            iconSize: myLocationIconSize
-          }
+        const positionIcon = L.divIcon({
+          iconUrl: config?.mapIcon ?? mylocationIcon,
+          shadowUrl: leafletShadow,
+          shadowSize: [0, 0],
+          iconSize: myLocationIconSize,
+          className: "my-location-icon-wrapper",
+          html: `<img src="${config?.mapIcon ??
+            mylocationIcon}" alt="marker-icon" style="height: 100%; width: auto;" />`
         });
+        // const positionIcon = L.Icon.extend({
+        //   options: {
+        //     iconUrl: config?.mapIcon || mylocationIcon,
+        //     shadowUrl: leafletShadow,
+        //     shadowSize: [0, 0],
+        //     iconSize: myLocationIconSize
+        //   }
+        // });
         L.marker([lat, lng], {
-          icon: new positionIcon()
+          icon: positionIcon
         })
           .bindPopup(searchAddress)
           .addTo(localMap);
@@ -703,7 +721,11 @@ const Map = React.memo<MapProps>(
                 shadowUrl: leafletShadow,
                 shadowSize: [0, 0],
                 iconSize: defaultAmenityIconSize,
-                className: "locality-marker-wrapper icon-" + entity.type,
+                className: `locality-marker-wrapper ${
+                  isRealEstateListing && config?.mapIcon
+                    ? "locality-marker-wrapper-custom"
+                    : ""
+                } icon-${entity.type}`,
                 html:
                   config?.mapIcon && isRealEstateListing
                     ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
