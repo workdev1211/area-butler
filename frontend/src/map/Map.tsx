@@ -685,7 +685,10 @@ const Map = React.memo<MapProps>(
                 shadowSize: [0, 0],
                 iconSize: defaultAmenityIconSize,
                 className: "locality-marker-wrapper icon-" + entity.type,
-                html: `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
+                html:
+                  config?.mapIcon && isRealEstateListing
+                    ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
+                    : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
               });
               const marker = new IdMarker(
                 entity.coordinates,
