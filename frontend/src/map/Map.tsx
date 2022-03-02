@@ -409,7 +409,8 @@ const Map = React.memo<MapProps>(
       mapBoxAccessToken,
       searchAddress,
       embedMode,
-      mapboxMapId
+      mapboxMapId,
+      config?.mapIcon
     ]);
 
     // react on zoom and center change
@@ -498,7 +499,7 @@ const Map = React.memo<MapProps>(
           ).addTo(meansGroup);
         }
       }
-    }, [meansStringified, searchResponse.routingProfiles]);
+    }, [meansStringified, searchResponse.routingProfiles, config?.mapIcon]);
 
     // draw routes
     useEffect(() => {
@@ -622,7 +623,7 @@ const Map = React.memo<MapProps>(
             }
           });
       }
-    }, [routes, transitRoutes, means, groupedEntities]);
+    }, [routes, transitRoutes, means, groupedEntities, config?.mapIcon]);
 
     const entitiesStringified = JSON.stringify(entities);
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
@@ -756,7 +757,8 @@ const Map = React.memo<MapProps>(
     }, [
       entitiesStringified,
       groupedEntitiesStringified,
-      searchContextDispatch
+      searchContextDispatch,
+      config?.mapIcon
     ]);
 
     const takePicture = () => {
