@@ -144,10 +144,9 @@
     @apply flex justify-center items-center mr-3 mask mask-circle;
 }
 
-.map-menu .locality-option .collapse-title div.img-container img {
+.map-menu .locality-option .collapse-title div.img-container img.item {
     filter: brightness(0) invert(1);
 }
-
 
 .map-menu .locality-option .collapse-title .checkbox {
     z-index: 99;

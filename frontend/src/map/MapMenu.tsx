@@ -154,13 +154,18 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     ge: EntityGroup;
     groupIconInfo: any;
     geIndex: number;
+    customIcon?: boolean;
   }
 
   const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
     ge,
     groupIconInfo,
-    geIndex
+    geIndex,
+    customIcon = false
   }) => {
+
+    const imgClass = !customIcon ? 'item' : '';
+
     return (
       <li
         className="locality-option-li"
@@ -182,6 +187,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 style={{ background: groupIconInfo.color }}
               >
                 <img
+                  className={imgClass}
                   src={groupIconInfo.icon}
                   alt="group-icon"
                   onClick={() => toggleLocality(ge.title)}
@@ -453,7 +459,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 const isPreferredLocation =
                   ge.items[0].label === preferredLocationsTitle;
                 const groupIconInfo = isRealEstateListing
-                  ? realEstateListingsIcon
+                  ? (!!config?.mapIcon ? {icon: config.mapIcon, color: 'transparent'} : realEstateListingsIcon)
                   : isPreferredLocation
                   ? preferredLocationsIcon
                   : deriveIconForOsmName(ge.items[0].type as OsmName);
@@ -462,6 +468,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     ge={ge}
                     groupIconInfo={groupIconInfo}
                     geIndex={geIndex}
+                    customIcon={!!config?.mapIcon}
                     key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
                   />
                 );
