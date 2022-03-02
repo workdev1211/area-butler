@@ -40,6 +40,7 @@ import {
   deriveMinutesFromMeters,
   preferredLocationsIcon,
   realEstateListingsIcon,
+  realEstateListingsTitle,
   timeToHumanReadable,
   toastSuccess
 } from "../shared/shared.functions";
@@ -599,7 +600,7 @@ const Map = React.memo<MapProps>(
       const parsedEntities: ResultEntity[] | null = JSON.parse(
         entitiesStringified
       );
-      const parsedEntityGroups: EntityGroup[] = JSON.parse(
+      let parsedEntityGroups: EntityGroup[] = JSON.parse(
         groupedEntitiesStringified
       );
       const drawAmenityMarkers = () => {
@@ -639,6 +640,18 @@ const Map = React.memo<MapProps>(
             animate: false,
             zoomToBoundsOnClick: false
           });
+
+          // set realEstateListing to active if theme is KF and group is real estate listings
+          if (config?.theme === "KF") {
+            parsedEntityGroups = parsedEntityGroups.map(peg => ({
+              ...peg,
+              active:
+                config.theme === "KF" && peg.title === realEstateListingsTitle
+                  ? true
+                  : peg.active
+            }));
+          }
+
           parsedEntities?.forEach(entity => {
             if (
               parsedEntityGroups.some(
