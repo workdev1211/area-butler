@@ -16,7 +16,7 @@ export class QuestionnaireController {
       );
     } catch (err) {
       console.error('Error while storing questionnaire data', err);
-      throw err
+      throw err;
     }
   }
 }

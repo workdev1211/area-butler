@@ -1,58 +1,60 @@
-import {ApiCoordinates, ApiMoneyAmount} from "./types";
+import { ApiCoordinates, ApiMoneyAmount } from "./types";
 
 export interface ApiRealEstateListing {
-    id: string;
-    name: string;
-    address: string;
-    coordinates?: ApiCoordinates;
-    costStructure?: ApiRealEstateCost;
-    characteristics?: ApiRealEstateCharacteristics;
+  id: string;
+  name: string;
+  address: string;
+  externalUrl?: string;
+  coordinates?: ApiCoordinates;
+  costStructure?: ApiRealEstateCost;
+  characteristics?: ApiRealEstateCharacteristics;
 }
 
 export interface ApiUpsertRealEstateListing {
-    name: string;
-    address: string;
-    coordinates?: ApiCoordinates;
-    costStructure?: ApiRealEstateCost;
-    characteristics?: ApiRealEstateCharacteristics;
+  name: string;
+  address: string;
+  externalUrl?: string;
+  coordinates?: ApiCoordinates;
+  costStructure?: ApiRealEstateCost;
+  characteristics?: ApiRealEstateCharacteristics;
 }
 
 export interface ApiRealEstateCost {
-    price: ApiMoneyAmount;
-    type: ApiRealEstateCostType;
+  price: ApiMoneyAmount;
+  type: ApiRealEstateCostType;
 }
 
 export enum ApiRealEstateCostType {
-    RENT_MONTHLY_COLD = "RENT_MONTHLY_COLD",
-    RENT_MONTHLY_WARM = "RENT_MONTHLY_WARM",
-    SELL = "SELL",
+  RENT_MONTHLY_COLD = "RENT_MONTHLY_COLD",
+  RENT_MONTHLY_WARM = "RENT_MONTHLY_WARM",
+  SELL = "SELL"
 }
 
 export interface ApiRealEstateCharacteristics {
-    numberOfRooms: number;
-    realEstateSizeInSquareMeters?: number;
-    propertySizeInSquareMeters?: number;
-    energyEfficiency?: ApiEnergyEfficiency;
-    furnishing: ApiFurnishing[];
+  numberOfRooms: number;
+  realEstateSizeInSquareMeters?: number;
+  propertySizeInSquareMeters?: number;
+  energyEfficiency?: ApiEnergyEfficiency;
+  furnishing: ApiFurnishing[];
 }
 
 export enum ApiFurnishing {
-    GARDEN = "GARDEN",
-    BALCONY = "BALCONY",
-    BASEMENT = "BASEMENT",
-    GUEST_REST_ROOMS = "GUEST_REST_ROOMS",
-    UNDERFLOOR_HEATING = "UNDERFLOOR_HEATING",
-    GARAGE_PARKING_SPACE = "GARAGE_PARKING_SPACE",
-    FITTED_KITCHEN = "FITTED_KITCHEN",
-    ACCESSIBLE = "ACCESSIBLE"
+  GARDEN = "GARDEN",
+  BALCONY = "BALCONY",
+  BASEMENT = "BASEMENT",
+  GUEST_REST_ROOMS = "GUEST_REST_ROOMS",
+  UNDERFLOOR_HEATING = "UNDERFLOOR_HEATING",
+  GARAGE_PARKING_SPACE = "GARAGE_PARKING_SPACE",
+  FITTED_KITCHEN = "FITTED_KITCHEN",
+  ACCESSIBLE = "ACCESSIBLE"
 }
 
 export enum ApiEnergyEfficiency {
-    A = "A",
-    B = "B",
-    C = "C",
-    D = "D",
-    E = "E",
-    F = "F",
-    G = "G",
+  A = "A",
+  B = "B",
+  C = "C",
+  D = "D",
+  E = "E",
+  F = "F",
+  G = "G"
 }

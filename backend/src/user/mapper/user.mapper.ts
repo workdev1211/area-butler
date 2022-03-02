@@ -1,12 +1,20 @@
-import {ApiUser} from '@area-butler-types/types';
-import {retrieveTotalRequestContingent, UserDocument} from '../schema/user.schema';
-import {SubscriptionDocument} from "../schema/subscription.schema";
-import {mapSubscriptionToApiSubscription} from "./subscription.mapper";
+import { ApiUser } from '@area-butler-types/types';
+import {
+  retrieveTotalRequestContingent,
+  UserDocument,
+} from '../schema/user.schema';
+import { SubscriptionDocument } from '../schema/subscription.schema';
+import { mapSubscriptionToApiSubscription } from './subscription.mapper';
 
-export const mapUserToApiUser = (user: UserDocument, subscription?: SubscriptionDocument): ApiUser => ({
+export const mapUserToApiUser = (
+  user: UserDocument,
+  subscription?: SubscriptionDocument,
+): ApiUser => ({
   fullname: user.fullname,
   email: user.email,
-  subscriptionPlan: subscription ? mapSubscriptionToApiSubscription(subscription) : null,
+  subscriptionPlan: subscription
+    ? mapSubscriptionToApiSubscription(subscription)
+    : null,
   requestsExecuted: user.requestsExecuted,
   consentGiven: user.consentGiven,
   requestContingents: retrieveTotalRequestContingent(user),
@@ -14,5 +22,5 @@ export const mapUserToApiUser = (user: UserDocument, subscription?: Subscription
   logo: user.logo,
   mapIcon: user.mapIcon,
   color: user.color,
-  additionalMapBoxStyles: user.additionalMapBoxStyles
+  additionalMapBoxStyles: user.additionalMapBoxStyles,
 });

@@ -9,8 +9,11 @@ import {
   LocationSearch,
   LocationSearchschema,
 } from './schema/location-search.schema';
-import {DataProvisionModule} from "../data-provision/data-provision.module";
-import { SearchResultSnapshot, SearchResultSnapshotSchema } from './schema/search-result-snapshot.schema';
+import { DataProvisionModule } from '../data-provision/data-provision.module';
+import {
+  SearchResultSnapshot,
+  SearchResultSnapshotSchema,
+} from './schema/search-result-snapshot.schema';
 import { SearchResultSnapshotController } from './search-result-snapshot.controller';
 import { TilesController } from './tiles.controller';
 
@@ -25,7 +28,11 @@ import { TilesController } from './tiles.controller';
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
-  controllers: [LocationController, SearchResultSnapshotController, TilesController],
+  controllers: [
+    LocationController,
+    SearchResultSnapshotController,
+    TilesController,
+  ],
   providers: [LocationService],
 })
 export class LocationModule {}

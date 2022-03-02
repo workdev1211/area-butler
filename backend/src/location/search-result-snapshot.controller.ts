@@ -3,7 +3,6 @@ import { Controller, Get, Param } from '@nestjs/common';
 import { LocationService } from './location.service';
 import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
 
-
 @Controller('api/location/snapshot')
 export class SearchResultSnapshotController {
   constructor(private locationService: LocationService) {}
@@ -12,6 +11,9 @@ export class SearchResultSnapshotController {
   async fetchSnapshot(
     @Param('token') token: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return mapSearchResultSnapshotToApiEmbeddableMap( await this.locationService.fetchSearchResultSnapshot(token), true);
+    return mapSearchResultSnapshotToApiEmbeddableMap(
+      await this.locationService.fetchSearchResultSnapshot(token),
+      true,
+    );
   }
 }

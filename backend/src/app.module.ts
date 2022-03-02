@@ -50,7 +50,7 @@ import { HealthModule } from './health/health.module';
     }),
     RoutingModule,
     BillingModule,
-    HealthModule
+    HealthModule,
   ],
   providers: [
     {

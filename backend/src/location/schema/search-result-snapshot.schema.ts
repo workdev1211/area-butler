@@ -1,15 +1,17 @@
-import { ApiSearchResultSnapshot, ApiSearchResultSnapshotConfig } from "@area-butler-types/types";
-import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import {
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
+} from '@area-butler-types/types';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 
 @Schema()
 export class SearchResultSnapshot {
-
   @Prop()
   userId: string;
-  
+
   @Prop()
   token: string;
 
@@ -24,9 +26,8 @@ export class SearchResultSnapshot {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
-
 }
 
 export const SearchResultSnapshotSchema = SchemaFactory.createForClass(
-    SearchResultSnapshot,
+  SearchResultSnapshot,
 );

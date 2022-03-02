@@ -13,7 +13,6 @@ const scopes = [
 export class MapboxService {
   tokenCreateUrl = 'https://api.mapbox.com/tokens/v2/kudiba-tech';
 
-
   tileCache: any = {};
 
   constructor(private http: HttpService) {}
@@ -22,7 +21,6 @@ export class MapboxService {
     userId: string,
     allowedUrls: string[] = [],
   ): Promise<string> {
-
     const tokenTitle = `user-token-${userId}`;
     const body = {
       note: tokenTitle,
@@ -34,19 +32,18 @@ export class MapboxService {
     }?access_token=${configService.getMapBoxCreateToken()}`;
 
     try {
-        const { token } = (
-          await this.http
-            .post<{ token: string }>(tokenCreateUrl, body)
-            .toPromise()
-        ).data;
-        return token;
+      const { token } = (
+        await this.http
+          .post<{ token: string }>(tokenCreateUrl, body)
+          .toPromise()
+      ).data;
+      return token;
     } catch (e) {
-        console.error(e);
+      console.error(e);
     }
   }
 
   async fetchTile(path: string) {
-
     const url = `https://api.mapbox.com/${path}`;
     const cachedTile = this.tileCache[path];
 
@@ -54,7 +51,9 @@ export class MapboxService {
       return cachedTile;
     }
 
-    const response = await this.http.get(url, { responseType: 'arraybuffer' }).toPromise();
+    const response = await this.http
+      .get(url, { responseType: 'arraybuffer' })
+      .toPromise();
     this.tileCache[path] = response.data;
     return response.data;
   }

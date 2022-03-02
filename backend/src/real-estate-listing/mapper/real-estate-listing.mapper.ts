@@ -8,6 +8,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
     id: realEstateListing.id,
     name: realEstateListing.name,
     address: realEstateListing.address,
+    externalUrl: realEstateListing.externalUrl,
     coordinates: realEstateListing.location
       ? {
           lat: realEstateListing.location.coordinates[0],

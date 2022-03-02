@@ -8,7 +8,10 @@ import {
 } from './schema/potential-customer.schema';
 import { PotentialCustomerController } from './potential-customer.controller';
 import { PotentialCustomerService } from './potential-customer.service';
-import { QuestionnaireRequest, QuestionnaireRequestSchema } from './schema/questionnaire-request.schema';
+import {
+  QuestionnaireRequest,
+  QuestionnaireRequestSchema,
+} from './schema/questionnaire-request.schema';
 import { QuestionnaireController } from './questionnaire.controller';
 import { ClientModule } from 'src/client/client.module';
 

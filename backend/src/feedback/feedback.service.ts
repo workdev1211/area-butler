@@ -12,13 +12,11 @@ import { Feedback, FeedbackDocument } from './schema/feedback.schema';
 
 @Injectable()
 export class FeedbackService {
-
   constructor(
     private slackSender: SlackSenderService,
     @InjectModel(Feedback.name)
     private feedbackModel: Model<FeedbackDocument>,
-  ) {
-  }
+  ) {}
 
   public async postFeedback(
     user: UserDocument,

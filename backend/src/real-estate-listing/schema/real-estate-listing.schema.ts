@@ -19,6 +19,9 @@ export class RealEstateListing {
   @Prop({ required: true })
   address: string;
 
+  @Prop({ required: false })
+  externalUrl: string;
+
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 

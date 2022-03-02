@@ -6,7 +6,6 @@ export type LocationSearchDocument = LocationSearch & Document;
 
 @Schema()
 export class LocationSearch {
-
   @Prop()
   userId: string;
 

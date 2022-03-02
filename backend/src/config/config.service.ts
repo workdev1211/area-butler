@@ -3,8 +3,7 @@ import { RollbarConfig } from '@area-butler-types/types';
 require('dotenv').config();
 
 class ConfigService {
-  constructor(private env: { [k: string]: string | undefined }) {
-  }
+  constructor(private env: { [k: string]: string | undefined }) {}
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
@@ -32,7 +31,7 @@ class ConfigService {
   public getMapBoxAccessToken(): string {
     return this.getValue('MAPBOX_ACCESS_TOKEN');
   }
-  
+
   public getMapBoxCreateToken(): string {
     return this.getValue('MAPBOX_CREATE_TOKEN');
   }
@@ -119,9 +118,9 @@ class ConfigService {
 
   getRollbarConfig(): RollbarConfig {
     return {
-      'accessToken': this.getValue('ROLLBAR_ACCESS_TOKEN', false) || '',
-      'environment': this.getValue('ROLLBAR_ENVIRONMENT', false) || 'local',
-      'code_version': this.getValue('CI_COMMIT_SHORT_SHA', false) || 'undefined',
+      accessToken: this.getValue('ROLLBAR_ACCESS_TOKEN', false) || '',
+      environment: this.getValue('ROLLBAR_ENVIRONMENT', false) || 'local',
+      code_version: this.getValue('CI_COMMIT_SHORT_SHA', false) || 'undefined',
     };
   }
 }

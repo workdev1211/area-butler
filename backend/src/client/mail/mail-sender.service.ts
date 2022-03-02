@@ -18,7 +18,7 @@ export class MailSenderService {
   constructor() {
     const defaultClient = SibApiV3Sdk.ApiClient.instance;
     const apiKey = defaultClient.authentications['api-key'];
-    
+
     apiKey.apiKey = configService.getMailProviderApiKey();
     this.apiInstance = new SibApiV3Sdk.TransactionalEmailsApi();
     const sendSmtpEmail = new SibApiV3Sdk.SendSmtpEmail();

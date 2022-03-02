@@ -1,4 +1,4 @@
-import { Prop, raw, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 export type ParticlePollutionDocument = ParticlePollution & Document;
 
@@ -19,4 +19,6 @@ export class ParticlePollution {
   geometry: Record<string, any>;
 }
 
-export const ParticlePollutionSchema = SchemaFactory.createForClass(ParticlePollution);
+export const ParticlePollutionSchema = SchemaFactory.createForClass(
+  ParticlePollution,
+);

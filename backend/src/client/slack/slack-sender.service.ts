@@ -8,7 +8,7 @@ export interface SlackNotification {
 export enum SlackChannel {
   OPERATIONS = 'OPERATIONS',
   FEEDBACK = 'FEEDBACK',
-  REVENUES = 'REVENUES'
+  REVENUES = 'REVENUES',
 }
 
 @Injectable()
@@ -45,11 +45,15 @@ export class SlackSenderService {
 
     if (!!this.slackChannels[slackChannel]) {
       await this.http
-        .post(this.slackChannels[slackChannel], {blocks}, {
-          headers: {
-            'Content-type': 'application/json',
+        .post(
+          this.slackChannels[slackChannel],
+          { blocks },
+          {
+            headers: {
+              'Content-type': 'application/json',
+            },
           },
-        })
+        )
         .toPromise();
     }
   }

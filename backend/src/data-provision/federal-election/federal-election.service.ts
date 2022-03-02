@@ -11,9 +11,9 @@ import {
   FederalElectionDocument,
 } from '../schemas/federal-election.schema';
 
-
 export const distinctValues = (value: any, index: any, self: any) =>
-  self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) === index;
+  self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) ===
+  index;
 
 @Injectable()
 export class FederalElectionService {
@@ -23,11 +23,10 @@ export class FederalElectionService {
     @InjectModel(FederalElection.name)
     private federalElectionModel: Model<FederalElectionDocument>,
     @InjectConnection() private connection: Connection,
-    private subscriptionService: SubscriptionService
+    private subscriptionService: SubscriptionService,
   ) {}
 
   async createCollection(federalElectionFeatures: ApiFederalElectionFeature[]) {
-
     const collection = this.connection.db.collection(
       this.federalElectionModel.collection.name,
     );
@@ -35,8 +34,12 @@ export class FederalElectionService {
       `creating new ${collection.collectionName} collection [count: ${federalElectionFeatures.length}]`,
     );
 
-    const augsburg = federalElectionFeatures.find(f => f.properties.WKR_NR === 253);
-    augsburg.geometry.coordinates[0] = augsburg.geometry.coordinates[0].filter(distinctValues);
+    const augsburg = federalElectionFeatures.find(
+      f => f.properties.WKR_NR === 253,
+    );
+    augsburg.geometry.coordinates[0] = augsburg.geometry.coordinates[0].filter(
+      distinctValues,
+    );
 
     try {
       this.logger.debug('Dropping existing collection');
@@ -46,7 +49,9 @@ export class FederalElectionService {
     this.logger.debug(
       `Inserting ${federalElectionFeatures.length} federal election districts`,
     );
-    await collection.insertMany(federalElectionFeatures.filter(f => f.properties.WKR_NR !== 253)); // cant deal with augsburg
+    await collection.insertMany(
+      federalElectionFeatures.filter(f => f.properties.WKR_NR !== 253),
+    ); // cant deal with augsburg
     this.logger.log('creating index on geometry field');
     await collection.createIndex({ geometry: '2dsphere' });
     this.logger.log(`${collection.collectionName} created`);
@@ -57,7 +62,9 @@ export class FederalElectionService {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       subscription =>
-        !subscription?.appFeatures.dataSources.includes(ApiDataSource.FEDERAL_ELECTION),
+        !subscription?.appFeatures.dataSources.includes(
+          ApiDataSource.FEDERAL_ELECTION,
+        ),
       'Bundestagswahldaten sind im aktuellem Abonnement nicht verfügbar',
     );
 

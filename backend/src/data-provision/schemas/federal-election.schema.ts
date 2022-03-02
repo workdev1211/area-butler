@@ -5,21 +5,21 @@ import { Prop, raw, SchemaFactory } from '@nestjs/mongoose';
 export type FederalElectionDocument = FederalElection & Document;
 
 export class FederalElection {
+  @Prop()
+  type: ApiGeojsonType;
 
-    @Prop()
-    type: ApiGeojsonType;
-  
-    @Prop(raw({}))
-    properties: ApiFederalElectionFeatureProperties;
-  
-    @Prop(
-      raw({
-        type: { type: String },
-        coordinates: { type: [[[[Number]]]] },
-      }),
-    )
-    geometry: ApiGeometry;
+  @Prop(raw({}))
+  properties: ApiFederalElectionFeatureProperties;
 
+  @Prop(
+    raw({
+      type: { type: String },
+      coordinates: { type: [[[[Number]]]] },
+    }),
+  )
+  geometry: ApiGeometry;
 }
 
-export const FederalElectionSchema = SchemaFactory.createForClass(FederalElection);
+export const FederalElectionSchema = SchemaFactory.createForClass(
+  FederalElection,
+);

@@ -1,4 +1,7 @@
-import { ApiPotentialCustomer, ApiQuestionnaireRequest } from '@area-butler-types/potential-customer';
+import {
+  ApiPotentialCustomer,
+  ApiQuestionnaireRequest,
+} from '@area-butler-types/potential-customer';
 import { PotentialCustomerDocument } from '../schema/potential-customer.schema';
 import { QuestionnaireRequestDocument } from '../schema/questionnaire-request.schema';
 
@@ -12,7 +15,7 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   preferredAmenities: potentialCustomer.preferredAmenities,
   preferredLocations: potentialCustomer.preferredLocations,
   realEstateCharacteristics: potentialCustomer.realEstateCharacteristics,
-  realEstateCostStructure: potentialCustomer.realEstateCostStructure
+  realEstateCostStructure: potentialCustomer.realEstateCostStructure,
 });
 
 export const mapQuestionnaireRequestToApiQuestionnaireRequest = (
@@ -21,6 +24,5 @@ export const mapQuestionnaireRequestToApiQuestionnaireRequest = (
   id: questionnaireRequest.id,
   name: questionnaireRequest.name,
   email: questionnaireRequest.email,
-  userInCopy: questionnaireRequest.userInCopy
+  userInCopy: questionnaireRequest.userInCopy,
 });
-

@@ -130,15 +130,17 @@ export class LocationService {
             preferredAmenities,
           );
 
-      const withIsochrone = search.withIsochrone === false ? false : true;    
-      const isochrone = withIsochrone ? (await this.isochroneService.fetchIsochrone(
-        routingProfile.type,
-        coordinates,
-        routingProfile.unit === UnitsOfTransportation.KILOMETERS
-          ? routingProfile.amount * 1000
-          : routingProfile.amount, // convert KM to M
-        routingProfile.unit,
-      )) : null;
+      const withIsochrone = search.withIsochrone === false ? false : true;
+      const isochrone = withIsochrone
+        ? await this.isochroneService.fetchIsochrone(
+            routingProfile.type,
+            coordinates,
+            routingProfile.unit === UnitsOfTransportation.KILOMETERS
+              ? routingProfile.amount * 1000
+              : routingProfile.amount, // convert KM to M
+            routingProfile.unit,
+          )
+        : null;
 
       routingProfiles[routingProfile.type] = {
         locationsOfInterest,
@@ -203,17 +205,17 @@ export class LocationService {
       mapboxAccessToken,
     } = await this.userService.createMapboxAccessToken(user);
 
-    const config : ApiSearchResultSnapshotConfig = {
+    const config: ApiSearchResultSnapshotConfig = {
       showLocation: true,
-      groupItems: true
-    }
+      groupItems: true,
+    };
 
-    const doc  = await new this.searchResultSnapshotModel({
+    const doc = await new this.searchResultSnapshotModel({
       userId: user.id,
       token,
       mapboxAccessToken,
       snapshot,
-      config
+      config,
     }).save();
 
     return {
@@ -221,7 +223,7 @@ export class LocationService {
       token,
       snapshot,
       mapboxToken: mapboxAccessToken,
-      createdAt: doc.createdAt
+      createdAt: doc.createdAt,
     };
   }
 
@@ -242,27 +244,28 @@ export class LocationService {
   async updateSearchResultSnapshot(
     user: UserDocument,
     id: string,
-    {snapshot, config}: ApiUpdateSearchResultSnapshot
-  ) : Promise<SearchResultSnapshotDocument> {
-
+    { snapshot, config }: ApiUpdateSearchResultSnapshot,
+  ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       subscription => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc : SearchResultSnapshotDocument = await this.fetchEmbeddableMap(user, id);
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
+      user,
+      id,
+    );
 
     snapshotDoc.snapshot = snapshot;
     snapshotDoc.config = config;
-    
+
     return await snapshotDoc.save();
   }
 
   async fetchEmbeddableMaps(
     user: UserDocument,
   ): Promise<SearchResultSnapshotDocument[]> {
-
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       subscription => !subscription.appFeatures.htmlSnippet,
@@ -274,9 +277,8 @@ export class LocationService {
 
   async fetchEmbeddableMap(
     user: UserDocument,
-    id: string
+    id: string,
   ): Promise<SearchResultSnapshotDocument> {
-
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       subscription => !subscription.appFeatures.htmlSnippet,
@@ -284,6 +286,9 @@ export class LocationService {
     );
 
     const oid = new Types.ObjectId(id);
-    return this.searchResultSnapshotModel.findOne({ userId: user.id, _id: oid });
+    return this.searchResultSnapshotModel.findOne({
+      userId: user.id,
+      _id: oid,
+    });
   }
 }
