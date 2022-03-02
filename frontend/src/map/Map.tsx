@@ -388,18 +388,15 @@ const Map = React.memo<MapProps>(
           html: `<img src="${config?.mapIcon ??
             mylocationIcon}" alt="marker-icon" style="height: 100%; width: auto;" />`
         });
-        // const positionIcon = L.Icon.extend({
-        //   options: {
-        //     iconUrl: config?.mapIcon || mylocationIcon,
-        //     shadowUrl: leafletShadow,
-        //     shadowSize: [0, 0],
-        //     iconSize: myLocationIconSize
-        //   }
-        // });
         L.marker([lat, lng], {
           icon: positionIcon
         })
-          .bindPopup(searchAddress)
+          .on("click", function(event) {
+            const marker = event.target;
+            marker.unbindPopup();
+            marker.bindPopup(searchAddress);
+            marker.openPopup();
+          })
           .addTo(localMap);
       }
       currentMap = localMap;
