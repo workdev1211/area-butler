@@ -49,8 +49,6 @@ import "leaflet-touch-helper";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import FormModal, { ModalConfig } from "components/FormModal";
 import AddPoiFormHandler from "./AddPoiFormHandler";
-import { GestureHandling } from "leaflet-gesture-handling";
-import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import { allRealEstateCostTypes } from "../../../shared/constants/real-estate";
 
 export interface MapProps {
@@ -289,8 +287,6 @@ const Map = React.memo<MapProps>(
     mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
     onPoiAdd
   }) => {
-    L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
-
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
@@ -334,17 +330,10 @@ const Map = React.memo<MapProps>(
       const localMap = L.map(leafletMapId, {
         preferCanvas: true,
         renderer: new L.Canvas(),
-        tap: false,
+        tap: true,
         maxZoom: 18,
         zoomControl: false,
-        gestureHandling: true,
-        gestureHandlingOptions: {
-          text: {
-            touch: "Karte mit zwei Fingern verschieben",
-            scroll: "Zoom mit Strg + Mausrad",
-            scrollMac: "Zoom mit \u2318 + Mausrad"
-          }
-        }
+        scrollWheelZoom: !L.Browser.mobile
       } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
