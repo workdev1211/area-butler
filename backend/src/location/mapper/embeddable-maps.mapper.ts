@@ -8,6 +8,7 @@ import {
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
+import { randomizeCoordinates } from '../../shared/shared.functions';
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
@@ -16,7 +17,10 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
 ): ApiSearchResultSnapshotResponse => {
   // filter / hide real estate listings
   const mappedListings = realEstateListings.map(r =>
-    mapRealEstateListingToApiRealEstateListing(r),
+    mapRealEstateListingToApiRealEstateListing(
+      r,
+      searchResultSnapshot.config.showLocation,
+    ),
   );
   const { config, snapshot } = searchResultSnapshot;
   if (config && config.fixedRealEstates) {
@@ -79,19 +83,4 @@ const mapSearchResultSnapshot = (
     location: randomizedCoordinates,
     searchResponse: searchResponseWithoutLocation,
   };
-};
-
-const randomizeCoordinates = ({ lat, lng }: ApiCoordinates): ApiCoordinates => {
-  const d1 = randomInt() / 10000;
-  const d2 = randomInt() / 10000;
-  return {
-    lat: lat + d1,
-    lng: lng + d2,
-  };
-};
-
-const randomInt = (min = -10, max = 10) => {
-  min = Math.ceil(min);
-  max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min;
 };

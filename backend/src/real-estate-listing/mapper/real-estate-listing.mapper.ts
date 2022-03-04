@@ -1,21 +1,28 @@
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { RealEstateListingDocument } from '../schema/real-estate-listing.schema';
+import { randomizeCoordinates } from '../../shared/shared.functions';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
+  showLocation = true,
 ): ApiRealEstateListing => {
   return {
     id: realEstateListing.id,
     name: realEstateListing.name,
-    address: realEstateListing.address,
+    address: showLocation ? realEstateListing.address : '',
     externalUrl: realEstateListing.externalUrl,
     coordinates: realEstateListing.location
-      ? {
-          lat: realEstateListing.location.coordinates[0],
-          lng: realEstateListing.location.coordinates[1],
-        }
+      ? showLocation
+        ? {
+            lat: realEstateListing.location.coordinates[0],
+            lng: realEstateListing.location.coordinates[1],
+          }
+        : randomizeCoordinates({
+            lat: realEstateListing.location.coordinates[0],
+            lng: realEstateListing.location.coordinates[1],
+          })
       : null,
-    costStructure: realEstateListing.costStructure,
+    // costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,
   };
 };

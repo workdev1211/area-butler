@@ -407,11 +407,19 @@ export const buildEntityDataFromRealEstateListings = (
   realEstateListings: ApiRealEstateListing[],
   config?: ApiSearchResultSnapshotConfig
 ): ResultEntity[] => {
+  const deriveName = (realEstateListing: ApiRealEstateListing) => {
+    const showLocation = config?.showLocation ?? false;
+    if (!showLocation) {
+      return `${realEstateListing.name}`;
+    } else {
+      return `${realEstateListing.name} (${realEstateListing.address})`;
+    }
+  };
   const mappedRealEstateListings = realEstateListings
     .filter(realEstateListing => !!realEstateListing.coordinates)
     .map(realEstateListing => ({
       id: realEstateListing.id ?? v4(),
-      name: `${realEstateListing.name} (${realEstateListing.address})`,
+      name: deriveName(realEstateListing),
       label: realEstateListingsTitle,
       type: OsmName.property,
       distanceInMeters: distanceInMeters(

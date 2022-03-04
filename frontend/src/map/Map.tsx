@@ -128,7 +128,7 @@ export class IdMarker extends L.Marker {
           ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
               searchString
             )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
-          : `<h4><a target="_blank" href="${this.entity.externalUrl}">${this.entity.name}</a></h4>`;
+          : `${entityTitle}`;
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
@@ -161,21 +161,9 @@ export class IdMarker extends L.Marker {
         const realEstateData = this.entity.realEstateData;
         const realEstateInformationParts = [];
 
-        if (!!realEstateData?.costStructure?.price?.amount) {
-          const costStructure = realEstateData.costStructure;
-          const moneyAmount = `${realEstateData?.costStructure.price.amount} ${realEstateData?.costStructure.price.currency}`;
-          const costType =
-            allRealEstateCostTypes.find(
-              costType => costStructure.type === costType.type
-            )?.label || "";
-          realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Angebot: </span> ${moneyAmount} (${costType})`
-          );
-        }
-
         if (!!realEstateData?.characteristics?.propertySizeInSquareMeters) {
           realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} m2`
+            `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} &#13217;`
           );
         }
 
@@ -184,7 +172,7 @@ export class IdMarker extends L.Marker {
         );
 
         this.bindPopup(
-          `<a target="_blank" href="${this.entity.externalUrl}"<span class="font-semibold mt-2">${title}</span></a><br />
+          `<h4 class="font-semibold">${title}</h4><br /><br />
           ${realEstateInformation}
           `
         );
