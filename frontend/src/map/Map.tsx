@@ -167,12 +167,18 @@ export class IdMarker extends L.Marker {
           );
         }
 
+        if (!!this.entity.externalUrl && this.entity.externalUrl.length) {
+          realEstateInformationParts.push(
+            `<a target="_blank" href="${this.entity.externalUrl}" class="real-estate-cta">Direkt zum Objekt ></a>`
+          );
+        }
+
         const realEstateInformation = realEstateInformationParts.join(
           "<br /><br />"
         );
 
         this.bindPopup(
-          `<h4 class="font-semibold">${title}</h4><br /><br />
+          `<h4 class="font-semibold text-lg">${title}</h4><br /><br />
           ${realEstateInformation}
           `
         );

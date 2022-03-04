@@ -82,6 +82,12 @@
     height: auto;
 }
 
+.real-estate-cta {
+    color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    @apply btn bg-white hover:bg-white;
+}
+
 .fullscreen nav, .fullscreen .default-layout-header, .fullscreen .action-bottom, .fullscreen #footer {
     display: none;
 }
