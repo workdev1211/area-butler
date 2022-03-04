@@ -201,7 +201,7 @@ export class IdMarker extends L.Marker {
 
 export const defaultMapZoom = 15;
 const defaultAmenityIconSize = new L.Point(32, 32);
-const myLocationIconSize = new L.Point(46, 46);
+const myLocationIconSize = new L.Point(32, 32);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -380,7 +380,7 @@ const Map = React.memo<MapProps>(
           iconSize: myLocationIconSize,
           className: "my-location-icon-wrapper",
           html: `<img src="${config?.mapIcon ??
-            mylocationIcon}" alt="marker-icon" style="height: 100%; width: auto;" />`
+            mylocationIcon}" alt="marker-icon" style="height: auto; width: 74px;" />`
         });
         L.marker([lat, lng], {
           icon: positionIcon
