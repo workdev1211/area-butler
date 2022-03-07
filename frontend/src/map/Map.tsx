@@ -201,7 +201,8 @@ export class IdMarker extends L.Marker {
 
 export const defaultMapZoom = 15;
 const defaultAmenityIconSize = new L.Point(32, 32);
-const myLocationIconSize = new L.Point(32, 32);
+const myLocationIconSize = new L.Point(46, 46);
+const customMyLocationIconSize = new L.Point(32, 32);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -373,14 +374,18 @@ const Map = React.memo<MapProps>(
         maxZoom: 18
       }).addTo(localMap);
       if (!embedMode || !!searchAddress) {
+
+
+        const iconStyle = config?.mapIcon ? "height: auto; width: 74px;" : "height: 100%; width: auto;";
+
         const positionIcon = L.divIcon({
           iconUrl: config?.mapIcon ?? mylocationIcon,
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
-          iconSize: myLocationIconSize,
+          iconSize: config?.mapIcon ? customMyLocationIconSize : myLocationIconSize,
           className: "my-location-icon-wrapper",
           html: `<img src="${config?.mapIcon ??
-            mylocationIcon}" alt="marker-icon" style="height: auto; width: 74px;" />`
+            mylocationIcon}" alt="marker-icon" style="${iconStyle}" />`
         });
         L.marker([lat, lng], {
           icon: positionIcon
