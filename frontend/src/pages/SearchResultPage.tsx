@@ -203,7 +203,10 @@ const SearchResultPage: React.FunctionComponent = () => {
                       }
                     ]
                   });
-                  if (transitRoutesResult.length) {
+                  if (
+                    transitRoutesResult.length &&
+                    transitRoutesResult[0].route
+                  ) {
                     transitRoutes.push({
                       route: transitRoutesResult[0].route,
                       title: transitRoutesResult[0].title,
