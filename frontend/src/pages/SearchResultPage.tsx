@@ -230,6 +230,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                 ).data;
                 history.push(`snippet-editor/${response.id}`);
               } catch (e) {
+                console.error(e);
                 toastError("Fehler beim Öffnen des Editors");
               } finally {
                 setBusyModalOpen(false);
