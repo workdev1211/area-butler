@@ -203,12 +203,14 @@ const SearchResultPage: React.FunctionComponent = () => {
                       }
                     ]
                   });
-                  transitRoutes.push({
-                    route: transitRoutesResult[0].route,
-                    title: transitRoutesResult[0].title,
-                    show: false,
-                    coordinates: preferredLocation.coordinates!
-                  });
+                  if (transitRoutesResult.length) {
+                    transitRoutes.push({
+                      route: transitRoutesResult[0].route,
+                      title: transitRoutesResult[0].title,
+                      show: false,
+                      coordinates: preferredLocation.coordinates!
+                    });
+                  }
                 }
 
                 const response: ApiSearchResultSnapshotResponse = (
