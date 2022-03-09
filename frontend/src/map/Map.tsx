@@ -486,7 +486,10 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.WALK),
             {
-              color: WALK_COLOR
+              color: WALK_COLOR,
+              opacity: 0.7,
+              fillOpacity: .0,
+              
             }
           ).addTo(meansGroup);
         }
@@ -494,7 +497,9 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.BICYCLE),
             {
-              color: BICYCLE_COLOR
+              color: BICYCLE_COLOR,
+              opacity: 0.7,
+              fillOpacity: .0
             }
           ).addTo(meansGroup);
         }
@@ -502,7 +507,9 @@ const Map = React.memo<MapProps>(
           L.polygon(
             derivePositionForTransportationMean(MeansOfTransportation.CAR),
             {
-              color: CAR_COLOR
+              color: CAR_COLOR,
+              opacity: 0.7,
+              fillOpacity: .0,
             }
           ).addTo(meansGroup);
         }
@@ -845,7 +852,9 @@ const Map = React.memo<MapProps>(
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.WALK),
               {
-                color: WALK_COLOR
+                color: WALK_COLOR,
+                opacity: 0.7,
+                fillOpacity: .0,
               }
             );
           }
@@ -855,7 +864,9 @@ const Map = React.memo<MapProps>(
                 MeansOfTransportation.BICYCLE
               ),
               {
-                color: BICYCLE_COLOR
+                color: BICYCLE_COLOR,
+                opacity: 0.7,
+                fillOpacity: .0,
               }
             );
           }
@@ -863,7 +874,9 @@ const Map = React.memo<MapProps>(
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.CAR),
               {
-                color: CAR_COLOR
+                color: CAR_COLOR,
+                opacity: 0.7,
+                fillOpacity: .0,
               }
             );
           }
