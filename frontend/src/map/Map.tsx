@@ -375,6 +375,15 @@ const Map = React.memo<MapProps>(
       }).addTo(localMap);
       if (!embedMode || !!searchAddress) {
 
+        
+        const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`
+
+
+        const detailContent = `${searchAddress} <br/><br/>
+                               <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
+                                  <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
+                                  <span>Street View</span>
+                               </a>`
 
         const iconStyle = config?.mapIcon ? "height: auto; width: 74px;" : "height: 100%; width: auto;";
 
@@ -393,7 +402,7 @@ const Map = React.memo<MapProps>(
           .on("click", function(event) {
             const marker = event.target;
             marker.unbindPopup();
-            marker.bindPopup(searchAddress);
+            marker.bindPopup(detailContent);
             marker.openPopup();
           })
           .addTo(localMap);
