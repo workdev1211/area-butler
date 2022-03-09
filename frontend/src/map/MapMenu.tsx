@@ -468,7 +468,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     ge={ge}
                     groupIconInfo={groupIconInfo}
                     geIndex={geIndex}
-                    customIcon={!!config?.mapIcon}
+                    customIcon={isRealEstateListing && !!config?.mapIcon}
                     key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
                   />
                 );

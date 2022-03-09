@@ -246,6 +246,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           config={config}
           transportationParams={snapshot.transportationParams}
           location={snapshot?.location}
+          preferredLocations={snapshot?.preferredLocations}
           listings={snapshot?.realEstateListings}
         />
         <EditorMapMenu
