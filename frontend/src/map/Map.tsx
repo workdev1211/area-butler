@@ -385,7 +385,7 @@ const Map = React.memo<MapProps>(
                                   <span>Street View</span>
                                </a>`
 
-        const iconStyle = config?.mapIcon ? "height: auto; width: 74px;" : "height: 100%; width: auto;";
+        const iconStyle = config?.mapIcon ? "height: auto; width: 46px;" : "height: 100%; width: auto;";
 
         const positionIcon = L.divIcon({
           iconUrl: config?.mapIcon ?? mylocationIcon,
