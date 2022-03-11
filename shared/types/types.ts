@@ -260,4 +260,5 @@ export interface ApiSearchResultSnapshotResponse {
   config?: ApiSearchResultSnapshotConfig;
   snapshot: ApiSearchResultSnapshot;
   createdAt: Date;
+  lastAccess?: Date;
 }

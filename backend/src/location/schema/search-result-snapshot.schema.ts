@@ -26,6 +26,9 @@ export class SearchResultSnapshot {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
+
+  @Prop({ type: Date, required: false })
+  lastAccess: Date
 }
 
 export const SearchResultSnapshotSchema = SchemaFactory.createForClass(

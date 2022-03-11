@@ -9,6 +9,15 @@ export interface EmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
 
+const sortByLastAccessDesc = (e1 : ApiSearchResultSnapshotResponse , e2: ApiSearchResultSnapshotResponse) => {
+
+  const e1LastAccess = !!e1.lastAccess ? new Date(e1.lastAccess).toISOString() : '';
+  const e2LastAccess = !!e2.lastAccess ? new Date(e2.lastAccess).toISOString() : '';
+
+  return e2LastAccess.localeCompare(e1LastAccess);
+
+}
+
 const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
   ({ embeddableMaps }) => {
     const [showModal, setShowModal] = useState(false);
@@ -35,16 +44,13 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
             <tr>
               <th>Adresse</th>
               <th>Erstellt am</th>
+              <th>Letzter Aufruf</th>
               <th></th>
             </tr>
           </thead>
           <tbody>
             {embeddableMaps
-              .sort(
-                (e1, e2) =>
-                  new Date(e2.createdAt).getTime() -
-                  new Date(e1.createdAt).getTime()
-              )
+              .sort(sortByLastAccessDesc)
               .map((embeddableMap) => (
                 <tr
                   key={`embeddable-map-${embeddableMap.token}`}
@@ -56,6 +62,13 @@ const EmbeddableMapsTable: React.FunctionComponent<EmbeddableMapsTableProps> =
                     {new Date(embeddableMap.createdAt).toLocaleDateString(
                       "de-DE"
                     )}
+                  </td>
+                  <td>
+                    {embeddableMap.lastAccess ?  new Date(embeddableMap.lastAccess).toLocaleDateString(
+                      "de-DE"
+                    ) + ' ' + new Date(embeddableMap.lastAccess).toLocaleTimeString(
+                      "de-DE"
+                    ) : 'Kein Aufruf'}
                   </td>
                   <td>
                   <button

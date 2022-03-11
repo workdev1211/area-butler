@@ -238,6 +238,9 @@ export class LocationService {
       throw new HttpException('Unknown token', 404);
     }
 
+    snapshotDoc.lastAccess = new Date();
+    snapshotDoc.save();
+
     return snapshotDoc;
   }
 
