@@ -785,7 +785,8 @@ const Map = React.memo<MapProps>(
 
       html2canvas(document.querySelector("#mymap")!, {
         allowTaint: true,
-        useCORS: true
+        useCORS: true,
+        scale: 5
       }).then(canvas => {
         const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
         searchContextDispatch({
