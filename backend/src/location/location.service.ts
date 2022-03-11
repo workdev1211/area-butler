@@ -266,6 +266,13 @@ export class LocationService {
     return await snapshotDoc.save();
   }
 
+  async deleteSearchResultSnapshot(
+    user: UserDocument,
+    id: string,
+  ) {
+    await this.searchResultSnapshotModel.deleteOne({_id: new Types.ObjectId(id), userId: user._id});
+  }
+
   async fetchEmbeddableMaps(
     user: UserDocument,
   ): Promise<SearchResultSnapshotDocument[]> {

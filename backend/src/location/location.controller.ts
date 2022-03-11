@@ -6,7 +6,7 @@ import {
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
 } from '@area-butler-types/types';
-import { Body, Controller, Get, Param, Post, Put } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, Post, Put } from '@nestjs/common';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
@@ -48,6 +48,14 @@ export class LocationController extends AuthenticatedController {
     return mapSearchResultSnapshotToApiEmbeddableMap(
       await this.locationService.updateSearchResultSnapshot(user, id, body),
     );
+  }
+
+  @Delete('snapshot/:id')
+  async deleteSnapshot(
+    @InjectUser() user: UserDocument,
+    @Param('id') id: string
+  ) {
+    await this.locationService.deleteSearchResultSnapshot(user, id);
   }
 
   @Get('latest-user-requests')
