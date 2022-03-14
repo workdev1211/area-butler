@@ -266,11 +266,31 @@ export class LocationService {
     return await snapshotDoc.save();
   }
 
-  async deleteSearchResultSnapshot(
+  async updateSnapshotDescription(
     user: UserDocument,
     id: string,
-  ) {
-    await this.searchResultSnapshotModel.deleteOne({_id: new Types.ObjectId(id), userId: user._id});
+    description: string,
+  ): Promise<SearchResultSnapshotDocument> {
+    await this.subscriptionService.checkSubscriptionViolation(
+      user._id,
+      subscription => !subscription.appFeatures.htmlSnippet,
+      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
+      user,
+      id,
+    );
+
+    snapshotDoc.description = description;
+    return await snapshotDoc.save();
+  }
+
+  async deleteSearchResultSnapshot(user: UserDocument, id: string) {
+    await this.searchResultSnapshotModel.deleteOne({
+      _id: new Types.ObjectId(id),
+      userId: user._id,
+    });
   }
 
   async fetchEmbeddableMaps(

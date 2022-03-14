@@ -46,6 +46,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
       searchResultSnapshot.config,
       embed,
     ),
+    description: embed ? undefined : searchResultSnapshot.description,
     lastAccess: searchResultSnapshot.lastAccess,
     config: searchResultSnapshot.config,
     token: searchResultSnapshot.token,

@@ -50,6 +50,17 @@ export class LocationController extends AuthenticatedController {
     );
   }
 
+  @Put('snapshot/:id/description')
+  async updateSnapshotDescription(
+    @InjectUser() user: UserDocument,
+    @Param('id') id: string,
+    @Body() {description}: {description: string},
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return mapSearchResultSnapshotToApiEmbeddableMap(
+      await this.locationService.updateSnapshotDescription(user, id, description),
+    );
+  }
+
   @Delete('snapshot/:id')
   async deleteSnapshot(
     @InjectUser() user: UserDocument,

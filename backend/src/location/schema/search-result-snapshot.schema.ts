@@ -15,6 +15,9 @@ export class SearchResultSnapshot {
   @Prop()
   token: string;
 
+  @Prop({required: false})
+  description: string;
+
   @Prop()
   mapboxAccessToken: string;
 

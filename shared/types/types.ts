@@ -259,6 +259,7 @@ export interface ApiSearchResultSnapshotResponse {
   token: string;
   config?: ApiSearchResultSnapshotConfig;
   snapshot: ApiSearchResultSnapshot;
+  description?: string;
   createdAt: Date;
   lastAccess?: Date;
 }

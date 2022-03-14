@@ -34,6 +34,7 @@ const EmbeddableMapsTable: React.FunctionComponent<
 > = ({ embeddableMaps }) => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
+  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
   const { deleteRequest } = useHttp();
   const {userDispatch} = useContext(UserContext);
   const history = useHistory();
@@ -45,8 +46,9 @@ const EmbeddableMapsTable: React.FunctionComponent<
     }
   };
 
-  const openCodeSnippetModal = (token: string) => {
-    setCodeSnippet(createCodeSnippet(token));
+  const openCodeSnippetModal = (snapshot: ApiSearchResultSnapshotResponse) => {
+    setCodeSnippet(createCodeSnippet(snapshot.token));
+    setSnapshot(snapshot);
     setShowModal(true);
   };
 
@@ -65,15 +67,18 @@ const EmbeddableMapsTable: React.FunctionComponent<
 
   return (
     <div className="overflow-x-auto">
-      <CodeSnippetModal
+      {showModal && <CodeSnippetModal
         showModal={showModal}
         setShowModal={setShowModal}
         codeSnippet={codeSnippet}
-      />
+        editDescription={true}
+        snapshot={snapshot}
+      />}
       <table className="table w-full table-compact">
         <thead>
           <tr>
             <th>Adresse</th>
+            <th>Notiz</th>
             <th>Erstellt am</th>
             <th>Letzter Aufruf</th>
             <th></th>
@@ -84,9 +89,12 @@ const EmbeddableMapsTable: React.FunctionComponent<
             <tr
               key={`embeddable-map-${embeddableMap.token}`}
               className="cursor-pointer"
-              onClick={() => openCodeSnippetModal(embeddableMap.token)}
+              onClick={() => openCodeSnippetModal(embeddableMap)}
             >
               <th>{embeddableMap?.snapshot?.placesLocation?.label}</th>
+              <td>
+                {embeddableMap.description}
+              </td>
               <td>
                 {new Date(embeddableMap.createdAt).toLocaleDateString("de-DE")}
               </td>
@@ -109,7 +117,7 @@ const EmbeddableMapsTable: React.FunctionComponent<
                     e.stopPropagation();
                   }}
                 >
-                  Bearbeiten
+                  Editor öffnen
                 </button>
                 <button
                   className="ml-5 rounded btn-xs btn-primary"

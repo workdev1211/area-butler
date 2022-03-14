@@ -28,6 +28,7 @@ export enum UserActionTypes {
   SET_LATEST_USER_REQUESTS = "SET_LATEST_USER_REQUESTS",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
   SET_EMBEDDABLE_MAPS = "SET_EMBEDDABLE_MAPS",
+  SET_EMBEDDABLE_MAP_DESCRIPTION = "SET_EMBEDDABLE_MAP_DESCRIPTION",
   REMOVE_EMBEDDABLE_MAP = "REMOVE_EMBEDDABLE_MAP",
   SET_START_TOUR = "SET_START_TOUR",
   SET_LOGO = "SET_LOGO",
@@ -39,6 +40,7 @@ type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
+  [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {id: string, description: string};
   [UserActionTypes.REMOVE_EMBEDDABLE_MAP]: string;
   [UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS]: {
     open: boolean;
@@ -67,6 +69,9 @@ export const userReducer = (
     }
     case UserActionTypes.SET_EMBEDDABLE_MAPS: {
       return { ...state, embeddableMaps: action.payload };
+    }
+    case UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION: {
+      return { ...state, embeddableMaps: [...state.embeddableMaps.map(map => map.id !== action.payload.id ? map : {...map, description: action.payload.description})]};
     }
     case UserActionTypes.REMOVE_EMBEDDABLE_MAP: {
       return { ...state, embeddableMaps: [...state.embeddableMaps.filter(map => map.id !== action.payload)]};
