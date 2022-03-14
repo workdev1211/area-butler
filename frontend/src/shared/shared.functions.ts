@@ -412,7 +412,7 @@ export const buildEntityDataFromRealEstateListings = (
     if (!showLocation) {
       return `${realEstateListing.name}`;
     } else {
-      return `${realEstateListing.name} (${realEstateListing.address})`;
+      return `${realEstateListing.name}`;
     }
   };
   const mappedRealEstateListings = realEstateListings
@@ -431,7 +431,7 @@ export const buildEntityDataFromRealEstateListings = (
         characteristics: realEstateListing.characteristics
       },
       coordinates: realEstateListing.coordinates!,
-      address: { street: realEstateListing.address },
+      address: config?.showLocation ? { street: realEstateListing.address } : { street: undefined },
       byFoot: true,
       byBike: true,
       byCar: true,

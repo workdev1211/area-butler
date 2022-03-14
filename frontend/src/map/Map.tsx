@@ -50,6 +50,7 @@ import { osmEntityTypes } from "../../../shared/constants/constants";
 import FormModal, { ModalConfig } from "components/FormModal";
 import AddPoiFormHandler from "./AddPoiFormHandler";
 import { allRealEstateCostTypes } from "../../../shared/constants/real-estate";
+import { config } from "process";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -103,7 +104,7 @@ export class IdMarker extends L.Marker {
     if (!this.getPopup()) {
       const entityTitle = this.entity.name || this.entity.label;
       const street =
-        this.entity.address.street && this.entity.address.street !== "undefined"
+        this.entity?.address?.street && this.entity?.address?.street !== "undefined"
           ? this.entity.address.street
           : null;
 
@@ -161,6 +162,12 @@ export class IdMarker extends L.Marker {
         const realEstateData = this.entity.realEstateData;
         const realEstateInformationParts = [];
 
+        if (!!street) {
+          realEstateInformationParts.push(
+            `<span class="font-semibold mt-2">Adresse: </span> ${street}`
+          );          
+        }
+
         if (!!realEstateData?.characteristics?.propertySizeInSquareMeters) {
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} &#13217;`
@@ -178,7 +185,7 @@ export class IdMarker extends L.Marker {
         );
 
         this.bindPopup(
-          `<h4 class="font-semibold text-lg">${title}</h4><br /><br />
+          `<h4 class="font-semibold text-lg">${title}</h4><br />
           ${realEstateInformation}
           `
         );
