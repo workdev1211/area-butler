@@ -40,7 +40,6 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
     const [focus, setFocus] = useState(false);
 
     const deriveLangLat = async (value: any) => {
-        console.log(value);
         if (value) {
             const coordinates = value?.value?.place_id ? await deriveGeocodeByPlaceId(value.value.place_id) : await deriveGeocodeByAddress(value.label);
             afterChange({value, coordinates});
