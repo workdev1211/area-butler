@@ -1,6 +1,7 @@
 import {
   geocodeByAddress,
   geocodeByLatLng,
+  geocodeByPlaceId,
   getLatLng
 } from "react-google-places-autocomplete";
 import {
@@ -60,6 +61,11 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
 
 export const deriveGeocodeByAddress = async (address: string) => {
   const latlngResults = await geocodeByAddress(address);
+  return await getLatLng(latlngResults[0]);
+};
+
+export const deriveGeocodeByPlaceId = async (placeId: string) => {
+  const latlngResults = await geocodeByPlaceId(placeId);
   return await getLatLng(latlngResults[0]);
 };
 

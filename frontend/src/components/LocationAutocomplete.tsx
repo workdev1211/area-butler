@@ -3,7 +3,7 @@ import {components} from "react-select";
 import React, {FunctionComponent, useContext, useState} from "react";
 import "./LocationAutocomplete.css";
 import {ConfigContext} from "../context/ConfigContext";
-import {deriveGeocodeByAddress} from "../shared/shared.functions";
+import {deriveGeocodeByAddress, deriveGeocodeByPlaceId} from "../shared/shared.functions";
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 
 export interface LocationAutocompleteProps {
@@ -40,8 +40,9 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
     const [focus, setFocus] = useState(false);
 
     const deriveLangLat = async (value: any) => {
+        console.log(value);
         if (value) {
-            const coordinates = await deriveGeocodeByAddress(value.label);
+            const coordinates = value?.value?.place_id ? await deriveGeocodeByPlaceId(value.value.place_id) : await deriveGeocodeByAddress(value.label);
             afterChange({value, coordinates});
         }
         setValue(value);
