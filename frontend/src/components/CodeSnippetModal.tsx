@@ -7,6 +7,7 @@ import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
 export interface CodeSnippetModalProps {
   codeSnippet: string;
+  directLink: string;
   setShowModal: (show: boolean) => void;
   showModal: boolean;
   editDescription?: boolean;
@@ -15,6 +16,7 @@ export interface CodeSnippetModalProps {
 
 const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
   codeSnippet,
+  directLink,
   setShowModal,
   showModal,
   editDescription = false,
@@ -28,7 +30,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
     if (success) {
-      toastSuccess("Karten Snippet erfolgreich kopiert!");
+      toastSuccess("Erfolgreich in Zwischenablage kopiert!");
     }
   };
 
@@ -76,15 +78,26 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
             </div>
           </div>
         )}
-        <div className="my-5">
+        <div className="my-10">
+          <h3>Direkt Link</h3>
+          <code className="break-all text-sm">{directLink}</code>
+        </div>
+        <div className="my-10">
+          <h3>HTML Snippet</h3>
           <code className="break-all text-sm">{codeSnippet}</code>
         </div>
         <div className="modal-action">
+        <button
+            className="btn btn-sm btn-primary"
+            onClick={() => copyCodeToClipBoard(directLink)}
+          >
+            Link Kopieren
+          </button>
           <button
             className="btn btn-sm btn-primary"
             onClick={() => copyCodeToClipBoard(codeSnippet)}
           >
-            Kopieren
+            Snippet Kopieren
           </button>
           <button
             className="btn btn-sm btn-primary"

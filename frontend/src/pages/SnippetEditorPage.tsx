@@ -17,6 +17,7 @@ import {
   buildEntityData,
   buildEntityDataFromRealEstateListings,
   createCodeSnippet,
+  createDirectLink,
   deriveAvailableMeansFromResponse,
   entityIncludesMean,
   toastError,
@@ -39,6 +40,7 @@ export interface SnippetEditorRouterProps {
 const SnippetEditorPage: React.FunctionComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
+  const [directLink, setDirectLink] = useState("");
   const history = useHistory();
   const { searchContextDispatch } = useContext(SearchContext);
   const { userState } = useContext(UserContext);
@@ -89,6 +91,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       });
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
+      setDirectLink(createDirectLink(snapshotResponse.token));
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
     };
 
@@ -186,7 +189,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
                   snapshot
                 });
                 setShowModal(true);
-                toastSuccess("Karten Snippet erfolgreich veröffentlicht!");
+                toastSuccess("Erfolgreich in Zwischenablage kopiert!");
               } catch (e) {
                 toastError("Fehler beim Veröffentlichen der Karte");
               }
@@ -230,6 +233,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       <CodeSnippetModal
         showModal={showModal}
         setShowModal={setShowModal}
+        directLink={directLink}
         codeSnippet={codeSnippet}
       />
       <div className="editor-container">

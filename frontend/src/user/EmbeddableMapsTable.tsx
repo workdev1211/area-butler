@@ -6,6 +6,7 @@ import { useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import {
   createCodeSnippet,
+  createDirectLink,
   toastError,
   toastSuccess,
 } from "shared/shared.functions";
@@ -34,6 +35,7 @@ const EmbeddableMapsTable: React.FunctionComponent<
 > = ({ embeddableMaps }) => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
+  const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
   const { deleteRequest } = useHttp();
   const {userDispatch} = useContext(UserContext);
@@ -42,12 +44,13 @@ const EmbeddableMapsTable: React.FunctionComponent<
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
     if (success) {
-      toastSuccess("Karten Snippet erfolgreich kopiert!");
+      toastSuccess("Erfolgreich in Zwischenablage kopiert!");
     }
   };
 
   const openCodeSnippetModal = (snapshot: ApiSearchResultSnapshotResponse) => {
     setCodeSnippet(createCodeSnippet(snapshot.token));
+    setDirectLink(createDirectLink(snapshot.token));
     setSnapshot(snapshot);
     setShowModal(true);
   };
@@ -71,6 +74,7 @@ const EmbeddableMapsTable: React.FunctionComponent<
         showModal={showModal}
         setShowModal={setShowModal}
         codeSnippet={codeSnippet}
+        directLink={directLink}
         editDescription={true}
         snapshot={snapshot}
       />}
@@ -118,6 +122,15 @@ const EmbeddableMapsTable: React.FunctionComponent<
                   }}
                 >
                   Editor öffnen
+                </button>
+                <button
+                  className="ml-5 rounded btn-xs btn-primary"
+                  onClick={(e) => {
+                    copyCodeToClipBoard(createDirectLink(embeddableMap.token));
+                    e.stopPropagation();
+                  }}
+                >
+                  Link Kopieren
                 </button>
                 <button
                   className="ml-5 rounded btn-xs btn-primary"

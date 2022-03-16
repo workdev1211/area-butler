@@ -492,13 +492,17 @@ export const buildCombinedGroupedEntries = (
   ];
 };
 
+export const createDirectLink = (token: string) => {
+  return `${window.location.origin}/embed?token=${token}`;
+}
+
 export const createCodeSnippet = (token: string) => {
   return `  
 <iframe
   style="border: none"
   width="100%"
   height="100%"
-  src="${window.location.origin}/embed?token=${token}"
+  src="${createDirectLink(token)}"
   title="Area Butler Map Snippet"
 ></iframe>
   `;
