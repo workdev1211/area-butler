@@ -42,28 +42,8 @@ const RealEstateCostStructureControl: React.FunctionComponent<
     onChange({ ...newCostStructure });
   };
 
-  const setStartingAt = (value: boolean) => {
-    const newCostStructure = {
-      ...inputValues,
-      startingAt: value,
-    };
-    onChange({ ...newCostStructure });
-  };
-
   return (
     <div className="flex flex-wrap items-end gap-6">
-      <div className="form-control flex-1">
-        <input
-          className="checkbox checkbox-primary checkbox-sm"
-          checked={inputValues?.startingAt}
-          onChange={(event) => setStartingAt(!!event.target.value)}
-          name="startingAt"
-          type="checkbox"
-        />
-        <label className="label">
-          <span className="label-text">Ab</span>
-        </label>
-      </div>
       <div className="form-control flex-1">
         <label className="label">
           <span className="label-text">Preis (€)</span>
