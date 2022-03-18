@@ -21,7 +21,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
       r,
       searchResultSnapshot.config.showLocation,
     ),
-  );
+  ).filter(r => r.showInSnippet);
   const { config, snapshot } = searchResultSnapshot;
   if (config && config.fixedRealEstates) {
     const { entityVisibility = [] } = config;

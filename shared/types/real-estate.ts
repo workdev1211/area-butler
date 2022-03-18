@@ -8,9 +8,11 @@ export interface ApiRealEstateListing {
   coordinates?: ApiCoordinates;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
+  showInSnippet: boolean;
 }
 
 export interface ApiUpsertRealEstateListing {
+  showInSnippet: boolean;
   name: string;
   address: string;
   externalUrl?: string;

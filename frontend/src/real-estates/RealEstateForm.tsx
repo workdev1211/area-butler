@@ -56,6 +56,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
         externalUrl: localRealEstate?.externalUrl ?? "",
         price: localRealEstate?.costStructure?.price?.amount || 0,
         startingAt: localRealEstate?.costStructure?.startingAt,
+        showInSnippet: localRealEstate === undefined || localRealEstate.showInSnippet === undefined ? true : localRealEstate.showInSnippet,
         type:
           localRealEstate?.costStructure?.type ||
           ApiRealEstateCostType.RENT_MONTHLY_COLD,
@@ -86,6 +87,11 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
       }}
     >
       <Form id={formId}>
+        <div className="mb-5">
+          <Checkbox name="showInSnippet" key="showInSnippet">
+            In Snippet anzeigen
+          </Checkbox>
+        </div>
         <div className="form-control">
           <Input
             label="Objektname"

@@ -36,6 +36,7 @@ const mapFormToApiUpsertRealEstateListing = async (
       lat,
       lng
     },
+    showInSnippet: values.showInSnippet,
     costStructure: {
       startingAt: values.startingAt,
       price: {
