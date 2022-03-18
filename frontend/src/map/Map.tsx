@@ -70,23 +70,28 @@ export interface MapProps {
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   embedMode?: boolean;
+  editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
   onPoiAdd?: (poi: Poi) => void;
+  hideEntity?: (entity: ResultEntity) => void;
 }
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
+  hideEntityFunction?: (entity: ResultEntity) => void;
 
   constructor(
     latLng: L.LatLngExpression,
     entity: ResultEntity,
     searchAddress: string,
-    options?: L.MarkerOptions
+    options?: L.MarkerOptions,
+    hideEntity?: (item: ResultEntity) => void
   ) {
     super(latLng, options);
     this.entity = entity;
     this.searchAddress = searchAddress;
+    this.hideEntityFunction = hideEntity;
   }
 
   getEntity() {
@@ -186,6 +191,12 @@ export class IdMarker extends L.Marker {
           );
         }
 
+        if (!!this.hideEntityFunction) {
+          realEstateInformationParts.push(
+            `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`
+          );
+        }
+
         const realEstateInformation = realEstateInformationParts.join(
           "<br /><br />"
         );
@@ -196,19 +207,33 @@ export class IdMarker extends L.Marker {
           `
         );
       } else {
-        this.bindPopup(
-          `<span class="font-semibold">${entityTitle}</span><br /><br />
+        let content = `<span class="font-semibold">${entityTitle}</span><br /><br />
         <span class="font-semibold mt-2">${title}</span><br />${
-            street ? "<div>" + street + "</div><br />" : ""
-          }<div class="flex gap-6">${
-            !isRealEstateListingOrPreferredAdress ? byFoot : ""
-          }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
-            !isRealEstateListingOrPreferredAdress ? byCar : ""
-          }</div>`
-        );
+          street ? "<div>" + street + "</div><br />" : ""
+        }<div class="flex gap-6">${
+          !isRealEstateListingOrPreferredAdress ? byFoot : ""
+        }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
+          !isRealEstateListingOrPreferredAdress ? byCar : ""
+        }</div>`;
+
+        if (!!this.hideEntityFunction) {
+          content =
+            content +
+            `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`;
+        }
+
+        this.bindPopup(content);
       }
     }
     this.openPopup();
+    if (!!this.hideEntityFunction) {
+      const element = document.getElementById(`hide-btn-${this.entity.id}`);
+      if (element) {
+        element.onclick = () => {
+          this.hideEntityFunction!(this.entity);
+        };
+      }
+    }
   }
 }
 
@@ -291,9 +316,11 @@ const Map = React.memo<MapProps>(
     routes,
     transitRoutes,
     embedMode = false,
+    editorMode = false,
     config,
     mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
-    onPoiAdd
+    onPoiAdd,
+    hideEntity
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -746,13 +773,15 @@ const Map = React.memo<MapProps>(
                     ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
                     : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
               });
+              const hideEntityFunction = editorMode ? hideEntity : undefined;
               const marker = new IdMarker(
                 entity.coordinates,
                 entity,
                 searchAddress,
                 {
                   icon
-                }
+                },
+                hideEntityFunction
               ).on("click", function(e) {
                 const marker = e.target;
                 marker.createOpenPopup();

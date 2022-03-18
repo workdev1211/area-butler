@@ -20,7 +20,8 @@ import {
   buildEntityDataFromPreferredLocations,
   buildEntityDataFromRealEstateListings,
   deriveAvailableMeansFromResponse,
-  entityIncludesMean
+  entityIncludesMean,
+  toggleEntityVisibility
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
@@ -32,7 +33,11 @@ import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { ApiRealEstateCharacteristics, ApiRealEstateCost, ApiRealEstateListing } from "../../../shared/types/real-estate";
+import {
+  ApiRealEstateCharacteristics,
+  ApiRealEstateCost,
+  ApiRealEstateListing
+} from "../../../shared/types/real-estate";
 
 export interface ResultEntity {
   name?: string;
@@ -46,9 +51,9 @@ export interface ResultEntity {
   byCar: boolean;
   distanceInMeters: number;
   realEstateData?: {
-    costStructure?: ApiRealEstateCost,
-    characteristics?: ApiRealEstateCharacteristics
-  }
+    costStructure?: ApiRealEstateCost;
+    characteristics?: ApiRealEstateCharacteristics;
+  };
   selected?: boolean;
   externalUrl?: string;
 }
@@ -81,7 +86,9 @@ export interface SearchResultContainerProps {
   onGroupedEntitiesChange?: (entities: EntityGroup[]) => void;
   onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
+  editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
+  onConfigChange?: (config: ApiSearchResultSnapshotConfig) => void;
   initialRoutes?: EntityRoute[];
   initialTransitRoutes?: EntityTransitRoute[];
   onPoiAdd?: (poi: Poi) => void;
@@ -109,7 +116,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   onEntitiesChange = () => null,
   onGroupedEntitiesChange = () => null,
   embedMode = false,
+  editorMode = false,
   config,
+  onConfigChange,
   initialRoutes = [],
   initialTransitRoutes = [],
   onPoiAdd
@@ -380,6 +389,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
 
   const containerClasses = `search-result-container theme-${config?.theme}`;
 
+  const hideEntity = (item: ResultEntity) => {
+    if (onConfigChange && config) {
+      const newEntityVisibility = toggleEntityVisibility(item, config);
+      onConfigChange({ ...config, entityVisibility: [...newEntityVisibility] });
+    }
+  };
+
   return (
     <>
       <div className={containerClasses} id="search-result-container">
@@ -409,8 +425,10 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             routes={routes}
             transitRoutes={transitRoutes}
             embedMode={embedMode}
+            editorMode={editorMode}
             config={config}
             onPoiAdd={onPoiAdd}
+            hideEntity={hideEntity}
           />
         </div>
         {config?.theme !== "KF" && <MapMenuMobileBtn />}

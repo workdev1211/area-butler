@@ -437,7 +437,9 @@ export const buildEntityDataFromRealEstateListings = (
         characteristics: realEstateListing.characteristics
       },
       coordinates: realEstateListing.coordinates!,
-      address: config?.showLocation ? { street: realEstateListing.address } : { street: undefined },
+      address: config?.showLocation
+        ? { street: realEstateListing.address }
+        : { street: undefined },
       byFoot: true,
       byBike: true,
       byCar: true,
@@ -492,9 +494,31 @@ export const buildCombinedGroupedEntries = (
   ];
 };
 
+export const isEntityHidden = (
+  entity: ResultEntity,
+  config: ApiSearchResultSnapshotConfig
+) => {
+  return (config.entityVisibility || []).some(
+    ev => ev.id === entity.id && ev.excluded
+  );
+};
+
+export const toggleEntityVisibility = (
+  entity: ResultEntity,
+  config: ApiSearchResultSnapshotConfig
+) => {
+  return [
+    ...(config.entityVisibility || []).filter(ev => ev.id !== entity.id),
+    {
+      id: entity.id,
+      excluded: !isEntityHidden(entity, config)
+    }
+  ];
+};
+
 export const createDirectLink = (token: string) => {
   return `${window.location.origin}/embed?token=${token}`;
-}
+};
 
 export const createCodeSnippet = (token: string) => {
   return `  

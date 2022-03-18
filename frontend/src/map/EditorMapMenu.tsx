@@ -11,8 +11,10 @@ import { LocalityItemContent } from "../components/LocalityItem";
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {
+  isEntityHidden,
   realEstateListingsTitle,
-  realEstateListingsTitleEmbed
+  realEstateListingsTitleEmbed,
+  toggleEntityVisibility
 } from "../shared/shared.functions";
 
 export interface EditorMapMenuProps {
@@ -123,21 +125,8 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     changeEntityVisiblity(newGroup);
   };
 
-  const isEntityHidden = (entity: ResultEntity) => {
-    return (config.entityVisibility || []).some(
-      ev => ev.id === entity.id && ev.excluded
-    );
-  };
-
-  const toggleEntityVisibility = (entity: ResultEntity) => {
-    const newGroup = [
-      ...(config.entityVisibility || []).filter(ev => ev.id !== entity.id),
-      {
-        id: entity.id,
-        excluded: !isEntityHidden(entity)
-      }
-    ];
-    changeEntityVisiblity(newGroup);
+  const toggleSingleEntityVisibility = (entity: ResultEntity) => {
+    changeEntityVisiblity(toggleEntityVisibility(entity, config));
   };
 
   return (
@@ -397,9 +386,11 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                               <div className="item-title">
                                 <input
                                   type="checkbox"
-                                  checked={!isEntityHidden(item)}
+                                  checked={!isEntityHidden(item, config)}
                                   className="checkbox checkbox-xs"
-                                  onChange={() => toggleEntityVisibility(item)}
+                                  onChange={() =>
+                                    toggleSingleEntityVisibility(item)
+                                  }
                                 />{" "}
                                 <span>{item.name ?? item.label}</span>
                               </div>

@@ -245,9 +245,11 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           placesLocation={snapshot.placesLocation}
           onPoiAdd={onPoiAdd}
           embedMode={true}
+          editorMode={true}
           initialRoutes={[]}
           initialTransitRoutes={[]}
           config={config}
+          onConfigChange={onConfigChange}
           transportationParams={snapshot.transportationParams}
           location={snapshot?.location}
           preferredLocations={snapshot?.preferredLocations}
