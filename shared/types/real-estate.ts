@@ -34,6 +34,7 @@ export enum ApiRealEstateCostType {
 }
 
 export interface ApiRealEstateCharacteristics {
+  startingAt: boolean;
   numberOfRooms: number;
   realEstateSizeInSquareMeters?: number;
   propertySizeInSquareMeters?: number;

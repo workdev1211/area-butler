@@ -6,6 +6,7 @@ const defaultValue: () => ApiRealEstateCharacteristics = () => ({
     numberOfRooms: 0,
     realEstateSizeInSquareMeters: 0,
     furnishing: [],
+    startingAt: false,
 });
 
 export interface RealEstateCharacteristicsControlProps {

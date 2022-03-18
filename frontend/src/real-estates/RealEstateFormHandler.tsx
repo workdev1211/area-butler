@@ -46,6 +46,7 @@ const mapFormToApiUpsertRealEstateListing = async (
       type: values.type
     },
     characteristics: {
+      startingAt: values.propertyStartingAt,
       numberOfRooms: values.numberOfRooms,
       propertySizeInSquareMeters: values.propertySizeInSquareMeters,
       realEstateSizeInSquareMeters: values.realEstateSizeInSquareMeters,

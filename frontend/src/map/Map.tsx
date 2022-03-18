@@ -166,9 +166,10 @@ export class IdMarker extends L.Marker {
           );          
         }
 
-        if (!!realEstateData?.characteristics?.propertySizeInSquareMeters) {
+        if (!!realEstateData?.characteristics?.realEstateSizeInSquareMeters) {
+          const startingAt = realEstateData?.characteristics?.startingAt ? 'Ab' : '';
           realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} &#13217;`
+            `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
           );
         }
 

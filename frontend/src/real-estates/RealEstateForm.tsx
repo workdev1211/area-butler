@@ -56,7 +56,12 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
         externalUrl: localRealEstate?.externalUrl ?? "",
         price: localRealEstate?.costStructure?.price?.amount || 0,
         startingAt: localRealEstate?.costStructure?.startingAt,
-        showInSnippet: localRealEstate === undefined || localRealEstate.showInSnippet === undefined ? true : localRealEstate.showInSnippet,
+        propertyStartingAt: localRealEstate?.characteristics?.startingAt,
+        showInSnippet:
+          localRealEstate === undefined ||
+          localRealEstate.showInSnippet === undefined
+            ? true
+            : localRealEstate.showInSnippet,
         type:
           localRealEstate?.costStructure?.type ||
           ApiRealEstateCostType.RENT_MONTHLY_COLD,
@@ -146,6 +151,11 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
           </div>
         </div>
         <div className="flex flex-wrap items-end gap-6">
+          <div className="form-control mr-5 mb-2">
+            <Checkbox name="propertyStartingAt" key="propertyStartingAt">
+              Ab
+            </Checkbox>
+          </div>
           <div className="form-control flex-1">
             <Input
               label="Größe in Quadratmeer"
