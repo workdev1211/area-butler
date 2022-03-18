@@ -112,6 +112,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
                   <th>{realEstate.name}</th>
                   <td>{realEstate.address}</td>
                   <td>
+                    {!!realEstate.costStructure?.startingAt ? 'Ab ' : ''}
                     {!!realEstate?.costStructure?.type &&
                     !!realEstate?.costStructure?.price
                       ? `${realEstate.costStructure.price.amount} € (${

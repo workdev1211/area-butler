@@ -21,6 +21,7 @@ export interface ApiUpsertRealEstateListing {
 
 export interface ApiRealEstateCost {
   price: ApiMoneyAmount;
+  startingAt?: boolean;
   type: ApiRealEstateCostType;
 }
 

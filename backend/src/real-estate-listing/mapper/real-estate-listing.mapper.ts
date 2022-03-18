@@ -22,7 +22,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
             lng: realEstateListing.location.coordinates[1],
           })
       : null,
-    // costStructure: realEstateListing.costStructure,
+    costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,
   };
 };

@@ -1,4 +1,5 @@
 import center from "@turf/center";
+import FormModal, { ModalConfig } from "components/FormModal";
 import {
   Poi,
   SearchContextActions,
@@ -6,12 +7,15 @@ import {
 } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
+import "leaflet-touch-helper";
 import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import React, { useCallback, useEffect, useState } from "react";
+import { osmEntityTypes } from "../../../shared/constants/constants";
+import { groupBy } from "../../../shared/functions/shared.functions";
 import {
   ApiRoute,
   ApiTransitRoute,
@@ -25,14 +29,13 @@ import {
   MeansOfTransportation,
   OsmName
 } from "../../../shared/types/types";
-import { groupBy } from "../../../shared/functions/shared.functions";
+import googleIcon from "../assets/icons/google.svg";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import googleIcon from "../assets/icons/google.svg";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import {
   deriveAddressFromCoordinates,
@@ -44,13 +47,8 @@ import {
   timeToHumanReadable,
   toastSuccess
 } from "../shared/shared.functions";
-import "./Map.scss";
-import "leaflet-touch-helper";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import FormModal, { ModalConfig } from "components/FormModal";
 import AddPoiFormHandler from "./AddPoiFormHandler";
-import { allRealEstateCostTypes } from "../../../shared/constants/real-estate";
-import { config } from "process";
+import "./Map.scss";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -171,6 +169,13 @@ export class IdMarker extends L.Marker {
         if (!!realEstateData?.characteristics?.propertySizeInSquareMeters) {
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Größe: </span> ${realEstateData?.characteristics?.propertySizeInSquareMeters} &#13217;`
+          );
+        }
+
+        if ((realEstateData?.costStructure?.price?.amount || 0) > 0) {
+          const startingAt = realEstateData?.costStructure?.startingAt ? 'Ab' : '';
+          realEstateInformationParts.push(
+            `<span class="font-semibold mt-2">Preis: </span> ${startingAt} ${realEstateData?.costStructure?.price.amount} €`
           );
         }
 

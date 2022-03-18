@@ -37,6 +37,7 @@ const mapFormToApiUpsertRealEstateListing = async (
       lng
     },
     costStructure: {
+      startingAt: values.startingAt,
       price: {
         amount: values.price,
         currency: "€"

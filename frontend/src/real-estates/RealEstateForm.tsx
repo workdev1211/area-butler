@@ -2,12 +2,12 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../shared/constants/real-estate";
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
-  ApiRealEstateListing
+  ApiRealEstateListing,
 } from "../../../shared/types/real-estate";
 import Input from "../components/Input";
 import Select from "../components/Select";
@@ -24,16 +24,15 @@ export interface RealEstateFormProps {
 export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
   realEstate,
   onSubmit,
-  formId
+  formId,
 }) => {
   const furnishing = {} as any;
   (realEstate?.characteristics?.furnishing || []).map(
-    f => (furnishing[f] = true)
+    (f) => (furnishing[f] = true)
   );
 
-  const [localRealEstate, setLocalRealEstate] = useState<
-    Partial<ApiRealEstateListing>
-  >(realEstate);
+  const [localRealEstate, setLocalRealEstate] =
+    useState<Partial<ApiRealEstateListing>>(realEstate);
 
   const realEstateString = JSON.stringify(realEstate);
   useEffect(() => {
@@ -45,7 +44,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
     const updatedRealEstate = {
       ...realEstate,
       address: payload.value.label,
-      coordinates: payload.coordinates
+      coordinates: payload.coordinates,
     };
     setLocalRealEstate(updatedRealEstate);
   };
@@ -56,6 +55,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
         name: localRealEstate?.name ?? "",
         externalUrl: localRealEstate?.externalUrl ?? "",
         price: localRealEstate?.costStructure?.price?.amount || 0,
+        startingAt: localRealEstate?.costStructure?.startingAt,
         type:
           localRealEstate?.costStructure?.type ||
           ApiRealEstateCostType.RENT_MONTHLY_COLD,
@@ -65,7 +65,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
           localRealEstate.characteristics?.propertySizeInSquareMeters ?? 0,
         energyEfficiency:
           localRealEstate.characteristics?.energyEfficiency ?? "A",
-        ...furnishing
+        ...furnishing,
       }}
       validationSchema={Yup.object({
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
@@ -74,14 +74,14 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
         type: Yup.string(),
         realEstateSizeInSquareMeters: Yup.number(),
         propertySizeInSquareMeters: Yup.number(),
-        energyEfficiency: Yup.string()
+        energyEfficiency: Yup.string(),
       })}
       enableReinitialize={true}
-      onSubmit={values => {
+      onSubmit={(values) => {
         onSubmit({
           ...values,
           address: localRealEstate.address,
-          coordinates: localRealEstate.coordinates
+          coordinates: localRealEstate.coordinates,
         });
       }}
     >
@@ -109,7 +109,12 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
           setValue={() => {}}
           afterChange={onLocationAutocompleteChange}
         />
-        <div className="flex flex-wrap items-end gap-6">
+        <div className="flex flex-wrap items-end justify-start gap-6">
+          <div className="form-control mr-5 mb-2">
+            <Checkbox name="startingAt" key="startingAt">
+              Ab
+            </Checkbox>
+          </div>
           <div className="form-control flex-1">
             <Input
               label="Preis (€)"
@@ -126,7 +131,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
               type="number"
               placeholder="Kostenart eingeben"
             >
-              {allRealEstateCostTypes.map(costType => (
+              {allRealEstateCostTypes.map((costType) => (
                 <option value={costType.type} key={costType.type}>
                   {costType.label}
                 </option>
@@ -160,7 +165,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
             name="energyEfficiency"
             placeholder="Energieeffizienzklasse"
           >
-            {Object.keys(ApiEnergyEfficiency).map(aee => (
+            {Object.keys(ApiEnergyEfficiency).map((aee) => (
               <option value={aee} key={aee}>
                 {aee}
               </option>
@@ -172,7 +177,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
             <strong>Ausstattung</strong>
           </span>
         </label>
-        {allFurnishing.map(furnishing => (
+        {allFurnishing.map((furnishing) => (
           <Checkbox name={furnishing.type} key={furnishing.type}>
             {furnishing.label}
           </Checkbox>
