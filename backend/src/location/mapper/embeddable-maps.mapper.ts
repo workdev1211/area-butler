@@ -15,13 +15,17 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
   embed = false,
   realEstateListings: RealEstateListingDocument[] = [],
 ): ApiSearchResultSnapshotResponse => {
+
+  const centerOfLocation = searchResultSnapshot.snapshot.location;
   // filter / hide real estate listings
   const mappedListings = realEstateListings.map(r =>
     mapRealEstateListingToApiRealEstateListing(
       r,
       searchResultSnapshot.config.showLocation,
     ),
-  ).filter(r => r.showInSnippet);
+  ).filter(r => r.showInSnippet)
+  .filter(r => !(r.coordinates.lat === centerOfLocation.lat && r.coordinates.lng === centerOfLocation.lng));
+  
   const { config, snapshot } = searchResultSnapshot;
   if (config && config.fixedRealEstates) {
     const { entityVisibility = [] } = config;
