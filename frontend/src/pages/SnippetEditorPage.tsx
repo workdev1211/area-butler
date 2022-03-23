@@ -23,6 +23,7 @@ import {
   toastError,
   toastSuccess
 } from "shared/shared.functions";
+import TourStarter from "tour/TourStarter";
 import {
   ApiOsmLocation,
   ApiSearchResponse,
@@ -214,6 +215,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       actionTop={<ActionsTop />}
       actionBottom={[<BackButton key="back-button" to="/" />]}
     >
+      <TourStarter tour="editor" />
       <div className="hidden">
         <GooglePlacesAutocomplete
           apiOptions={{

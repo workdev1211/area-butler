@@ -130,7 +130,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   return (
-    <div className="editor-map-menu z-9000">
+    <div className="editor-map-menu z-9000" data-tour="editor-map-menu">
       <div
         className={
           "collapse collapse-arrow view-option" +

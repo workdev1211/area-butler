@@ -26,7 +26,8 @@ export const initialShowTour: ApiShowTour = {
   result: true,
   realEstates: true,
   customers: true,
-  profile: true
+  profile: true,
+  editor: true
 };
 
 export const localStorageConsentGivenKey = "ab-cg";

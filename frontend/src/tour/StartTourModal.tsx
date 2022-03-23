@@ -10,7 +10,8 @@ const tourDescriptions: Record<ApiTour, string> = {
   customers:
     "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
   realEstates: "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
-  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?"
+  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
+  editor: "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?"
 };
 
 export interface StartTourModalProps {

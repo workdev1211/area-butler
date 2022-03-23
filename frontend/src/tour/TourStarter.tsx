@@ -7,6 +7,7 @@ import CustomersSteps from "./CustomersPageSteps";
 import SearchResulSteps from "./SearchResultPageSteps";
 import SearchSteps from "./SearchPageSteps";
 import ProfileSteps from "./ProfilePageSteps";
+import SnippetEditorSteps from "./SnippetEditorPageSteps";
 import StartTourModal from "./StartTourModal";
 
 export interface TourStarterProps {
@@ -31,7 +32,8 @@ const tourSteps: Record<ApiTour, Step[]> = {
   result: SearchResulSteps,
   realEstates: RealEstatesSteps,
   customers: CustomersSteps,
-  profile: ProfileSteps
+  profile: ProfileSteps,
+  editor: SnippetEditorSteps
 };
 
 const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {

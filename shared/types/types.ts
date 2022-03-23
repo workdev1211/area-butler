@@ -52,7 +52,8 @@ export type ApiTour =
   | "result"
   | "realEstates"
   | "customers"
-  | "profile";
+  | "profile"
+  | "editor";
 
 export interface ApiShowTour {
   search: boolean;
@@ -60,6 +61,7 @@ export interface ApiShowTour {
   realEstates: boolean;
   customers: boolean;
   profile: boolean;
+  editor: boolean;
 }
 
 export interface ApiInsertFeedback {
