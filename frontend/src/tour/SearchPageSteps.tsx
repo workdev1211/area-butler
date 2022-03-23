@@ -23,24 +23,23 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Über Meine Objekte lassen sich hinzugefügte Objekte in der Suche als Adresse vorbelegen",
+      "Zeigt Ihnen die letzten gemachten Abfragen an",
     locale: defaultLocale,
-    target: 'div[data-tour="my-real-estates"]',
+    target: 'div[data-tour="last-requests"]',
   },
   {
     content:
-      "Alternativ lässt sich der aktuelle Standort als Adresse über die aktivierten Standortdienste vorbelegen",
+      "Hier können Sie Ihre angelegten Objekte auswählen, um die Adresse automatisch auszufüllen",
     locale: defaultLocale,
-    target: 'button[data-tour="my-location"]',
+    target: 'div[data-tour="my-real-estates"]',
   },
   {
     content: (
       <>
         <p className="text-base">
-          Über die Bewegungspräferenz lässt sich der Umkreis der Suche
-          bestimmen. Die Angabe erfolgt über Meter oder Zeitangabe. Zur besseren
-          Einordnung lassen sich drei Bewegungsprofile auswählen (Zu Fuß, Mit
-          Fahrrad und/oder mit Auto)
+          Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche Isochronen in Ihrer 
+          Karte angezeigt werden. Die Angabe erfolgt über Meter oder Zeitangabe. Sie können drei Arten der 
+          Fortbewegung auswählen (Zu Fuß, Fahrrad und/oder Auto)
         </p>
       </>
     ),
@@ -49,26 +48,26 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Über Adresse hinzufügen lassen sich bis zu vier wichtige Adressen eines Interessenten hinterlegen, die im Ergebnis später hervorgehoben werden. Ebenfalls steht eine Routenberechnung zu den Adressen zur Verfügung.",
-    locale: defaultLocale,
-    target: 'button[data-tour="add-important-address"]',
-  },
-  {
-    content:
-      "Eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist wie bei den Objekten auch für hinterlegte Interessenten möglich",
+      "Eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
     locale: defaultLocale,
     target: 'div[data-tour="my-customers"]',
   },
   {
     content:
-      "Über die Lokalitäten lassen sich die bevorzugten Orte vorauswählen",
+      "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden im Ergebnis hervorgehoben. Ebenfalls steht eine Routenberechnung zu den wichtigen Adressen zur Verfügung.",
+    locale: defaultLocale,
+    target: 'button[data-tour="add-important-address"]',
+  },
+  {
+    content:
+      "Hier können Sie die POI Kategorien auswählen, die Sie in die Analyse und Ihre Karte mit aufnehmen möchten.",
     locale: defaultLocale,
     placement: "top",
     target: 'div[data-tour="locality-params"]',
   },
   {
     content:
-      "Wenn alle Daten eingegeben sind, kann es losgehen und die Suche gestartet werden.",
+      "Fertig. Es kann losgehen und sie können die Analyse starten oder aktualisieren.",
     locale: defaultLocale,
     placement: "top",
     target: 'button[data-tour="start-search"]',

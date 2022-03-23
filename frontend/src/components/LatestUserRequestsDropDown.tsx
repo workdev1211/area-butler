@@ -71,7 +71,7 @@ const LatestUserRequestsDropDown: React.FunctionComponent = () => {
       <div
         className={buttonStyles}
         onClick={() => setShowMenu(!showMenu)}
-        data-tour="my-real-estates"
+        data-tour="last-requests"
       >
         Letzte Eingaben
       </div>
