@@ -40,11 +40,11 @@ const Steps: Step[] = [
         target: 'div[data-tour="map-navbar"]',
     }, {
         content:
-            "Über das Aktionen Menu lassen sich der Makler-Spickzettel und die personalisierte Umgebungsanalyse für den Interessenten mit den ausgewählten Daten exportieren.",
+            "Über das Aktionen Menü können Sie die Analyse als .pdf oder word exportieren. Zudem gelangen Sie hier in Ihren Karten Editor um die Karte an Ihre Wünsche, Farben, Stile anzupassen und z.B. auf Ihrer Webseite zu veröffentlichen.",
         locale: defaultLocale,
         target: 'div[data-tour="actions-top"]',
     }, {
-        content: "Ein Klick zoomt und zentriert die Map auf das gewählte Fortbewegungsmittel",
+        content: "Ein Klick zoomt und zentriert die Karte auf die Erreichbarkeitslinie/Isochrone des gewählten Fortbewegungsmittels.",
         locale: defaultLocale,
         placement: "right",
         target: 'div[data-tour="zoom-to-bounds"]'
@@ -53,6 +53,11 @@ const Steps: Step[] = [
         locale: defaultLocale,
         placement: "right",
         target: 'a[data-tour="go-fullscreen"]'
+    }, {
+        content: "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt.",
+        locale: defaultLocale,
+        placement: "right",
+        target: 'a[data-tour="take-map-picture"]'
     }
 ];
 
