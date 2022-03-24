@@ -9,7 +9,7 @@ const defaultLocale: Locale = {
 
 const Steps: Step[] = [
   {
-    content: 'Auf dieser Seite lassen sich Ihre Interessenten verwalten.',
+    content: 'Auf dieser Seite lassen sich Ihre Interessenten/Zielgruppen verwalten.',
     locale: defaultLocale,
     placement: "center",
     target: "body",
