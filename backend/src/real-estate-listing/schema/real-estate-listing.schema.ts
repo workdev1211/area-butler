@@ -23,8 +23,8 @@ export class RealEstateListing {
   externalUrl: string;
 
   @Prop({ type: Date, default: Date.now })
-  createdAt: Date;  
-  
+  createdAt: Date;
+
   @Prop({ type: Boolean, default: true })
   showInSnippet: boolean;
 

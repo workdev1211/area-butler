@@ -15,7 +15,7 @@ export class SearchResultSnapshot {
   @Prop()
   token: string;
 
-  @Prop({required: false})
+  @Prop({ required: false })
   description: string;
 
   @Prop()
@@ -31,7 +31,7 @@ export class SearchResultSnapshot {
   createdAt: Date;
 
   @Prop({ type: Date, required: false })
-  lastAccess: Date
+  lastAccess: Date;
 }
 
 export const SearchResultSnapshotSchema = SchemaFactory.createForClass(
