@@ -139,7 +139,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         entityIncludesMean(entity, activeMeans)
       ) ?? [];
     const centerOfSearch = searchResponse?.centerOfInterest?.coordinates!;
-    if (!!snapshot?.realEstateListings) {
+    if (!!snapshot?.realEstateListings && !!centerOfSearch) {
       entitiesIncludedInActiveMeans?.push(
         ...buildEntityDataFromRealEstateListings(
           centerOfSearch,
@@ -148,9 +148,14 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       );
     }
     const theme = config?.theme;
+    const defaultActiveGroups = config?.defaultActiveGroups;
     const defaultActive = theme !== "KF";
     updateGroupedEntities(
-      buildCombinedGroupedEntries(entitiesIncludedInActiveMeans, defaultActive)
+      buildCombinedGroupedEntries(
+        entitiesIncludedInActiveMeans,
+        defaultActive,
+        defaultActiveGroups
+      )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse, activeMeans, config]);

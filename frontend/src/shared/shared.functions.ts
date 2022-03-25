@@ -37,7 +37,7 @@ import {
   calculateMinutesToMeters,
   meansOfTransportations
 } from "../../../shared/constants/constants";
-import { ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { v4 } from "uuid";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -458,16 +458,36 @@ export const buildEntityDataFromRealEstateListings = (
 export const buildCombinedGroupedEntries = (
   entities: ResultEntity[],
   active = true,
-  oldActiveGroups: string[] = []
+  defaultActiveGroups: string[] = [],
+  oldGroupedEntries: EntityGroup[] = []
 ) => {
   const newGroupedEntries: any[] = Object.entries(
     groupBy(entities, (item: ResultEntity) => item.label)
   );
 
+  const deriveActiveState = (title: string) => {
+    if (!active) {
+      return oldGroupedEntries.some(e => e.title === title && e.active);
+    }
+    if (!defaultActiveGroups.length) {
+      return (
+        active || oldGroupedEntries.some(e => e.title === title && e.active)
+      );
+    }
+    if (
+      defaultActiveGroups.length &&
+      !oldGroupedEntries.some(e => e.title === title && e.active)
+    ) {
+      return defaultActiveGroups.includes(title);
+    }
+    return true;
+  };
+
   return [
     {
       title: preferredLocationsTitle,
-      active: active || oldActiveGroups.includes(preferredLocationsTitle),
+      active: deriveActiveState(preferredLocationsTitle),
+      defaultActive: defaultActiveGroups.includes(preferredLocationsTitle),
       items: newGroupedEntries
         .filter(([label, _]) => label === preferredLocationsTitle)
         .map(([_, items]) => items)
@@ -475,7 +495,8 @@ export const buildCombinedGroupedEntries = (
     },
     {
       title: realEstateListingsTitle,
-      active: active || oldActiveGroups.includes(realEstateListingsTitle),
+      active: deriveActiveState(realEstateListingsTitle),
+      defaultActive: defaultActiveGroups.includes(realEstateListingsTitle),
       items: newGroupedEntries
         .filter(([label, _]) => label === realEstateListingsTitle)
         .map(([_, items]) => items)
@@ -488,7 +509,8 @@ export const buildCombinedGroupedEntries = (
       )
       .map(([title, items]) => ({
         title,
-        active: active || oldActiveGroups.includes(title),
+        active: deriveActiveState(title),
+        defaultActive: defaultActiveGroups.includes(title),
         items
       }))
   ];

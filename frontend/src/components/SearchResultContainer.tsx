@@ -61,6 +61,7 @@ export interface ResultEntity {
 export interface EntityGroup {
   title: string;
   active: boolean;
+  defaultActive?: boolean;
   items: ResultEntity[];
 }
 
@@ -200,7 +201,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         )
       );
     }
-    if (!!listings) {
+    if (!!listings && !!centerOfSearch) {
       entitiesIncludedInActiveMeans?.push(
         ...buildEntityDataFromRealEstateListings(
           centerOfSearch,
@@ -210,16 +211,15 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
     }
     updateEntities(entitiesIncludedInActiveMeans);
-    const oldActiveEntityGroups = groupedEntities
-      .filter(ge => ge.active)
-      .map(ge => ge.title);
     const theme = config?.theme;
+    const defaultActiveConfigGroups = config?.defaultActiveGroups;
     const defaultActive = theme !== "KF";
     updateGroupedEntities(
       buildCombinedGroupedEntries(
         entitiesIncludedInActiveMeans,
         defaultActive,
-        oldActiveEntityGroups
+        defaultActiveConfigGroups,
+        groupedEntities
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
