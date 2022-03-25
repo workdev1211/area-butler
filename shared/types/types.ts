@@ -248,6 +248,7 @@ export interface ApiSearchResultSnapshotConfig {
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
+  defaultActiveGroups?: string[];
   groupItems: boolean;
   entityVisibility?: ApiSnippetEntitVisiblity[];
   primaryColor?: string;

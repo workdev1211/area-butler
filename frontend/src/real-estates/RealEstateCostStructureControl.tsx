@@ -1,18 +1,17 @@
 import React from "react";
-import { boolean } from "yup/lib/locale";
 import { allRealEstateCostTypes } from "../../../shared/constants/real-estate";
 import {
   ApiRealEstateCost,
-  ApiRealEstateCostType,
+  ApiRealEstateCostType
 } from "../../../shared/types/real-estate";
 
 const defaultValue: () => ApiRealEstateCost = () => ({
   price: {
     amount: 0,
     currency: "€",
-    startingAt: false,
+    startingAt: false
   },
-  type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
+  type: ApiRealEstateCostType.RENT_MONTHLY_COLD
 });
 
 export interface RealEstateCostStructureControlProps {
@@ -20,16 +19,17 @@ export interface RealEstateCostStructureControlProps {
   onChange: (realEstateCost: ApiRealEstateCost) => void;
 }
 
-const RealEstateCostStructureControl: React.FunctionComponent<
-  RealEstateCostStructureControlProps
-> = ({ onChange, inputValues = defaultValue() }) => {
+const RealEstateCostStructureControl: React.FunctionComponent<RealEstateCostStructureControlProps> = ({
+  onChange,
+  inputValues = defaultValue()
+}) => {
   const setAmount = (value?: number) => {
     const newCostStructure: ApiRealEstateCost = {
       ...inputValues,
       price: {
         currency: "€",
-        amount: value,
-      },
+        amount: value
+      }
     };
     onChange({ ...newCostStructure });
   };
@@ -37,7 +37,7 @@ const RealEstateCostStructureControl: React.FunctionComponent<
   const setCostType = (value: ApiRealEstateCostType) => {
     const newCostStructure = {
       ...inputValues,
-      type: value,
+      type: value
     };
     onChange({ ...newCostStructure });
   };
@@ -51,7 +51,7 @@ const RealEstateCostStructureControl: React.FunctionComponent<
         <input
           className="input input-bordered"
           value={inputValues?.price.amount}
-          onChange={(event) =>
+          onChange={event =>
             setAmount(!!event.target.value ? +event.target.value : undefined)
           }
           name="costAmount"
@@ -68,11 +68,11 @@ const RealEstateCostStructureControl: React.FunctionComponent<
           placeholder="Kostenart eingeben"
           className="select select-bordered w-full max-w-xs"
           value={inputValues?.type}
-          onChange={(event) =>
+          onChange={event =>
             setCostType(event.target.value as ApiRealEstateCostType)
           }
         >
-          {allRealEstateCostTypes.map((arct) => (
+          {allRealEstateCostTypes.map(arct => (
             <option value={arct.type} key={arct.type}>
               {arct.label}
             </option>

@@ -1,5 +1,5 @@
 import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
@@ -34,6 +34,10 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 }) => {
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
   const [poiVisibilityOpen, setPoiVisibilityOpen] = useState<boolean>(true);
+  const [
+    preselectedGroupVisibilityOpen,
+    setPreselectedGroupVisibilityOpen
+  ] = useState<boolean>(true);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
 
   const [color, setColor] = useState(config?.primaryColor);
@@ -91,6 +95,22 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     onConfigChange({ ...config, defaultActiveMeans });
   };
 
+  const changeDefaultActiveGroups = (activeGroup: string) => {
+    let defaultActiveGroups = config.defaultActiveGroups || [];
+    if (defaultActiveGroups.includes(activeGroup)) {
+      defaultActiveGroups = [
+        ...defaultActiveGroups.filter(g => g !== activeGroup)
+      ];
+    } else {
+      defaultActiveGroups.push(activeGroup);
+    }
+    onConfigChange({ ...config, defaultActiveGroups });
+  };
+
+  const isDefaultActiveGroup = (activeGroup: string) => {
+    return (config.defaultActiveGroups ?? []).includes(activeGroup);
+  };
+
   const isGroupOpen = (group: EntityGroup) => {
     return poiGroupsOpen.includes(group.title);
   };
@@ -124,6 +144,15 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     ];
     changeEntityVisiblity(newGroup);
   };
+
+  useEffect(() => {
+    if (!config.defaultActiveGroups) {
+      onConfigChange({
+        ...config,
+        defaultActiveGroups: groupedEntries.map(g => g.title)
+      });
+    }
+  }, [config, groupedEntries]);
 
   const toggleSingleEntityVisibility = (entity: ResultEntity) => {
     changeEntityVisiblity(toggleEntityVisibility(entity, config));
@@ -341,6 +370,45 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
           </ul>
         </div>
       </div>
+      {config.theme === "DEFAULT" && (
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (preselectedGroupVisibilityOpen
+              ? " collapse-open"
+              : " collapse-closed")
+          }
+        >
+          <input
+            type="checkbox"
+            onChange={event =>
+              setPreselectedGroupVisibilityOpen(event.target.checked)
+            }
+          />
+          <div className="collapse-title">Vorausgewählte Kategorien</div>
+          <div className="collapse-content preselected-groups">
+            <ul>
+              {groupedEntries
+                .filter(ge => ge.items.length)
+                .map(group => (
+                  <li key={group.title}>
+                    <input
+                      type="checkbox"
+                      checked={isDefaultActiveGroup(group.title)}
+                      className="checkbox checkbox-primary"
+                      onChange={() => changeDefaultActiveGroups(group.title)}
+                    />
+                    <h4 className="font-medium pl-2">
+                      {group.title === realEstateListingsTitle
+                        ? realEstateListingsTitleEmbed
+                        : group.title}{" "}
+                    </h4>
+                  </li>
+                ))}
+            </ul>
+          </div>
+        </div>
+      )}
       <div
         className={
           "collapse collapse-arrow view-option" +

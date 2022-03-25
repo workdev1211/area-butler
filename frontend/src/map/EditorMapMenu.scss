@@ -245,9 +245,10 @@
 }
 
 .editor-map-menu {
-  .entity-groups li {
+  .entity-groups li, .preselected-groups li {
     padding-right: 10px !important;
   }
+
   .group-items li {
     @apply flex flex-col py-2;
 
@@ -262,4 +263,11 @@
       }
     }
   }
+
+  .preselected-groups {
+    li {
+      display: flex;
+      justify-content: flex-start !important;
+    }
   }
+}
