@@ -7,8 +7,8 @@ import {
   toastSuccess
 } from "shared/shared.functions";
 import { v4 as uuid } from "uuid";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { ApiCoordinates } from "../../../shared/types/types";
+import { osmEntityTypes } from "../../../../shared/constants/constants";
+import { ApiCoordinates } from "../../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
 
 export interface AddPoiFormHandlerProps extends FormModalData {

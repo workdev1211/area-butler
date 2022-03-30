@@ -5,9 +5,9 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   ApiSnippetEntitVisiblity,
   MeansOfTransportation
-} from "../../../shared/types/types";
+} from "../../../../shared/types/types";
 import "./EditorMapMenu.scss";
-import { LocalityItemContent } from "../components/LocalityItem";
+import { LocalityItemContent } from "../../components/LocalityItem";
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {
@@ -15,7 +15,7 @@ import {
   realEstateListingsTitle,
   realEstateListingsTitleEmbed,
   toggleEntityVisibility
-} from "../shared/shared.functions";
+} from "../../shared/shared.functions";
 
 export interface EditorMapMenuProps {
   availableMeans: MeansOfTransportation[];
@@ -336,7 +336,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   color={color}
                   setColor={setColor}
                   onChange={color => changeColor(color)}
-                ></ColorPicker>
+                />
                 {config?.primaryColor && (
                   <button
                     className="text-sm"
@@ -356,7 +356,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   image={mapIcon}
                   setImage={setMapIcon}
                   onChange={mapIcon => changeMapIcon(mapIcon)}
-                ></ImageUpload>
+                />
                 {config?.mapIcon && (
                   <button
                     className="text-sm"

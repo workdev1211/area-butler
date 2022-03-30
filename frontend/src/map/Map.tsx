@@ -47,7 +47,7 @@ import {
   timeToHumanReadable,
   toastSuccess
 } from "../shared/shared.functions";
-import AddPoiFormHandler from "./AddPoiFormHandler";
+import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import "./Map.scss";
 
 export interface MapProps {
@@ -107,7 +107,8 @@ export class IdMarker extends L.Marker {
     if (!this.getPopup()) {
       const entityTitle = this.entity.name || this.entity.label;
       const street =
-        this.entity?.address?.street && this.entity?.address?.street !== "undefined"
+        this.entity?.address?.street &&
+        this.entity?.address?.street !== "undefined"
           ? this.entity.address.street
           : null;
 
@@ -168,18 +169,22 @@ export class IdMarker extends L.Marker {
         if (!!street) {
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Adresse: </span> ${street}`
-          );          
+          );
         }
 
         if (!!realEstateData?.characteristics?.realEstateSizeInSquareMeters) {
-          const startingAt = realEstateData?.characteristics?.startingAt ? 'Ab' : '';
+          const startingAt = realEstateData?.characteristics?.startingAt
+            ? "Ab"
+            : "";
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
           );
         }
 
         if ((realEstateData?.costStructure?.price?.amount || 0) > 0) {
-          const startingAt = realEstateData?.costStructure?.startingAt ? 'Ab' : '';
+          const startingAt = realEstateData?.costStructure?.startingAt
+            ? "Ab"
+            : "";
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Preis: </span> ${startingAt} ${realEstateData?.costStructure?.price.amount} €`
           );
@@ -414,24 +419,25 @@ const Map = React.memo<MapProps>(
         maxZoom: 18
       }).addTo(localMap);
       if (!embedMode || !!searchAddress) {
-
-        
-        const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`
-
+        const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
 
         const detailContent = `${searchAddress} <br/><br/>
                                <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
                                   <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
                                   <span>Street View</span>
-                               </a>`
+                               </a>`;
 
-        const iconStyle = config?.mapIcon ? "height: auto; width: 46px;" : "height: 100%; width: auto;";
+        const iconStyle = config?.mapIcon
+          ? "height: auto; width: 46px;"
+          : "height: 100%; width: auto;";
 
         const positionIcon = L.divIcon({
           iconUrl: config?.mapIcon ?? mylocationIcon,
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
-          iconSize: config?.mapIcon ? customMyLocationIconSize : myLocationIconSize,
+          iconSize: config?.mapIcon
+            ? customMyLocationIconSize
+            : myLocationIconSize,
           className: "my-location-icon-wrapper",
           html: `<img src="${config?.mapIcon ??
             mylocationIcon}" alt="marker-icon" style="${iconStyle}" />`
@@ -528,8 +534,7 @@ const Map = React.memo<MapProps>(
             {
               color: WALK_COLOR,
               opacity: 0.7,
-              fillOpacity: .0,
-              
+              fillOpacity: 0.0
             }
           ).addTo(meansGroup);
         }
@@ -539,7 +544,7 @@ const Map = React.memo<MapProps>(
             {
               color: BICYCLE_COLOR,
               opacity: 0.7,
-              fillOpacity: .0
+              fillOpacity: 0.0
             }
           ).addTo(meansGroup);
         }
@@ -549,7 +554,7 @@ const Map = React.memo<MapProps>(
             {
               color: CAR_COLOR,
               opacity: 0.7,
-              fillOpacity: .0,
+              fillOpacity: 0.0
             }
           ).addTo(meansGroup);
         }
@@ -897,7 +902,7 @@ const Map = React.memo<MapProps>(
               {
                 color: WALK_COLOR,
                 opacity: 0.7,
-                fillOpacity: .0,
+                fillOpacity: 0.0
               }
             );
           }
@@ -909,7 +914,7 @@ const Map = React.memo<MapProps>(
               {
                 color: BICYCLE_COLOR,
                 opacity: 0.7,
-                fillOpacity: .0,
+                fillOpacity: 0.0
               }
             );
           }
@@ -919,7 +924,7 @@ const Map = React.memo<MapProps>(
               {
                 color: CAR_COLOR,
                 opacity: 0.7,
-                fillOpacity: .0,
+                fillOpacity: 0.0
               }
             );
           }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import './MapMenuCollapsable.css';
+import "./MapMenuCollapsable.scss";
 
 export interface MapMenuCollapsableProps {
   title: string;
@@ -31,15 +31,10 @@ const MapMenuCollapsable: React.FunctionComponent<MapMenuCollapsableProps> = ({
           (open ? " collapse-open" : " collapse-closed")
         }
       >
-        <div
-          className="collapse-title"
-          onClick={() => toggleOpen()}
-        >
+        <div className="collapse-title" onClick={() => toggleOpen()}>
           {title}
         </div>
-        <div className="collapse-content">
-            {children}
-        </div>
+        <div className="collapse-content">{children}</div>
       </div>
     </div>
   );

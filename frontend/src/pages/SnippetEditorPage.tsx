@@ -8,7 +8,7 @@ import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
-import EditorMapMenu from "map/EditorMapMenu";
+import EditorMapMenu from "map/menu-editor/EditorMapMenu";
 import React, { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useParams } from "react-router-dom";

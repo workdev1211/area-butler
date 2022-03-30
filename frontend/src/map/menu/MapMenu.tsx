@@ -21,14 +21,14 @@ import {
   realEstateListingsTitle
 } from "../../shared/shared.functions";
 import { ApiDataSource } from "../../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "../MapMenuCollapsable";
-import CensusTable from "../CensusTable";
+import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
+import CensusTable from "./data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import FederalElectionTable from "../FederalElectionTable";
-import ParticlePollutionTable from "../ParticlePollutionTable";
+import FederalElectionTable from "./data/FederalElectionTable";
+import ParticlePollutionTable from "./data/ParticlePollutionTable";
 import { osmEntityTypes } from "../../../../shared/constants/constants";
 import { MapClipping } from "context/SearchContext";
-import MapClippingsCollapsable from "../MapClippingsCollapsable";
+import MapClippingsCollapsable from "./clippings/MapClippingsCollapsable";
 import { CensusData } from "hooks/censusdata";
 import MapMenuKarlaFricke from "./karla-fricke/MapMenuKarlaFricke";
 import {

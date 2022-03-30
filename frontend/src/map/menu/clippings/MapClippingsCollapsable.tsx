@@ -5,7 +5,7 @@ import {
 } from "context/SearchContext";
 import { saveAs } from "file-saver";
 import { useContext } from "react";
-import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
+import deleteIcon from "../../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 
 export interface MapClippingsCollapsableProps {
   clippings: MapClipping[];

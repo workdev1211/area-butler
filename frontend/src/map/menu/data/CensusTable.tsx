@@ -1,5 +1,5 @@
 import { FunctionComponent } from "react";
-import { ApiGeojsonFeature } from "../../../shared/types/types";
+import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 
 export interface CensusTableProps {
   censusData: ApiGeojsonFeature[];
@@ -14,7 +14,7 @@ export const averageCensus = {
   "Durchschnittliche Wohnfläche je Bewohner": 37,
   "Durchschnittliche Wohnfläche je Wohnung": 68,
   "Anteil der Bevölkerung ab 65 Jahre": 22,
-  "Anteil der Bevölkerung unter 18 Jahre": 15,
+  "Anteil der Bevölkerung unter 18 Jahre": 15
 } as any;
 
 const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
@@ -23,7 +23,7 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
   }
 
   const censusCenter =
-    censusData.find((c) =>
+    censusData.find(c =>
       (c.properties as any).some((p: any) => p.value !== "unbekannt")
     ) || (censusData[0] as any);
 

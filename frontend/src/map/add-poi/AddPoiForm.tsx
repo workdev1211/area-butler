@@ -4,8 +4,8 @@ import Select from "components/Select";
 import { Form, Formik } from "formik";
 import React, { useState } from "react";
 import * as Yup from "yup";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { ApiCoordinates, OsmName } from "../../../shared/types/types";
+import { osmEntityTypes } from "../../../../shared/constants/constants";
+import { ApiCoordinates, OsmName } from "../../../../shared/types/types";
 
 export interface AddPoiFormProps {
   formId: string;
@@ -18,7 +18,7 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
   formId,
   coordinates,
   address,
-  onSubmit,
+  onSubmit
 }) => {
   const [localCoordinates, setLocalCoordinates] = useState(coordinates);
   const [localAddress, setLocalAddress] = useState(address);
@@ -33,15 +33,15 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
       initialValues={{
         name: "",
         address: address,
-        type: OsmName.doctors,
+        type: OsmName.doctors
       }}
       validationSchema={Yup.object({
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-        type: Yup.string().required("Bitte geben Sie einen Objekttyp an"),
+        type: Yup.string().required("Bitte geben Sie einen Objekttyp an")
       })}
       enableReinitialize={true}
-      onSubmit={(values) => {
-        onSubmit({coordinates: localCoordinates, ...values});
+      onSubmit={values => {
+        onSubmit({ coordinates: localCoordinates, ...values });
       }}
     >
       <Form id={formId}>
@@ -59,7 +59,7 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
           setValue={() => {}}
           afterChange={onLocationAutocompleteChange}
           menuZIndex={2000}
-        ></LocationAutocomplete>
+        />
         <div className="flex flex-wrap items-end gap-6">
           <div className="form-control flex-1">
             <Select
@@ -67,11 +67,13 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
               name="type"
               placeholder="Objekttype angeben"
             >
-              {osmEntityTypes.sort((e1, e2) => e1.label.localeCompare(e2.label)).map((entityType) => (
-                <option value={entityType.name} key={entityType.name}>
-                  {entityType.label}
-                </option>
-              ))}
+              {osmEntityTypes
+                .sort((e1, e2) => e1.label.localeCompare(e2.label))
+                .map(entityType => (
+                  <option value={entityType.name} key={entityType.name}>
+                    {entityType.label}
+                  </option>
+                ))}
             </Select>
           </div>
         </div>

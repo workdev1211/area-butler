@@ -1,0 +1,46 @@
+.map-menu-collapsable {
+    margin: 0;
+    @apply w-full;
+    & > .collapse-closed .collapse-content {
+        max-height: 0;
+        height: 0;
+        display: none;
+    }
+
+    .collapse-closed {
+        .collapse-title {
+            &:after {
+                top: 15px;
+                transform: rotate(405deg) !important;
+            }
+        }
+    }
+
+    .collapse-open {
+        .collapse-title {
+            &:after {
+                top: 15px;
+            }
+        }
+        .collapse-content {
+            max-height: 9000px;
+            background-color: white;
+        }
+    }
+
+    .collapse-title {
+        font-size: 16px;
+        border: 0 !important;
+        height: 40px !important;
+        min-height: 100% !important;
+        @apply flex justify-between items-center;
+
+        & > div {
+            @apply flex items-center;
+        }
+
+        div.img-container img {
+            filter: brightness(0) invert(1);
+        }
+    }
+}
