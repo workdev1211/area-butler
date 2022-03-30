@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import "./EmbedContainer.css";
+import "./EmbedContainer.scss";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse

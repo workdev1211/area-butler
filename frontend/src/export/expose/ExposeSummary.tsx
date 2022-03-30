@@ -13,7 +13,7 @@ import {
   MeansOfTransportation,
   TransportationParam
 } from "../../../../shared/types/types";
-import "./ExposeSummary.css";
+import "./ExposeSummary.scss";
 import { EntityGroup } from "../../components/SearchResultContainer";
 
 export interface ExposeSummaryProps {

@@ -14,7 +14,7 @@ import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
 import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
-import "./index.css";
+import "./index.scss";
 
 ReactDOM.render(
   <React.StrictMode>

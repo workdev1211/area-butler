@@ -3,7 +3,7 @@ import {
   deriveColorPalette,
   distanceToHumanReadable
 } from "shared/shared.functions";
-import "./EntityList.css";
+import "./EntityList.scss";
 import { EntityGroup } from "../components/SearchResultContainer";
 
 export interface EntityListProps {

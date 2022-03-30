@@ -1,0 +1,27 @@
+.img-upload {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+
+    .img-placeholder {
+        width: 150px;
+        height: 150px;
+        border: 1px dashed var(--base-anthracite);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .img-container {
+        padding: 4px;
+        border: 1px dashed var(--base-anthracite);
+    }
+
+    img {
+        height: 150px;
+        width: auto;
+        cursor: pointer;
+    }
+}

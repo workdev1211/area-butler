@@ -32,7 +32,7 @@ import {
   ApiSearchResultSnapshotResponse,
   MeansOfTransportation
 } from "../../../shared/types/types";
-import "./SnippetEditorPage.css";
+import "./SnippetEditorPage.scss";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;

@@ -1,10 +1,10 @@
 import React from "react";
-import "./ImageUpload.css";
+import "./ImageUpload.scss";
 import { toastError } from "../shared/shared.functions";
 
 export interface ImageUploadProps {
   label?: string;
-  uploadLabel?: string
+  uploadLabel?: string;
   image: string | undefined;
   inputId?: string;
   setImage: (image: string | undefined) => void;

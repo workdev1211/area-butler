@@ -1,7 +1,7 @@
 import { UserActionTypes, UserContext } from "context/UserContext";
 import copy from "copy-to-clipboard";
 import { useHttp } from "hooks/http";
-import { useContext, useState } from "react";
+import React, { useContext, useState } from "react";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
@@ -20,7 +20,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
   setShowModal,
   showModal,
   editDescription = false,
-  snapshot,
+  snapshot
 }) => {
   const { put } = useHttp();
   const { userDispatch } = useContext(UserContext);
@@ -43,11 +43,11 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
     ) {
       try {
         await put(`/api/location/snapshot/${snapshot.id}/description`, {
-          description,
+          description
         });
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION,
-          payload: { id: snapshot.id, description: description || "" },
+          payload: { id: snapshot.id, description: description || "" }
         });
       } catch (err) {
         toastError("Fehler beim Ändern der Notiz");
@@ -73,7 +73,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
               <textarea
                 className="textarea textarea-primary"
                 value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                onChange={event => setDescription(event.target.value)}
               ></textarea>
             </div>
           </div>
@@ -87,7 +87,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
           <code className="break-all text-sm">{codeSnippet}</code>
         </div>
         <div className="modal-action">
-        <button
+          <button
             className="btn btn-sm btn-primary"
             onClick={() => copyCodeToClipBoard(directLink)}
           >

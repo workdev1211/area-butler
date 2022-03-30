@@ -152,7 +152,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
         defaultActiveGroups: groupedEntries.map(g => g.title)
       });
     }
-  }, [config, groupedEntries]);
+  }, [config, groupedEntries, onConfigChange]);
 
   const toggleSingleEntityVisibility = (entity: ResultEntity) => {
     changeEntityVisiblity(toggleEntityVisibility(entity, config));

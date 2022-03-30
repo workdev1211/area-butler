@@ -1,6 +1,6 @@
 import { ApiGeojsonFeature } from "../../../shared/types/types";
 import React from "react";
-import "./EntityTable.css";
+import "./EntityTable.scss";
 import { averageCensus } from "map/menu/data/CensusTable";
 import { deriveColorPalette } from "shared/shared.functions";
 

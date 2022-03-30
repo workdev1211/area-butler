@@ -1,5 +1,5 @@
 import React from "react";
-import "./EntityTable.css";
+import "./EntityTable.scss";
 import {
   meansOfTransportations,
   unitsOfTransportation

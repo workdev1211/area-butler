@@ -4,19 +4,6 @@
     @apply flex relative w-full;
 }
 
-@media screen(lg) {
-    .search-result-container {
-        grid-template-columns: 5fr 2fr;
-        @apply grid;
-    }
-    .search-result-container.theme-KF {
-        @apply block;
-    }
-    .search-result-container > div:first-child {
-        @apply w-full h-full;
-    }
-}
-
 .mobile-menu-btn {
     top: 20px;
     right: 10px;
@@ -25,7 +12,19 @@
     @apply btn absolute;
 }
 
-@media screen(lg) {
+@media (min-width: 1024px) {
+    .search-result-container {
+        grid-template-columns: 5fr 2fr;
+        @apply grid;
+
+        &.theme-KF {
+            @apply block;
+        }
+
+        & > div:first-child {
+            @apply w-full h-full;
+        }
+    }
     .mobile-menu-btn {
         display: none;
     }

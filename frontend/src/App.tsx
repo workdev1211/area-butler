@@ -9,7 +9,7 @@ import "react-toastify/dist/ReactToastify.css";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
 import { ApiUser, ApiUserRequests } from "../../shared/types/types";
-import "./App.css";
+import "./App.scss";
 import Authenticated from "./auth/authenticated";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
@@ -93,9 +93,8 @@ function App() {
       };
       const consumeConsentGiven = async () => {
         try {
-          const updatedUser = (
-            await post<ApiUser>("/api/users/me/consent", {})
-          ).data;
+          const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
+            .data;
           userDispatch({
             type: UserActionTypes.SET_USER,
             payload: updatedUser
@@ -118,7 +117,7 @@ function App() {
       };
 
       validateEmailVerified();
-      if (localStorage.getItem(localStorageConsentGivenKey) === 'true') {
+      if (localStorage.getItem(localStorageConsentGivenKey) === "true") {
         consumeConsentGiven();
       } else {
         fetchUser();
@@ -186,7 +185,7 @@ function App() {
                     <Authenticated>
                       <SearchResultPage />
                     </Authenticated>
-                  </Route>                  
+                  </Route>
                   <Route path="/snippet-editor/:snapshotId">
                     <Authenticated>
                       <SnippetEditorPage />

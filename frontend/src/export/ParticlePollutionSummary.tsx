@@ -4,7 +4,7 @@ import {
 } from "map/menu/data/ParticlePollutionTable";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiGeojsonFeature } from "../../../shared/types/types";
-import "./EntityTable.css";
+import "./EntityTable.scss";
 
 export interface ParticlePollutionSummaryProps {
   particlePollutionData?: ApiGeojsonFeature[];

@@ -1,3 +1,5 @@
+import React from "react";
+
 export interface BusyModalProps {
   open: boolean;
   title: string;
@@ -5,7 +7,7 @@ export interface BusyModalProps {
 
 const BusyModal: React.FunctionComponent<BusyModalProps> = ({
   open,
-  title,
+  title
 }) => {
   if (!open) {
     return null;

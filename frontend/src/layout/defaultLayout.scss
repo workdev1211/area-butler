@@ -1,0 +1,85 @@
+.default-layout {
+  @apply flex flex-col w-full;
+
+  .default-layout-header {
+    min-height: var(--content-header-height);
+    padding: var(--nav-padding-y) var(--nav-padding-x);
+    background-image: var(--primary-gradient);
+    @apply flex flex-col items-start sm:flex-row sm:flex-wrap sm:items-center gap-4 justify-between;
+
+    h1 {
+      font-size: var(--h1-size);
+      font-weight: var(--h1-weight);
+      @apply text-white;
+    }
+
+    .dropdown .dropdown-btn {
+      color: white !important;
+      text-transform: none !important;
+      border-radius: var(--btn-border-radius);
+      @apply btn btn-outline hover:bg-primary hover:border-white text-base;
+    }
+
+    .dropdown-btn-content {
+      @apply flex gap-4 h-full justify-center items-center;
+      .divider {
+        width: 1px;
+        border-left: 1px solid white;
+        @apply h-full;
+      }
+    }
+  }
+
+    .dropdown-content {
+        background: rgba(53, 53, 53, 0.95);
+        color: white;
+        top: 50px;
+
+      * {
+        color: white;
+      }
+
+      button {
+        justify-content: start;
+        @apply w-full text-left;
+      }
+
+      a.btn-link {
+        justify-content: flex-start;
+      }
+
+      img {
+        @apply mr-2;
+      }
+    }
+
+  .default-layout-content {
+    &.padding {
+      padding: 0 var(--content-padding-x) var(--content-padding-y);
+    }
+
+    h2 {
+      font-size: var(--h2-size);
+      font-weight: var(--h2-weight);
+      padding: var(--h2-pt) 0 var(--h2-pb) 0;
+      border-bottom: 1px solid var(--base-bright-silver);
+    }
+
+    h3 {
+      font-size: var(--h3-size);
+      font-weight: var(--h3-weight);
+      padding: var(--h3-pt) 0 var(--h3-pb) 0;
+      @apply text-primary;
+    }
+
+    p {
+      @apply py-2;
+    }
+  }
+
+  .action-bottom {
+    border-top: 1px solid var(--base-bright-silver);
+    padding: 14px var(--content-padding-x);
+    @apply flex flex-wrap gap-6;
+  }
+}

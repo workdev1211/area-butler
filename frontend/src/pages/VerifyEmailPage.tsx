@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import DefaultLayout from "../layout/defaultLayout";
-import "./Auth0ConsentPage.css";
+import "./Auth0ConsentPage.scss";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useHistory } from "react-router-dom";
 

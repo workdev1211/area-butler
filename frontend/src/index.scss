@@ -93,7 +93,7 @@ html {
   --mobile-menu-width: 350px;
 }
 
-@media screen(sm) {
+@media (min-width: 640px) {
   html {
     --nav-padding-x: 52px;
   }

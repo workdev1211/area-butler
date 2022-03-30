@@ -1,4 +1,4 @@
-import "./EntityTable.css";
+import "./EntityTable.scss";
 import React from "react";
 import { calculateMinutesToMeters } from "../../../shared/constants/constants";
 import { MeansOfTransportation } from "../../../shared/types/types";

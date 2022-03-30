@@ -1,0 +1,21 @@
+.terms {
+    & > ol {
+        list-style-type: none;
+        counter-reset: item;
+        margin: 0;
+        @apply pt-5;
+
+        & > li {
+            display: table;
+            counter-increment: item;
+            margin-bottom: 0.6em;
+            width: 100%;
+            &:before {
+                content: attr(data-start) "." counters(item, ".") ". " ;
+                display: table-cell;
+                padding-right: 0.6em;
+                width: 42px;
+            }
+        }
+    }
+}

@@ -28,7 +28,7 @@ import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import Map, { defaultMapZoom } from "../map/Map";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
-import "./SearchResultContainer.css";
+import "./SearchResultContainer.scss";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
