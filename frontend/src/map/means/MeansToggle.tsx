@@ -1,13 +1,13 @@
 import React from "react";
-import "./MapNavBar.scss";
+import "./MeansToggle.scss";
 import {
   MeansOfTransportation,
   TransportationParam,
   UnitsOfTransportation
-} from "../../../shared/types/types";
-import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+} from "../../../../shared/types/types";
+import walkIcon from "../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bicycleIcon from "../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 
 export interface MapNavBarProps {
   transportationParams: TransportationParam[];
@@ -16,7 +16,7 @@ export interface MapNavBarProps {
   onMeansChange: (newValues: MeansOfTransportation[]) => void;
 }
 
-const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
+const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
   transportationParams,
   availableMeans,
   activeMeans,
@@ -55,6 +55,7 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
                 }
                 onClick={() => toggleMean(mean)}
                 key={`mean-${mean}`}
+                data-testid={`means-toggle-${mean}`}
               >
                 <span className={deriveBackgroundClass(mean)} />
                 {mean === MeansOfTransportation.WALK && (
@@ -80,4 +81,4 @@ const MapNavBar: React.FunctionComponent<MapNavBarProps> = ({
   );
 };
 
-export default MapNavBar;
+export default MeansToggle;
