@@ -1,11 +1,10 @@
-import React, { useEffect, useState } from "react";
-import "./MapMenu.css";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
-import positionIcon from "../assets/icons/icons-16-x-16-outline-ic-position.svg";
-import distanceIcon from "../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
-import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bicycleIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import React, { useState } from "react";
+import "./MapMenu.scss";
+import {
+  EntityGroup,
+  ResultEntity
+} from "../../components/SearchResultContainer";
+import positionIcon from "../../assets/icons/icons-16-x-16-outline-ic-position.svg";
 import {
   ApiGeojsonFeature,
   ApiOsmEntityCategory,
@@ -13,37 +12,38 @@ import {
   ApiUser,
   MeansOfTransportation,
   OsmName
-} from "../../../shared/types/types";
+} from "../../../../shared/types/types";
 import {
   deriveIconForOsmName,
   preferredLocationsIcon,
   preferredLocationsTitle,
   realEstateListingsIcon,
-  realEstateListingsTitle,
-  realEstateListingsTitleEmbed
-} from "../shared/shared.functions";
-import LocalityItem from "../components/LocalityItem";
-import { ApiDataSource } from "../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "./MapMenuCollapsable";
-import CensusTable from "./CensusTable";
+  realEstateListingsTitle
+} from "../../shared/shared.functions";
+import { ApiDataSource } from "../../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "../MapMenuCollapsable";
+import CensusTable from "../CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import FederalElectionTable from "./FederalElectionTable";
-import ParticlePollutionTable from "./ParticlePollutionTable";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import FederalElectionTable from "../FederalElectionTable";
+import ParticlePollutionTable from "../ParticlePollutionTable";
+import { osmEntityTypes } from "../../../../shared/constants/constants";
 import { MapClipping } from "context/SearchContext";
-import MapClippingsCollapsable from "./MapClippingsCollapsable";
+import MapClippingsCollapsable from "../MapClippingsCollapsable";
 import { CensusData } from "hooks/censusdata";
-import MapMenuKarlaFricke from "./menu/MapMenuKarlaFricke";
-import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
+import MapMenuKarlaFricke from "./karla-fricke/MapMenuKarlaFricke";
+import {
+  EntityRoute,
+  EntityTransitRoute
+} from "../../../../shared/types/routing";
+import MapMenuListItem from "./menu-item/MapMenuListItem";
 
 export interface MapMenuProps {
   censusData?: CensusData[];
   federalElectionData?: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
+  setGroupedEntries: (entityGroups: EntityGroup[]) => void;
   particlePollutionData?: ApiGeojsonFeature[];
   clippings: MapClipping[];
-  toggleEntryGroup: (title: string) => void;
-  toggleAllEntryGroups: () => void;
   highlightZoomEntity: (item: ResultEntity) => void;
   mobileMenuOpen: boolean;
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
@@ -58,7 +58,6 @@ export interface MapMenuProps {
   config?: ApiSearchResultSnapshotConfig;
 }
 
-const localityPaginationSize = 5;
 const censusNotInSubscriptionPlanMessage = (
   <div>
     <p className="my-5">
@@ -96,8 +95,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   particlePollutionData,
   clippings = [],
   groupedEntries,
-  toggleEntryGroup,
-  toggleAllEntryGroups,
+  setGroupedEntries,
   highlightZoomEntity,
   toggleRoute,
   routes,
@@ -114,20 +112,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
   const [localitiesOpen, setLocalitiesOpen] = useState(true);
-  const [localityOpen, setLocalityOpen] = useState<string[]>([]);
-  const [localityPagination, setLocalityPagination] = useState<number[]>(
-    groupedEntries.map(() => localityPaginationSize)
-  );
-
-  const allLocalitiesActive = groupedEntries.some(ge => ge.active);
-
-  const toggleLocality = (title: string) => {
-    const filtered = [...localityOpen.filter(l => l !== title)];
-    if (!localityOpen.some(l => l === title)) {
-      filtered.push(title);
-    }
-    setLocalityOpen(filtered);
-  };
 
   const mobileMenuButtonClasses = `map-menu ${
     mobileMenuOpen ? "mobile-open" : ""
@@ -144,132 +128,34 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     ApiDataSource.PARTICLE_POLLUTION
   )!;
 
-  useEffect(() => {
-    if (Array.isArray(groupedEntries)) {
-      setLocalityPagination(groupedEntries.map(() => localityPaginationSize));
+  const toggleEntityGroup = (groupTitle: string): void => {
+    const isKarlaFricke = !!config && config.theme === "KF";
+    if (isKarlaFricke) {
+      // toggle single entry active for karla fricke
+      setGroupedEntries(
+        groupedEntries.map(e => ({
+          ...e,
+          active: e.title === groupTitle
+        }))
+      );
+    } else {
+      // toggle additional entry per default
+      setGroupedEntries(
+        groupedEntries.map(e => ({
+          ...e,
+          active: e.title === groupTitle ? !e.active : e.active
+        }))
+      );
     }
-  }, [groupedEntries, setLocalityPagination]);
+  };
 
-  interface MapMenuListItemProps {
-    ge: EntityGroup;
-    groupIconInfo: any;
-    geIndex: number;
-    customIcon?: boolean;
-  }
-
-  const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
-    ge,
-    groupIconInfo,
-    geIndex,
-    customIcon = false
-  }) => {
-
-    const imgClass = !customIcon ? 'item' : '';
-
-    return (
-      <li
-        className="locality-option-li"
-        key={`grouped-entry-${ge.title}-${geIndex}`}
-      >
-        <div
-          className={
-            "collapse collapse-arrow locality-option" +
-            (localityOpen.includes(ge.title)
-              ? " collapse-child-open"
-              : " collapse-child-closed")
-          }
-        >
-          <input type="checkbox" onChange={() => toggleLocality(ge.title)} />
-          <div className="collapse-title">
-            <div onClick={() => toggleLocality(ge.title)}>
-              <div
-                className="img-container"
-                style={{ background: groupIconInfo.color }}
-              >
-                <img
-                  className={imgClass}
-                  src={groupIconInfo.icon}
-                  alt="group-icon"
-                  onClick={() => toggleLocality(ge.title)}
-                />
-              </div>
-              {ge.title === realEstateListingsTitle
-                ? realEstateListingsTitleEmbed
-                : ge.title}{" "}
-              [{ge.items.length}]
-            </div>
-            <label className="cursor-pointer label justify-start pl-0">
-              <input
-                type="checkbox"
-                checked={ge.active}
-                className={checkboxPrimaryClasses}
-                onChange={() => toggleEntryGroup(ge.title)}
-              />
-            </label>
-          </div>
-          <div className="collapse-content">
-            <div className="mean-items">
-              <div className="item">
-                <img src={distanceIcon} alt="icon-distance" />
-                Distanz
-              </div>
-              <div className="item">
-                <img src={walkIcon} alt="icon-walk" />
-                Fußweg
-              </div>
-              <div className="item">
-                <img src={bicycleIcon} alt="icon-bicycle" />
-                Fahrrad
-              </div>
-              <div className="item">
-                <img src={carIcon} alt="icon-car" />
-                Auto
-              </div>
-            </div>
-            {localityOpen.includes(ge.title) &&
-              ge.items
-                .slice(0, localityPagination[geIndex])
-                .map((item, index) => (
-                  <LocalityItem
-                    key={`${ge.title}-${index}`}
-                    item={item}
-                    group={ge}
-                    onClickTitle={item => highlightZoomEntity(item)}
-                    onToggleRoute={(item, mean) => toggleRoute(item, mean)}
-                    route={routes?.find(
-                      r =>
-                        r.coordinates.lat === item.coordinates.lat &&
-                        r.coordinates.lng === item.coordinates.lng &&
-                        r.show
-                    )}
-                    onToggleTransitRoute={item => toggleTransitRoute(item)}
-                    transitRoute={transitRoutes?.find(
-                      tr =>
-                        tr.coordinates.lat === item.coordinates.lat &&
-                        tr.coordinates.lng === item.coordinates.lng &&
-                        tr.show
-                    )}
-                  />
-                ))}
-            {localityOpen.includes(ge.title) &&
-              ge.items.length > localityPagination[geIndex] && (
-                <button
-                  type="button"
-                  className="btn btn-link"
-                  onClick={() =>
-                    setLocalityPagination(
-                      localityPagination.map((lp, index) =>
-                        index !== geIndex ? lp : lp + localityPaginationSize
-                      )
-                    )
-                  }
-                >
-                  Mehr anzeigen
-                </button>
-              )}
-          </div>
-        </div>
-      </li>
+  const toggleAllEntityGroups = (): void => {
+    const someActive = groupedEntries.some(e => e.active);
+    setGroupedEntries(
+      groupedEntries.map(e => ({
+        ...e,
+        active: !someActive
+      }))
     );
   };
 
@@ -283,7 +169,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 ge => ge.items.length && ge.title !== realEstateListingsTitle
               )
               .sort((a, b) => (a.title > b.title ? 1 : -1))}
-            toggleEntryGroup={title => toggleEntryGroup(title)}
+            activateGroup={title => toggleEntityGroup(title)}
             mobileMenuOpen={false}
           />
         );
@@ -292,10 +178,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   }
 
   const background = config?.primaryColor || "var(--primary-gradient)";
-
-  const checkboxPrimaryClasses = !!config?.primaryColor
-    ? "checkbox checkbox-custom checkbox-sm"
-    : "checkbox checkbox-primary checkbox-sm";
 
   return (
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
@@ -439,9 +321,9 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
           <label className="cursor-pointer label justify-start pl-0">
             <input
               type="checkbox"
-              checked={allLocalitiesActive}
+              checked={!groupedEntries.some(e => !e.active)}
               className="checkbox checkbox-white checkbox-sm z-2500"
-              onChange={toggleAllEntryGroups}
+              onChange={toggleAllEntityGroups}
             />
           </label>
         </div>
@@ -459,16 +341,27 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 const isPreferredLocation =
                   ge.items[0].label === preferredLocationsTitle;
                 const groupIconInfo = isRealEstateListing
-                  ? (!!config?.mapIcon ? {icon: config.mapIcon, color: 'transparent'} : realEstateListingsIcon)
+                  ? !!config?.mapIcon
+                    ? { icon: config.mapIcon, color: "transparent" }
+                    : realEstateListingsIcon
                   : isPreferredLocation
                   ? preferredLocationsIcon
                   : deriveIconForOsmName(ge.items[0].type as OsmName);
                 return (
                   <MapMenuListItem
-                    ge={ge}
-                    groupIconInfo={groupIconInfo}
-                    geIndex={geIndex}
+                    entityGroup={ge}
+                    groupIcon={groupIconInfo}
+                    entityGroupIndex={geIndex}
                     customIcon={isRealEstateListing && !!config?.mapIcon}
+                    toggleGroup={entityGroup =>
+                      toggleEntityGroup(entityGroup.title)
+                    }
+                    routes={routes}
+                    toggleRoute={toggleRoute}
+                    transitRoutes={transitRoutes}
+                    toggleTransitRoute={toggleTransitRoute}
+                    highlightZoomEntity={highlightZoomEntity}
+                    config={config}
                     key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
                   />
                 );
@@ -513,9 +406,18 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                           : deriveIconForOsmName(ge.items[0].type as OsmName);
                         return (
                           <MapMenuListItem
-                            ge={ge}
-                            groupIconInfo={groupIconInfo}
-                            geIndex={geIndex}
+                            entityGroup={ge}
+                            groupIcon={groupIconInfo}
+                            entityGroupIndex={geIndex}
+                            config={config}
+                            routes={routes}
+                            toggleRoute={toggleRoute}
+                            transitRoutes={transitRoutes}
+                            toggleTransitRoute={toggleTransitRoute}
+                            toggleGroup={entityGroup =>
+                              toggleEntityGroup(entityGroup.title)
+                            }
+                            highlightZoomEntity={highlightZoomEntity}
                             key={`${ge.title}-${geIndex}-map-menu-list-item`}
                           />
                         );

@@ -25,9 +25,7 @@ import {
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
-import MapNavBar from "../map/MapNavBar";
 import Map, { defaultMapZoom } from "../map/Map";
-import MapMenu from "../map/MapMenu";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.css";
@@ -38,6 +36,8 @@ import {
   ApiRealEstateCost,
   ApiRealEstateListing
 } from "../../../shared/types/real-estate";
+import MeansToggle from "../map/means-toggle/MeansToggle";
+import MapMenu from "../map/menu/MapMenu";
 
 export interface ResultEntity {
   name?: string;
@@ -61,7 +61,6 @@ export interface ResultEntity {
 export interface EntityGroup {
   title: string;
   active: boolean;
-  defaultActive?: boolean;
   items: ResultEntity[];
 }
 
@@ -400,11 +399,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     <>
       <div className={containerClasses} id="search-result-container">
         <div className="relative flex-1">
-          <MapNavBar
+          <MeansToggle
             transportationParams={transportationParams}
             activeMeans={activeMeans}
             availableMeans={availableMeans}
-            onMeansChange={newValues => setActiveMeans(newValues)}
+            onMeansChange={(newValues: MeansOfTransportation[]) =>
+              setActiveMeans(newValues)
+            }
           />
           <Map
             mapBoxAccessToken={mapBoxToken}
@@ -439,8 +440,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           particlePollutionData={particlePollutionData}
           clippings={mapClippings}
           groupedEntries={groupedEntities}
-          toggleEntryGroup={toggleEntityGroup}
-          toggleAllEntryGroups={toggleAllEntityGroups}
+          setGroupedEntries={groupedEntries =>
+            setGroupedEntities(groupedEntries)
+          }
           highlightZoomEntity={highlightZoomEntity}
           toggleRoute={(item, mean) =>
             toggleRoutesToEntity(location, item, mean)

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import React, { useState } from "react";
+import { EntityGroup } from "../../../components/SearchResultContainer";
 import "./MapMenuKarlaFricke.scss";
 import {
   deriveIconForOsmName,
@@ -7,38 +7,31 @@ import {
   preferredLocationsTitle,
   realEstateListingsIcon,
   realEstateListingsTitle
-} from "../../shared/shared.functions";
-import { OsmName } from "../../../../shared/types/types";
+} from "../../../shared/shared.functions";
+import { OsmName } from "../../../../../shared/types/types";
 
 export interface MapMenuKarlaFrickeProps {
   groupedEntries: EntityGroup[];
-  toggleEntryGroup: (title: string) => void;
+  activateGroup: (title: string) => void;
   mobileMenuOpen: boolean;
 }
 
 const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   mobileMenuOpen,
   groupedEntries,
-  toggleEntryGroup
+  activateGroup
 }) => {
-  useEffect(() => {
-    if (groupedEntries.length && !groupedEntries.some(ge => ge.active)) {
-      toggleEntryGroup(groupedEntries[0].title);
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [groupedEntries.length]);
-
   const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
 
   interface ListItemProps {
     group: EntityGroup;
-    toggleEntryGroup: (title: string) => void;
+    activateGroup: (title: string) => void;
     dropdown?: boolean;
   }
 
   const ListItem: React.FunctionComponent<ListItemProps> = ({
     group,
-    toggleEntryGroup,
+    activateGroup,
     dropdown = false
   }) => {
     const isRealEstateListing =
@@ -52,7 +45,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
       : deriveIconForOsmName(group.items[0].type as OsmName);
     return (
       <li
-        onClick={() => toggleEntryGroup(group.title)}
+        onClick={() => activateGroup(group.title)}
         className={group.active ? "active" : ""}
       >
         <img src={groupIconInfo.icon} alt="group-icon" />
@@ -71,12 +64,12 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
 
   interface MenuProps {
     groupedEntries: EntityGroup[];
-    toggleEntryGroup: (title: string) => void;
+    activateGroup: (title: string) => void;
   }
 
   const DesktopMenu: React.FunctionComponent<MenuProps> = ({
     groupedEntries,
-    toggleEntryGroup
+    activateGroup
   }) => {
     return (
       <ul className="menu-desktop">
@@ -84,7 +77,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
           <ListItemMemo
             group={ge}
             key={ge.title}
-            toggleEntryGroup={title => toggleEntryGroup(title)}
+            activateGroup={title => activateGroup(title)}
           />
         ))}
       </ul>
@@ -95,7 +88,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
 
   const MobileMenu: React.FunctionComponent<MenuProps> = ({
     groupedEntries,
-    toggleEntryGroup
+    activateGroup
   }) => {
     const activeEntry = groupedEntries.find(ge => ge.active);
     return (
@@ -111,7 +104,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
                 <ul>
                   <ListItemMemo
                     group={activeEntry}
-                    toggleEntryGroup={() => null}
+                    activateGroup={() => null}
                     dropdown={true}
                   />
                 </ul>
@@ -126,7 +119,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
                 <ListItemMemo
                   key={ge.title}
                   group={ge}
-                  toggleEntryGroup={title => toggleEntryGroup(title)}
+                  activateGroup={title => activateGroup(title)}
                 />
               ))}
             </ul>
@@ -140,11 +133,11 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
     <div className={menuClasses}>
       <MobileMenu
         groupedEntries={groupedEntries}
-        toggleEntryGroup={title => toggleEntryGroup(title)}
+        activateGroup={title => activateGroup(title)}
       />
       <DesktopMenu
         groupedEntries={groupedEntries}
-        toggleEntryGroup={title => toggleEntryGroup(title)}
+        activateGroup={title => activateGroup(title)}
       />
     </div>
   );
