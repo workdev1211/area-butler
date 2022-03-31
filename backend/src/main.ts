@@ -21,6 +21,7 @@ async function bootstrap() {
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()
+      .addBearerAuth()
       .setTitle('AreaButler')
       .setDescription('The Area Butler API description')
       .setVersion('1.0')

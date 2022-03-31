@@ -21,13 +21,14 @@ import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
 import { mapUserToApiUser } from './mapper/user.mapper';
 import { SubscriptionService } from './subscription.service';
 import { UserService } from './user.service';
-import { ApiProperty, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import ApiUserDto from '../dto/api-user.dto';
 import ApiUserSubscriptionDto from '../dto/api-user-subscription.dto';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 
 @ApiTags('users')
+@ApiBearerAuth()
 @Controller('api/users')
 @UseGuards(AuthGuard('jwt'))
 export class UserController {
@@ -60,9 +61,9 @@ export class UserController {
       requestUser.email,
       requestUser.email,
     );
-    return (await this.subscriptionService.allUserSubscriptions(user._id)).map(
-      (s) => mapSubscriptionToApiSubscription(s),
-    );
+    return (
+      await this.subscriptionService.allUserSubscriptions(user._id)
+    ).map(s => mapSubscriptionToApiSubscription(s));
   }
 
   @ApiProperty({ description: 'Update the current user' })

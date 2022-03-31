@@ -3,9 +3,10 @@ import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { OverpassDataService } from './overpass-data/overpass-data.service';
 import { Role, Roles } from '../auth/roles.decorator';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('overpass')
+@ApiBearerAuth()
 @Controller('api/data-provision')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class DataProvisionController {
