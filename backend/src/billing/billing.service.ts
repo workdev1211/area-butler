@@ -1,4 +1,3 @@
-import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { HttpException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
 import { StripeService } from 'src/client/stripe/stripe.service';
@@ -20,6 +19,7 @@ import {
   SlackChannel,
   SlackSenderService,
 } from 'src/client/slack/slack-sender.service';
+import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 
 @Injectable()
 export class BillingService {
@@ -36,7 +36,7 @@ export class BillingService {
 
   async createCheckoutSessionUrl(
     user: UserDocument,
-    createCheckout: ApiCreateCheckout,
+    createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
     const existingsSubscriptions =
       await this.subscriptionService.allUserSubscriptions(user._id);

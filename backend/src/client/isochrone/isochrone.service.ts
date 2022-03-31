@@ -1,13 +1,13 @@
-import {
-  ApiCoordinates,
-  ApiIsochrone,
-  MeansOfTransportation,
-  UnitsOfTransportation,
-} from '@area-butler-types/types';
 import { Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';
 import { meansOfTransportations } from '../../../../shared/constants/constants';
 import { HttpService } from '@nestjs/axios';
+import {
+  MeansOfTransportation,
+  UnitsOfTransportation,
+} from '@area-butler-types/types';
+import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
+import ApiIsochroneDto from '../../dto/api-isochrone.dto';
 
 @Injectable()
 export class IsochroneService {
@@ -17,10 +17,10 @@ export class IsochroneService {
 
   async fetchIsochrone(
     preferredMeansOfTransportation: MeansOfTransportation,
-    coordinates: ApiCoordinates,
+    coordinates: ApiCoordinatesDto,
     limit: number,
     unit: UnitsOfTransportation,
-  ): Promise<ApiIsochrone> {
+  ): Promise<ApiIsochroneDto> {
     const contour =
       unit === UnitsOfTransportation.KILOMETERS
         ? 'contours_meters'
@@ -32,7 +32,6 @@ export class IsochroneService {
     const params = {
       [contour]: `${limit}`,
       polygons: true,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       access_token: configService.getMapBoxAccessToken(),
     };
 

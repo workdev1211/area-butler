@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';

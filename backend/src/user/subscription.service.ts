@@ -5,12 +5,10 @@ import {
   Subscription,
   SubscriptionDocument,
 } from './schema/subscription.schema';
-import {
-  ApiSubscriptionPlan,
-  ApiSubscriptionPlanType,
-} from '@area-butler-types/subscription-plan';
 import { configService } from '../config/config.service';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import ApiSubscriptionPlanDto from '../dto/api-subscription-plan.dto';
+import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class SubscriptionService {
@@ -23,10 +21,10 @@ export class SubscriptionService {
 
   public getApiSubscriptionPlanForStripePriceId(
     stripePriceId: string,
-  ): ApiSubscriptionPlan | undefined {
+  ): ApiSubscriptionPlanDto | undefined {
     const stripeEnv = configService.getStripeEnv();
     return Object.values(allSubscriptions).find(
-      (subscription: ApiSubscriptionPlan) =>
+      (subscription: ApiSubscriptionPlanDto) =>
         subscription.priceIds[stripeEnv].annuallyId === stripePriceId ||
         subscription.priceIds[stripeEnv].monthlyId === stripePriceId,
     );
@@ -34,7 +32,7 @@ export class SubscriptionService {
 
   public async checkSubscriptionViolation(
     userId: string,
-    check: (subscription: ApiSubscriptionPlan) => boolean,
+    check: (subscription: ApiSubscriptionPlanDto) => boolean,
     message: string,
   ): Promise<void> {
     const userSubscription = await this.findActiveByUserId(userId);

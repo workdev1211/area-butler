@@ -1,6 +1,5 @@
 import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
-import { ApiGeometry } from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
@@ -10,6 +9,7 @@ import {
   FederalElection,
   FederalElectionDocument,
 } from '../schemas/federal-election.schema';
+import ApiGeometryDto from '../../dto/api-geometry.dto';
 
 export const distinctValues = (value: any, index: any, self: any) =>
   self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) ===
@@ -57,7 +57,7 @@ export class FederalElectionService {
     return;
   }
 
-  async findIntersecting(query: ApiGeometry, user: UserDocument) {
+  async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       (subscription) =>

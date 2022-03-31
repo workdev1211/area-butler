@@ -1,20 +1,18 @@
-import {
-  ApiCoordinates,
-  ApiSearchResponse,
-  ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-} from '@area-butler-types/types';
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
 import { randomizeCoordinates } from '../../shared/shared.functions';
+import ApiSearchResultSnapshotResponseDto from '../../dto/api-search-result-snapshot-response.dto';
+import ApiSearchResultSnapshotDto from '../../dto/api-search-result-snapshot.dto';
+import ApiSearchResultSnapshotConfigDto from '../../dto/api-search-result-snapshot-config.dto';
+import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
+import ApiSearchResponseDto from '../../dto/api-search-response.dto';
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
   embed = false,
   realEstateListings: RealEstateListingDocument[] = [],
-): ApiSearchResultSnapshotResponse => {
+): ApiSearchResultSnapshotResponseDto => {
   const centerOfLocation = searchResultSnapshot.snapshot.location;
   // filter / hide real estate listings
   const mappedListings = realEstateListings
@@ -69,20 +67,20 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
 };
 
 const mapSearchResultSnapshot = (
-  snapshot: ApiSearchResultSnapshot,
-  config: ApiSearchResultSnapshotConfig,
+  snapshot: ApiSearchResultSnapshotDto,
+  config: ApiSearchResultSnapshotConfigDto,
   embed: boolean,
-): ApiSearchResultSnapshot => {
+): ApiSearchResultSnapshotDto => {
   if (!embed || !config || config.showLocation !== false) {
     return snapshot;
   }
 
-  const randomizedCoordinates: ApiCoordinates = randomizeCoordinates(
+  const randomizedCoordinates: ApiCoordinatesDto = randomizeCoordinates(
     snapshot.location,
   );
 
   // no location
-  const searchResponseWithoutLocation: ApiSearchResponse = {
+  const searchResponseWithoutLocation: ApiSearchResponseDto = {
     ...snapshot.searchResponse,
     centerOfInterest: {
       coordinates: randomizedCoordinates,

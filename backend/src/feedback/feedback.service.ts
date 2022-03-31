@@ -1,4 +1,3 @@
-import { ApiInsertFeedback, FeedbackType } from '@area-butler-types/types';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -8,6 +7,8 @@ import {
 } from 'src/client/slack/slack-sender.service';
 import { UserDocument } from 'src/user/schema/user.schema';
 import { Feedback, FeedbackDocument } from './schema/feedback.schema';
+import ApiInsertFeedbackDto from '../dto/api-insert-feedback.dto';
+import { FeedbackType } from '@area-butler-types/types';
 
 @Injectable()
 export class FeedbackService {
@@ -19,7 +20,7 @@ export class FeedbackService {
 
   public async postFeedback(
     user: UserDocument,
-    { description, type }: ApiInsertFeedback,
+    { description, type }: ApiInsertFeedbackDto,
   ) {
     const newFeedbackDocument = await new this.feedbackModel({
       userId: user.id,
@@ -33,7 +34,7 @@ export class FeedbackService {
   private async sendFeedbackToSlack(feedbackDocument: FeedbackDocument) {
     const textBlocks = [
       'Area-Butler Feedback',
-      `*Art:* ${this.deriveType(feedbackDocument.type)}\n*ID:* ${
+      `*Art:* ${FeedbackService.deriveType(feedbackDocument.type)}\n*ID:* ${
         feedbackDocument.id
       }`,
       `*Beschreibung:*\n ${feedbackDocument.description}`,
@@ -44,7 +45,7 @@ export class FeedbackService {
     });
   }
 
-  private deriveType(type: FeedbackType) {
+  private static deriveType(type: FeedbackType) {
     switch (type) {
       case 'ERROR':
         return 'Fehler';

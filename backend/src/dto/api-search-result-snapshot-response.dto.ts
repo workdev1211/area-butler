@@ -3,7 +3,8 @@ import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-confi
 import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
 
 class ApiSearchResultSnapshotResponseDto
-  implements ApiSearchResultSnapshotResponse {
+  implements ApiSearchResultSnapshotResponse
+{
   config?: ApiSearchResultSnapshotConfigDto;
   createdAt: Date;
   description?: string;

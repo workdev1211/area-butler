@@ -1,19 +1,3 @@
-import {
-  ApiIsochrone,
-  ApiOsmEntityCategory,
-  ApiOsmLocation,
-  ApiSearch,
-  ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-  ApiUpdateSearchResultSnapshot,
-  ApiUserRequests,
-  MeansOfTransportation,
-  OsmName,
-  OsmType,
-  TransportationParam,
-  UnitsOfTransportation,
-} from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -38,6 +22,22 @@ import {
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
 import ApiSearchResponseDto from '../dto/api-search-response.dto';
+import ApiSearchDto from '../dto/api-search.dto';
+import TransportationParamDto from '../dto/transportation-param.dto';
+import {
+  ApiOsmEntityCategory,
+  MeansOfTransportation,
+  OsmName,
+  OsmType,
+  UnitsOfTransportation,
+} from '@area-butler-types/types';
+import ApiOsmLocationDto from '../dto/api-osm-location.dto';
+import ApiIsochroneDto from '../dto/api-isochrone.dto';
+import ApiUserRequestsDto from '../dto/api-user-requests.dto';
+import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
+import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
+import ApiSearchResultSnapshotConfigDto from '../dto/api-search-result-snapshot-config.dto';
+import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 
 const crypto = require('crypto');
 @Injectable()
@@ -56,7 +56,7 @@ export class LocationService {
 
   async searchLocation(
     user: UserDocument,
-    search: ApiSearch,
+    search: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
     const newRequest =
       (await this.locationModel.count({
@@ -67,10 +67,10 @@ export class LocationService {
     if (newRequest) {
       await this.subscriptionService.checkSubscriptionViolation(
         user._id,
-        _ =>
+        (_) =>
           user.requestsExecuted + 1 >
           retrieveTotalRequestContingent(user)
-            .map(c => c.amount)
+            .map((c) => c.amount)
             .reduce((acc, inc) => acc + inc),
         'Im aktuellen Monat sind keine weiteren Abfragen möglich',
       );
@@ -81,7 +81,7 @@ export class LocationService {
 
     const routingProfiles = {};
 
-    function deriveMeterEquivalent(routingProfile: TransportationParam) {
+    function deriveMeterEquivalent(routingProfile: TransportationParamDto) {
       const { amount } = routingProfile;
       if (routingProfile.unit === UnitsOfTransportation.KILOMETERS) {
         // convert km to m
@@ -93,7 +93,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              mtm => mtm.mean === MeansOfTransportation.BICYCLE,
+              (mtm) => mtm.mean === MeansOfTransportation.BICYCLE,
             )?.multiplicator
           );
         case MeansOfTransportation.CAR:
@@ -101,7 +101,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              mtm => mtm.mean === MeansOfTransportation.CAR,
+              (mtm) => mtm.mean === MeansOfTransportation.CAR,
             )?.multiplicator
           );
         case MeansOfTransportation.WALK:
@@ -109,7 +109,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              mtm => mtm.mean === MeansOfTransportation.WALK,
+              (mtm) => mtm.mean === MeansOfTransportation.WALK,
             )?.multiplicator
           );
         default:
@@ -173,39 +173,38 @@ export class LocationService {
       },
       routingProfiles: routingProfiles as Record<
         MeansOfTransportation,
-        { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }
+        { locationsOfInterest: ApiOsmLocationDto[]; isochrone: ApiIsochroneDto }
       >,
     };
   }
 
-  async latestUserRequests(user: UserDocument): Promise<ApiUserRequests> {
+  async latestUserRequests(user: UserDocument): Promise<ApiUserRequestsDto> {
     const requests = (
       await this.locationModel
         .find({ userId: user._id })
         .sort({ createdAt: -1 })
-    ).map(d => d.locationSearch);
+    ).map((d) => d.locationSearch);
 
     const grouped = groupBy(
       requests,
-      (request: ApiSearch) =>
+      (request: ApiSearchDto) =>
         `${request.coordinates.lat}${request.coordinates.lng}`,
     );
 
     return {
-      requests: Object.values(grouped).map(g => g[0]),
+      requests: Object.values(grouped).map((g) => g[0]),
     };
   }
 
   async createSearchResultSnapshot(
     user: UserDocument,
-    snapshot: ApiSearchResultSnapshot,
-  ): Promise<ApiSearchResultSnapshotResponse> {
+    snapshot: ApiSearchResultSnapshotDto,
+  ): Promise<ApiSearchResultSnapshotResponseDto> {
     const token = crypto.randomBytes(60).toString('hex');
-    const {
-      mapboxAccessToken,
-    } = await this.userService.createMapboxAccessToken(user);
+    const { mapboxAccessToken } =
+      await this.userService.createMapboxAccessToken(user);
 
-    const config: ApiSearchResultSnapshotConfig = {
+    const config: ApiSearchResultSnapshotConfigDto = {
       showLocation: true,
       groupItems: true,
     };
@@ -247,18 +246,16 @@ export class LocationService {
   async updateSearchResultSnapshot(
     user: UserDocument,
     id: string,
-    { snapshot, config }: ApiUpdateSearchResultSnapshot,
+    { snapshot, config }: ApiUpdateSearchResultSnapshotDto,
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription => !subscription.appFeatures.htmlSnippet,
+      (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
-      user,
-      id,
-    );
+    const snapshotDoc: SearchResultSnapshotDocument =
+      await this.fetchEmbeddableMap(user, id);
 
     snapshotDoc.snapshot = snapshot;
     snapshotDoc.config = config;
@@ -273,14 +270,12 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription => !subscription.appFeatures.htmlSnippet,
+      (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
-      user,
-      id,
-    );
+    const snapshotDoc: SearchResultSnapshotDocument =
+      await this.fetchEmbeddableMap(user, id);
 
     snapshotDoc.description = description;
     return await snapshotDoc.save();
@@ -298,7 +293,7 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription => !subscription.appFeatures.htmlSnippet,
+      (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
@@ -311,7 +306,7 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription => !subscription.appFeatures.htmlSnippet,
+      (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 

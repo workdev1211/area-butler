@@ -26,9 +26,8 @@ export class SearchResultSnapshotController {
     );
     const { userId } = snapshot;
     const user = await this.userService.findById(userId);
-    const realEstateListings = await this.realEstateListingService.getRealEstateListings(
-      user,
-    );
+    const realEstateListings =
+      await this.realEstateListingService.getRealEstateListings(user);
     return mapSearchResultSnapshotToApiEmbeddableMap(
       snapshot,
       true,

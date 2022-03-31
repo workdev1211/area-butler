@@ -2,9 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ZensusAtlas, ZensusAtlasDocument } from './schema/zensus-atlas.schema';
 import { Connection, Model, Promise } from 'mongoose';
-import { ApiGeojsonFeature, ApiGeometry } from '@area-butler-types/types';
 import { SubscriptionService } from 'src/user/subscription.service';
 import { UserDocument } from 'src/user/schema/user.schema';
+import { ApiGeojsonFeature } from '@area-butler-types/types';
+import ApiGeometryDto from '../dto/api-geometry.dto';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
 
 @Injectable()
@@ -57,7 +58,7 @@ export class ZensusAtlasService {
     return this.zensusAtlasModel.findById(id);
   }
 
-  async findIntersecting(user: UserDocument, query: ApiGeometry) {
+  async findIntersecting(user: UserDocument, query: ApiGeometryDto) {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       (subscription) =>

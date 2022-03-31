@@ -6,7 +6,8 @@ import {
 import ApiSnippetEntityVisiblityDto from './api-snippet-entity-visiblity.dto';
 
 class ApiSearchResultSnapshotConfigDto
-  implements ApiSearchResultSnapshotConfig {
+  implements ApiSearchResultSnapshotConfig
+{
   defaultActiveGroups?: string[];
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisiblityDto[];

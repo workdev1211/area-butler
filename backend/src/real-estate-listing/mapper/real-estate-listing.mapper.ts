@@ -1,11 +1,11 @@
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { RealEstateListingDocument } from '../schema/real-estate-listing.schema';
 import { randomizeCoordinates } from '../../shared/shared.functions';
+import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
   showLocation = true,
-): ApiRealEstateListing => {
+): ApiRealEstateListingDto => {
   return {
     id: realEstateListing.id,
     name: realEstateListing.name,

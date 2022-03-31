@@ -1,4 +1,3 @@
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import {
@@ -6,7 +5,6 @@ import {
   RequestContingentIncreasedEvent,
   SubscriptionCreatedEvent,
   SubscriptionRenewedEvent,
-  UserEvent,
 } from 'src/event/event.types';
 import { StripeService } from '../../client/stripe/stripe.service';
 import { SubscriptionService } from '../subscription.service';
@@ -14,8 +12,6 @@ import { UserService } from '../user.service';
 
 @Injectable()
 export class SubscriptionListener {
-  private logger: Logger = new Logger(SubscriptionListener.name);
-
   constructor(
     private userService: UserService,
     private subscriptionService: SubscriptionService,

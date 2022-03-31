@@ -16,4 +16,4 @@ class ApiPotentialCustomerDto implements ApiPotentialCustomer {
   routingProfiles: TransportationParamDto[];
 }
 
-export default ApiPotentialCustomerDto
+export default ApiPotentialCustomerDto;

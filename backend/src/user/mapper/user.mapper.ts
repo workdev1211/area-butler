@@ -1,15 +1,15 @@
-import { ApiUser } from '@area-butler-types/types';
 import {
   retrieveTotalRequestContingent,
   UserDocument,
 } from '../schema/user.schema';
 import { SubscriptionDocument } from '../schema/subscription.schema';
 import { mapSubscriptionToApiSubscription } from './subscription.mapper';
+import ApiUserDto from '../../dto/api-user.dto';
 
 export const mapUserToApiUser = (
   user: UserDocument,
   subscription?: SubscriptionDocument,
-): ApiUser => ({
+): ApiUserDto => ({
   fullname: user.fullname,
   email: user.email,
   subscriptionPlan: subscription

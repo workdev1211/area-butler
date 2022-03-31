@@ -34,7 +34,7 @@ export class RealEstateListingController extends AuthenticatedController {
   ): Promise<ApiRealEstateListingDto[]> {
     return (
       await this.realEstateListingService.getRealEstateListings(user)
-    ).map(l => mapRealEstateListingToApiRealEstateListing(l));
+    ).map((l) => mapRealEstateListingToApiRealEstateListing(l));
   }
 
   @ApiOperation({ description: 'Insert a new real estate listing' })

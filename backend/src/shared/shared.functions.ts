@@ -1,4 +1,4 @@
-import { ApiCoordinates } from '@area-butler-types/types';
+import ApiCoordinatesDto from '../dto/api-coordinates.dto';
 
 export const randomInt = (min = -10, max = 10) => {
   min = Math.ceil(min);
@@ -9,7 +9,7 @@ export const randomInt = (min = -10, max = 10) => {
 export const randomizeCoordinates = ({
   lat,
   lng,
-}: ApiCoordinates): ApiCoordinates => {
+}: ApiCoordinatesDto): ApiCoordinatesDto => {
   const d1 = randomInt() / 10000;
   const d2 = randomInt() / 10000;
   return {

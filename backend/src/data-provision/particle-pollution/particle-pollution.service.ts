@@ -1,5 +1,4 @@
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
-import { ApiGeojsonFeature, ApiGeometry } from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
@@ -9,6 +8,8 @@ import {
   ParticlePollution,
   ParticlePollutionDocument,
 } from '../schemas/particle-pollution.schema';
+import { ApiGeojsonFeature } from '@area-butler-types/types';
+import ApiGeometryDto from '../../dto/api-geometry.dto';
 
 @Injectable()
 export class ParticlePollutionService {
@@ -51,7 +52,7 @@ export class ParticlePollutionService {
     return;
   }
 
-  async findIntersecting(query: ApiGeometry, user: UserDocument) {
+  async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
       (subscription) =>

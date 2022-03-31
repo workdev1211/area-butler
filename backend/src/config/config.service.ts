@@ -1,4 +1,4 @@
-import { RollbarConfig } from '@area-butler-types/types';
+import RollbarConfigDto from '../dto/rollbar-config.dto';
 
 require('dotenv').config();
 
@@ -116,7 +116,7 @@ class ConfigService {
     return this.getValue('HERE_TRANSIT_ROUTER_API_URL');
   }
 
-  getRollbarConfig(): RollbarConfig {
+  getRollbarConfig(): RollbarConfigDto {
     return {
       accessToken: this.getValue('ROLLBAR_ACCESS_TOKEN', false) || '',
       environment: this.getValue('ROLLBAR_ENVIRONMENT', false) || 'local',

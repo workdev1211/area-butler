@@ -1,8 +1,3 @@
-import {
-  ApiUpsertPotentialCustomer,
-  ApiUpsertQuestionnaire,
-  ApiUpsertQuestionnaireRequest,
-} from '@area-butler-types/potential-customer';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -22,6 +17,9 @@ import {
 } from 'src/client/mail/mail-sender.service';
 import { configService } from 'src/config/config.service';
 import { SubscriptionService } from '../user/subscription.service';
+import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
+import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-request.dto';
+import ApiUpsertQuestionnaireDto from '../dto/api-upsert-questionnaire.dto';
 
 const crypto = require('crypto');
 
@@ -45,7 +43,7 @@ export class PotentialCustomerService {
 
   async insertPotentialCustomer(
     user: UserDocument,
-    { ...upsertData }: ApiUpsertPotentialCustomer,
+    { ...upsertData }: ApiUpsertPotentialCustomerDto,
     subscriptionCheck = true,
   ): Promise<PotentialCustomerDocument> {
     subscriptionCheck &&
@@ -69,7 +67,7 @@ export class PotentialCustomerService {
   async updatePotentialCustomer(
     user: UserDocument,
     id: string,
-    { ...upsertData }: Partial<ApiUpsertPotentialCustomer>,
+    { ...upsertData }: Partial<ApiUpsertPotentialCustomerDto>,
   ): Promise<PotentialCustomerDocument> {
     const oid = new Types.ObjectId(id);
     const potentialCustomer = await this.potentialCustomerModel.findById({
@@ -112,7 +110,7 @@ export class PotentialCustomerService {
 
   async insertQuestionnaireRequest(
     user: UserDocument,
-    { ...upsertData }: ApiUpsertQuestionnaireRequest,
+    { ...upsertData }: ApiUpsertQuestionnaireRequestDto,
   ): Promise<QuestionnaireRequestDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
@@ -157,7 +155,7 @@ export class PotentialCustomerService {
   async upsertCustomerFromQuestionnaire({
     token,
     customer,
-  }: ApiUpsertQuestionnaire) {
+  }: ApiUpsertQuestionnaireDto) {
     const questionnaireRequest = await this.questionnaireRequestModel.findOne({
       token,
     });

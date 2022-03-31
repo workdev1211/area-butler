@@ -1,12 +1,3 @@
-import {
-  ApiRequestContingentType,
-  ApiSubscriptionPlanType,
-} from '@area-butler-types/subscription-plan';
-import {
-  ApiTour,
-  ApiUpsertUser,
-  ApiUserSettings,
-} from '@area-butler-types/types';
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
@@ -16,6 +7,13 @@ import { EventType, UserEvent } from 'src/event/event.types';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
+import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
+import {
+  ApiRequestContingentType,
+  ApiSubscriptionPlanType,
+} from '@area-butler-types/subscription-plan';
+import { ApiTour } from '@area-butler-types/types';
+import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 
 @Injectable()
 export class UserService {
@@ -49,7 +47,7 @@ export class UserService {
     }
   }
 
-  public async patchUser(email: string, { fullname }: ApiUpsertUser) {
+  public async patchUser(email: string, { fullname }: ApiUpsertUserDto) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -62,7 +60,7 @@ export class UserService {
   }
 
   public async giveConsent(email: string) {
-    let existingUser = await this.upsertUser(email, email);
+    const existingUser = await this.upsertUser(email, email);
 
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
@@ -241,7 +239,7 @@ export class UserService {
     return Promise.resolve(user);
   }
 
-  async updateSettings(email, settings: ApiUserSettings) {
+  async updateSettings(email, settings: ApiUserSettingsDto) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -276,8 +274,9 @@ export class UserService {
 
   async createMapboxAccessToken(user: UserDocument): Promise<UserDocument> {
     if (!user.mapboxAccessToken) {
-      const token = await this.mapboxService.createAccessToken(user.id);
-      user.mapboxAccessToken = token;
+      user.mapboxAccessToken = await this.mapboxService.createAccessToken(
+        user.id,
+      );
       return await user.save();
     }
     return user;

@@ -1,4 +1,3 @@
-import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
@@ -8,6 +7,7 @@ import {
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
 import { SubscriptionService } from '../user/subscription.service';
+import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 
 @Injectable()
 export class RealEstateListingService {
@@ -25,7 +25,7 @@ export class RealEstateListingService {
 
   async insertRealEstateListing(
     user: UserDocument,
-    { coordinates, ...upsertData }: ApiUpsertRealEstateListing,
+    { coordinates, ...upsertData }: ApiUpsertRealEstateListingDto,
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
     subscriptionCheck &&
@@ -56,7 +56,7 @@ export class RealEstateListingService {
   async updateRealEstateListing(
     user: UserDocument,
     id: string,
-    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListing>,
+    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListingDto>,
   ): Promise<RealEstateListingDocument> {
     const oid = new Types.ObjectId(id);
     const existingListing = await this.realEstateListingModel.findById({

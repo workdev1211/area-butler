@@ -1,13 +1,11 @@
 import { Injectable, Logger } from '@nestjs/common';
-import {
-  ApiCoordinates,
-  ApiGeometry,
-  MeansOfTransportation,
-} from '@area-butler-types/types';
 import { configService } from '../config/config.service';
 import { ApiRoute, ApiTransitRoute } from '@area-butler-types/routing';
 import * as poly from '@liberty-rider/flexpolyline';
 import { HttpService } from '@nestjs/axios';
+import { MeansOfTransportation } from '@area-butler-types/types';
+import ApiCoordinatesDto from '../dto/api-coordinates.dto';
+import ApiGeometryDto from '../dto/api-geometry.dto';
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
@@ -94,8 +92,8 @@ export class RoutingService {
   constructor(private httpService: HttpService) {}
 
   async getRoute(
-    origin: ApiCoordinates,
-    destination: ApiCoordinates,
+    origin: ApiCoordinatesDto,
+    destination: ApiCoordinatesDto,
     meansOfTransportation: MeansOfTransportation,
   ): Promise<ApiRoute | undefined> {
     try {
@@ -128,7 +126,7 @@ export class RoutingService {
             geometry: {
               type: 'LineString',
               coordinates: poly.decode(s.polyline).polyline.map(switchCoords),
-            } as ApiGeometry,
+            } as ApiGeometryDto,
             transportMode: s.transport.mode,
           })),
         };
@@ -143,8 +141,8 @@ export class RoutingService {
   }
 
   async getTransitRoute(
-    origin: ApiCoordinates,
-    destination: ApiCoordinates,
+    origin: ApiCoordinatesDto,
+    destination: ApiCoordinatesDto,
   ): Promise<ApiTransitRoute | undefined> {
     try {
       const request: HereApiTransitRoutingRequest = {
@@ -176,7 +174,7 @@ export class RoutingService {
             geometry: {
               type: 'LineString',
               coordinates: poly.decode(s.polyline).polyline.map(switchCoords),
-            } as ApiGeometry,
+            } as ApiGeometryDto,
             transportMode: s.transport.mode,
           })),
         };

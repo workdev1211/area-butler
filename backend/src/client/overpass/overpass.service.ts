@@ -1,10 +1,3 @@
-import {
-  ApiAddress,
-  ApiCoordinates,
-  ApiOsmEntity,
-  ApiOsmLocation,
-  OsmName,
-} from '@area-butler-types/types';
 import { Injectable, Logger } from '@nestjs/common';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
@@ -14,6 +7,11 @@ import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
 import { HttpService } from '@nestjs/axios';
+import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
+import { OsmName } from '@area-butler-types/types';
+import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
+import ApiAddressDto from '../../dto/api-address.dto';
+import ApiOsmEntityDto from '../../dto/api-osm-entity.dto';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
 
@@ -25,10 +23,10 @@ export class OverpassService {
   constructor(private http: HttpService) {}
 
   async fetchEntites(
-    coordinates: ApiCoordinates,
+    coordinates: ApiCoordinatesDto,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocation[]> {
+  ): Promise<ApiOsmLocationDto[]> {
     const requestParams = await this.deriveRequestParams(
       coordinates,
       distanceInMeters,
@@ -49,8 +47,8 @@ export class OverpassService {
 
   async mapResponse(
     response,
-    centerCoordinates: ApiCoordinates,
-  ): Promise<ApiOsmLocation[]> {
+    centerCoordinates: ApiCoordinatesDto,
+  ): Promise<ApiOsmLocationDto[]> {
     const elements = Array.isArray(response)
       ? response
       : response?.data?.elements;
@@ -88,7 +86,7 @@ export class OverpassService {
         { unit: 'meter' },
       );
 
-      const address: ApiAddress = {
+      const address: ApiAddressDto = {
         street: `${elementTags['addr:street']}${
           !!elementTags['addr:housenumber']
             ? ' ' + elementTags['addr:housenumber']
@@ -166,7 +164,7 @@ export class OverpassService {
   }
 
   private async deriveRequestParams(
-    coordinates: ApiCoordinates,
+    coordinates: ApiCoordinatesDto,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
   ) {
@@ -191,7 +189,9 @@ export class OverpassService {
     return queryParts.join('');
   }
 
-  async fetchForEntityType(entitType: ApiOsmEntity): Promise<OverpassData[]> {
+  async fetchForEntityType(
+    entitType: ApiOsmEntityDto,
+  ): Promise<OverpassData[]> {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entitType.type}"="${entitType.name}"];way["${entitType.type}"="${entitType.name}"];relation["${entitType.type}"="${entitType.name}"];);out center;`;
     const hasCoordinates = (e) => e.center || (e.lat && e.lon);
     try {

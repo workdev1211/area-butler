@@ -5,4 +5,4 @@ class ApiUserRequestsDto implements ApiUserRequests {
   requests: ApiSearchDto[];
 }
 
-export default ApiUserRequestsDto
+export default ApiUserRequestsDto;
