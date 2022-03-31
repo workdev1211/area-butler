@@ -11,7 +11,7 @@ import distanceIcon from "../../../assets/icons/icons-32-x-32-illustrated-ic-dis
 import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import LocalityItem from "../../../components/LocalityItem";
+import LocalityItem from "./locality-item/LocalityItem";
 import React, { useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,

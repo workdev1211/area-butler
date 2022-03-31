@@ -7,7 +7,7 @@ import {
   MeansOfTransportation
 } from "../../../../shared/types/types";
 import "./EditorMapMenu.scss";
-import { LocalityItemContent } from "../../components/LocalityItem";
+import { LocalityItemContent } from "../menu/menu-item/locality-item/LocalityItem";
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {

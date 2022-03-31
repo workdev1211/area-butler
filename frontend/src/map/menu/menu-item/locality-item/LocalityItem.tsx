@@ -1,12 +1,21 @@
 import React from "react";
-import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
-import { MeansOfTransportation, OsmName } from "../../../shared/types/types";
+import {
+  EntityRoute,
+  EntityTransitRoute
+} from "../../../../../../shared/types/routing";
+import {
+  MeansOfTransportation,
+  OsmName
+} from "../../../../../../shared/types/types";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
   timeToHumanReadable
-} from "../shared/shared.functions";
-import { EntityGroup, ResultEntity } from "./SearchResultContainer";
+} from "../../../../shared/shared.functions";
+import {
+  EntityGroup,
+  ResultEntity
+} from "../../../../components/SearchResultContainer";
 import "./LocalityItem.scss";
 
 export interface LocalityItemProps {

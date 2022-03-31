@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -20,6 +20,7 @@ import { BillingModule } from './billing/billing.module';
 import { ScheduleModule } from '@nestjs/schedule';
 import { DataProvisionModule } from './data-provision/data-provision.module';
 import { HealthModule } from './health/health.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [

@@ -1,4 +1,4 @@
-import { HttpModule, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { UserModule } from 'src/user/user.module';
 import { ClientModule } from '../client/client.module';
@@ -20,6 +20,7 @@ import {
   ParticlePollution,
   ParticlePollutionSchema,
 } from './schemas/particle-pollution.schema';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   providers: [
