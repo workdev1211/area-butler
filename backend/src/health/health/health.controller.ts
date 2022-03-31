@@ -4,7 +4,9 @@ import {
   HealthCheck,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
+@ApiTags('health')
 @Controller('api/health')
 export class HealthController {
   constructor(
@@ -12,6 +14,9 @@ export class HealthController {
     private mongooseIndicator: MongooseHealthIndicator,
   ) {}
 
+  @ApiOperation({
+    description: 'Perform a health check including the database',
+  })
   @Get()
   @HealthCheck()
   check() {

@@ -19,6 +19,12 @@ export interface ApiConfig {
   stripeEnv: "dev" | "prod";
   rollbarConfig: RollbarConfig;
 }
+
+export interface MapBoxStyle {
+  key: string;
+  label: string;
+}
+
 export interface ApiUser {
   fullname: string;
   email: string;
@@ -30,7 +36,7 @@ export interface ApiUser {
   logo?: string;
   mapIcon?: string;
   color?: string;
-  additionalMapBoxStyles: { key: string; label: string }[];
+  additionalMapBoxStyles: MapBoxStyle[];
 }
 
 export interface ApiUpsertUser {

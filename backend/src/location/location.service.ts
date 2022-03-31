@@ -3,7 +3,6 @@ import {
   ApiOsmEntityCategory,
   ApiOsmLocation,
   ApiSearch,
-  ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
@@ -38,6 +37,7 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
+import ApiSearchResponseDto from '../dto/api-search-response.dto';
 
 const crypto = require('crypto');
 @Injectable()
@@ -57,7 +57,7 @@ export class LocationService {
   async searchLocation(
     user: UserDocument,
     search: ApiSearch,
-  ): Promise<ApiSearchResponse> {
+  ): Promise<ApiSearchResponseDto> {
     const newRequest =
       (await this.locationModel.count({
         userId: user._id,
@@ -67,10 +67,10 @@ export class LocationService {
     if (newRequest) {
       await this.subscriptionService.checkSubscriptionViolation(
         user._id,
-        (_) =>
+        _ =>
           user.requestsExecuted + 1 >
           retrieveTotalRequestContingent(user)
-            .map((c) => c.amount)
+            .map(c => c.amount)
             .reduce((acc, inc) => acc + inc),
         'Im aktuellen Monat sind keine weiteren Abfragen möglich',
       );
@@ -93,7 +93,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.BICYCLE,
+              mtm => mtm.mean === MeansOfTransportation.BICYCLE,
             )?.multiplicator
           );
         case MeansOfTransportation.CAR:
@@ -101,7 +101,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.CAR,
+              mtm => mtm.mean === MeansOfTransportation.CAR,
             )?.multiplicator
           );
         case MeansOfTransportation.WALK:
@@ -109,7 +109,7 @@ export class LocationService {
             amount *
             1.2 *
             calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.WALK,
+              mtm => mtm.mean === MeansOfTransportation.WALK,
             )?.multiplicator
           );
         default:
@@ -183,7 +183,7 @@ export class LocationService {
       await this.locationModel
         .find({ userId: user._id })
         .sort({ createdAt: -1 })
-    ).map((d) => d.locationSearch);
+    ).map(d => d.locationSearch);
 
     const grouped = groupBy(
       requests,
@@ -192,7 +192,7 @@ export class LocationService {
     );
 
     return {
-      requests: Object.values(grouped).map((g) => g[0]),
+      requests: Object.values(grouped).map(g => g[0]),
     };
   }
 
@@ -201,8 +201,9 @@ export class LocationService {
     snapshot: ApiSearchResultSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const token = crypto.randomBytes(60).toString('hex');
-    const { mapboxAccessToken } =
-      await this.userService.createMapboxAccessToken(user);
+    const {
+      mapboxAccessToken,
+    } = await this.userService.createMapboxAccessToken(user);
 
     const config: ApiSearchResultSnapshotConfig = {
       showLocation: true,
@@ -250,12 +251,14 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      subscription => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchEmbeddableMap(user, id);
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
+      user,
+      id,
+    );
 
     snapshotDoc.snapshot = snapshot;
     snapshotDoc.config = config;
@@ -270,12 +273,14 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      subscription => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchEmbeddableMap(user, id);
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchEmbeddableMap(
+      user,
+      id,
+    );
 
     snapshotDoc.description = description;
     return await snapshotDoc.save();
@@ -293,7 +298,7 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      subscription => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
@@ -306,7 +311,7 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      subscription => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 

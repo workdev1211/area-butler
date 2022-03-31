@@ -21,27 +21,35 @@ import {
   mapQuestionnaireRequestToApiQuestionnaireRequest,
 } from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import ApiPotentialCustomerDto from '../dto/api-potential-customer.dto';
+import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
+import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-request.dto';
+import ApiQuestionnaireRequestDto from '../dto/api-questionnaire-request.dto';
 
+@ApiTags('potential-customers')
 @Controller('api/potential-customers')
 export class PotentialCustomerController extends AuthenticatedController {
   constructor(private potentialCustomerService: PotentialCustomerService) {
     super();
   }
 
+  @ApiOperation({ description: 'Fetch potential customers' })
   @Get()
   async fetchPotentialCustomers(
     @InjectUser() user: UserDocument,
-  ): Promise<ApiPotentialCustomer[]> {
+  ): Promise<ApiPotentialCustomerDto[]> {
     return (
       await this.potentialCustomerService.fetchPotentialCustomers(user)
-    ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p));
+    ).map(p => mapPotentialCustomerToApiPotentialCustomer(p));
   }
 
+  @ApiOperation({ description: 'Add potential customers' })
   @Post()
   public async insertPotentialCustomer(
     @InjectUser() user: UserDocument,
-    @Body() potentialCustomer: ApiUpsertPotentialCustomer,
-  ): Promise<ApiPotentialCustomer> {
+    @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
+  ): Promise<ApiPotentialCustomerDto> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.insertPotentialCustomer(
         user,
@@ -50,11 +58,12 @@ export class PotentialCustomerController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Add questionnaire' })
   @Post('/questionnaire-request')
   public async insertQuestionnaireRequest(
     @InjectUser() user: UserDocument,
-    @Body() questionnaireRequest: ApiUpsertQuestionnaireRequest,
-  ): Promise<ApiQuestionnaireRequest> {
+    @Body() questionnaireRequest: ApiUpsertQuestionnaireRequestDto,
+  ): Promise<ApiQuestionnaireRequestDto> {
     return mapQuestionnaireRequestToApiQuestionnaireRequest(
       await this.potentialCustomerService.insertQuestionnaireRequest(
         user,
@@ -63,12 +72,13 @@ export class PotentialCustomerController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Update a potential customer' })
   @Put(':id')
   public async updatePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
-    @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomer>,
-  ): Promise<ApiPotentialCustomer> {
+    @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
+  ): Promise<ApiPotentialCustomerDto> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.updatePotentialCustomer(
         user,
@@ -78,6 +88,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Delete a potential customer' })
   @Delete(':id')
   public async deletePotentialCustomer(
     @Param('id') id: string,

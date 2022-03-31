@@ -1,11 +1,14 @@
-import { ApiConfig } from '@area-butler-types/types';
 import { Controller, Get } from '@nestjs/common';
 import { configService } from './config.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiConfigDto } from '../dto/api-config.dto';
 
+@ApiTags('config')
 @Controller('api/config')
 export class ConfigController {
+  @ApiOperation({ description: 'Get the client configuration' })
   @Get()
-  public fetchConfig(): ApiConfig {
+  public fetchConfig(): ApiConfigDto {
     const { domain, audience } = configService.getAuthConfig();
     const googleApiKey = configService.getGoogleApiKey();
     const mapBoxAccessToken = configService.getMapBoxAccessToken();

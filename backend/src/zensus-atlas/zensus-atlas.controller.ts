@@ -15,6 +15,9 @@ import { ApiGeometry } from '@area-butler-types/types';
 import { AuthenticatedController } from 'src/shared/authenticated.controller';
 import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import FileUploadDto from '../dto/file-upload.dto';
+import ApiGeometryDto from '../dto/api-geometry.dto';
 
 interface ZensusDataGeojson {
   type: string;
@@ -51,6 +54,7 @@ interface ZensusDataGeojson {
   }[];
 }
 
+@ApiTags('zensus-atlas')
 @Controller('api/zensus-atlas')
 @UseGuards(AuthGuard('jwt'), RolesGuard)
 export class ZensusAtlasController extends AuthenticatedController {
@@ -58,6 +62,9 @@ export class ZensusAtlasController extends AuthenticatedController {
     super();
   }
 
+  @ApiOperation({ description: 'upload file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ description: 'The file to upload', type: FileUploadDto })
   @Post('upload')
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
@@ -68,8 +75,9 @@ export class ZensusAtlasController extends AuthenticatedController {
     return 'done';
   }
 
+  @ApiOperation({ description: 'Query the zensus atlas' })
   @Post('query')
-  async query(@Body() query: ApiGeometry, @InjectUser() user: UserDocument) {
+  async query(@Body() query: ApiGeometryDto, @InjectUser() user: UserDocument) {
     return (await this.zensusAtlasService.findIntersecting(user, query)).map(
       (d: any) => {
         if (!!d?.properties?.Frauen_A) {

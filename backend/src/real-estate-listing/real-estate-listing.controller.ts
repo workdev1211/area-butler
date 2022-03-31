@@ -16,27 +16,33 @@ import { InjectUser } from 'src/user/inject-user.decorator';
 import { UserDocument } from 'src/user/schema/user.schema';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import ApiRealEstateListingDto from '../dto/api-real-estate-listing.dto';
+import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 
+@ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
 export class RealEstateListingController extends AuthenticatedController {
   constructor(private realEstateListingService: RealEstateListingService) {
     super();
   }
 
+  @ApiOperation({ description: 'Get real estate listings for current user' })
   @Get()
   public async fetchRealEstateListings(
     @InjectUser() user: UserDocument,
-  ): Promise<ApiRealEstateListing[]> {
+  ): Promise<ApiRealEstateListingDto[]> {
     return (
       await this.realEstateListingService.getRealEstateListings(user)
-    ).map((l) => mapRealEstateListingToApiRealEstateListing(l));
+    ).map(l => mapRealEstateListingToApiRealEstateListing(l));
   }
 
+  @ApiOperation({ description: 'Insert a new real estate listing' })
   @Post()
   public async insertRealEstateListing(
     @InjectUser() user: UserDocument,
-    @Body() realEstateListing: ApiUpsertRealEstateListing,
-  ): Promise<ApiRealEstateListing> {
+    @Body() realEstateListing: ApiUpsertRealEstateListingDto,
+  ): Promise<ApiRealEstateListingDto> {
     return mapRealEstateListingToApiRealEstateListing(
       await this.realEstateListingService.insertRealEstateListing(
         user,
@@ -45,12 +51,13 @@ export class RealEstateListingController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Update a real estate listing' })
   @Put(':id')
   public async updateRealEstateListing(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
-    @Body() realEstateListing: Partial<ApiUpsertRealEstateListing>,
-  ): Promise<ApiRealEstateListing> {
+    @Body() realEstateListing: Partial<ApiUpsertRealEstateListingDto>,
+  ): Promise<ApiRealEstateListingDto> {
     return mapRealEstateListingToApiRealEstateListing(
       await this.realEstateListingService.updateRealEstateListing(
         user,
@@ -60,6 +67,7 @@ export class RealEstateListingController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Delete a real estate listing' })
   @Delete(':id')
   public async deleteRealEstateListing(
     @Param('id') id: string,
