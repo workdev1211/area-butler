@@ -45,7 +45,6 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
-  const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
   const { get, post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
   const [busyModalOpen, setBusyModalOpen] = useState<boolean>(false);
@@ -281,12 +280,11 @@ const SearchResultPage: React.FunctionComponent = () => {
           preferredLocations={searchContextState.preferredLocations}
           onEntitiesChange={setEntities}
           onGroupedEntitiesChange={setGroupedEntities}
-          onActiveMeansChange={setActiveMeans}
         />
       </DefaultLayout>
       {searchContextState.printingActive && (
         <ExportModal
-          activeMeans={activeMeans}
+          activeMeans={searchContextState.responseActiveMeans}
           entities={entities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
@@ -294,7 +292,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       )}
       {searchContextState.printingCheatsheetActive && (
         <ExportModal
-          activeMeans={activeMeans}
+          activeMeans={searchContextState.responseActiveMeans}
           entities={entities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
@@ -303,7 +301,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       )}
       {searchContextState.printingDocxActive && (
         <ExportModal
-          activeMeans={activeMeans}
+          activeMeans={searchContextState.responseActiveMeans}
           entities={entities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { EntityGroup } from "../../../components/SearchResultContainer";
 import "./MapMenuKarlaFricke.scss";
 import {
@@ -9,31 +9,33 @@ import {
   realEstateListingsTitle
 } from "../../../shared/shared.functions";
 import { OsmName } from "../../../../../shared/types/types";
+import {
+  SearchContext,
+  SearchContextActionTypes
+} from "../../../context/SearchContext";
 
 export interface MapMenuKarlaFrickeProps {
   groupedEntries: EntityGroup[];
-  activateGroup: (title: string) => void;
   mobileMenuOpen: boolean;
 }
 
 const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   mobileMenuOpen,
-  groupedEntries,
-  activateGroup
+  groupedEntries
 }) => {
   const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
 
   interface ListItemProps {
     group: EntityGroup;
-    activateGroup: (title: string) => void;
     dropdown?: boolean;
   }
 
   const ListItem: React.FunctionComponent<ListItemProps> = ({
     group,
-    activateGroup,
     dropdown = false
   }) => {
+    const { searchContextDispatch } = useContext(SearchContext);
+
     const isRealEstateListing =
       group.items[0].label === realEstateListingsTitle;
     const isPreferredLocation =
@@ -45,7 +47,12 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
       : deriveIconForOsmName(group.items[0].type as OsmName);
     return (
       <li
-        onClick={() => activateGroup(group.title)}
+        onClick={() =>
+          searchContextDispatch({
+            type: SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP,
+            payload: group.title
+          })
+        }
         className={group.active ? "active" : ""}
       >
         <img src={groupIconInfo.icon} alt="group-icon" />
@@ -64,21 +71,15 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
 
   interface MenuProps {
     groupedEntries: EntityGroup[];
-    activateGroup: (title: string) => void;
   }
 
   const DesktopMenu: React.FunctionComponent<MenuProps> = ({
-    groupedEntries,
-    activateGroup
+    groupedEntries
   }) => {
     return (
       <ul className="menu-desktop">
         {groupedEntries.map(ge => (
-          <ListItemMemo
-            group={ge}
-            key={ge.title}
-            activateGroup={title => activateGroup(title)}
-          />
+          <ListItemMemo group={ge} key={ge.title} />
         ))}
       </ul>
     );
@@ -87,8 +88,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const MobileMenu: React.FunctionComponent<MenuProps> = ({
-    groupedEntries,
-    activateGroup
+    groupedEntries
   }) => {
     const activeEntry = groupedEntries.find(ge => ge.active);
     return (
@@ -102,11 +102,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
             <div tabIndex={0} className="w-52">
               {activeEntry && (
                 <ul>
-                  <ListItemMemo
-                    group={activeEntry}
-                    activateGroup={() => null}
-                    dropdown={true}
-                  />
+                  <ListItemMemo group={activeEntry} dropdown={true} />
                 </ul>
               )}
               {!activeEntry && "Bitte auswählen"}
@@ -116,11 +112,7 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
               className="p-2 pr-0.5 menu dropdown-content bg-transparent"
             >
               {groupedEntries.map(ge => (
-                <ListItemMemo
-                  key={ge.title}
-                  group={ge}
-                  activateGroup={title => activateGroup(title)}
-                />
+                <ListItemMemo key={ge.title} group={ge} />
               ))}
             </ul>
           </div>
@@ -131,14 +123,8 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
 
   return (
     <div className={menuClasses}>
-      <MobileMenu
-        groupedEntries={groupedEntries}
-        activateGroup={title => activateGroup(title)}
-      />
-      <DesktopMenu
-        groupedEntries={groupedEntries}
-        activateGroup={title => activateGroup(title)}
-      />
+      <MobileMenu groupedEntries={groupedEntries} />
+      <DesktopMenu groupedEntries={groupedEntries} />
     </div>
   );
 };

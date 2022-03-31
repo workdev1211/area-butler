@@ -18,6 +18,7 @@ import { useHistory } from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
   deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates,
+  deriveInitialEntityGroups,
   deriveTotalRequestContingent,
   toastError
 } from "shared/shared.functions";
@@ -58,7 +59,7 @@ const SearchParamsPage: React.FunctionComponent = () => {
     SearchContext
   );
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
-  const { realEstateDispatch } = useContext(RealEstateContext);
+  const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
   const [newRequest, setNewRequest] = useState(true);
 
   useEffect(() => {
@@ -170,6 +171,10 @@ const SearchParamsPage: React.FunctionComponent = () => {
     const performLocationSearch = async () => {
       try {
         searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: undefined
+        });
+        searchContextDispatch({
           type: SearchContextActionTypes.SET_SEARCH_BUSY,
           payload: true
         });
@@ -230,6 +235,15 @@ const SearchParamsPage: React.FunctionComponent = () => {
         }
         searchContextDispatch({
           type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS
+        });
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+          payload: deriveInitialEntityGroups(
+            result.data,
+            undefined,
+            realEstateState?.listings,
+            searchContextState.preferredLocations
+          )
         });
         history.push("/search-result");
       } catch (error) {

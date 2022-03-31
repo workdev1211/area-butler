@@ -3,7 +3,11 @@ import SearchResultContainer, {
   EntityGroup
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
-import { Poi, SearchContext } from "context/SearchContext";
+import {
+  Poi,
+  SearchContext,
+  SearchContextActionTypes
+} from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
@@ -19,6 +23,7 @@ import {
   createCodeSnippet,
   createDirectLink,
   deriveAvailableMeansFromResponse,
+  deriveInitialEntityGroups,
   entityIncludesMean,
   toastError,
   toastSuccess
@@ -43,7 +48,9 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const history = useHistory();
-  const { searchContextDispatch } = useContext(SearchContext);
+  const { searchContextDispatch, searchContextState } = useContext(
+    SearchContext
+  );
   const { userState } = useContext(UserContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
@@ -90,10 +97,33 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         ...snapshotConfig,
         fixedRealEstates: snapshotConfig.fixedRealEstates ?? true
       });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+        payload: snapshotConfig
+      });
+
       setSnapshot(snapshotResponse.snapshot);
       setSearchResponse(snapshotResponse.snapshot.searchResponse);
       setDirectLink(createDirectLink(snapshotResponse.token));
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
+      if (!!snapshotResponse.snapshot && !!snapshotConfig) {
+        const {
+          searchResponse,
+          realEstateListings,
+          preferredLocations
+        } = snapshotResponse.snapshot;
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+          payload: deriveInitialEntityGroups(
+            searchResponse,
+            snapshotConfig,
+            realEstateListings,
+            preferredLocations
+          )
+        });
+      }
     };
 
     fetchSnapshot();
@@ -180,6 +210,22 @@ const SnippetEditorPage: React.FunctionComponent = () => {
 
     setSnapshot({ ...snapshot!, searchResponse: copiedSearchResponse });
     setSearchResponse({ ...copiedSearchResponse });
+
+    const newEntity = buildEntityData(copiedSearchResponse, config)?.find(
+      e => e.id === poi.entity.id
+    )!;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: (searchContextState.responseGroupedEntities ?? []).map(ge =>
+        ge.title !== poi.entity.label
+          ? ge
+          : {
+              ...ge,
+              items: [...ge.items, newEntity]
+            }
+      )
+    });
   };
 
   const ActionsTop: React.FunctionComponent = () => {

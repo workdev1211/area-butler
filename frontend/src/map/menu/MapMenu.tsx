@@ -44,7 +44,6 @@ export interface MapMenuProps {
   setGroupedEntries: (entityGroups: EntityGroup[]) => void;
   particlePollutionData?: ApiGeojsonFeature[];
   clippings: MapClipping[];
-  highlightZoomEntity: (item: ResultEntity) => void;
   mobileMenuOpen: boolean;
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
@@ -96,7 +95,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   clippings = [],
   groupedEntries,
   setGroupedEntries,
-  highlightZoomEntity,
   toggleRoute,
   routes,
   toggleTransitRoute,
@@ -128,27 +126,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     ApiDataSource.PARTICLE_POLLUTION
   )!;
 
-  const toggleEntityGroup = (groupTitle: string): void => {
-    const isKarlaFricke = !!config && config.theme === "KF";
-    if (isKarlaFricke) {
-      // toggle single entry active for karla fricke
-      setGroupedEntries(
-        groupedEntries.map(e => ({
-          ...e,
-          active: e.title === groupTitle
-        }))
-      );
-    } else {
-      // toggle additional entry per default
-      setGroupedEntries(
-        groupedEntries.map(e => ({
-          ...e,
-          active: e.title === groupTitle ? !e.active : e.active
-        }))
-      );
-    }
-  };
-
   const toggleAllEntityGroups = (): void => {
     const someActive = groupedEntries.some(e => e.active);
     setGroupedEntries(
@@ -169,7 +146,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                 ge => ge.items.length && ge.title !== realEstateListingsTitle
               )
               .sort((a, b) => (a.title > b.title ? 1 : -1))}
-            activateGroup={title => toggleEntityGroup(title)}
             mobileMenuOpen={false}
           />
         );
@@ -353,14 +329,10 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                     groupIcon={groupIconInfo}
                     entityGroupIndex={geIndex}
                     customIcon={isRealEstateListing && !!config?.mapIcon}
-                    toggleGroup={entityGroup =>
-                      toggleEntityGroup(entityGroup.title)
-                    }
                     routes={routes}
                     toggleRoute={toggleRoute}
                     transitRoutes={transitRoutes}
                     toggleTransitRoute={toggleTransitRoute}
-                    highlightZoomEntity={highlightZoomEntity}
                     config={config}
                     key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
                   />
@@ -414,10 +386,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
                             toggleRoute={toggleRoute}
                             transitRoutes={transitRoutes}
                             toggleTransitRoute={toggleTransitRoute}
-                            toggleGroup={entityGroup =>
-                              toggleEntityGroup(entityGroup.title)
-                            }
-                            highlightZoomEntity={highlightZoomEntity}
                             key={`${ge.title}-${geIndex}-map-menu-list-item`}
                           />
                         );

@@ -460,7 +460,7 @@ export const buildCombinedGroupedEntries = (
   active = true,
   defaultActiveGroups: string[] = [],
   oldGroupedEntries: EntityGroup[] = []
-) => {
+): EntityGroup[] => {
   const newGroupedEntries: any[] = Object.entries(
     groupBy(entities, (item: ResultEntity) => item.label)
   );
@@ -552,4 +552,58 @@ export const createCodeSnippet = (token: string) => {
   title="Area Butler Map Snippet"
 ></iframe>
   `;
+};
+
+export const deriveInitialEntityGroups = (
+  searchResponse: ApiSearchResponse,
+  config?: ApiSearchResultSnapshotConfig,
+  listings?: ApiRealEstateListing[],
+  locations?: ApiPreferredLocation[]
+): EntityGroup[] => {
+  const groupedEntities: EntityGroup[] = [];
+  const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
+
+  const deriveActiveState = (title: string, index?: number): boolean => {
+    if (config?.theme === "KF") {
+      return (
+        [preferredLocationsTitle, realEstateListingsTitle].includes(title) ||
+        index === 0
+      );
+    }
+    return config?.defaultActiveGroups
+      ? config.defaultActiveGroups.includes(title)
+      : true;
+  };
+
+  if (!!locations && !!centerOfSearch) {
+    groupedEntities.push({
+      title: preferredLocationsTitle,
+      active: deriveActiveState(preferredLocationsTitle),
+      items: buildEntityDataFromPreferredLocations(centerOfSearch, locations)
+    });
+  }
+  if (!!listings && !!centerOfSearch) {
+    groupedEntities.push({
+      title: realEstateListingsTitle,
+      active: deriveActiveState(realEstateListingsTitle),
+      items: buildEntityDataFromRealEstateListings(
+        centerOfSearch,
+        listings,
+        config
+      )
+    });
+  }
+  const allEntities = buildEntityData(searchResponse, config);
+  const newGroupedEntries: any[] = Object.entries(
+    groupBy(allEntities, (item: ResultEntity) => item.label)
+  );
+
+  newGroupedEntries
+    .map(([title, items], index) => ({
+      title,
+      active: deriveActiveState(title, index),
+      items
+    }))
+    .forEach(e => groupedEntities.push(e));
+  return groupedEntities;
 };

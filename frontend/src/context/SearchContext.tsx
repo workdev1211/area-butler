@@ -8,12 +8,15 @@ import {
   ApiOsmEntity,
   ApiOsmLocation,
   ApiSearchResponse,
+  ApiSearchResultSnapshotConfig,
+  MeansOfTransportation,
   OsmName,
   TransportationParam
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { CensusData } from "../hooks/censusdata";
+import { EntityGroup } from "../components/SearchResultContainer";
 
 export interface MapClipping {
   zoomLevel: number;
@@ -21,15 +24,15 @@ export interface MapClipping {
 }
 
 export interface Poi {
-  address: {street: string},
-  coordinates: ApiCoordinates,
-  distanceInMeters: number,
+  address: { street: string };
+  coordinates: ApiCoordinates;
+  distanceInMeters: number;
   entity: {
-    id: string,
-    name: string,
-    label: string,
-    type: OsmName
-  }
+    id: string;
+    name: string;
+    label: string;
+    type: OsmName;
+  };
 }
 
 export interface SearchContextState {
@@ -51,6 +54,9 @@ export interface SearchContextState {
   printingDocxActive: boolean;
   mapClippings: MapClipping[];
   realEstateListing?: ApiRealEstateListing;
+  responseGroupedEntities?: EntityGroup[];
+  responseConfig?: ApiSearchResultSnapshotConfig;
+  responseActiveMeans: MeansOfTransportation[];
 }
 
 export const initialState: SearchContextState = {
@@ -60,7 +66,8 @@ export const initialState: SearchContextState = {
   printingActive: false,
   printingCheatsheetActive: false,
   printingDocxActive: false,
-  mapClippings: []
+  mapClippings: [],
+  responseActiveMeans: []
 };
 
 export enum SearchContextActionTypes {
@@ -71,6 +78,11 @@ export enum SearchContextActionTypes {
   SET_LOCALITY_PARAMS = "SET_LOCALITY_PARAMS",
   SET_SEARCH_BUSY = "SET_SEARCH_BUSY",
   SET_SEARCH_RESPONSE = "SET_SEARCH_RESPONSE",
+  SET_RESPONSE_GROUPED_ENTITIES = "SET_RESPONSE_GROUPED_ENTITIES",
+  SET_RESPONSE_ACTIVE_MEANS = "SET_RESPONSE_ACTIVE_MEANS",
+  TOGGLE_SINGLE_RESPONSE_GROUP = "TOGGLE_SINGLE_RESPONSE_GROUP",
+  TOGGLE_RESPONSE_GROUP = "TOGGLE_RESPONSE_GROUP",
+  SET_RESPONSE_CONFIG = "SET_RESPONSE_CONFIG",
   SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
   SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
   SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
@@ -96,6 +108,13 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_LOCALITY_PARAMS]: ApiOsmEntity[];
   [SearchContextActionTypes.SET_SEARCH_BUSY]: boolean;
   [SearchContextActionTypes.SET_SEARCH_RESPONSE]: ApiSearchResponse;
+  [SearchContextActionTypes.SET_RESPONSE_CONFIG]:
+    | ApiSearchResultSnapshotConfig
+    | undefined;
+  [SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES]: EntityGroup[];
+  [SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS]: MeansOfTransportation[];
+  [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: string;
+  [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.SET_ZENSUS_DATA]: CensusData[];
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
@@ -149,6 +168,42 @@ export const searchContextReducer = (
         searchResponse: { ...action.payload },
         location: action.payload?.centerOfInterest?.coordinates,
         mapCenter: action.payload?.centerOfInterest?.coordinates
+      };
+    }
+    case SearchContextActionTypes.SET_RESPONSE_CONFIG: {
+      return {
+        ...state,
+        responseConfig: !!action.payload ? { ...action.payload } : undefined
+      };
+    }
+    case SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS: {
+      return {
+        ...state,
+        responseActiveMeans: [...action.payload]
+      };
+    }
+    case SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES: {
+      return {
+        ...state,
+        responseGroupedEntities: [...action.payload]
+      };
+    }
+    case SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP: {
+      return {
+        ...state,
+        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(g =>
+          g.title === action.payload
+            ? { ...g, active: true }
+            : { ...g, active: false }
+        )
+      };
+    }
+    case SearchContextActionTypes.TOGGLE_RESPONSE_GROUP: {
+      return {
+        ...state,
+        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(g =>
+          g.title === action.payload ? { ...g, active: !g.active } : g
+        )
       };
     }
     case SearchContextActionTypes.SET_ZENSUS_DATA: {
@@ -215,15 +270,22 @@ export const searchContextReducer = (
       return { ...state, realEstateListing: { ...action.payload } };
     }
     case SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE: {
+      const poi: Poi = action.payload;
 
-      const poi : Poi = action.payload;
+      const searchResponse = JSON.parse(
+        JSON.stringify(state.searchResponse)
+      ) as ApiSearchResponse;
+      searchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
+      searchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
+      searchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
 
-      const searchResponse = JSON.parse(JSON.stringify(state.searchResponse)) as ApiSearchResponse;
-      searchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
-      searchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
-      searchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(poi as any as ApiOsmLocation);
-
-      return { ...state, searchResponse};
+      return { ...state, searchResponse };
     }
     default:
       return state;

@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   MapClipping,
   Poi,
+  SearchContext,
   SearchContextActions,
   SearchContextActionTypes
 } from "../context/SearchContext";
@@ -84,7 +85,6 @@ export interface SearchResultContainerProps {
   userDispatch?: (action: UserActions) => void;
   onEntitiesChange?: (entities: ResultEntity[]) => void;
   onGroupedEntitiesChange?: (entities: EntityGroup[]) => void;
-  onActiveMeansChange?: (activeMeans: MeansOfTransportation[]) => void;
   embedMode?: boolean;
   editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
@@ -99,6 +99,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   mapBoxMapId,
   searchResponse,
   transportationParams = [],
+  searchContextDispatch,
   placesLocation,
   location,
   highlightId = "",
@@ -110,9 +111,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   user,
   preferredLocations,
   listings,
-  searchContextDispatch = () => null,
   userDispatch = () => null,
-  onActiveMeansChange = () => null,
   onEntitiesChange = () => null,
   onGroupedEntitiesChange = () => null,
   embedMode = false,
@@ -128,12 +127,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   const [entities, setEntities] = useState<ResultEntity[]>([]);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [availableMeans, setAvailableMeans] = useState<any>([]);
-  const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
   const [routes, setRoutes] = useState<EntityRoute[]>(initialRoutes);
   const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>(
     initialTransitRoutes
   );
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
+  const { searchContextState } = useContext(SearchContext);
 
   // Customize primary color
   useEffect(() => {
@@ -164,11 +164,6 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     onGroupedEntitiesChange(entities);
   };
 
-  const updateActiveMeans = (means: MeansOfTransportation[]) => {
-    setActiveMeans(means);
-    onActiveMeansChange(means);
-  };
-
   // consume search response
   useEffect(() => {
     if (!!searchResponse) {
@@ -176,20 +171,24 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         searchResponse
       );
       setAvailableMeans(meansFromResponse);
-      updateActiveMeans(
+
+      const activeMeans =
         config && config.defaultActiveMeans
           ? [...config.defaultActiveMeans]
-          : meansFromResponse
-      );
+          : meansFromResponse;
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+        payload: [...activeMeans]
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse]);
 
   // react to active means change
   useEffect(() => {
-    let entitiesIncludedInActiveMeans =
+    let entitiesIncludedInActiveMeans: ResultEntity[] =
       buildEntityData(searchResponse, config)?.filter(entity =>
-        entityIncludesMean(entity, activeMeans)
+        entityIncludesMean(entity, searchContextState.responseActiveMeans)
       ) ?? [];
     const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
     if (!!preferredLocations) {
@@ -222,7 +221,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       )
     );
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, config, activeMeans, preferredLocations, listings]);
+  }, [
+    searchResponse,
+    config,
+    searchContextState.responseActiveMeans,
+    preferredLocations,
+    listings
+  ]);
 
   const toggleEntityGroup = (title: string) => {
     const theme = config?.theme;
@@ -254,17 +259,6 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       active: !someActive
     }));
     updateGroupedEntities(newGroups);
-  };
-
-  const highlightZoomEntity = (item: ResultEntity) => {
-    searchContextDispatch({
-      type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
-      payload: { center: item.coordinates, zoom: 18 }
-    });
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-      payload: item.id
-    });
   };
 
   const toggleRoutesToEntity = async (
@@ -401,10 +395,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         <div className="relative flex-1">
           <MeansToggle
             transportationParams={transportationParams}
-            activeMeans={activeMeans}
+            activeMeans={searchContextState.responseActiveMeans}
             availableMeans={availableMeans}
             onMeansChange={(newValues: MeansOfTransportation[]) =>
-              setActiveMeans(newValues)
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+                payload: [...newValues]
+              })
             }
           />
           <Map
@@ -417,9 +414,15 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             groupedEntities={groupedEntities}
             highlightId={highlightId}
             means={{
-              byFoot: activeMeans.includes(MeansOfTransportation.WALK),
-              byBike: activeMeans.includes(MeansOfTransportation.BICYCLE),
-              byCar: activeMeans.includes(MeansOfTransportation.CAR)
+              byFoot: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.WALK
+              ),
+              byBike: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.BICYCLE
+              ),
+              byCar: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.CAR
+              )
             }}
             mapCenter={location}
             mapZoomLevel={mapZoomLevel}
@@ -443,7 +446,6 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           setGroupedEntries={groupedEntries =>
             setGroupedEntities(groupedEntries)
           }
-          highlightZoomEntity={highlightZoomEntity}
           toggleRoute={(item, mean) =>
             toggleRoutesToEntity(location, item, mean)
           }

@@ -12,7 +12,7 @@ import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-w
 import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import LocalityItem from "./locality-item/LocalityItem";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation
@@ -21,14 +21,16 @@ import {
   EntityRoute,
   EntityTransitRoute
 } from "../../../../../shared/types/routing";
+import {
+  SearchContext,
+  SearchContextActionTypes
+} from "../../../context/SearchContext";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;
   groupIcon: any;
   customIcon?: boolean;
   entityGroupIndex: number;
-  toggleGroup: (entityGroup: EntityGroup) => void;
-  highlightZoomEntity: (item: ResultEntity) => void;
   routes: EntityRoute[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   transitRoutes: EntityTransitRoute[];
@@ -41,8 +43,6 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
   groupIcon,
   customIcon,
   entityGroupIndex,
-  toggleGroup,
-  highlightZoomEntity,
   routes,
   toggleRoute,
   transitRoutes,
@@ -52,11 +52,24 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
   const [isListOpen, setIsListOpen] = useState(true);
   const [localityPagination, setLocalityPagination] = useState<number>(5);
 
+  const { searchContextDispatch } = useContext(SearchContext);
+
   const imgClass = !customIcon ? "item" : "";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
     ? "checkbox checkbox-custom checkbox-sm"
     : "checkbox checkbox-primary checkbox-sm";
+
+  const highlightZoomEntity = (item: ResultEntity) => {
+    searchContextDispatch({
+      type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
+      payload: { center: item.coordinates, zoom: 18 }
+    });
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
+      payload: item.id
+    });
+  };
 
   return (
     <li
@@ -93,7 +106,12 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
               type="checkbox"
               checked={entityGroup.active}
               className={checkboxPrimaryClasses}
-              onChange={() => toggleGroup(entityGroup)}
+              onChange={() =>
+                searchContextDispatch({
+                  type: SearchContextActionTypes.TOGGLE_RESPONSE_GROUP,
+                  payload: entityGroup.title
+                })
+              }
             />
           </label>
         </div>

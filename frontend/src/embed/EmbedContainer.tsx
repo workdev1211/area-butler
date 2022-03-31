@@ -12,6 +12,7 @@ import {
 import SearchResultContainer from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { deriveInitialEntityGroups } from "../shared/shared.functions";
 
 const EmbedContainer: React.FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } = useContext(
@@ -31,10 +32,10 @@ const EmbedContainer: React.FunctionComponent = () => {
   >();
 
   const getQueryVariable = (variable: string) => {
-    var query = window.location.search.substring(1);
-    var vars = query.split("&");
-    for (var i = 0; i < vars.length; i++) {
-      var pair = vars[i].split("=");
+    const query = window.location.search.substring(1);
+    const vars = query.split("&");
+    for (let i = 0; i < vars.length; i++) {
+      let pair = vars[i].split("=");
       if (pair[0] === variable) {
         return pair[1];
       }
@@ -55,11 +56,11 @@ const EmbedContainer: React.FunctionComponent = () => {
       setResult(response);
       setSearchConfig(response.config);
     };
-    fetchData();
+    void fetchData();
   }, [setMapBoxToken, searchContextDispatch]);
 
   useEffect(() => {
-    if (!!result) {
+    if (!!result && !!searchConfig) {
       const {
         searchResponse,
         transportationParams,
@@ -98,8 +99,23 @@ const EmbedContainer: React.FunctionComponent = () => {
       setRoutes(routes);
       setTransitRoutes(transitRoutes);
       setRealEstateListings(realEstateListings);
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+        payload: { ...searchConfig }
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: deriveInitialEntityGroups(
+          searchResponse,
+          searchConfig,
+          realEstateListings,
+          preferredLocations
+        )
+      });
     }
-  }, [result, searchContextDispatch]);
+  }, [result, searchConfig, searchContextDispatch]);
 
   if (!searchContextState.searchResponse) {
     return <div>Loading...</div>;
@@ -112,11 +128,10 @@ const EmbedContainer: React.FunctionComponent = () => {
       searchResponse={searchContextState.searchResponse}
       transportationParams={searchContextState.transportationParams}
       placesLocation={searchContextState.placesLocation}
+      searchContextDispatch={searchContextDispatch}
       location={searchContextState.mapCenter ?? searchContextState.location!}
       highlightId={searchContextState.highlightId!}
       mapZoomLevel={searchContextState.mapZoomLevel!}
-      preferredLocations={searchContextState.preferredLocations}
-      searchContextDispatch={searchContextDispatch}
       embedMode={true}
       config={searchConfig}
       initialRoutes={routes}
