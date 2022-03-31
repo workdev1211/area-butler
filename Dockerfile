@@ -42,4 +42,4 @@ RUN rm -rf ../frontend
 
 EXPOSE 3000
 # Run the web service on container startup.
-CMD [ "node", "dist/backend/src/main"]
+CMD [ "node", "NODE_ENV=production", "dist/backend/src/main"]
