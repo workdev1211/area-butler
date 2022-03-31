@@ -33,9 +33,10 @@ export class SubscriptionListener {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
-    const plan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
-      stripePriceId,
-    );
+    const plan =
+      this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
+        stripePriceId,
+      );
     if (user && plan) {
       await this.subscriptionService.upsertForUserId(
         user._id,

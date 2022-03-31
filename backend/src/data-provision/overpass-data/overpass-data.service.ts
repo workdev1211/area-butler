@@ -88,10 +88,7 @@ export class OverpassDataService {
       },
       entityType: { $in: Object.values(preferredAmenities) },
     };
-    const response = await this.overpassDataModel
-      .find(dbQuery)
-      .lean()
-      .exec();
+    const response = await this.overpassDataModel.find(dbQuery).lean().exec();
     return this.overpassService.mapResponse(response, coordinates);
   }
 }

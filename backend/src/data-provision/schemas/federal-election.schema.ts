@@ -20,6 +20,5 @@ export class FederalElection {
   geometry: ApiGeometry;
 }
 
-export const FederalElectionSchema = SchemaFactory.createForClass(
-  FederalElection,
-);
+export const FederalElectionSchema =
+  SchemaFactory.createForClass(FederalElection);

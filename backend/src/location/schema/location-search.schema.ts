@@ -16,6 +16,5 @@ export class LocationSearch {
   createdAt: Date;
 }
 
-export const LocationSearchschema = SchemaFactory.createForClass(
-  LocationSearch,
-);
+export const LocationSearchschema =
+  SchemaFactory.createForClass(LocationSearch);

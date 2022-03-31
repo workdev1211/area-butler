@@ -18,13 +18,12 @@ export class StripeService {
   }
 
   public async createCustomerPortalLink(user: UserDocument): Promise<string> {
-    const stripeSession: Stripe.BillingPortal.Session = await this.stripeClient.billingPortal.sessions.create(
-      {
+    const stripeSession: Stripe.BillingPortal.Session =
+      await this.stripeClient.billingPortal.sessions.create({
         customer: user.stripeCustomerId,
         locale: 'de',
         return_url: configService.getBaseAppUrl(),
-      },
-    );
+      });
 
     return stripeSession.url;
   }
@@ -38,8 +37,8 @@ export class StripeService {
       mode = 'subscription',
     }: ApiCreateCheckout,
   ): Promise<string> {
-    const checkoutUrl: Stripe.Checkout.Session = await this.stripeClient.checkout.sessions.create(
-      {
+    const checkoutUrl: Stripe.Checkout.Session =
+      await this.stripeClient.checkout.sessions.create({
         customer: user.stripeCustomerId,
         mode,
         payment_method_types: ['card'],
@@ -60,19 +59,17 @@ export class StripeService {
           mode === 'subscription' ? 'subscriptionId' : 'checkoutId'
         }={CHECKOUT_SESSION_ID}`,
         cancel_url: configService.getBaseAppUrl(),
-      },
-    );
+      });
 
     return checkoutUrl.url;
   }
 
   public async createCustomer(user: UserDocument): Promise<string> {
-    const stripeCustomer: Stripe.Customer = await this.stripeClient.customers.create(
-      {
+    const stripeCustomer: Stripe.Customer =
+      await this.stripeClient.customers.create({
         email: user.email,
         name: user.fullname,
-      },
-    );
+      });
 
     return stripeCustomer.id;
   }

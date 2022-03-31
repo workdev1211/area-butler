@@ -34,7 +34,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   ): Promise<ApiPotentialCustomer[]> {
     return (
       await this.potentialCustomerService.fetchPotentialCustomers(user)
-    ).map(p => mapPotentialCustomerToApiPotentialCustomer(p));
+    ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p));
   }
 
   @Post()

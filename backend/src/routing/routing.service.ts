@@ -1,9 +1,4 @@
-import {
-  HttpService,
-  Injectable,
-  InternalServerErrorException,
-  Logger,
-} from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import {
   ApiCoordinates,
   ApiGeometry,
@@ -12,7 +7,7 @@ import {
 import { configService } from '../config/config.service';
 import { ApiRoute, ApiTransitRoute } from '@area-butler-types/routing';
 import * as poly from '@liberty-rider/flexpolyline';
-import { InternalCoreModule } from '@nestjs/core/injector/internal-core-module';
+import { HttpService } from '@nestjs/axios';
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
@@ -88,7 +83,7 @@ interface HereApiTransitRoutingResponse {
   routes: HereApiTransitRoute[];
 }
 
-const switchCoords = array => {
+const switchCoords = (array) => {
   return array.reverse();
 };
 
@@ -127,7 +122,7 @@ export class RoutingService {
           meansOfTransportation: meansOfTransportation,
           destination,
           origin,
-          sections: data.routes[0].sections.map(s => ({
+          sections: data.routes[0].sections.map((s) => ({
             duration: Math.round(s.summary.duration / 60),
             length: s.summary.length,
             geometry: {
@@ -174,7 +169,7 @@ export class RoutingService {
         return {
           destination,
           origin,
-          sections: data.routes[0].sections.map(s => ({
+          sections: data.routes[0].sections.map((s) => ({
             type: s.type,
             duration: Math.round(s.travelSummary.duration / 60),
             length: s.travelSummary.length,

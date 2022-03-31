@@ -18,15 +18,15 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
   const centerOfLocation = searchResultSnapshot.snapshot.location;
   // filter / hide real estate listings
   const mappedListings = realEstateListings
-    .map(r =>
+    .map((r) =>
       mapRealEstateListingToApiRealEstateListing(
         r,
         searchResultSnapshot.config.showLocation,
       ),
     )
-    .filter(r => r.showInSnippet)
+    .filter((r) => r.showInSnippet)
     .filter(
-      r =>
+      (r) =>
         !(
           r.coordinates.lat === centerOfLocation.lat &&
           r.coordinates.lng === centerOfLocation.lng
@@ -39,8 +39,10 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
     config.entityVisibility = [
       ...entityVisibility,
       ...mappedListings
-        .filter(l => !snapshot.realEstateListings.some(rel => rel.id === l.id))
-        .map(l => ({
+        .filter(
+          (l) => !snapshot.realEstateListings.some((rel) => rel.id === l.id),
+        )
+        .map((l) => ({
           id: l.id,
           excluded: true,
         })),

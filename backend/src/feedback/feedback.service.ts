@@ -1,8 +1,7 @@
 import { ApiInsertFeedback, FeedbackType } from '@area-butler-types/types';
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { configService } from 'src/config/config.service';
 import {
   SlackChannel,
   SlackSenderService,

@@ -21,6 +21,5 @@ export class QuestionnaireRequest {
   userInCopy: boolean;
 }
 
-export const QuestionnaireRequestSchema = SchemaFactory.createForClass(
-  QuestionnaireRequest,
-);
+export const QuestionnaireRequestSchema =
+  SchemaFactory.createForClass(QuestionnaireRequest);

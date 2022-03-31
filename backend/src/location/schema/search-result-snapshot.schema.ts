@@ -34,6 +34,5 @@ export class SearchResultSnapshot {
   lastAccess: Date;
 }
 
-export const SearchResultSnapshotSchema = SchemaFactory.createForClass(
-  SearchResultSnapshot,
-);
+export const SearchResultSnapshotSchema =
+  SchemaFactory.createForClass(SearchResultSnapshot);

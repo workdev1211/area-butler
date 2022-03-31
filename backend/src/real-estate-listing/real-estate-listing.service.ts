@@ -31,7 +31,7 @@ export class RealEstateListingService {
     subscriptionCheck &&
       (await this.subscriptionService.checkSubscriptionViolation(
         user._id,
-        subscription => !subscription,
+        (subscription) => !subscription,
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       ));
 

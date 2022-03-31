@@ -19,6 +19,5 @@ export class ParticlePollution {
   geometry: Record<string, any>;
 }
 
-export const ParticlePollutionSchema = SchemaFactory.createForClass(
-  ParticlePollution,
-);
+export const ParticlePollutionSchema =
+  SchemaFactory.createForClass(ParticlePollution);

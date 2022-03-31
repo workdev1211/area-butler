@@ -4,9 +4,10 @@ import {
   MeansOfTransportation,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';
 import { meansOfTransportations } from '../../../../shared/constants/constants';
+import { HttpService } from '@nestjs/axios';
 
 @Injectable()
 export class IsochroneService {
@@ -26,7 +27,7 @@ export class IsochroneService {
         : 'contours_minutes';
     const routingProfile =
       meansOfTransportations.find(
-        mot => mot.type === preferredMeansOfTransportation,
+        (mot) => mot.type === preferredMeansOfTransportation,
       )?.mode || '';
     const params = {
       [contour]: `${limit}`,

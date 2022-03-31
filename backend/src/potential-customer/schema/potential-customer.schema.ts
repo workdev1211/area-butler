@@ -36,6 +36,5 @@ export class PotentialCustomer {
   preferredLocations: ApiPreferredLocation[];
 }
 
-export const PotentialCustomerSchema = SchemaFactory.createForClass(
-  PotentialCustomer,
-);
+export const PotentialCustomerSchema =
+  SchemaFactory.createForClass(PotentialCustomer);

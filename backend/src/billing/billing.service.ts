@@ -38,9 +38,8 @@ export class BillingService {
     user: UserDocument,
     createCheckout: ApiCreateCheckout,
   ): Promise<string> {
-    const existingsSubscriptions = await this.subscriptionService.allUserSubscriptions(
-      user._id,
-    );
+    const existingsSubscriptions =
+      await this.subscriptionService.allUserSubscriptions(user._id);
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,
       trialPeriod: existingsSubscriptions.length ? undefined : TRIAL_DAYS,
@@ -87,23 +86,25 @@ export class BillingService {
     const payload = eventData.object as any;
     const stripeCustomerId = payload.customer;
     const checkoutSessionId = payload.id;
-    const lineItems = await this.stripeService.fetchLineItemsFromCheckoutSession(
-      checkoutSessionId,
-    );
+    const lineItems =
+      await this.stripeService.fetchLineItemsFromCheckoutSession(
+        checkoutSessionId,
+      );
 
     if (lineItems.length > 0) {
       const lineItem = lineItems[0];
       const requestIncreasingLineItem = Object.values(allSubscriptions).some(
-        subscription =>
+        (subscription) =>
           subscription.priceIds[stripeEnv].requestIncreaseId ===
           lineItem.price.id,
       );
 
       if (!!requestIncreasingLineItem) {
-        const requestContingentIncreasedEvent: RequestContingentIncreasedEvent = {
-          stripeCustomerId,
-          amount: lineItem.quantity,
-        };
+        const requestContingentIncreasedEvent: RequestContingentIncreasedEvent =
+          {
+            stripeCustomerId,
+            amount: lineItem.quantity,
+          };
 
         this.eventEmitter.emitAsync(
           EventType.REQUEST_CONTINGENT_INCREASED_EVENT,

@@ -29,7 +29,7 @@ export class RealEstateListingController extends AuthenticatedController {
   ): Promise<ApiRealEstateListing[]> {
     return (
       await this.realEstateListingService.getRealEstateListings(user)
-    ).map(l => mapRealEstateListingToApiRealEstateListing(l));
+    ).map((l) => mapRealEstateListingToApiRealEstateListing(l));
   }
 
   @Post()

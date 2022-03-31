@@ -58,7 +58,7 @@ export const retrieveTotalRequestContingent = (
   const contingents = user.requestContingents || [];
 
   return contingents.filter(
-    c =>
+    (c) =>
       c.date.getFullYear() < date.getFullYear() ||
       (c.date.getFullYear() === date.getFullYear() &&
         c.date.getMonth() <= date.getMonth()),

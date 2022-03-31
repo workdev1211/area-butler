@@ -92,7 +92,7 @@ export class LocationController extends AuthenticatedController {
   async getEmbeddableMaps(
     @InjectUser() user: UserDocument,
   ): Promise<ApiSearchResultSnapshotResponse[]> {
-    return (await this.locationService.fetchEmbeddableMaps(user)).map(r =>
+    return (await this.locationService.fetchEmbeddableMaps(user)).map((r) =>
       mapSearchResultSnapshotToApiEmbeddableMap(r),
     );
   }
@@ -103,9 +103,8 @@ export class LocationController extends AuthenticatedController {
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const map = await this.locationService.fetchEmbeddableMap(user, id);
-    const realEstateListings = await this.realEstateListingService.getRealEstateListings(
-      user,
-    );
+    const realEstateListings =
+      await this.realEstateListingService.getRealEstateListings(user);
     return mapSearchResultSnapshotToApiEmbeddableMap(
       map,
       false,

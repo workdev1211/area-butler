@@ -5,7 +5,7 @@ import {
   ApiOsmLocation,
   OsmName,
 } from '@area-butler-types/types';
-import { HttpService, Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 import { point, Properties } from '@turf/helpers';
@@ -13,6 +13,7 @@ import circle from '@turf/circle';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
+import { HttpService } from '@nestjs/axios';
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
 
@@ -58,11 +59,11 @@ export class OverpassService {
       return [];
     }
 
-    const rawElements = elements.map(element => {
+    const rawElements = elements.map((element) => {
       const elementTags: Record<string, any> = element.tags;
 
       const entityType = osmEntityTypes.find(
-        entityType => elementTags[entityType.type] === entityType.name,
+        (entityType) => elementTags[entityType.type] === entityType.name,
       );
 
       const coordinates = !!element.center
@@ -113,10 +114,10 @@ export class OverpassService {
     const CIRCLE_OPTIONS: Properties = { units: 'meters' };
     const findDuplicatesAround = (elements, elementToInspect) => {
       const searchAroundDistance =
-        osmEntityTypes.find(e => e.label === elementToInspect.entity.label)
+        osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
           ?.uniqueRadius || 20;
       const similiarityTreshold =
-        osmEntityTypes.find(e => e.label === elementToInspect.entity.label)
+        osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
           ?.uniqueTreshold || 0.8;
       const polygon = circle(
         point([
@@ -129,11 +130,11 @@ export class OverpassService {
       const container = [];
       elements
         .filter(
-          e =>
+          (e) =>
             e.entity.id !== elementToInspect.entity.id &&
             e.entity.type === elementToInspect.entity.type,
         )
-        .forEach(element => {
+        .forEach((element) => {
           const { lat, lng } = element.coordinates;
           const elementPoint = point([lat, lng]);
 
@@ -157,7 +158,7 @@ export class OverpassService {
     for (const rawElement of rawElements) {
       if (!duplicates.includes(rawElement.entity.id)) {
         const dups = findDuplicatesAround(rawElements, rawElement);
-        duplicates.push(...dups.map(d => d.entity.id));
+        duplicates.push(...dups.map((d) => d.entity.id));
         finalElements.push(rawElement);
       }
     }
@@ -172,7 +173,9 @@ export class OverpassService {
     const queryParts: string[] = [];
     queryParts.push('[out:json];( ');
     for (const preferredAmenity of preferredAmenities) {
-      const entityType = osmEntityTypes.find(e => e.name === preferredAmenity);
+      const entityType = osmEntityTypes.find(
+        (e) => e.name === preferredAmenity,
+      );
       queryParts.push(
         `node["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
@@ -190,7 +193,7 @@ export class OverpassService {
 
   async fetchForEntityType(entitType: ApiOsmEntity): Promise<OverpassData[]> {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entitType.type}"="${entitType.name}"];way["${entitType.type}"="${entitType.name}"];relation["${entitType.type}"="${entitType.name}"];);out center;`;
-    const hasCoordinates = e => e.center || (e.lat && e.lon);
+    const hasCoordinates = (e) => e.center || (e.lat && e.lon);
     try {
       this.logger.debug(`fetching ${entitType.name}`);
       const response = await this.http
@@ -198,7 +201,7 @@ export class OverpassService {
         .toPromise();
       this.logger.debug(`${entitType.name} fetched.`);
 
-      return response?.data?.elements.filter(hasCoordinates).map(e => ({
+      return response?.data?.elements.filter(hasCoordinates).map((e) => ({
         ...e,
         geometry: {
           type: 'Point',

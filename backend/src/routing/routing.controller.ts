@@ -21,13 +21,13 @@ export class RoutingController {
     if (query.destinations.length) {
       try {
         return await Promise.all(
-          query.destinations.map(async destination => {
+          query.destinations.map(async (destination) => {
             return {
               coordinates: destination.coordinates,
               title: destination.title,
               routes: (
                 await Promise.all(
-                  query.meansOfTransportation.map(async transportType => {
+                  query.meansOfTransportation.map(async (transportType) => {
                     const result = await this.routingService.getRoute(
                       query.origin,
                       destination.coordinates,
@@ -36,7 +36,7 @@ export class RoutingController {
                     return result;
                   }),
                 )
-              ).filter(value => !!value),
+              ).filter((value) => !!value),
             };
           }),
         );
@@ -54,7 +54,7 @@ export class RoutingController {
     if (query.destinations.length) {
       try {
         return await Promise.all(
-          query.destinations.map(async destination => {
+          query.destinations.map(async (destination) => {
             return {
               coordinates: destination.coordinates,
               title: destination.title,

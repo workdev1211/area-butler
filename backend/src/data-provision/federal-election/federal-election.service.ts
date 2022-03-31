@@ -35,11 +35,10 @@ export class FederalElectionService {
     );
 
     const augsburg = federalElectionFeatures.find(
-      f => f.properties.WKR_NR === 253,
+      (f) => f.properties.WKR_NR === 253,
     );
-    augsburg.geometry.coordinates[0] = augsburg.geometry.coordinates[0].filter(
-      distinctValues,
-    );
+    augsburg.geometry.coordinates[0] =
+      augsburg.geometry.coordinates[0].filter(distinctValues);
 
     try {
       this.logger.debug('Dropping existing collection');
@@ -50,7 +49,7 @@ export class FederalElectionService {
       `Inserting ${federalElectionFeatures.length} federal election districts`,
     );
     await collection.insertMany(
-      federalElectionFeatures.filter(f => f.properties.WKR_NR !== 253),
+      federalElectionFeatures.filter((f) => f.properties.WKR_NR !== 253),
     ); // cant deal with augsburg
     this.logger.log('creating index on geometry field');
     await collection.createIndex({ geometry: '2dsphere' });
@@ -61,7 +60,7 @@ export class FederalElectionService {
   async findIntersecting(query: ApiGeometry, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription =>
+      (subscription) =>
         !subscription?.appFeatures.dataSources.includes(
           ApiDataSource.FEDERAL_ELECTION,
         ),

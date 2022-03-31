@@ -68,11 +68,10 @@ export class SubscriptionService {
   public async findActiveByUserId(
     userId: string,
   ): Promise<SubscriptionDocument | null> {
-    const userSubscriptions: SubscriptionDocument[] = await this.allUserSubscriptions(
-      userId,
-    );
+    const userSubscriptions: SubscriptionDocument[] =
+      await this.allUserSubscriptions(userId);
     const activeSubscriptions = userSubscriptions.filter(
-      s =>
+      (s) =>
         s.trialEndsAt >= new Date() ||
         (s.trialEndsAt < new Date() && s.endsAt >= new Date()),
     );

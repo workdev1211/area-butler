@@ -38,6 +38,5 @@ export class RealEstateListing {
   location: GeoJsonPoint;
 }
 
-export const RealEstateListingSchema = SchemaFactory.createForClass(
-  RealEstateListing,
-);
+export const RealEstateListingSchema =
+  SchemaFactory.createForClass(RealEstateListing);

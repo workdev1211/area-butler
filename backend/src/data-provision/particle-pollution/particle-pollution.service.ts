@@ -44,7 +44,7 @@ export class ParticlePollutionService {
     this.logger.debug(
       `Inserting ${chunks.length} chunks of ${chunksize} datasets.`,
     );
-    await Promise.all(chunks.map(async c => await collection.insertMany(c)));
+    await Promise.all(chunks.map(async (c) => await collection.insertMany(c)));
     this.logger.log('creating index on geometry field');
     await collection.createIndex({ geometry: '2dsphere' });
     this.logger.log(`${collection.collectionName} created`);
@@ -54,7 +54,7 @@ export class ParticlePollutionService {
   async findIntersecting(query: ApiGeometry, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription =>
+      (subscription) =>
         !subscription?.appFeatures.dataSources.includes(
           ApiDataSource.PARTICLE_POLLUTION,
         ),

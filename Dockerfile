@@ -1,4 +1,4 @@
-FROM node:14-alpine
+FROM node:16-alpine
 RUN apk add jq
 RUN apk --no-cache --virtual build-dependencies add python3 py3-pip make g++
 

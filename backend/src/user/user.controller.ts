@@ -52,9 +52,9 @@ export class UserController {
       requestUser.email,
       requestUser.email,
     );
-    return (
-      await this.subscriptionService.allUserSubscriptions(user._id)
-    ).map(s => mapSubscriptionToApiSubscription(s));
+    return (await this.subscriptionService.allUserSubscriptions(user._id)).map(
+      (s) => mapSubscriptionToApiSubscription(s),
+    );
   }
 
   @Post('me')

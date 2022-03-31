@@ -51,7 +51,7 @@ export class PotentialCustomerService {
     subscriptionCheck &&
       (await this.subscriptionService.checkSubscriptionViolation(
         user._id,
-        subscription => !subscription,
+        (subscription) => !subscription,
         'Weitere Interessentenerstellung ist im aktuellen Plan nicht mehr möglich',
       ));
 
@@ -116,7 +116,7 @@ export class PotentialCustomerService {
   ): Promise<QuestionnaireRequestDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
-      subscription =>
+      (subscription) =>
         !subscription?.appFeatures.sendCustomerQuestionnaireRequest,
       'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
     );
@@ -171,7 +171,7 @@ export class PotentialCustomerService {
     const user = await this.userService.findById(userId);
     const customers = await this.fetchPotentialCustomers(user);
     const existingCustomer = customers.find(
-      c => c.email.toLowerCase() === email.toLowerCase(),
+      (c) => c.email.toLowerCase() === email.toLowerCase(),
     );
 
     const upsertData = {

@@ -98,7 +98,7 @@ export class UserService {
     if (!!tour) {
       showTour[tour] = false;
     } else {
-      Object.keys(user.showTour).forEach(tour => (showTour[tour] = false));
+      Object.keys(user.showTour).forEach((tour) => (showTour[tour] = false));
     }
     user.showTour = showTour;
     return await user.save();
@@ -150,9 +150,10 @@ export class UserService {
       return;
     }
 
-    const subscriptionPlan = this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
-      stripePriceId,
-    );
+    const subscriptionPlan =
+      this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
+        stripePriceId,
+      );
 
     if (!subscriptionPlan) {
       console.log('no subscription plan found for price id: ' + stripePriceId);
@@ -209,7 +210,7 @@ export class UserService {
         currentMonth.getMonth() <= untilMonthIncluded.getMonth())
     ) {
       const existingMonthlyContingent = user.requestContingents.find(
-        c =>
+        (c) =>
           c.type === ApiRequestContingentType.RECURRENT &&
           c.date.getMonth() === currentMonth.getMonth() &&
           c.date.getFullYear() === currentMonth.getFullYear(),
@@ -248,7 +249,7 @@ export class UserService {
     }
     await this.subscriptionService.checkSubscriptionViolation(
       existingUser._id,
-      subscription => !subscription.appFeatures.canCustomizeExport,
+      (subscription) => !subscription.appFeatures.canCustomizeExport,
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 

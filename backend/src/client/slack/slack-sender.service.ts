@@ -1,5 +1,6 @@
-import { HttpService, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { configService } from 'src/config/config.service';
+import { HttpService } from '@nestjs/axios';
 
 export interface SlackNotification {
   textBlocks: string[];
@@ -16,15 +17,12 @@ export class SlackSenderService {
   slackChannels: any = {};
 
   constructor(private http: HttpService) {
-    this.slackChannels[
-      SlackChannel.FEEDBACK
-    ] = configService.getFeedbackSlackWebhook();
-    this.slackChannels[
-      SlackChannel.OPERATIONS
-    ] = configService.getOperationsSlackWebhook();
-    this.slackChannels[
-      SlackChannel.REVENUES
-    ] = configService.getRevenuesSlackWebhook();
+    this.slackChannels[SlackChannel.FEEDBACK] =
+      configService.getFeedbackSlackWebhook();
+    this.slackChannels[SlackChannel.OPERATIONS] =
+      configService.getOperationsSlackWebhook();
+    this.slackChannels[SlackChannel.REVENUES] =
+      configService.getRevenuesSlackWebhook();
   }
 
   async sendNotifcation(
@@ -33,7 +31,7 @@ export class SlackSenderService {
   ) {
     const blocks = [];
 
-    textBlocks.forEach(textBlock =>
+    textBlocks.forEach((textBlock) =>
       blocks.push({
         type: 'section',
         text: {
