@@ -100,7 +100,9 @@ const PreferredLocationItemContent: React.FunctionComponent<{
             >
               <input
                 type="checkbox"
-                checked={route?.show.includes(MeansOfTransportation.WALK)}
+                checked={
+                  route?.show.includes(MeansOfTransportation.WALK) || false
+                }
                 onChange={event =>
                   onToggleRoute(item, MeansOfTransportation.WALK)
                 }
@@ -114,7 +116,9 @@ const PreferredLocationItemContent: React.FunctionComponent<{
             >
               <input
                 type="checkbox"
-                checked={route?.show.includes(MeansOfTransportation.BICYCLE)}
+                checked={
+                  route?.show.includes(MeansOfTransportation.BICYCLE) || false
+                }
                 onChange={event =>
                   onToggleRoute(item, MeansOfTransportation.BICYCLE)
                 }
@@ -128,7 +132,9 @@ const PreferredLocationItemContent: React.FunctionComponent<{
             >
               <input
                 type="checkbox"
-                checked={route?.show.includes(MeansOfTransportation.CAR)}
+                checked={
+                  route?.show.includes(MeansOfTransportation.CAR) || false
+                }
                 onChange={event =>
                   onToggleRoute(item, MeansOfTransportation.CAR)
                 }

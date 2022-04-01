@@ -41,7 +41,7 @@ export interface MapMenuProps {
   censusData?: CensusData[];
   federalElectionData?: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
-  setGroupedEntries: (entityGroups: EntityGroup[]) => void;
+  toggleAllLocalities: () => void;
   particlePollutionData?: ApiGeojsonFeature[];
   clippings: MapClipping[];
   mobileMenuOpen: boolean;
@@ -94,7 +94,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   particlePollutionData,
   clippings = [],
   groupedEntries,
-  setGroupedEntries,
+  toggleAllLocalities,
   toggleRoute,
   routes,
   toggleTransitRoute,
@@ -125,16 +125,6 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
   const particlePollutionInSubscriptionPlan = user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
     ApiDataSource.PARTICLE_POLLUTION
   )!;
-
-  const toggleAllEntityGroups = (): void => {
-    const someActive = groupedEntries.some(e => e.active);
-    setGroupedEntries(
-      groupedEntries.map(e => ({
-        ...e,
-        active: !someActive
-      }))
-    );
-  };
 
   if (config?.theme) {
     switch (config?.theme) {
@@ -299,7 +289,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
               type="checkbox"
               checked={!groupedEntries.some(e => !e.active)}
               className="checkbox checkbox-white checkbox-sm z-2500"
-              onChange={toggleAllEntityGroups}
+              onChange={() => toggleAllLocalities()}
             />
           </label>
         </div>

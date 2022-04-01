@@ -17,14 +17,12 @@ import React, { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useParams } from "react-router-dom";
 import {
-  buildCombinedGroupedEntries,
   buildEntityData,
-  buildEntityDataFromRealEstateListings,
   createCodeSnippet,
   createDirectLink,
   deriveAvailableMeansFromResponse,
+  deriveEntityGroupsByActiveMeans,
   deriveInitialEntityGroups,
-  entityIncludesMean,
   toastError,
   toastSuccess
 } from "shared/shared.functions";
@@ -35,7 +33,7 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  MeansOfTransportation
+  ApiUpdateSearchResultSnapshot
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
 
@@ -47,23 +45,16 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
+  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
+  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const history = useHistory();
+  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
+  const { userState } = useContext(UserContext);
   const { searchContextDispatch, searchContextState } = useContext(
     SearchContext
   );
-  const { userState } = useContext(UserContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
-  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const [config, setConfig] = useState<
-    ApiSearchResultSnapshotConfig | undefined
-  >();
-  const [snapshot, setSnapshot] = useState<
-    ApiSearchResultSnapshot | undefined
-  >();
-  const [searchResponse, setSearchResponse] = useState<
-    ApiSearchResponse | undefined
-  >();
 
   useEffect(() => {
     const user = userState.user;
@@ -93,20 +84,24 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         snapshotConfig["mapIcon"] = user.mapIcon;
       }
 
-      setConfig({
+      const enhancedConfig = {
         ...snapshotConfig,
-        fixedRealEstates: snapshotConfig.fixedRealEstates ?? true
-      });
+        fixedRealEstates: snapshotConfig.fixedRealEstates ?? true,
+        defaultActiveMeans: snapshotConfig.defaultActiveMeans?.length
+          ? snapshotConfig.defaultActiveMeans
+          : deriveAvailableMeansFromResponse(
+              snapshotResponse.snapshot?.searchResponse
+            )
+      };
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: snapshotConfig
+        payload: { ...enhancedConfig }
       });
 
-      setSnapshot(snapshotResponse.snapshot);
-      setSearchResponse(snapshotResponse.snapshot.searchResponse);
       setDirectLink(createDirectLink(snapshotResponse.token));
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
+      setSnapshot(snapshotResponse.snapshot);
       if (!!snapshotResponse.snapshot && !!snapshotConfig) {
         const {
           searchResponse,
@@ -118,114 +113,87 @@ const SnippetEditorPage: React.FunctionComponent = () => {
           type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
           payload: deriveInitialEntityGroups(
             searchResponse,
-            snapshotConfig,
+            enhancedConfig,
             realEstateListings,
             preferredLocations
           )
         });
+        // use dedicated entity groups for editor (do not exclude any group by config)
+        setEditorGroups(
+          deriveInitialEntityGroups(
+            searchResponse,
+            enhancedConfig,
+            realEstateListings,
+            preferredLocations,
+            true
+          )
+        );
       }
     };
 
-    fetchSnapshot();
+    void fetchSnapshot();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
-  const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
-  const [availableMeans, setAvailableMeans] = useState<MeansOfTransportation[]>(
-    []
-  );
-  const [activeMeans, setActiveMeans] = useState<MeansOfTransportation[]>([]);
-
-  const updateGroupedEntities = (entities: EntityGroup[]) => {
-    if (!groupedEntities.some(ge => ge.active)) {
-      setGroupedEntities(
-        entities.map((e, index) => (index === 0 ? { ...e, active: true } : e))
-      );
-    } else {
-      setGroupedEntities(entities);
-    }
-  };
-
-  const updateActiveMeans = (means: MeansOfTransportation[]) => {
-    setActiveMeans(means);
-  };
-
-  // consume search response
+  // react to changes
   useEffect(() => {
-    if (!!searchResponse) {
-      const meansFromResponse = deriveAvailableMeansFromResponse(
-        searchResponse
-      );
-      setAvailableMeans(meansFromResponse);
-      updateActiveMeans(meansFromResponse);
+    if (!!snapshot) {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: deriveInitialEntityGroups(
+          snapshot?.searchResponse!,
+          searchContextState.responseConfig,
+          snapshot.realEstateListings,
+          snapshot.preferredLocations
+        )
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, config]);
+  }, [
+    searchContextState.responseConfig?.defaultActiveGroups,
+    searchContextState.responseConfig?.entityVisibility
+  ]);
 
-  // react to active means change
-  useEffect(() => {
-    let entitiesIncludedInActiveMeans =
-      buildEntityData(snapshot?.searchResponse!)?.filter(entity =>
-        entityIncludesMean(entity, activeMeans)
-      ) ?? [];
-    const centerOfSearch = searchResponse?.centerOfInterest?.coordinates!;
-    if (!!snapshot?.realEstateListings && !!centerOfSearch) {
-      entitiesIncludedInActiveMeans?.push(
-        ...buildEntityDataFromRealEstateListings(
-          centerOfSearch,
-          snapshot?.realEstateListings
+  const onPoiAdd = (poi: Poi) => {
+    if (!!snapshot) {
+      const copiedSearchResponse = JSON.parse(
+        JSON.stringify(snapshot!.searchResponse)
+      ) as ApiSearchResponse;
+      copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
+      copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
+      copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
+        (poi as any) as ApiOsmLocation
+      );
+
+      const newEntity = buildEntityData(
+        copiedSearchResponse,
+        searchContextState.responseConfig
+      )?.find(e => e.id === poi.entity.id)!;
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: (searchContextState.responseGroupedEntities ?? []).map(ge =>
+          ge.title !== poi.entity.label
+            ? ge
+            : {
+                ...ge,
+                items: [...ge.items, newEntity]
+              }
+        )
+      });
+      // update dedicated entity groups for editor
+      setEditorGroups(
+        editorGroups.map(ge =>
+          ge.title !== poi.entity.label
+            ? ge
+            : { ...ge, items: [...ge.items, newEntity] }
         )
       );
     }
-    const theme = config?.theme;
-    const defaultActiveGroups = config?.defaultActiveGroups;
-    const defaultActive = theme !== "KF";
-    updateGroupedEntities(
-      buildCombinedGroupedEntries(
-        entitiesIncludedInActiveMeans,
-        defaultActive,
-        defaultActiveGroups
-      )
-    );
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, activeMeans, config]);
-
-  const onConfigChange = (config: ApiSearchResultSnapshotConfig) => {
-    setConfig(config);
-  };
-
-  const onPoiAdd = (poi: Poi) => {
-    const copiedSearchResponse = JSON.parse(
-      JSON.stringify(searchResponse)
-    ) as ApiSearchResponse;
-    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-      (poi as any) as ApiOsmLocation
-    );
-    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-      (poi as any) as ApiOsmLocation
-    );
-    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-      (poi as any) as ApiOsmLocation
-    );
-
-    setSnapshot({ ...snapshot!, searchResponse: copiedSearchResponse });
-    setSearchResponse({ ...copiedSearchResponse });
-
-    const newEntity = buildEntityData(copiedSearchResponse, config)?.find(
-      e => e.id === poi.entity.id
-    )!;
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: (searchContextState.responseGroupedEntities ?? []).map(ge =>
-        ge.title !== poi.entity.label
-          ? ge
-          : {
-              ...ge,
-              items: [...ge.items, newEntity]
-            }
-      )
-    });
   };
 
   const ActionsTop: React.FunctionComponent = () => {
@@ -236,10 +204,15 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             type="button"
             onClick={async () => {
               try {
-                await put(`/api/location/snapshot/${snapshotId}`, {
-                  config,
-                  snapshot
-                });
+                await put<ApiUpdateSearchResultSnapshot>(
+                  `/api/location/snapshot/${snapshotId}`,
+                  {
+                    config: searchContextState.responseConfig,
+                    snapshot: {
+                      ...snapshot
+                    }
+                  }
+                );
                 setShowModal(true);
                 toastSuccess("Erfolgreich in Zwischenablage kopiert!");
               } catch (e) {
@@ -292,27 +265,26 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       <div className="editor-container">
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
-          mapBoxMapId={config?.mapBoxMapId}
-          searchContextDispatch={searchContextDispatch}
+          mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
           searchResponse={snapshot?.searchResponse!}
           placesLocation={snapshot.placesLocation}
-          onPoiAdd={onPoiAdd}
+          location={snapshot?.location}
           embedMode={true}
           editorMode={true}
-          initialRoutes={[]}
-          initialTransitRoutes={[]}
-          config={config}
-          onConfigChange={onConfigChange}
-          transportationParams={snapshot.transportationParams}
-          location={snapshot?.location}
-          preferredLocations={snapshot?.preferredLocations}
-          listings={snapshot?.realEstateListings}
+          onPoiAdd={onPoiAdd}
         />
         <EditorMapMenu
-          availableMeans={availableMeans}
-          groupedEntries={groupedEntities}
-          config={config!}
-          onConfigChange={onConfigChange}
+          availableMeans={deriveAvailableMeansFromResponse(
+            snapshot.searchResponse
+          )}
+          groupedEntries={editorGroups}
+          config={searchContextState.responseConfig!}
+          onConfigChange={config =>
+            searchContextDispatch({
+              type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+              payload: { ...config }
+            })
+          }
           additionalMapBoxStyles={userState?.user?.additionalMapBoxStyles || []}
         />
       </div>

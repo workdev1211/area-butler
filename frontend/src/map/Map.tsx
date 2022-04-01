@@ -1,10 +1,6 @@
 import center from "@turf/center";
 import FormModal, { ModalConfig } from "components/FormModal";
-import {
-  Poi,
-  SearchContextActions,
-  SearchContextActionTypes
-} from "context/SearchContext";
+import { Poi } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
 import "leaflet-touch-helper";
@@ -52,10 +48,8 @@ import "./Map.scss";
 
 export interface MapProps {
   mapBoxAccessToken: string;
-  searchContextDispatch: (action: SearchContextActions) => void;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
-  entities: ResultEntity[] | null;
   groupedEntities: EntityGroup[];
   mapCenter?: ApiCoordinates;
   mapZoomLevel?: number;
@@ -67,6 +61,8 @@ export interface MapProps {
     byCar: boolean;
   };
   highlightId?: string | null | undefined;
+  setHighlightId: (id: string | null) => void;
+  addMapClipping: (zoom: number, dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   embedMode?: boolean;
@@ -74,6 +70,10 @@ export interface MapProps {
   config?: ApiSearchResultSnapshotConfig;
   onPoiAdd?: (poi: Poi) => void;
   hideEntity?: (entity: ResultEntity) => void;
+  centerZoomCoordinates: (
+    zoomLevel: number,
+    coordinates: ApiCoordinates
+  ) => void;
 }
 
 export class IdMarker extends L.Marker {
@@ -262,8 +262,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const searchAdressEqual =
     JSON.stringify(prevProps.searchAddress) ===
     JSON.stringify(nextProps.searchAddress);
-  const entitiesEqual =
-    JSON.stringify(prevProps.entities) === JSON.stringify(nextProps.entities);
   const entityGroupsEqual =
     JSON.stringify(prevProps.groupedEntities) ===
     JSON.stringify(nextProps.groupedEntities);
@@ -283,7 +281,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     mapboxKeyEqual &&
     responseEqual &&
     searchAdressEqual &&
-    entitiesEqual &&
     entityGroupsEqual &&
     meansEqual &&
     mapCenterEqual &&
@@ -308,16 +305,15 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
 const Map = React.memo<MapProps>(
   ({
     mapBoxAccessToken,
-    searchContextDispatch,
     searchResponse,
     searchAddress,
-    entities,
     groupedEntities,
     means,
     mapCenter,
     mapZoomLevel,
     leafletMapId = "mymap",
     highlightId,
+    setHighlightId,
     routes,
     transitRoutes,
     embedMode = false,
@@ -325,7 +321,9 @@ const Map = React.memo<MapProps>(
     config,
     mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
     onPoiAdd,
-    hideEntity
+    hideEntity,
+    centerZoomCoordinates,
+    addMapClipping
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -380,7 +378,7 @@ const Map = React.memo<MapProps>(
       zoomControl.addTo(localMap);
 
       localMap.on("zoomend", function() {
-        if (config && config.groupItems === false) {
+        if (config && !config.groupItems) {
           const container = document.querySelector(".leaflet-container");
           if (localMap.getZoom() < 15) {
             container?.classList.add("no-group");
@@ -459,7 +457,6 @@ const Map = React.memo<MapProps>(
       lat,
       lng,
       leafletMapId,
-      searchContextDispatch,
       mapBoxAccessToken,
       searchAddress,
       embedMode,
@@ -496,16 +493,14 @@ const Map = React.memo<MapProps>(
               // use timeout to wait for de-spider animation of cluster
               setTimeout(() => {
                 marker.createOpenPopup();
-                searchContextDispatch({
-                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                  payload: null
-                });
+                setHighlightId(null);
               }, 1200);
             }
           }
         }
       }
-    }, [mapCenter, mapZoomLevel, highlightId, searchContextDispatch]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mapCenter, mapZoomLevel, highlightId]);
 
     const meansStringified = JSON.stringify(means);
     // draw means
@@ -685,7 +680,9 @@ const Map = React.memo<MapProps>(
       }
     }, [routes, transitRoutes, means, groupedEntities, config?.mapIcon]);
 
-    const entitiesStringified = JSON.stringify(entities);
+    const entitiesStringified = JSON.stringify(
+      groupedEntities.map(g => g.items).flat()
+    );
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
     // draw amenities
@@ -798,16 +795,7 @@ const Map = React.memo<MapProps>(
             const centerOfGroup = center(a.layer.toGeoJSON());
             const lat = centerOfGroup.geometry.coordinates[1];
             const lng = centerOfGroup.geometry.coordinates[0];
-            searchContextDispatch({
-              type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
-              payload: {
-                center: {
-                  lat,
-                  lng
-                },
-                zoom: 17
-              }
-            });
+            centerZoomCoordinates(17, { lat, lng });
           });
           currentMap.addLayer(amenityMarkerGroup);
         }
@@ -816,12 +804,7 @@ const Map = React.memo<MapProps>(
         drawAmenityMarkers();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      entitiesStringified,
-      groupedEntitiesStringified,
-      searchContextDispatch,
-      config?.mapIcon
-    ]);
+    }, [entitiesStringified, groupedEntitiesStringified, config?.mapIcon]);
 
     const takePicture = () => {
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
@@ -836,13 +819,7 @@ const Map = React.memo<MapProps>(
         scale: 5
       }).then(canvas => {
         const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
-        searchContextDispatch({
-          type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-          payload: {
-            zoomLevel: mapZoomLevel || zoom,
-            mapClippingDataUrl
-          }
-        });
+        addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
         for (let i = 0; i < bottomElements.length; i++) {
           bottomElements[i].className = bottomElements[i].className.replace(
@@ -934,13 +911,10 @@ const Map = React.memo<MapProps>(
           padding: L.point(10, 10)
         });
         setTimeout(() => {
-          searchContextDispatch({
-            type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
-            payload: {
-              zoom: currentMap?.getZoom()!,
-              center: searchResponse.centerOfInterest.coordinates
-            }
-          });
+          centerZoomCoordinates(
+            currentMap?.getZoom()!,
+            searchResponse.centerOfInterest.coordinates
+          );
         }, 1000);
       }
     };
@@ -958,7 +932,7 @@ const Map = React.memo<MapProps>(
               coordinates={addPoiCoordinates}
               address={addPoiAddress}
               onPoiAdd={onPoiAdd}
-            ></AddPoiFormHandler>
+            />
           </FormModal>
         )}
         <div className={`leaflet-bottom leaflet-left mb-20 cursor-pointer`}>

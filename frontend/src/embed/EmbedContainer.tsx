@@ -10,21 +10,19 @@ import {
   SearchContextActionTypes
 } from "../context/SearchContext";
 import SearchResultContainer from "../components/SearchResultContainer";
-import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { deriveInitialEntityGroups } from "../shared/shared.functions";
+import {
+  RealEstateActionTypes,
+  RealEstateContext
+} from "../context/RealEstateContext";
 
 const EmbedContainer: React.FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } = useContext(
     SearchContext
   );
+  const { realEstateDispatch } = useContext(RealEstateContext);
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
-  const [routes, setRoutes] = useState<EntityRoute[]>([]);
-  const [transitRoutes, setTransitRoutes] = useState<EntityTransitRoute[]>([]);
-  const [realEstateListings, setRealEstateListings] = useState<
-    ApiRealEstateListing[]
-  >([]);
 
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [searchConfig, setSearchConfig] = useState<
@@ -96,9 +94,18 @@ const EmbedContainer: React.FunctionComponent = () => {
         type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
         payload: preferredLocations
       });
-      setRoutes(routes);
-      setTransitRoutes(transitRoutes);
-      setRealEstateListings(realEstateListings);
+      realEstateDispatch({
+        type: RealEstateActionTypes.SET_REAL_ESTATES,
+        payload: realEstateListings
+      });
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+        payload: routes
+      });
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
+        payload: transitRoutes
+      });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
@@ -115,6 +122,7 @@ const EmbedContainer: React.FunctionComponent = () => {
         )
       });
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, searchConfig, searchContextDispatch]);
 
   if (!searchContextState.searchResponse) {
@@ -126,17 +134,10 @@ const EmbedContainer: React.FunctionComponent = () => {
       mapBoxToken={mapBoxToken}
       mapBoxMapId={searchConfig?.mapBoxMapId}
       searchResponse={searchContextState.searchResponse}
-      transportationParams={searchContextState.transportationParams}
       placesLocation={searchContextState.placesLocation}
-      searchContextDispatch={searchContextDispatch}
       location={searchContextState.mapCenter ?? searchContextState.location!}
-      highlightId={searchContextState.highlightId!}
       mapZoomLevel={searchContextState.mapZoomLevel!}
       embedMode={true}
-      config={searchConfig}
-      initialRoutes={routes}
-      initialTransitRoutes={transitRoutes}
-      listings={realEstateListings}
     />
   );
 };

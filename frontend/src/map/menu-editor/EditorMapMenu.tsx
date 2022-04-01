@@ -92,7 +92,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     } else {
       defaultActiveMeans.push(activeMeans);
     }
-    onConfigChange({ ...config, defaultActiveMeans });
+    onConfigChange({ ...config, defaultActiveMeans: [...defaultActiveMeans] });
   };
 
   const changeDefaultActiveGroups = (activeGroup: string) => {
@@ -104,7 +104,10 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     } else {
       defaultActiveGroups.push(activeGroup);
     }
-    onConfigChange({ ...config, defaultActiveGroups });
+    onConfigChange({
+      ...config,
+      defaultActiveGroups: [...defaultActiveGroups]
+    });
   };
 
   const isDefaultActiveGroup = (activeGroup: string) => {
@@ -390,6 +393,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
             <ul>
               {groupedEntries
                 .filter(ge => ge.items.length)
+                .sort((a, b) => a.title.localeCompare(b.title))
                 .map(group => (
                   <li key={group.title}>
                     <input
@@ -424,6 +428,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
           <ul>
             {groupedEntries
               .filter(ge => ge.items.length)
+              .sort((a, b) => a.title.localeCompare(b.title))
               .map(group => (
                 <li key={group.title}>
                   <div className="flex flex-col">

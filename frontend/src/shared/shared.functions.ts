@@ -336,7 +336,8 @@ export const deriveAvailableMeansFromResponse = (
 
 export const buildEntityData = (
   locationSearchResult: ApiSearchResponse,
-  config?: ApiSearchResultSnapshotConfig
+  config?: ApiSearchResultSnapshotConfig,
+  ignoreVisibility?: boolean
 ): ResultEntity[] | null => {
   if (!locationSearchResult) {
     return null;
@@ -351,7 +352,7 @@ export const buildEntityData = (
   let allLocationIds = Array.from(
     new Set(allLocations.map(location => location.entity.id))
   );
-  if (config && config.entityVisibility) {
+  if (config && config.entityVisibility && !ignoreVisibility) {
     const { entityVisibility = [] } = config;
     allLocationIds = allLocationIds.filter(
       id => !entityVisibility.some(ev => ev.id === id && ev.excluded)
@@ -455,67 +456,7 @@ export const buildEntityDataFromRealEstateListings = (
   return mappedRealEstateListings;
 };
 
-export const buildCombinedGroupedEntries = (
-  entities: ResultEntity[],
-  active = true,
-  defaultActiveGroups: string[] = [],
-  oldGroupedEntries: EntityGroup[] = []
-): EntityGroup[] => {
-  const newGroupedEntries: any[] = Object.entries(
-    groupBy(entities, (item: ResultEntity) => item.label)
-  );
-
-  const deriveActiveState = (title: string) => {
-    if (!active) {
-      return oldGroupedEntries.some(e => e.title === title && e.active);
-    }
-    if (!defaultActiveGroups.length) {
-      return (
-        active || oldGroupedEntries.some(e => e.title === title && e.active)
-      );
-    }
-    if (
-      defaultActiveGroups.length &&
-      !oldGroupedEntries.some(e => e.title === title && e.active)
-    ) {
-      return defaultActiveGroups.includes(title);
-    }
-    return true;
-  };
-
-  return [
-    {
-      title: preferredLocationsTitle,
-      active: deriveActiveState(preferredLocationsTitle),
-      defaultActive: defaultActiveGroups.includes(preferredLocationsTitle),
-      items: newGroupedEntries
-        .filter(([label, _]) => label === preferredLocationsTitle)
-        .map(([_, items]) => items)
-        .flat()
-    },
-    {
-      title: realEstateListingsTitle,
-      active: deriveActiveState(realEstateListingsTitle),
-      defaultActive: defaultActiveGroups.includes(realEstateListingsTitle),
-      items: newGroupedEntries
-        .filter(([label, _]) => label === realEstateListingsTitle)
-        .map(([_, items]) => items)
-        .flat()
-    },
-    ...newGroupedEntries
-      .filter(
-        ([label, _]) =>
-          label !== preferredLocationsTitle && label !== realEstateListingsTitle
-      )
-      .map(([title, items]) => ({
-        title,
-        active: deriveActiveState(title),
-        defaultActive: defaultActiveGroups.includes(title),
-        items
-      }))
-  ];
-};
-
+// ### Hide / Show Entities ###
 export const isEntityHidden = (
   entity: ResultEntity,
   config: ApiSearchResultSnapshotConfig
@@ -554,21 +495,40 @@ export const createCodeSnippet = (token: string) => {
   `;
 };
 
+export const deriveEntityGroupsByActiveMeans = (
+  entityGroups: EntityGroup[] = [],
+  activeMeans: MeansOfTransportation[] = []
+): EntityGroup[] => {
+  const filterByMeans = (
+    entityGroup: EntityGroup,
+    activeMeans: MeansOfTransportation[]
+  ): EntityGroup => {
+    return {
+      ...entityGroup,
+      items: entityGroup.items.filter(
+        i =>
+          (activeMeans.includes(MeansOfTransportation.WALK) && i.byFoot) ||
+          (activeMeans.includes(MeansOfTransportation.BICYCLE) && i.byBike) ||
+          (activeMeans.includes(MeansOfTransportation.CAR) && i.byCar)
+      )
+    };
+  };
+  return entityGroups.map(group => filterByMeans(group, activeMeans));
+};
+
 export const deriveInitialEntityGroups = (
   searchResponse: ApiSearchResponse,
   config?: ApiSearchResultSnapshotConfig,
   listings?: ApiRealEstateListing[],
-  locations?: ApiPreferredLocation[]
+  locations?: ApiPreferredLocation[],
+  ignoreVisibility?: boolean
 ): EntityGroup[] => {
   const groupedEntities: EntityGroup[] = [];
   const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
 
   const deriveActiveState = (title: string, index?: number): boolean => {
     if (config?.theme === "KF") {
-      return (
-        [preferredLocationsTitle, realEstateListingsTitle].includes(title) ||
-        index === 0
-      );
+      return [realEstateListingsTitle].includes(title) || index === 0;
     }
     return config?.defaultActiveGroups
       ? config.defaultActiveGroups.includes(title)
@@ -593,7 +553,7 @@ export const deriveInitialEntityGroups = (
       )
     });
   }
-  const allEntities = buildEntityData(searchResponse, config);
+  const allEntities = buildEntityData(searchResponse, config, ignoreVisibility);
   const newGroupedEntries: any[] = Object.entries(
     groupBy(allEntities, (item: ResultEntity) => item.label)
   );

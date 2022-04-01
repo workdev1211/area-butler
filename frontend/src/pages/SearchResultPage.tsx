@@ -6,7 +6,10 @@ import { useHttp } from "hooks/http";
 import { useRouting } from "hooks/routing";
 import React, { useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
-import { toastError } from "shared/shared.functions";
+import {
+  deriveEntityGroupsByActiveMeans,
+  toastError
+} from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -19,10 +22,7 @@ import {
 } from "../../../shared/types/types";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
-import SearchResultContainer, {
-  EntityGroup,
-  ResultEntity
-} from "../components/SearchResultContainer";
+import SearchResultContainer from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
   SearchContext,
@@ -38,13 +38,10 @@ const SearchResultPage: React.FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } = useContext(
     SearchContext
   );
-
   const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
 
-  const [entities, setEntities] = useState<ResultEntity[]>([]);
-  const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const { get, post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
   const [busyModalOpen, setBusyModalOpen] = useState<boolean>(false);
@@ -258,43 +255,48 @@ const SearchResultPage: React.FunctionComponent = () => {
         actionBottom={[<BackButton key="back-button" to="/" />]}
       >
         <TourStarter tour="result" />
-        <BusyModal open={busyModalOpen} title="Öffne Editor..."></BusyModal>
+        <BusyModal open={busyModalOpen} title="Öffne Editor..." />
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
           searchResponse={searchContextState.searchResponse}
-          transportationParams={searchContextState.transportationParams}
           placesLocation={searchContextState.placesLocation}
           location={
             searchContextState.mapCenter ?? searchContextState.location!
           }
-          highlightId={searchContextState.highlightId!}
           mapZoomLevel={searchContextState.mapZoomLevel!}
-          searchContextDispatch={searchContextDispatch}
-          censusData={searchContextState.censusData}
-          federalElectionData={searchContextState.federalElectionData}
-          particlePollutionData={searchContextState.particlePollutionData}
-          mapClippings={searchContextState.mapClippings}
           user={user}
           userDispatch={userDispatch}
-          listings={realEstateState.listings}
-          preferredLocations={searchContextState.preferredLocations}
-          onEntitiesChange={setEntities}
-          onGroupedEntitiesChange={setGroupedEntities}
         />
       </DefaultLayout>
       {searchContextState.printingActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={entities}
-          groupedEntries={groupedEntities}
+          entities={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )
+            .map(g => g.items)
+            .flat()}
+          groupedEntries={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )}
           censusData={searchContextState.censusData!}
         />
       )}
       {searchContextState.printingCheatsheetActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={entities}
-          groupedEntries={groupedEntities}
+          entities={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )
+            .map(g => g.items)
+            .flat()}
+          groupedEntries={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )}
           censusData={searchContextState.censusData!}
           exportType="CHEATSHEET"
         />
@@ -302,8 +304,16 @@ const SearchResultPage: React.FunctionComponent = () => {
       {searchContextState.printingDocxActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={entities}
-          groupedEntries={groupedEntities}
+          entities={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )
+            .map(g => g.items)
+            .flat()}
+          groupedEntries={deriveEntityGroupsByActiveMeans(
+            searchContextState.responseGroupedEntities,
+            searchContextState.responseActiveMeans
+          )}
           censusData={searchContextState.censusData!}
           exportType="EXPOSE_DOCX"
         />
