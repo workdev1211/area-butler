@@ -31,11 +31,7 @@ describe("MapMenuKarlaFricke", () => {
 
   test("should mount", async () => {
     const component = render(
-      <MapMenuKarlaFricke
-        groupedEntries={[]}
-        activateGroup={jest.fn()}
-        mobileMenuOpen={false}
-      />
+      <MapMenuKarlaFricke groupedEntries={[]} mobileMenuOpen={false} />
     );
     expect(component).toBeDefined();
   });
@@ -44,7 +40,6 @@ describe("MapMenuKarlaFricke", () => {
     const component = render(
       <MapMenuKarlaFricke
         groupedEntries={groupedEntries}
-        activateGroup={jest.fn()}
         mobileMenuOpen={false}
       />
     );
