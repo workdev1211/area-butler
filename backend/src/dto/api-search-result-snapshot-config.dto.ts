@@ -19,6 +19,7 @@ class ApiSearchResultSnapshotConfigDto
   showLocation: boolean;
   showAddress?: boolean;
   theme?: ApiSearchResultSnapshotConfigTheme;
+  showStreetViewLink?: boolean;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

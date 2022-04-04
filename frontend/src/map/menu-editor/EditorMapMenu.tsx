@@ -75,6 +75,10 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 
   const changeEntityVisiblity = (visiblity: ApiSnippetEntitVisiblity[]) => {
     onConfigChange({ ...config, entityVisibility: [...visiblity] });
+  };  
+  
+  const changeShowStreetViewLink = () => {
+    onConfigChange({ ...config, showStreetViewLink: !config.showStreetViewLink });
   };
 
   const changeColor = (color: string | undefined) => {
@@ -315,6 +319,20 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">Adresse anzeigen</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="showLocation"
+                    checked={!!config?.showStreetViewLink}
+                    onChange={() => changeShowStreetViewLink()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Street View Link anzeigen</span>
                 </label>
               </div>
             </li>

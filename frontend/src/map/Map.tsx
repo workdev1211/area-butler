@@ -417,13 +417,21 @@ const Map = React.memo<MapProps>(
         maxZoom: 18
       }).addTo(localMap);
       if (!embedMode || config?.showLocation) {
-        const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
+        
+        let detailContent = `${searchAddress}`;
+        
+        if (!embedMode || !!config?.showStreetViewLink) {
+          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
 
-        const detailContent = `${searchAddress} <br/><br/>
-                               <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
-                                  <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
-                                  <span>Street View</span>
-                               </a>`;
+          const streetViewContent = `
+            <br/><br/>
+            <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
+              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
+               <span>Street View</span>
+            </a>
+          `;
+          detailContent = `${detailContent}${streetViewContent}`;
+        }                      
 
         const iconStyle = config?.mapIcon
           ? "height: auto; width: 46px;"

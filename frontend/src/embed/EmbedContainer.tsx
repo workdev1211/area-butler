@@ -56,6 +56,10 @@ const EmbedContainer: React.FunctionComponent = () => {
 
       if (!!config && !("showAddress" in config)) {
         config["showAddress"] = true;
+      }      
+      
+      if (!!config && !("showStreetViewLink" in config)) {
+        config["showStreetViewLink"] = true;
       }
 
       setMapBoxToken(response.mapboxToken);

@@ -208,6 +208,7 @@ export class LocationService {
       showLocation: true,
       showAddress: true,
       groupItems: true,
+      showStreetViewLink: true
     };
 
     const doc = await new this.searchResultSnapshotModel({

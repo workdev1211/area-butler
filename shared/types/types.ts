@@ -261,6 +261,7 @@ export interface ApiSearchResultSnapshotConfig {
   primaryColor?: string;
   mapIcon?: string;
   fixedRealEstates?: boolean;
+  showStreetViewLink?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {

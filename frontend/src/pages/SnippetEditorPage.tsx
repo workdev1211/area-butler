@@ -88,6 +88,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         snapshotConfig["showAddress"] = true;
       }
 
+      if (!("showStreetViewLink" in snapshotConfig)) {
+        snapshotConfig["showStreetViewLink"] = true;
+      }
+
       const enhancedConfig = {
         ...snapshotConfig,
         fixedRealEstates: snapshotConfig.fixedRealEstates ?? true,
