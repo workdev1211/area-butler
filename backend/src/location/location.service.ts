@@ -206,6 +206,7 @@ export class LocationService {
 
     const config: ApiSearchResultSnapshotConfigDto = {
       showLocation: true,
+      showAddress: true,
       groupItems: true,
     };
 

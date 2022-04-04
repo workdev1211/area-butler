@@ -84,6 +84,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         snapshotConfig["mapIcon"] = user.mapIcon;
       }
 
+      if (!("showAddress" in snapshotConfig)) {
+        snapshotConfig["showAddress"] = true;
+      }
+
       const enhancedConfig = {
         ...snapshotConfig,
         fixedRealEstates: snapshotConfig.fixedRealEstates ?? true,

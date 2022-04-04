@@ -61,6 +61,10 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     onConfigChange({ ...config, showLocation: !config?.showLocation });
   };
 
+  const changeShowAddress = () => {
+    onConfigChange({ ...config, showAddress: !config?.showAddress });
+  };
+
   const changeGroupItems = () => {
     onConfigChange({ ...config, groupItems: !config?.groupItems });
   };
@@ -296,7 +300,21 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     onChange={() => changeShowLocation()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Objekt auf Karte anzeigen</span>
+                  <span className="label-text">Objekt anzeigen</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="showLocation"
+                    checked={!!config?.showAddress}
+                    onChange={() => changeShowAddress()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Adresse anzeigen</span>
                 </label>
               </div>
             </li>

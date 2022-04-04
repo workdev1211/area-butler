@@ -251,6 +251,7 @@ export interface ApiSnippetEntitVisiblity {
 
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
+  showAddress?: boolean;
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];

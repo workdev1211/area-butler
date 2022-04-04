@@ -17,6 +17,7 @@ class ApiSearchResultSnapshotConfigDto
   mapIcon?: string;
   primaryColor?: string;
   showLocation: boolean;
+  showAddress?: boolean;
   theme?: ApiSearchResultSnapshotConfigTheme;
 }
 

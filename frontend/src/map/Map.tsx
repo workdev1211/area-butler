@@ -416,7 +416,7 @@ const Map = React.memo<MapProps>(
         tileSize: 512,
         maxZoom: 18
       }).addTo(localMap);
-      if (!embedMode || !!searchAddress) {
+      if (!embedMode || config?.showLocation) {
         const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
 
         const detailContent = `${searchAddress} <br/><br/>
@@ -440,16 +440,18 @@ const Map = React.memo<MapProps>(
           html: `<img src="${config?.mapIcon ??
             mylocationIcon}" alt="marker-icon" style="${iconStyle}" />`
         });
-        L.marker([lat, lng], {
+        const myLocationMarker = L.marker([lat, lng], {
           icon: positionIcon
-        })
-          .on("click", function(event) {
+        }).addTo(localMap);
+
+        if (!!config?.showAddress || !embedMode) {
+          myLocationMarker.on("click", function(event) {
             const marker = event.target;
             marker.unbindPopup();
             marker.bindPopup(detailContent);
             marker.openPopup();
           })
-          .addTo(localMap);
+        }
       }
       currentMap = localMap;
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -461,7 +463,9 @@ const Map = React.memo<MapProps>(
       searchAddress,
       embedMode,
       mapboxMapId,
-      config?.mapIcon
+      config?.mapIcon,
+      config?.showLocation,
+      config?.showAddress
     ]);
 
     // react on zoom and center change
@@ -554,7 +558,7 @@ const Map = React.memo<MapProps>(
           ).addTo(meansGroup);
         }
       }
-    }, [meansStringified, searchResponse.routingProfiles, config?.mapIcon]);
+    }, [meansStringified, searchResponse.routingProfiles, config?.mapIcon, config?.showLocation, config?.showAddress]);
 
     // draw routes
     useEffect(() => {

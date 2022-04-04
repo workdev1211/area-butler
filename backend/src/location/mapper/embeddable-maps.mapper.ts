@@ -71,7 +71,7 @@ const mapSearchResultSnapshot = (
   config: ApiSearchResultSnapshotConfigDto,
   embed: boolean,
 ): ApiSearchResultSnapshotDto => {
-  if (!embed || !config || config.showLocation !== false) {
+  if (!embed || !config || config.showAddress !== false) {
     return snapshot;
   }
 

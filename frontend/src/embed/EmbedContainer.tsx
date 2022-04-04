@@ -50,9 +50,17 @@ const EmbedContainer: React.FunctionComponent = () => {
           `${baseUrl}/api/location/snapshot/${getQueryVariable("token")}`
         )
       ).data;
+
+
+      const config = response.config;
+
+      if (!!config && !("showAddress" in config)) {
+        config["showAddress"] = true;
+      }
+
       setMapBoxToken(response.mapboxToken);
       setResult(response);
-      setSearchConfig(response.config);
+      setSearchConfig(config);
     };
     void fetchData();
   }, [setMapBoxToken, searchContextDispatch]);

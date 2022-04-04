@@ -149,7 +149,7 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
     <div className={mobileMenuButtonClasses} data-tour="map-menu">
       <div className="heading">
         <span className="heading">Ergebnisse</span>
-        {searchAddress && (
+        {(!!config?.showAddress || !config) && (
           <button
             type="button"
             className="btn btn-link"
