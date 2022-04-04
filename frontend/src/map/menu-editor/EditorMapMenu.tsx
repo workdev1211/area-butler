@@ -4,7 +4,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
   ApiSnippetEntitVisiblity,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../../shared/types/types";
 import "./EditorMapMenu.scss";
 import { LocalityItemContent } from "../menu/menu-item/locality-item/LocalityItem";
@@ -14,7 +14,7 @@ import {
   isEntityHidden,
   realEstateListingsTitle,
   realEstateListingsTitleEmbed,
-  toggleEntityVisibility
+  toggleEntityVisibility,
 } from "../../shared/shared.functions";
 
 export interface EditorMapMenuProps {
@@ -30,14 +30,12 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   onConfigChange,
   availableMeans = [],
   groupedEntries = [],
-  additionalMapBoxStyles = []
+  additionalMapBoxStyles = [],
 }) => {
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
   const [poiVisibilityOpen, setPoiVisibilityOpen] = useState<boolean>(true);
-  const [
-    preselectedGroupVisibilityOpen,
-    setPreselectedGroupVisibilityOpen
-  ] = useState<boolean>(true);
+  const [preselectedGroupVisibilityOpen, setPreselectedGroupVisibilityOpen] =
+    useState<boolean>(true);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
 
   const [color, setColor] = useState(config?.primaryColor);
@@ -46,11 +44,19 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   const mapStyles: { key: string; label: string }[] = [
     { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
     { key: "kudiba-tech/ckzbqgya2000414li19g3p9u1", label: "Highlight" },
-    ...additionalMapBoxStyles
+    ...additionalMapBoxStyles,
   ];
 
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme) => {
-    onConfigChange({ ...config, theme: value });
+    let newConfig = { ...config, theme: value };
+    const oldGroups = config.defaultActiveGroups ?? [];
+    if (value === "KF" && oldGroups.length > 1) {
+      newConfig = {
+        ...newConfig,
+        defaultActiveGroups: [oldGroups[0]],
+      };
+    }
+    onConfigChange({ ...newConfig });
   };
 
   const changeMapboxMap = (value: string) => {
@@ -95,7 +101,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     let defaultActiveMeans = config.defaultActiveMeans || [];
     if (defaultActiveMeans.includes(activeMeans)) {
       defaultActiveMeans = [
-        ...defaultActiveMeans.filter(a => a !== activeMeans)
+        ...defaultActiveMeans.filter((a) => a !== activeMeans),
       ];
     } else {
       defaultActiveMeans.push(activeMeans);
@@ -107,14 +113,17 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     let defaultActiveGroups = config.defaultActiveGroups || [];
     if (defaultActiveGroups.includes(activeGroup)) {
       defaultActiveGroups = [
-        ...defaultActiveGroups.filter(g => g !== activeGroup)
+        ...defaultActiveGroups.filter((g) => g !== activeGroup),
       ];
     } else {
+      if (config.theme === "KF") {
+        defaultActiveGroups = [];
+      }
       defaultActiveGroups.push(activeGroup);
     }
     onConfigChange({
       ...config,
-      defaultActiveGroups: [...defaultActiveGroups]
+      defaultActiveGroups: [...defaultActiveGroups],
     });
   };
 
@@ -128,30 +137,30 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 
   const toggleGroupOpen = (group: EntityGroup) => {
     if (isGroupOpen(group)) {
-      setPoiGroupsOpen(poiGroupsOpen.filter(g => g !== group.title));
+      setPoiGroupsOpen(poiGroupsOpen.filter((g) => g !== group.title));
     } else {
       setPoiGroupsOpen([...poiGroupsOpen, group.title]);
     }
   };
 
   const isGroupHidden = (group: EntityGroup) => {
-    const groupEntityIds = group.items.map(i => i.id);
-    return groupEntityIds.every(id =>
-      (config.entityVisibility || []).some(ev => ev.id === id && ev.excluded)
+    const groupEntityIds = group.items.map((i) => i.id);
+    return groupEntityIds.every((id) =>
+      (config.entityVisibility || []).some((ev) => ev.id === id && ev.excluded)
     );
   };
 
   const toggleGroupVisibility = (group: EntityGroup) => {
     const visiblityWithoutGroup = (config.entityVisibility || []).filter(
-      ev => !group.items.some(i => i.id === ev.id)
+      (ev) => !group.items.some((i) => i.id === ev.id)
     );
     const wasGroupHidden = isGroupHidden(group);
     const newGroup = [
       ...visiblityWithoutGroup,
-      ...group.items.map(i => ({
+      ...group.items.map((i) => ({
         id: i.id,
-        excluded: !wasGroupHidden
-      }))
+        excluded: !wasGroupHidden,
+      })),
     ];
     changeEntityVisiblity(newGroup);
   };
@@ -160,7 +169,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
     if (!config.defaultActiveGroups) {
       onConfigChange({
         ...config,
-        defaultActiveGroups: groupedEntries.map(g => g.title)
+        defaultActiveGroups: groupedEntries.map((g) => g.title),
       });
     }
   }, [config, groupedEntries, onConfigChange]);
@@ -179,7 +188,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={event => setConfigOptionsOpen(event.target.checked)}
+          onChange={(event) => setConfigOptionsOpen(event.target.checked)}
         />
         <div className="collapse-title">Konfiguration</div>
         <div className="collapse-content">
@@ -218,9 +227,9 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     config?.mapBoxMapId ||
                     "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
                   }
-                  onChange={event => changeMapboxMap(event.target.value)}
+                  onChange={(event) => changeMapboxMap(event.target.value)}
                 >
-                  {mapStyles.map(style => (
+                  {mapStyles.map((style) => (
                     <option value={style.key} key={style.key}>
                       {style.label}
                     </option>
@@ -374,7 +383,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   label="Primärfarbe"
                   color={color}
                   setColor={setColor}
-                  onChange={color => changeColor(color)}
+                  onChange={(color) => changeColor(color)}
                 />
                 {config?.primaryColor && (
                   <button
@@ -394,7 +403,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   inputId="map-icon-upload-button"
                   image={mapIcon}
                   setImage={setMapIcon}
-                  onChange={mapIcon => changeMapIcon(mapIcon)}
+                  onChange={(mapIcon) => changeMapIcon(mapIcon)}
                 />
                 {config?.mapIcon && (
                   <button
@@ -409,46 +418,45 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
           </ul>
         </div>
       </div>
-      {config.theme === "DEFAULT" && (
-        <div
-          className={
-            "collapse collapse-arrow view-option" +
-            (preselectedGroupVisibilityOpen
-              ? " collapse-open"
-              : " collapse-closed")
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (preselectedGroupVisibilityOpen
+            ? " collapse-open"
+            : " collapse-closed")
+        }
+      >
+        <input
+          type="checkbox"
+          onChange={(event) =>
+            setPreselectedGroupVisibilityOpen(event.target.checked)
           }
-        >
-          <input
-            type="checkbox"
-            onChange={event =>
-              setPreselectedGroupVisibilityOpen(event.target.checked)
-            }
-          />
-          <div className="collapse-title">Vorausgewählte Kategorien</div>
-          <div className="collapse-content preselected-groups">
-            <ul>
-              {groupedEntries
-                .filter(ge => ge.items.length)
-                .sort((a, b) => a.title.localeCompare(b.title))
-                .map(group => (
-                  <li key={group.title}>
-                    <input
-                      type="checkbox"
-                      checked={isDefaultActiveGroup(group.title)}
-                      className="checkbox checkbox-primary"
-                      onChange={() => changeDefaultActiveGroups(group.title)}
-                    />
-                    <h4 className="font-medium pl-2">
-                      {group.title === realEstateListingsTitle
-                        ? realEstateListingsTitleEmbed
-                        : group.title}{" "}
-                    </h4>
-                  </li>
-                ))}
-            </ul>
-          </div>
+        />
+        <div className="collapse-title">Vorausgewählte Kategorie</div>
+        <div className="collapse-content preselected-groups">
+          <ul>
+            {groupedEntries
+              .filter((ge) => ge.items.length)
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((group) => (
+                <li key={group.title}>
+                  <input
+                    type="checkbox"
+                    checked={isDefaultActiveGroup(group.title)}
+                    className="checkbox checkbox-primary"
+                    onChange={() => changeDefaultActiveGroups(group.title)}
+                  />
+                  <h4 className="font-medium pl-2">
+                    {group.title === realEstateListingsTitle
+                      ? realEstateListingsTitleEmbed
+                      : group.title}{" "}
+                  </h4>
+                </li>
+              ))}
+          </ul>
         </div>
-      )}
+      </div>
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -457,15 +465,15 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
       >
         <input
           type="checkbox"
-          onChange={event => setPoiVisibilityOpen(event.target.checked)}
+          onChange={(event) => setPoiVisibilityOpen(event.target.checked)}
         />
         <div className="collapse-title">POI Sichtbarkeit</div>
         <div className="collapse-content entity-groups">
           <ul>
             {groupedEntries
-              .filter(ge => ge.items.length)
+              .filter((ge) => ge.items.length)
               .sort((a, b) => a.title.localeCompare(b.title))
-              .map(group => (
+              .map((group) => (
                 <li key={group.title}>
                   <div className="flex flex-col">
                     <div className="flex items-center py-4">
@@ -490,7 +498,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     {isGroupOpen(group) && (
                       <div className="group-items flex flex-col pl-2">
                         <ul>
-                          {group.items.map(item => (
+                          {group.items.map((item) => (
                             <li key={item.id}>
                               <div className="item-title">
                                 <input

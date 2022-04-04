@@ -2,7 +2,7 @@ import {
   geocodeByAddress,
   geocodeByLatLng,
   geocodeByPlaceId,
-  getLatLng
+  getLatLng,
 } from "react-google-places-autocomplete";
 import {
   ApiCoordinates,
@@ -10,7 +10,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiUser,
   MeansOfTransportation,
-  OsmName
+  OsmName,
 } from "../../../shared/types/types";
 import harversine from "haversine";
 import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
@@ -35,7 +35,7 @@ import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.s
 import { toast } from "react-toastify";
 import {
   calculateMinutesToMeters,
-  meansOfTransportations
+  meansOfTransportations,
 } from "../../../shared/constants/constants";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -78,8 +78,8 @@ export const deriveAddressFromCoordinates = async (
     return {
       label: formatted_address,
       value: {
-        place_id
-      }
+        place_id,
+      },
     };
   } else {
     return null;
@@ -90,11 +90,11 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
   return harversine(
     {
       latitude: from.lat,
-      longitude: from.lng
+      longitude: from.lng,
     },
     {
       latitude: to.lat,
-      longitude: to.lng
+      longitude: to.lng,
     },
     { unit: "meter" }
   );
@@ -106,8 +106,8 @@ export const deriveMinutesFromMeters = (
 ) => {
   return Math.round(
     distanceInMeters /
-      (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator ||
-        1)
+      (calculateMinutesToMeters.find((mtm) => mtm.mean === mean)
+        ?.multiplicator || 1)
   );
 };
 
@@ -156,7 +156,7 @@ export const toastSuccess = (message: string) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined
+    progress: undefined,
   });
 };
 
@@ -168,20 +168,20 @@ export const toastError = (message: string) => {
     closeOnClick: true,
     pauseOnHover: true,
     draggable: true,
-    progress: undefined
+    progress: undefined,
   });
 };
 
 export const preferredLocationsTitle = "Wichtige Adressen";
 export const preferredLocationsIcon = {
   icon: preferredLocationIcon,
-  color: "#c91444"
+  color: "#c91444",
 };
 export const realEstateListingsTitle = "Meine Objekte";
 export const realEstateListingsTitleEmbed = "Weitere Objekte";
 export const realEstateListingsIcon = {
   icon: realEstateListingIcon,
-  color: "#c91444"
+  color: "#c91444",
 };
 
 export const deriveColorPalette = (hexColor: string): ColorPalette => {
@@ -192,11 +192,8 @@ export const deriveColorPalette = (hexColor: string): ColorPalette => {
       .desaturate(30)
       .lighten(10)
       .toHexString(),
-    primaryColorDark: hexColorTinyColor
-      .saturate(30)
-      .darken(10)
-      .toHexString(),
-    textColor: hexColorTinyColor.isDark() ? "#FFFFFF" : "#000000"
+    primaryColorDark: hexColorTinyColor.saturate(30).darken(10).toHexString(),
+    textColor: hexColorTinyColor.isDark() ? "#FFFFFF" : "#000000",
   };
 };
 
@@ -207,102 +204,102 @@ export const deriveIconForOsmName = (
     case OsmName.fuel:
       return {
         icon: fuelIcon,
-        color: "#8E71EB"
+        color: "#8E71EB",
       };
     case OsmName.park:
       return {
         icon: parkIcon,
-        color: "#165B4E"
+        color: "#165B4E",
       };
     case OsmName.chemist:
       return {
         icon: chemistIcon,
-        color: "#267F9D"
+        color: "#267F9D",
       };
     case OsmName.supermarket:
       return {
         icon: chemistIcon,
-        color: "#267F9D"
+        color: "#267F9D",
       };
     case OsmName.kiosk:
       return {
         icon: chemistIcon,
-        color: "#267F9D"
+        color: "#267F9D",
       };
     case OsmName.station:
       return {
         icon: trainIcon,
-        color: "#CB513B"
+        color: "#CB513B",
       };
     case OsmName.bus_stop:
       return {
         icon: busIcon,
-        color: "#C71362"
+        color: "#C71362",
       };
     case OsmName.bar:
       return {
         icon: barIcon,
-        color: "#E3BB3F"
+        color: "#E3BB3F",
       };
     case OsmName.restaurant:
       return {
         icon: restaurantIcon,
-        color: "#48136D"
+        color: "#48136D",
       };
     case OsmName.theatre:
       return {
         icon: theaterIcon,
-        color: "#C91444"
+        color: "#C91444",
       };
     case OsmName.playground:
       return {
         icon: playgroundIcon,
-        color: "#D96666"
+        color: "#D96666",
       };
     case OsmName.kindergarten:
       return {
         icon: kindergartenIcon,
-        color: "#734242"
+        color: "#734242",
       };
     case OsmName.school:
       return {
         icon: schoolIcon,
-        color: "#96476A"
+        color: "#96476A",
       };
     case OsmName.university:
       return {
         icon: universityIcon,
-        color: "#201C1E"
+        color: "#201C1E",
       };
     case OsmName.doctors:
       return {
         icon: doctorIcon,
-        color: "#10A877"
+        color: "#10A877",
       };
     case OsmName.dentist:
       return {
         icon: doctorIcon,
-        color: "#10A877"
+        color: "#10A877",
       };
     case OsmName.clinic:
       return {
         icon: clinicIcon,
-        color: "#42AEA7"
+        color: "#42AEA7",
       };
     case OsmName.hospital:
       return {
         icon: clinicIcon,
-        color: "#42AEA7"
+        color: "#42AEA7",
       };
     case OsmName.post_office:
       return {
         icon: postofficeIcon,
-        color: "#66A3B7"
+        color: "#66A3B7",
       };
     case OsmName.motorway_link:
       return {
         icon: highwayIcon,
-        color: "#579BE4"
+        color: "#579BE4",
       };
     case OsmName.sports_centre:
     case OsmName.sports_hall:
@@ -310,19 +307,21 @@ export const deriveIconForOsmName = (
     case OsmName.fitness_centre:
       return {
         icon: sportIcon,
-        color: "#9F532E"
+        color: "#9F532E",
       };
     default:
       return {
         icon: parkIcon,
-        color: "#165B4E"
+        color: "#165B4E",
       };
   }
 };
 
 export const deriveTotalRequestContingent = (user: ApiUser) =>
   user?.requestContingents?.length > 0
-    ? user.requestContingents.map(c => c.amount).reduce((acc, inc) => acc + inc)
+    ? user.requestContingents
+        .map((c) => c.amount)
+        .reduce((acc, inc) => acc + inc)
     : 0;
 
 export const deriveAvailableMeansFromResponse = (
@@ -330,8 +329,8 @@ export const deriveAvailableMeansFromResponse = (
 ): MeansOfTransportation[] => {
   const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
   return meansOfTransportations
-    .filter(mot => routingKeys.includes(mot.type))
-    .map(mot => mot.type);
+    .filter((mot) => routingKeys.includes(mot.type))
+    .map((mot) => mot.type);
 };
 
 export const buildEntityData = (
@@ -343,23 +342,23 @@ export const buildEntityData = (
     return null;
   }
   const allLocations = Object.values(locationSearchResult.routingProfiles)
-    .map(a =>
+    .map((a) =>
       a.locationsOfInterest.sort(
         (a, b) => a.distanceInMeters - b.distanceInMeters
       )
     )
     .flat();
   let allLocationIds = Array.from(
-    new Set(allLocations.map(location => location.entity.id))
+    new Set(allLocations.map((location) => location.entity.id))
   );
   if (config && config.entityVisibility && !ignoreVisibility) {
     const { entityVisibility = [] } = config;
     allLocationIds = allLocationIds.filter(
-      id => !entityVisibility.some(ev => ev.id === id && ev.excluded)
+      (id) => !entityVisibility.some((ev) => ev.id === id && ev.excluded)
     );
   }
-  return allLocationIds.map(locationId => {
-    const location = allLocations.find(l => l.entity.id === locationId)!;
+  return allLocationIds.map((locationId) => {
+    const location = allLocations.find((l) => l.entity.id === locationId)!;
     return {
       id: locationId!,
       name: location.entity.name,
@@ -370,17 +369,17 @@ export const buildEntityData = (
       address: location.address,
       byFoot:
         locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
+          (l) => l.entity.id === locationId
         ) ?? false,
       byBike:
         locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
+          (l) => l.entity.id === locationId
         ) ?? false,
       byCar:
         locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(
-          l => l.entity.id === locationId
+          (l) => l.entity.id === locationId
         ) ?? false,
-      selected: false
+      selected: false,
     };
   });
 };
@@ -390,8 +389,8 @@ export const buildEntityDataFromPreferredLocations = (
   preferredLocations: ApiPreferredLocation[]
 ): ResultEntity[] => {
   return preferredLocations
-    .filter(preferredLocation => !!preferredLocation.coordinates)
-    .map(preferredLocation => ({
+    .filter((preferredLocation) => !!preferredLocation.coordinates)
+    .map((preferredLocation) => ({
       id: v4(),
       name: `${preferredLocation.title} (${preferredLocation.address})`,
       label: preferredLocationsTitle,
@@ -405,7 +404,7 @@ export const buildEntityDataFromPreferredLocations = (
       byFoot: true,
       byBike: true,
       byCar: true,
-      selected: false
+      selected: false,
     }));
 };
 
@@ -423,8 +422,8 @@ export const buildEntityDataFromRealEstateListings = (
     }
   };
   const mappedRealEstateListings = realEstateListings
-    .filter(realEstateListing => !!realEstateListing.coordinates)
-    .map(realEstateListing => ({
+    .filter((realEstateListing) => !!realEstateListing.coordinates)
+    .map((realEstateListing) => ({
       id: realEstateListing.id ?? v4(),
       name: deriveName(realEstateListing),
       label: realEstateListingsTitle,
@@ -435,7 +434,7 @@ export const buildEntityDataFromRealEstateListings = (
       ), // Calc distance
       realEstateData: {
         costStructure: realEstateListing.costStructure,
-        characteristics: realEstateListing.characteristics
+        characteristics: realEstateListing.characteristics,
       },
       coordinates: realEstateListing.coordinates!,
       address: config?.showLocation
@@ -445,12 +444,12 @@ export const buildEntityDataFromRealEstateListings = (
       byBike: true,
       byCar: true,
       selected: false,
-      externalUrl: realEstateListing.externalUrl
+      externalUrl: realEstateListing.externalUrl,
     }));
   if (config && config.entityVisibility) {
     const { entityVisibility = [] } = config;
     return mappedRealEstateListings.filter(
-      rel => !entityVisibility.some(ev => ev.id === rel.id && ev.excluded)
+      (rel) => !entityVisibility.some((ev) => ev.id === rel.id && ev.excluded)
     );
   }
   return mappedRealEstateListings;
@@ -462,7 +461,7 @@ export const isEntityHidden = (
   config: ApiSearchResultSnapshotConfig
 ) => {
   return (config.entityVisibility || []).some(
-    ev => ev.id === entity.id && ev.excluded
+    (ev) => ev.id === entity.id && ev.excluded
   );
 };
 
@@ -471,11 +470,11 @@ export const toggleEntityVisibility = (
   config: ApiSearchResultSnapshotConfig
 ) => {
   return [
-    ...(config.entityVisibility || []).filter(ev => ev.id !== entity.id),
+    ...(config.entityVisibility || []).filter((ev) => ev.id !== entity.id),
     {
       id: entity.id,
-      excluded: !isEntityHidden(entity, config)
-    }
+      excluded: !isEntityHidden(entity, config),
+    },
   ];
 };
 
@@ -506,14 +505,14 @@ export const deriveEntityGroupsByActiveMeans = (
     return {
       ...entityGroup,
       items: entityGroup.items.filter(
-        i =>
+        (i) =>
           (activeMeans.includes(MeansOfTransportation.WALK) && i.byFoot) ||
           (activeMeans.includes(MeansOfTransportation.BICYCLE) && i.byBike) ||
           (activeMeans.includes(MeansOfTransportation.CAR) && i.byCar)
-      )
+      ),
     };
   };
-  return entityGroups.map(group => filterByMeans(group, activeMeans));
+  return entityGroups.map((group) => filterByMeans(group, activeMeans));
 };
 
 export const deriveInitialEntityGroups = (
@@ -528,7 +527,11 @@ export const deriveInitialEntityGroups = (
 
   const deriveActiveState = (title: string, index?: number): boolean => {
     if (config?.theme === "KF") {
-      return [realEstateListingsTitle].includes(title) || index === 0;
+      const activeGroups = config?.defaultActiveGroups ?? [];
+      return (
+        [realEstateListingsTitle].includes(title) ||
+        (activeGroups.length < 1 ? index === 0 : activeGroups.includes(title))
+      );
     }
     return config?.defaultActiveGroups
       ? config.defaultActiveGroups.includes(title)
@@ -539,7 +542,7 @@ export const deriveInitialEntityGroups = (
     groupedEntities.push({
       title: preferredLocationsTitle,
       active: deriveActiveState(preferredLocationsTitle),
-      items: buildEntityDataFromPreferredLocations(centerOfSearch, locations)
+      items: buildEntityDataFromPreferredLocations(centerOfSearch, locations),
     });
   }
   if (!!listings && !!centerOfSearch) {
@@ -550,7 +553,7 @@ export const deriveInitialEntityGroups = (
         centerOfSearch,
         listings,
         config
-      )
+      ),
     });
   }
   const allEntities = buildEntityData(searchResponse, config, ignoreVisibility);
@@ -562,8 +565,8 @@ export const deriveInitialEntityGroups = (
     .map(([title, items], index) => ({
       title,
       active: deriveActiveState(title, index),
-      items
+      items,
     }))
-    .forEach(e => groupedEntities.push(e));
+    .forEach((e) => groupedEntities.push(e));
   return groupedEntities;
 };
