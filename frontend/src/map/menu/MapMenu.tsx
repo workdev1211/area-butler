@@ -172,7 +172,20 @@ const MapMenu: React.FunctionComponent<MapMenuProps> = ({
             type="checkbox"
             onChange={event => setMapClippingsOpen(event.target.checked)}
           />
-          <div className="collapse-title">Kartenausschnitte</div>
+          <div 
+            className="collapse-title"
+            ref={node => {
+              if (!!node) {
+                if (node.parentElement?.classList.contains("collapse-open")) {
+                  node.style.setProperty("background", background, "important");
+                } else {
+                  node.style.setProperty("background", "#FFFFFF", "important");
+                }
+              }
+            }}
+          >
+            Kartenausschnitte
+          </div>
           <div className="collapse-content">
             <MapClippingsCollapsable
               searchAddress={searchAddress}
