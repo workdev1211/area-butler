@@ -67,7 +67,7 @@
             overflow-y: hidden;
         }
 
-        .collapse-closed > .collapse-content {
+        &.collapse-closed > .collapse-content {
             max-height: 0 !important;
             height: 0;
         }
