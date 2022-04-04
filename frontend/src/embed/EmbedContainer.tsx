@@ -125,6 +125,11 @@ const EmbedContainer: React.FunctionComponent = () => {
       });
 
       searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
+        payload: result.token
+      })
+
+      searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups(
           searchResponse,

@@ -34,6 +34,7 @@ import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg"
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import {
+  createDirectLink,
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
   deriveMinutesFromMeters,
@@ -65,6 +66,7 @@ export interface MapProps {
   addMapClipping: (zoom: number, dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
+  snippetToken?: string;
   embedMode?: boolean;
   editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
@@ -323,7 +325,8 @@ const Map = React.memo<MapProps>(
     onPoiAdd,
     hideEntity,
     centerZoomCoordinates,
-    addMapClipping
+    addMapClipping,
+    snippetToken
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -986,7 +989,7 @@ const Map = React.memo<MapProps>(
               </a>
             )}
           </div>
-          {!embedMode && (
+          {!embedMode ? (
             <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
               <a
                 href="/"
@@ -1023,7 +1026,25 @@ const Map = React.memo<MapProps>(
                 📷
               </a>
             </div>
-          )}
+          ) : <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
+          <a
+            href={`${createDirectLink(snippetToken!)}`}
+            target="_blank"
+            className="leaflet-control-zoom-in cursor-pointer"
+            role="button"
+          >
+            <svg
+              height="100%"
+              version="1.1"
+              viewBox="0 0 36 36"
+              width="100%"
+            >
+              <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
+              <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
+              <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
+              <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
+            </svg>
+          </a></div>}
         </div>
       </div>
     );

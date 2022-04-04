@@ -136,6 +136,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             true
           )
         );
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
+          payload: snapshotResponse.token
+        });
       }
     };
 

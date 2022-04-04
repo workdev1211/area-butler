@@ -318,6 +318,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             searchAddress={placesLocation?.label}
             groupedEntities={filteredGroupedEntities ?? []}
             highlightId={searchContextState.highlightId}
+            snippetToken={searchContextState.responseToken}
             setHighlightId={id =>
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_HIGHLIGHT_ID,

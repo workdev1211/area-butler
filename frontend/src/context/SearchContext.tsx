@@ -60,6 +60,7 @@ export interface SearchContextState {
   responseActiveMeans: MeansOfTransportation[];
   responseRoutes: EntityRoute[];
   responseTransitRoutes: EntityTransitRoute[];
+  responseToken: string;
 }
 
 export const initialState: SearchContextState = {
@@ -72,7 +73,8 @@ export const initialState: SearchContextState = {
   mapClippings: [],
   responseActiveMeans: [],
   responseRoutes: [],
-  responseTransitRoutes: []
+  responseTransitRoutes: [],
+  responseToken: '' 
 };
 
 export enum SearchContextActionTypes {
@@ -87,6 +89,7 @@ export enum SearchContextActionTypes {
   SET_RESPONSE_ACTIVE_MEANS = "SET_RESPONSE_ACTIVE_MEANS",
   SET_RESPONSE_ROUTES = "SET_RESPONSE_ROUTES",
   SET_RESPONSE_TRANSIT_ROUTES = "SET_RESPONSE_TRANSIT_ROUTES",
+  SET_RESPONSE_TOKEN = "SET_RESPONSE_TOKEN",
   TOGGLE_SINGLE_RESPONSE_GROUP = "TOGGLE_SINGLE_RESPONSE_GROUP",
   TOGGLE_RESPONSE_GROUP = "TOGGLE_RESPONSE_GROUP",
   SET_RESPONSE_CONFIG = "SET_RESPONSE_CONFIG",
@@ -123,6 +126,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
+  [SearchContextActionTypes.SET_RESPONSE_TOKEN]: string;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];
   [SearchContextActionTypes.SET_ZENSUS_DATA]: CensusData[];
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
@@ -189,6 +193,12 @@ export const searchContextReducer = (
       return {
         ...state,
         responseActiveMeans: [...action.payload]
+      };
+    }
+    case SearchContextActionTypes.SET_RESPONSE_TOKEN: {
+      return {
+        ...state,
+        responseToken: action.payload
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_ROUTES: {
