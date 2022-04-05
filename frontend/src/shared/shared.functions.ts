@@ -533,7 +533,7 @@ export const deriveInitialEntityGroups = (
         (activeGroups.length < 1 ? index === 0 : activeGroups.includes(title))
       );
     }
-    return config?.defaultActiveGroups
+    return config?.defaultActiveGroups?.length
       ? config.defaultActiveGroups.includes(title)
       : true;
   };
