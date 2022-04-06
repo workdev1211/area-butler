@@ -3,12 +3,14 @@ import FormModal, { ModalConfig } from "components/FormModal";
 import { Poi } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
+import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-touch-helper";
 import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
@@ -16,14 +18,14 @@ import {
   ApiRoute,
   ApiTransitRoute,
   EntityRoute,
-  EntityTransitRoute
+  EntityTransitRoute,
 } from "../../../shared/types/routing";
 import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
-  OsmName
+  OsmName,
 } from "../../../shared/types/types";
 import googleIcon from "../assets/icons/google.svg";
 import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
@@ -32,6 +34,7 @@ import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import eyeIcon from "../assets/icons/eye.svg";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import {
   createDirectLink,
@@ -42,7 +45,7 @@ import {
   realEstateListingsIcon,
   realEstateListingsTitle,
   timeToHumanReadable,
-  toastSuccess
+  toastSuccess,
 } from "../shared/shared.functions";
 import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import "./Map.scss";
@@ -121,14 +124,14 @@ export class IdMarker extends L.Marker {
       }
 
       const searchString = [
-        osmEntityTypes.find(t => t.name === this.entity.type)?.label,
+        osmEntityTypes.find((t) => t.name === this.entity.type)?.label,
         entityTitle,
         this.entity?.address?.street !== "undefined"
           ? this.entity.address?.street
           : "",
         this.entity?.address?.city
           ? this.entity?.address?.city
-          : cityFromSearch.trim()
+          : cityFromSearch.trim(),
       ].join(" ");
       const title =
         this.entity.type !== "property"
@@ -204,9 +207,8 @@ export class IdMarker extends L.Marker {
           );
         }
 
-        const realEstateInformation = realEstateInformationParts.join(
-          "<br /><br />"
-        );
+        const realEstateInformation =
+          realEstateInformationParts.join("<br /><br />");
 
         this.bindPopup(
           `<h4 class="font-semibold text-lg">${title}</h4><br />
@@ -302,7 +304,7 @@ const CAR_COLOR = "#1f2937";
 const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
   [MeansOfTransportation.CAR]: CAR_COLOR,
   [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
-  [MeansOfTransportation.WALK]: WALK_COLOR
+  [MeansOfTransportation.WALK]: WALK_COLOR,
 };
 const Map = React.memo<MapProps>(
   ({
@@ -326,13 +328,16 @@ const Map = React.memo<MapProps>(
     hideEntity,
     centerZoomCoordinates,
     addMapClipping,
-    snippetToken
+    snippetToken,
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
+    const [hideIsochrones, setHideIsochrones] = useState(
+      config?.hideIsochrones
+    );
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -340,8 +345,12 @@ const Map = React.memo<MapProps>(
       modalOpen: addPoiModalOpen,
       postSubmit: () => {
         setAddPoiModalOpen(false);
-      }
+      },
     };
+
+    useEffect(() => {
+      setHideIsochrones(config?.hideIsochrones);
+    }, [config?.hideIsochrones, setHideIsochrones]);
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
@@ -359,8 +368,9 @@ const Map = React.memo<MapProps>(
         'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
         attribution;
       const url = embedMode
-        ? `${process.env.REACT_APP_BASE_URL ||
-            ""}/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
+        ? `${
+            process.env.REACT_APP_BASE_URL || ""
+          }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
         : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
 
       if (currentMap !== undefined) {
@@ -368,19 +378,25 @@ const Map = React.memo<MapProps>(
         currentMap.remove();
       }
       const initialPosition: L.LatLngExpression = [lat, lng];
+
+      L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
       const localMap = L.map(leafletMapId, {
         preferCanvas: true,
         renderer: new L.Canvas(),
         tap: true,
         maxZoom: 18,
         zoomControl: false,
-        scrollWheelZoom: !L.Browser.mobile
+        gestureHandling: L.Browser.mobile,
+        gestureHandlingOptions: {
+          duration: 1,
+        },
       } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
 
-      localMap.on("zoomend", function() {
+      localMap.on("zoomend", function () {
         if (config && !config.groupItems) {
           const container = document.querySelector(".leaflet-container");
           if (localMap.getZoom() < 15) {
@@ -401,7 +417,7 @@ const Map = React.memo<MapProps>(
           const coordinates: ApiCoordinates = e.latlng;
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
             label: "Mein Standort",
-            value: { place_id: "123" }
+            value: { place_id: "123" },
           };
 
           setAddPoiCoordinates(coordinates);
@@ -417,12 +433,11 @@ const Map = React.memo<MapProps>(
         zoomOffset: -1,
         accessToken: mapBoxAccessToken,
         tileSize: 512,
-        maxZoom: 18
+        maxZoom: 18,
       }).addTo(localMap);
       if (!embedMode || config?.showLocation) {
-        
         let detailContent = `${searchAddress}`;
-        
+
         if (!embedMode || !!config?.showStreetViewLink) {
           const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
 
@@ -434,7 +449,7 @@ const Map = React.memo<MapProps>(
             </a>
           `;
           detailContent = `${detailContent}${streetViewContent}`;
-        }                      
+        }
 
         const iconStyle = config?.mapIcon
           ? "height: auto; width: 46px;"
@@ -448,20 +463,21 @@ const Map = React.memo<MapProps>(
             ? customMyLocationIconSize
             : myLocationIconSize,
           className: "my-location-icon-wrapper",
-          html: `<img src="${config?.mapIcon ??
-            mylocationIcon}" alt="marker-icon" style="${iconStyle}" />`
+          html: `<img src="${
+            config?.mapIcon ?? mylocationIcon
+          }" alt="marker-icon" style="${iconStyle}" />`,
         });
         const myLocationMarker = L.marker([lat, lng], {
-          icon: positionIcon
+          icon: positionIcon,
         }).addTo(localMap);
 
         if (!!config?.showAddress || !embedMode) {
-          myLocationMarker.on("click", function(event) {
+          myLocationMarker.on("click", function (event) {
             const marker = event.target;
             marker.unbindPopup();
             marker.bindPopup(detailContent);
             marker.openPopup();
-          })
+          });
         }
       }
       currentMap = localMap;
@@ -476,7 +492,7 @@ const Map = React.memo<MapProps>(
       mapboxMapId,
       config?.mapIcon,
       config?.showLocation,
-      config?.showAddress
+      config?.showAddress,
     ]);
 
     // react on zoom and center change
@@ -490,20 +506,22 @@ const Map = React.memo<MapProps>(
           if (markers.length) {
             const currentSize = markers[0].getIcon().options.iconSize;
             if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
-              markers.forEach(marker => {
+              markers.forEach((marker) => {
                 const icon = marker.getIcon();
                 icon.options.iconSize = new L.Point(25, 25);
                 marker.setIcon(icon);
               });
             }
             if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
-              markers.forEach(marker => {
+              markers.forEach((marker) => {
                 const icon = marker.getIcon();
                 icon.options.iconSize = defaultAmenityIconSize;
                 marker.setIcon(icon);
               });
             }
-            const marker = markers.find(m => m.getEntity().id === highlightId);
+            const marker = markers.find(
+              (m) => m.getEntity().id === highlightId
+            );
             if (marker) {
               // use timeout to wait for de-spider animation of cluster
               setTimeout(() => {
@@ -525,57 +543,69 @@ const Map = React.memo<MapProps>(
         if (meansGroup) {
           currentMap.removeLayer(meansGroup);
         }
-        meansGroup = L.layerGroup();
-        currentMap.addLayer(meansGroup);
-        const derivePositionForTransportationMean = (
-          profile: MeansOfTransportation
-        ) => {
-          return searchResponse.routingProfiles[
-            profile
-          ].isochrone.features[0].geometry.coordinates[0].map(
-            (item: number[]) => {
-              return [item[1], item[0]];
-            }
-          );
-        };
-        if (parsedMeans.byFoot) {
-          L.polygon(
-            derivePositionForTransportationMean(MeansOfTransportation.WALK),
-            {
-              color: WALK_COLOR,
-              opacity: 0.7,
-              fillOpacity: 0.0
-            }
-          ).addTo(meansGroup);
-        }
-        if (parsedMeans.byBike) {
-          L.polygon(
-            derivePositionForTransportationMean(MeansOfTransportation.BICYCLE),
-            {
-              color: BICYCLE_COLOR,
-              opacity: 0.7,
-              fillOpacity: 0.0
-            }
-          ).addTo(meansGroup);
-        }
-        if (parsedMeans.byCar) {
-          L.polygon(
-            derivePositionForTransportationMean(MeansOfTransportation.CAR),
-            {
-              color: CAR_COLOR,
-              opacity: 0.7,
-              fillOpacity: 0.0
-            }
-          ).addTo(meansGroup);
+        if (!hideIsochrones) {
+          meansGroup = L.layerGroup();
+          currentMap.addLayer(meansGroup);
+          const derivePositionForTransportationMean = (
+            profile: MeansOfTransportation
+          ) => {
+            return searchResponse.routingProfiles[
+              profile
+            ].isochrone.features[0].geometry.coordinates[0].map(
+              (item: number[]) => {
+                return [item[1], item[0]];
+              }
+            );
+          };
+          if (parsedMeans.byFoot) {
+            L.polygon(
+              derivePositionForTransportationMean(MeansOfTransportation.WALK),
+              {
+                color: WALK_COLOR,
+                opacity: 0.7,
+                fillOpacity: 0.0,
+              }
+            ).addTo(meansGroup);
+          }
+          if (parsedMeans.byBike) {
+            L.polygon(
+              derivePositionForTransportationMean(
+                MeansOfTransportation.BICYCLE
+              ),
+              {
+                color: BICYCLE_COLOR,
+                opacity: 0.7,
+                fillOpacity: 0.0,
+              }
+            ).addTo(meansGroup);
+          }
+          if (parsedMeans.byCar) {
+            L.polygon(
+              derivePositionForTransportationMean(MeansOfTransportation.CAR),
+              {
+                color: CAR_COLOR,
+                opacity: 0.7,
+                fillOpacity: 0.0,
+              }
+            ).addTo(meansGroup);
+          }
         }
       }
-    }, [meansStringified, searchResponse.routingProfiles, config?.mapIcon, config?.showLocation, config?.showAddress]);
+    }, [
+      meansStringified,
+      searchResponse.routingProfiles,
+      config?.mapIcon,
+      config?.showLocation,
+      config?.showAddress,
+      config?.hideIsochrones,
+      hideIsochrones,
+    ]);
 
     // draw routes
     useEffect(() => {
       const activeEntities = groupedEntities
-        ?.filter(ge => ge.active)
-        .flatMap(value => value.items);
+        ?.filter((ge) => ge.active)
+        .flatMap((value) => value.items);
       const getIcon = (m: MeansOfTransportation | string) => {
         switch (m) {
           case MeansOfTransportation.CAR:
@@ -604,7 +634,7 @@ const Map = React.memo<MapProps>(
 
       const isVisibleDestination = (r: ApiRoute | ApiTransitRoute) =>
         !!activeEntities.find(
-          value =>
+          (value) =>
             value.coordinates.lat === r.destination.lat &&
             value.coordinates.lng === r.destination.lng
         );
@@ -616,20 +646,20 @@ const Map = React.memo<MapProps>(
         routesGroup = L.layerGroup();
         currentMap.addLayer(routesGroup);
         routes
-          .filter(e => e.show.length > 0)
-          .forEach(entityRoute => {
+          .filter((e) => e.show.length > 0)
+          .forEach((entityRoute) => {
             entityRoute.routes
-              .filter(r => entityRoute.show.includes(r.meansOfTransportation))
+              .filter((r) => entityRoute.show.includes(r.meansOfTransportation))
               .filter(isVisibleDestination)
-              .forEach(r => {
-                r.sections.forEach(s => {
+              .forEach((r) => {
+                r.sections.forEach((s) => {
                   const durationInMinutes = r.sections
-                    .map(s => s.duration)
+                    .map((s) => s.duration)
                     .reduce((p, c) => p + c);
                   const line = L.geoJSON(s.geometry, {
-                    style: function() {
+                    style: function () {
                       return { color: MEAN_COLORS[r.meansOfTransportation] };
-                    }
+                    },
                   })
                     .bindPopup(
                       `<h4 class="font-semibold">Route zu ${
@@ -649,13 +679,13 @@ const Map = React.memo<MapProps>(
               });
           });
         transitRoutes
-          .filter(e => e.show)
-          .forEach(entityRoute => {
+          .filter((e) => e.show)
+          .forEach((entityRoute) => {
             const { route } = entityRoute;
             if (isVisibleDestination(route)) {
               const popupContent = route.sections
                 .map(
-                  s =>
+                  (s) =>
                     `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
                       s.transportMode
                     )} alt="icon"/><span>${
@@ -666,16 +696,16 @@ const Map = React.memo<MapProps>(
                 )
                 .join("➟");
               const fullDuration = route.sections
-                .map(s => s.duration)
+                .map((s) => s.duration)
                 .reduce((p, c) => p + c);
-              route.sections.forEach(s => {
+              route.sections.forEach((s) => {
                 const line = L.geoJSON(s.geometry, {
-                  style: function() {
+                  style: function () {
                     return {
                       color: "#fcba03",
-                      dashArray: getDashArray(s.transportMode)
+                      dashArray: getDashArray(s.transportMode),
                     };
-                  }
+                  },
                 })
                   .bindPopup(
                     `<h4 class="font-semibold">ÖPNV Route zu ${
@@ -696,15 +726,14 @@ const Map = React.memo<MapProps>(
     }, [routes, transitRoutes, means, groupedEntities, config?.mapIcon]);
 
     const entitiesStringified = JSON.stringify(
-      groupedEntities.map(g => g.items).flat()
+      groupedEntities.map((g) => g.items).flat()
     );
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
     // draw amenities
     useEffect(() => {
-      const parsedEntities: ResultEntity[] | null = JSON.parse(
-        entitiesStringified
-      );
+      const parsedEntities: ResultEntity[] | null =
+        JSON.parse(entitiesStringified);
       let parsedEntityGroups: EntityGroup[] = JSON.parse(
         groupedEntitiesStringified
       );
@@ -712,20 +741,20 @@ const Map = React.memo<MapProps>(
         if (currentMap) {
           currentMap.removeLayer(amenityMarkerGroup);
           amenityMarkerGroup = L.markerClusterGroup({
-            iconCreateFunction: function(cluster) {
+            iconCreateFunction: function (cluster) {
               const groupedMarkers = groupBy(
-                cluster.getAllChildMarkers().map(m => m.getIcon().options),
+                cluster.getAllChildMarkers().map((m) => m.getIcon().options),
                 (i: any) => i.className
               );
               const countedMarkers = Object.entries(groupedMarkers)
                 .map(([key, value]) => ({
                   key,
                   icon: (value as any)[0].html,
-                  count: (value as any).length
+                  count: (value as any).length,
                 }))
                 .sort((a, b) => b.count - a.count);
               const markerIcons = countedMarkers.map(
-                cm =>
+                (cm) =>
                   '<div class="flex items-center gap-0.5">' +
                   cm.icon +
                   cm.count +
@@ -736,31 +765,31 @@ const Map = React.memo<MapProps>(
                   '<div class="cluster-icon-wrapper">' +
                   markerIcons.join("") +
                   "</div>",
-                className: "cluster-icon"
+                className: "cluster-icon",
               });
             },
             maxClusterRadius: 200,
             disableClusteringAtZoom: config?.groupItems ? 15 : 1,
             spiderfyOnMaxZoom: false,
             animate: false,
-            zoomToBoundsOnClick: false
+            zoomToBoundsOnClick: false,
           });
 
           // set realEstateListing to active if theme is KF and group is real estate listings
           if (config?.theme === "KF") {
-            parsedEntityGroups = parsedEntityGroups.map(peg => ({
+            parsedEntityGroups = parsedEntityGroups.map((peg) => ({
               ...peg,
               active:
                 config.theme === "KF" && peg.title === realEstateListingsTitle
                   ? true
-                  : peg.active
+                  : peg.active,
             }));
           }
 
-          parsedEntities?.forEach(entity => {
+          parsedEntities?.forEach((entity) => {
             if (
               parsedEntityGroups.some(
-                eg => eg.title === entity.label && eg.active
+                (eg) => eg.title === entity.label && eg.active
               )
             ) {
               const isRealEstateListing = entity.type === "property";
@@ -769,7 +798,8 @@ const Map = React.memo<MapProps>(
                 ? config?.mapIcon
                   ? {
                       icon: config?.mapIcon,
-                      color: config.primaryColor ?? realEstateListingsIcon.color
+                      color:
+                        config.primaryColor ?? realEstateListingsIcon.color,
                     }
                   : realEstateListingsIcon
                 : isPreferredLocation
@@ -788,7 +818,7 @@ const Map = React.memo<MapProps>(
                 html:
                   config?.mapIcon && isRealEstateListing
                     ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
-                    : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`
+                    : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
               });
               const hideEntityFunction = editorMode ? hideEntity : undefined;
               const marker = new IdMarker(
@@ -796,17 +826,17 @@ const Map = React.memo<MapProps>(
                 entity,
                 searchAddress,
                 {
-                  icon
+                  icon,
                 },
                 hideEntityFunction
-              ).on("click", function(e) {
+              ).on("click", function (e) {
                 const marker = e.target;
                 marker.createOpenPopup();
               });
               amenityMarkerGroup.addLayer(marker);
             }
           });
-          amenityMarkerGroup.on("clusterclick", function(a) {
+          amenityMarkerGroup.on("clusterclick", function (a) {
             const centerOfGroup = center(a.layer.toGeoJSON());
             const lat = centerOfGroup.geometry.coordinates[1];
             const lng = centerOfGroup.geometry.coordinates[0];
@@ -831,8 +861,8 @@ const Map = React.memo<MapProps>(
       html2canvas(document.querySelector("#mymap")!, {
         allowTaint: true,
         useCORS: true,
-        scale: 2
-      }).then(canvas => {
+        scale: 2,
+      }).then((canvas) => {
         const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
         addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
@@ -846,11 +876,11 @@ const Map = React.memo<MapProps>(
     };
 
     const escFunction = useCallback(
-      event => {
+      (event) => {
         if (event.keyCode === 27) {
           if (currentMap && fullscreen) {
             setFullscreen(false);
-            setTimeout(function() {
+            setTimeout(function () {
               currentMap!.invalidateSize();
             }, 400);
           }
@@ -868,7 +898,7 @@ const Map = React.memo<MapProps>(
     const toggleFullscreen = () => {
       setFullscreen(!fullscreen);
       if (currentMap) {
-        setTimeout(function() {
+        setTimeout(function () {
           currentMap!.invalidateSize();
         }, 400);
       }
@@ -894,7 +924,7 @@ const Map = React.memo<MapProps>(
               {
                 color: WALK_COLOR,
                 opacity: 0.7,
-                fillOpacity: 0.0
+                fillOpacity: 0.0,
               }
             );
           }
@@ -906,7 +936,7 @@ const Map = React.memo<MapProps>(
               {
                 color: BICYCLE_COLOR,
                 opacity: 0.7,
-                fillOpacity: 0.0
+                fillOpacity: 0.0,
               }
             );
           }
@@ -916,14 +946,14 @@ const Map = React.memo<MapProps>(
               {
                 color: CAR_COLOR,
                 opacity: 0.7,
-                fillOpacity: 0.0
+                fillOpacity: 0.0,
               }
             );
           }
         };
         const polygon = derivePolygonForMean(mean);
         currentMap!.fitBounds(polygon!.getBounds(), {
-          padding: L.point(10, 10)
+          padding: L.point(10, 10),
         });
         setTimeout(() => {
           centerZoomCoordinates(
@@ -955,6 +985,14 @@ const Map = React.memo<MapProps>(
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"
           >
+            <a
+              data-tour="toggle-bounds"
+              className="leaflet-control-zoom-in cursor-pointer p-2"
+              role="button"
+              onClick={() => setHideIsochrones(!hideIsochrones)}
+            >
+              <img src={eyeIcon} alt="toggle isochrones" />
+            </a>
             {means.byFoot && (
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
@@ -996,7 +1034,7 @@ const Map = React.memo<MapProps>(
                 data-tour="go-fullscreen"
                 className="leaflet-control-zoom-in cursor-pointer"
                 role="button"
-                onClick={event => {
+                onClick={(event) => {
                   event.preventDefault();
                   toggleFullscreen();
                 }}
@@ -1018,7 +1056,7 @@ const Map = React.memo<MapProps>(
                 data-tour="take-map-picture"
                 className="leaflet-control-zoom-in cursor-pointer"
                 role="button"
-                onClick={event => {
+                onClick={(event) => {
                   event.preventDefault();
                   takePicture();
                 }}
@@ -1026,25 +1064,29 @@ const Map = React.memo<MapProps>(
                 📷
               </a>
             </div>
-          ) : <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
-          <a
-            href={`${createDirectLink(snippetToken!)}`}
-            target="_blank"
-            className="leaflet-control-zoom-in cursor-pointer"
-            role="button"
-          >
-            <svg
-              height="100%"
-              version="1.1"
-              viewBox="0 0 36 36"
-              width="100%"
-            >
-              <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
-              <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
-              <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
-              <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
-            </svg>
-          </a></div>}
+          ) : (
+            <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
+              <a
+                href={`${createDirectLink(snippetToken!)}`}
+                target="_blank"
+                rel="noreferrer"
+                className="leaflet-control-zoom-in cursor-pointer"
+                role="button"
+              >
+                <svg
+                  height="100%"
+                  version="1.1"
+                  viewBox="0 0 36 36"
+                  width="100%"
+                >
+                  <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
+                  <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
+                  <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
+                  <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
+                </svg>
+              </a>
+            </div>
+          )}
         </div>
       </div>
     );

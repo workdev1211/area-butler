@@ -28,6 +28,8 @@ COPY --chown=node:node . .
 
 WORKDIR /home/node/app/frontend
 
+RUN CI=true yarn test
+
 RUN tmp=$(mktemp); jq '.homepage = "/embed"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-embed
 

@@ -81,10 +81,20 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
 
   const changeEntityVisiblity = (visiblity: ApiSnippetEntitVisiblity[]) => {
     onConfigChange({ ...config, entityVisibility: [...visiblity] });
-  };  
-  
+  };
+
   const changeShowStreetViewLink = () => {
-    onConfigChange({ ...config, showStreetViewLink: !config.showStreetViewLink });
+    onConfigChange({
+      ...config,
+      showStreetViewLink: !config.showStreetViewLink,
+    });
+  };
+
+  const changeHideIsochrones = () => {
+    onConfigChange({
+      ...config,
+      hideIsochrones: !config.hideIsochrones,
+    });
   };
 
   const changeColor = (color: string | undefined) => {
@@ -373,6 +383,22 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                   />
                   <span className="label-text">
                     Neue Einträge in "Meine Objekte" automatisch einfügen
+                  </span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="hideIsochrones"
+                    checked={config?.hideIsochrones}
+                    onChange={() => changeHideIsochrones()}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Grenzen der Bewegungsprofile ausblenden
                   </span>
                 </label>
               </div>

@@ -125,7 +125,7 @@ export enum ApiOsmEntityCategory {
   "TRAFFIC" = "Verkehr",
   "SUPPLIES" = "Nahversorgung",
   "HEALTH" = "Gesundheit",
-  "EDUCATION" = "Bildung"
+  "EDUCATION" = "Bildung",
 }
 
 export interface ApiOsmEntity {
@@ -179,13 +179,13 @@ export interface TransportationParam {
 
 export enum UnitsOfTransportation {
   MINUTES = "MINUTES",
-  KILOMETERS = "KILOMETERS"
+  KILOMETERS = "KILOMETERS",
 }
 
 export enum MeansOfTransportation {
   WALK = "WALK",
   CAR = "CAR",
-  BICYCLE = "BICYCLE"
+  BICYCLE = "BICYCLE",
 }
 
 export enum OsmType {
@@ -193,7 +193,7 @@ export enum OsmType {
   amenity = "amenity",
   shop = "shop",
   public_transport = "public_transport",
-  highway = "highway"
+  highway = "highway",
 }
 
 export enum OsmName {
@@ -222,7 +222,7 @@ export enum OsmName {
   swimming_pool = "swimming_pool",
   fitness_centre = "fitness_centre",
   favorite = "favorite",
-  property = "property"
+  property = "property",
 }
 
 export interface ApiUpdateSearchResultSnapshot {
@@ -262,6 +262,7 @@ export interface ApiSearchResultSnapshotConfig {
   mapIcon?: string;
   fixedRealEstates?: boolean;
   showStreetViewLink?: boolean;
+  hideIsochrones?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {
