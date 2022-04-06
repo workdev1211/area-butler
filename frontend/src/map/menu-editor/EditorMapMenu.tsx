@@ -166,7 +166,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   };
 
   useEffect(() => {
-    if (!config.defaultActiveGroups) {
+    if (!config.defaultActiveGroups && groupedEntries?.length) {
       onConfigChange({
         ...config,
         defaultActiveGroups: groupedEntries.map((g) => g.title),
