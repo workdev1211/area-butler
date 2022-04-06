@@ -383,6 +383,7 @@ const Map = React.memo<MapProps>(
         maxZoom: 18,
         zoomControl: false,
         scrollWheelZoom: !L.Browser.mobile,
+        dragging: !L.Browser.mobile,
       } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
