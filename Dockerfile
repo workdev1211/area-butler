@@ -17,8 +17,6 @@ WORKDIR /home/node/app/frontend
 
 RUN yarn install
 
-RUN yarn test
-
 WORKDIR /home/node/app/backend
 
 RUN npm ci
@@ -29,6 +27,8 @@ WORKDIR /home/node/app
 COPY --chown=node:node . .
 
 WORKDIR /home/node/app/frontend
+
+RUN yarn test
 
 RUN tmp=$(mktemp); jq '.homepage = "/embed"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-embed
