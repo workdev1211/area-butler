@@ -49,7 +49,7 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
   toggleTransitRoute,
   config
 }) => {
-  const [isListOpen, setIsListOpen] = useState(true);
+  const [isListOpen, setIsListOpen] = useState(false);
   const [localityPagination, setLocalityPagination] = useState<number>(5);
 
   const { searchContextDispatch } = useContext(SearchContext);
