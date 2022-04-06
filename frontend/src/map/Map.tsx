@@ -1061,6 +1061,7 @@ const Map = React.memo<MapProps>(
               <a
                 href={`${createDirectLink(snippetToken!)}`}
                 target="_blank"
+                rel="noreferrer"
                 className="leaflet-control-zoom-in cursor-pointer"
                 role="button"
               >
