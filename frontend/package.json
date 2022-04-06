@@ -54,8 +54,8 @@
     "yup": "^0.32.9"
   },
   "scripts": {
-    "start": "TAILWIND_MODE=watch PORT=3001 craco start",
-    "start-embed": "TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
+    "start": "cross-env TAILWIND_MODE=watch PORT=3001 craco start",
+    "start-embed": "cross-env TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
     "build": "craco build",
     "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
     "test": "craco test"
@@ -87,6 +87,7 @@
     "@types/react-router-dom": "^5.1.8",
     "@types/uuid": "^8.3.1",
     "autoprefixer": "^9",
+    "cross-env": "^7.0.3",
     "postcss": "^7",
     "postcss-import": "^12.0.0",
     "tailwindcss": "npm:@tailwindcss/postcss7-compat@^2.2.9",
