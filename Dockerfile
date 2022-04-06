@@ -41,5 +41,8 @@ RUN npm run build
 RUN rm -rf ../frontend
 
 EXPOSE 3000
+
+ENV NODE_ENV=production
+
 # Run the web service on container startup.
-CMD [ "node", "NODE_ENV=production", "dist/backend/src/main"]
+CMD [ "node", "dist/backend/src/main"]
