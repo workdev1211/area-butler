@@ -17,6 +17,8 @@ WORKDIR /home/node/app/frontend
 
 RUN yarn install
 
+RUN yarn test
+
 WORKDIR /home/node/app/backend
 
 RUN npm ci
