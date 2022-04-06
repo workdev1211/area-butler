@@ -3,12 +3,14 @@ import FormModal, { ModalConfig } from "components/FormModal";
 import { Poi } from "context/SearchContext";
 import html2canvas from "html2canvas";
 import * as L from "leaflet";
+import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-touch-helper";
 import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
 import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
+import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import React, { useCallback, useEffect, useState } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
@@ -376,14 +378,19 @@ const Map = React.memo<MapProps>(
         currentMap.remove();
       }
       const initialPosition: L.LatLngExpression = [lat, lng];
+
+      L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+
       const localMap = L.map(leafletMapId, {
         preferCanvas: true,
         renderer: new L.Canvas(),
         tap: true,
         maxZoom: 18,
         zoomControl: false,
-        scrollWheelZoom: !L.Browser.mobile,
-        dragging: !L.Browser.mobile,
+        gestureHandling: L.Browser.mobile,
+        gestureHandlingOptions: {
+          duration: 1,
+        },
       } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
