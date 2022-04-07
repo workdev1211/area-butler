@@ -14,13 +14,15 @@ export interface MapNavBarProps {
   availableMeans: MeansOfTransportation[];
   activeMeans: MeansOfTransportation[];
   onMeansChange: (newValues: MeansOfTransportation[]) => void;
+  hideIsochrones: boolean;
 }
 
 const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
   transportationParams,
   availableMeans,
   activeMeans,
-  onMeansChange
+  onMeansChange,
+  hideIsochrones
 }) => {
   const toggleMean = (mean: MeansOfTransportation) => {
     const newValues = activeMeans.includes(mean)
@@ -57,7 +59,7 @@ const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
                 key={`mean-${mean}`}
                 data-testid={`means-toggle-${mean}`}
               >
-                <span className={deriveBackgroundClass(mean)} />
+                {!hideIsochrones && <span className={deriveBackgroundClass(mean)} />}
                 {mean === MeansOfTransportation.WALK && (
                   <img src={walkIcon} alt="iconwalk" />
                 )}

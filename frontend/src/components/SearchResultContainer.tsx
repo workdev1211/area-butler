@@ -92,6 +92,14 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     EntityGroup[]
   >([]);
 
+  const [hideIsochrones, setHideIsochrones] = useState(
+    searchContextState.responseConfig?.hideIsochrones
+  );
+
+  useEffect(() => {
+    setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
+  }, [searchContextState.responseConfig?.hideIsochrones, setHideIsochrones]);
+
   // Customize primary color
   useEffect(() => {
     if (!!searchContextState.responseConfig?.primaryColor) {
@@ -310,6 +318,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
                 payload: [...newValues]
               })
             }
+            hideIsochrones={!!hideIsochrones}
           />
           <Map
             mapBoxAccessToken={mapBoxToken}
@@ -365,6 +374,8 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
                 }
               })
             }
+            hideIsochrones={!!hideIsochrones}
+            setHideIsochrones={setHideIsochrones}
           />
         </div>
         {searchContextState.responseConfig?.theme !== "KF" && (

@@ -79,6 +79,8 @@ export interface MapProps {
     zoomLevel: number,
     coordinates: ApiCoordinates
   ) => void;
+  hideIsochrones: boolean;
+  setHideIsochrones: (value: boolean) => void;
 }
 
 export class IdMarker extends L.Marker {
@@ -281,6 +283,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const configEqual =
     JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config);
   const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
+  const hideIsochronesEqual = prevProps.hideIsochrones === nextProps.hideIsochrones;
   return (
     mapboxKeyEqual &&
     responseEqual &&
@@ -293,7 +296,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     routesEqual &&
     transitRoutesEqual &&
     configEqual &&
-    mapboxMapIdEqual
+    mapboxMapIdEqual && 
+    hideIsochronesEqual
   );
 };
 
@@ -329,15 +333,14 @@ const Map = React.memo<MapProps>(
     centerZoomCoordinates,
     addMapClipping,
     snippetToken,
+    hideIsochrones,
+    setHideIsochrones
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
-    const [hideIsochrones, setHideIsochrones] = useState(
-      config?.hideIsochrones
-    );
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -347,10 +350,6 @@ const Map = React.memo<MapProps>(
         setAddPoiModalOpen(false);
       },
     };
-
-    useEffect(() => {
-      setHideIsochrones(config?.hideIsochrones);
-    }, [config?.hideIsochrones, setHideIsochrones]);
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 

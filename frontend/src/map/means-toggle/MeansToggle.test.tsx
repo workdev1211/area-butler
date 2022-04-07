@@ -44,6 +44,7 @@ describe("MeansToggle", () => {
         availableMeans={availableMeans}
         activeMeans={activeMeans}
         onMeansChange={onMeansChange}
+        hideIsochrones={false}
       />
     );
     expect(component).toBeDefined();
@@ -57,6 +58,7 @@ describe("MeansToggle", () => {
         availableMeans={availableMeans}
         activeMeans={activeMeans}
         onMeansChange={onMeansChange}
+        hideIsochrones={false}
       />
     );
     const buttonsAll = allMeansComponent.container.querySelectorAll("button");
@@ -70,6 +72,7 @@ describe("MeansToggle", () => {
         )}
         activeMeans={activeMeans}
         onMeansChange={onMeansChange}
+        hideIsochrones={false}
       />
     );
     const buttonsTwo = twoMeansComponent.container.querySelectorAll("button");
@@ -84,6 +87,7 @@ describe("MeansToggle", () => {
         availableMeans={availableMeans}
         activeMeans={activeMeans}
         onMeansChange={onMeansChange}
+        hideIsochrones={false}
       />
     );
     const walkToggle = getByTestId(
@@ -109,6 +113,7 @@ describe("MeansToggle", () => {
         availableMeans={availableMeans}
         activeMeans={activeMeans}
         onMeansChange={onMeansChange}
+        hideIsochrones={false}
       />
     );
     const bicycleToggle = getByTestId(
