@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { UserModule } from 'src/user/user.module';
 import { ClientModule } from '../client/client.module';
 import { DataProvisionController } from './data-provision.controller';
 import { FederalElectionController } from './federal-election/federal-election.controller';
@@ -21,6 +20,7 @@ import {
   ParticlePollutionSchema,
 } from './schemas/particle-pollution.schema';
 import { HttpModule } from '@nestjs/axios';
+import { UserModule } from '../user/user.module';
 
 @Module({
   providers: [

@@ -11,13 +11,12 @@ import { ZensusAtlasService } from './zensus-atlas.service';
 import { AuthGuard } from '@nestjs/passport';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
-import { ApiGeometry } from '@area-butler-types/types';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import FileUploadDto from '../dto/file-upload.dto';
 import ApiGeometryDto from '../dto/api-geometry.dto';
+import { AuthenticatedController } from '../shared/authenticated.controller';
+import { InjectUser } from '../user/inject-user.decorator';
+import { UserDocument } from '../user/schema/user.schema';
 
 interface ZensusDataGeojson {
   type: string;

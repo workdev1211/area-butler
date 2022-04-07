@@ -7,7 +7,6 @@ import { join } from 'path';
 import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
 import { ConfigController } from './config/config.controller';
-import { configService } from './config/config.service';
 import { FeedbackModule } from './feedback/feedback.module';
 import { LocationModule } from './location/location.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
@@ -21,6 +20,7 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { DataProvisionModule } from './data-provision/data-provision.module';
 import { HealthModule } from './health/health.module';
 import { HttpModule } from '@nestjs/axios';
+import { configService } from './config/config.service';
 
 @Module({
   imports: [

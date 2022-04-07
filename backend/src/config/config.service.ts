@@ -1,3 +1,4 @@
+import { ApiConfigDto } from '../dto/api-config.dto';
 import RollbarConfigDto from '../dto/rollbar-config.dto';
 
 require('dotenv').config();
@@ -121,6 +122,24 @@ class ConfigService {
       accessToken: this.getValue('ROLLBAR_ACCESS_TOKEN', false) || '',
       environment: this.getValue('ROLLBAR_ENVIRONMENT', false) || 'local',
       code_version: this.getValue('CI_COMMIT_SHORT_SHA', false) || 'undefined',
+    };
+  }
+
+  getFrontendConfig(): ApiConfigDto {
+    const { domain, audience } = this.getAuthConfig();
+    const googleApiKey = this.getGoogleApiKey();
+    const mapBoxAccessToken = this.getMapBoxAccessToken();
+    const stripeEnv = this.getStripeEnv();
+    const rollbarConfig = this.getRollbarConfig();
+    return {
+      auth: {
+        domain,
+        clientId: audience,
+      },
+      googleApiKey,
+      mapBoxAccessToken,
+      stripeEnv,
+      rollbarConfig,
     };
   }
 }

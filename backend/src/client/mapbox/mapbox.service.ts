@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
-import { configService } from 'src/config/config.service';
 import { HttpService } from '@nestjs/axios';
+import { configService } from '../../config/config.service';
 
 const scopes = [
   'styles:tiles',

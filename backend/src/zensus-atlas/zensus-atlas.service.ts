@@ -2,11 +2,11 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { ZensusAtlas, ZensusAtlasDocument } from './schema/zensus-atlas.schema';
 import { Connection, Model, Promise } from 'mongoose';
-import { SubscriptionService } from 'src/user/subscription.service';
-import { UserDocument } from 'src/user/schema/user.schema';
 import { ApiGeojsonFeature } from '@area-butler-types/types';
 import ApiGeometryDto from '../dto/api-geometry.dto';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
+import { UserDocument } from '../user/schema/user.schema';
+import { SubscriptionService } from '../user/subscription.service';
 
 @Injectable()
 export class ZensusAtlasService {

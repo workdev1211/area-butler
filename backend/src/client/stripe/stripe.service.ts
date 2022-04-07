@@ -1,8 +1,8 @@
 import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { Injectable } from '@nestjs/common';
-import { configService } from 'src/config/config.service';
-import { UserDocument } from 'src/user/schema/user.schema';
 import Stripe from 'stripe';
+import { configService } from '../../config/config.service';
+import { UserDocument } from '../../user/schema/user.schema';
 
 @Injectable()
 export class StripeService {

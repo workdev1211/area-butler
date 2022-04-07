@@ -9,15 +9,15 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Role, Roles } from 'src/auth/roles.decorator';
-import { RolesGuard } from 'src/auth/roles.guard';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
 import { FederalElectionService } from './federal-election.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
+import { Roles, Role } from '../../auth/roles.decorator';
+import { RolesGuard } from '../../auth/roles.guard';
+import { AuthenticatedController } from '../../shared/authenticated.controller';
+import { InjectUser } from '../../user/inject-user.decorator';
+import { UserDocument } from '../../user/schema/user.schema';
 
 @ApiTags('federal-election')
 @Controller('api/federal-election')

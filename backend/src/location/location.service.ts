@@ -1,19 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { IsochroneService } from 'src/client/isochrone/isochrone.service';
-import { OverpassService } from 'src/client/overpass/overpass.service';
 import {
   LocationSearch,
   LocationSearchDocument,
 } from './schema/location-search.schema';
 import { calculateMinutesToMeters } from '../../../shared/constants/constants';
 import { groupBy } from '../../../shared/functions/shared.functions';
-import { UserService } from 'src/user/user.service';
-import {
-  retrieveTotalRequestContingent,
-  UserDocument,
-} from 'src/user/schema/user.schema';
 import { SubscriptionService } from '../user/subscription.service';
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
 import { configService } from '../config/config.service';
@@ -38,6 +31,10 @@ import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
 import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
 import ApiSearchResultSnapshotConfigDto from '../dto/api-search-result-snapshot-config.dto';
 import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
+import { IsochroneService } from '../client/isochrone/isochrone.service';
+import { OverpassService } from '../client/overpass/overpass.service';
+import { UserDocument, retrieveTotalRequestContingent } from '../user/schema/user.schema';
+import { UserService } from '../user/user.service';
 
 const crypto = require('crypto');
 @Injectable()

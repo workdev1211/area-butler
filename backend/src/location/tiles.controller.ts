@@ -1,7 +1,7 @@
 import { Controller, Get, Header, Req, Res } from '@nestjs/common';
 import { Response } from 'express';
-import { MapboxService } from 'src/client/mapbox/mapbox.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { MapboxService } from '../client/mapbox/mapbox.service';
 
 @ApiTags('tiles')
 @Controller('api/location/tiles')

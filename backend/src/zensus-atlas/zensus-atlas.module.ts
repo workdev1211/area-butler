@@ -4,7 +4,7 @@ import { ZensusAtlasService } from './zensus-atlas.service';
 import { ZensusAtlasController } from './zensus-atlas.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ZensusAtlas, ZensusAtlasSchema } from './schema/zensus-atlas.schema';
-import { UserModule } from 'src/user/user.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   controllers: [ZensusAtlasController],

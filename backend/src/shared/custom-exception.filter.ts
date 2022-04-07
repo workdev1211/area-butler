@@ -6,10 +6,8 @@ import {
   HttpService,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import {
-  SlackChannel,
-  SlackSenderService,
-} from 'src/client/slack/slack-sender.service';
+import { SlackChannel, SlackSenderService } from '../client/slack/slack-sender.service';
+
 
 @Catch()
 export class CustomExceptionFilter extends BaseExceptionFilter {

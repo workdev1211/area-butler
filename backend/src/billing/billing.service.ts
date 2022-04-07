@@ -1,13 +1,5 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
-import { StripeService } from 'src/client/stripe/stripe.service';
-import {
-  EventType,
-  RequestContingentIncreasedEvent,
-  SubscriptionCreatedEvent as SubscriptionUpsertedEvent,
-  SubscriptionRenewedEvent,
-} from 'src/event/event.types';
-import { UserDocument } from 'src/user/schema/user.schema';
 import {
   allSubscriptions,
   TRIAL_DAYS,
@@ -15,11 +7,12 @@ import {
 import { configService } from '../config/config.service';
 import Stripe from 'stripe';
 import { SubscriptionService } from '../user/subscription.service';
-import {
-  SlackChannel,
-  SlackSenderService,
-} from 'src/client/slack/slack-sender.service';
+
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
+import { SlackSenderService, SlackChannel } from '../client/slack/slack-sender.service';
+import { StripeService } from '../client/stripe/stripe.service';
+import { RequestContingentIncreasedEvent, EventType, SubscriptionRenewedEvent, SubscriptionCreatedEvent } from '../event/event.types';
+import { UserDocument } from '../user/schema/user.schema';
 
 @Injectable()
 export class BillingService {
@@ -122,7 +115,7 @@ export class BillingService {
     const trialEndsAt = payload.trial_end;
     const endsAt = payload.current_period_end;
 
-    const subscriptionUpsertedEvent: SubscriptionUpsertedEvent = {
+    const subscriptionUpsertedEvent: SubscriptionCreatedEvent = {
       stripeCustomerId,
       stripePriceId,
       stripeSubscriptionId,

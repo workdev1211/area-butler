@@ -1,31 +1,26 @@
 import {
-  ApiPotentialCustomer,
-  ApiQuestionnaireRequest,
-  ApiUpsertPotentialCustomer,
-  ApiUpsertQuestionnaireRequest,
-} from '@area-butler-types/potential-customer';
-import {
   Body,
   Controller,
   Delete,
   Get,
   Param,
   Post,
-  Put,
+  Put
 } from '@nestjs/common';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
-import {
-  mapPotentialCustomerToApiPotentialCustomer,
-  mapQuestionnaireRequestToApiQuestionnaireRequest,
-} from './mapper/potential-customer.mapper';
-import { PotentialCustomerService } from './potential-customer.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ApiPotentialCustomerDto from '../dto/api-potential-customer.dto';
+import ApiQuestionnaireRequestDto from '../dto/api-questionnaire-request.dto';
 import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
 import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-request.dto';
-import ApiQuestionnaireRequestDto from '../dto/api-questionnaire-request.dto';
+import { AuthenticatedController } from '../shared/authenticated.controller';
+import { InjectUser } from '../user/inject-user.decorator';
+import { UserDocument } from '../user/schema/user.schema';
+import {
+  mapPotentialCustomerToApiPotentialCustomer,
+  mapQuestionnaireRequestToApiQuestionnaireRequest
+} from './mapper/potential-customer.mapper';
+import { PotentialCustomerService } from './potential-customer.service';
+
 
 @ApiTags('potential-customers')
 @Controller('api/potential-customers')

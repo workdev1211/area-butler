@@ -4,7 +4,7 @@ import {
 } from '@area-butler-types/real-estate';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
-import { GeoJsonPoint } from 'src/shared/geo-json.types';
+import { GeoJsonPoint } from '../../shared/geo-json.types';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
 

@@ -11,14 +11,14 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ApiRealEstateListingDto from '../dto/api-real-estate-listing.dto';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
+import { AuthenticatedController } from '../shared/authenticated.controller';
+import { UserDocument } from '../user/schema/user.schema';
+import { InjectUser } from '../user/inject-user.decorator';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')

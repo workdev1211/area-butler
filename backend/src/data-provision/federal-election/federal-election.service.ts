@@ -3,13 +3,13 @@ import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import { UserDocument } from 'src/user/schema/user.schema';
-import { SubscriptionService } from 'src/user/subscription.service';
 import {
   FederalElection,
   FederalElectionDocument,
 } from '../schemas/federal-election.schema';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
+import { UserDocument } from '../../user/schema/user.schema';
+import { SubscriptionService } from '../../user/subscription.service';
 
 export const distinctValues = (value: any, index: any, self: any) =>
   self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) ===

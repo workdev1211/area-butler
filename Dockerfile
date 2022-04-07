@@ -40,6 +40,8 @@ WORKDIR /home/node/app/backend
 
 RUN npm run build
 
+RUN npm test:e2e
+
 RUN rm -rf ../frontend
 
 EXPOSE 3000

@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { configService } from 'src/config/config.service';
 import { meansOfTransportations } from '../../../../shared/constants/constants';
 import { HttpService } from '@nestjs/axios';
 import {
@@ -8,6 +7,7 @@ import {
 } from '@area-butler-types/types';
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import ApiIsochroneDto from '../../dto/api-isochrone.dto';
+import { configService } from '../../config/config.service';
 
 @Injectable()
 export class IsochroneService {

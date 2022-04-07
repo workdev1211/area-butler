@@ -1,12 +1,7 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import {
-  EventType,
-  RequestContingentIncreasedEvent,
-  SubscriptionCreatedEvent,
-  SubscriptionRenewedEvent,
-} from 'src/event/event.types';
 import { StripeService } from '../../client/stripe/stripe.service';
+import { EventType, RequestContingentIncreasedEvent, SubscriptionCreatedEvent, SubscriptionRenewedEvent } from '../../event/event.types';
 import { SubscriptionService } from '../subscription.service';
 import { UserService } from '../user.service';
 

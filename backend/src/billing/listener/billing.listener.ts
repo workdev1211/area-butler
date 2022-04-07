@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
-import { StripeService } from 'src/client/stripe/stripe.service';
-import { EventType, UserEvent } from 'src/event/event.types';
-import { UserService } from 'src/user/user.service';
+import { StripeService } from '../../client/stripe/stripe.service';
+import { EventType, UserEvent } from '../../event/event.types';
+import { UserService } from '../../user/user.service';
 
 @Injectable()
 export class BillingListener {

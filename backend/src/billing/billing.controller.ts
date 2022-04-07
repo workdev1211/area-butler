@@ -1,10 +1,11 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
-import { BillingService } from './billing.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
+import { AuthenticatedController } from '../shared/authenticated.controller';
+import { InjectUser } from '../user/inject-user.decorator';
+import { UserDocument } from '../user/schema/user.schema';
+import { BillingService } from './billing.service';
+
 
 @ApiTags('billing')
 @Controller('api/billing')

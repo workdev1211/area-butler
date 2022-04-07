@@ -2,14 +2,14 @@ import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
-import { UserDocument } from 'src/user/schema/user.schema';
-import { SubscriptionService } from 'src/user/subscription.service';
 import {
   ParticlePollution,
   ParticlePollutionDocument,
 } from '../schemas/particle-pollution.schema';
 import { ApiGeojsonFeature } from '@area-butler-types/types';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
+import { SubscriptionService } from '../../user/subscription.service';
+import { UserDocument } from '../../user/schema/user.schema';
 
 @Injectable()
 export class ParticlePollutionService {

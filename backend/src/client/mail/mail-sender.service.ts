@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { configService } from 'src/config/config.service';
+import { configService } from '../../config/config.service';
 
 const SibApiV3Sdk = require('sib-api-v3-sdk');
 

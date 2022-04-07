@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { ClientModule } from 'src/client/client.module';
-import { UserModule } from 'src/user/user.module';
+import { ClientModule } from '../client/client.module';
+import { UserModule } from '../user/user.module';
 import { BillingWebhookController } from './billing-webhook.controller';
 import { BillingController } from './billing.controller';
 import { BillingService } from './billing.service';

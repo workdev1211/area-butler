@@ -1,8 +1,5 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AuthModule } from 'src/auth/auth.module';
-import { ClientModule } from 'src/client/client.module';
-import { UserModule } from 'src/user/user.module';
 import { LocationController } from './location.controller';
 import { LocationService } from './location.service';
 import {
@@ -17,6 +14,9 @@ import {
 import { SearchResultSnapshotController } from './search-result-snapshot.controller';
 import { TilesController } from './tiles.controller';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
+import { ClientModule } from '../client/client.module';
+import { AuthModule } from '../auth/auth.module';
+import { UserModule } from '../user/user.module';
 
 @Module({
   imports: [

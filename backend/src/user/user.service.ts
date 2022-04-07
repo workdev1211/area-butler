@@ -2,8 +2,6 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model, Types } from 'mongoose';
-import { MapboxService } from 'src/client/mapbox/mapbox.service';
-import { EventType, UserEvent } from 'src/event/event.types';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
@@ -14,6 +12,8 @@ import {
 } from '@area-butler-types/subscription-plan';
 import { ApiTour } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
+import { EventType, UserEvent } from '../event/event.types';
+import { MapboxService } from '../client/mapbox/mapbox.service';
 
 @Injectable()
 export class UserService {

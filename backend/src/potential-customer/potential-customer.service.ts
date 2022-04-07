@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { UserDocument } from 'src/user/schema/user.schema';
 import {
   PotentialCustomer,
   PotentialCustomerDocument,
@@ -10,16 +9,15 @@ import {
   QuestionnaireRequest,
   QuestionnaireRequestDocument,
 } from './schema/questionnaire-request.schema';
-import { UserService } from 'src/user/user.service';
-import {
-  MailProps,
-  MailSenderService,
-} from 'src/client/mail/mail-sender.service';
-import { configService } from 'src/config/config.service';
+
 import { SubscriptionService } from '../user/subscription.service';
 import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
 import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-request.dto';
 import ApiUpsertQuestionnaireDto from '../dto/api-upsert-questionnaire.dto';
+import { MailSenderService, MailProps } from '../client/mail/mail-sender.service';
+import { configService } from '../config/config.service';
+import { UserDocument } from '../user/schema/user.schema';
+import { UserService } from '../user/user.service';
 
 const crypto = require('crypto');
 

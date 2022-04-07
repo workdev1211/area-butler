@@ -7,9 +7,6 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
-import { AuthenticatedController } from 'src/shared/authenticated.controller';
-import { InjectUser } from 'src/user/inject-user.decorator';
-import { UserDocument } from 'src/user/schema/user.schema';
 import { LocationService } from './location.service';
 import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
@@ -20,6 +17,9 @@ import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
 import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
 import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 import ApiUserRequestsDto from '../dto/api-user-requests.dto';
+import { UserDocument } from '../user/schema/user.schema';
+import { InjectUser } from '../user/inject-user.decorator';
+import { AuthenticatedController } from '../shared/authenticated.controller';
 
 @ApiTags('location')
 @Controller('api/location')
