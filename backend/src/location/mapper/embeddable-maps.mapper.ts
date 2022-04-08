@@ -19,7 +19,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
     .map((r) =>
       mapRealEstateListingToApiRealEstateListing(
         r,
-        searchResultSnapshot.config.showLocation,
+        !!searchResultSnapshot?.config?.showLocation,
       ),
     )
     .filter((r) => r.showInSnippet)
