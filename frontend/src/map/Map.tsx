@@ -492,6 +492,7 @@ const Map = React.memo<MapProps>(
       config?.mapIcon,
       config?.showLocation,
       config?.showAddress,
+      config?.groupItems
     ]);
 
     // react on zoom and center change
@@ -596,6 +597,7 @@ const Map = React.memo<MapProps>(
       config?.mapIcon,
       config?.showLocation,
       config?.showAddress,
+      config?.groupItems,
       config?.hideIsochrones,
       hideIsochrones,
     ]);
@@ -848,7 +850,7 @@ const Map = React.memo<MapProps>(
         drawAmenityMarkers();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [entitiesStringified, groupedEntitiesStringified, config?.mapIcon]);
+    }, [entitiesStringified, groupedEntitiesStringified, config?.mapIcon, config?.groupItems]);
 
     const takePicture = () => {
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
