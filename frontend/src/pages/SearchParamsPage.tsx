@@ -140,7 +140,8 @@ const SearchParamsPage: React.FunctionComponent = () => {
     !searchContextState.location?.lat ||
     !searchContextState.location?.lng ||
     searchContextState.transportationParams.length === 0 ||
-    searchContextState.localityParams.length === 0;
+    searchContextState.transportationParams.some(t => !t.amount) ||
+    searchContextState.localityParams.length === 0
 
   const increaseLimitButton: React.ReactNode = (
     <button
