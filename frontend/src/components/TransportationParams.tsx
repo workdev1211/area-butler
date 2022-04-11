@@ -78,7 +78,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
         amount:
           unit === UnitsOfTransportation.MINUTES
             ? Math.min(parseInt(newValue), 60)
-            : parseFloat(newValue)
+            : Math.min(parseFloat(newValue), 10)
       };
     });
     handleOnChange(newParams);
@@ -97,7 +97,7 @@ const TransportationParams: React.FunctionComponent<TransportationParamsProps> =
         amount:
           unit === UnitsOfTransportation.MINUTES
             ? Math.min(value.amount, 60)
-            : value.amount,
+            : Math.min(value.amount, 10),
         unit
       };
     });
