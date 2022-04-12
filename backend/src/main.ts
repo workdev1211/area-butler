@@ -2,6 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { json } from 'body-parser';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import { ValidationPipe } from '@nestjs/common';
 const cloneBuffer = require('clone-buffer');
 
 async function bootstrap() {
@@ -30,7 +31,7 @@ async function bootstrap() {
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
   }
-
+  app.useGlobalPipes(new ValidationPipe({forbidUnknownValues: true}));
   await app.listen(process.env.PORT || 3000, process.env.HOST || '0.0.0.0');
 }
 bootstrap();

@@ -310,9 +310,15 @@ export class LocationService {
     );
 
     const oid = new Types.ObjectId(id);
-    return this.searchResultSnapshotModel.findOne({
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       userId: user.id,
       _id: oid,
     });
+
+    if (!snapshotDoc) {
+      throw new HttpException('Unknown token', 404);
+    }
+
+    return snapshotDoc;
   }
 }

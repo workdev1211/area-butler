@@ -4,9 +4,22 @@ import {
 } from '@area-butler-types/real-estate';
 import ApiMoneyAmountDto from './api-money-amount.dto';
 
+import { Type } from 'class-transformer';
+import { IsBoolean, IsNotEmpty, IsOptional, ValidateNested, IsEnum } from 'class-validator';
+
 class ApiRealEstateCostDto implements ApiRealEstateCost {
+
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => ApiMoneyAmountDto)
   price: ApiMoneyAmountDto;
+
+  @IsOptional()
+  @IsBoolean()
   startingAt?: boolean;
+
+  @IsNotEmpty()
+  @IsEnum(ApiRealEstateCostType)
   type: ApiRealEstateCostType;
 }
 

@@ -40,6 +40,8 @@
     "@turf/helpers": "^6.5.0",
     "@types/node-geocoder": "^3.24.4",
     "@types/stripe": "^8.0.417",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.13.2",
     "clone-buffer": "^1.0.0",
     "dotenv": "^16.0.0",
     "fuse.js": "^6.5.3",
