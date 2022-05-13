@@ -205,7 +205,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
           <ul>
             <li>
               <div className="flex items-center gap-6 py-1">
-                <h4 className="w-12 font-bold">Theme</h4>
+                <h4 className="w-12 font-bold">Menu</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -214,7 +214,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     onChange={() => changeTheme("DEFAULT")}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">Classic</span>
+                  <span className="label-text">Standard</span>
                 </label>
                 <label className="cursor-pointer label">
                   <input
@@ -224,7 +224,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     onChange={() => changeTheme("KF")}
                     className="radio radio-sm radio-primary mr-2"
                   />
-                  <span className="label-text">Minimalist</span>
+                  <span className="label-text">Minimal</span>
                 </label>
               </div>
             </li>
