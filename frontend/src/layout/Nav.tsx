@@ -6,11 +6,16 @@ import { NavLink } from "react-router-dom";
 import { useAuth0, User } from "@auth0/auth0-react";
 import Authenticated from "auth/authenticated";
 import LoginButton from "../components/LoginButton";
+import { useContext } from "react";
+import { UserContext } from "../context/UserContext";
 
 const Nav: FunctionComponent = () => {
   const showNavBar = !RegExp(/questionnaire.+/).test(window.location.pathname);
 
   const [currentUser, setCurrentUser] = useState<User>();
+  const {
+    userState: { user: userData },
+  } = useContext(UserContext);
   const { logout, user, isAuthenticated } = useAuth0();
 
   useEffect(() => {
@@ -143,7 +148,7 @@ const Nav: FunctionComponent = () => {
               >
                 <span className="sr-only">Benutzer Menü</span>
                 <img
-                  src={currentUser.picture}
+                  src={userData?.logo || currentUser.picture}
                   referrerPolicy="no-referrer"
                   alt=""
                 />
