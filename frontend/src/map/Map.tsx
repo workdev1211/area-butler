@@ -283,7 +283,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const configEqual =
     JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config);
   const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
-  const hideIsochronesEqual = prevProps.hideIsochrones === nextProps.hideIsochrones;
+  const hideIsochronesEqual =
+    prevProps.hideIsochrones === nextProps.hideIsochrones;
   return (
     mapboxKeyEqual &&
     responseEqual &&
@@ -296,7 +297,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     routesEqual &&
     transitRoutesEqual &&
     configEqual &&
-    mapboxMapIdEqual && 
+    mapboxMapIdEqual &&
     hideIsochronesEqual
   );
 };
@@ -390,6 +391,11 @@ const Map = React.memo<MapProps>(
         gestureHandlingOptions: {
           duration: 1,
         },
+        // Controls zoom buttons' zoom rate. Default values - 1, smaller values for zoomDelta - smaller steps.
+        zoomSnap: 0,
+        zoomDelta: 0.25,
+        // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
+        wheelPxPerZoomLevel: 60,
       } as any).setView(initialPosition, zoom);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
@@ -850,7 +856,12 @@ const Map = React.memo<MapProps>(
         drawAmenityMarkers();
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [entitiesStringified, groupedEntitiesStringified, config?.mapIcon, config?.groupItems]);
+    }, [
+      entitiesStringified,
+      groupedEntitiesStringified,
+      config?.mapIcon,
+      config?.groupItems
+    ]);
 
     const takePicture = () => {
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
