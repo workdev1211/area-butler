@@ -1097,6 +1097,18 @@ const Map = React.memo<MapProps>(
                   <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
                 </svg>
               </a>
+              <a
+                href="/"
+                data-tour="take-map-picture"
+                className="leaflet-control-zoom-in cursor-pointer"
+                role="button"
+                onClick={(event) => {
+                  event.preventDefault();
+                  takePicture();
+                }}
+              >
+                📷
+              </a>
             </div>
           )}
         </div>
