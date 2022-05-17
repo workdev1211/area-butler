@@ -22,7 +22,6 @@ class ApiRealEstateCharacteristicsDto implements ApiRealEstateCharacteristics {
   numberOfRooms: number;
 
   @IsOptional()
-  @IsNumber()
   propertySizeInSquareMeters?: number;
 
   @IsOptional()
