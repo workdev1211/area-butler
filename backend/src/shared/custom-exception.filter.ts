@@ -27,7 +27,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
     console.error('Error while performing a request');
 
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR) {
+    if (status === HttpStatus.INTERNAL_SERVER_ERROR || status === HttpStatus.BAD_REQUEST) {
       const headers = { ...req.headers };
       delete headers.authorization;
 
