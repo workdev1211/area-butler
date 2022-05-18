@@ -372,8 +372,8 @@ const Map = React.memo<MapProps>(
       const url = embedMode
         ? `${
             process.env.REACT_APP_BASE_URL || ""
-          }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}`
-        : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}";
+          }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}`
+        : "https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}";
 
       if (currentMap !== undefined) {
         currentMap.off();
