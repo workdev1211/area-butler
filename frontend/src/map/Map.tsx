@@ -1,7 +1,7 @@
 import center from "@turf/center";
 import FormModal, { ModalConfig } from "components/FormModal";
 import { Poi } from "context/SearchContext";
-import html2canvas from "html2canvas";
+import { toJpeg } from "html-to-image";
 import * as L from "leaflet";
 import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-touch-helper";
@@ -81,6 +81,7 @@ export interface MapProps {
   ) => void;
   hideIsochrones: boolean;
   setHideIsochrones: (value: boolean) => void;
+  mapWithLegendId: string;
 }
 
 export class IdMarker extends L.Marker {
@@ -335,7 +336,8 @@ const Map = React.memo<MapProps>(
     addMapClipping,
     snippetToken,
     hideIsochrones,
-    setHideIsochrones
+    setHideIsochrones,
+    mapWithLegendId,
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -870,14 +872,10 @@ const Map = React.memo<MapProps>(
         bottomElements[i].className = className + " hidden";
       }
 
-      html2canvas(document.querySelector("#mymap")!, {
-        allowTaint: true,
-        useCORS: true,
-        scale: 2,
-      }).then((canvas) => {
-        const mapClippingDataUrl = canvas.toDataURL("image/jpeg", 1.0);
+      toJpeg(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {quality: 1, pixelRatio: 2}).then(mapClippingDataUrl => {
         addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+
         for (let i = 0; i < bottomElements.length; i++) {
           bottomElements[i].className = bottomElements[i].className.replace(
             "hidden",

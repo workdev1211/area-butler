@@ -303,11 +303,12 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   };
 
   const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
+  const mapWithLegendId = "map-with-legend";
 
   return (
     <>
       <div className={containerClasses} id="search-result-container">
-        <div className="relative flex-1">
+        <div className="relative flex-1" id={mapWithLegendId}>
           <MeansToggle
             transportationParams={searchContextState.transportationParams}
             activeMeans={searchContextState.responseActiveMeans}
@@ -376,6 +377,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             }
             hideIsochrones={!!hideIsochrones}
             setHideIsochrones={setHideIsochrones}
+            mapWithLegendId={mapWithLegendId}
           />
         </div>
         {searchContextState.responseConfig?.theme !== "KF" && (
