@@ -35,6 +35,7 @@ export interface DocxExposeProps {
   realEstateListing: ApiRealEstateListing;
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
+  color?: string;
 }
 
 const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
@@ -47,11 +48,10 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   activeMeans,
   user,
   realEstateListing,
-  listingAddress
+  listingAddress,
+  color
 }) => {
-  const colorPalette = deriveColorPalette(
-    !!user?.color ? user.color! : "#AA0C54"
-  );
+  const colorPalette = deriveColorPalette(color || user?.color || "#AA0C54");
 
   let documentTitle = "MeinStandort_AreaButler";
 
@@ -116,7 +116,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         ]
       : [];
 
-    const particlePollutionTable = !!federalElectionData
+    const particlePollutionTable = !!particlePollutionData
       ? [
           createTable({
             pageBreak: false,
@@ -153,6 +153,25 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
       ? user?.logo!.replace(base64PrefixRegex, "")!
       : await (await fetch(AreaButlerLogo)).blob();
 
+    const sectionChildren = [
+      ...gridSummary,
+      ...tables.flatMap((t) => t),
+      ...images,
+    ];
+
+    if (
+      censusTable.length ||
+      federalElectionTable.length ||
+      particlePollutionTable.length
+    ) {
+      sectionChildren.push(
+        new Paragraph({ children: [new PageBreak()] }),
+        ...censusTable.flatMap((t) => t),
+        ...federalElectionTable.flatMap((t) => t),
+        ...particlePollutionTable.flatMap((t) => t)
+      );
+    }
+
     const doc = new Document({
       styles: {
         paragraphStyles: [
@@ -174,15 +193,7 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
           headers: {
             ...createHeader(imageBase64Data)
           },
-          children: [
-            ...gridSummary,
-            ...tables.flatMap(t => t),
-            ...images,
-            new Paragraph({ children: [new PageBreak()] }),
-            ...censusTable.flatMap(t => t),
-            ...federalElectionTable.flatMap(t => t),
-            ...particlePollutionTable.flatMap(t => t)
-          ],
+          children: sectionChildren,
           footers: {
             ...createFooter()
           }

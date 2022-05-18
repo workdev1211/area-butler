@@ -26,6 +26,7 @@ export interface ExposeDownloadProps {
   federalElectionData?: FederalElectionDistrict;
   user: ApiUser | null;
   onAfterPrint: () => void;
+  color?: string;
 }
 
 export class ComponentToPrint extends React.PureComponent {
@@ -47,7 +48,8 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
   federalElectionData,
   particlePollutionData,
   user,
-  onAfterPrint
+  onAfterPrint,
+  color
 }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const [activePrinting, setActivePrinting] = useState(false);
@@ -99,6 +101,7 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
         particlePollutionData={particlePollutionData!}
         activePrinting={activePrinting}
         user={user}
+        color={color}
       />
     </div>
   );

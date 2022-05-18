@@ -26,6 +26,7 @@ export interface CheatsheetDownloadProps {
   federalElectionData?: FederalElectionDistrict;
   onAfterPrint: () => void;
   user: ApiUser | null;
+  color?: string;
 }
 
 export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps> = ({
@@ -41,7 +42,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
   federalElectionData,
   particlePollutionData,
   user,
-  onAfterPrint
+  onAfterPrint,
+  color
 }) => {
   const componentRef = useRef();
 
@@ -95,6 +97,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
         federalElectionData={federalElectionData!}
         particlePollutionData={particlePollutionData!}
         user={user}
+        color={color}
       />
     </div>
   );

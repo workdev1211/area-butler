@@ -37,6 +37,7 @@ export interface CheatsheetProps {
   activePrinting: boolean;
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
+  color?: string;
 }
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
@@ -47,7 +48,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
   const user = props.user;
-  const color = user?.color || "#aa0c54";
+  const color = props.color || user?.color || "#aa0c54";
   const logo = user?.logo || AreaButlerLogo;
   const particlePollutionData = props.particlePollutionData;
 

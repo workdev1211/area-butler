@@ -7,6 +7,7 @@ import ApiSearchResultSnapshotDto from '../../dto/api-search-result-snapshot.dto
 import ApiSearchResultSnapshotConfigDto from '../../dto/api-search-result-snapshot-config.dto';
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import ApiSearchResponseDto from '../../dto/api-search-response.dto';
+import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
 export const mapSearchResultSnapshotToApiEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
@@ -14,22 +15,38 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
   realEstateListings: RealEstateListingDocument[] = [],
 ): ApiSearchResultSnapshotResponseDto => {
   const centerOfLocation = searchResultSnapshot.snapshot.location;
+
+  // we need this when the estate is located in the center of the map in order to provide
+  // all necessary information in the exported files (PDF, DOCX)
+  let realEstateListing: ApiRealEstateListingDto;
+
   // filter / hide real estate listings
-  const mappedListings = realEstateListings
-    .map((r) =>
-      mapRealEstateListingToApiRealEstateListing(
-        r,
-        !!searchResultSnapshot?.config?.showLocation,
-      ),
-    )
-    .filter((r) => r.showInSnippet)
-    .filter(
-      (r) =>
-        !(
-          r.coordinates.lat === centerOfLocation.lat &&
-          r.coordinates.lng === centerOfLocation.lng
-        ),
-    );
+  const mappedListings = realEstateListings.reduce<ApiRealEstateListingDto[]>(
+    (accum, curVal) => {
+      if (!curVal.showInSnippet) {
+        return accum;
+      }
+
+      const mappedApiRealEstateListing =
+        mapRealEstateListingToApiRealEstateListing(
+          curVal,
+          !!searchResultSnapshot?.config?.showLocation,
+        );
+
+      const isEstateAtCenter =
+        mappedApiRealEstateListing.coordinates.lat === centerOfLocation.lat &&
+        mappedApiRealEstateListing.coordinates.lng === centerOfLocation.lng;
+
+      if (!isEstateAtCenter) {
+        accum.push(mappedApiRealEstateListing);
+      } else {
+        realEstateListing = mappedApiRealEstateListing;
+      }
+
+      return accum;
+    },
+    [],
+  );
 
   const { config, snapshot } = searchResultSnapshot;
   if (config && config.fixedRealEstates) {
@@ -52,6 +69,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
     snapshot: mapSearchResultSnapshot(
       {
         ...searchResultSnapshot.snapshot,
+        realEstateListing,
         realEstateListings: mappedListings,
       },
       searchResultSnapshot.config,

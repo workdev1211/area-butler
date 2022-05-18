@@ -239,6 +239,7 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
+  realEstateListing: ApiRealEstateListing;
   realEstateListings: ApiRealEstateListing[];
 }
 

@@ -168,6 +168,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       ? user
                       : null
                   }
+                  color={searchContextState.responseConfig?.primaryColor}
                 />
               )}
 
@@ -198,6 +199,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       ? user
                       : null
                   }
+                  color={searchContextState.responseConfig?.primaryColor}
                 />
               )}
 
@@ -225,6 +227,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       ? user
                       : null
                   }
+                  color={searchContextState.responseConfig?.primaryColor}
                 />
               )}
             </div>

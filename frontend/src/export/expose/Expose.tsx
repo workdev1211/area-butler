@@ -30,6 +30,7 @@ export interface ExposeProps {
   activePrinting: boolean;
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
+  color?: string;
 }
 
 export const Expose = React.forwardRef(
@@ -48,7 +49,7 @@ export const Expose = React.forwardRef(
     const activeMeans = props.activeMeans;
 
     const user = props.user;
-    const color = user?.color || "#aa0c54";
+    const color = props.color || user?.color || "#aa0c54";
     const logo = user?.logo || AreaButlerLogo;
 
     let page = 0;

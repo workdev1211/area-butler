@@ -29,6 +29,9 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @Type(() => ApiPreferredLocationDto)
   preferredLocations: ApiPreferredLocationDto[];
 
+  @Type(() => ApiRealEstateListingDto)
+  realEstateListing: ApiRealEstateListingDto;
+
   @ValidateNested()
   @IsArray()
   @Type(() => ApiRealEstateListingDto)

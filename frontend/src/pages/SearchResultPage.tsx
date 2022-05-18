@@ -31,7 +31,7 @@ import {
 import BackButton from "../layout/BackButton";
 import DefaultLayout from "../layout/defaultLayout";
 
-const subscriptionUpgradeFullyCustomizableExpose =
+export const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
 const SearchResultPage: React.FunctionComponent = () => {
