@@ -237,12 +237,23 @@ const SearchParamsPage: React.FunctionComponent = () => {
         searchContextDispatch({
           type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS
         });
+
+        let filteredRealEstateListings;
+
+        if (realEstateState?.listings?.length) {
+          filteredRealEstateListings = realEstateState.listings.filter(
+            (listing) =>
+              listing.coordinates!.lat !== searchContextState.location!.lat ||
+              listing.coordinates!.lng !== searchContextState.location!.lng
+          );
+        }
+
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
           payload: deriveInitialEntityGroups(
             result.data,
             undefined,
-            realEstateState?.listings,
+            filteredRealEstateListings,
             searchContextState.preferredLocations
           )
         });
