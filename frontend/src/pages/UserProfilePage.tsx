@@ -12,16 +12,12 @@ import React, {
 } from "react";
 import { dateDiffInDays } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
-import EmbeddableMapsTable from "user/EmbeddableMapsTable";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { v4 as uuid } from "uuid";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
-import {
-  ApiSearchResultSnapshotResponse,
-  ApiUser
-} from "../../../shared/types/types";
+import { ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 
 const UserProfilePage: FunctionComponent = () => {
@@ -43,11 +39,6 @@ const UserProfilePage: FunctionComponent = () => {
     hasSubscription &&
     user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
 
-  const hasHtmlSnippet =
-    hasSubscription && user.subscriptionPlan!.config.appFeatures.htmlSnippet;
-
-  const embedddableMaps = userState.embeddableMaps || [];
-
   useEffect(() => {
     const fetchUser = async () => {
       const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
@@ -58,27 +49,6 @@ const UserProfilePage: FunctionComponent = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [true]);
-
-  useEffect(() => {
-    if (!!user) {
-      const fetchEmbeddableMaps = async () => {
-        const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-          await get<ApiSearchResultSnapshotResponse[]>(
-            "/api/location/user-embeddable-maps"
-          )
-        ).data;
-        userDispatch({
-          type: UserActionTypes.SET_EMBEDDABLE_MAPS,
-          payload: embeddableMaps
-        });
-      };
-
-      if (hasHtmlSnippet) {
-        fetchEmbeddableMaps();
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
@@ -127,12 +97,6 @@ const UserProfilePage: FunctionComponent = () => {
           postSubmit={postSubmit}
         />
       </div>
-      {hasSubscription && hasHtmlSnippet && embedddableMaps.length > 0 && (
-        <div className="my-10">
-          <h1 className="text-xl font-bold mb-5">Ihre Karten Snippets</h1>
-          <EmbeddableMapsTable embeddableMaps={embedddableMaps} />
-        </div>
-      )}
       {canCustomizeExport && <UserExportSettings />}
       {hasSubscription ? (
         <SubscriptionPlanLimits

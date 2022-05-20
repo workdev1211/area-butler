@@ -33,11 +33,11 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
           !!searchResultSnapshot?.config?.showLocation,
         );
 
-      const isEstateAtCenter =
-        mappedApiRealEstateListing.coordinates.lat === centerOfLocation.lat &&
-        mappedApiRealEstateListing.coordinates.lng === centerOfLocation.lng;
+      const isNotEstateAtCenter =
+        mappedApiRealEstateListing.coordinates.lat !== centerOfLocation.lat ||
+        mappedApiRealEstateListing.coordinates.lng !== centerOfLocation.lng;
 
-      if (!isEstateAtCenter) {
+      if (isNotEstateAtCenter) {
         accum.push(mappedApiRealEstateListing);
       } else {
         realEstateListing = mappedApiRealEstateListing;

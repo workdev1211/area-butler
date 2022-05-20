@@ -101,9 +101,26 @@ export class LocationController extends AuthenticatedController {
   async getEmbeddableMaps(
     @InjectUser() user: UserDocument,
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
-    return (await this.locationService.fetchEmbeddableMaps(user)).map((r) =>
-      mapSearchResultSnapshotToApiEmbeddableMap(r),
-    );
+    const includedFields = {
+      token: 1,
+      description: 1,
+      config: 1,
+      createdAt: 1,
+      lastAccess: 1,
+      'snapshot.location': 1,
+      'snapshot.description': 1,
+      'snapshot.placesLocation.label': 1,
+    };
+
+    const sortOptions = { lastAccess: -1, createdAt: -1 };
+
+    return (
+      await this.locationService.fetchEmbeddableMaps(
+        user,
+        includedFields,
+        sortOptions,
+      )
+    ).map((r) => mapSearchResultSnapshotToApiEmbeddableMap(r));
   }
 
   @ApiOperation({ description: 'Get a specific embeddable map' })

@@ -127,6 +127,13 @@ const Nav: FunctionComponent = () => {
                   >
                     Meine Interessenten
                   </NavLink>
+                  <NavLink
+                    to="/map-snippets"
+                    className="nav-link"
+                    aria-current="page"
+                  >
+                    Meine Karten Snippets
+                  </NavLink>
                 </Authenticated>
               </div>
             </div>
@@ -214,6 +221,13 @@ const Nav: FunctionComponent = () => {
               aria-current="page"
             >
               Meine Interessenten
+            </NavLink>
+            <NavLink
+              to="/map-snippets"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              Meine Karten Snippets
             </NavLink>
           </Authenticated>
           {!isAuthenticated && <LoginButton />}

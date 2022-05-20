@@ -33,10 +33,15 @@ import ApiSearchResultSnapshotConfigDto from '../dto/api-search-result-snapshot-
 import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 import { IsochroneService } from '../client/isochrone/isochrone.service';
 import { OverpassService } from '../client/overpass/overpass.service';
-import { UserDocument, retrieveTotalRequestContingent } from '../user/schema/user.schema';
+import {
+  UserDocument,
+  retrieveTotalRequestContingent,
+} from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 const crypto = require('crypto');
+
 @Injectable()
 export class LocationService {
   constructor(
@@ -205,7 +210,7 @@ export class LocationService {
       showLocation: true,
       showAddress: true,
       groupItems: true,
-      showStreetViewLink: true
+      showStreetViewLink: true,
     };
 
     const doc = await new this.searchResultSnapshotModel({
@@ -289,6 +294,8 @@ export class LocationService {
 
   async fetchEmbeddableMaps(
     user: UserDocument,
+    includedFields?: { [key: string]: number },
+    sortOptions?: { [key: string]: number },
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
       user._id,
@@ -296,7 +303,9 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    return this.searchResultSnapshotModel.find({ userId: user.id });
+    return this.searchResultSnapshotModel
+      .find({ userId: user.id }, includedFields)
+      .sort(sortOptions);
   }
 
   async fetchEmbeddableMap(

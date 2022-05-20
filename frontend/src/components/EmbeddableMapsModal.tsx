@@ -1,4 +1,4 @@
-import EmbeddableMapsTable from "user/EmbeddableMapsTable";
+import EmbeddableMapsTable from "map-snippets/EmbeddableMapsTable";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import React from "react";
 

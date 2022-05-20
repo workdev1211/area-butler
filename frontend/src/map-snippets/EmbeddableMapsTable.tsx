@@ -1,9 +1,10 @@
+import { FunctionComponent, useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
+import copy from "copy-to-clipboard";
+
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import copy from "copy-to-clipboard";
 import { useHttp } from "hooks/http";
-import { useContext, useState } from "react";
-import { useHistory } from "react-router-dom";
 import {
   createCodeSnippet,
   createDirectLink,
@@ -16,33 +17,20 @@ export interface EmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
 
-const sortByLastAccessDesc = (
-  e1: ApiSearchResultSnapshotResponse,
-  e2: ApiSearchResultSnapshotResponse
-) => {
-  const e1LastAccess = !!e1.lastAccess
-    ? new Date(e1.lastAccess).toISOString()
-    : "";
-  const e2LastAccess = !!e2.lastAccess
-    ? new Date(e2.lastAccess).toISOString()
-    : "";
-
-  return e2LastAccess.localeCompare(e1LastAccess);
-};
-
-const EmbeddableMapsTable: React.FunctionComponent<
-  EmbeddableMapsTableProps
-> = ({ embeddableMaps }) => {
+const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
+  embeddableMaps,
+}) => {
   const [showModal, setShowModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
   const { deleteRequest } = useHttp();
-  const {userDispatch} = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
   const history = useHistory();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
+
     if (success) {
       toastSuccess("Erfolgreich in Zwischenablage kopiert!");
     }
@@ -57,10 +45,17 @@ const EmbeddableMapsTable: React.FunctionComponent<
 
   const deleteSnippet = async (id: string) => {
     try {
-      const confirmDeleteRequest = window.confirm('Wollen Sie wirklich das Kartensnippet löschen?');
-      if (!!confirmDeleteRequest) {
+      const confirmDeleteRequest = window.confirm(
+        "Wollen Sie wirklich das Kartensnippet löschen?"
+      );
+
+      if (confirmDeleteRequest) {
         await deleteRequest(`/api/location/snapshot/${id}`);
-        userDispatch({type: UserActionTypes.REMOVE_EMBEDDABLE_MAP, payload: id});
+
+        userDispatch({
+          type: UserActionTypes.REMOVE_EMBEDDABLE_MAP,
+          payload: id,
+        });
       }
     } catch (err) {
       toastError("Fehler beim Löschen eines Snippets");
@@ -69,36 +64,37 @@ const EmbeddableMapsTable: React.FunctionComponent<
   };
 
   return (
-    <div className="overflow-x-auto">
-      {showModal && <CodeSnippetModal
-        showModal={showModal}
-        setShowModal={setShowModal}
-        codeSnippet={codeSnippet}
-        directLink={directLink}
-        editDescription={true}
-        snapshot={snapshot}
-      />}
-      <table className="table w-full table-compact">
+    // TODO data tour
+    <div className="overflow-x-auto" data-tour="real-estates-table">
+      {showModal && (
+        <CodeSnippetModal
+          showModal={showModal}
+          setShowModal={setShowModal}
+          codeSnippet={codeSnippet}
+          directLink={directLink}
+          editDescription={true}
+          snapshot={snapshot}
+        />
+      )}
+      <table className="table w-full">
         <thead>
           <tr>
             <th>Adresse</th>
             <th>Notiz</th>
             <th>Erstellt am</th>
             <th>Letzter Aufruf</th>
-            <th></th>
+            <th />
           </tr>
         </thead>
         <tbody>
-          {embeddableMaps.sort(sortByLastAccessDesc).map((embeddableMap) => (
+          {embeddableMaps.map((embeddableMap) => (
             <tr
               key={`embeddable-map-${embeddableMap.token}`}
               className="cursor-pointer"
               onClick={() => openCodeSnippetModal(embeddableMap)}
             >
               <th>{embeddableMap?.snapshot?.placesLocation?.label}</th>
-              <td>
-                {embeddableMap.description}
-              </td>
+              <td>{embeddableMap.description}</td>
               <td>
                 {new Date(embeddableMap.createdAt).toLocaleDateString("de-DE")}
               </td>
