@@ -86,7 +86,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Umgebungsanalyse PDF
+            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse PDF
           </button>
         </li>
         <li>
@@ -108,7 +108,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Umgebungsanalyse Docx
+            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse DOCX
           </button>
         </li>
         <li>
@@ -122,7 +122,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Spickzettel PDF
+            <img src={pdfIcon} alt="pdf-icon" /> Kurzusammenfassung PDF
           </button>
         </li>
         <li>
@@ -137,7 +137,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             href="/potential-customers/from-result"
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
+            <img src={plusIcon} alt="pdf-icon" /> Zielgruppe speichern
           </a>
         </li>
         <li>
@@ -152,7 +152,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             href="/real-estates/from-result"
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
+            <img src={plusIcon} alt="pdf-icon" /> Adresse speichern
           </a>
         </li>
         <li>
@@ -239,7 +239,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Karten-Editor öffnen
+            <img src={plusIcon} alt="pdf-icon" /> Eigener Karten-Editor
           </button>
         </li>
       </>

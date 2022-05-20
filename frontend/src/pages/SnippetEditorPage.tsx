@@ -301,7 +301,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Umgebungsanalyse PDF
+            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse PDF
           </button>
         </li>
         <li>
@@ -323,7 +323,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Umgebungsanalyse Docx
+            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse DOCX
           </button>
         </li>
         <li>
@@ -337,7 +337,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Spickzettel PDF
+            <img src={pdfIcon} alt="pdf-icon" /> Kurzusammenfassung PDF
           </button>
         </li>
         <li>

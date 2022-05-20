@@ -14,7 +14,8 @@
     }
 
     .dropdown .dropdown-btn {
-      color: white !important;
+      color: var(--primary) !important;
+      background-color: white !important;
       text-transform: none !important;
       border-radius: var(--btn-border-radius);
       @apply btn btn-outline hover:bg-primary hover:border-white text-base;
@@ -24,34 +25,38 @@
       @apply flex gap-4 h-full justify-center items-center;
       .divider {
         width: 1px;
-        border-left: 1px solid white;
+        border-left: 1px solid var(--primary);
         @apply h-full;
+      }
+      .caret-down {
+        filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg)
+          saturate(600%) contrast(0.8) drop-shadow(0px 1.5px 0px red);
       }
     }
   }
 
-    .dropdown-content {
-        background: rgba(53, 53, 53, 0.95);
-        color: white;
-        top: 50px;
+  .dropdown-content {
+    background: rgba(53, 53, 53, 0.95);
+    color: white;
+    top: 50px;
 
-      * {
-        color: white;
-      }
-
-      button {
-        justify-content: start;
-        @apply w-full text-left;
-      }
-
-      a.btn-link {
-        justify-content: flex-start;
-      }
-
-      img {
-        @apply mr-2;
-      }
+    * {
+      color: white;
     }
+
+    button {
+      justify-content: start;
+      @apply w-full text-left;
+    }
+
+    a.btn-link {
+      justify-content: flex-start;
+    }
+
+    img {
+      @apply mr-2;
+    }
+  }
 
   .default-layout-content {
     &.padding {

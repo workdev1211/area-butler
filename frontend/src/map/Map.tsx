@@ -249,7 +249,7 @@ export class IdMarker extends L.Marker {
   }
 }
 
-export const defaultMapZoom = 15;
+export const defaultMapZoom = 16.5;
 const defaultAmenityIconSize = new L.Point(32, 32);
 const myLocationIconSize = new L.Point(46, 46);
 const customMyLocationIconSize = new L.Point(32, 32);
