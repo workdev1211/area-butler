@@ -49,6 +49,7 @@ import {
 } from "../shared/shared.functions";
 import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import "./Map.scss";
+import satelliteIcon from "../assets/icons/satellite.svg";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -82,6 +83,7 @@ export interface MapProps {
   hideIsochrones: boolean;
   setHideIsochrones: (value: boolean) => void;
   mapWithLegendId: string;
+  toggleSatelliteMapMode: () => void;
 }
 
 export class IdMarker extends L.Marker {
@@ -312,6 +314,7 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
   [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
   [MeansOfTransportation.WALK]: WALK_COLOR,
 };
+
 const Map = React.memo<MapProps>(
   ({
     mapBoxAccessToken,
@@ -329,7 +332,7 @@ const Map = React.memo<MapProps>(
     embedMode = false,
     editorMode = false,
     config,
-    mapboxMapId = "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    mapboxMapId,
     onPoiAdd,
     hideEntity,
     centerZoomCoordinates,
@@ -338,6 +341,7 @@ const Map = React.memo<MapProps>(
     hideIsochrones,
     setHideIsochrones,
     mapWithLegendId,
+    toggleSatelliteMapMode,
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -500,7 +504,7 @@ const Map = React.memo<MapProps>(
       config?.mapIcon,
       config?.showLocation,
       config?.showAddress,
-      config?.groupItems
+      config?.groupItems,
     ]);
 
     // react on zoom and center change
@@ -862,7 +866,7 @@ const Map = React.memo<MapProps>(
       entitiesStringified,
       groupedEntitiesStringified,
       config?.mapIcon,
-      config?.groupItems
+      config?.groupItems,
     ]);
 
     const takePicture = () => {
@@ -872,7 +876,10 @@ const Map = React.memo<MapProps>(
         bottomElements[i].className = className + " hidden";
       }
 
-      toJpeg(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {quality: 1, pixelRatio: 2}).then(mapClippingDataUrl => {
+      toJpeg(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {
+        quality: 1,
+        pixelRatio: 2,
+      }).then((mapClippingDataUrl) => {
         addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
 
@@ -898,6 +905,7 @@ const Map = React.memo<MapProps>(
       },
       [fullscreen]
     );
+
     useEffect(() => {
       document.addEventListener("keydown", escFunction, false);
       return () => {
@@ -1037,78 +1045,80 @@ const Map = React.memo<MapProps>(
               </a>
             )}
           </div>
-          {!embedMode ? (
-            <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
-              <a
-                href="/"
-                data-tour="go-fullscreen"
-                className="leaflet-control-zoom-in cursor-pointer"
-                role="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  toggleFullscreen();
-                }}
-              >
-                <svg
-                  height="100%"
-                  version="1.1"
-                  viewBox="0 0 36 36"
-                  width="100%"
+          <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
+            {!embedMode ? (
+              <>
+                <a
+                  href="/"
+                  data-tour="go-fullscreen"
+                  className="leaflet-control-zoom-in cursor-pointer"
+                  role="button"
+                  onClick={(event) => {
+                    event.preventDefault();
+                    toggleFullscreen();
+                  }}
                 >
-                  <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
-                  <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
-                  <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
-                  <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
-                </svg>
-              </a>
-              <a
-                href="/"
-                data-tour="take-map-picture"
-                className="leaflet-control-zoom-in cursor-pointer"
-                role="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  takePicture();
-                }}
-              >
-                📷
-              </a>
-            </div>
-          ) : (
-            <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
-              <a
-                href={`${createDirectLink(snippetToken!)}`}
-                target="_blank"
-                rel="noreferrer"
-                className="leaflet-control-zoom-in cursor-pointer"
-                role="button"
-              >
-                <svg
-                  height="100%"
-                  version="1.1"
-                  viewBox="0 0 36 36"
-                  width="100%"
+                  <svg
+                    height="100%"
+                    version="1.1"
+                    viewBox="0 0 36 36"
+                    width="100%"
+                  >
+                    <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
+                    <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
+                    <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
+                    <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
+                  </svg>
+                </a>
+              </>
+            ) : (
+              <>
+                <a
+                  href={`${createDirectLink(snippetToken!)}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="leaflet-control-zoom-in cursor-pointer"
+                  role="button"
                 >
-                  <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
-                  <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
-                  <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
-                  <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
-                </svg>
-              </a>
-              <a
-                href="/"
-                data-tour="take-map-picture"
-                className="leaflet-control-zoom-in cursor-pointer"
-                role="button"
-                onClick={(event) => {
-                  event.preventDefault();
-                  takePicture();
-                }}
-              >
-                📷
-              </a>
-            </div>
-          )}
+                  <svg
+                    height="100%"
+                    version="1.1"
+                    viewBox="0 0 36 36"
+                    width="100%"
+                  >
+                    <path d="m 10,16 2,0 0,-4 4,0 0,-2 L 10,10 l 0,6 0,0 z" />
+                    <path d="m 20,10 0,2 4,0 0,4 2,0 L 26,10 l -6,0 0,0 z" />
+                    <path d="m 24,24 -4,0 0,2 L 26,26 l 0,-6 -2,0 0,4 0,0 z" />
+                    <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
+                  </svg>
+                </a>
+              </>
+            )}
+            <a
+              href="/"
+              data-tour="take-map-picture"
+              className="leaflet-control-zoom-in cursor-pointer"
+              role="button"
+              onClick={(event) => {
+                event.preventDefault();
+                toggleSatelliteMapMode();
+              }}
+            >
+              <img src={satelliteIcon} alt="" />
+            </a>
+            <a
+              href="/"
+              data-tour="take-map-picture"
+              className="leaflet-control-zoom-in cursor-pointer"
+              role="button"
+              onClick={(event) => {
+                event.preventDefault();
+                takePicture();
+              }}
+            >
+              📷
+            </a>
+          </div>
         </div>
       </div>
     );

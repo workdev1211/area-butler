@@ -44,6 +44,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
   const mapStyles: { key: string; label: string }[] = [
     { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
     { key: "kudiba-tech/ckzbqgya2000414li19g3p9u1", label: "Highlight" },
+    { key: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob", label: "Satellite" },
     ...additionalMapBoxStyles,
   ];
 

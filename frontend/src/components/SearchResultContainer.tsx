@@ -1,20 +1,20 @@
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import {
   Poi,
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "../context/SearchContext";
 import {
   ApiAddress,
   ApiCoordinates,
   ApiSearchResponse,
   ApiUser,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../shared/types/types";
 import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
-  toggleEntityVisibility
+  toggleEntityVisibility,
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
@@ -24,7 +24,7 @@ import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.scss";
 import {
   ApiRealEstateCharacteristics,
-  ApiRealEstateCost
+  ApiRealEstateCost,
 } from "../../../shared/types/real-estate";
 import MeansToggle from "../map/means-toggle/MeansToggle";
 import MapMenu from "../map/menu/MapMenu";
@@ -68,7 +68,7 @@ export interface SearchResultContainerProps {
   onPoiAdd?: (poi: Poi) => void;
 }
 
-const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps> = ({
+const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   mapBoxToken,
   mapBoxMapId,
   searchResponse,
@@ -79,11 +79,16 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   userDispatch = () => null,
   embedMode = false,
   editorMode = false,
-  onPoiAdd
+  onPoiAdd,
 }) => {
-  const { searchContextState, searchContextDispatch } = useContext(
-    SearchContext
-  );
+  const initialMapBoxMapIds = {
+    current: mapBoxMapId || "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    previous: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob",
+  };
+
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
+
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -95,6 +100,13 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   const [hideIsochrones, setHideIsochrones] = useState(
     searchContextState.responseConfig?.hideIsochrones
   );
+
+  const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
+
+  useEffect(() => {
+    setMapBoxMapIds(initialMapBoxMapIds);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [mapBoxMapId]);
 
   useEffect(() => {
     setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
@@ -117,14 +129,14 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       r?.style.setProperty("--primary", "#c91444");
       r?.style.setProperty("--custom-primary", "#c91444");
     }
-  }, [searchContextState.responseConfig]);
+  }, [searchContextState.responseConfig?.primaryColor]);
 
   // consume search response and set active/available means
   useEffect(() => {
     if (!!searchResponse) {
-      const meansFromResponse = deriveAvailableMeansFromResponse(
-        searchResponse
-      );
+      const meansFromResponse =
+        deriveAvailableMeansFromResponse(searchResponse);
+
       setAvailableMeans(meansFromResponse);
 
       const activeMeans =
@@ -134,11 +146,11 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           : meansFromResponse;
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-        payload: [...activeMeans]
+        payload: [...activeMeans],
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, searchContextState.responseConfig]);
+  }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
 
   // react to active means change
   useEffect(() => {
@@ -150,7 +162,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
   }, [
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans,
-    setFilteredGroupedEntities
+    setFilteredGroupedEntities,
   ]);
 
   const toggleRoutesToEntity = async (
@@ -159,14 +171,14 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     mean: MeansOfTransportation
   ) => {
     const existing = searchContextState.responseRoutes.find(
-      r =>
+      (r) =>
         r.coordinates.lat === item.coordinates.lat &&
         r.coordinates.lng === item.coordinates.lng
     );
     if (existing) {
       let newRoutes = [...existing.show];
       if (newRoutes.includes(mean)) {
-        newRoutes = newRoutes.filter(r => r !== mean);
+        newRoutes = newRoutes.filter((r) => r !== mean);
       } else {
         newRoutes.push(mean);
       }
@@ -175,30 +187,30 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
         payload: [
           ...searchContextState.responseRoutes.filter(
-            r =>
+            (r) =>
               r.coordinates.lat !== item.coordinates.lat &&
               r.coordinates.lng !== item.coordinates.lng
           ),
           {
             ...existing,
-            show: newRoutes
-          }
-        ]
+            show: newRoutes,
+          },
+        ],
       });
     } else {
       const routesResult = await fetchRoutes({
         meansOfTransportation: [
           MeansOfTransportation.BICYCLE,
           MeansOfTransportation.CAR,
-          MeansOfTransportation.WALK
+          MeansOfTransportation.WALK,
         ],
         origin: origin,
         destinations: [
           {
             title: item.name || "" + item.id,
-            coordinates: item.coordinates
-          }
-        ]
+            coordinates: item.coordinates,
+          },
+        ],
       });
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
@@ -208,9 +220,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             routes: routesResult[0].routes,
             title: routesResult[0].title,
             show: [mean],
-            coordinates: item.coordinates
-          }
-        ]
+            coordinates: item.coordinates,
+          },
+        ],
       });
     }
   };
@@ -220,25 +232,25 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
     item: ResultEntity
   ) => {
     const existing = searchContextState.responseTransitRoutes.find(
-      r =>
+      (r) =>
         r.coordinates.lat === item.coordinates.lat &&
         r.coordinates.lng === item.coordinates.lng
     );
     if (existing) {
       const newTransitRoutes = [
         ...searchContextState.responseTransitRoutes.filter(
-          r =>
+          (r) =>
             r.coordinates.lat !== item.coordinates.lat &&
             r.coordinates.lng !== item.coordinates.lng
         ),
         {
           ...existing,
-          show: !existing.show
-        }
+          show: !existing.show,
+        },
       ];
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-        payload: newTransitRoutes
+        payload: newTransitRoutes,
       });
     } else {
       const routesResult = await fetchTransitRoutes({
@@ -246,9 +258,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
         destinations: [
           {
             title: item.name || "" + item.id,
-            coordinates: item.coordinates
-          }
-        ]
+            coordinates: item.coordinates,
+          },
+        ],
       });
       if (routesResult.length) {
         searchContextDispatch({
@@ -259,9 +271,9 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
               route: routesResult[0].route,
               title: routesResult[0].title,
               show: true,
-              coordinates: item.coordinates
-            }
-          ]
+              coordinates: item.coordinates,
+            },
+          ],
         });
       }
     }
@@ -293,13 +305,20 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
       );
       const newConfig = {
         ...searchContextState.responseConfig,
-        entityVisibility: [...newEntityVisibility]
+        entityVisibility: [...newEntityVisibility],
       };
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...newConfig }
+        payload: { ...newConfig },
       });
     }
+  };
+
+  const toggleSatelliteMapMode = () => {
+    setMapBoxMapIds({
+      current: mapBoxMapIds.previous,
+      previous: mapBoxMapIds.current,
+    });
   };
 
   const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
@@ -316,23 +335,23 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
             onMeansChange={(newValues: MeansOfTransportation[]) =>
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-                payload: [...newValues]
+                payload: [...newValues],
               })
             }
             hideIsochrones={!!hideIsochrones}
           />
           <Map
             mapBoxAccessToken={mapBoxToken}
-            mapboxMapId={mapBoxMapId}
+            mapboxMapId={mapBoxMapIds.current}
             searchResponse={searchResponse}
             searchAddress={placesLocation?.label}
             groupedEntities={filteredGroupedEntities ?? []}
             highlightId={searchContextState.highlightId}
             snippetToken={searchContextState.responseToken}
-            setHighlightId={id =>
+            setHighlightId={(id) =>
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                payload: id
+                payload: id,
               })
             }
             means={{
@@ -344,7 +363,7 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
               ),
               byCar: searchContextState.responseActiveMeans.includes(
                 MeansOfTransportation.CAR
-              )
+              ),
             }}
             mapCenter={location}
             mapZoomLevel={mapZoomLevel}
@@ -360,10 +379,10 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
                 type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
                 payload: {
                   center: {
-                    ...coordinates
+                    ...coordinates,
                   },
-                  zoom
-                }
+                  zoom,
+                },
               })
             }
             addMapClipping={(zoomLevel, mapClippingDataUrl) =>
@@ -371,13 +390,14 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
                 type: SearchContextActionTypes.ADD_MAP_CLIPPING,
                 payload: {
                   zoomLevel,
-                  mapClippingDataUrl
-                }
+                  mapClippingDataUrl,
+                },
               })
             }
             hideIsochrones={!!hideIsochrones}
             setHideIsochrones={setHideIsochrones}
             mapWithLegendId={mapWithLegendId}
+            toggleSatelliteMapMode={toggleSatelliteMapMode}
           />
         </div>
         {searchContextState.responseConfig?.theme !== "KF" && (
@@ -395,17 +415,17 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
               searchContextState.responseGroupedEntities ?? [];
             searchContextDispatch({
               type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-              payload: oldGroupedEntities.map(g => ({
+              payload: oldGroupedEntities.map((g) => ({
                 ...g,
-                active: !oldGroupedEntities.some(g => g.active)
-              }))
+                active: !oldGroupedEntities.some((g) => g.active),
+              })),
             });
           }}
           toggleRoute={(item, mean) =>
             toggleRoutesToEntity(location, item, mean)
           }
           routes={searchContextState.responseRoutes}
-          toggleTransitRoute={item =>
+          toggleTransitRoute={(item) =>
             toggleTransitRoutesToEntity(location, item)
           }
           transitRoutes={searchContextState.responseTransitRoutes}
@@ -413,14 +433,14 @@ const SearchResultContainer: React.FunctionComponent<SearchResultContainerProps>
           resetPosition={() =>
             searchContextDispatch({
               type: SearchContextActionTypes.SET_MAP_CENTER,
-              payload: searchResponse?.centerOfInterest?.coordinates!
+              payload: searchResponse?.centerOfInterest?.coordinates!,
             })
           }
           user={user}
-          openUpgradeSubscriptionModal={message =>
+          openUpgradeSubscriptionModal={(message) =>
             userDispatch({
               type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-              payload: { open: true, message }
+              payload: { open: true, message },
             })
           }
           showInsights={!embedMode}
