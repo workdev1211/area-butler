@@ -5,10 +5,10 @@ import ExportModal from "export/ExportModal";
 import { useHttp } from "hooks/http";
 import { useRouting } from "hooks/routing";
 import React, { useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import {
   deriveEntityGroupsByActiveMeans,
-  toastError
+  toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
@@ -18,7 +18,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../shared/types/types";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
@@ -26,7 +26,7 @@ import SearchResultContainer from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "../context/SearchContext";
 import BackButton from "../layout/BackButton";
 import DefaultLayout from "../layout/defaultLayout";
@@ -35,9 +35,8 @@ export const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
 const SearchResultPage: React.FunctionComponent = () => {
-  const { searchContextState, searchContextDispatch } = useContext(
-    SearchContext
-  );
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
   const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
@@ -53,7 +52,7 @@ const SearchResultPage: React.FunctionComponent = () => {
       ).data;
       userDispatch({
         type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-        payload: latestUserRequests
+        payload: latestUserRequests,
       });
     };
 
@@ -66,6 +65,7 @@ const SearchResultPage: React.FunctionComponent = () => {
     user.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
 
   const history = useHistory();
+  const currentLocation = useLocation();
 
   if (!searchContextState.searchResponse?.routingProfiles) {
     history.push("/");
@@ -81,7 +81,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                payload: true
+                payload: true,
               });
             }}
             className="btn btn-link"
@@ -96,14 +96,14 @@ const SearchResultPage: React.FunctionComponent = () => {
               hasFullyCustomizableExpose
                 ? searchContextDispatch({
                     type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                    payload: true
+                    payload: true,
                   })
                 : userDispatch({
                     type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
-                      message: subscriptionUpgradeFullyCustomizableExpose
-                    }
+                      message: subscriptionUpgradeFullyCustomizableExpose,
+                    },
                   });
             }}
             className="btn btn-link"
@@ -117,7 +117,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             onClick={() => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                payload: true
+                payload: true,
               });
             }}
             className="btn btn-link"
@@ -173,21 +173,22 @@ const SearchResultPage: React.FunctionComponent = () => {
                     meansOfTransportation: [
                       MeansOfTransportation.BICYCLE,
                       MeansOfTransportation.CAR,
-                      MeansOfTransportation.WALK
+                      MeansOfTransportation.WALK,
                     ],
                     origin: location,
                     destinations: [
                       {
                         title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!
-                      }
-                    ]
+                        coordinates: preferredLocation.coordinates!,
+                      },
+                    ],
                   });
+
                   routes.push({
                     routes: routesResult[0].routes,
                     title: routesResult[0].title,
                     show: [],
-                    coordinates: preferredLocation.coordinates!
+                    coordinates: preferredLocation.coordinates!,
                   });
 
                   const transitRoutesResult = await fetchTransitRoutes({
@@ -195,10 +196,11 @@ const SearchResultPage: React.FunctionComponent = () => {
                     destinations: [
                       {
                         title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!
-                      }
-                    ]
+                        coordinates: preferredLocation.coordinates!,
+                      },
+                    ],
                   });
+
                   if (
                     transitRoutesResult.length &&
                     transitRoutesResult[0].route
@@ -207,7 +209,7 @@ const SearchResultPage: React.FunctionComponent = () => {
                       route: transitRoutesResult[0].route,
                       title: transitRoutesResult[0].title,
                       show: false,
-                      coordinates: preferredLocation.coordinates!
+                      coordinates: preferredLocation.coordinates!,
                     });
                   }
                 }
@@ -225,11 +227,12 @@ const SearchResultPage: React.FunctionComponent = () => {
                       realEstateListings: realEstateState.listings,
                       preferredLocations,
                       routes,
-                      transitRoutes
+                      transitRoutes,
                     }
                   )
                 ).data;
-                history.push(`snippet-editor/${response.id}`);
+
+                history.push(`snippet-editor/${response.id}`, { from: currentLocation.pathname });
               } catch (e) {
                 console.error(e);
                 toastError("Fehler beim Öffnen des Editors");
@@ -275,7 +278,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             searchContextState.responseGroupedEntities,
             searchContextState.responseActiveMeans
           )
-            .map(g => g.items)
+            .map((g) => g.items)
             .flat()}
           groupedEntries={deriveEntityGroupsByActiveMeans(
             searchContextState.responseGroupedEntities,
@@ -291,7 +294,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             searchContextState.responseGroupedEntities,
             searchContextState.responseActiveMeans
           )
-            .map(g => g.items)
+            .map((g) => g.items)
             .flat()}
           groupedEntries={deriveEntityGroupsByActiveMeans(
             searchContextState.responseGroupedEntities,
@@ -308,7 +311,7 @@ const SearchResultPage: React.FunctionComponent = () => {
             searchContextState.responseGroupedEntities,
             searchContextState.responseActiveMeans
           )
-            .map(g => g.items)
+            .map((g) => g.items)
             .flat()}
           groupedEntries={deriveEntityGroupsByActiveMeans(
             searchContextState.responseGroupedEntities,

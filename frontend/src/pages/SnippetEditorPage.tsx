@@ -15,7 +15,7 @@ import DefaultLayout from "layout/defaultLayout";
 import EditorMapMenu from "map/menu-editor/EditorMapMenu";
 import React, { useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
   buildEntityData,
   createCodeSnippet,
@@ -55,6 +55,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const history = useHistory();
+  const currentLocation = useLocation<{ from: string }>();
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch, searchContextState } =
@@ -373,13 +374,26 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     return <div>Lade Daten...</div>;
   }
 
+  const beforeGoBack = () => {
+    const from = currentLocation.state?.from;
+
+    if (from === "/search-result") {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+        payload: {} as ApiSearchResultSnapshotConfig,
+      });
+    }
+  };
+
   return (
     <>
       <DefaultLayout
         title="Karten Editor"
         withHorizontalPadding={false}
         actionTop={<ActionsTop />}
-        actionBottom={[<BackButton key="back-button" to="/" />]}
+        actionBottom={[
+          <BackButton key="back-button" beforeGoBack={beforeGoBack} />,
+        ]}
       >
         <TourStarter tour="editor" />
         <div className="hidden">
