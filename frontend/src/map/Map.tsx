@@ -35,7 +35,11 @@ import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.sv
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import eyeIcon from "../assets/icons/eye.svg";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import {
+  EntityGroup,
+  poiSearchContainerId,
+  ResultEntity,
+} from "../components/SearchResultContainer";
 import {
   createDirectLink,
   deriveAddressFromCoordinates,
@@ -548,6 +552,7 @@ const Map = React.memo<MapProps>(
     }, [mapCenter, mapZoomLevel, highlightId]);
 
     const meansStringified = JSON.stringify(means);
+
     // draw means
     useEffect(() => {
       const parsedMeans = JSON.parse(meansStringified);
@@ -743,22 +748,26 @@ const Map = React.memo<MapProps>(
     );
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
-    // draw amenities
+    // draw amenities (POIs)
     useEffect(() => {
       const parsedEntities: ResultEntity[] | null =
         JSON.parse(entitiesStringified);
+
       let parsedEntityGroups: EntityGroup[] = JSON.parse(
         groupedEntitiesStringified
       );
+
       const drawAmenityMarkers = () => {
         if (currentMap) {
           currentMap.removeLayer(amenityMarkerGroup);
+
           amenityMarkerGroup = L.markerClusterGroup({
             iconCreateFunction: function (cluster) {
               const groupedMarkers = groupBy(
                 cluster.getAllChildMarkers().map((m) => m.getIcon().options),
                 (i: any) => i.className
               );
+
               const countedMarkers = Object.entries(groupedMarkers)
                 .map(([key, value]) => ({
                   key,
@@ -766,6 +775,7 @@ const Map = React.memo<MapProps>(
                   count: (value as any).length,
                 }))
                 .sort((a, b) => b.count - a.count);
+
               const markerIcons = countedMarkers.map(
                 (cm) =>
                   '<div class="flex items-center gap-0.5">' +
@@ -773,6 +783,7 @@ const Map = React.memo<MapProps>(
                   cm.count +
                   "</div>"
               );
+
               return L.divIcon({
                 html:
                   '<div class="cluster-icon-wrapper">' +
@@ -799,6 +810,7 @@ const Map = React.memo<MapProps>(
             }));
           }
 
+          // Add each POI to the marker cluster group
           parsedEntities?.forEach((entity) => {
             if (
               parsedEntityGroups.some(
@@ -807,6 +819,7 @@ const Map = React.memo<MapProps>(
             ) {
               const isRealEstateListing = entity.type === "property";
               const isPreferredLocation = entity.type === "favorite";
+
               const markerIcon = isRealEstateListing
                 ? config?.mapIcon
                   ? {
@@ -818,6 +831,7 @@ const Map = React.memo<MapProps>(
                 : isPreferredLocation
                 ? preferredLocationsIcon
                 : deriveIconForOsmName(entity.type as OsmName);
+
               const icon = L.divIcon({
                 iconUrl: markerIcon.icon,
                 shadowUrl: leafletShadow,
@@ -833,7 +847,9 @@ const Map = React.memo<MapProps>(
                     ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
                     : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
               });
+
               const hideEntityFunction = editorMode ? hideEntity : undefined;
+
               const marker = new IdMarker(
                 entity.coordinates,
                 entity,
@@ -846,21 +862,26 @@ const Map = React.memo<MapProps>(
                 const marker = e.target;
                 marker.createOpenPopup();
               });
+
               amenityMarkerGroup.addLayer(marker);
             }
           });
+
           amenityMarkerGroup.on("clusterclick", function (a) {
             const centerOfGroup = center(a.layer.toGeoJSON());
             const lat = centerOfGroup.geometry.coordinates[1];
             const lng = centerOfGroup.geometry.coordinates[0];
             centerZoomCoordinates(17, { lat, lng });
           });
+
           currentMap.addLayer(amenityMarkerGroup);
         }
       };
+
       if (currentMap) {
         drawAmenityMarkers();
       }
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       entitiesStringified,
@@ -870,10 +891,14 @@ const Map = React.memo<MapProps>(
     ]);
 
     const takePicture = () => {
+      const poiSearchContainer = document.getElementById(poiSearchContainerId);
+      if (poiSearchContainer) {
+        poiSearchContainer.className = `${poiSearchContainer.className} hidden`;
+      }
+
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
       for (let i = 0; i < bottomElements.length; i++) {
-        const className = bottomElements[i].className;
-        bottomElements[i].className = className + " hidden";
+        bottomElements[i].className = `${bottomElements[i].className} hidden`;
       }
 
       toJpeg(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {
@@ -882,6 +907,13 @@ const Map = React.memo<MapProps>(
       }).then((mapClippingDataUrl) => {
         addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+
+        if (poiSearchContainer) {
+          poiSearchContainer.className = poiSearchContainer.className.replace(
+            "hidden",
+            ""
+          );
+        }
 
         for (let i = 0; i < bottomElements.length; i++) {
           bottomElements[i].className = bottomElements[i].className.replace(

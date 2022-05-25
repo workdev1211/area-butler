@@ -5,7 +5,7 @@ import {
   MeansOfTransportation,
   OsmName,
   OsmType,
-  UnitsOfTransportation
+  UnitsOfTransportation,
 } from "../types/types";
 
 export const kudibaCompany = {
@@ -18,7 +18,7 @@ export const kudibaCompany = {
     `${kudibaCompany.name}<br />${kudibaCompany.address}<br />${kudibaCompany.zip} ${kudibaCompany.city}`,
   court: "Amtsgericht Hamburg",
   regNr: "HRB 171915",
-  vat: "DE349350290"
+  vat: "DE349350290",
 };
 
 export const initialShowTour: ApiShowTour = {
@@ -27,7 +27,7 @@ export const initialShowTour: ApiShowTour = {
   realEstates: true,
   customers: true,
   profile: true,
-  editor: true
+  editor: true,
 };
 
 export const localStorageConsentGivenKey = "ab-cg";
@@ -36,18 +36,18 @@ export const localStorageSearchContext = "ab-sc";
 export const calculateMinutesToMeters = [
   { mean: MeansOfTransportation.WALK, multiplicator: 83 },
   { mean: MeansOfTransportation.BICYCLE, multiplicator: 233 },
-  { mean: MeansOfTransportation.CAR, multiplicator: 338 }
+  { mean: MeansOfTransportation.CAR, multiplicator: 338 },
 ];
 
 export const unitsOfTransportation = [
   { label: "Minuten", type: UnitsOfTransportation.MINUTES },
-  { label: "Kilometern", type: UnitsOfTransportation.KILOMETERS }
+  { label: "Kilometern", type: UnitsOfTransportation.KILOMETERS },
 ];
 
 export const meansOfTransportations = [
   { label: "Zu Fuß", type: MeansOfTransportation.WALK, mode: "walking" },
   { label: "Fahrrad", type: MeansOfTransportation.BICYCLE, mode: "cycling" },
-  { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" }
+  { label: "Auto", type: MeansOfTransportation.CAR, mode: "driving" },
 ];
 
 export const osmEntityTypes: ApiOsmEntity[] = [
@@ -57,7 +57,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Sportcenter",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.leisure,
@@ -65,7 +65,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Sporthalle",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.leisure,
@@ -73,7 +73,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Schwimmbad",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.leisure,
@@ -81,7 +81,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Fitness",
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.leisure,
@@ -89,7 +89,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Spielplatz",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 50,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.leisure,
@@ -97,7 +97,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Park",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 200,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.amenity,
@@ -105,7 +105,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Kindergarten",
     category: ApiOsmEntityCategory.EDUCATION,
     uniqueRadius: 100,
-    uniqueTreshold: 0.4
+    uniqueTreshold: 0.4,
   },
   {
     type: OsmType.amenity,
@@ -113,7 +113,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Schule",
     category: ApiOsmEntityCategory.EDUCATION,
     uniqueRadius: 50,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -121,7 +121,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Universität",
     category: ApiOsmEntityCategory.EDUCATION,
     uniqueRadius: 400,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.amenity,
@@ -129,7 +129,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Bar",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 50,
-    uniqueTreshold: 0.8
+    uniqueTreshold: 0.8,
   },
   {
     type: OsmType.amenity,
@@ -137,7 +137,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Restaurant",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 50,
-    uniqueTreshold: 0.8
+    uniqueTreshold: 0.8,
   },
   {
     type: OsmType.amenity,
@@ -145,7 +145,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Theater",
     category: ApiOsmEntityCategory.LEISURE,
     uniqueRadius: 500,
-    uniqueTreshold: 0.5
+    uniqueTreshold: 0.5,
   },
   {
     type: OsmType.shop,
@@ -153,7 +153,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Drogerie",
     category: ApiOsmEntityCategory.SUPPLIES,
     uniqueRadius: 50,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.shop,
@@ -161,7 +161,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Supermarkt",
     category: ApiOsmEntityCategory.SUPPLIES,
     uniqueRadius: 50,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -169,7 +169,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Arzt",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 100,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -177,7 +177,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Zahnarzt",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 100,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -185,7 +185,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Klinik",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 500,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -193,7 +193,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Krankenhaus",
     category: ApiOsmEntityCategory.HEALTH,
     uniqueRadius: 1000,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.amenity,
@@ -201,7 +201,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Kiosk",
     category: ApiOsmEntityCategory.SUPPLIES,
     uniqueRadius: 50,
-    uniqueTreshold: 0.8
+    uniqueTreshold: 0.8,
   },
   {
     type: OsmType.amenity,
@@ -209,7 +209,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Kiosk/Paketshop",
     category: ApiOsmEntityCategory.SUPPLIES,
     uniqueRadius: 50,
-    uniqueTreshold: 0.8
+    uniqueTreshold: 0.8,
   },
   {
     type: OsmType.amenity,
@@ -217,7 +217,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Tankstelle",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 50,
-    uniqueTreshold: 0.6
+    uniqueTreshold: 0.6,
   },
   {
     type: OsmType.highway,
@@ -225,7 +225,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Autobahnauffahrt",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 500,
-    uniqueTreshold: 0.4
+    uniqueTreshold: 0.4,
   },
   {
     type: OsmType.public_transport,
@@ -233,7 +233,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "S/U-Bahn",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 200,
-    uniqueTreshold: 0.4
+    uniqueTreshold: 0.4,
   },
   {
     type: OsmType.highway,
@@ -241,6 +241,8 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     label: "Bushaltestelle",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 100,
-    uniqueTreshold: 0.8
-  }
+    uniqueTreshold: 0.8,
+  },
 ];
+
+export const defaultColor = "#c91444";

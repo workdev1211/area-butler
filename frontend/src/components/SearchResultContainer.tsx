@@ -1,4 +1,12 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import Select, {
+  ActionMeta,
+  ControlProps,
+  CSSObjectWithLabel,
+  GroupBase,
+  SingleValue,
+} from "react-select";
+
 import {
   Poi,
   SearchContext,
@@ -28,6 +36,7 @@ import {
 } from "../../../shared/types/real-estate";
 import MeansToggle from "../map/means-toggle/MeansToggle";
 import MapMenu from "../map/menu/MapMenu";
+import { defaultColor } from "../../../shared/constants/constants";
 
 export interface ResultEntity {
   name?: string;
@@ -54,6 +63,11 @@ export interface EntityGroup {
   items: ResultEntity[];
 }
 
+interface IPoiSearchOption {
+  label: string;
+  value: number | string;
+}
+
 export interface SearchResultContainerProps {
   mapBoxToken: string;
   mapBoxMapId?: string;
@@ -67,6 +81,8 @@ export interface SearchResultContainerProps {
   editorMode?: boolean;
   onPoiAdd?: (poi: Poi) => void;
 }
+
+export const poiSearchContainerId = "poi-search-container";
 
 const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   mapBoxToken,
@@ -90,12 +106,20 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     useContext(SearchContext);
 
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
-
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [availableMeans, setAvailableMeans] = useState<any>([]);
+
   const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
     EntityGroup[]
   >([]);
+
+  const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
+    EntityGroup[]
+  >([]);
+
+  const [poiSearchOptions, setPoiSearchOptions] = useState<IPoiSearchOption[]>(
+    []
+  );
 
   const [hideIsochrones, setHideIsochrones] = useState(
     searchContextState.responseConfig?.hideIsochrones
@@ -114,21 +138,12 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
   // Customize primary color
   useEffect(() => {
-    if (!!searchContextState.responseConfig?.primaryColor) {
-      const r = document.getElementById("search-result-container");
-      r?.style.setProperty(
-        "--primary",
-        searchContextState.responseConfig.primaryColor
-      );
-      r?.style.setProperty(
-        "--custom-primary",
-        searchContextState.responseConfig.primaryColor
-      );
-    } else {
-      const r = document.getElementById("search-result-container");
-      r?.style.setProperty("--primary", "#c91444");
-      r?.style.setProperty("--custom-primary", "#c91444");
-    }
+    const primaryColor =
+      searchContextState.responseConfig?.primaryColor || defaultColor;
+
+    const r = document.getElementById("search-result-container");
+    r?.style.setProperty("--primary", primaryColor);
+    r?.style.setProperty("--custom-primary", primaryColor);
   }, [searchContextState.responseConfig?.primaryColor]);
 
   // consume search response and set active/available means
@@ -152,18 +167,69 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
 
-  // react to active means change
+  // react to active means change (changes in POIs)
   useEffect(() => {
     const groupsFilteredByActiveMeans = deriveEntityGroupsByActiveMeans(
       searchContextState.responseGroupedEntities,
       searchContextState.responseActiveMeans
     );
+
+    const poiSearchOptions = groupsFilteredByActiveMeans.reduce<
+      IPoiSearchOption[]
+    >((result, { title, items }) => {
+      result.push({ label: `${title} Kategorie`, value: title });
+
+      items.forEach(({ id, label, name }) => {
+        result.push({ label: name || label, value: id });
+      });
+
+      return result;
+    }, []);
+
     setFilteredGroupedEntities(groupsFilteredByActiveMeans);
+    setResultingGroupedEntities(groupsFilteredByActiveMeans);
+    setPoiSearchOptions(poiSearchOptions);
   }, [
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans,
     setFilteredGroupedEntities,
+    setResultingGroupedEntities,
+    setPoiSearchOptions,
   ]);
+
+  const onPoiSearchSelect = (
+    option: SingleValue<IPoiSearchOption>,
+    action: ActionMeta<IPoiSearchOption>
+  ) => {
+    if (action.action === "clear") {
+      setResultingGroupedEntities(filteredGroupedEntities);
+
+      return;
+    }
+
+    const processedGroupedEntities = filteredGroupedEntities.reduce<
+      EntityGroup[]
+    >((result, entityGroup) => {
+      const resultingEntityGroup = { ...entityGroup, active: true };
+
+      if (option?.value === resultingEntityGroup.title) {
+        result.push(resultingEntityGroup);
+      } else {
+        const foundItem = entityGroup.items.find(
+          (item) => item.id === option?.value
+        );
+
+        if (foundItem) {
+          Object.assign(resultingEntityGroup, { items: [foundItem] });
+          result.push(resultingEntityGroup);
+        }
+      }
+
+      return result;
+    }, []);
+
+    setResultingGroupedEntities(processedGroupedEntities);
+  };
 
   const toggleRoutesToEntity = async (
     origin: ApiCoordinates,
@@ -324,28 +390,78 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
   const mapWithLegendId = "map-with-legend";
 
+  const poiSearchStyles = {
+    control: (
+      provided: CSSObjectWithLabel,
+      state: ControlProps<IPoiSearchOption, false, GroupBase<IPoiSearchOption>>
+    ) => ({
+      ...provided,
+      "&:hover": state.isFocused
+        ? {
+            borderColor: "var(--primary)",
+          }
+        : provided["&:hover"],
+      boxShadow: undefined,
+      borderRadius: "16px!important",
+      minHeight: "32px",
+      height: "32px",
+      borderWidth: "2px",
+      borderColor: state.isFocused ? "var(--primary)" : provided.borderColor,
+    }),
+    input: (provided: CSSObjectWithLabel) => ({
+      ...provided,
+      paddingBottom: undefined,
+      paddingTop: undefined,
+    }),
+    clearIndicator: (provided: CSSObjectWithLabel) => ({
+      ...provided,
+      padding: "0px 8px 0px 0px",
+    }),
+  };
+
   return (
     <>
       <div className={containerClasses} id="search-result-container">
         <div className="relative flex-1" id={mapWithLegendId}>
-          <MeansToggle
-            transportationParams={searchContextState.transportationParams}
-            activeMeans={searchContextState.responseActiveMeans}
-            availableMeans={availableMeans}
-            onMeansChange={(newValues: MeansOfTransportation[]) =>
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-                payload: [...newValues],
-              })
-            }
-            hideIsochrones={!!hideIsochrones}
-          />
+          <div className="map-nav-bar-container">
+            {searchContextState.responseConfig?.theme !== "KF" && (
+              <div id={poiSearchContainerId} className="w-1/3 opacity-90">
+                <Select
+                  styles={poiSearchStyles}
+                  options={poiSearchOptions}
+                  placeholder="Geben Sie einen Ort ein"
+                  components={{
+                    DropdownIndicator: () => null,
+                    IndicatorSeparator: () => null,
+                  }}
+                  openMenuOnClick={false}
+                  openMenuOnFocus={false}
+                  isClearable={true}
+                  onChange={(option, action) =>
+                    onPoiSearchSelect(option, action)
+                  }
+                />
+              </div>
+            )}
+            <MeansToggle
+              transportationParams={searchContextState.transportationParams}
+              activeMeans={searchContextState.responseActiveMeans}
+              availableMeans={availableMeans}
+              onMeansChange={(newValues: MeansOfTransportation[]) =>
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+                  payload: [...newValues],
+                })
+              }
+              hideIsochrones={!!hideIsochrones}
+            />
+          </div>
           <Map
             mapBoxAccessToken={mapBoxToken}
             mapboxMapId={mapBoxMapIds.current}
             searchResponse={searchResponse}
             searchAddress={placesLocation?.label}
-            groupedEntities={filteredGroupedEntities ?? []}
+            groupedEntities={resultingGroupedEntities ?? []}
             highlightId={searchContextState.highlightId}
             snippetToken={searchContextState.responseToken}
             setHighlightId={(id) =>
@@ -409,7 +525,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           federalElectionData={searchContextState.federalElectionData}
           particlePollutionData={searchContextState.particlePollutionData}
           clippings={searchContextState.mapClippings}
-          groupedEntries={filteredGroupedEntities ?? []}
+          groupedEntries={resultingGroupedEntities ?? []}
           toggleAllLocalities={() => {
             const oldGroupedEntities =
               searchContextState.responseGroupedEntities ?? [];
