@@ -429,7 +429,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
                 <Select
                   styles={poiSearchStyles}
                   options={poiSearchOptions}
-                  placeholder="Geben Sie einen Ort ein"
+                  placeholder="Suchen..."
                   components={{
                     DropdownIndicator: () => null,
                     IndicatorSeparator: () => null,
