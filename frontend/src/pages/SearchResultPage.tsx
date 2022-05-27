@@ -22,6 +22,7 @@ import {
 } from "../../../shared/types/types";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import arrowIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 import SearchResultContainer from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
@@ -232,7 +233,9 @@ const SearchResultPage: React.FunctionComponent = () => {
                   )
                 ).data;
 
-                history.push(`snippet-editor/${response.id}`, { from: currentLocation.pathname });
+                history.push(`snippet-editor/${response.id}`, {
+                  from: currentLocation.pathname,
+                });
               } catch (e) {
                 console.error(e);
                 toastError("Fehler beim Öffnen des Editors");
@@ -242,7 +245,12 @@ const SearchResultPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Eigener Karten-Editor
+            <img
+              src={arrowIcon}
+              alt="pdf-icon"
+              style={{ transform: "scale(-1, 1)" }}
+            />{" "}
+            Karten-Editor
           </button>
         </li>
       </>
