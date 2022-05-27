@@ -1,5 +1,6 @@
+import { FunctionComponent, useEffect, useState } from "react";
+
 import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
-import React, { useEffect, useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
@@ -25,7 +26,7 @@ export interface EditorMapMenuProps {
   additionalMapBoxStyles?: { key: string; label: string }[];
 }
 
-const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
+const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
   config,
   onConfigChange,
   availableMeans = [],
@@ -383,7 +384,7 @@ const EditorMapMenu: React.FunctionComponent<EditorMapMenuProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Neue Einträge in "Meine Objekte" automatisch einfügen
+                    Neue Einträge in "Meine Immobilien" automatisch einfügen
                   </span>
                 </label>
               </div>

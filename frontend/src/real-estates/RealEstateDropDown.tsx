@@ -1,6 +1,7 @@
+import { FunctionComponent, useContext, useRef, useState } from "react";
+
 import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import React, { useRef, useState } from "react";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import useOnClickOutside from "../hooks/onclickoutside";
@@ -9,29 +10,29 @@ export interface RealEstateMenuListProps {
   buttonStyles?: string;
 }
 
-const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> = ({
-  buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto"
+const RealEstateDropDown: FunctionComponent<RealEstateMenuListProps> = ({
+  buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
-  const { realEstateState } = React.useContext(RealEstateContext);
-  const { searchContextDispatch } = React.useContext(SearchContext);
+  const { realEstateState } = useContext(RealEstateContext);
+  const { searchContextDispatch } = useContext(SearchContext);
 
   const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
     const result = await deriveGeocodeByAddress(listing.address);
     const { lat, lng } = result;
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: { label: listing.address, value: { place_id: "123" } }
+      payload: { label: listing.address, value: { place_id: "123" } },
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: listing
+      payload: listing,
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCATION,
       payload: {
         lat,
-        lng
-      }
+        lng,
+      },
     });
   };
 
@@ -50,7 +51,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> = ({
         onClick={() => setShowMenu(!showMenu)}
         data-tour="my-real-estates"
       >
-        Meine Objekte
+        Meine Immobilien
       </div>
       {showMenu && (
         <ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
@@ -60,7 +61,7 @@ const RealEstateDropDown: React.FunctionComponent<RealEstateMenuListProps> = ({
                 <button
                   type="button"
                   key={"real-estate-listing-item-a-" + realEstateListing.id}
-                  onClick={e => {
+                  onClick={() => {
                     fillAddressFromListing(realEstateListing);
                     setShowMenu(false);
                   }}

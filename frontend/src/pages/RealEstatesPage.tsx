@@ -74,8 +74,13 @@ const RealEstatesPage: React.FunctionComponent = () => {
   const realEstates = realEstateState.listings || [];
 
   const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing) => {
-    const {lat, lng} = realEstate.coordinates!;
-    setRealEstateEmbeddableMaps(userState.embeddableMaps.filter(map => map.snapshot.location.lat === lat && map.snapshot.location.lng === lng));
+    const { lat, lng } = realEstate.coordinates!;
+    setRealEstateEmbeddableMaps(
+      userState.embeddableMaps.filter(
+        (map) =>
+          map.snapshot.location.lat === lat && map.snapshot.location.lng === lng
+      )
+    );
     setShowEmbeddableMapsModal(true);
   };
   const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
@@ -126,7 +131,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Meine Objekte"
+      title="Meine Immobilien"
       withHorizontalPadding={false}
       actionTop={<ActionsTop />}
     >
@@ -136,7 +141,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
           showModal={showEmbeddableMapsModal}
           setShowModal={setShowEmbeddableMapsModal}
           embeddableMaps={realEstateEmbeddableMaps}
-        ></EmbeddableMapsModal>
+        />
       )}
       <div className="overflow-x-auto" data-tour="real-estates-table">
         <table className="table w-full">

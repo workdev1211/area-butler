@@ -1,12 +1,18 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useEffect,
+  useRef,
+  useState,
+  useContext,
+} from "react";
+import { NavLink } from "react-router-dom";
+import { useAuth0, User } from "@auth0/auth0-react";
+
 import "./Nav.scss";
 import Logo from "assets/img/logo.svg";
 import useOnClickOutside from "../hooks/onclickoutside";
-import { NavLink } from "react-router-dom";
-import { useAuth0, User } from "@auth0/auth0-react";
 import Authenticated from "auth/authenticated";
 import LoginButton from "../components/LoginButton";
-import { useContext } from "react";
 import { UserContext } from "../context/UserContext";
 
 const Nav: FunctionComponent = () => {
@@ -118,7 +124,7 @@ const Nav: FunctionComponent = () => {
                     className="nav-link"
                     aria-current="page"
                   >
-                    Meine Objekte
+                    Meine Immobilien
                   </NavLink>
                   <NavLink
                     to="/potential-customers"
@@ -182,7 +188,7 @@ const Nav: FunctionComponent = () => {
               <button
                 onClick={() => {
                   logout({
-                    returnTo: window.location.origin
+                    returnTo: window.location.origin,
                   });
                   setUserMenuOpen(false);
                 }}
@@ -213,7 +219,7 @@ const Nav: FunctionComponent = () => {
               className="nav-mobile-menu-link"
               aria-current="page"
             >
-              Meine Objekte
+              Meine Immobilien
             </NavLink>
             <NavLink
               to="/potential-customers"
