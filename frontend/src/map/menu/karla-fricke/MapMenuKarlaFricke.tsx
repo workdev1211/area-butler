@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import { FunctionComponent, memo, useContext, useState } from "react";
+
 import { EntityGroup } from "../../../components/SearchResultContainer";
 import "./MapMenuKarlaFricke.scss";
 import {
@@ -6,53 +7,60 @@ import {
   preferredLocationsIcon,
   preferredLocationsTitle,
   realEstateListingsIcon,
-  realEstateListingsTitle
+  realEstateListingsTitle,
 } from "../../../shared/shared.functions";
 import { OsmName } from "../../../../../shared/types/types";
 import {
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "../../../context/SearchContext";
 
 export interface MapMenuKarlaFrickeProps {
   groupedEntries: EntityGroup[];
   mobileMenuOpen: boolean;
+  isShownPreferredLocationsModal: boolean;
+  togglePreferredLocationsModal: (isShown: boolean) => void;
 }
 
-const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
+const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
   mobileMenuOpen,
-  groupedEntries
+  groupedEntries,
+  isShownPreferredLocationsModal,
+  togglePreferredLocationsModal,
 }) => {
-  const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
-
   interface ListItemProps {
     group: EntityGroup;
     dropdown?: boolean;
   }
 
-  const ListItem: React.FunctionComponent<ListItemProps> = ({
+  const ListItem: FunctionComponent<ListItemProps> = ({
     group,
-    dropdown = false
+    dropdown = false,
   }) => {
     const { searchContextDispatch } = useContext(SearchContext);
 
     const isRealEstateListing =
       group.items[0].label === realEstateListingsTitle;
+
     const isPreferredLocation =
       group.items[0].label === preferredLocationsTitle;
+
     const groupIconInfo = isRealEstateListing
       ? realEstateListingsIcon
       : isPreferredLocation
       ? preferredLocationsIcon
       : deriveIconForOsmName(group.items[0].type as OsmName);
+
     return (
       <li
-        onClick={() =>
+        onClick={() => {
+          togglePreferredLocationsModal(isPreferredLocation ? !isShownPreferredLocationsModal : false);
+
           searchContextDispatch({
             type: SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP,
-            payload: group.title
-          })
-        }
+            payload: group.title,
+          });
+        }}
         className={group.active ? "active" : ""}
       >
         <img src={groupIconInfo.icon} alt="group-icon" />
@@ -61,42 +69,40 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
       </li>
     );
   };
+
   const listItemPropsAreEqual = (
     prevItem: ListItemProps,
     nextItem: ListItemProps
   ) => {
     return prevItem.group.active === nextItem.group.active;
   };
-  const ListItemMemo = React.memo(ListItem, listItemPropsAreEqual);
+
+  const ListItemMemo = memo(ListItem, listItemPropsAreEqual);
+
+  const resultingList = groupedEntries.map((group) => (
+    <ListItemMemo key={group.title} group={group} />
+  ));
 
   interface MenuProps {
     groupedEntries: EntityGroup[];
   }
 
-  const DesktopMenu: React.FunctionComponent<MenuProps> = ({
-    groupedEntries
-  }) => {
-    return (
-      <ul className="menu-desktop">
-        {groupedEntries.map(ge => (
-          <ListItemMemo group={ge} key={ge.title} />
-        ))}
-      </ul>
-    );
+  const DesktopMenu: FunctionComponent<MenuProps> = ({ groupedEntries }) => {
+    return <ul className="menu-desktop">{resultingList}</ul>;
   };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const MobileMenu: React.FunctionComponent<MenuProps> = ({
-    groupedEntries
-  }) => {
-    const activeEntry = groupedEntries.find(ge => ge.active);
+  const MobileMenu: FunctionComponent<MenuProps> = ({ groupedEntries }) => {
+    const activeEntry = groupedEntries.find((ge) => ge.active);
+
     return (
       <div className={`menu-mobile ${dropdownOpen && "open"}`}>
         {groupedEntries.length && (
           <div
-            className={`dropdown dropdown-end ${dropdownOpen &&
-              "dropdown-open"}`}
+            className={`dropdown dropdown-end ${
+              dropdownOpen && "dropdown-open"
+            }`}
             onClick={() => setDropdownOpen(!dropdownOpen)}
           >
             <div tabIndex={0} className="w-52">
@@ -111,15 +117,15 @@ const MapMenuKarlaFricke: React.FunctionComponent<MapMenuKarlaFrickeProps> = ({
               tabIndex={0}
               className="p-2 pr-0.5 menu dropdown-content bg-transparent"
             >
-              {groupedEntries.map(ge => (
-                <ListItemMemo key={ge.title} group={ge} />
-              ))}
+              {resultingList}
             </ul>
           </div>
         )}
       </div>
     );
   };
+
+  const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
 
   return (
     <div className={menuClasses}>

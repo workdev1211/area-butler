@@ -1,20 +1,21 @@
-import React from "react";
+import { FunctionComponent } from "react";
+
 import {
   EntityRoute,
-  EntityTransitRoute
+  EntityTransitRoute,
 } from "../../../../../../shared/types/routing";
 import {
   MeansOfTransportation,
-  OsmName
+  OsmName,
 } from "../../../../../../shared/types/types";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
-  timeToHumanReadable
+  timeToHumanReadable,
 } from "../../../../shared/shared.functions";
 import {
   EntityGroup,
-  ResultEntity
+  ResultEntity,
 } from "../../../../components/SearchResultContainer";
 import "./LocalityItem.scss";
 
@@ -28,14 +29,14 @@ export interface LocalityItemProps {
   transitRoute?: EntityTransitRoute;
 }
 
-const LocalityItem: React.FunctionComponent<LocalityItemProps> = ({
+const LocalityItem: FunctionComponent<LocalityItemProps> = ({
   item,
   group,
   onClickTitle,
   onToggleRoute,
   route,
   onToggleTransitRoute,
-  transitRoute
+  transitRoute,
 }) => {
   return (
     <div
@@ -62,7 +63,8 @@ const LocalityItem: React.FunctionComponent<LocalityItemProps> = ({
     </div>
   );
 };
-const PreferredLocationItemContent: React.FunctionComponent<{
+
+export const PreferredLocationItemContent: FunctionComponent<{
   item: ResultEntity;
   onToggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   route?: EntityRoute;
@@ -71,22 +73,26 @@ const PreferredLocationItemContent: React.FunctionComponent<{
 }> = ({ item, onToggleRoute, route, onToggleTransitRoute, transitRoute }) => {
   const byFootDuration =
     route?.routes
-      .find(r => r.meansOfTransportation === MeansOfTransportation.WALK)
-      ?.sections.map(s => s.duration)
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.WALK)
+      ?.sections.map((s) => s.duration)
       .reduce((p, c) => p + c) ?? "-";
+
   const byCarDuration =
     route?.routes
-      .find(r => r.meansOfTransportation === MeansOfTransportation.CAR)
-      ?.sections.map(s => s.duration)
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.CAR)
+      ?.sections.map((s) => s.duration)
       .reduce((p, c) => p + c) ?? "-";
+
   const byBicycleDuration =
     route?.routes
-      .find(r => r.meansOfTransportation === MeansOfTransportation.BICYCLE)
-      ?.sections.map(s => s.duration)
+      .find((r) => r.meansOfTransportation === MeansOfTransportation.BICYCLE)
+      ?.sections.map((s) => s.duration)
       .reduce((p, c) => p + c) ?? "-";
+
   const transitDuration =
-    transitRoute?.route.sections.map(s => s.duration).reduce((p, c) => p + c) ??
-    "-";
+    transitRoute?.route.sections
+      .map((s) => s.duration)
+      .reduce((p, c) => p + c) ?? "-";
 
   return (
     <>
@@ -103,7 +109,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
                 checked={
                   route?.show.includes(MeansOfTransportation.WALK) || false
                 }
-                onChange={event =>
+                onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.WALK)
                 }
                 className="checkbox checkbox-primary checkbox-xs"
@@ -119,7 +125,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
                 checked={
                   route?.show.includes(MeansOfTransportation.BICYCLE) || false
                 }
-                onChange={event =>
+                onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.BICYCLE)
                 }
                 className="checkbox checkbox-accent checkbox-xs"
@@ -135,7 +141,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
                 checked={
                   route?.show.includes(MeansOfTransportation.CAR) || false
                 }
-                onChange={event =>
+                onChange={(event) =>
                   onToggleRoute(item, MeansOfTransportation.CAR)
                 }
                 className="checkbox checkbox-xs"
@@ -149,7 +155,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
               <input
                 type="checkbox"
                 checked={transitRoute?.show || false}
-                onChange={event => onToggleTransitRoute(item)}
+                onChange={(event) => onToggleTransitRoute(item)}
                 className="checkbox checkbox-secondary checkbox-xs"
               />{" "}
               <span className="label-text">ÖPNV</span>
@@ -212,7 +218,7 @@ const PreferredLocationItemContent: React.FunctionComponent<{
   );
 };
 
-export const LocalityItemContent: React.FunctionComponent<{
+export const LocalityItemContent: FunctionComponent<{
   item: ResultEntity;
 }> = ({ item }) => {
   return (

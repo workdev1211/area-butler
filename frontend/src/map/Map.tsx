@@ -1,7 +1,7 @@
+import { memo, useCallback, useEffect, useState } from "react";
 import center from "@turf/center";
-import FormModal, { ModalConfig } from "components/FormModal";
-import { Poi } from "context/SearchContext";
 import { toJpeg } from "html-to-image";
+
 import * as L from "leaflet";
 import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-touch-helper";
@@ -11,7 +11,9 @@ import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
-import React, { useCallback, useEffect, useState } from "react";
+
+import FormModal, { ModalConfig } from "components/FormModal";
+import { Poi } from "context/SearchContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
 import {
@@ -88,6 +90,10 @@ export interface MapProps {
   setHideIsochrones: (value: boolean) => void;
   mapWithLegendId: string;
   toggleSatelliteMapMode: () => void;
+  isShownPreferredLocationsModal: boolean;
+  togglePreferredLocationsModal: (
+    isShownPreferredLocationsModal: boolean
+  ) => void;
 }
 
 export class IdMarker extends L.Marker {
@@ -292,6 +298,10 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
   const hideIsochronesEqual =
     prevProps.hideIsochrones === nextProps.hideIsochrones;
+  const isShownPreferredLocationsModalEqual =
+    prevProps.isShownPreferredLocationsModal ===
+    nextProps.isShownPreferredLocationsModal;
+
   return (
     mapboxKeyEqual &&
     responseEqual &&
@@ -305,7 +315,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     transitRoutesEqual &&
     configEqual &&
     mapboxMapIdEqual &&
-    hideIsochronesEqual
+    hideIsochronesEqual &&
+    isShownPreferredLocationsModalEqual
   );
 };
 
@@ -319,7 +330,7 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
   [MeansOfTransportation.WALK]: WALK_COLOR,
 };
 
-const Map = React.memo<MapProps>(
+const Map = memo<MapProps>(
   ({
     mapBoxAccessToken,
     searchResponse,
@@ -346,6 +357,8 @@ const Map = React.memo<MapProps>(
     setHideIsochrones,
     mapWithLegendId,
     toggleSatelliteMapMode,
+    isShownPreferredLocationsModal,
+    togglePreferredLocationsModal,
   }) => {
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
@@ -896,6 +909,10 @@ const Map = React.memo<MapProps>(
         poiSearchContainer.className = `${poiSearchContainer.className} hidden`;
       }
 
+      if (isShownPreferredLocationsModal) {
+        togglePreferredLocationsModal(false);
+      }
+
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
       for (let i = 0; i < bottomElements.length; i++) {
         bottomElements[i].className = `${bottomElements[i].className} hidden`;
@@ -913,6 +930,10 @@ const Map = React.memo<MapProps>(
             "hidden",
             ""
           );
+        }
+
+        if (isShownPreferredLocationsModal) {
+          togglePreferredLocationsModal(true);
         }
 
         for (let i = 0; i < bottomElements.length; i++) {

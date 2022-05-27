@@ -1,30 +1,27 @@
+import { FunctionComponent, useContext, useState } from "react";
+
 import "./MapMenuListItem.scss";
 import {
   EntityGroup,
-  ResultEntity
+  ResultEntity,
 } from "../../../components/SearchResultContainer";
 import {
   realEstateListingsTitle,
-  realEstateListingsTitleEmbed
+  realEstateListingsTitleEmbed,
 } from "../../../shared/shared.functions";
-import distanceIcon from "../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
-import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import LocalityItem from "./locality-item/LocalityItem";
-import React, { useContext, useState } from "react";
 import {
   ApiSearchResultSnapshotConfig,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import {
   EntityRoute,
-  EntityTransitRoute
+  EntityTransitRoute,
 } from "../../../../../shared/types/routing";
 import {
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "../../../context/SearchContext";
+import CategoryContent from "./CategoryContent";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;
@@ -38,7 +35,7 @@ export interface MapMenuListItemProps {
   config?: ApiSearchResultSnapshotConfig | undefined;
 }
 
-const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
+const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   entityGroup,
   groupIcon,
   customIcon,
@@ -47,29 +44,15 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
   toggleRoute,
   transitRoutes,
   toggleTransitRoute,
-  config
+  config,
 }) => {
   const [isListOpen, setIsListOpen] = useState(false);
-  const [localityPagination, setLocalityPagination] = useState<number>(5);
-
   const { searchContextDispatch } = useContext(SearchContext);
-
   const imgClass = !customIcon ? "item" : "";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
     ? "checkbox checkbox-custom checkbox-sm"
     : "checkbox checkbox-primary checkbox-sm";
-
-  const highlightZoomEntity = (item: ResultEntity) => {
-    searchContextDispatch({
-      type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
-      payload: { center: item.coordinates, zoom: 18 }
-    });
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-      payload: item.id
-    });
-  };
 
   return (
     <li
@@ -109,66 +92,20 @@ const MapMenuListItem: React.FunctionComponent<MapMenuListItemProps> = ({
               onChange={() =>
                 searchContextDispatch({
                   type: SearchContextActionTypes.TOGGLE_RESPONSE_GROUP,
-                  payload: entityGroup.title
+                  payload: entityGroup.title,
                 })
               }
             />
           </label>
         </div>
-        <div className="collapse-content">
-          <div className="mean-items">
-            <div className="item">
-              <img src={distanceIcon} alt="icon-distance" />
-              Distanz
-            </div>
-            <div className="item">
-              <img src={walkIcon} alt="icon-walk" />
-              Fußweg
-            </div>
-            <div className="item">
-              <img src={bicycleIcon} alt="icon-bicycle" />
-              Fahrrad
-            </div>
-            <div className="item">
-              <img src={carIcon} alt="icon-car" />
-              Auto
-            </div>
-          </div>
-          {isListOpen &&
-            entityGroup.items
-              .slice(0, localityPagination)
-              .map((item, index) => (
-                <LocalityItem
-                  key={`${entityGroup.title}-${index}`}
-                  item={item}
-                  group={entityGroup}
-                  onClickTitle={item => highlightZoomEntity(item)}
-                  onToggleRoute={(item, mean) => toggleRoute(item, mean)}
-                  route={routes?.find(
-                    r =>
-                      r.coordinates.lat === item.coordinates.lat &&
-                      r.coordinates.lng === item.coordinates.lng &&
-                      r.show
-                  )}
-                  onToggleTransitRoute={item => toggleTransitRoute(item)}
-                  transitRoute={transitRoutes?.find(
-                    tr =>
-                      tr.coordinates.lat === item.coordinates.lat &&
-                      tr.coordinates.lng === item.coordinates.lng &&
-                      tr.show
-                  )}
-                />
-              ))}
-          {isListOpen && entityGroup.items.length > localityPagination && (
-            <button
-              type="button"
-              className="btn btn-link"
-              onClick={() => setLocalityPagination(localityPagination + 5)}
-            >
-              Mehr anzeigen
-            </button>
-          )}
-        </div>
+        <CategoryContent
+          entityGroup={entityGroup}
+          routes={routes}
+          toggleRoute={toggleRoute}
+          transitRoutes={transitRoutes}
+          toggleTransitRoute={toggleTransitRoute}
+          isListOpen={isListOpen}
+        />
       </div>
     </li>
   );

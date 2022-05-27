@@ -22,6 +22,7 @@ import {
 import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
+  preferredLocationsTitle,
   toggleEntityVisibility,
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
@@ -37,6 +38,7 @@ import {
 import MeansToggle from "../map/means-toggle/MeansToggle";
 import MapMenu from "../map/menu/MapMenu";
 import { defaultColor } from "../../../shared/constants/constants";
+import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
 
 export interface ResultEntity {
   name?: string;
@@ -127,6 +129,12 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
   const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
 
+  const [preferredLocationsGroup, setPreferredLocationsGroup] =
+    useState<EntityGroup>();
+
+  const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
+    useState(true);
+
   useEffect(() => {
     setMapBoxMapIds(initialMapBoxMapIds);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -169,6 +177,8 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
   // react to active means change (changes in POIs)
   useEffect(() => {
+    setPreferredLocationsGroup(undefined);
+
     const groupsFilteredByActiveMeans = deriveEntityGroupsByActiveMeans(
       searchContextState.responseGroupedEntities,
       searchContextState.responseActiveMeans
@@ -176,10 +186,14 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
     const poiSearchOptions = groupsFilteredByActiveMeans.reduce<
       IPoiSearchOption[]
-    >((result, { title, items }) => {
-      result.push({ label: `${title} Kategorie`, value: title });
+    >((result, group) => {
+      result.push({ label: `${group.title} Kategorie`, value: group.title });
 
-      items.forEach(({ id, label, name }) => {
+      if (group.items[0]?.label === preferredLocationsTitle) {
+        setPreferredLocationsGroup(group);
+      }
+
+      group.items.forEach(({ id, label, name }) => {
         result.push({ label: name || label, value: id });
       });
 
@@ -195,6 +209,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     setFilteredGroupedEntities,
     setResultingGroupedEntities,
     setPoiSearchOptions,
+    setPreferredLocationsGroup,
   ]);
 
   const onPoiSearchSelect = (
@@ -419,12 +434,14 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     }),
   };
 
+  const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+
   return (
     <>
       <div className={containerClasses} id="search-result-container">
         <div className="relative flex-1" id={mapWithLegendId}>
           <div className="map-nav-bar-container">
-            {searchContextState.responseConfig?.theme !== "KF" && (
+            {!isThemeKf && (
               <div id={poiSearchContainerId} className="w-1/3 opacity-90">
                 <Select
                   styles={poiSearchStyles}
@@ -514,11 +531,11 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
             setHideIsochrones={setHideIsochrones}
             mapWithLegendId={mapWithLegendId}
             toggleSatelliteMapMode={toggleSatelliteMapMode}
+            isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+            togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
           />
         </div>
-        {searchContextState.responseConfig?.theme !== "KF" && (
-          <MapMenuMobileBtn />
-        )}
+        {!isThemeKf && <MapMenuMobileBtn />}
         <MapMenu
           mobileMenuOpen={mobileMenuOpen}
           censusData={searchContextState.censusData}
@@ -561,7 +578,25 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           }
           showInsights={!embedMode}
           config={searchContextState.responseConfig}
+          isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+          togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
         />
+        {isThemeKf &&
+          preferredLocationsGroup &&
+          isShownPreferredLocationsModal && (
+            <PreferredLocationsModal
+              entityGroup={preferredLocationsGroup}
+              routes={searchContextState.responseRoutes}
+              toggleRoute={(item, mean) =>
+                toggleRoutesToEntity(location, item, mean)
+              }
+              transitRoutes={searchContextState.responseTransitRoutes}
+              toggleTransitRoute={(item) =>
+                toggleTransitRoutesToEntity(location, item)
+              }
+              closeModal={setIsShownPreferredLocationsModal}
+            />
+          )}
       </div>
     </>
   );
