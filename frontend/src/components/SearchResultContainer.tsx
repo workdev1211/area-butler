@@ -361,7 +361,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   };
 
   // components
-  const MapMenuMobileBtn: React.FunctionComponent = () => {
+  const MapMenuMobileBtn: FunctionComponent = () => {
     return (
       <button
         type="button"

@@ -9,7 +9,21 @@
   top: 24px;
   margin-left: 10px;
   margin-right: 10px;
+  left: 0;
+  right: 0;
   @apply absolute flex;
+}
+
+@media (max-width: 768px) {
+  #poi-search-container {
+    margin-left: 10px;
+    order: 2;
+    @apply w-1/2;
+  }
+
+  .map-nav-bar {
+    order: 1;
+  }
 }
 
 .mobile-menu-btn {
