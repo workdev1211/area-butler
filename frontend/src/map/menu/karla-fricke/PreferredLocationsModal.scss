@@ -20,7 +20,7 @@
   border-top-right-radius: inherit;
 
   color: white;
-  background: #c91444;
+  background: var(--primary);
   @apply text-lg font-medium cursor-default flex;
 
   img {

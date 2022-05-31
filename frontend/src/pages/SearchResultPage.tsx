@@ -1,11 +1,12 @@
-import BusyModal from "components/BusyModal";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { useHistory, useLocation } from "react-router-dom";
+
+import BusyModal, { IBusyModalItem } from "components/BusyModal";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import ExportModal from "export/ExportModal";
 import { useHttp } from "hooks/http";
 import { useRouting } from "hooks/routing";
-import React, { useContext, useEffect, useState } from "react";
-import { useHistory, useLocation } from "react-router-dom";
 import {
   deriveEntityGroupsByActiveMeans,
   toastError,
@@ -20,9 +21,6 @@ import {
   ApiUserRequests,
   MeansOfTransportation,
 } from "../../../shared/types/types";
-import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
-import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
-import arrowIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 import SearchResultContainer from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
@@ -31,26 +29,32 @@ import {
 } from "../context/SearchContext";
 import BackButton from "../layout/BackButton";
 import DefaultLayout from "../layout/defaultLayout";
+import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
+import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import arrowIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 
 export const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
-const SearchResultPage: React.FunctionComponent = () => {
+const SearchResultPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
+
   const { mapBoxAccessToken } = useContext(ConfigContext);
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
 
   const { get, post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
-  const [busyModalOpen, setBusyModalOpen] = useState<boolean>(false);
+  const [isShownBusyModal, setIsShownBusyModal] = useState(false);
+  const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
 
   useEffect(() => {
     const fetchUserRequests = async () => {
       const latestUserRequests: ApiUserRequests = (
         await get<ApiUserRequests>("/api/location/latest-user-requests")
       ).data;
+
       userDispatch({
         type: UserActionTypes.SET_LATEST_USER_REQUESTS,
         payload: latestUserRequests,
@@ -59,7 +63,7 @@ const SearchResultPage: React.FunctionComponent = () => {
 
     fetchUserRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [true]);
+  }, []);
 
   const user: ApiUser = userState.user!;
   const hasFullyCustomizableExpose =
@@ -70,10 +74,11 @@ const SearchResultPage: React.FunctionComponent = () => {
 
   if (!searchContextState.searchResponse?.routingProfiles) {
     history.push("/");
+
     return null;
   }
 
-  const ActionsTop: React.FunctionComponent = () => {
+  const ActionsTop: FunctionComponent = () => {
     return (
       <>
         <li>
@@ -160,7 +165,8 @@ const SearchResultPage: React.FunctionComponent = () => {
           <button
             type="button"
             onClick={async () => {
-              setBusyModalOpen(true);
+              setIsShownBusyModal(true);
+              const items: IBusyModalItem[] = [];
 
               try {
                 const routes: EntityRoute[] = [];
@@ -169,7 +175,15 @@ const SearchResultPage: React.FunctionComponent = () => {
                 const preferredLocations: ApiPreferredLocation[] =
                   searchContextState.preferredLocations || [];
 
+                let index = 0;
+
+                // TODO change to Promise.all?
                 for (const preferredLocation of preferredLocations) {
+                  items.push({
+                    key: `fetch-routes-${preferredLocation.title}-${index}`,
+                  });
+                  setBusyModalItems([...items]);
+
                   const routesResult = await fetchRoutes({
                     meansOfTransportation: [
                       MeansOfTransportation.BICYCLE,
@@ -192,6 +206,11 @@ const SearchResultPage: React.FunctionComponent = () => {
                     coordinates: preferredLocation.coordinates!,
                   });
 
+                  items.push({
+                    key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
+                  });
+                  setBusyModalItems([...items]);
+
                   const transitRoutesResult = await fetchTransitRoutes({
                     origin: location,
                     destinations: [
@@ -213,7 +232,14 @@ const SearchResultPage: React.FunctionComponent = () => {
                       coordinates: preferredLocation.coordinates!,
                     });
                   }
+
+                  index += 1;
                 }
+
+                items.push({
+                  key: "save-map-snippet",
+                });
+                setBusyModalItems([...items]);
 
                 const response: ApiSearchResultSnapshotResponse = (
                   await post<ApiSearchResultSnapshotResponse>(
@@ -240,7 +266,8 @@ const SearchResultPage: React.FunctionComponent = () => {
                 console.error(e);
                 toastError("Fehler beim Öffnen des Editors");
               } finally {
-                setBusyModalOpen(false);
+                setIsShownBusyModal(false);
+                setBusyModalItems([]);
               }
             }}
             className="btn btn-link"
@@ -266,7 +293,18 @@ const SearchResultPage: React.FunctionComponent = () => {
         actionBottom={[<BackButton key="back-button" to="/" />]}
       >
         <TourStarter tour="result" />
-        <BusyModal open={busyModalOpen} title="Öffne Editor..." />
+        {isShownBusyModal && (
+          <BusyModal
+            items={busyModalItems}
+            totalItems={
+              searchContextState.preferredLocations?.length
+                ? searchContextState.preferredLocations.length * 2 + 1
+                : 1
+            }
+            isAnimated={true}
+            isRandomMessages={true}
+          />
+        )}
         <SearchResultContainer
           mapBoxToken={mapBoxAccessToken}
           searchResponse={searchContextState.searchResponse}
@@ -332,4 +370,5 @@ const SearchResultPage: React.FunctionComponent = () => {
     </>
   );
 };
+
 export default SearchResultPage;
