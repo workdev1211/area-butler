@@ -1149,7 +1149,6 @@ const Map = memo<MapProps>(
             )}
             <a
               href="/"
-              data-tour="take-map-picture"
               className="leaflet-control-zoom-in cursor-pointer"
               role="button"
               onClick={(event) => {
@@ -1159,18 +1158,20 @@ const Map = memo<MapProps>(
             >
               <img src={satelliteIcon} alt="" />
             </a>
-            <a
-              href="/"
-              data-tour="take-map-picture"
-              className="leaflet-control-zoom-in cursor-pointer"
-              role="button"
-              onClick={(event) => {
-                event.preventDefault();
-                takePicture();
-              }}
-            >
-              📷
-            </a>
+            {(!embedMode || editorMode) && (
+              <a
+                href="/"
+                data-tour="take-map-picture"
+                className="leaflet-control-zoom-in cursor-pointer"
+                role="button"
+                onClick={(event) => {
+                  event.preventDefault();
+                  takePicture();
+                }}
+              >
+                📷
+              </a>
+            )}
           </div>
         </div>
       </div>
