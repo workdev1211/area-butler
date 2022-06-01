@@ -37,6 +37,7 @@ import {
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
+import copyMapIcon from "../assets/icons/copy-map.svg";
 import { subscriptionUpgradeFullyCustomizableExpose } from "./SearchResultPage";
 import ExportModal from "../export/ExportModal";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
@@ -363,6 +364,11 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
+            <img
+              src={copyMapIcon}
+              alt="copy-map-icon"
+              style={{ filter: "invert(1)" }}
+            />{" "}
             Karte veröffentlichen
           </button>
         </li>
