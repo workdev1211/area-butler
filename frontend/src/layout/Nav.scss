@@ -10,9 +10,9 @@
         @apply flex h-full;
         .nav-link {
             padding: 0 var(--nav-padding-x);
-            line-height: var(--nav-height);
+            line-height: normal;
             color: var(--base-anthracite);
-            @apply h-full font-medium;
+            @apply h-full font-medium flex items-center text-center;
             &.active {
                 color: var(--primary);
                 border-bottom: 4px solid var(--primary);
