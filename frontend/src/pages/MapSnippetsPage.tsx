@@ -42,7 +42,7 @@ const MapSnippetsPage: FunctionComponent = () => {
   }, [user]);
 
   return (
-    <DefaultLayout title="Meine Karten Snippets" withHorizontalPadding={false}>
+    <DefaultLayout title="Meine Karten" withHorizontalPadding={false}>
       {/*TODO implement a tour*/}
       {/*<TourStarter tour="realEstates" />*/}
       {hasSubscription && hasHtmlSnippet && embeddableMaps.length > 0 && (
