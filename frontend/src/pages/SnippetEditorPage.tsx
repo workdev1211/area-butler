@@ -339,7 +339,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Kurzusammenfassung PDF
+            <img src={pdfIcon} alt="pdf-icon" /> Export Überblick PDF
           </button>
         </li>
         <li>
