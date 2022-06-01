@@ -60,7 +60,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
         onClick={() => setMenuOpen(!menuOpen)}
         data-tour="my-customers"
       >
-        Meine Interessenten
+        Meine Zielgruppen
       </div>
       {menuOpen && (
         <ul tabIndex={0} className={dropDownListStyle}>
