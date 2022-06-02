@@ -1,20 +1,21 @@
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import {
   PotentialCustomerActionTypes,
-  PotentialCustomerContext
+  PotentialCustomerContext,
 } from "../context/PotentialCustomerContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import { Link, useHistory, useLocation } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
@@ -26,12 +27,12 @@ import TourStarter from "tour/TourStarter";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
-  submitButtonTitle: "Löschen"
+  submitButtonTitle: "Löschen",
 };
 
 const createCustomerQuestionnaireModalConfig = {
   modalTitle: "Fragebogen versenden",
-  submitButtonTitle: "Senden"
+  submitButtonTitle: "Senden",
 };
 
 const subscriptionUpgradeSendCustomerRequestMessage = (
@@ -52,7 +53,7 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
   </div>
 );
 
-const PotentialCustomersPage: React.FunctionComponent = () => {
+const PotentialCustomersPage: FunctionComponent = () => {
   const { get } = useHttp();
   const history = useHistory();
   const queryParams = new URLSearchParams(useLocation().search);
@@ -70,22 +71,30 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
   const canSendCustomerRequest =
     subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
 
-  const startSearchFromCustomer = (customer: ApiPotentialCustomer) => {
-    const localityParams = osmEntityTypes.filter(entity =>
-      customer.preferredAmenities.includes(entity.name)
+  const startSearchFromCustomer = ({
+    preferredAmenities,
+    routingProfiles,
+    preferredLocations,
+  }: ApiPotentialCustomer) => {
+    const localityParams = osmEntityTypes.filter((entity) =>
+      preferredAmenities?.includes(entity.name)
     );
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: localityParams
+      payload: localityParams,
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: customer.routingProfiles
+      payload: routingProfiles || [],
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-      payload: customer.preferredLocations
+      payload: preferredLocations || [],
     });
+
     history.push("/");
   };
 
@@ -94,15 +103,17 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
       const response = await get<ApiPotentialCustomer[]>(
         "/api/potential-customers"
       );
+
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data
+        payload: response.data,
       });
     };
-    fetchCustomers();
-  }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const ActionsTop: React.FunctionComponent = () => {
+    fetchCustomers();
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const ActionsTop: FunctionComponent = () => {
     return (
       <>
         <li>
@@ -121,8 +132,8 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
                     payload: {
                       open: true,
-                      message: subscriptionUpgradeSendCustomerRequestMessage
-                    }
+                      message: subscriptionUpgradeSendCustomerRequestMessage,
+                    },
                   })
             }
           >
@@ -136,7 +147,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
   const questionnaireModalConfig = {
     ...createCustomerQuestionnaireModalConfig,
     modalOpen: questionnaireModalOpen,
-    postSubmit: () => setQuestionnaireModalOpen(false)
+    postSubmit: () => setQuestionnaireModalOpen(false),
   };
 
   return (
@@ -184,7 +195,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     {Array.isArray(customer.preferredLocations) &&
                     customer.preferredLocations.length
                       ? customer.preferredLocations
-                          .map(location => location.title || "")
+                          .map((location) => location.title || "")
                           .join(", ")
                       : "-"}
                   </td>
@@ -193,7 +204,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     !!customer?.realEstateCostStructure.price
                       ? `${customer?.realEstateCostStructure.price.amount} € (${
                           allRealEstateCostTypes.find(
-                            t =>
+                            (t) =>
                               t.type === customer?.realEstateCostStructure?.type
                           )?.label
                         })`
@@ -201,12 +212,12 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                     <br />
                     {customer?.realEstateCharacteristics?.furnishing &&
                       allFurnishing
-                        .filter(f =>
+                        .filter((f) =>
                           customer?.realEstateCharacteristics?.furnishing.includes(
                             f.type
                           )
                         )
-                        .map(f => f.label)
+                        .map((f) => f.label)
                         .join(", ")}
                   </td>
                   <td>
@@ -241,7 +252,7 @@ const PotentialCustomersPage: React.FunctionComponent = () => {
                                 "customers-table-item-delete-button-" + index
                               }
                             />
-                          )
+                          ),
                         }}
                       >
                         <PotentialCustomerFormDeleteHandler

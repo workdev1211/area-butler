@@ -1,27 +1,35 @@
 import {
+  IsArray,
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsNotEmpty,
+} from 'class-validator';
+
+import {
   ApiEnergyEfficiency,
   ApiFurnishing,
-  ApiRealEstateCharacteristics
+  ApiRealEstateCharacteristics,
 } from '@area-butler-types/real-estate';
-import { IsArray, IsBoolean, IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
-
 
 class ApiRealEstateCharacteristicsDto implements ApiRealEstateCharacteristics {
-
   @IsOptional()
   @IsEnum(ApiEnergyEfficiency)
   energyEfficiency?: ApiEnergyEfficiency;
 
+  // TODO make "furnishing" completely optional
   @IsNotEmpty()
   @IsArray()
-  @IsEnum(ApiFurnishing, {each: true})
+  @IsEnum(ApiFurnishing, { each: true })
   furnishing: ApiFurnishing[];
 
   @IsOptional()
   @IsNumber()
-  numberOfRooms: number;
+  numberOfRooms?: number;
 
   @IsOptional()
+  @IsNumber()
   propertySizeInSquareMeters?: number;
 
   @IsOptional()
@@ -29,7 +37,7 @@ class ApiRealEstateCharacteristicsDto implements ApiRealEstateCharacteristics {
   realEstateSizeInSquareMeters?: number;
 
   @IsOptional()
-  @IsBoolean() 
+  @IsBoolean()
   startingAt?: boolean;
 }
 

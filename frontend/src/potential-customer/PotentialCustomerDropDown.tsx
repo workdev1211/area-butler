@@ -1,6 +1,7 @@
+import { FunctionComponent, useContext, useRef, useState } from "react";
+
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import React, { useRef, useState } from "react";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import useOnClickOutside from "hooks/onclickoutside";
@@ -9,28 +10,36 @@ export interface PotentialCustomerDropDownProps {
   buttonStyles?: string;
 }
 
-export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustomerDropDownProps> = ({
-  buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto"
+export const PotentialCustomerDropDown: FunctionComponent<
+  PotentialCustomerDropDownProps
+> = ({
+  buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
-  const { potentialCustomerState } = React.useContext(PotentialCustomerContext);
-  const { searchContextDispatch } = React.useContext(SearchContext);
+  const { potentialCustomerState } = useContext(PotentialCustomerContext);
+  const { searchContextDispatch } = useContext(SearchContext);
 
-  const fillDataFromCustomer = (customer: ApiPotentialCustomer) => {
-    const localityParams = osmEntityTypes.filter(entity =>
-      customer.preferredAmenities.includes(entity.name)
+  const fillDataFromCustomer = ({
+    preferredAmenities,
+    routingProfiles,
+    preferredLocations,
+  }: ApiPotentialCustomer) => {
+    const localityParams = osmEntityTypes.filter((entity) =>
+      preferredAmenities?.includes(entity.name)
     );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: localityParams
+      payload: localityParams,
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: customer.routingProfiles
+      payload: routingProfiles || [],
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-      payload: customer.preferredLocations
+      payload: preferredLocations || [],
     });
   };
 
@@ -48,7 +57,7 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
       <div
         className={buttonStyles}
         tabIndex={0}
-        onClick={e => setMenuOpen(!menuOpen)}
+        onClick={() => setMenuOpen(!menuOpen)}
         data-tour="my-customers"
       >
         Meine Interessenten
@@ -60,7 +69,7 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
               <li key={"customer-drop-down-" + customer.id}>
                 <button
                   type="button"
-                  onClick={e => {
+                  onClick={() => {
                     fillDataFromCustomer(customer);
                     setMenuOpen(false);
                   }}
@@ -69,7 +78,8 @@ export const PotentialCustomerDropDown: React.FunctionComponent<PotentialCustome
                 >
                   <div className="flex flex-col items-start">
                     <span className="font-bold">
-                      {customer.name} ({customer.email})
+                      {customer.name}
+                      {customer.email ? ` (${customer.email})` : ""}
                     </span>
                   </div>
                 </button>

@@ -1,18 +1,20 @@
+import { FunctionComponent, useContext } from "react";
+import { useHistory } from "react-router-dom";
+
 import {
   PotentialCustomerActionTypes,
-  PotentialCustomerContext
+  PotentialCustomerContext,
 } from "context/PotentialCustomerContext";
 import { useHttp } from "hooks/http";
-import React from "react";
 import {
   ApiPotentialCustomer,
   ApiPreferredLocation,
-  ApiUpsertPotentialCustomer
+  ApiUpsertPotentialCustomer,
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
-import { useHistory } from "react-router-dom";
 import { toastError, toastSuccess } from "shared/shared.functions";
 
+// TODO change to "plainToInstance" from the "class-transformer" package without async
 export const mapFormToApiUpsertPotentialCustomer = async (
   values: any
 ): Promise<ApiUpsertPotentialCustomer> => {
@@ -25,7 +27,7 @@ export const mapFormToApiUpsertPotentialCustomer = async (
       (pl: ApiPreferredLocation) => !!pl.title && !!pl.address
     ),
     realEstateCharacteristics: values.realEstateCharacteristics,
-    realEstateCostStructure: values.realEstateCostStructure
+    realEstateCostStructure: values.realEstateCostStructure,
   };
 };
 
@@ -36,27 +38,22 @@ export interface PotentialCustomerFormHandlerData {
   postSubmit?: (success: boolean) => void;
 }
 
-const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFormHandlerData> = ({
-  formId,
-  beforeSubmit = () => {},
-  postSubmit = () => {},
-  customer
-}) => {
+const PotentialCustomerFormHandler: FunctionComponent<
+  PotentialCustomerFormHandlerData
+> = ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
   const { post, put } = useHttp();
   const history = useHistory();
 
-  const { potentialCustomerDispatch } = React.useContext(
-    PotentialCustomerContext
-  );
+  const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
 
   const onSubmit = async (values: any) => {
-    const mappedPotentialCustomer: ApiUpsertPotentialCustomer = await mapFormToApiUpsertPotentialCustomer(
-      values
-    );
+    const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
+      await mapFormToApiUpsertPotentialCustomer(values);
 
     try {
       let response = null;
       beforeSubmit();
+
       if (customer.id) {
         response = await put(
           `/api/potential-customers/${customer.id}`,
@@ -68,11 +65,14 @@ const PotentialCustomerFormHandler: React.FunctionComponent<PotentialCustomerFor
           mappedPotentialCustomer
         );
       }
+
       const storedCustomer = response.data as ApiPotentialCustomer;
+
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.PUT_POTENTIAL_CUSTOMER,
-        payload: storedCustomer
+        payload: storedCustomer,
       });
+
       postSubmit(true);
       toastSuccess("Interessent erfolgreich gespeichert!");
       history.push(`/potential-customers?id=${storedCustomer.id}`);

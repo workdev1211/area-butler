@@ -3,23 +3,23 @@ import { ApiCoordinates, OsmName, TransportationParam } from "./types";
 
 export interface ApiUpsertPotentialCustomer {
     name: string;
-    email: string;
+    email?: string;
     routingProfiles?: TransportationParam[];
     preferredAmenities?: OsmName[];
     preferredLocations?: ApiPreferredLocation[];
-    realEstateCostStructure: ApiRealEstateCost;
-    realEstateCharacteristics: ApiRealEstateCharacteristics;
+    realEstateCostStructure?: ApiRealEstateCost;
+    realEstateCharacteristics?: ApiRealEstateCharacteristics;
 }
 
 export interface ApiPotentialCustomer {
   id: string;
   name: string;
-  email: string;
-  routingProfiles: TransportationParam[];
-  preferredAmenities: OsmName[];
-  preferredLocations: ApiPreferredLocation[];
-  realEstateCostStructure: ApiRealEstateCost;
-  realEstateCharacteristics: ApiRealEstateCharacteristics;
+  email?: string;
+  routingProfiles?: TransportationParam[];
+  preferredAmenities?: OsmName[];
+  preferredLocations?: ApiPreferredLocation[];
+  realEstateCostStructure?: ApiRealEstateCost;
+  realEstateCharacteristics?: ApiRealEstateCharacteristics;
 }
 
 export interface ApiUpsertQuestionnaireRequest {

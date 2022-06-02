@@ -38,7 +38,7 @@ const PotentialCustomerForm: React.FunctionComponent<PotentialCustomerFormProps>
                 : Yup.string().required('Name wird benötigt'),
             email: questionnaire
                 ? Yup.string()
-                : Yup.string().email().required('Gültige Email-Adresse wird benötigt'),
+                : Yup.string().email(),
             preferredLocations: Yup.array()
         })}
             enableReinitialize={true}

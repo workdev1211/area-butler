@@ -1,10 +1,10 @@
-import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
-import ApiCoordinatesDto from './api-coordinates.dto';
 import { Type } from 'class-transformer';
 import { IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
 
-class ApiPreferredLocationDto implements ApiPreferredLocation {
+import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
+import ApiCoordinatesDto from './api-coordinates.dto';
 
+class ApiPreferredLocationDto implements ApiPreferredLocation {
   @IsNotEmpty()
   address: string;
 

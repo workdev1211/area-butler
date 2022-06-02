@@ -19,7 +19,6 @@ export interface PotentialCustomerPageRouterProps {
 
 const defaultCustomer: Partial<ApiPotentialCustomer> = {
   name: "Neuer Interessent",
-  email: "vorname.nachname@kudiba.net",
   preferredLocations: [],
   routingProfiles: []
 };

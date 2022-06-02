@@ -17,7 +17,7 @@ export class PotentialCustomer {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop()
   email: string;
 
   @Prop({ type: Array })

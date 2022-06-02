@@ -33,9 +33,10 @@ export enum ApiRealEstateCostType {
   SELL = "SELL"
 }
 
+// TODO make "furnishing" completely optional
 export interface ApiRealEstateCharacteristics {
   startingAt?: boolean;
-  numberOfRooms: number;
+  numberOfRooms?: number;
   realEstateSizeInSquareMeters?: number;
   propertySizeInSquareMeters?: number;
   energyEfficiency?: ApiEnergyEfficiency;
