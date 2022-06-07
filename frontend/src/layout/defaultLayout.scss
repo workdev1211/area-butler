@@ -5,7 +5,7 @@
     min-height: var(--content-header-height);
     padding: var(--nav-padding-y) var(--nav-padding-x);
     background-image: var(--primary-gradient);
-    @apply flex flex-col items-start sm:flex-row sm:flex-wrap sm:items-center gap-4 justify-between;
+    @apply flex flex-col items-start sm:flex-row sm:flex-wrap gap-4 justify-between;
 
     h1 {
       font-size: var(--h1-size);
@@ -23,11 +23,13 @@
 
     .dropdown-btn-content {
       @apply flex gap-4 h-full justify-center items-center;
+
       .divider {
         width: 1px;
         border-left: 1px solid var(--primary);
         @apply h-full;
       }
+
       .caret-down {
         filter: grayscale(100%) brightness(40%) sepia(100%) hue-rotate(-50deg)
           saturate(600%) contrast(0.8) drop-shadow(0px 1.5px 0px red);

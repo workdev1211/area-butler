@@ -291,6 +291,7 @@ const SearchResultPage: FunctionComponent = () => {
         withHorizontalPadding={false}
         actionTop={<ActionsTop />}
         actionBottom={[<BackButton key="back-button" to="/" />]}
+        timelineStep={2}
       >
         <TourStarter tour="result" />
         {isShownBusyModal && (

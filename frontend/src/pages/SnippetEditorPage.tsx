@@ -400,6 +400,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         actionBottom={[
           <BackButton key="back-button" beforeGoBack={beforeGoBack} />,
         ]}
+        timelineStep={3}
       >
         <TourStarter tour="editor" />
         <div className="hidden">

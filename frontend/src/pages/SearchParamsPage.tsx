@@ -7,6 +7,7 @@ import {
 } from "react";
 import { Form, Formik } from "formik";
 
+import "./SearchParamsPage.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
 import LatestUserRequestsDropDown from "components/LatestUserRequestsDropDown";
 import {
@@ -367,6 +368,7 @@ const SearchParamsPage: FunctionComponent = () => {
           <SearchButton key="search-button" />
         ),
       ]}
+      timelineStep={1}
     >
       <TourStarter tour="search" />
       {isShownBusyModal && (
@@ -379,7 +381,7 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
-          <h2>Lage</h2>
+          <h2 className="search-params-first-title">Lage</h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
             <LocationAutocomplete
               value={searchContextState.placesLocation}
