@@ -359,7 +359,7 @@ const SearchParamsPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Umgebungsanalyse"
+      title="Suche"
       withHorizontalPadding={true}
       actionBottom={[
         newRequest && requestLimitExceeded ? (
