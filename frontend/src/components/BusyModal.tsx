@@ -58,7 +58,7 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
   return (
     <div className="busy-modal modal modal-open z-9999">
       <div className="modal-box">
-        <div className="modal-title">Wird geladen</div>
+        <div className="modal-header">Wird geladen</div>
         <div className="modal-content">
           {items.map((item, i) => (
             <div key={item.key}>

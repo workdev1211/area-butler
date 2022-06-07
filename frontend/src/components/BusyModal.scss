@@ -1,79 +1,82 @@
 .busy-modal.modal.modal-open {
+  align-items: center;
+  padding: 0 10px 0 10px;
   backdrop-filter: blur(1px);
-}
 
-.busy-modal > .modal-box {
-  padding: 0;
+  .modal-box {
+    padding: 0;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
 
-  .modal-title {
-    padding: 0 20px 0 20px;
-    border-top-left-radius: inherit;
-    border-top-right-radius: inherit;
-    height: 3em;
-
-    color: white;
-    background: var(--primary);
-    @apply text-lg font-medium items-center flex;
-  }
-
-  .modal-content {
-    padding: 10px 20px 10px 20px;
-
-    & > div:not(:last-child) {
-      margin-bottom: 5px;
+    .modal-header {
+      padding: 0 20px 0 20px;
+      height: 3em;
+      color: white;
+      background: var(--primary);
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      @apply text-lg font-medium items-center flex;
     }
 
-    & > div {
-      span {
-        padding-left: 5px;
+    .modal-content {
+      padding: 10px 20px 10px 20px;
+
+      & div:not(:last-child) {
+        margin-bottom: 5px;
       }
 
-      .animated-butler,
-      .animated-check {
-        height: 1.2em;
-        width: 1.2em;
+      & div {
+        span {
+          padding-left: 5px;
+        }
+
+        .animated-butler,
+        .animated-check {
+          height: 1.2em;
+          width: 1.2em;
+        }
+
+        .animated-check path {
+          fill: none;
+          stroke: var(--primary);
+          stroke-width: 4;
+          stroke-dasharray: 23;
+          stroke-dashoffset: 23;
+          stroke-linecap: round;
+          stroke-linejoin: round;
+          animation: draw 500ms linear forwards;
+        }
+
+        .animated-butler {
+          animation-play-state: paused;
+          display: none;
+        }
+
+        align-items: normal;
+        @apply flex;
       }
 
-      .animated-check path {
-        fill: none;
-        stroke: var(--primary);
-        stroke-width: 4;
-        stroke-dasharray: 23;
-        stroke-dashoffset: 23;
-        stroke-linecap: round;
-        stroke-linejoin: round;
-        animation: draw 500ms linear forwards;
+      & div:nth-last-child(2) {
+        .animated-butler {
+          display: initial;
+          animation: flip 2s infinite linear;
+        }
+
+        .animated-check {
+          animation-play-state: paused;
+          display: none;
+        }
       }
 
-      .animated-butler {
-        animation-play-state: paused;
-        display: none;
-      }
+      .progress-bar {
+        margin-top: 10px;
+        background-color: lightgrey;
 
-      align-items: normal;
-      @apply flex;
-    }
-
-    & > div:nth-last-child(2) {
-      .animated-butler {
-        display: initial;
-        animation: flip 2s infinite linear;
-      }
-
-      .animated-check {
-        animation-play-state: paused;
-        display: none;
-      }
-    }
-
-    .progress-bar {
-      margin-top: 10px;
-      background-color: lightgrey;
-
-      .filled-progress-bar {
-        text-align: center;
-        color: white;
-        background-color: var(--primary);
+        .filled-progress-bar {
+          text-align: center;
+          color: white;
+          background-color: var(--primary);
+        }
       }
     }
   }
