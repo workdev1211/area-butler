@@ -133,7 +133,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     useState<EntityGroup>();
 
   const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
-    useState(true);
+    useState(false);
 
   useEffect(() => {
     setMapBoxMapIds(initialMapBoxMapIds);
