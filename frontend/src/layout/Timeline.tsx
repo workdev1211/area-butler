@@ -5,7 +5,7 @@ import "./Timeline.scss";
 const timelineSteps = [
   { number: 1, name: "Suche" },
   { number: 2, name: "Analyse" },
-  { number: 3, name: "Editieren, speichern, veröffentlichen" },
+  { number: 3, name: "Editor" },
 ];
 
 interface TimelineProps {
@@ -22,17 +22,12 @@ const Timeline: FunctionComponent<TimelineProps> = ({ activeStep }) => {
           }`}
           key={name}
         >
-          <div className="timeline-step-line-number">
-            <div className="timeline-step-number">
-              <span>{number}</span>
-            </div>
-            {i === timelineSteps.length - 1 && (
-              <div className="timeline-step-arrow" />
-            )}
-          </div>
-          <div className="timeline-step-name">
-            <span>{name}</span>
-          </div>
+          <div className="timeline-step-line" />
+          <div className="timeline-step-title">{`${number}. ${name}`}</div>
+          <div className="timeline-step-line" />
+          {i === timelineSteps.length - 1 && (
+            <div className="timeline-step-arrow" />
+          )}
         </div>
       ))}
     </div>

@@ -5,9 +5,9 @@ import caretDown from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import Timeline from "./Timeline";
 
 interface DefaultLayoutProps {
-  title: string;
   withHorizontalPadding: boolean;
   children: ReactNode;
+  title?: string;
   actionsTop?: ReactNode;
   isOverriddenActionsTop?: boolean;
   actionsBottom?: ReactNode[];
@@ -26,7 +26,7 @@ const DefaultLayout: FunctionComponent<DefaultLayoutProps> = ({
   return (
     <div className="default-layout">
       <div className="default-layout-header">
-        <h1>{title}</h1>
+        {title && !timelineStep && <h1>{title}</h1>}
         {timelineStep && <Timeline activeStep={timelineStep} />}
         {actionsTop && (
           <div

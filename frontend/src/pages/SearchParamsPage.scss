@@ -1,27 +1,28 @@
 .default-layout {
   .default-layout-header {
-    .dropdown {
-      button.actions-top-search-button {
-        color: var(--primary) !important;
-        background-color: white !important;
-        text-transform: none !important;
-        border-radius: var(--btn-border-radius);
-        @apply btn btn-outline hover:bg-primary hover:border-white;
-
-        img {
-          filter: invert(22%) sepia(66%) saturate(6007%) hue-rotate(334deg)
-            brightness(79%) contrast(98%) drop-shadow(0 1.5px 0 var(--primary));
-        }
-
-        &:disabled {
-          color: var(--base-silver) !important;
-
-          img {
-            filter: brightness(70%);
-          }
-        }
-      }
-    }
+    // TODO left for a possible top action button
+    //.dropdown {
+    //  button.actions-top-search-button {
+    //    color: var(--primary) !important;
+    //    background-color: white !important;
+    //    text-transform: none !important;
+    //    border-radius: var(--btn-border-radius);
+    //    @apply btn btn-outline hover:bg-primary hover:border-white;
+    //
+    //    img {
+    //      filter: invert(22%) sepia(66%) saturate(6007%) hue-rotate(334deg)
+    //        brightness(79%) contrast(98%) drop-shadow(0 1.5px 0 var(--primary));
+    //    }
+    //
+    //    &:disabled {
+    //      color: var(--base-silver) !important;
+    //
+    //      img {
+    //        filter: brightness(70%);
+    //      }
+    //    }
+    //  }
+    //}
   }
 
   .default-layout-content {

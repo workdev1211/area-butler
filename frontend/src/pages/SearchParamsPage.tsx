@@ -356,7 +356,6 @@ const SearchParamsPage: FunctionComponent = () => {
     <DefaultLayout
       title="Suche"
       withHorizontalPadding={true}
-      actionsTop={<SearchButton classes="actions-top-search-button" />}
       isOverriddenActionsTop={true}
       actionsBottom={[
         newRequest && requestLimitExceeded ? (

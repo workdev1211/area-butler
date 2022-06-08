@@ -1,75 +1,46 @@
 .timeline {
-  padding-top: 5px;
   flex-grow: 1;
-  @apply flex cursor-default;
+  align-items: center;
+  @apply flex cursor-default w-full sm:w-auto;
 
   .timeline-step {
     flex-grow: 1;
     flex-basis: 0;
-    @apply flex flex-col;
+    align-items: center;
+    @apply flex;
 
-    .timeline-step-line-number {
-      padding-bottom: 5px;
-      @apply flex items-center;
-
-      .timeline-step-number {
-        flex-grow: 1;
-        @apply flex;
-
-        &:before,
-        &:after {
-          content: "";
-          flex-grow: 1;
-          border-bottom: solid 5px white;
-          margin: auto;
-        }
-
-        span {
-          width: 1.5em;
-          height: 1.5em;
-          border-radius: 1.5em;
-          color: var(--primary);
-          background-color: lightgray;
-          font-size: var(--h3-size);
-          font-weight: var(--h3-weight);
-          opacity: 0.8;
-          @apply text-center;
-        }
-      }
-
-      .timeline-step-arrow {
-        border-top: 0.5em solid transparent;
-        border-bottom: 0.5em solid transparent;
-        border-left: 0.75em solid white;
-      }
+    .timeline-step-line {
+      flex-grow: 1;
+      border-bottom: 0.5rem solid white;
     }
 
-    .timeline-step-name {
+    .timeline-step-title {
+      padding: 0.5rem;
+      color: var(--primary);
+      background-color: lightgray;
+      border-radius: var(--btn-border-radius);
+      opacity: 0.8;
       @apply text-center;
+    }
 
-      span {
-        font-size: 14px;
-        color: lightgray;
+    .timeline-step-arrow {
+      border-top: 0.5rem solid transparent;
+      border-bottom: 0.5rem solid transparent;
+      border-left: 0.7rem solid white;
+
+      @media (min-width: 640px) {
+        border-top: 0.7rem solid transparent;
+        border-bottom: 0.7rem solid transparent;
+        border-left: 1.2rem solid white;
       }
     }
 
     &.timeline-step-active {
-      .timeline-step-line-number {
-        .timeline-step-number {
-          span {
-            opacity: 1;
-            background-color: white;
-            font-weight: 900;
-          }
-        }
-      }
-
-      .timeline-step-name {
-        span {
-          color: white;
-          font-size: var(--h3-size);
-          font-weight: bold;
-        }
+      .timeline-step-title {
+        font-size: 18px;
+        font-weight: 700;
+        background-color: white;
+        opacity: 1;
       }
     }
   }
