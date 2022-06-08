@@ -133,7 +133,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
     <DefaultLayout
       title="Meine Immobilien"
       withHorizontalPadding={false}
-      actionTop={<ActionsTop />}
+      actionsTop={<ActionsTop />}
     >
       <TourStarter tour="realEstates" />
       {showEmbeddableMapsModal && (

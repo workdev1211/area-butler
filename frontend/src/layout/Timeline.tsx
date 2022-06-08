@@ -12,27 +12,31 @@ interface TimelineProps {
   activeStep: number;
 }
 
-const Timeline: FunctionComponent<TimelineProps> = ({ activeStep }) => (
-  <div className="timeline">
-    {timelineSteps.map(({ number, name }, i) => (
-      <div
-        className={`timeline-step${
-          activeStep === i + 1 ? " timeline-step-active" : ""
-        }`}
-        key={name}
-      >
-        <div className="timeline-step-line-number">
-          <div className="timeline-step-number">
-            <span>{number}</span>
+const Timeline: FunctionComponent<TimelineProps> = ({ activeStep }) => {
+  return (
+    <div className="timeline">
+      {timelineSteps.map(({ number, name }, i) => (
+        <div
+          className={`timeline-step${
+            activeStep === i + 1 ? " timeline-step-active" : ""
+          }`}
+          key={name}
+        >
+          <div className="timeline-step-line-number">
+            <div className="timeline-step-number">
+              <span>{number}</span>
+            </div>
+            {i === timelineSteps.length - 1 && (
+              <div className="timeline-step-arrow" />
+            )}
           </div>
-          {i === timelineSteps.length - 1 && (
-            <div className="timeline-step-arrow" />
-          )}
+          <div className="timeline-step-name">
+            <span>{name}</span>
+          </div>
         </div>
-        <div className="timeline-step-name">{name}</div>
-      </div>
-    ))}
-  </div>
-);
+      ))}
+    </div>
+  );
+};
 
 export default Timeline;

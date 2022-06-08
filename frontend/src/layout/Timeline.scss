@@ -1,7 +1,7 @@
 .timeline {
   padding-top: 5px;
   flex-grow: 1;
-  @apply flex;
+  @apply flex cursor-default;
 
   .timeline-step {
     flex-grow: 1;
@@ -30,10 +30,10 @@
           border-radius: 1.5em;
           color: var(--primary);
           background-color: lightgray;
-          text-align: center;
           font-size: var(--h3-size);
           font-weight: var(--h3-weight);
           opacity: 0.8;
+          @apply text-center;
         }
       }
 
@@ -45,9 +45,12 @@
     }
 
     .timeline-step-name {
-      font-size: 14px;
-      color: lightgray;
-      text-align: center;
+      @apply text-center;
+
+      span {
+        font-size: 14px;
+        color: lightgray;
+      }
     }
 
     &.timeline-step-active {
@@ -56,12 +59,17 @@
           span {
             opacity: 1;
             background-color: white;
+            font-weight: 900;
           }
         }
       }
 
       .timeline-step-name {
-        color: white;
+        span {
+          color: white;
+          font-size: var(--h3-size);
+          font-weight: bold;
+        }
       }
     }
   }

@@ -75,7 +75,7 @@ const UserProfilePage: FunctionComponent = () => {
     <DefaultLayout
       title="Ihr Profil"
       withHorizontalPadding={true}
-      actionBottom={[
+      actionsBottom={[
         <BackButton to="/" key="user-profile-back" />,
         <SubmitButton key="user-profile-submit" />
       ]}

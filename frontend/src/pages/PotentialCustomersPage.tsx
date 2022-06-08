@@ -154,7 +154,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
     <DefaultLayout
       title="Meine Interessenten"
       withHorizontalPadding={false}
-      actionTop={<ActionsTop />}
+      actionsTop={<ActionsTop />}
     >
       <TourStarter tour="customers" />
       <FormModal modalConfig={questionnaireModalConfig}>

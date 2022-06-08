@@ -289,8 +289,8 @@ const SearchResultPage: FunctionComponent = () => {
       <DefaultLayout
         title="Umgebungsanalyse"
         withHorizontalPadding={false}
-        actionTop={<ActionsTop />}
-        actionBottom={[<BackButton key="back-button" to="/" />]}
+        actionsTop={<ActionsTop />}
+        actionsBottom={[<BackButton key="back-button" to="/" />]}
         timelineStep={2}
       >
         <TourStarter tour="result" />

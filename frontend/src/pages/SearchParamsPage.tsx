@@ -71,12 +71,13 @@ const SearchParamsPage: FunctionComponent = () => {
   const [newRequest, setNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
+  const history = useHistory();
 
   useEffect(() => {
     const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
     const coordinates = searchContextState.location;
 
-    if (!!coordinates) {
+    if (coordinates) {
       setNewRequest(
         !latestUserRequests.requests.some(
           (r) => JSON.stringify(r.coordinates) === JSON.stringify(coordinates)
@@ -195,161 +196,155 @@ const SearchParamsPage: FunctionComponent = () => {
     modalButton: increaseLimitButton,
   };
 
-  const IncreaseLimitModal: FunctionComponent<any> = () => (
+  const IncreaseLimitModal: FunctionComponent = () => (
     <FormModal modalConfig={increaseRequestLimitModalConfig}>
       <IncreaseRequestLimitFormHandler />
     </FormModal>
   );
 
-  const SearchButton: FunctionComponent<any> = () => {
-    const history = useHistory();
+  const performLocationSearch = async () => {
+    try {
+      setIsShownBusyModal(true);
+      const items = [];
 
-    const performLocationSearch = async () => {
-      try {
-        setIsShownBusyModal(true);
-        const items = [];
+      items.push({
+        key: "location-search",
+      });
+      setBusyModalItems([...items]);
 
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+        payload: undefined,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SEARCH_BUSY,
+        payload: true,
+      });
+
+      const search: ApiSearch = {
+        searchTitle:
+          searchContextState?.placesLocation?.label || "Mein Standort",
+        coordinates: searchContextState.location!,
+        preferredLocations: searchContextState.preferredLocations || [],
+        meansOfTransportation: searchContextState.transportationParams,
+        preferredAmenities: searchContextState.localityParams.map(
+          (l: ApiOsmEntity) => l.name
+        ),
+      };
+
+      const result = await post<ApiSearchResponse>(
+        "/api/location/search",
+        search
+      );
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
+        payload: result.data,
+      });
+
+      if (hasFederalElectionData) {
         items.push({
-          key: "location-search",
+          key: "fetch-election-data",
         });
         setBusyModalItems([...items]);
 
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: undefined,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_SEARCH_BUSY,
-          payload: true,
-        });
-
-        const search: ApiSearch = {
-          searchTitle:
-            searchContextState?.placesLocation?.label || "Mein Standort",
-          coordinates: searchContextState.location!,
-          preferredLocations: searchContextState.preferredLocations || [],
-          meansOfTransportation: searchContextState.transportationParams,
-          preferredAmenities: searchContextState.localityParams.map(
-            (l: ApiOsmEntity) => l.name
-          ),
-        };
-
-        const result = await post<ApiSearchResponse>(
-          "/api/location/search",
-          search
+        const federalElectionData = await fetchElectionData(
+          searchContextState.location!
         );
 
         searchContextDispatch({
-          type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
-          payload: result.data,
+          type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
+          payload: federalElectionData!,
         });
-
-        if (hasFederalElectionData) {
-          items.push({
-            key: "fetch-election-data",
-          });
-          setBusyModalItems([...items]);
-
-          const federalElectionData = await fetchElectionData(
-            searchContextState.location!
-          );
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
-            payload: federalElectionData!,
-          });
-        }
-
-        if (hasParticlePollutionData) {
-          items.push({
-            key: "fetch-particle-pollution-data",
-          });
-          setBusyModalItems([...items]);
-
-          const particlePollutionData = await fetchParticlePollutionData(
-            searchContextState.location!
-          );
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
-            payload: particlePollutionData,
-          });
-        }
-
-        if (hasCensusData) {
-          items.push({
-            key: "fetch-census-data",
-          });
-          setBusyModalItems([...items]);
-
-          const zensusData = await fetchNearData(searchContextState.location!);
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_ZENSUS_DATA,
-            payload: zensusData!,
-          });
-        }
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
-        });
-
-        let filteredRealEstateListings;
-
-        if (realEstateState?.listings?.length) {
-          filteredRealEstateListings = realEstateState.listings.filter(
-            (listing) =>
-              listing.coordinates!.lat !== searchContextState.location!.lat ||
-              listing.coordinates!.lng !== searchContextState.location!.lng
-          );
-        }
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-          payload: deriveInitialEntityGroups(
-            result.data,
-            undefined,
-            filteredRealEstateListings,
-            searchContextState.preferredLocations
-          ),
-        });
-
-        history.push("/search-result");
-      } catch (error) {
-        toastError(
-          "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
-        );
-
-        console.error(error);
-      } finally {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_SEARCH_BUSY,
-          payload: false,
-        });
-
-        setIsShownBusyModal(false);
-        setBusyModalItems([]);
       }
-    };
 
-    const classes = "btn bg-primary-gradient w-full sm:w-auto ml-auto";
+      if (hasParticlePollutionData) {
+        items.push({
+          key: "fetch-particle-pollution-data",
+        });
+        setBusyModalItems([...items]);
 
-    return (
-      <button
-        data-tour="start-search"
-        type="button"
-        disabled={searchButtonDisabled}
-        onClick={performLocationSearch}
-        className={
-          searchContextState.searchBusy ? `${classes} loading` : classes
-        }
-      >
-        {newRequest ? "Analyse Starten " : "Analyse aktualisieren "}
-        <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
-      </button>
-    );
+        const particlePollutionData = await fetchParticlePollutionData(
+          searchContextState.location!
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+          payload: particlePollutionData,
+        });
+      }
+
+      if (hasCensusData) {
+        items.push({
+          key: "fetch-census-data",
+        });
+        setBusyModalItems([...items]);
+
+        const zensusData = await fetchNearData(searchContextState.location!);
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_ZENSUS_DATA,
+          payload: zensusData!,
+        });
+      }
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
+      });
+
+      let filteredRealEstateListings;
+
+      if (realEstateState?.listings?.length) {
+        filteredRealEstateListings = realEstateState.listings.filter(
+          (listing) =>
+            listing.coordinates!.lat !== searchContextState.location!.lat ||
+            listing.coordinates!.lng !== searchContextState.location!.lng
+        );
+      }
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: deriveInitialEntityGroups(
+          result.data,
+          undefined,
+          filteredRealEstateListings,
+          searchContextState.preferredLocations
+        ),
+      });
+
+      history.push("/search-result");
+    } catch (error) {
+      toastError(
+        "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
+      );
+
+      console.error(error);
+    } finally {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SEARCH_BUSY,
+        payload: false,
+      });
+
+      setIsShownBusyModal(false);
+      setBusyModalItems([]);
+    }
   };
+
+  const SearchButton: FunctionComponent<{ classes?: string }> = ({
+    classes = "btn bg-primary-gradient w-full sm:w-auto ml-auto",
+  }) => (
+    <button
+      data-tour="start-search"
+      type="button"
+      disabled={searchButtonDisabled}
+      onClick={performLocationSearch}
+      className={searchContextState.searchBusy ? `${classes} loading` : classes}
+    >
+      <span>{newRequest ? "Analyse Starten " : "Analyse aktualisieren "}</span>
+      <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
+    </button>
+  );
 
   const totalBusyModalItems =
     +(hasFederalElectionData || 0) +
@@ -361,7 +356,9 @@ const SearchParamsPage: FunctionComponent = () => {
     <DefaultLayout
       title="Suche"
       withHorizontalPadding={true}
-      actionBottom={[
+      actionsTop={<SearchButton classes="actions-top-search-button" />}
+      isOverriddenActionsTop={true}
+      actionsBottom={[
         newRequest && requestLimitExceeded ? (
           <IncreaseLimitModal key="search-button" />
         ) : (

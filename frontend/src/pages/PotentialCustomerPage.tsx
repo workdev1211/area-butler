@@ -114,7 +114,7 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
     <DefaultLayout
       title={customer.name || "Unbekannter Name"}
       withHorizontalPadding={true}
-      actionBottom={[
+      actionsBottom={[
         <BackButton to="/potential-customers" key="customer-back" />,
         <SubmitButton key="customer-submit" />
       ]}

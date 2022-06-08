@@ -396,8 +396,8 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       <DefaultLayout
         title="Karten Editor"
         withHorizontalPadding={false}
-        actionTop={<ActionsTop />}
-        actionBottom={[
+        actionsTop={<ActionsTop />}
+        actionsBottom={[
           <BackButton key="back-button" beforeGoBack={beforeGoBack} />,
         ]}
         timelineStep={3}

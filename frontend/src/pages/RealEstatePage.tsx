@@ -102,7 +102,7 @@ const RealEstatePage: React.FunctionComponent = () => {
     <DefaultLayout
       title={realEstate.name || "Unbekanntes Objekt"}
       withHorizontalPadding={true}
-      actionBottom={[
+      actionsBottom={[
         <BackButton to="/real-estates" key="real-estates-back" />,
         <SubmitButton key="real-estates-submit" />
       ]}
