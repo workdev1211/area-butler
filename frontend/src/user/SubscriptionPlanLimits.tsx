@@ -1,4 +1,5 @@
 import { FunctionComponent } from "react";
+
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiUser } from "../../../shared/types/types";
 import { allSubscriptionTypes } from "../../../shared/constants/subscription-plan";
@@ -13,17 +14,16 @@ export interface SubscriptionPlanLimitsProps {
   customers: ApiPotentialCustomer[];
 }
 
-const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> = ({
-  user
-}) => {
+const SubscriptionPlanLimits: FunctionComponent<
+  SubscriptionPlanLimitsProps
+> = ({ user }) => {
   const subscription = user.subscriptionPlan;
 
   const subscriptionLabel =
-    allSubscriptionTypes.find(item => subscription?.type === item.type)
-      ?.label || "Unbekannt";
+    allSubscriptionTypes.find((item) => subscription?.type === item.type)
+      ?.name || "Unbekannt";
 
   const totalRequestContingent = deriveTotalRequestContingent(user);
-
   const { post } = useHttp();
 
   const forwardToCustomerPortal = async () => {
@@ -56,13 +56,13 @@ const SubscriptionPlanLimits: FunctionComponent<SubscriptionPlanLimitsProps> = (
           Anfragen ausgeführt {user.requestsExecuted}/{totalRequestContingent}:
           <RequestContingentDropDown
             requestContingents={user.requestContingents}
-          ></RequestContingentDropDown>
+          />
         </span>
         <progress
           value={user.requestsExecuted}
           max={totalRequestContingent}
           className="w-96 progress progress-primary"
-        ></progress>
+        />
       </div>
       <div
         key="real-estate-contingent"

@@ -1,6 +1,7 @@
+import { FunctionComponent, useContext } from "react";
+
 import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import { useContext } from "react";
 import { toastError } from "shared/shared.functions";
 import { ApiUser } from "../../../shared/types/types";
 import IncreaseRequestLimitForm from "./IncreaseRequestLimitForm";
@@ -12,29 +13,39 @@ export interface IncreaseRequestLimitFormHandlerProps {
   postSubmit?: (success: boolean) => void;
 }
 
-const IncreaseRequestLimitFormHandler: React.FunctionComponent<IncreaseRequestLimitFormHandlerProps> = ({
-  formId,
-  beforeSubmit = () => {},
-  postSubmit = () => {}
-}) => {
+const IncreaseRequestLimitFormHandler: FunctionComponent<
+  IncreaseRequestLimitFormHandlerProps
+> = ({ formId, beforeSubmit = () => {}, postSubmit = () => {} }) => {
   const { post } = useHttp();
   const { userState } = useContext(UserContext);
   const { stripeEnv } = useContext(ConfigContext);
   const user: ApiUser = userState.user!;
+  const subscriptionPriceId = user.subscriptionPlan?.priceId;
   const subscriptionPlan = user.subscriptionPlan?.config;
+
+  const currentPrice = subscriptionPlan?.prices.find(
+    ({ id }) => id[stripeEnv] === subscriptionPriceId
+  );
+
+  const requestIncreaseParams =
+    currentPrice?.limits?.numberOfRequests?.increaseParams ||
+    subscriptionPlan?.limits?.numberOfRequests?.increaseParams;
+
+  const requestIncreasePriceId = requestIncreaseParams?.id[stripeEnv];
+  const requestIncreaseAmount = requestIncreaseParams?.amount;
 
   const onSubmit = async ({ amount }: any) => {
     try {
       beforeSubmit();
 
-      const priceId = subscriptionPlan?.priceIds[stripeEnv].requestIncreaseId!;
       window.location.href = (
         await post<string>("/api/billing/create-checkout-url", {
-          priceId,
+          priceId: requestIncreasePriceId,
           amount,
-          mode: "payment"
+          mode: "payment",
         })
       ).data;
+
       postSubmit(true);
     } catch (err) {
       console.log(err);
@@ -47,7 +58,7 @@ const IncreaseRequestLimitFormHandler: React.FunctionComponent<IncreaseRequestLi
     <IncreaseRequestLimitForm
       formId={formId!}
       onSubmit={onSubmit}
-      subscriptionPlan={subscriptionPlan!}
+      amount={requestIncreaseAmount!}
     />
   );
 };

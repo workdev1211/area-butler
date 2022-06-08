@@ -1,6 +1,7 @@
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+
+import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 
 export type SubscriptionDocument = Subscription & Document;
 
@@ -10,9 +11,11 @@ export class Subscription {
     type: String,
     required: true,
     enum: [
-      ApiSubscriptionPlanType.STANDARD,
-      ApiSubscriptionPlanType.PRO,
+      ApiSubscriptionPlanType.PAY_PER_USE_1,
+      ApiSubscriptionPlanType.PAY_PER_USE_5,
+      ApiSubscriptionPlanType.PAY_PER_USE_10,
       ApiSubscriptionPlanType.BUSINESS_PLUS,
+      ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
       ApiSubscriptionPlanType.TRIAL,
     ],
   })
@@ -37,4 +40,4 @@ export class Subscription {
   stripePriceId: string;
 }
 
-export const Subscriptionschema = SchemaFactory.createForClass(Subscription);
+export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);

@@ -1,18 +1,23 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
-import {
-  allSubscriptions,
-  TRIAL_DAYS,
-} from '../../../shared/constants/subscription-plan';
-import { configService } from '../config/config.service';
+
+import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
 import Stripe from 'stripe';
 import { SubscriptionService } from '../user/subscription.service';
-
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
-import { SlackSenderService, SlackChannel } from '../client/slack/slack-sender.service';
+import {
+  SlackSenderService,
+  SlackChannel,
+} from '../client/slack/slack-sender.service';
 import { StripeService } from '../client/stripe/stripe.service';
-import { RequestContingentIncreasedEvent, EventType, SubscriptionRenewedEvent, SubscriptionCreatedEvent } from '../event/event.types';
+import {
+  EventType,
+  SubscriptionRenewEvent,
+  SubscriptionCreateEvent,
+  ILimitIncreaseEvent,
+} from '../event/event.types';
 import { UserDocument } from '../user/schema/user.schema';
+import { ApiSubscriptionLimitsEnum } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class BillingService {
@@ -31,28 +36,35 @@ export class BillingService {
     user: UserDocument,
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
-    const existingsSubscriptions =
+    const existingSubscriptions =
       await this.subscriptionService.allUserSubscriptions(user._id);
+
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,
-      trialPeriod: existingsSubscriptions.length ? undefined : TRIAL_DAYS,
+      trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
     });
   }
 
   async consumeWebhook(request: any): Promise<void> {
     try {
       const event = this.stripeService.constructEvent(request);
+
       switch (event.type) {
         case 'checkout.session.completed': {
           await this.handleCheckoutSessionCompleted(event.data);
           break;
         }
-        case 'customer.subscription.created':
+
+        case 'customer.subscription.created': {
           this.slackSenderService.sendNotifcation(SlackChannel.REVENUES, {
             textBlocks: ['🎉 New customer has signed a subscription 🎉! '],
           });
+          this.handleSubscriptionUpsertEvent(event.data);
+          break;
+        }
+
         case 'customer.subscription.updated': {
-          this.handleSubscriptionUpsertedEvent(event.data);
+          this.handleSubscriptionUpsertEvent(event.data);
           break;
         }
 
@@ -63,8 +75,9 @@ export class BillingService {
           this.handleInvoicePaid(event.data);
           break;
         }
+
         default: {
-          console.log('Unknown Type: ' + event.type);
+          console.log(`Unknown Type: ${event.type}`);
           console.log(JSON.stringify(event.data));
           break;
         }
@@ -75,10 +88,10 @@ export class BillingService {
   }
 
   private async handleCheckoutSessionCompleted(eventData: Stripe.Event.Data) {
-    const stripeEnv = configService.getStripeEnv();
     const payload = eventData.object as any;
     const stripeCustomerId = payload.customer;
     const checkoutSessionId = payload.id;
+
     const lineItems =
       await this.stripeService.fetchLineItemsFromCheckoutSession(
         checkoutSessionId,
@@ -86,28 +99,33 @@ export class BillingService {
 
     if (lineItems.length > 0) {
       const lineItem = lineItems[0];
-      const requestIncreasingLineItem = Object.values(allSubscriptions).some(
-        (subscription) =>
-          subscription.priceIds[stripeEnv].requestIncreaseId ===
-          lineItem.price.id,
+
+      const limitIncreaseItem = this.subscriptionService.getLimitIncreaseItem(
+        lineItem.price.id,
       );
 
-      if (!!requestIncreasingLineItem) {
-        const requestContingentIncreasedEvent: RequestContingentIncreasedEvent =
-          {
-            stripeCustomerId,
-            amount: lineItem.quantity,
-          };
+      // skips if there are no increase package items (adds the number of requests) in the checkout
+      if (limitIncreaseItem) {
+        const limitIncreaseEvent: ILimitIncreaseEvent = {
+          stripeCustomerId,
+          amount: lineItem.quantity,
+        };
 
-        this.eventEmitter.emitAsync(
-          EventType.REQUEST_CONTINGENT_INCREASED_EVENT,
-          requestContingentIncreasedEvent,
-        );
+        switch (limitIncreaseItem.type) {
+          case ApiSubscriptionLimitsEnum.NumberOfRequests: {
+            this.eventEmitter.emitAsync(
+              EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
+              limitIncreaseEvent,
+            );
+
+            break;
+          }
+        }
       }
     }
   }
 
-  private handleSubscriptionUpsertedEvent(eventData: Stripe.Event.Data) {
+  private handleSubscriptionUpsertEvent(eventData: Stripe.Event.Data) {
     const payload = eventData.object as any;
     const stripeCustomerId = payload.customer;
     const stripePriceId = payload.items.data[0].price.id;
@@ -115,7 +133,7 @@ export class BillingService {
     const trialEndsAt = payload.trial_end;
     const endsAt = payload.current_period_end;
 
-    const subscriptionUpsertedEvent: SubscriptionCreatedEvent = {
+    const subscriptionUpsertEvent: SubscriptionCreateEvent = {
       stripeCustomerId,
       stripePriceId,
       stripeSubscriptionId,
@@ -124,8 +142,8 @@ export class BillingService {
     };
 
     this.eventEmitter.emitAsync(
-      EventType.SUBSCRIPTION_UPSERTED_EVENT,
-      subscriptionUpsertedEvent,
+      EventType.SUBSCRIPTION_UPSERT_EVENT,
+      subscriptionUpsertEvent,
     );
   }
 
@@ -133,12 +151,14 @@ export class BillingService {
     const payload = eventData.object as any;
     const stripeCustomerId = payload.customer;
     const stripeSubscriptionId = payload.subscription;
-    const event: SubscriptionRenewedEvent = {
+
+    const event: SubscriptionRenewEvent = {
       stripeCustomerId,
       stripeSubscriptionId,
     };
+
     if (stripeSubscriptionId) {
-      this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEWED_EVENT, event);
+      this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEW_EVENT, event);
     }
   }
 }

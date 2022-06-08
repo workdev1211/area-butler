@@ -1,130 +1,310 @@
-import {ApiDataSource, ApiSubscriptionPlan, ApiSubscriptionPlanType,} from "../types/subscription-plan";
+import {
+  ApiDataSource,
+  ApiSubscriptionPlan,
+  ApiSubscriptionIntervalEnum,
+  ApiSubscriptionPlanType,
+} from "../types/subscription-plan";
 
-export const TRIAL_DAYS = 14;
+export const TRIAL_DAYS = 4;
 
 export const allSubscriptionTypes: {
-    type: ApiSubscriptionPlanType;
-    label: string;
+  type: ApiSubscriptionPlanType;
+  name: string;
 }[] = [
-    {type: ApiSubscriptionPlanType.STANDARD, label: "Standard"},
-    {type: ApiSubscriptionPlanType.PRO, label: "Pro"},
-    {type: ApiSubscriptionPlanType.BUSINESS_PLUS, label: "Business+"},
-    {type: ApiSubscriptionPlanType.TRIAL, label: "Kostenfreie Testversion"},
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_1, name: "Pay per Use (1)" },
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_5, name: "Pay per Use (5)" },
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use (10)" },
+  { type: ApiSubscriptionPlanType.BUSINESS_PLUS, name: "Business+" },
+  { type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2, name: "Business+" },
+  { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },
+  // TODO will be released later
+  // { type: ApiSubscriptionPlanType.ENTERPRISE, name: "Enterprise" },
 ];
 
-export const standardSubscription: ApiSubscriptionPlan = {
-    type: ApiSubscriptionPlanType.STANDARD,
-    limits: {
-        numberOfRequestsPerMonth: 20
+// Number of requests (addresses) is summed up from the values set for each month
+export const cumulativeRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
+  ApiSubscriptionPlanType.BUSINESS_PLUS,
+  ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
+];
+
+// Number of requests (addresses) is set for the entire period
+export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
+  ApiSubscriptionPlanType.PAY_PER_USE_1,
+  ApiSubscriptionPlanType.PAY_PER_USE_5,
+  ApiSubscriptionPlanType.PAY_PER_USE_10,
+  ApiSubscriptionPlanType.TRIAL,
+];
+
+export const payPerUse1Subscription: ApiSubscriptionPlan = {
+  name: "Pay per Use",
+  type: ApiSubscriptionPlanType.PAY_PER_USE_1,
+  prices: [
+    {
+      id: { dev: "price_1LAUOVLcbb2Q3qBpRhqjaCb5" },
+      name: "Per 1",
+      price: "49",
+      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      limits: { numberOfRequests: { amount: 1 } },
     },
-    priceIds: {
-        dev: {
-            requestIncreaseId: 'price_1JpeazLcbb2Q3qBpgUYRLUaW',
-            monthlyId: 'price_1Jp7oWLcbb2Q3qBpK0DbKHfR',
-            annuallyId: 'price_1JrlPQLcbb2Q3qBpJQF5JTaF'
-        },
-        prod: {
-            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBpESLlpZ4v',
-            monthlyId: 'price_1Jw8gALcbb2Q3qBp20TjytRI',
-            annuallyId: 'price_1Jw8gALcbb2Q3qBpKDAnhGnX'
-        }
-    },
-    properties: [
-        'bis zu 20 Umgebungsanalysen im Monat',
-        'Beliebig viele Interessenten & Objekten hinterlegen',
-        'vollautomatisiertes Exposé',
-        'Analyse basierend auf OSM-Daten',
+  ],
+  description: [
+    "pro Adresse",
+    "iFrame / Widget mit Ihren Farben & Logos",
+    "PDF & Word Exporte mit Ihren Farben & Logos",
+    "Hochauflösende Kartenausschnitte",
+    "Fragebögen an Ihre Kunden verschicken",
+    "Karten & POI Daten",
+    "Sozio-Ökonomische Analyse-Daten",
+    "Email Support und FAQs",
+  ],
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: false,
+    dataSources: [
+      ApiDataSource.OSM,
+      ApiDataSource.CENSUS,
+      ApiDataSource.FEDERAL_ELECTION,
+      ApiDataSource.PARTICLE_POLLUTION,
     ],
-    appFeatures: {
-        requestIncreasePackage: 12,
-        sendCustomerQuestionnaireRequest: false,
-        dataSources: [ApiDataSource.OSM],
-        canCustomizeExport: false,
-        fullyCustomizableExpose: false,
-        htmlSnippet: false
-    },
+    canCustomizeExport: true,
+    fullyCustomizableExpose: true,
+    htmlSnippet: true,
+  },
 };
 
-export const proSubscription: ApiSubscriptionPlan = {
-    type: ApiSubscriptionPlanType.PRO,
-    limits: {
-        numberOfRequestsPerMonth: 100
+export const payPerUse5Subscription: ApiSubscriptionPlan = {
+  name: "Pay per Use",
+  type: ApiSubscriptionPlanType.PAY_PER_USE_5,
+  prices: [
+    {
+      id: { dev: "price_1LAUPELcbb2Q3qBpne9Hyox6" },
+      name: "Per 5",
+      price: "195",
+      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      limits: { numberOfRequests: { amount: 5 } },
     },
-    priceIds: {
-        dev: {
-            requestIncreaseId: 'price_1JpeivLcbb2Q3qBpnKL4gaMh',
-            monthlyId: 'price_1JpHb4Lcbb2Q3qBpECFvTJJ1',
-            annuallyId: 'price_1JrlQeLcbb2Q3qBpdXq9M5sW'
-        },
-        prod: {
-            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBpGXldv0vo',
-            monthlyId: 'price_1Jw8g6Lcbb2Q3qBp6GfMGdkC',
-            annuallyId: 'price_1Jw8g6Lcbb2Q3qBpJ8VSzPvZ'
-        },
-    },
-    properties: [
-        'bis zu 100 Umgebungsanalysen im Monat',
-        'Beliebig viele Interessenten & Objekten hinterlegen',
-        'vollautomatisiertes Exposé',
-        'Analyse basierend auf OSM- und Zensus-Daten',
-        'Versand von Fragebögen'
+  ],
+  description: [
+    "pro Adresse",
+    "iFrame / Widget mit Ihren Farben & Logos",
+    "PDF & Word Exporte mit Ihren Farben & Logos",
+    "Hochauflösende Kartenausschnitte",
+    "Fragebögen an Ihre Kunden verschicken",
+    "Karten & POI Daten",
+    "Sozio-Ökonomische Analyse-Daten",
+    "Email Support und FAQs",
+  ],
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: false,
+    dataSources: [
+      ApiDataSource.OSM,
+      ApiDataSource.CENSUS,
+      ApiDataSource.FEDERAL_ELECTION,
+      ApiDataSource.PARTICLE_POLLUTION,
     ],
-    appFeatures: {
-        requestIncreasePackage: 50,
-        sendCustomerQuestionnaireRequest: true,
-        dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS],
-        canCustomizeExport: true,
-        fullyCustomizableExpose: false,
-        htmlSnippet: false
-    },
+    canCustomizeExport: true,
+    fullyCustomizableExpose: true,
+    htmlSnippet: true,
+  },
 };
 
+export const payPerUse10Subscription: ApiSubscriptionPlan = {
+  name: "Pay per Use",
+  type: ApiSubscriptionPlanType.PAY_PER_USE_10,
+  prices: [
+    {
+      id: { dev: "price_1LAUPsLcbb2Q3qBpmM72R6DK" },
+      name: "Per 10",
+      price: "290",
+      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      limits: { numberOfRequests: { amount: 10 } },
+    },
+  ],
+  description: [
+    "pro Adresse",
+    "iFrame / Widget mit Ihren Farben & Logos",
+    "PDF & Word Exporte mit Ihren Farben & Logos",
+    "Hochauflösende Kartenausschnitte",
+    "Fragebögen an Ihre Kunden verschicken",
+    "Karten & POI Daten",
+    "Sozio-Ökonomische Analyse-Daten",
+    "Email Support und FAQs",
+  ],
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: false,
+    dataSources: [
+      ApiDataSource.OSM,
+      ApiDataSource.CENSUS,
+      ApiDataSource.FEDERAL_ELECTION,
+      ApiDataSource.PARTICLE_POLLUTION,
+    ],
+    canCustomizeExport: true,
+    fullyCustomizableExpose: true,
+    htmlSnippet: true,
+  },
+};
+
+// Legacy Business+ subscription
 export const businessPlusSubscription: ApiSubscriptionPlan = {
-    type: ApiSubscriptionPlanType.BUSINESS_PLUS,
-    limits: {
-        numberOfRequestsPerMonth: 500
+  name: "Business+",
+  type: ApiSubscriptionPlanType.BUSINESS_PLUS,
+  prices: [
+    {
+      id: {
+        dev: "price_1JpHc4Lcbb2Q3qBpam7MLdw7",
+        prod: "price_1Jw8g2Lcbb2Q3qBp72CuwKjT",
+      },
+      name: "Per 500",
+      price: "250",
+      interval: ApiSubscriptionIntervalEnum.MONTHLY,
     },
-    priceIds: {
-        dev: {
-            requestIncreaseId: 'price_1JpejDLcbb2Q3qBpNFh2rph9',
-            monthlyId: 'price_1JpHc4Lcbb2Q3qBpam7MLdw7',
-            annuallyId: 'price_1JrlRBLcbb2Q3qBpoLgnzxCC'
+    {
+      id: {
+        dev: "price_1JrlRBLcbb2Q3qBpoLgnzxCC",
+        prod: "price_1Jw8g2Lcbb2Q3qBpX7r3BGMl",
+      },
+      name: "Per 500",
+      price: "2750",
+      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+    },
+  ],
+  limits: {
+    numberOfRequests: {
+      amount: 500,
+      increaseParams: {
+        id: {
+          dev: "price_1JpejDLcbb2Q3qBpNFh2rph9",
+          prod: "price_1Jw8ftLcbb2Q3qBp73Out78u",
         },
-        prod: {
-            requestIncreaseId: 'price_1Jw8ftLcbb2Q3qBp73Out78u',
-            monthlyId: 'price_1Jw8g2Lcbb2Q3qBp72CuwKjT',
-            annuallyId: 'price_1Jw8g2Lcbb2Q3qBpX7r3BGMl'
-        }
+        amount: 100,
+      },
     },
-    properties: [
-        'bis zu 500 Umgebungsanalysen im Monat',
-        'Beliebig viele Interessenten & Objekte hinterlegen',
-        'vollautomatisiertes Exposé',
-        'Analyse basierend auf allen Geo-Daten',
-        'Versand von Fragebögen',
+  },
+  description: [
+    "bis zu 500 Umgebungsanalysen im Monat",
+    "Beliebig viele Interessenten & Objekte hinterlegen",
+    "vollautomatisiertes Exposé",
+    "Analyse basierend auf allen Geo-Daten",
+    "Versand von Fragebögen",
+  ],
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: true,
+    dataSources: [
+      ApiDataSource.OSM,
+      ApiDataSource.CENSUS,
+      ApiDataSource.FEDERAL_ELECTION,
+      ApiDataSource.PARTICLE_POLLUTION,
     ],
-    appFeatures: {
-        requestIncreasePackage: 100,
-        sendCustomerQuestionnaireRequest: true,
-        dataSources: [ApiDataSource.OSM, ApiDataSource.CENSUS, ApiDataSource.FEDERAL_ELECTION, ApiDataSource.PARTICLE_POLLUTION],
-        canCustomizeExport: true,
-        fullyCustomizableExpose: true,
-        htmlSnippet: true
-    },
+    canCustomizeExport: true,
+    fullyCustomizableExpose: true,
+    htmlSnippet: true,
+  },
 };
 
-export const trialSubscription : ApiSubscriptionPlan = {
-    ...businessPlusSubscription,
-    type: ApiSubscriptionPlanType.TRIAL,
-    limits: {
-        numberOfRequestsPerMonth: 100
+// Actual Business+ subscription
+export const businessPlusV2Subscription: ApiSubscriptionPlan = {
+  name: "Business+",
+  type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
+  prices: [
+    {
+      id: { dev: "price_1LApwWLcbb2Q3qBpgGgTVGbV" },
+      name: "Per 100",
+      price: "1470",
+      interval: ApiSubscriptionIntervalEnum.QUARTERLY,
+      limits: { numberOfRequests: { amount: 100 } },
+      description: ["100 Adressen pro Monat"],
     },
-}
+    {
+      id: { dev: "price_1L8Lx8Lcbb2Q3qBpPX9JNiId" },
+      name: "Per 200",
+      price: "5390",
+      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      limits: { numberOfRequests: { amount: 200 } },
+      description: ["200 Adressen pro Monat"],
+    },
+  ],
+  description: [
+    'Alle Funktionen aus "Pay per use"',
+    "+ Karten Stile in eigenem Design",
+    "+ individuelles onboarding",
+    "+ 24*7 persönlicher Kundenservice",
+  ],
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: true,
+    dataSources: [
+      ApiDataSource.OSM,
+      ApiDataSource.CENSUS,
+      ApiDataSource.FEDERAL_ELECTION,
+      ApiDataSource.PARTICLE_POLLUTION,
+    ],
+    canCustomizeExport: true,
+    fullyCustomizableExpose: true,
+    htmlSnippet: true,
+  },
+};
 
-export const allSubscriptions: Record<ApiSubscriptionPlanType,
-    ApiSubscriptionPlan> = {
-    [ApiSubscriptionPlanType.STANDARD]: standardSubscription,
-    [ApiSubscriptionPlanType.PRO]: proSubscription,
-    [ApiSubscriptionPlanType.BUSINESS_PLUS]: businessPlusSubscription,
-    [ApiSubscriptionPlanType.TRIAL]: trialSubscription,
+// TODO will be released later
+// export const enterpriseSubscription: ApiSubscriptionPlan = {
+//   name: "Enterprise",
+//   type: ApiSubscriptionPlanType.ENTERPRISE,
+//   limits: null,
+//   prices: [
+//     {
+//       id: {
+//         dev: "",
+//         prod: "",
+//       },
+//       price: "",
+//       interval: ApiSubscriptionPlanInterval.MONTHLY,
+//     },
+//     {
+//       id: {
+//         dev: "",
+//         prod: "",
+//       },
+//       price: "",
+//       interval: ApiSubscriptionPlanInterval.ANNUALLY,
+//     },
+//   ],
+//   requestIncreaseId: {
+//     dev: "",
+//     prod: "",
+//   },
+//   properties: [
+//     "Beliebig viele Adressen",
+//     'Alle Funktionen von "Business+"',
+//     "+ voll individualisierbare Exporte",
+//     "+ individuelle Integration in Ihre Website",
+//     "+ individuelle api Integration in Ihr CMS/CRM",
+//   ],
+//   appFeatures: {
+//     requestIncreasePackage: null,
+//     sendCustomerQuestionnaireRequest: true,
+//     dataSources: Object.values(ApiDataSource),
+//     canCustomizeExport: true,
+//     fullyCustomizableExpose: true,
+//     htmlSnippet: true,
+//   },
+// };
+
+// TODO npmdl ask Alex
+export const trialSubscription: ApiSubscriptionPlan = {
+  ...businessPlusV2Subscription,
+  type: ApiSubscriptionPlanType.TRIAL,
+  limits: {
+    numberOfRequests: { amount: 1 },
+  },
+};
+
+export const allSubscriptions: Record<
+  ApiSubscriptionPlanType,
+  ApiSubscriptionPlan
+> = {
+  [ApiSubscriptionPlanType.PAY_PER_USE_1]: payPerUse1Subscription,
+  [ApiSubscriptionPlanType.PAY_PER_USE_5]: payPerUse5Subscription,
+  [ApiSubscriptionPlanType.PAY_PER_USE_10]: payPerUse10Subscription,
+  [ApiSubscriptionPlanType.BUSINESS_PLUS]: businessPlusSubscription,
+  [ApiSubscriptionPlanType.BUSINESS_PLUS_V2]: businessPlusV2Subscription,
+  // TODO will be released later
+  // [ApiSubscriptionPlanType.ENTERPRISE]: enterpriseSubscription,
+  [ApiSubscriptionPlanType.TRIAL]: trialSubscription,
 };

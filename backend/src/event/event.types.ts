@@ -1,19 +1,18 @@
-import { UserDocument } from "../user/schema/user.schema";
-
+import { UserDocument } from '../user/schema/user.schema';
 
 export enum EventType {
   USER_CREATED_EVENT = 'USER_CREATED_EVENT',
   USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
-  SUBSCRIPTION_UPSERTED_EVENT = 'SUBSCRIPTION_UPSERTED_EVENT',
-  SUBSCRIPTION_RENEWED_EVENT = 'SUBSCRIPTION_RENEWED_EVENT',
-  REQUEST_CONTINGENT_INCREASED_EVENT = 'REQUEST_CONTINGENT_INCREASED_EVENT',
+  SUBSCRIPTION_UPSERT_EVENT = 'SUBSCRIPTION_UPSERT_EVENT',
+  SUBSCRIPTION_RENEW_EVENT = 'SUBSCRIPTION_RENEW_EVENT',
+  REQUEST_CONTINGENT_INCREASE_EVENT = 'REQUEST_CONTINGENT_INCREASE_EVENT',
 }
 
 export interface UserEvent {
   user: UserDocument;
 }
 
-export interface SubscriptionCreatedEvent {
+export interface SubscriptionCreateEvent {
   stripeCustomerId: string;
   stripePriceId: string;
   stripeSubscriptionId: string;
@@ -21,12 +20,12 @@ export interface SubscriptionCreatedEvent {
   trialEndsAt: Date;
 }
 
-export interface RequestContingentIncreasedEvent {
+export interface ILimitIncreaseEvent {
   stripeCustomerId: string;
-  amount: number;
+  amount: any;
 }
 
-export interface SubscriptionRenewedEvent {
+export interface SubscriptionRenewEvent {
   stripeCustomerId: string;
   stripeSubscriptionId: string;
 }

@@ -1,7 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { StripeService } from '../../client/stripe/stripe.service';
-import { EventType, RequestContingentIncreasedEvent, SubscriptionCreatedEvent, SubscriptionRenewedEvent } from '../../event/event.types';
+import {
+  EventType,
+  ILimitIncreaseEvent,
+  SubscriptionCreateEvent,
+  SubscriptionRenewEvent,
+} from '../../event/event.types';
 import { SubscriptionService } from '../subscription.service';
 import { UserService } from '../user.service';
 
@@ -13,64 +19,76 @@ export class SubscriptionListener {
     private stripeService: StripeService,
   ) {}
 
-  @OnEvent(EventType.SUBSCRIPTION_UPSERTED_EVENT, { async: true })
-  private async handleSubscriptionUpsertedEvent({
+  @OnEvent(EventType.SUBSCRIPTION_UPSERT_EVENT, { async: true })
+  private async handleSubscriptionUpsertEvent({
     stripeCustomerId,
     stripePriceId,
     stripeSubscriptionId,
     endsAt,
     trialEndsAt,
-  }: SubscriptionCreatedEvent) {
+  }: SubscriptionCreateEvent) {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
-    const plan =
-      this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
+
+    const {
+      plan: { type },
+    } =
+      this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
         stripePriceId,
       );
-    if (user && plan) {
-      await this.subscriptionService.upsertForUserId(
-        user._id,
-        plan.type,
-        stripeSubscriptionId,
-        stripePriceId,
-        endsAt,
-        trialEndsAt,
-      );
-      await this.userService.addMonthlyRequestContingents(user, endsAt);
+
+    if (!user || !type) {
+      return;
     }
+
+    await this.subscriptionService.upsertByUserId(
+      user._id,
+      type,
+      stripeSubscriptionId,
+      stripePriceId,
+      endsAt,
+      trialEndsAt,
+    );
+
+    await this.userService.addMonthlyRequestContingents(user, endsAt);
   }
 
-  @OnEvent(EventType.SUBSCRIPTION_RENEWED_EVENT, { async: true })
-  private async handleSubscriptionRenewedEvent({
+  @OnEvent(EventType.SUBSCRIPTION_RENEW_EVENT, { async: true })
+  private async handleSubscriptionRenewEvent({
     stripeSubscriptionId,
     stripeCustomerId,
-  }: SubscriptionRenewedEvent) {
+  }: SubscriptionRenewEvent) {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
+
     const subscription = await this.stripeService.fetchSubscriptionData(
       stripeSubscriptionId,
     );
+
     const newEndDate = new Date(subscription.current_period_end * 1000);
+
     if (user && subscription) {
       await this.subscriptionService.renewSubscription(
         stripeSubscriptionId,
         newEndDate,
       );
+
       await this.userService.addMonthlyRequestContingents(user, newEndDate);
     }
   }
 
-  @OnEvent(EventType.REQUEST_CONTINGENT_INCREASED_EVENT, { async: true })
-  private async handleRequestContingentIncreasedEvent({
+  @OnEvent(EventType.REQUEST_CONTINGENT_INCREASE_EVENT, { async: true })
+  private async handleRequestContingentIncreaseEvent({
     stripeCustomerId,
     amount,
-  }: RequestContingentIncreasedEvent) {
+  }: ILimitIncreaseEvent) {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
-    if (!!user) {
+
+    if (user) {
       await this.userService.addRequestContingentIncrease(user, amount);
     }
   }

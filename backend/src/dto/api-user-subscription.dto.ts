@@ -1,13 +1,19 @@
 import {
-  ApiSubscriptionPlanType,
-  ApiUserSubscription
-} from '@area-butler-types/subscription-plan';
+  IsDate,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsDate, IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
+
+import {
+  ApiSubscriptionPlanType,
+  ApiUserSubscription,
+} from '@area-butler-types/subscription-plan';
 import ApiSubscriptionPlanDto from './api-subscription-plan.dto';
 
 class ApiUserSubscriptionDto implements ApiUserSubscription {
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiSubscriptionPlanDto)
@@ -28,6 +34,10 @@ class ApiUserSubscriptionDto implements ApiUserSubscription {
   @IsNotEmpty()
   @IsEnum(ApiSubscriptionPlanType)
   type: ApiSubscriptionPlanType;
+
+  @IsNotEmpty()
+  @IsString()
+  priceId: string;
 }
 
 export default ApiUserSubscriptionDto;

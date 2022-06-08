@@ -4,7 +4,7 @@ import { SubscriptionListener } from './listener/subscription.listener';
 import { User, Userschema } from './schema/user.schema';
 import { UserController } from './user.controller';
 import { UserService } from './user.service';
-import { Subscription, Subscriptionschema } from './schema/subscription.schema';
+import { Subscription, SubscriptionSchema } from './schema/subscription.schema';
 import { SubscriptionService } from './subscription.service';
 import { ClientModule } from '../client/client.module';
 
@@ -14,7 +14,7 @@ import { ClientModule } from '../client/client.module';
       { name: User.name, schema: Userschema },
       {
         name: Subscription.name,
-        schema: Subscriptionschema,
+        schema: SubscriptionSchema,
       },
     ]),
     ClientModule,

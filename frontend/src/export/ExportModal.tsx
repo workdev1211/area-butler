@@ -164,7 +164,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   }
                   onAfterPrint={onClose}
                   user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
+                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
                       ? user
                       : null
                   }
@@ -195,7 +195,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                   }
                   onAfterPrint={onClose}
                   user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
+                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
                       ? user
                       : null
                   }
@@ -223,7 +223,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       : undefined
                   }
                   user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.STANDARD
+                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
                       ? user
                       : null
                   }

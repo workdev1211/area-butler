@@ -1,6 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
 import {
   Subscription,
   SubscriptionDocument,
@@ -8,7 +9,11 @@ import {
 import { configService } from '../config/config.service';
 import { allSubscriptions } from '../../../shared/constants/subscription-plan';
 import ApiSubscriptionPlanDto from '../dto/api-subscription-plan.dto';
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
+import {
+  ApiSubscriptionLimitsEnum,
+  ApiSubscriptionPlanType,
+} from '@area-butler-types/subscription-plan';
+import ApiSubscriptionPricingDto from '../dto/api-subscription-pricing.dto';
 
 @Injectable()
 export class SubscriptionService {
@@ -19,18 +24,86 @@ export class SubscriptionService {
     private subscriptionModel: Model<SubscriptionDocument>,
   ) {}
 
-  public getApiSubscriptionPlanForStripePriceId(
+  getApiSubscriptionPlanPriceByStripePriceId(
     stripePriceId: string,
-  ): ApiSubscriptionPlanDto | undefined {
+  ):
+    | { plan: ApiSubscriptionPlanDto; price: ApiSubscriptionPricingDto }
+    | undefined {
     const stripeEnv = configService.getStripeEnv();
-    return Object.values(allSubscriptions).find(
-      (subscription: ApiSubscriptionPlanDto) =>
-        subscription.priceIds[stripeEnv].annuallyId === stripePriceId ||
-        subscription.priceIds[stripeEnv].monthlyId === stripePriceId,
-    );
+    let foundPlanPrice;
+
+    Object.values(allSubscriptions).find((subscriptionPlan) => {
+      const foundPrice = subscriptionPlan.prices.find(
+        ({ id }) => id[stripeEnv] === stripePriceId,
+      );
+
+      if (foundPrice) {
+        foundPlanPrice = { plan: subscriptionPlan, price: foundPrice };
+      }
+
+      return !!foundPrice;
+    });
+
+    return foundPlanPrice;
   }
 
-  public async checkSubscriptionViolation(
+  getLimitIncreaseItem(itemPriceId: string): {
+    type: ApiSubscriptionLimitsEnum;
+    amount: any;
+  } {
+    const stripeEnv = configService.getStripeEnv();
+
+    let foundItem;
+
+    Object.values(allSubscriptions).some(({ limits: planLimits, prices }) => {
+      const hasPriceLimitIncreaseItem = prices.some(
+        ({ limits: priceLimits }) =>
+          priceLimits &&
+          Object.keys(priceLimits).some((limitName) => {
+            if (
+              priceLimits[limitName].increaseParams?.id[stripeEnv] ===
+              itemPriceId
+            ) {
+              foundItem = {
+                type: limitName,
+                amount: priceLimits[limitName].increaseParams.amount,
+              };
+
+              return true;
+            }
+
+            return false;
+          }),
+      );
+
+      if (hasPriceLimitIncreaseItem) {
+        return true;
+      }
+
+      // hasPlanLimitIncreaseItem
+      return (
+        planLimits &&
+        Object.keys(planLimits).some((limitName) => {
+          if (
+            planLimits[limitName].increaseParams?.id[stripeEnv] === itemPriceId
+          ) {
+            foundItem = {
+              type: limitName,
+              amount: planLimits[limitName].increaseParams.amount,
+            };
+
+            return true;
+          }
+
+          return false;
+        })
+      );
+    });
+
+    return foundItem;
+  }
+
+  async checkSubscriptionViolation(
     userId: string,
     check: (subscription: ApiSubscriptionPlanDto) => boolean,
     message: string,
@@ -46,13 +119,11 @@ export class SubscriptionService {
     }
   }
 
-  public async allUserSubscriptions(
-    userId: string,
-  ): Promise<SubscriptionDocument[]> {
+  async allUserSubscriptions(userId: string): Promise<SubscriptionDocument[]> {
     return this.subscriptionModel.find({ userId });
   }
 
-  public async renewSubscription(
+  async renewSubscription(
     stripeSubscriptionId: string,
     newEndDate: Date,
   ): Promise<SubscriptionDocument> {
@@ -60,35 +131,40 @@ export class SubscriptionService {
       { stripeSubscriptionId },
       { $set: { endsAt: newEndDate } },
     );
+
     return this.subscriptionModel.findOne({ stripeSubscriptionId });
   }
 
-  public async findActiveByUserId(
+  async findActiveByUserId(
     userId: string,
   ): Promise<SubscriptionDocument | null> {
     const userSubscriptions: SubscriptionDocument[] =
       await this.allUserSubscriptions(userId);
+
     const activeSubscriptions = userSubscriptions.filter(
       (s) =>
         s.trialEndsAt >= new Date() ||
         (s.trialEndsAt < new Date() && s.endsAt >= new Date()),
     );
+
     if (activeSubscriptions.length > 1) {
       throw new HttpException('user has multliple active subscriptions', 400);
     }
+
     if (activeSubscriptions.length < 1) {
       return null;
     }
+
     return activeSubscriptions[0];
   }
 
-  public async findByStripeSubscriptionId(
+  async findByStripeSubscriptionId(
     stripeSubscriptionId: string,
   ): Promise<SubscriptionDocument> {
     return this.subscriptionModel.findOne({ stripeSubscriptionId });
   }
 
-  public async upsertForUserId(
+  async upsertByUserId(
     userId: string,
     type: ApiSubscriptionPlanType,
     stripeSubscriptionId = 'unverified-new',
@@ -98,7 +174,7 @@ export class SubscriptionService {
   ): Promise<SubscriptionDocument> {
     if (type === 'TRIAL') {
       if (await this.findActiveByUserId(userId)) {
-        throw new HttpException('user has already an active subscription', 400);
+        throw new HttpException('User already has an active subscription', 400);
       }
 
       return await new this.subscriptionModel({
@@ -115,17 +191,23 @@ export class SubscriptionService {
       stripeSubscriptionId,
     );
 
-    if (!!subscription) {
-      subscription.stripePriceId = stripePriceId;
-      subscription.type = type;
-      subscription.endsAt = endsAt;
-      subscription.trialEndsAt = trialEndsAt;
-      this.logger.log(`Create subscription for ${userId}, ${type}`);
+    if (subscription) {
+      Object.assign(subscription, {
+        stripePriceId,
+        type,
+        endsAt,
+        trialEndsAt,
+      });
+
+      this.logger.log(`Update ${type} subscription for ${userId} user`);
+
       return await subscription.save();
     } else {
       if (await this.findActiveByUserId(userId)) {
         throw new HttpException('user has already an active subscription', 400);
       }
+
+      this.logger.log(`Create ${type} subscription for ${userId} user`);
 
       return await new this.subscriptionModel({
         userId,

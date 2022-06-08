@@ -70,7 +70,7 @@ export class UserService {
       existingUser.consentGiven = new Date();
       const endsAt = new Date();
       endsAt.setDate(new Date().getDate() + 14);
-      await this.subscriptionService.upsertForUserId(
+      await this.subscriptionService.upsertByUserId(
         existingUser._id,
         ApiSubscriptionPlanType.TRIAL,
         'trialSubcription',
@@ -148,12 +148,12 @@ export class UserService {
       return;
     }
 
-    const subscriptionPlan =
-      this.subscriptionService.getApiSubscriptionPlanForStripePriceId(
+    const { plan: type } =
+      this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
         stripePriceId,
       );
 
-    if (!subscriptionPlan) {
+    if (!type) {
       console.log('no subscription plan found for price id: ' + stripePriceId);
       return;
     }
@@ -161,7 +161,7 @@ export class UserService {
     const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(
       { _id: oid },
-      { $set: { subscriptionPlan: subscriptionPlan.type } },
+      { $set: { subscriptionPlan: type } },
     );
     const userWithSubscription = await this.findById(user.id);
     return await this.addMonthlyRequestContingents(
@@ -217,12 +217,12 @@ export class UserService {
       if (!existingMonthlyContingent) {
         user.requestContingents.push({
           type: ApiRequestContingentType.RECURRENT,
-          amount: subscription?.limits?.numberOfRequestsPerMonth,
+          amount: subscription?.limits?.numberOfRequests?.amount,
           date: currentMonth,
         });
       } else {
         existingMonthlyContingent.amount =
-          subscription?.limits?.numberOfRequestsPerMonth;
+          subscription?.limits?.numberOfRequests?.amount;
       }
       const month = currentMonth.getMonth();
       const year = currentMonth.getFullYear();

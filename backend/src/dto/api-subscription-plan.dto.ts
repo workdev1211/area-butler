@@ -1,40 +1,58 @@
 import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+import {
   ApiDataSource,
   ApiSubscriptionPlan,
-  ApiSubscriptionPlanType
+  ApiSubscriptionPlanType,
+  TApiSubscriptionLimits,
 } from '@area-butler-types/subscription-plan';
-import { IsArray, IsEnum, IsNotEmpty, IsObject } from 'class-validator';
 import ApiSubscriptionPricingDto from './api-subscription-pricing.dto';
+import ApiSubscriptionLimitsDto from './api-subscription-limits.dto';
 
 class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
+  @IsNotEmpty()
+  @IsString()
+  name: string;
 
+  @IsNotEmpty()
+  @IsEnum(ApiSubscriptionPlanType)
+  type: ApiSubscriptionPlanType;
+
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested()
+  @Type(() => ApiSubscriptionPricingDto)
+  prices: ApiSubscriptionPricingDto[];
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiSubscriptionLimitsDto)
+  limits?: TApiSubscriptionLimits;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  description?: string[];
 
   @IsNotEmpty()
   @IsObject()
   appFeatures: {
-    requestIncreasePackage: number;
     sendCustomerQuestionnaireRequest: boolean;
     dataSources: ApiDataSource[];
     canCustomizeExport: boolean;
     fullyCustomizableExpose: boolean;
     htmlSnippet: boolean;
   };
-
-  @IsNotEmpty()
-  @IsObject()
-  limits: { numberOfRequestsPerMonth?: number };
-
-  @IsNotEmpty()
-  @IsObject()  
-  priceIds: { dev: ApiSubscriptionPricingDto; prod: ApiSubscriptionPricingDto };
-
-  @IsArray()
-  @IsNotEmpty()
-  properties: string[];
-
-  @IsNotEmpty()
-  @IsEnum(ApiSubscriptionPlanType)
-  type: ApiSubscriptionPlanType;
 }
 
 export default ApiSubscriptionPlanDto;

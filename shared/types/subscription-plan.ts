@@ -1,59 +1,92 @@
 export interface ApiUserSubscription {
-    type: ApiSubscriptionPlanType;
-    createdAt: Date;
-    endsAt: Date;
-    trialEndsAt: Date;
-    config: ApiSubscriptionPlan;
+  type: ApiSubscriptionPlanType;
+  createdAt: Date;
+  endsAt: Date;
+  trialEndsAt: Date;
+  priceId: string;
+  config: ApiSubscriptionPlan;
 }
 
+export enum ApiSubscriptionIntervalEnum {
+  MONTHLY = "monthly",
+  ANNUALLY = "annually",
+  TWELVE_WEEKS = "twelveWeeks",
+  QUARTERLY = "quarterly",
+}
+
+export interface IApiSubscriptionEnvIds {
+  dev?: string;
+  prod?: string;
+}
+
+// TODO think about specific interfaces for each limit
+export interface IApiSubscriptionLimitIncreaseParams {
+  id: IApiSubscriptionEnvIds;
+  amount: any;
+}
+
+export interface IApiSubscriptionLimit {
+  amount: any;
+  increaseParams?: IApiSubscriptionLimitIncreaseParams;
+}
+
+export enum ApiSubscriptionLimitsEnum {
+  NumberOfRequests = "numberOfRequests",
+}
+
+export type TApiSubscriptionLimits = {
+  [key in ApiSubscriptionLimitsEnum]?: IApiSubscriptionLimit;
+};
+
 export enum ApiSubscriptionPlanType {
-    STANDARD = 'STANDARD',
-    PRO = 'PRO',
-    BUSINESS_PLUS = 'BUSINESS_PLUS',
-    TRIAL = 'TRIAL',
-    // ENTERPRISE = 'ENTERPRISE' TODO coming soon
+  PAY_PER_USE_1 = "PAY_PER_USE_1",
+  PAY_PER_USE_5 = "PAY_PER_USE_5",
+  PAY_PER_USE_10 = "PAY_PER_USE_10",
+  BUSINESS_PLUS = "BUSINESS_PLUS",
+  BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
+  // TODO will be released later
+  // ENTERPRISE = "ENTERPRISE",
+  TRIAL = "TRIAL",
 }
 
 export interface ApiSubscriptionPricing {
-    requestIncreaseId?: string,
-    monthlyId?: string,
-    annuallyId?: string
+  id: IApiSubscriptionEnvIds;
+  name?: string;
+  price: string;
+  interval: ApiSubscriptionIntervalEnum;
+  limits?: TApiSubscriptionLimits;
+  description?: string[];
 }
 
 export interface ApiSubscriptionPlan {
-    type: ApiSubscriptionPlanType,
-    priceIds: {
-        dev: ApiSubscriptionPricing,
-        prod: ApiSubscriptionPricing
-    },
-    properties: string[],
-    limits: {
-        numberOfRequestsPerMonth?: number,
-    },
-    appFeatures: {
-        requestIncreasePackage: number;
-        sendCustomerQuestionnaireRequest: boolean,
-        dataSources: ApiDataSource[],
-        canCustomizeExport: boolean,
-        fullyCustomizableExpose: boolean,
-        htmlSnippet: boolean
-    }
+  name: string;
+  type: ApiSubscriptionPlanType;
+  prices: ApiSubscriptionPricing[];
+  limits?: TApiSubscriptionLimits;
+  description?: string[];
+  appFeatures: {
+    sendCustomerQuestionnaireRequest: boolean;
+    dataSources: ApiDataSource[];
+    canCustomizeExport: boolean;
+    fullyCustomizableExpose: boolean;
+    htmlSnippet: boolean;
+  };
 }
 
 export interface ApiRequestContingent {
-    amount: number;
-    type: ApiRequestContingentType;
-    date: Date
+  amount: number;
+  type: ApiRequestContingentType;
+  date: Date;
 }
 
 export enum ApiRequestContingentType {
-    RECURRENT = 'RECURRENT',
-    INCREASE = 'INCREASE',
+  RECURRENT = "RECURRENT",
+  INCREASE = "INCREASE",
 }
 
 export enum ApiDataSource {
-    OSM = 'OSM',
-    CENSUS = 'CENSUS',
-    FEDERAL_ELECTION = 'FEDERAL_ELECTION',
-    PARTICLE_POLLUTION = 'PARTICLE_POLLUTION',
+  OSM = "OSM",
+  CENSUS = "CENSUS",
+  FEDERAL_ELECTION = "FEDERAL_ELECTION",
+  PARTICLE_POLLUTION = "PARTICLE_POLLUTION",
 }

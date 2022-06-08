@@ -1,62 +1,119 @@
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+
 import { useHttp } from "hooks/http";
-import React, { useContext, useEffect, useState } from "react";
 import {
-  businessPlusSubscription,
-  proSubscription,
-  standardSubscription,
-  TRIAL_DAYS
+  payPerUse1Subscription,
+  payPerUse5Subscription,
+  payPerUse10Subscription,
+  businessPlusV2Subscription,
+  TRIAL_DAYS,
 } from "../../../shared/constants/subscription-plan";
-import { ApiUserSubscription } from "../../../shared/types/subscription-plan";
+import {
+  ApiSubscriptionIntervalEnum,
+  ApiUserSubscription,
+} from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
 
-enum PlanInterval {
-  INTERVALL_MONTHLY,
-  INTERVALL_ANNUALLY
-}
-
-interface PlanProps {
+interface ISubscriptionPlan {
   stripePriceId: string;
   name: string;
   price: string;
-  intervall: PlanInterval;
-  properties: string[];
+  interval: string;
+  description: string[];
 }
 
-const SubscriptionPlanSelection: React.FunctionComponent = () => {
+const SubscriptionPlanSelection: FunctionComponent = () => {
   const { get, post } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
 
-  const [hadPreviousSubscriptions, setHadPreviousSubscriptions] = useState(
-    false
-  );
+  const [hadPreviousSubscriptions, setHadPreviousSubscriptions] =
+    useState(false);
 
-  const [intervall, setIntervall] = useState(PlanInterval.INTERVALL_MONTHLY);
+  const [sortedSubscriptionPlans, setSortedSubscriptionPlans] = useState<
+    ISubscriptionPlan[]
+  >([]);
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
       const subscriptions = (
         await get<ApiUserSubscription[]>("/api/users/me/subscriptions")
       ).data;
+
       setHadPreviousSubscriptions(subscriptions.length > 0);
     };
+
     fetchSubscriptions();
   }, [get, hadPreviousSubscriptions]);
+
+  useEffect(() => {
+    const getIntervalName = (interval: ApiSubscriptionIntervalEnum) => {
+      switch (interval) {
+        case ApiSubscriptionIntervalEnum.MONTHLY:
+          return "Monthly";
+
+        case ApiSubscriptionIntervalEnum.ANNUALLY:
+          return "Each year";
+
+        case ApiSubscriptionIntervalEnum.TWELVE_WEEKS:
+          return "Each twelve weeks";
+
+        case ApiSubscriptionIntervalEnum.QUARTERLY:
+          return "Each quartile";
+
+        default:
+          return "Monthly";
+      }
+    };
+
+    const resultingSubscriptionPlans = [
+      payPerUse1Subscription,
+      payPerUse5Subscription,
+      payPerUse10Subscription,
+      businessPlusV2Subscription,
+    ].reduce<ISubscriptionPlan[]>(
+      (result, { name, prices, description: planDescription = [] }) => {
+        prices.forEach(
+          ({ id, price, interval, description: priceDescription = [] }) => {
+            if (!id[stripeEnv]) {
+              return;
+            }
+
+            const description = [...priceDescription, ...planDescription];
+
+            result.push({
+              stripePriceId: id[stripeEnv]!,
+              name,
+              price,
+              interval: getIntervalName(interval),
+              description,
+            });
+          }
+        );
+
+        return result;
+      },
+      []
+    );
+
+    setSortedSubscriptionPlans(resultingSubscriptionPlans);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const forwardToCheckoutUrl = async (priceId: string) => {
     window.location.href = (
       await post<string>("/api/billing/create-checkout-url", {
         priceId,
-        trialPeriod: 14
+        trialPeriod: TRIAL_DAYS,
       })
     ).data;
   };
 
-  const SubscribePlanCard: React.FunctionComponent<PlanProps> = ({
+  const SubscriptionPlanCard: FunctionComponent<ISubscriptionPlan> = ({
     stripePriceId,
     name,
     price,
-    intervall,
-    properties
+    interval,
+    description,
   }) => {
     return (
       <div className="card shadow-lg w-auto flex flex-col justify-center items-center bg-gray-50">
@@ -69,7 +126,7 @@ const SubscriptionPlanSelection: React.FunctionComponent = () => {
             <span className="text-lg ml-2">
               {" "}
               /
-              {intervall === PlanInterval.INTERVALL_MONTHLY
+              {interval === ApiSubscriptionIntervalEnum.MONTHLY
                 ? "Monat "
                 : "Jahr "}
               zzgl. USt.
@@ -85,8 +142,8 @@ const SubscriptionPlanSelection: React.FunctionComponent = () => {
           <div className="flex flex-col my-10 h-64">
             <span className="font-semibold">Eigenschaften:</span>
             <ul className="list-disc ml-5 mt-2">
-              {properties.map(p => (
-                <li>{p}</li>
+              {description.map((p, i) => (
+                <li key={`${i}-${p}`}>{p}</li>
               ))}
             </ul>
           </div>
@@ -100,13 +157,13 @@ const SubscriptionPlanSelection: React.FunctionComponent = () => {
             aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber
             KuDiBa kündigt
           </p>
-          {intervall === PlanInterval.INTERVALL_MONTHLY && (
+          {interval === ApiSubscriptionIntervalEnum.MONTHLY && (
             <p className="text-sm">
               Das Abo ist zum Ende des jeweiligen Abonnementzeitraums mit einer
               Frist von 2 Wochen monatlich kündbar.
             </p>
           )}
-          {intervall === PlanInterval.INTERVALL_ANNUALLY && (
+          {interval === ApiSubscriptionIntervalEnum.ANNUALLY && (
             <p className="text-sm">
               Das Abo ist zum Ende des Abonnementzeitraums mit einer Frist von 2
               Wochen jährlich kündbar.
@@ -130,88 +187,28 @@ const SubscriptionPlanSelection: React.FunctionComponent = () => {
           Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das
           passende Abonnement für sich aus.
         </h1>
-
-        <div className="p-20 flex flex-col items-center justify-center">
-          <h2>Abrechnungsintervall</h2>
-          <div className="btn-group mt-5">
-            <button
-              className={`btn btn-lg ${
-                intervall === PlanInterval.INTERVALL_MONTHLY ? "btn-active" : ""
-              }`}
-              onClick={() => setIntervall(PlanInterval.INTERVALL_MONTHLY)}
-            >
-              Monatlich
-            </button>
-            <button
-              className={`btn btn-lg ${
-                intervall === PlanInterval.INTERVALL_ANNUALLY
-                  ? "btn-active"
-                  : ""
-              }`}
-              onClick={() => setIntervall(PlanInterval.INTERVALL_ANNUALLY)}
-            >
-              Jährlich
-            </button>
+        {sortedSubscriptionPlans.length && (
+          <div
+            className={`grid grid-cols-1 ${
+              sortedSubscriptionPlans.length === 1
+                ? "xl:w-1/2 xl:grid-cols-1"
+                : "gap-20 xl:grid-cols-3"
+            } mt-20`}
+          >
+            {sortedSubscriptionPlans.map(
+              ({ stripePriceId, name, price, interval, description }) => (
+                <SubscriptionPlanCard
+                  key={stripePriceId}
+                  stripePriceId={stripePriceId}
+                  name={name}
+                  price={price}
+                  interval={interval}
+                  description={description}
+                />
+              )
+            )}
           </div>
-          {intervall === PlanInterval.INTERVALL_MONTHLY && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-20 mt-20">
-              <SubscribePlanCard
-                stripePriceId={
-                  standardSubscription.priceIds[stripeEnv].monthlyId!
-                }
-                name="Standard"
-                price="60,00"
-                intervall={PlanInterval.INTERVALL_MONTHLY}
-                properties={standardSubscription.properties}
-              />
-              <SubscribePlanCard
-                stripePriceId={proSubscription.priceIds[stripeEnv].monthlyId!}
-                name="Pro"
-                price="90,00"
-                intervall={PlanInterval.INTERVALL_MONTHLY}
-                properties={proSubscription.properties}
-              />
-              <SubscribePlanCard
-                stripePriceId={
-                  businessPlusSubscription.priceIds[stripeEnv].monthlyId!
-                }
-                name="Business"
-                price="250,00"
-                intervall={PlanInterval.INTERVALL_MONTHLY}
-                properties={businessPlusSubscription.properties}
-              />
-            </div>
-          )}
-          {intervall === PlanInterval.INTERVALL_ANNUALLY && (
-            <div className="grid grid-cols-1 xl:grid-cols-3 gap-20 mt-20">
-              <SubscribePlanCard
-                stripePriceId={
-                  standardSubscription.priceIds[stripeEnv].annuallyId!
-                }
-                name="Standard"
-                price="660,00"
-                intervall={PlanInterval.INTERVALL_ANNUALLY}
-                properties={standardSubscription.properties}
-              />
-              <SubscribePlanCard
-                stripePriceId={proSubscription.priceIds[stripeEnv].annuallyId!}
-                name="Pro"
-                price="990,00"
-                intervall={PlanInterval.INTERVALL_ANNUALLY}
-                properties={proSubscription.properties}
-              />
-              <SubscribePlanCard
-                stripePriceId={
-                  businessPlusSubscription.priceIds[stripeEnv].annuallyId!
-                }
-                name="Business"
-                price="2750,00"
-                intervall={PlanInterval.INTERVALL_ANNUALLY}
-                properties={businessPlusSubscription.properties}
-              />
-            </div>
-          )}
-        </div>
+        )}
       </div>
     </div>
   );
