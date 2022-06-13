@@ -6,15 +6,15 @@ export interface CensusTableProps {
 }
 
 export const averageCensus = {
-  Durchschnittsalter: 44,
-  "Anteil der Ausländer": 8,
+  Durchschnittsalter: 44.6,
+  "Anteil der Ausländer": 11.2,
   Einwohner: 4041,
-  "Durchschnittliche Haushaltsgröße": 2,
-  "Anteil der leerstehenden Wohnungen": 0,
-  "Durchschnittliche Wohnfläche je Bewohner": 37,
-  "Durchschnittliche Wohnfläche je Wohnung": 68,
-  "Anteil der Bevölkerung ab 65 Jahre": 22,
-  "Anteil der Bevölkerung unter 18 Jahre": 15
+  "Durchschnittliche Haushaltsgröße": 2.02,
+  "Anteil der leerstehenden Wohnungen": 2.8,
+  "Durchschnittliche Wohnfläche je Bewohner": 45.3,
+  "Durchschnittliche Wohnfläche je Wohnung": 91.7,
+  "Anteil der Bevölkerung ab 65 Jahre": 21.1,
+  "Anteil der Bevölkerung unter 18 Jahre": 16.3,
 } as any;
 
 const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
@@ -23,7 +23,7 @@ const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
   }
 
   const censusCenter =
-    censusData.find(c =>
+    censusData.find((c) =>
       (c.properties as any).some((p: any) => p.value !== "unbekannt")
     ) || (censusData[0] as any);
 
