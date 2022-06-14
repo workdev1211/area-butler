@@ -1,8 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
+import Stripe from 'stripe';
 
 import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
-import Stripe from 'stripe';
 import { SubscriptionService } from '../user/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
@@ -21,6 +21,8 @@ import { ApiSubscriptionLimitsEnum } from '@area-butler-types/subscription-plan'
 
 @Injectable()
 export class BillingService {
+  private readonly logger = new Logger(BillingService.name);
+
   constructor(
     private stripeService: StripeService,
     private subscriptionService: SubscriptionService,
@@ -48,6 +50,7 @@ export class BillingService {
   async consumeWebhook(request: any): Promise<void> {
     try {
       const event = this.stripeService.constructEvent(request);
+      this.logger.log(`Consumed Stripe event with the type: ${event.type}`);
 
       switch (event.type) {
         case 'checkout.session.completed': {

@@ -1,8 +1,12 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
-import { Model, Types } from 'mongoose';
-import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import { Model } from 'mongoose';
+
+import {
+  cumulativeRequestSubscriptionTypes,
+  fixedRequestSubscriptionTypes,
+} from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
@@ -24,12 +28,10 @@ export class UserService {
     private mapboxService: MapboxService,
   ) {}
 
-  public async upsertUser(
-    email: string,
-    fullname: string,
-  ): Promise<UserDocument> {
+  async upsertUser(email: string, fullname: string): Promise<UserDocument> {
     const existingUser = await this.userModel.findOne({ email });
-    if (!!existingUser) {
+
+    if (existingUser) {
       return existingUser;
     } else {
       const newUser = await new this.userModel({
@@ -37,6 +39,7 @@ export class UserService {
         fullname,
         consentGiven: null,
       }).save();
+
       const event: UserEvent = {
         user: newUser,
       };
@@ -47,7 +50,7 @@ export class UserService {
     }
   }
 
-  public async patchUser(email: string, { fullname }: ApiUpsertUserDto) {
+  async patchUser(email: string, { fullname }: ApiUpsertUserDto) {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -59,7 +62,7 @@ export class UserService {
     return existingUser.save();
   }
 
-  public async giveConsent(email: string) {
+  async giveConsent(email: string) {
     const existingUser = await this.upsertUser(email, email);
 
     if (!existingUser) {
@@ -70,21 +73,23 @@ export class UserService {
       existingUser.consentGiven = new Date();
       const endsAt = new Date();
       endsAt.setDate(new Date().getDate() + 14);
+
       await this.subscriptionService.upsertByUserId(
         existingUser._id,
         ApiSubscriptionPlanType.TRIAL,
-        'trialSubcription',
+        'trialSubscription',
         'trialSubscription',
         endsAt,
         endsAt,
       );
-      await this.addMonthlyRequestContingents(existingUser, endsAt);
+
+      await this.setRequestContingents(existingUser, endsAt);
     }
 
     return await existingUser.save();
   }
 
-  public async hideTour(email: string, tour?: ApiTour) {
+  async hideTour(email: string, tour?: ApiTour) {
     const user = await this.findByEmail(email);
 
     if (!user) {
@@ -93,28 +98,30 @@ export class UserService {
 
     const showTour = { ...user.showTour };
 
-    if (!!tour) {
+    if (tour) {
       showTour[tour] = false;
     } else {
       Object.keys(user.showTour).forEach((tour) => (showTour[tour] = false));
     }
+
     user.showTour = showTour;
+
     return await user.save();
   }
 
-  public async setStripeCustomerId(
-    user: UserDocument,
+  async setStripeCustomerId(
+    userId: string,
     stripeCustomerId: string,
   ): Promise<UserDocument> {
-    const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(
-      { _id: oid },
+      { _id: userId },
       { $set: { stripeCustomerId } },
     );
-    return this.findById(user.id);
+
+    return this.findById(userId);
   }
 
-  public async findByEmail(email: string): Promise<UserDocument> {
+  async findByEmail(email: string): Promise<UserDocument> {
     return this.userModel.findOne({ email });
   }
 
@@ -124,53 +131,18 @@ export class UserService {
     return this.userModel.findOne({ stripeCustomerId });
   }
 
-  public async findById(id: string): Promise<UserDocument> {
-    const oid = new Types.ObjectId(id);
-    return this.userModel.findById({ _id: oid });
+  async findById(id: string): Promise<UserDocument> {
+    return this.userModel.findById({ _id: id });
   }
 
-  public async incrementExecutedRequestCount(id: string): Promise<void> {
-    const oid = new Types.ObjectId(id);
+  async incrementExecutedRequestCount(id: string): Promise<void> {
     await this.userModel.updateOne(
-      { _id: oid },
+      { _id: id },
       { $inc: { requestsExecuted: 1 } },
     );
   }
 
-  public async changeSubscriptionPlan(
-    stripeCustomerId: string,
-    stripePriceId: string,
-  ): Promise<UserDocument> {
-    const user = await this.findByStripeCustomerId(stripeCustomerId);
-
-    if (!user) {
-      console.log('no user found for stripeId: ' + stripeCustomerId);
-      return;
-    }
-
-    const { plan: type } =
-      this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
-        stripePriceId,
-      );
-
-    if (!type) {
-      console.log('no subscription plan found for price id: ' + stripePriceId);
-      return;
-    }
-
-    const oid = new Types.ObjectId(user.id);
-    await this.userModel.updateOne(
-      { _id: oid },
-      { $set: { subscriptionPlan: type } },
-    );
-    const userWithSubscription = await this.findById(user.id);
-    return await this.addMonthlyRequestContingents(
-      userWithSubscription,
-      new Date(),
-    );
-  }
-
-  public async addRequestContingentIncrease(
+  async addRequestContingentIncrease(
     user: UserDocument,
     amount: number,
   ): Promise<UserDocument> {
@@ -179,64 +151,127 @@ export class UserService {
       amount,
       date: new Date(),
     });
-    const oid = new Types.ObjectId(user.id);
+
     await this.userModel.updateOne(
-      { _id: oid },
+      { _id: user.id },
       { $set: { requestContingents: user.requestContingents } },
     );
-    return Promise.resolve(user);
+
+    return user;
   }
 
-  public async addMonthlyRequestContingents(
+  async setRequestContingents(
     user: UserDocument,
     untilMonthIncluded: Date,
   ): Promise<UserDocument> {
     const userSubscription = await this.subscriptionService.findActiveByUserId(
-      user._id,
+      user.id,
     );
 
     if (!userSubscription) {
-      return Promise.resolve(user);
+      return user;
     }
 
-    const subscription = allSubscriptions[userSubscription.type];
-    let currentMonth = new Date();
+    const {
+      plan: { limits: planLimits },
+      price: { limits: priceLimits },
+    } = this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
+      userSubscription.stripePriceId,
+    );
+
+    // TODO refactor using the Strategy pattern
+    const numberOfRequests =
+      priceLimits?.numberOfRequests?.amount ||
+      planLimits?.numberOfRequests?.amount ||
+      0;
+
+    if (cumulativeRequestSubscriptionTypes.includes(userSubscription.type)) {
+      await this.addMonthlyRequestContingents(
+        user,
+        untilMonthIncluded,
+        numberOfRequests,
+      );
+    }
+
+    if (fixedRequestSubscriptionTypes.includes(userSubscription.type)) {
+      await this.setFixedRequestContingents(
+        user.id,
+        untilMonthIncluded,
+        numberOfRequests,
+      );
+    }
+
+    return user;
+  }
+
+  private async setFixedRequestContingents(
+    userId: string,
+    untilMonthIncluded: Date,
+    numberOfRequests: number,
+  ): Promise<void> {
+    const currentDate = new Date();
+
+    const requestContingents = [
+      {
+        type: ApiRequestContingentType.RECURRENT,
+        amount: numberOfRequests,
+        date: currentDate,
+      },
+      {
+        type: ApiRequestContingentType.RECURRENT,
+        amount: numberOfRequests,
+        date: untilMonthIncluded,
+      },
+    ];
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      { $set: { requestContingents } },
+    );
+  }
+
+  private async addMonthlyRequestContingents(
+    { id: userId, requestContingents: userRequestContingents }: UserDocument,
+    untilMonthIncluded: Date,
+    numberOfRequests: number,
+  ): Promise<void> {
+    let requestContingentDate = new Date();
+    const requestContingents = [...userRequestContingents];
 
     while (
-      currentMonth.getFullYear() < untilMonthIncluded.getFullYear() ||
-      (currentMonth.getFullYear() === untilMonthIncluded.getFullYear() &&
-        currentMonth.getMonth() <= untilMonthIncluded.getMonth())
+      requestContingentDate.getFullYear() < untilMonthIncluded.getFullYear() ||
+      (requestContingentDate.getFullYear() ===
+        untilMonthIncluded.getFullYear() &&
+        requestContingentDate.getMonth() <= untilMonthIncluded.getMonth())
     ) {
-      const existingMonthlyContingent = user.requestContingents.find(
+      const existingMonthlyContingent = requestContingents.find(
         (c) =>
           c.type === ApiRequestContingentType.RECURRENT &&
-          c.date.getMonth() === currentMonth.getMonth() &&
-          c.date.getFullYear() === currentMonth.getFullYear(),
+          c.date.getMonth() === requestContingentDate.getMonth() &&
+          c.date.getFullYear() === requestContingentDate.getFullYear(),
       );
 
       if (!existingMonthlyContingent) {
-        user.requestContingents.push({
+        requestContingents.push({
           type: ApiRequestContingentType.RECURRENT,
-          amount: subscription?.limits?.numberOfRequests?.amount,
-          date: currentMonth,
+          amount: numberOfRequests,
+          date: requestContingentDate,
         });
       } else {
-        existingMonthlyContingent.amount =
-          subscription?.limits?.numberOfRequests?.amount;
+        existingMonthlyContingent.amount = numberOfRequests;
       }
-      const month = currentMonth.getMonth();
-      const year = currentMonth.getFullYear();
-      currentMonth = new Date();
-      currentMonth.setFullYear(year);
-      currentMonth.setMonth(month + 1);
+
+      const month = requestContingentDate.getMonth();
+      const year = requestContingentDate.getFullYear();
+      requestContingentDate = new Date();
+      requestContingentDate.setFullYear(year);
+      requestContingentDate.setMonth(month + 1);
     }
 
-    const oid = new Types.ObjectId(user.id);
     await this.userModel.updateOne(
-      { _id: oid },
-      { $set: { requestContingents: user.requestContingents } },
+      { _id: userId },
+      { $set: { requestContingents } },
     );
-    return Promise.resolve(user);
   }
 
   async updateSettings(email, settings: ApiUserSettingsDto) {
@@ -245,6 +280,7 @@ export class UserService {
     if (!existingUser) {
       throw new HttpException('Unknown User', 400);
     }
+
     await this.subscriptionService.checkSubscriptionViolation(
       existingUser._id,
       (subscription) => !subscription.appFeatures.canCustomizeExport,
@@ -277,8 +313,10 @@ export class UserService {
       user.mapboxAccessToken = await this.mapboxService.createAccessToken(
         user.id,
       );
+
       return await user.save();
     }
+
     return user;
   }
 }

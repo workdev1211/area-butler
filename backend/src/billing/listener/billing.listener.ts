@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
+
 import { StripeService } from '../../client/stripe/stripe.service';
 import { EventType, UserEvent } from '../../event/event.types';
 import { UserService } from '../../user/user.service';
@@ -14,7 +15,6 @@ export class BillingListener {
   @OnEvent(EventType.USER_CREATED_EVENT, { async: true })
   private async handleUserCreatedEvent({ user }: UserEvent) {
     const stripeCustomerId = await this.stripeService.createCustomer(user);
-
-    await this.userService.setStripeCustomerId(user, stripeCustomerId);
+    await this.userService.setStripeCustomerId(user.id, stripeCustomerId);
   }
 }

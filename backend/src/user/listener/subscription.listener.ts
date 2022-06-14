@@ -51,7 +51,7 @@ export class SubscriptionListener {
       trialEndsAt,
     );
 
-    await this.userService.addMonthlyRequestContingents(user, endsAt);
+    await this.userService.setRequestContingents(user, endsAt);
   }
 
   @OnEvent(EventType.SUBSCRIPTION_RENEW_EVENT, { async: true })
@@ -75,7 +75,7 @@ export class SubscriptionListener {
         newEndDate,
       );
 
-      await this.userService.addMonthlyRequestContingents(user, newEndDate);
+      await this.userService.setRequestContingents(user, newEndDate);
     }
   }
 
