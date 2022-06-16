@@ -1,6 +1,7 @@
-import { ApiSearch } from '@area-butler-types/types';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
+
+import { ApiSearch } from '@area-butler-types/types';
 
 export type LocationSearchDocument = LocationSearch & Document;
 
@@ -14,7 +15,10 @@ export class LocationSearch {
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
+
+  @Prop({ type: Date })
+  endsAt: Date;
 }
 
-export const LocationSearchschema =
+export const LocationSearchSchema =
   SchemaFactory.createForClass(LocationSearch);

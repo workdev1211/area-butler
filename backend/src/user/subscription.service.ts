@@ -107,7 +107,7 @@ export class SubscriptionService {
     userId: string,
     check: (subscription: ApiSubscriptionPlanDto) => boolean,
     message: string,
-  ): Promise<void> {
+  ): Promise<SubscriptionDocument> {
     const userSubscription = await this.findActiveByUserId(userId);
 
     if (!userSubscription) {
@@ -117,6 +117,8 @@ export class SubscriptionService {
     if (check(allSubscriptions[userSubscription.type])) {
       throw new HttpException(message, 400);
     }
+
+    return userSubscription;
   }
 
   async allUserSubscriptions(userId: string): Promise<SubscriptionDocument[]> {

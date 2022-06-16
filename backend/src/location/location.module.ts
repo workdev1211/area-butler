@@ -1,10 +1,11 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { LocationController } from './location.controller';
 import { LocationService } from './location.service';
 import {
   LocationSearch,
-  LocationSearchschema,
+  LocationSearchSchema,
 } from './schema/location-search.schema';
 import { DataProvisionModule } from '../data-provision/data-provision.module';
 import {
@@ -26,7 +27,7 @@ import { UserModule } from '../user/user.module';
     RealEstateListingModule,
     DataProvisionModule,
     MongooseModule.forFeature([
-      { name: LocationSearch.name, schema: LocationSearchschema },
+      { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],

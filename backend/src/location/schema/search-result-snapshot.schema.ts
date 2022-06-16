@@ -1,9 +1,10 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
 import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
 } from '@area-butler-types/types';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 
@@ -32,6 +33,9 @@ export class SearchResultSnapshot {
 
   @Prop({ type: Date, required: false })
   lastAccess: Date;
+
+  @Prop({ type: Date })
+  endsAt: Date;
 }
 
 export const SearchResultSnapshotSchema =
