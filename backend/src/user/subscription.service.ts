@@ -12,6 +12,7 @@ import ApiSubscriptionPlanDto from '../dto/api-subscription-plan.dto';
 import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
+  IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionPricingDto from '../dto/api-subscription-pricing.dto';
 
@@ -47,9 +48,9 @@ export class SubscriptionService {
     return foundPlanPrice;
   }
 
-  getLimitIncreaseItem(itemPriceId: string): {
+  getLimitIncreaseParams(itemPriceId: string): {
     type: ApiSubscriptionLimitsEnum;
-    amount: any;
+    amount: IApiSubscriptionLimitAmount;
   } {
     const stripeEnv = configService.getStripeEnv();
 
@@ -59,15 +60,12 @@ export class SubscriptionService {
       const hasPriceLimitIncreaseItem = prices.some(
         ({ limits: priceLimits }) =>
           priceLimits &&
-          Object.keys(priceLimits).some((limitName) => {
+          Object.keys(priceLimits).some((limitType) => {
             if (
-              priceLimits[limitName].increaseParams?.id[stripeEnv] ===
+              priceLimits[limitType].increaseParams?.id[stripeEnv] ===
               itemPriceId
             ) {
-              foundItem = {
-                type: limitName,
-                amount: priceLimits[limitName].increaseParams.amount,
-              };
+              foundItem = priceLimits[limitType].increaseParams;
 
               return true;
             }
@@ -83,14 +81,11 @@ export class SubscriptionService {
       // hasPlanLimitIncreaseItem
       return (
         planLimits &&
-        Object.keys(planLimits).some((limitName) => {
+        Object.keys(planLimits).some((limitType) => {
           if (
-            planLimits[limitName].increaseParams?.id[stripeEnv] === itemPriceId
+            planLimits[limitType].increaseParams?.id[stripeEnv] === itemPriceId
           ) {
-            foundItem = {
-              type: limitName,
-              amount: planLimits[limitName].increaseParams.amount,
-            };
+            foundItem = planLimits[limitType].increaseParams;
 
             return true;
           }

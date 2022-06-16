@@ -29,10 +29,11 @@ const IncreaseRequestLimitFormHandler: FunctionComponent<
 
   const requestIncreaseParams =
     currentPrice?.limits?.numberOfRequests?.increaseParams ||
-    subscriptionPlan?.limits?.numberOfRequests?.increaseParams;
+    subscriptionPlan?.limits?.numberOfRequests?.increaseParams ||
+    [];
 
-  const requestIncreasePriceId = requestIncreaseParams?.id[stripeEnv];
-  const requestIncreaseAmount = requestIncreaseParams?.amount;
+  const requestIncreasePriceId = requestIncreaseParams[0]?.id[stripeEnv];
+  const requestIncreaseAmount = requestIncreaseParams[0]?.amount.value;
 
   const onSubmit = async ({ amount }: any) => {
     try {

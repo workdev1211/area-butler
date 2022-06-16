@@ -181,8 +181,8 @@ export class UserService {
 
     // TODO refactor using the Strategy pattern
     const numberOfRequests =
-      priceLimits?.numberOfRequests?.amount ||
-      planLimits?.numberOfRequests?.amount ||
+      priceLimits?.numberOfRequests?.amount?.value ||
+      planLimits?.numberOfRequests?.amount?.value ||
       0;
 
     if (cumulativeRequestSubscriptionTypes.includes(userSubscription.type)) {

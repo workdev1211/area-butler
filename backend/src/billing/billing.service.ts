@@ -103,24 +103,23 @@ export class BillingService {
     if (lineItems.length > 0) {
       const lineItem = lineItems[0];
 
-      const limitIncreaseItem = this.subscriptionService.getLimitIncreaseItem(
+      const limitIncreaseParams = this.subscriptionService.getLimitIncreaseParams(
         lineItem.price.id,
       );
 
       // skips if there are no increase package items (adds the number of requests) in the checkout
-      if (limitIncreaseItem) {
+      if (limitIncreaseParams) {
         const limitIncreaseEvent: ILimitIncreaseEvent = {
           stripeCustomerId,
           amount: lineItem.quantity,
         };
 
-        switch (limitIncreaseItem.type) {
+        switch (limitIncreaseParams.type) {
           case ApiSubscriptionLimitsEnum.NumberOfRequests: {
             this.eventEmitter.emitAsync(
               EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
               limitIncreaseEvent,
             );
-
             break;
           }
         }

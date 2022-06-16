@@ -19,24 +19,35 @@ export interface IApiSubscriptionEnvIds {
   prod?: string;
 }
 
-// TODO think about specific interfaces for each limit
+export interface IApiSubscriptionLimitAmount {
+  value: number;
+  unit?: string;
+}
+
 export interface IApiSubscriptionLimitIncreaseParams {
   id: IApiSubscriptionEnvIds;
-  amount: any;
+  amount: IApiSubscriptionLimitAmount;
+  name?: string;
+  description?: string;
 }
 
 export interface IApiSubscriptionLimit {
-  amount: any;
-  increaseParams?: IApiSubscriptionLimitIncreaseParams;
+  amount: IApiSubscriptionLimitAmount;
+  increaseParams?: IApiSubscriptionLimitIncreaseParams[];
+  name?: string;
+  description?: string;
 }
 
 export enum ApiSubscriptionLimitsEnum {
   NumberOfRequests = "numberOfRequests",
+  AddressExpiration = "addressExpiration",
 }
 
-export type TApiSubscriptionLimits = {
-  [key in ApiSubscriptionLimitsEnum]?: IApiSubscriptionLimit;
-};
+// Could be changed to the type later
+export interface IApiSubscriptionLimits {
+  [ApiSubscriptionLimitsEnum.NumberOfRequests]?: IApiSubscriptionLimit;
+  [ApiSubscriptionLimitsEnum.AddressExpiration]?: IApiSubscriptionLimit;
+}
 
 export enum ApiSubscriptionPlanType {
   PAY_PER_USE_1 = "PAY_PER_USE_1",
@@ -54,7 +65,7 @@ export interface ApiSubscriptionPricing {
   name?: string;
   price: string;
   interval: ApiSubscriptionIntervalEnum;
-  limits?: TApiSubscriptionLimits;
+  limits?: IApiSubscriptionLimits;
   description?: string[];
 }
 
@@ -62,7 +73,7 @@ export interface ApiSubscriptionPlan {
   name: string;
   type: ApiSubscriptionPlanType;
   prices: ApiSubscriptionPricing[];
-  limits?: TApiSubscriptionLimits;
+  limits?: IApiSubscriptionLimits;
   description?: string[];
   appFeatures: {
     sendCustomerQuestionnaireRequest: boolean;

@@ -13,7 +13,7 @@ import {
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionPricing,
   IApiSubscriptionEnvIds,
-  TApiSubscriptionLimits,
+  IApiSubscriptionLimits,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionLimitsDto from './api-subscription-limits.dto';
 import ApiSubscriptionEnvIdsDto from './api-subscription-env-ids.dto';
@@ -41,7 +41,7 @@ class ApiSubscriptionPricingDto implements ApiSubscriptionPricing {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSubscriptionLimitsDto)
-  limits?: TApiSubscriptionLimits;
+  limits?: IApiSubscriptionLimits;
 
   @IsOptional()
   @IsArray()

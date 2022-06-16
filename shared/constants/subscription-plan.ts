@@ -3,6 +3,8 @@ import {
   ApiSubscriptionPlan,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionPlanType,
+  ApiSubscriptionLimitsEnum,
+  IApiSubscriptionLimitIncreaseParams,
 } from "../types/subscription-plan";
 
 export const TRIAL_DAYS = 4;
@@ -21,7 +23,7 @@ export const allSubscriptionTypes: {
   // { type: ApiSubscriptionPlanType.ENTERPRISE, name: "Enterprise" },
 ];
 
-// Number of requests (addresses) is summed up from the values set for each month
+// Number of requests (addresses) is set for each month
 export const cumulativeRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.BUSINESS_PLUS,
   ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
@@ -35,6 +37,21 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.TRIAL,
 ];
 
+const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
+  {
+    id: { dev: "price_1LCHlOLcbb2Q3qBpZltd36hh" },
+    amount: { value: 1 },
+  },
+  {
+    id: { dev: "price_1LCHm5Lcbb2Q3qBp0CRFBhib" },
+    amount: { value: 5 },
+  },
+  {
+    id: { dev: "price_1LCHmyLcbb2Q3qBpM8txQGt1" },
+    amount: { value: 10 },
+  },
+];
+
 export const payPerUse1Subscription: ApiSubscriptionPlan = {
   name: "Pay per Use",
   type: ApiSubscriptionPlanType.PAY_PER_USE_1,
@@ -44,7 +61,21 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
       name: "Per 1",
       price: "49",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
-      limits: { numberOfRequests: { amount: 1 } },
+      limits: {
+        [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+          amount: { value: 1 },
+          increaseParams: payPerUseRequestLimitIncrease,
+        },
+        [ApiSubscriptionLimitsEnum.AddressExpiration]: {
+          amount: { value: 12, unit: "weeks" },
+          increaseParams: [
+            {
+              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              amount: { value: 4, unit: "weeks" },
+            },
+          ],
+        },
+      },
     },
   ],
   description: [
@@ -76,11 +107,25 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PAY_PER_USE_5,
   prices: [
     {
-      id: { dev: "price_1LAUPELcbb2Q3qBpne9Hyox6" },
+      id: { dev: "price_1LCIZwLcbb2Q3qBpYMEmHHTO" },
       name: "Per 5",
-      price: "195",
+      price: "190",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
-      limits: { numberOfRequests: { amount: 5 } },
+      limits: {
+        [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+          amount: { value: 5 },
+          increaseParams: payPerUseRequestLimitIncrease,
+        },
+        [ApiSubscriptionLimitsEnum.AddressExpiration]: {
+          amount: { value: 12, unit: "weeks" },
+          increaseParams: [
+            {
+              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              amount: { value: 4, unit: "weeks" },
+            },
+          ],
+        },
+      },
     },
   ],
   description: [
@@ -116,7 +161,21 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
       name: "Per 10",
       price: "290",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
-      limits: { numberOfRequests: { amount: 10 } },
+      limits: {
+        [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+          amount: { value: 10 },
+          increaseParams: payPerUseRequestLimitIncrease,
+        },
+        [ApiSubscriptionLimitsEnum.AddressExpiration]: {
+          amount: { value: 12, unit: "weeks" },
+          increaseParams: [
+            {
+              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              amount: { value: 4, unit: "weeks" },
+            },
+          ],
+        },
+      },
     },
   ],
   description: [
@@ -168,15 +227,17 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     },
   ],
   limits: {
-    numberOfRequests: {
-      amount: 500,
-      increaseParams: {
-        id: {
-          dev: "price_1JpejDLcbb2Q3qBpNFh2rph9",
-          prod: "price_1Jw8ftLcbb2Q3qBp73Out78u",
+    [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+      amount: { value: 500 },
+      increaseParams: [
+        {
+          id: {
+            dev: "price_1JpejDLcbb2Q3qBpNFh2rph9",
+            prod: "price_1Jw8ftLcbb2Q3qBp73Out78u",
+          },
+          amount: { value: 100 },
         },
-        amount: 100,
-      },
+      ],
     },
   },
   description: [
@@ -200,25 +261,43 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
   },
 };
 
+const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
+  [
+    {
+      id: { dev: "price_1LCHqFLcbb2Q3qBpmxFBI6TE" },
+      amount: { value: 50 },
+    },
+  ];
+
 // Actual Business+ subscription
 export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   name: "Business+",
   type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
   prices: [
     {
-      id: { dev: "price_1LApwWLcbb2Q3qBpgGgTVGbV" },
+      id: { dev: "price_1LCIdULcbb2Q3qBpprbknZcZ" },
       name: "Per 100",
-      price: "1470",
+      price: "1770",
       interval: ApiSubscriptionIntervalEnum.QUARTERLY,
-      limits: { numberOfRequests: { amount: 100 } },
+      limits: {
+        [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+          amount: { value: 100 },
+          increaseParams: businessPlusRequestLimitIncrease,
+        },
+      },
       description: ["100 Adressen pro Monat"],
     },
     {
-      id: { dev: "price_1L8Lx8Lcbb2Q3qBpPX9JNiId" },
+      id: { dev: "price_1LCIdULcbb2Q3qBp42UdqzxG" },
       name: "Per 200",
-      price: "5390",
+      price: "6490",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
-      limits: { numberOfRequests: { amount: 200 } },
+      limits: {
+        [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
+          amount: { value: 200 },
+          increaseParams: businessPlusRequestLimitIncrease,
+        },
+      },
       description: ["200 Adressen pro Monat"],
     },
   ],
@@ -242,56 +321,11 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   },
 };
 
-// TODO will be released later
-// export const enterpriseSubscription: ApiSubscriptionPlan = {
-//   name: "Enterprise",
-//   type: ApiSubscriptionPlanType.ENTERPRISE,
-//   limits: null,
-//   prices: [
-//     {
-//       id: {
-//         dev: "",
-//         prod: "",
-//       },
-//       price: "",
-//       interval: ApiSubscriptionPlanInterval.MONTHLY,
-//     },
-//     {
-//       id: {
-//         dev: "",
-//         prod: "",
-//       },
-//       price: "",
-//       interval: ApiSubscriptionPlanInterval.ANNUALLY,
-//     },
-//   ],
-//   requestIncreaseId: {
-//     dev: "",
-//     prod: "",
-//   },
-//   properties: [
-//     "Beliebig viele Adressen",
-//     'Alle Funktionen von "Business+"',
-//     "+ voll individualisierbare Exporte",
-//     "+ individuelle Integration in Ihre Website",
-//     "+ individuelle api Integration in Ihr CMS/CRM",
-//   ],
-//   appFeatures: {
-//     requestIncreasePackage: null,
-//     sendCustomerQuestionnaireRequest: true,
-//     dataSources: Object.values(ApiDataSource),
-//     canCustomizeExport: true,
-//     fullyCustomizableExpose: true,
-//     htmlSnippet: true,
-//   },
-// };
-
-// TODO npmdl ask Alex
 export const trialSubscription: ApiSubscriptionPlan = {
   ...businessPlusV2Subscription,
   type: ApiSubscriptionPlanType.TRIAL,
   limits: {
-    numberOfRequests: { amount: 1 },
+    [ApiSubscriptionLimitsEnum.NumberOfRequests]: { amount: { value: 1 } },
   },
 };
 
