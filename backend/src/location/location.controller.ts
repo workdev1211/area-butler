@@ -34,7 +34,10 @@ export class LocationController extends AuthenticatedController {
     super();
   }
 
-  @ApiOperation({ description: 'Search for a location' })
+  @ApiOperation({
+    description:
+      'Search for a location, creates an entry in the "locationsearches" collection',
+  })
   @Post('search')
   async searchLocation(
     @InjectUser() user: UserDocument,
@@ -136,8 +139,10 @@ export class LocationController extends AuthenticatedController {
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     const map = await this.locationService.fetchEmbeddableMap(user, id);
+
     const realEstateListings =
       await this.realEstateListingService.getRealEstateListings(user);
+
     return mapSearchResultSnapshotToApiEmbeddableMap(
       map,
       false,

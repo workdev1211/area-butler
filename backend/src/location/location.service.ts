@@ -1,6 +1,8 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
+import { randomBytes } from 'crypto';
+
 import {
   LocationSearch,
   LocationSearchDocument,
@@ -39,9 +41,6 @@ import {
 } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
 
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-const crypto = require('crypto');
-
 @Injectable()
 export class LocationService {
   constructor(
@@ -67,9 +66,10 @@ export class LocationService {
       })) === 0;
 
     if (newRequest) {
+      // TODO change map and reduce to reduce only
       await this.subscriptionService.checkSubscriptionViolation(
         user._id,
-        (_) =>
+        () =>
           user.requestsExecuted + 1 >
           retrieveTotalRequestContingent(user)
             .map((c) => c.amount)
@@ -80,15 +80,16 @@ export class LocationService {
 
     const coordinates = search.coordinates;
     const preferredAmenities = search.preferredAmenities;
-
     const routingProfiles = {};
 
     function deriveMeterEquivalent(routingProfile: TransportationParamDto) {
       const { amount } = routingProfile;
+
       if (routingProfile.unit === UnitsOfTransportation.KILOMETERS) {
         // convert km to m
         return amount * 1000;
       }
+
       switch (routingProfile.type) {
         case MeansOfTransportation.BICYCLE:
           return (
@@ -98,6 +99,7 @@ export class LocationService {
               (mtm) => mtm.mean === MeansOfTransportation.BICYCLE,
             )?.multiplicator
           );
+
         case MeansOfTransportation.CAR:
           return (
             amount *
@@ -106,6 +108,7 @@ export class LocationService {
               (mtm) => mtm.mean === MeansOfTransportation.CAR,
             )?.multiplicator
           );
+
         case MeansOfTransportation.WALK:
           return (
             amount *
@@ -114,6 +117,7 @@ export class LocationService {
               (mtm) => mtm.mean === MeansOfTransportation.WALK,
             )?.multiplicator
           );
+
         default:
           return 0;
       }
@@ -132,7 +136,8 @@ export class LocationService {
             preferredAmenities,
           );
 
-      const withIsochrone = search.withIsochrone === false ? false : true;
+      const withIsochrone = search.withIsochrone !== false;
+
       const isochrone = withIsochrone
         ? await this.isochroneService.fetchIsochrone(
             routingProfile.type,
@@ -181,12 +186,14 @@ export class LocationService {
   }
 
   async latestUserRequests(user: UserDocument): Promise<ApiUserRequestsDto> {
+    // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationModel
-        .find({ userId: user._id })
+        .find({ userId: user._id }, { locationSearch: 1 })
         .sort({ createdAt: -1 })
-    ).map((d) => d.locationSearch);
+    ).map(({ locationSearch }) => locationSearch);
 
+    // TODO think about using lodash.groupBy or making all the grouping (etc, etc) in one cycle
     const grouped = groupBy(
       requests,
       (request: ApiSearchDto) =>
@@ -202,7 +209,8 @@ export class LocationService {
     user: UserDocument,
     snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const token = crypto.randomBytes(60).toString('hex');
+    const token = randomBytes(60).toString('hex');
+
     const { mapboxAccessToken } =
       await this.userService.createMapboxAccessToken(user);
 
@@ -260,9 +268,7 @@ export class LocationService {
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchEmbeddableMap(user, id);
-
-    snapshotDoc.snapshot = snapshot;
-    snapshotDoc.config = config;
+    Object.assign(snapshotDoc, { snapshot, config });
 
     return await snapshotDoc.save();
   }
@@ -280,14 +286,15 @@ export class LocationService {
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchEmbeddableMap(user, id);
-
     snapshotDoc.description = description;
+
     return await snapshotDoc.save();
   }
 
   async deleteSearchResultSnapshot(user: UserDocument, id: string) {
+    // TODO check without userId condition
     await this.searchResultSnapshotModel.deleteOne({
-      _id: new Types.ObjectId(id),
+      _id: id,
       userId: user._id,
     });
   }
@@ -322,10 +329,10 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const oid = new Types.ObjectId(id);
+    // TODO check without userId condition
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
+      _id: id,
       userId: user.id,
-      _id: oid,
     });
 
     if (!snapshotDoc) {

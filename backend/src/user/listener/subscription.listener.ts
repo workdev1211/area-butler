@@ -33,10 +33,7 @@ export class SubscriptionListener {
 
     const {
       plan: { type },
-    } =
-      this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
-        stripePriceId,
-      );
+    } = this.subscriptionService.getApiSubscriptionPlanPrice(stripePriceId);
 
     if (!user || !type) {
       return;

@@ -39,7 +39,7 @@ export class BillingService {
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
     const existingSubscriptions =
-      await this.subscriptionService.allUserSubscriptions(user._id);
+      await this.subscriptionService.fetchAllUserSubscriptions(user._id);
 
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,

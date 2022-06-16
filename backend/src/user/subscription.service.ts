@@ -25,7 +25,7 @@ export class SubscriptionService {
     private subscriptionModel: Model<SubscriptionDocument>,
   ) {}
 
-  getApiSubscriptionPlanPriceByStripePriceId(
+  getApiSubscriptionPlanPrice(
     stripePriceId: string,
   ):
     | { plan: ApiSubscriptionPlanDto; price: ApiSubscriptionPricingDto }
@@ -98,6 +98,7 @@ export class SubscriptionService {
     return foundItem;
   }
 
+  // TODO think about refactoring as custom decorator
   async checkSubscriptionViolation(
     userId: string,
     check: (subscription: ApiSubscriptionPlanDto) => boolean,
@@ -116,7 +117,7 @@ export class SubscriptionService {
     return userSubscription;
   }
 
-  async allUserSubscriptions(userId: string): Promise<SubscriptionDocument[]> {
+  async fetchAllUserSubscriptions(userId: string): Promise<SubscriptionDocument[]> {
     return this.subscriptionModel.find({ userId });
   }
 
@@ -136,7 +137,7 @@ export class SubscriptionService {
     userId: string,
   ): Promise<SubscriptionDocument | null> {
     const userSubscriptions: SubscriptionDocument[] =
-      await this.allUserSubscriptions(userId);
+      await this.fetchAllUserSubscriptions(userId);
 
     const activeSubscriptions = userSubscriptions.filter(
       (s) =>

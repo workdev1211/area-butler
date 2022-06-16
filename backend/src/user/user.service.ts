@@ -175,7 +175,7 @@ export class UserService {
     const {
       plan: { limits: planLimits },
       price: { limits: priceLimits },
-    } = this.subscriptionService.getApiSubscriptionPlanPriceByStripePriceId(
+    } = this.subscriptionService.getApiSubscriptionPlanPrice(
       userSubscription.stripePriceId,
     );
 
