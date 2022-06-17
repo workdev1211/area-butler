@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
+
 import {
   RealEstateListing,
   RealEstateListingDocument,
@@ -20,7 +21,7 @@ export class RealEstateListingService {
   async getRealEstateListings({
     id,
   }: UserDocument): Promise<RealEstateListingDocument[]> {
-    return await this.realEstateListingModel.find({ userId: id });
+    return this.realEstateListingModel.find({ userId: id });
   }
 
   async insertRealEstateListing(
@@ -29,11 +30,11 @@ export class RealEstateListingService {
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
     subscriptionCheck &&
-      (await this.subscriptionService.checkSubscriptionViolation(
-        user._id,
+      this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
         (subscription) => !subscription,
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
-      ));
+      );
 
     const documentData: any = {
       ...upsertData,
@@ -50,7 +51,8 @@ export class RealEstateListingService {
       userId: user.id,
       ...documentData,
     };
-    return await new this.realEstateListingModel(document).save();
+
+    return new this.realEstateListingModel(document).save();
   }
 
   async updateRealEstateListing(
@@ -58,10 +60,10 @@ export class RealEstateListingService {
     id: string,
     { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListingDto>,
   ): Promise<RealEstateListingDocument> {
-    const oid = new Types.ObjectId(id);
     const existingListing = await this.realEstateListingModel.findById({
-      _id: oid,
+      _id: id,
     });
+
     if (!existingListing) {
       throw 'Entity not found';
     }
@@ -82,15 +84,15 @@ export class RealEstateListingService {
     }
 
     await existingListing.updateOne(documentData);
-    return await this.realEstateListingModel.findById({
-      _id: oid,
+
+    return this.realEstateListingModel.findById({
+      _id: id,
     });
   }
 
   async deleteRealEstateListing(user: UserDocument, id: string) {
-    const oid = new Types.ObjectId(id);
     const existingListing = await this.realEstateListingModel.findById({
-      _id: oid,
+      _id: id,
     });
 
     if (!existingListing) {

@@ -99,25 +99,19 @@ export class SubscriptionService {
   }
 
   // TODO think about refactoring as custom decorator
-  async checkSubscriptionViolation(
-    userId: string,
-    check: (subscription: ApiSubscriptionPlanDto) => boolean,
-    message: string,
-  ): Promise<SubscriptionDocument> {
-    const userSubscription = await this.findActiveByUserId(userId);
-
-    if (!userSubscription) {
-      throw new HttpException('User has no active subscription', 400);
+  checkSubscriptionViolation(
+    subscriptionType: ApiSubscriptionPlanType,
+    checkFunction: (subscription: ApiSubscriptionPlanDto) => boolean,
+    errorMessage: string,
+  ): void {
+    if (checkFunction(allSubscriptions[subscriptionType])) {
+      throw new HttpException(errorMessage, 400);
     }
-
-    if (check(allSubscriptions[userSubscription.type])) {
-      throw new HttpException(message, 400);
-    }
-
-    return userSubscription;
   }
 
-  async fetchAllUserSubscriptions(userId: string): Promise<SubscriptionDocument[]> {
+  async fetchAllUserSubscriptions(
+    userId: string,
+  ): Promise<SubscriptionDocument[]> {
     return this.subscriptionModel.find({ userId });
   }
 
@@ -175,7 +169,7 @@ export class SubscriptionService {
         throw new HttpException('User already has an active subscription', 400);
       }
 
-      return await new this.subscriptionModel({
+      return new this.subscriptionModel({
         userId,
         type,
         stripePriceId,
@@ -199,7 +193,7 @@ export class SubscriptionService {
 
       this.logger.log(`Update ${type} subscription for ${userId} user`);
 
-      return await subscription.save();
+      return subscription.save();
     } else {
       if (await this.findActiveByUserId(userId)) {
         throw new HttpException('user has already an active subscription', 400);
@@ -207,7 +201,7 @@ export class SubscriptionService {
 
       this.logger.log(`Create ${type} subscription for ${userId} user`);
 
-      return await new this.subscriptionModel({
+      return new this.subscriptionModel({
         userId,
         type,
         stripePriceId,

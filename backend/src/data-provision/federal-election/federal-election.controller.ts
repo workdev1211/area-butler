@@ -9,8 +9,9 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { FederalElectionService } from './federal-election.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { FederalElectionService } from './federal-election.service';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { Roles, Role } from '../../auth/roles.decorator';
@@ -18,6 +19,7 @@ import { RolesGuard } from '../../auth/roles.guard';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
+import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 
 @ApiTags('federal-election')
 @Controller('api/federal-election')
@@ -37,14 +39,19 @@ export class FederalElectionController extends AuthenticatedController {
     const data: { features: ApiFederalElectionFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
+
     //TODO: Validate Data
     await this.federalElectionService.createCollection(data.features);
+
     return 'done';
   }
 
   @ApiOperation({ description: 'Query for federal election data' })
   @Post('query')
-  async query(@Body() query: ApiGeometryDto, @InjectUser() user: UserDocument) {
-    return await this.federalElectionService.findIntersecting(query, user);
+  async query(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() query: ApiGeometryDto,
+  ) {
+    return this.federalElectionService.findIntersecting(query, user);
   }
 }

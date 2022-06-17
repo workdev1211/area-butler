@@ -21,6 +21,9 @@ import ApiUserDto from '../dto/api-user.dto';
 import ApiUserSubscriptionDto from '../dto/api-user-subscription.dto';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
+import { InjectUser } from './inject-user.decorator';
+import { UserDocument } from './schema/user.schema';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @ApiTags('users')
 @ApiBearerAuth()
@@ -85,11 +88,9 @@ export class UserController {
   @ApiProperty({ description: 'Update the current user settings' })
   @Post('me/settings')
   async settings(
-    @Req() request,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() settings: ApiUserSettingsDto,
   ): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-
     if (settings.logo) {
       this.checkMimeType(settings.logo);
     }
@@ -98,10 +99,7 @@ export class UserController {
       this.checkMimeType(settings.mapIcon);
     }
 
-    const user = await this.userService.updateSettings(
-      requestUser.email,
-      settings,
-    );
+    await this.userService.updateSettings(user, settings);
 
     return mapUserToApiUser(
       user,

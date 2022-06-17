@@ -5,9 +5,10 @@ import {
   Get,
   Param,
   Post,
-  Put
+  Put,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import ApiPotentialCustomerDto from '../dto/api-potential-customer.dto';
 import ApiQuestionnaireRequestDto from '../dto/api-questionnaire-request.dto';
 import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
@@ -17,10 +18,10 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   mapPotentialCustomerToApiPotentialCustomer,
-  mapQuestionnaireRequestToApiQuestionnaireRequest
+  mapQuestionnaireRequestToApiQuestionnaireRequest,
 } from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
-
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @ApiTags('potential-customers')
 @Controller('api/potential-customers')
@@ -41,8 +42,8 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Add potential customers' })
   @Post()
-  public async insertPotentialCustomer(
-    @InjectUser() user: UserDocument,
+  async insertPotentialCustomer(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
   ): Promise<ApiPotentialCustomerDto> {
     return mapPotentialCustomerToApiPotentialCustomer(
@@ -55,8 +56,8 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Add questionnaire' })
   @Post('/questionnaire-request')
-  public async insertQuestionnaireRequest(
-    @InjectUser() user: UserDocument,
+  async insertQuestionnaireRequest(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() questionnaireRequest: ApiUpsertQuestionnaireRequestDto,
   ): Promise<ApiQuestionnaireRequestDto> {
     return mapQuestionnaireRequestToApiQuestionnaireRequest(
@@ -69,7 +70,7 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Update a potential customer' })
   @Put(':id')
-  public async updatePotentialCustomer(
+  async updatePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
     @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
@@ -85,7 +86,7 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Delete a potential customer' })
   @Delete(':id')
-  public async deletePotentialCustomer(
+  async deletePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
   ) {

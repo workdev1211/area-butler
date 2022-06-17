@@ -1,8 +1,4 @@
 import {
-  ApiRealEstateListing,
-  ApiUpsertRealEstateListing,
-} from '@area-butler-types/real-estate';
-import {
   Body,
   Controller,
   Delete,
@@ -11,14 +7,16 @@ import {
   Post,
   Put,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ApiRealEstateListingDto from '../dto/api-real-estate-listing.dto';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -29,7 +27,7 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Get real estate listings for current user' })
   @Get()
-  public async fetchRealEstateListings(
+  async fetchRealEstateListings(
     @InjectUser() user: UserDocument,
   ): Promise<ApiRealEstateListingDto[]> {
     return (
@@ -39,8 +37,8 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Insert a new real estate listing' })
   @Post()
-  public async insertRealEstateListing(
-    @InjectUser() user: UserDocument,
+  async insertRealEstateListing(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() realEstateListing: ApiUpsertRealEstateListingDto,
   ): Promise<ApiRealEstateListingDto> {
     return mapRealEstateListingToApiRealEstateListing(
@@ -53,7 +51,7 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Update a real estate listing' })
   @Put(':id')
-  public async updateRealEstateListing(
+  async updateRealEstateListing(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
     @Body() realEstateListing: Partial<ApiUpsertRealEstateListingDto>,
@@ -69,7 +67,7 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Delete a real estate listing' })
   @Delete(':id')
-  public async deleteRealEstateListing(
+  async deleteRealEstateListing(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
   ) {

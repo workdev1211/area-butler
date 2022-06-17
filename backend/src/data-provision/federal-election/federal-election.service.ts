@@ -1,8 +1,9 @@
-import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
-import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
+
+import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
+import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import {
   FederalElection,
   FederalElectionDocument,
@@ -30,6 +31,7 @@ export class FederalElectionService {
     const collection = this.connection.db.collection(
       this.federalElectionModel.collection.name,
     );
+
     this.logger.log(
       `creating new ${collection.collectionName} collection [count: ${federalElectionFeatures.length}]`,
     );
@@ -37,6 +39,7 @@ export class FederalElectionService {
     const augsburg = federalElectionFeatures.find(
       (f) => f.properties.WKR_NR === 253,
     );
+
     augsburg.geometry.coordinates[0] =
       augsburg.geometry.coordinates[0].filter(distinctValues);
 
@@ -48,18 +51,21 @@ export class FederalElectionService {
     this.logger.debug(
       `Inserting ${federalElectionFeatures.length} federal election districts`,
     );
+
     await collection.insertMany(
       federalElectionFeatures.filter((f) => f.properties.WKR_NR !== 253),
-    ); // cant deal with augsburg
+    ); // can't deal with augsburg
+
     this.logger.log('creating index on geometry field');
     await collection.createIndex({ geometry: '2dsphere' });
     this.logger.log(`${collection.collectionName} created`);
+
     return;
   }
 
   async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
-      user._id,
+      user.subscription.type,
       (subscription) =>
         !subscription?.appFeatures.dataSources.includes(
           ApiDataSource.FEDERAL_ELECTION,

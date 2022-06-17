@@ -1,4 +1,3 @@
-import { ApiGeojsonFeature } from '@area-butler-types/types';
 import {
   Body,
   Controller,
@@ -7,14 +6,17 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ParticlePollutionService } from './particle-pollution.service';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ApiGeojsonFeature } from '@area-butler-types/types';
+import { ParticlePollutionService } from './particle-pollution.service';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { Roles, Role } from '../../auth/roles.decorator';
 import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
+import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 
 @ApiTags('particle-pollution')
 @Controller('api/particle-pollution')
@@ -33,14 +35,19 @@ export class ParticlePollutionController extends AuthenticatedController {
     const data: { features: ApiGeojsonFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
+
     //TODO: Validate Data
     await this.particlePollutionService.createCollection(data.features);
+
     return 'done';
   }
 
   @ApiOperation({ description: 'Query for particle pollution data' })
   @Post('query')
-  async query(@Body() query: ApiGeometryDto, @InjectUser() user: UserDocument) {
-    return await this.particlePollutionService.findIntersecting(query, user);
+  async query(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() query: ApiGeometryDto,
+  ) {
+    return this.particlePollutionService.findIntersecting(query, user);
   }
 }

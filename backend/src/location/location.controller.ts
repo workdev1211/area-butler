@@ -23,6 +23,7 @@ import ApiUserRequestsDto from '../dto/api-user-requests.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -40,7 +41,7 @@ export class LocationController extends AuthenticatedController {
   })
   @Post('search')
   async searchLocation(
-    @InjectUser() user: UserDocument,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() search: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
     return this.locationService.searchLocation(user, search);
@@ -55,10 +56,12 @@ export class LocationController extends AuthenticatedController {
     return this.locationService.createSearchResultSnapshot(user, snapshot);
   }
 
+  // TODO think about merging updateSnapshot and updateSnapshotDescription
+  // TODO think about using class-transformer instead of a mapper
   @ApiOperation({ description: 'Update an existing snapshot' })
   @Put('snapshot/:id')
   async updateSnapshot(
-    @InjectUser() user: UserDocument,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
@@ -70,7 +73,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Update an existing snapshot description' })
   @Put('snapshot/:id/description')
   async updateSnapshotDescription(
-    @InjectUser() user: UserDocument,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() { description }: { description: string },
   ): Promise<ApiSearchResultSnapshotResponseDto> {
@@ -105,7 +108,7 @@ export class LocationController extends AuthenticatedController {
   })
   @Get('user-embeddable-maps')
   async getEmbeddableMaps(
-    @InjectUser() user: UserDocument,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Req() request: Request,
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
     const includedFields = {
@@ -135,7 +138,7 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({ description: 'Get a specific embeddable map' })
   @Get('user-embeddable-maps/:id')
   async getEmbeddableMap(
-    @InjectUser() user: UserDocument,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     const map = await this.locationService.fetchEmbeddableMap(user, id);

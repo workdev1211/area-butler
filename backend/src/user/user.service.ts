@@ -33,24 +33,27 @@ export class UserService {
 
     if (existingUser) {
       return existingUser;
-    } else {
-      const newUser = await new this.userModel({
-        email,
-        fullname,
-        consentGiven: null,
-      }).save();
-
-      const event: UserEvent = {
-        user: newUser,
-      };
-
-      this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, event);
-
-      return newUser;
     }
+
+    const newUser = await new this.userModel({
+      email,
+      fullname,
+      consentGiven: null,
+    }).save();
+
+    const event: UserEvent = {
+      user: newUser,
+    };
+
+    this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, event);
+
+    return newUser;
   }
 
-  async patchUser(email: string, { fullname }: ApiUpsertUserDto) {
+  async patchUser(
+    email: string,
+    { fullname }: ApiUpsertUserDto,
+  ): Promise<UserDocument> {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
@@ -62,7 +65,7 @@ export class UserService {
     return existingUser.save();
   }
 
-  async giveConsent(email: string) {
+  async giveConsent(email: string): Promise<UserDocument> {
     const existingUser = await this.upsertUser(email, email);
 
     if (!existingUser) {
@@ -86,10 +89,10 @@ export class UserService {
       await this.setRequestContingents(existingUser, endsAt);
     }
 
-    return await existingUser.save();
+    return existingUser.save();
   }
 
-  async hideTour(email: string, tour?: ApiTour) {
+  async hideTour(email: string, tour?: ApiTour): Promise<UserDocument> {
     const user = await this.findByEmail(email);
 
     if (!user) {
@@ -106,7 +109,7 @@ export class UserService {
 
     user.showTour = showTour;
 
-    return await user.save();
+    return user.save();
   }
 
   async setStripeCustomerId(
@@ -274,38 +277,35 @@ export class UserService {
     );
   }
 
-  async updateSettings(email, settings: ApiUserSettingsDto) {
-    const existingUser = await this.userModel.findOne({ email });
-
-    if (!existingUser) {
-      throw new HttpException('Unknown User', 400);
-    }
-
+  async updateSettings(
+    user: UserDocument,
+    settings: ApiUserSettingsDto,
+  ): Promise<UserDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
-      existingUser._id,
+      user.subscription.type,
       (subscription) => !subscription.appFeatures.canCustomizeExport,
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 
     if (settings.logo) {
-      Object.assign(existingUser, { logo: settings.logo });
+      Object.assign(user, { logo: settings.logo });
     } else if (settings.logo === null) {
-      Object.assign(existingUser, { logo: null });
+      Object.assign(user, { logo: null });
     }
 
     if (settings.mapIcon) {
-      Object.assign(existingUser, { mapIcon: settings.mapIcon });
+      Object.assign(user, { mapIcon: settings.mapIcon });
     } else if (settings.logo === null) {
-      Object.assign(existingUser, { mapIcon: null });
+      Object.assign(user, { mapIcon: null });
     }
 
     if (settings.color) {
-      Object.assign(existingUser, { color: settings.color });
+      Object.assign(user, { color: settings.color });
     } else if (settings.color === null) {
-      Object.assign(existingUser, { color: null });
+      Object.assign(user, { color: null });
     }
 
-    return existingUser.save();
+    return user.save();
   }
 
   async createMapboxAccessToken(user: UserDocument): Promise<UserDocument> {
@@ -314,7 +314,7 @@ export class UserService {
         user.id,
       );
 
-      return await user.save();
+      return user.save();
     }
 
     return user;

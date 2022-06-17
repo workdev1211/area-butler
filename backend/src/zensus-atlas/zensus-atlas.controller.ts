@@ -7,16 +7,18 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { ZensusAtlasService } from './zensus-atlas.service';
 import { AuthGuard } from '@nestjs/passport';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { ZensusAtlasService } from './zensus-atlas.service';
 import { RolesGuard } from '../auth/roles.guard';
 import { Role, Roles } from '../auth/roles.decorator';
-import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import FileUploadDto from '../dto/file-upload.dto';
 import ApiGeometryDto from '../dto/api-geometry.dto';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 interface ZensusDataGeojson {
   type: string;
@@ -69,19 +71,25 @@ export class ZensusAtlasController extends AuthenticatedController {
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File) {
     const data: ZensusDataGeojson = JSON.parse(file.buffer.toString());
+
     //TODO: Validate Data
     await this.zensusAtlasService.createCollection(data.features);
+
     return 'done';
   }
 
   @ApiOperation({ description: 'Query the zensus atlas' })
   @Post('query')
-  async query(@Body() query: ApiGeometryDto, @InjectUser() user: UserDocument) {
+  async query(
+    @Body() query: ApiGeometryDto,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+  ) {
     return (await this.zensusAtlasService.findIntersecting(user, query)).map(
       (d: any) => {
         if (!!d?.properties?.Frauen_A) {
           delete d?.properties?.Frauen_A;
         }
+
         return d;
       },
     );

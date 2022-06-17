@@ -36,8 +36,8 @@ import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-sn
 import { IsochroneService } from '../client/isochrone/isochrone.service';
 import { OverpassService } from '../client/overpass/overpass.service';
 import {
-  UserDocument,
   retrieveTotalRequestContingent,
+  UserDocument,
 } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
 
@@ -68,7 +68,7 @@ export class LocationService {
     if (newRequest) {
       // TODO change map and reduce to reduce only
       await this.subscriptionService.checkSubscriptionViolation(
-        user._id,
+        user.subscription.type,
         () =>
           user.requestsExecuted + 1 >
           retrieveTotalRequestContingent(user)
@@ -261,16 +261,17 @@ export class LocationService {
     { snapshot, config }: ApiUpdateSearchResultSnapshotDto,
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
-      user._id,
+      user.subscription.type,
       (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchEmbeddableMap(user, id);
+
     Object.assign(snapshotDoc, { snapshot, config });
 
-    return await snapshotDoc.save();
+    return snapshotDoc.save();
   }
 
   async updateSnapshotDescription(
@@ -279,7 +280,7 @@ export class LocationService {
     description: string,
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
-      user._id,
+      user.subscription.type,
       (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
@@ -288,11 +289,10 @@ export class LocationService {
       await this.fetchEmbeddableMap(user, id);
     snapshotDoc.description = description;
 
-    return await snapshotDoc.save();
+    return snapshotDoc.save();
   }
 
   async deleteSearchResultSnapshot(user: UserDocument, id: string) {
-    // TODO check without userId condition
     await this.searchResultSnapshotModel.deleteOne({
       _id: id,
       userId: user._id,
@@ -307,7 +307,7 @@ export class LocationService {
     sortOptions?: { [key: string]: number },
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
-      user._id,
+      user.subscription.type,
       (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
@@ -324,12 +324,11 @@ export class LocationService {
     id: string,
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
-      user._id,
+      user.subscription.type,
       (subscription) => !subscription.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    // TODO check without userId condition
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       _id: id,
       userId: user.id,
