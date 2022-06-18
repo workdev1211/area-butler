@@ -2,6 +2,8 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { randomBytes } from 'crypto';
+import * as dayjs from 'dayjs';
+import { ManipulateType } from 'dayjs';
 
 import {
   LocationSearch,
@@ -40,6 +42,7 @@ import {
   UserDocument,
 } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
+import { ApiSubscriptionLimitsEnum } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class LocationService {
@@ -59,13 +62,17 @@ export class LocationService {
     user: UserDocument,
     search: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
-    const newRequest =
-      (await this.locationModel.count({
+    const existingLocation = await this.locationModel.findOne(
+      {
         userId: user._id,
         'locationSearch.coordinates': search.coordinates,
-      })) === 0;
+      },
+      { endsAt: 1 },
+    );
 
-    if (newRequest) {
+    this.checkAddressExpiration(existingLocation);
+
+    if (!existingLocation) {
       // TODO change map and reduce to reduce only
       await this.subscriptionService.checkSubscriptionViolation(
         user.subscription.type,
@@ -155,12 +162,36 @@ export class LocationService {
       };
     }
 
-    await new this.locationModel({
+    const location: Partial<LocationSearchDocument> = {
       userId: user._id,
       locationSearch: search,
-    }).save();
+    };
 
-    if (newRequest) {
+    if (!existingLocation) {
+      const addressExpiration = this.subscriptionService.getLimitAmount(
+        user.subscription.stripePriceId,
+        ApiSubscriptionLimitsEnum.AddressExpiration,
+      );
+
+      if (addressExpiration) {
+        const currentDate = dayjs();
+        const endsAt = dayjs(currentDate);
+
+        Object.assign(location, {
+          createdAt: currentDate.toDate(),
+          endsAt: endsAt
+            .add(
+              addressExpiration.value,
+              addressExpiration.unit as ManipulateType,
+            )
+            .toDate(),
+        });
+      }
+    }
+
+    await new this.locationModel(location).save();
+
+    if (!existingLocation) {
       await this.userService.incrementExecutedRequestCount(user.id);
     }
 
@@ -189,9 +220,9 @@ export class LocationService {
     // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationModel
-        .find({ userId: user._id }, { locationSearch: 1 })
+        .find({ userId: user._id }, { locationSearch: 1, endsAt: 1 })
         .sort({ createdAt: -1 })
-    ).map(({ locationSearch }) => locationSearch);
+    ).map(({ locationSearch, endsAt }) => ({ ...locationSearch, endsAt }));
 
     // TODO think about using lodash.groupBy or making all the grouping (etc, etc) in one cycle
     const grouped = groupBy(
@@ -210,7 +241,6 @@ export class LocationService {
     snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     const token = randomBytes(60).toString('hex');
-
     const { mapboxAccessToken } =
       await this.userService.createMapboxAccessToken(user);
 
@@ -221,20 +251,39 @@ export class LocationService {
       showStreetViewLink: true,
     };
 
-    const doc = await new this.searchResultSnapshotModel({
+    const snapshotDoc = {
       userId: user.id,
       token,
       mapboxAccessToken,
       snapshot,
       config,
-    }).save();
+    };
+
+    const addressExpiration = this.subscriptionService.getLimitAmount(
+      user.subscription.stripePriceId,
+      ApiSubscriptionLimitsEnum.AddressExpiration,
+    );
+
+    if (addressExpiration) {
+      const createdAt = dayjs();
+      const endsAt = dayjs(createdAt)
+        .add(addressExpiration.value, addressExpiration.unit as ManipulateType)
+        .toDate();
+
+      Object.assign(snapshotDoc, { createdAt, endsAt });
+    }
+
+    const savedSnapshotDoc = await new this.searchResultSnapshotModel(
+      snapshotDoc,
+    ).save();
 
     return {
-      id: doc.id,
+      id: savedSnapshotDoc.id,
       token,
       snapshot,
       mapboxToken: mapboxAccessToken,
-      createdAt: doc.createdAt,
+      createdAt: savedSnapshotDoc.createdAt,
+      endsAt: savedSnapshotDoc.endsAt,
     };
   }
 
@@ -287,6 +336,7 @@ export class LocationService {
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchEmbeddableMap(user, id);
+
     snapshotDoc.description = description;
 
     return snapshotDoc.save();
@@ -338,6 +388,16 @@ export class LocationService {
       throw new HttpException('Unknown token', 404);
     }
 
+    this.checkAddressExpiration(snapshotDoc);
+
     return snapshotDoc;
+  }
+
+  checkAddressExpiration(
+    address: LocationSearchDocument | SearchResultSnapshotDocument,
+  ): void {
+    if (address?.endsAt && dayjs().isAfter(address.endsAt)) {
+      throw new HttpException('Address has expired', 400);
+    }
   }
 }

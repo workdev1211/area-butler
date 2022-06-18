@@ -211,4 +211,15 @@ export class SubscriptionService {
       }).save();
     }
   }
+
+  getLimitAmount(
+    stripePriceId: string,
+    limitType: ApiSubscriptionLimitsEnum,
+  ): IApiSubscriptionLimitAmount {
+    const { plan, price } = this.getApiSubscriptionPlanPrice(stripePriceId);
+
+    return (
+      price?.limits?.[limitType]?.amount || plan?.limits?.[limitType]?.amount
+    );
+  }
 }

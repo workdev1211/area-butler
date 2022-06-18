@@ -1,6 +1,12 @@
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import {
+  IsDate,
+  IsNotEmpty,
+  IsOptional,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsDate, IsNotEmpty, IsOptional, ValidateNested } from 'class-validator';
+
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-config.dto';
 import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
 
@@ -15,6 +21,10 @@ class ApiSearchResultSnapshotResponseDto
   @IsNotEmpty()
   @IsDate()
   createdAt: Date;
+
+  @IsOptional()
+  @IsDate()
+  endsAt?: Date;
 
   @IsOptional()
   description?: string;
