@@ -58,20 +58,25 @@ export class SubscriptionService {
 
     Object.values(allSubscriptions).some(({ limits: planLimits, prices }) => {
       const hasPriceLimitIncreaseItem = prices.some(
-        ({ limits: priceLimits }) =>
-          priceLimits &&
-          Object.keys(priceLimits).some((limitType) => {
-            if (
-              priceLimits[limitType].increaseParams?.id[stripeEnv] ===
-              itemPriceId
-            ) {
-              foundItem = priceLimits[limitType].increaseParams;
+        ({ limits: priceLimits }) => {
+          return (
+            priceLimits &&
+            Object.keys(priceLimits).some((limitType) => {
+              const priceIncreaseParams = priceLimits[
+                limitType
+              ].increaseParams?.find(({ id }) => id[stripeEnv] === itemPriceId);
 
-              return true;
-            }
+              if (priceIncreaseParams) {
+                foundItem = {
+                  type: limitType,
+                  amount: priceIncreaseParams.amount,
+                };
+              }
 
-            return false;
-          }),
+              return !!priceIncreaseParams;
+            })
+          );
+        },
       );
 
       if (hasPriceLimitIncreaseItem) {
@@ -82,15 +87,15 @@ export class SubscriptionService {
       return (
         planLimits &&
         Object.keys(planLimits).some((limitType) => {
-          if (
-            planLimits[limitType].increaseParams?.id[stripeEnv] === itemPriceId
-          ) {
-            foundItem = planLimits[limitType].increaseParams;
+          const planIncreaseParams = planLimits[limitType].increaseParams?.find(
+            ({ id }) => id[stripeEnv] === itemPriceId,
+          );
 
-            return true;
+          if (planIncreaseParams) {
+            foundItem = { type: limitType, amount: planIncreaseParams.amount };
           }
 
-          return false;
+          return !!planIncreaseParams;
         })
       );
     });

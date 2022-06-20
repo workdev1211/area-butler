@@ -31,10 +31,13 @@ import {
   toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
-import IncreaseRequestLimitFormHandler from "user/IncreaseRequestLimitFormHandler";
+import IncreaseLimitFormHandler from "user/IncreaseLimitFormHandler";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { ApiDataSource } from "../../../shared/types/subscription-plan";
+import {
+  ApiDataSource,
+  ApiSubscriptionLimitsEnum,
+} from "../../../shared/types/subscription-plan";
 import {
   ApiCoordinates,
   ApiOsmEntity,
@@ -201,7 +204,9 @@ const SearchParamsPage: FunctionComponent = () => {
 
   const IncreaseLimitModal: FunctionComponent = () => (
     <FormModal modalConfig={increaseRequestLimitModalConfig}>
-      <IncreaseRequestLimitFormHandler />
+      <IncreaseLimitFormHandler
+        limitType={ApiSubscriptionLimitsEnum.NumberOfRequests}
+      />
     </FormModal>
   );
 

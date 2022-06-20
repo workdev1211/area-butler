@@ -1,68 +1,76 @@
+import { FunctionComponent, useContext, useRef, useState } from "react";
+
 import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
-import React, { useContext, useRef, useState } from "react";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
 
-const LatestUserRequestsDropDown: React.FunctionComponent = () => {
+const LatestUserRequestsDropDown: FunctionComponent = () => {
   const { userState } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
-
   const requests = userState.latestUserRequests?.requests || [];
-
   const dropDownRef = useRef(null);
   const [showMenu, setShowMenu] = useState(false);
   useOnClickOutside(dropDownRef, () => showMenu && setShowMenu(false));
+
   const buttonStyles =
     "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto";
+
   const dropdownClasses = showMenu
     ? "dropdown dropdown-open dropdown-top z-2000 relative mt-4 w-full sm:w-auto"
     : "dropdown mt-4 w-full sm:w-auto";
 
   const fillSearchParamsFromLatestRequest = (request: ApiSearch) => {
     const { lat, lng } = request.coordinates;
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: { label: request.searchTitle!, value: { place_id: "123" } }
+      payload: { label: request.searchTitle!, value: { place_id: "123" } },
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCATION,
       payload: {
         lat,
-        lng
-      }
+        lng,
+      },
     });
 
     const listings: ApiRealEstateListing[] = realEstateState.listings;
 
     const existingListing = listings.find(
-      l => JSON.stringify(l.coordinates) === JSON.stringify(request.coordinates)
+      (l) =>
+        JSON.stringify(l.coordinates) === JSON.stringify(request.coordinates)
     );
+
     if (!!existingListing) {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-        payload: existingListing
+        payload: existingListing,
       });
     }
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: request.meansOfTransportation
+      payload: request.meansOfTransportation,
     });
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-      payload: request.preferredLocations || []
+      payload: request.preferredLocations || [],
     });
+
     const localityParams = request.preferredAmenities
-      .map(name => osmEntityTypes.find(entity => entity.name === name))
+      .map((name) => osmEntityTypes.find((entity) => entity.name === name))
       .filter(Boolean) as ApiOsmEntity[];
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: localityParams
+      payload: localityParams,
     });
   };
 

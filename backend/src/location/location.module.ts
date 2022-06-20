@@ -18,6 +18,7 @@ import { RealEstateListingModule } from '../real-estate-listing/real-estate-list
 import { ClientModule } from '../client/client.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
+import { LocationListener } from './listener/location.listener';
 
 @Module({
   imports: [
@@ -36,6 +37,6 @@ import { UserModule } from '../user/user.module';
     SearchResultSnapshotController,
     TilesController,
   ],
-  providers: [LocationService],
+  providers: [LocationService, LocationListener],
 })
 export class LocationModule {}

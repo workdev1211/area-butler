@@ -81,6 +81,7 @@ export interface ApiMoneyAmount {
   amount?: number;
   currency: string;
 }
+
 export interface ApiSearch {
   searchTitle?: string;
   withIsochrone?: boolean;
@@ -276,4 +277,5 @@ export interface ApiSearchResultSnapshotResponse {
   description?: string;
   createdAt: Date;
   lastAccess?: Date;
+  endsAt?: Date;
 }

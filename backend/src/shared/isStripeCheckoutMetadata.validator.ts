@@ -1,0 +1,30 @@
+import { ValidateBy, ValidationOptions } from 'class-validator';
+import Stripe from 'stripe';
+
+const IS_STRIPE_CHECKOUT_METADATA = 'isStripeCheckoutMetadata';
+const allowedPropertyKeyTypes = ['string'];
+const allowedPropertyValueTypes = ['string', 'number', 'null'];
+
+const getDataType = (data: unknown) => (data === null ? 'null' : typeof data);
+
+export const IsStripeCheckoutMetadata = (
+  validationOptions?: ValidationOptions,
+): PropertyDecorator => {
+  return ValidateBy(
+    {
+      name: IS_STRIPE_CHECKOUT_METADATA,
+      validator: {
+        validate: (metadata: Stripe.MetadataParam): boolean => {
+          return Object.entries(metadata).every(
+            ([key, value]) =>
+              allowedPropertyKeyTypes.includes(getDataType(key)) &&
+              allowedPropertyValueTypes.includes(getDataType(value)),
+          );
+        },
+        defaultMessage: () =>
+          'The provided metadata has incorrect data types of either its property names or values',
+      },
+    },
+    validationOptions,
+  );
+};

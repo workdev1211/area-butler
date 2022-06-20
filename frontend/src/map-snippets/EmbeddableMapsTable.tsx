@@ -1,7 +1,9 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
+import dayjs from "dayjs";
 
+import "./EmbeddableMapsTable.scss";
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
@@ -12,6 +14,9 @@ import {
   toastSuccess,
 } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import FormModal, { ModalConfig } from "../components/FormModal";
+import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
+import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
 
 export interface EmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
@@ -63,6 +68,45 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
     }
   };
 
+  const OpenMapEditorButton: FunctionComponent<{
+    embeddableMap: ApiSearchResultSnapshotResponse;
+  }> = ({ embeddableMap }) => (
+    <button
+      className="ml-5 rounded btn-xs btn-primary"
+      onClick={(e) => {
+        history.push(`snippet-editor/${embeddableMap.id}`);
+        e.stopPropagation();
+      }}
+    >
+      Editor öffnen
+    </button>
+  );
+
+  const increaseLimitButton: ReactNode = (
+    <button type="button" className="ml-5 rounded btn-xs btn-primary">
+      Editor öffnen
+    </button>
+  );
+
+  const increaseLimitModalConfig: ModalConfig = {
+    modalTitle: "Abfragelimit erreicht",
+    buttonTitle: "Analyse starten",
+    submitButtonTitle: "Neues Kontingent kaufen",
+    modalButton: increaseLimitButton,
+  };
+
+  const IncreaseLimitModal: FunctionComponent<{
+    modelId?: string;
+  }> = ({ modelId }) => (
+    <FormModal modalConfig={increaseLimitModalConfig}>
+      <IncreaseLimitFormHandler
+        limitType={ApiSubscriptionLimitsEnum.AddressExpiration}
+        modelName="SearchResultSnapshot"
+        modelId={modelId}
+      />
+    </FormModal>
+  );
+
   return (
     // TODO data tour
     <div className="overflow-x-auto" data-tour="real-estates-table">
@@ -110,15 +154,12 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
                   : "Kein Aufruf"}
               </td>
               <td>
-                <button
-                  className="ml-5 rounded btn-xs btn-primary"
-                  onClick={(e) => {
-                    history.push(`snippet-editor/${embeddableMap.id}`);
-                    e.stopPropagation();
-                  }}
-                >
-                  Editor öffnen
-                </button>
+                {!embeddableMap.endsAt ||
+                dayjs().isBefore(embeddableMap.endsAt) ? (
+                  <OpenMapEditorButton embeddableMap={embeddableMap} />
+                ) : (
+                  <IncreaseLimitModal modelId={embeddableMap.id} />
+                )}
                 <button
                   className="ml-5 rounded btn-xs btn-primary"
                   onClick={(e) => {

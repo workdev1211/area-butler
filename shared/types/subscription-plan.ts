@@ -27,8 +27,8 @@ export interface IApiSubscriptionLimitAmount {
 export interface IApiSubscriptionLimitIncreaseParams {
   id: IApiSubscriptionEnvIds;
   amount: IApiSubscriptionLimitAmount;
-  name?: string;
-  description?: string;
+  name: string;
+  description: string;
 }
 
 export interface IApiSubscriptionLimit {

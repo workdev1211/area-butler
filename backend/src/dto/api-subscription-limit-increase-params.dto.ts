@@ -1,7 +1,6 @@
 import {
   IsNotEmpty,
   IsObject,
-  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -30,13 +29,13 @@ class ApiSubscriptionLimitIncreaseParamsDto
   @Type(() => ApiSubscriptionLimitAmountDto)
   amount: IApiSubscriptionLimitAmount;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  name?: string;
+  name: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  description?: string;
+  description: string;
 }
 
 export default ApiSubscriptionLimitIncreaseParamsDto;

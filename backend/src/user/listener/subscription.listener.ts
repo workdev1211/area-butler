@@ -26,7 +26,7 @@ export class SubscriptionListener {
     stripeSubscriptionId,
     endsAt,
     trialEndsAt,
-  }: SubscriptionCreateEvent) {
+  }: SubscriptionCreateEvent): Promise<void> {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
@@ -55,7 +55,7 @@ export class SubscriptionListener {
   private async handleSubscriptionRenewEvent({
     stripeSubscriptionId,
     stripeCustomerId,
-  }: SubscriptionRenewEvent) {
+  }: SubscriptionRenewEvent): Promise<void> {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
@@ -80,13 +80,13 @@ export class SubscriptionListener {
   private async handleRequestContingentIncreaseEvent({
     stripeCustomerId,
     amount,
-  }: ILimitIncreaseEvent) {
+  }: ILimitIncreaseEvent): Promise<void> {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
     );
 
     if (user) {
-      await this.userService.addRequestContingentIncrease(user, amount);
+      await this.userService.addRequestContingentIncrease(user, amount.value);
     }
   }
 }

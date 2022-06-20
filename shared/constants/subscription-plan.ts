@@ -41,19 +41,28 @@ const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   {
     id: { dev: "price_1LCHlOLcbb2Q3qBpZltd36hh" },
     amount: { value: 1 },
+    name: "Abfrage Kontingent",
+    description:
+      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 39,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
   },
   {
     id: { dev: "price_1LCHm5Lcbb2Q3qBp0CRFBhib" },
     amount: { value: 5 },
+    name: "Abfrage Kontingent",
+    description:
+      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 156,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
   },
   {
     id: { dev: "price_1LCHmyLcbb2Q3qBpM8txQGt1" },
     amount: { value: 10 },
+    name: "Abfrage Kontingent",
+    description:
+      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 232,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
   },
 ];
 
 export const payPerUse1Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use",
+  name: "Pay per Use x1",
   type: ApiSubscriptionPlanType.PAY_PER_USE_1,
   prices: [
     {
@@ -72,6 +81,9 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
               amount: { value: 4, unit: "weeks" },
+              name: "Adressablauf Kontingent",
+              description:
+                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 13,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
             },
           ],
         },
@@ -103,7 +115,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
 };
 
 export const payPerUse5Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use",
+  name: "Pay per Use x5",
   type: ApiSubscriptionPlanType.PAY_PER_USE_5,
   prices: [
     {
@@ -122,6 +134,9 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
               amount: { value: 4, unit: "weeks" },
+              name: "Adressablauf Kontingent",
+              description:
+                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
             },
           ],
         },
@@ -153,7 +168,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
 };
 
 export const payPerUse10Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use",
+  name: "Pay per Use x10",
   type: ApiSubscriptionPlanType.PAY_PER_USE_10,
   prices: [
     {
@@ -172,6 +187,9 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
               amount: { value: 4, unit: "weeks" },
+              name: "Adressablauf Kontingent",
+              description:
+                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
             },
           ],
         },
@@ -236,6 +254,9 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
             prod: "price_1Jw8ftLcbb2Q3qBp73Out78u",
           },
           amount: { value: 100 },
+          name: "Abfrage Kontingent",
+          description:
+            "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 30,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
         },
       ],
     },
@@ -266,6 +287,9 @@ const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
     {
       id: { dev: "price_1LCHqFLcbb2Q3qBpmxFBI6TE" },
       amount: { value: 50 },
+      name: "Abfrage Kontingent",
+      description:
+        "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
     },
   ];
 

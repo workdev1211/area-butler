@@ -92,8 +92,12 @@ export class BillingService {
 
   private async handleCheckoutSessionCompleted(eventData: Stripe.Event.Data) {
     const payload = eventData.object as any;
-    const stripeCustomerId = payload.customer;
-    const checkoutSessionId = payload.id;
+
+    const {
+      id: checkoutSessionId,
+      customer: stripeCustomerId,
+      metadata,
+    } = payload;
 
     const lineItems =
       await this.stripeService.fetchLineItemsFromCheckoutSession(
@@ -103,22 +107,28 @@ export class BillingService {
     if (lineItems.length > 0) {
       const lineItem = lineItems[0];
 
-      const limitIncreaseParams = this.subscriptionService.getLimitIncreaseParams(
-        lineItem.price.id,
-      );
+      const limitIncreaseParams =
+        this.subscriptionService.getLimitIncreaseParams(lineItem.price.id);
 
       // skips if there are no increase package items (adds the number of requests) in the checkout
       if (limitIncreaseParams) {
         const limitIncreaseEvent: ILimitIncreaseEvent = {
-          stripeCustomerId,
-          amount: lineItem.quantity,
+          amount: { ...limitIncreaseParams.amount, value: lineItem.quantity },
         };
 
         switch (limitIncreaseParams.type) {
           case ApiSubscriptionLimitsEnum.NumberOfRequests: {
             this.eventEmitter.emitAsync(
               EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
-              limitIncreaseEvent,
+              { ...limitIncreaseEvent, stripeCustomerId },
+            );
+            break;
+          }
+
+          case ApiSubscriptionLimitsEnum.AddressExpiration: {
+            this.eventEmitter.emitAsync(
+              EventType.ADDRESS_EXPIRATION_INCREASE_EVENT,
+              { ...limitIncreaseEvent, metadata },
             );
             break;
           }

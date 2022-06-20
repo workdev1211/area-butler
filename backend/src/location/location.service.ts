@@ -42,7 +42,10 @@ import {
   UserDocument,
 } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
-import { ApiSubscriptionLimitsEnum } from '@area-butler-types/subscription-plan';
+import {
+  ApiSubscriptionLimitsEnum,
+  IApiSubscriptionLimitAmount,
+} from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class LocationService {
@@ -50,7 +53,7 @@ export class LocationService {
     private overpassService: OverpassService,
     private isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
-    private locationModel: Model<LocationSearchDocument>,
+    private locationSearchModel: Model<LocationSearchDocument>,
     @InjectModel(SearchResultSnapshot.name)
     private searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private userService: UserService,
@@ -62,7 +65,7 @@ export class LocationService {
     user: UserDocument,
     search: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
-    const existingLocation = await this.locationModel.findOne(
+    const existingLocation = await this.locationSearchModel.findOne(
       {
         userId: user._id,
         'locationSearch.coordinates': search.coordinates,
@@ -189,7 +192,7 @@ export class LocationService {
       }
     }
 
-    await new this.locationModel(location).save();
+    await new this.locationSearchModel(location).save();
 
     if (!existingLocation) {
       await this.userService.incrementExecutedRequestCount(user.id);
@@ -219,7 +222,7 @@ export class LocationService {
   async latestUserRequests(user: UserDocument): Promise<ApiUserRequestsDto> {
     // TODO think about using class-transformer for mapping
     const requests = (
-      await this.locationModel
+      await this.locationSearchModel
         .find({ userId: user._id }, { locationSearch: 1, endsAt: 1 })
         .sort({ createdAt: -1 })
     ).map(({ locationSearch, endsAt }) => ({ ...locationSearch, endsAt }));
@@ -398,6 +401,38 @@ export class LocationService {
   ): void {
     if (address?.endsAt && dayjs().isAfter(address.endsAt)) {
       throw new HttpException('Address has expired', 400);
+    }
+  }
+
+  async prolongAddressDuration(
+    modelName: string,
+    modelId: string,
+    { value, unit }: IApiSubscriptionLimitAmount,
+  ) {
+    const endsAt = dayjs()
+      .add(value, unit as ManipulateType)
+      .toDate();
+
+    switch (modelName) {
+      case 'LocationSearch': {
+        await this.locationSearchModel.updateOne(
+          {
+            _id: modelId,
+          },
+          { endsAt },
+        );
+        break;
+      }
+
+      case 'SearchResultSnapshot': {
+        await this.searchResultSnapshotModel.updateOne(
+          {
+            _id: modelId,
+          },
+          { endsAt },
+        );
+        break;
+      }
     }
   }
 }

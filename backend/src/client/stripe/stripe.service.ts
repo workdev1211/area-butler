@@ -1,6 +1,7 @@
-import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
+
+import { ApiCreateCheckout } from '@area-butler-types/billing';
 import { configService } from '../../config/config.service';
 import { UserDocument } from '../../user/schema/user.schema';
 
@@ -13,10 +14,11 @@ export class StripeService {
     this.stripeClient = new Stripe(configService.getStripeKey(), {
       apiVersion: '2020-08-27',
     });
+
     this.stripeWebhookSecret = configService.getStripeWebhookSecret();
   }
 
-  public async createCustomerPortalLink(user: UserDocument): Promise<string> {
+  async createCustomerPortalLink(user: UserDocument): Promise<string> {
     const stripeSession: Stripe.BillingPortal.Session =
       await this.stripeClient.billingPortal.sessions.create({
         customer: user.stripeCustomerId,
@@ -27,13 +29,14 @@ export class StripeService {
     return stripeSession.url;
   }
 
-  public async createCheckoutSessionUrl(
+  async createCheckoutSessionUrl(
     user: UserDocument,
     {
       priceId,
       amount = 1,
       trialPeriod,
       mode = 'subscription',
+      metadata,
     }: ApiCreateCheckout,
   ): Promise<string> {
     const checkoutUrl: Stripe.Checkout.Session =
@@ -58,12 +61,13 @@ export class StripeService {
           mode === 'subscription' ? 'subscriptionId' : 'checkoutId'
         }={CHECKOUT_SESSION_ID}`,
         cancel_url: configService.getBaseAppUrl(),
+        metadata,
       });
 
     return checkoutUrl.url;
   }
 
-  public async createCustomer(user: UserDocument): Promise<string> {
+  async createCustomer(user: UserDocument): Promise<string> {
     const stripeCustomer: Stripe.Customer =
       await this.stripeClient.customers.create({
         email: user.email,
@@ -73,9 +77,10 @@ export class StripeService {
     return stripeCustomer.id;
   }
 
-  public constructEvent(request: any): Stripe.Event {
+  constructEvent(request: any): Stripe.Event {
     const webhookSecret = configService.getStripeWebhookSecret();
     const signature = request.headers['stripe-signature'];
+
     try {
       return this.stripeClient.webhooks.constructEvent(
         request.rawBody,
@@ -88,18 +93,19 @@ export class StripeService {
     }
   }
 
-  public async fetchLineItemsFromCheckoutSession(
+  async fetchLineItemsFromCheckoutSession(
     checkoutSessionId: string,
   ): Promise<Stripe.LineItem[]> {
     const lineItems = await this.stripeClient.checkout.sessions.listLineItems(
       checkoutSessionId,
     );
+
     return lineItems.data;
   }
 
-  public async fetchSubscriptionData(
+  async fetchSubscriptionData(
     stripeSubscriptionId: string,
   ): Promise<Stripe.Subscription> {
-    return await this.stripeClient.subscriptions.retrieve(stripeSubscriptionId);
+    return this.stripeClient.subscriptions.retrieve(stripeSubscriptionId);
   }
 }
