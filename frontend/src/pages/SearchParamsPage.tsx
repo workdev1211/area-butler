@@ -6,6 +6,7 @@ import {
   useState,
 } from "react";
 import { Form, Formik } from "formik";
+import dayjs from "dayjs";
 
 import "./SearchParamsPage.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
@@ -71,7 +72,8 @@ const SearchParamsPage: FunctionComponent = () => {
     useContext(SearchContext);
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
-  const [newRequest, setNewRequest] = useState(true);
+  const [isNewRequest, setIsNewRequest] = useState(true);
+  const [existingRequest, setExistingRequest] = useState<ApiSearch>();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
   const history = useHistory();
@@ -81,11 +83,16 @@ const SearchParamsPage: FunctionComponent = () => {
     const coordinates = searchContextState.location;
 
     if (coordinates) {
-      setNewRequest(
-        !latestUserRequests.requests.some(
-          (r) => JSON.stringify(r.coordinates) === JSON.stringify(coordinates)
-        )
+      const existingRequest = latestUserRequests.requests.find(
+        ({ coordinates: requestCoordinates }) =>
+          JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
       );
+
+      if (existingRequest) {
+        setExistingRequest(existingRequest);
+      }
+
+      setIsNewRequest(!existingRequest);
     }
   }, [searchContextState, userState.latestUserRequests]);
 
@@ -190,10 +197,24 @@ const SearchParamsPage: FunctionComponent = () => {
       data-tour="start-search"
       className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
     >
-      {newRequest ? "Analyse Starten " : "Analyse aktualisieren "}
+      {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
       <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
     </button>
   );
+
+  let limitType: ApiSubscriptionLimitsEnum | undefined;
+  let modelName: string | undefined;
+  let modelId: string | undefined;
+
+  if (isNewRequest && requestLimitExceeded) {
+    limitType = ApiSubscriptionLimitsEnum.NumberOfRequests;
+  }
+
+  if (existingRequest && dayjs().isAfter(existingRequest.endsAt)) {
+    modelName = "LocationSearch";
+    modelId = existingRequest.id;
+    limitType = ApiSubscriptionLimitsEnum.AddressExpiration;
+  }
 
   const increaseRequestLimitModalConfig: ModalConfig = {
     modalTitle: "Abfragelimit erreicht",
@@ -205,7 +226,9 @@ const SearchParamsPage: FunctionComponent = () => {
   const IncreaseLimitModal: FunctionComponent = () => (
     <FormModal modalConfig={increaseRequestLimitModalConfig}>
       <IncreaseLimitFormHandler
-        limitType={ApiSubscriptionLimitsEnum.NumberOfRequests}
+        limitType={limitType || ApiSubscriptionLimitsEnum.NumberOfRequests}
+        modelName={modelName}
+        modelId={modelId}
       />
     </FormModal>
   );
@@ -349,7 +372,9 @@ const SearchParamsPage: FunctionComponent = () => {
       onClick={performLocationSearch}
       className={searchContextState.searchBusy ? `${classes} loading` : classes}
     >
-      <span>{newRequest ? "Analyse Starten " : "Analyse aktualisieren "}</span>
+      <span>
+        {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
+      </span>
       <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
     </button>
   );
@@ -366,7 +391,7 @@ const SearchParamsPage: FunctionComponent = () => {
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
       actionsBottom={[
-        newRequest && requestLimitExceeded ? (
+        limitType ? (
           <IncreaseLimitModal key="search-button" />
         ) : (
           <SearchButton key="search-button" />

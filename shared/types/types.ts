@@ -83,12 +83,14 @@ export interface ApiMoneyAmount {
 }
 
 export interface ApiSearch {
+  id?: string;
   searchTitle?: string;
   withIsochrone?: boolean;
   coordinates: ApiCoordinates;
   preferredLocations?: ApiPreferredLocation[];
   meansOfTransportation: TransportationParam[];
   preferredAmenities: OsmName[];
+  endsAt?: Date;
 }
 
 export interface ApiSearchResponse {

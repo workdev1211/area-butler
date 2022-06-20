@@ -192,6 +192,7 @@ export class LocationService {
       }
     }
 
+    // TODO ask Kai what is the purpose of saving a new locationSearch record after each search request
     await new this.locationSearchModel(location).save();
 
     if (!existingLocation) {
@@ -223,9 +224,13 @@ export class LocationService {
     // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationSearchModel
-        .find({ userId: user._id }, { locationSearch: 1, endsAt: 1 })
+        .find({ userId: user._id }, { _id: 1, locationSearch: 1, endsAt: 1 })
         .sort({ createdAt: -1 })
-    ).map(({ locationSearch, endsAt }) => ({ ...locationSearch, endsAt }));
+    ).map(({ locationSearch, endsAt, _id: id }) => ({
+      ...locationSearch,
+      id,
+      endsAt,
+    }));
 
     // TODO think about using lodash.groupBy or making all the grouping (etc, etc) in one cycle
     const grouped = groupBy(
