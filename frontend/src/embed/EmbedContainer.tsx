@@ -1,41 +1,42 @@
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import axios from "axios";
+
 import "./EmbedContainer.scss";
 import {
   ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse
+  ApiSearchResultSnapshotResponse,
 } from "../../../shared/types/types";
-import axios from "axios";
 import {
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "../context/SearchContext";
 import SearchResultContainer from "../components/SearchResultContainer";
 import { deriveInitialEntityGroups } from "../shared/shared.functions";
 import {
   RealEstateActionTypes,
-  RealEstateContext
+  RealEstateContext,
 } from "../context/RealEstateContext";
-import {defaultMapZoom} from "../map/Map";
+import { addressExpiredMessage } from "../../../shared/messages/error.message";
+import { defaultMapZoom } from "../map/Map";
 
-window.addEventListener('resize', () => {
+window.addEventListener("resize", () => {
   calculateViewHeight();
 });
 
 const calculateViewHeight = () => {
-  let vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty('--vh', `${vh}px`);
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
 };
 
 calculateViewHeight();
 
-const EmbedContainer: React.FunctionComponent = () => {
-  const { searchContextState, searchContextDispatch } = useContext(
-    SearchContext
-  );
+const EmbedContainer: FunctionComponent = () => {
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
-
+  const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
   const [searchConfig, setSearchConfig] = useState<
@@ -45,12 +46,15 @@ const EmbedContainer: React.FunctionComponent = () => {
   const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1);
     const vars = query.split("&");
+
     for (let i = 0; i < vars.length; i++) {
       let pair = vars[i].split("=");
+
       if (pair[0] === variable) {
         return pair[1];
       }
     }
+
     return undefined;
   };
 
@@ -58,36 +62,44 @@ const EmbedContainer: React.FunctionComponent = () => {
   useEffect(() => {
     const fetchData = async () => {
       const baseUrl = process.env.REACT_APP_BASE_URL || "";
-      const response = (
-        await axios.get<ApiSearchResultSnapshotResponse>(
-          `${baseUrl}/api/location/snapshot/${getQueryVariable("token")}`
-        )
-      ).data;
 
+      try {
+        const response = (
+          await axios.get<ApiSearchResultSnapshotResponse>(
+            `${baseUrl}/api/location/snapshot/${getQueryVariable("token")}`
+          )
+        ).data;
 
-      const config = response.config;
+        const config = response.config;
 
-      if (!!config && !("showAddress" in config)) {
-        config["showAddress"] = true;
-      }      
-      
-      if (!!config && !("showStreetViewLink" in config)) {
-        config["showStreetViewLink"] = true;
+        if (config && !("showAddress" in config)) {
+          config["showAddress"] = true;
+        }
+
+        if (config && !("showStreetViewLink" in config)) {
+          config["showStreetViewLink"] = true;
+        }
+
+        if (config?.zoomLevel) {
+          setMapZoomLevel(config.zoomLevel);
+        }
+
+        setMapBoxToken(response.mapboxToken);
+        setResult(response);
+        setSearchConfig(config);
+      } catch (e: any) {
+        const { statusCode, message } = e.response.data;
+        setIsAddressExpired(
+          statusCode === 402 && message === addressExpiredMessage
+        );
       }
-
-      if (config?.zoomLevel) {
-        setMapZoomLevel(config.zoomLevel);
-      }
-
-      setMapBoxToken(response.mapboxToken);
-      setResult(response);
-      setSearchConfig(config);
     };
+
     void fetchData();
   }, [setMapBoxToken, searchContextDispatch]);
 
   useEffect(() => {
-    if (!!result && !!searchConfig) {
+    if (result && searchConfig) {
       const {
         searchResponse,
         transportationParams,
@@ -97,54 +109,63 @@ const EmbedContainer: React.FunctionComponent = () => {
         preferredLocations = [],
         routes = [],
         transitRoutes = [],
-        realEstateListings = []
+        realEstateListings = [],
       } = result.snapshot;
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
-        payload: searchResponse
+        payload: searchResponse,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-        payload: transportationParams
+        payload: transportationParams,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-        payload: localityParams
+        payload: localityParams,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_PLACES_LOCATION,
-        payload: placesLocation
+        payload: placesLocation,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCATION,
-        payload: location
+        payload: location,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-        payload: preferredLocations
+        payload: preferredLocations,
       });
+
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstateListings
+        payload: realEstateListings,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-        payload: routes
+        payload: routes,
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-        payload: transitRoutes
+        payload: transitRoutes,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...searchConfig }
+        payload: { ...searchConfig },
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-        payload: result.token
-      })
+        payload: result.token,
+      });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
@@ -153,14 +174,18 @@ const EmbedContainer: React.FunctionComponent = () => {
           searchConfig,
           realEstateListings,
           preferredLocations
-        )
+        ),
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, searchConfig, searchContextDispatch]);
 
   if (!searchContextState.searchResponse) {
-    return <div>Loading...</div>;
+    return isAddressExpired ? (
+      <div>{`Ihre Adresse ist abgelaufen. Bitte besuchen Sie die ${process.env.REACT_APP_BASE_URL} und verlängern Sie sie.`}</div>
+    ) : (
+      <div>Loading...</div>
+    );
   }
 
   return (

@@ -46,6 +46,7 @@ import {
   ApiSubscriptionLimitsEnum,
   IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
+import { addressExpiredMessage } from '../../../shared/messages/error.message';
 
 @Injectable()
 export class LocationService {
@@ -306,6 +307,8 @@ export class LocationService {
       throw new HttpException('Unknown token', 404);
     }
 
+    this.checkAddressExpiration(snapshotDoc);
+
     snapshotDoc.lastAccess = new Date();
     snapshotDoc.save();
 
@@ -404,8 +407,8 @@ export class LocationService {
   checkAddressExpiration(
     address: LocationSearchDocument | SearchResultSnapshotDocument,
   ): void {
-    if (address?.endsAt && dayjs().isAfter(address.endsAt)) {
-      throw new HttpException('Address has expired', 400);
+    if (dayjs().isAfter(address?.endsAt)) {
+      throw new HttpException(addressExpiredMessage, 402);
     }
   }
 
