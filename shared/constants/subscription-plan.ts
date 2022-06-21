@@ -13,9 +13,9 @@ export const allSubscriptionTypes: {
   type: ApiSubscriptionPlanType;
   name: string;
 }[] = [
-  { type: ApiSubscriptionPlanType.PAY_PER_USE_1, name: "Pay per Use (1)" },
-  { type: ApiSubscriptionPlanType.PAY_PER_USE_5, name: "Pay per Use (5)" },
-  { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use (10)" },
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_1, name: "Pay per Use x1" },
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_5, name: "Pay per Use x5" },
+  { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use x10" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS, name: "Business+" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2, name: "Business+" },
   { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },

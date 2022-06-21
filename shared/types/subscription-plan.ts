@@ -60,6 +60,11 @@ export enum ApiSubscriptionPlanType {
   TRIAL = "TRIAL",
 }
 
+export enum ApiSubscriptionPlanTypeGroupEnum {
+  PayPerUse = "Pay per Use",
+  BusinessPlus = "Business+",
+}
+
 export interface ApiSubscriptionPricing {
   id: IApiSubscriptionEnvIds;
   name?: string;

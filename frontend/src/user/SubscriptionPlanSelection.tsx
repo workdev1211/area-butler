@@ -1,15 +1,18 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import "./SubscriptionPlanSelection.scss";
 import { useHttp } from "hooks/http";
 import {
+  businessPlusV2Subscription,
+  payPerUse10Subscription,
   payPerUse1Subscription,
   payPerUse5Subscription,
-  payPerUse10Subscription,
-  businessPlusV2Subscription,
   TRIAL_DAYS,
 } from "../../../shared/constants/subscription-plan";
 import {
   ApiSubscriptionIntervalEnum,
+  ApiSubscriptionPlanType,
+  ApiSubscriptionPlanTypeGroupEnum,
   ApiUserSubscription,
 } from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
@@ -22,16 +25,41 @@ interface ISubscriptionPlan {
   description: string[];
 }
 
+type TSubscriptionPlanGroups = {
+  [key in ApiSubscriptionPlanTypeGroupEnum]: ISubscriptionPlan[];
+};
+
 const SubscriptionPlanSelection: FunctionComponent = () => {
   const { get, post } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
 
-  const [hadPreviousSubscriptions, setHadPreviousSubscriptions] =
+  const [hadPreviousSubscriptionPlans, setHadPreviousSubscriptionPlans] =
     useState(false);
 
-  const [sortedSubscriptionPlans, setSortedSubscriptionPlans] = useState<
-    ISubscriptionPlan[]
-  >([]);
+  const [sortedSubscriptionPlans, setSortedSubscriptionPlans] =
+    useState<TSubscriptionPlanGroups>({
+      [ApiSubscriptionPlanTypeGroupEnum.PayPerUse]: [],
+      [ApiSubscriptionPlanTypeGroupEnum.BusinessPlus]: [],
+    });
+
+  const [activeSubscriptionGroup, setActiveSubscriptionGroup] = useState(
+    ApiSubscriptionPlanTypeGroupEnum.PayPerUse
+  );
+
+  const [isMounted, setIsMounted] = useState(true);
+  const [shouldRender, setShouldRender] = useState(false);
+
+  useEffect(() => {
+    let timeoutId: NodeJS.Timeout;
+
+    if (isMounted && !shouldRender) {
+      setShouldRender(true);
+    } else if (!isMounted && shouldRender) {
+      timeoutId = setTimeout(() => setShouldRender(false), 500);
+    }
+
+    return () => clearTimeout(timeoutId);
+  }, [isMounted, shouldRender]);
 
   useEffect(() => {
     const fetchSubscriptions = async () => {
@@ -39,14 +67,16 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
         await get<ApiUserSubscription[]>("/api/users/me/subscriptions")
       ).data;
 
-      setHadPreviousSubscriptions(subscriptions.length > 0);
+      setHadPreviousSubscriptionPlans(subscriptions.length > 0);
     };
 
     fetchSubscriptions();
-  }, [get, hadPreviousSubscriptions]);
+  }, [get, hadPreviousSubscriptionPlans]);
 
   useEffect(() => {
-    const getIntervalName = (interval: ApiSubscriptionIntervalEnum) => {
+    const getSubscriptionIntervalName = (
+      interval: ApiSubscriptionIntervalEnum
+    ) => {
       switch (interval) {
         case ApiSubscriptionIntervalEnum.MONTHLY:
           return "Monthly";
@@ -65,13 +95,27 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       }
     };
 
+    const getSubscriptionGroup = (
+      type: ApiSubscriptionPlanType
+    ): ApiSubscriptionPlanTypeGroupEnum => {
+      switch (type) {
+        case ApiSubscriptionPlanType.BUSINESS_PLUS_V2: {
+          return ApiSubscriptionPlanTypeGroupEnum.BusinessPlus;
+        }
+
+        default: {
+          return ApiSubscriptionPlanTypeGroupEnum.PayPerUse;
+        }
+      }
+    };
+
     const resultingSubscriptionPlans = [
       payPerUse1Subscription,
       payPerUse5Subscription,
       payPerUse10Subscription,
       businessPlusV2Subscription,
-    ].reduce<ISubscriptionPlan[]>(
-      (result, { name, prices, description: planDescription = [] }) => {
+    ].reduce<TSubscriptionPlanGroups>(
+      (result, { name, prices, description: planDescription = [], type }) => {
         prices.forEach(
           ({ id, price, interval, description: priceDescription = [] }) => {
             if (!id[stripeEnv]) {
@@ -80,11 +124,11 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
             const description = [...priceDescription, ...planDescription];
 
-            result.push({
+            result[getSubscriptionGroup(type)].push({
               stripePriceId: id[stripeEnv]!,
               name,
               price,
-              interval: getIntervalName(interval),
+              interval: getSubscriptionIntervalName(interval),
               description,
             });
           }
@@ -92,7 +136,10 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
         return result;
       },
-      []
+      {
+        [ApiSubscriptionPlanTypeGroupEnum.PayPerUse]: [],
+        [ApiSubscriptionPlanTypeGroupEnum.BusinessPlus]: [],
+      }
     );
 
     setSortedSubscriptionPlans(resultingSubscriptionPlans);
@@ -132,7 +179,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
               zzgl. USt.
             </span>
           </div>
-          {!hadPreviousSubscriptions && (
+          {!hadPreviousSubscriptionPlans && (
             <div className="flex justify-end">
               <div className="badge badge-primary">
                 {TRIAL_DAYS} Tage kostenfrei testen!
@@ -180,6 +227,21 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     );
   };
 
+  const mountedStyle = { animation: "inAnimation 500ms ease-in" };
+  const unmountedStyle = { animation: "outAnimation 500ms ease-in" };
+  const numberOfSubscriptionPlans =
+    sortedSubscriptionPlans[activeSubscriptionGroup].length;
+  let cardContainerClassNames = "grid grid-cols-1 mt-20";
+
+  if ([1, 2].includes(numberOfSubscriptionPlans)) {
+    cardContainerClassNames +=
+      numberOfSubscriptionPlans === 1
+        ? " xl:w-1/2 xl:grid-cols-1"
+        : ` gap-40 xl:grid-cols-2`;
+  } else {
+    cardContainerClassNames += ` gap-20 xl:grid-cols-3`;
+  }
+
   return (
     <div className="mt-20 flex flex-col gap-5">
       <div>
@@ -187,28 +249,58 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
           Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das
           passende Abonnement für sich aus.
         </h1>
-        {sortedSubscriptionPlans.length && (
-          <div
-            className={`grid grid-cols-1 ${
-              sortedSubscriptionPlans.length === 1
-                ? "xl:w-1/2 xl:grid-cols-1"
-                : "gap-20 xl:grid-cols-3"
-            } mt-20`}
-          >
-            {sortedSubscriptionPlans.map(
-              ({ stripePriceId, name, price, interval, description }) => (
-                <SubscriptionPlanCard
-                  key={stripePriceId}
-                  stripePriceId={stripePriceId}
-                  name={name}
-                  price={price}
-                  interval={interval}
-                  description={description}
-                />
-              )
+        <div className="p-20 flex flex-col items-center justify-center">
+          <h2>Abrechnungsintervall</h2>
+          <div className="btn-group mt-5">
+            {Object.entries(sortedSubscriptionPlans).map(
+              ([subscriptionGroupName, subscriptionPlans]) => {
+                if (subscriptionPlans.length) {
+                  return (
+                    <button
+                      className={`btn btn-lg ${
+                        activeSubscriptionGroup === subscriptionGroupName
+                          ? "btn-active"
+                          : ""
+                      }`}
+                      onClick={() => {
+                        setIsMounted(!isMounted);
+                        setActiveSubscriptionGroup(
+                          subscriptionGroupName as ApiSubscriptionPlanTypeGroupEnum
+                        );
+                      }}
+                      key={subscriptionGroupName}
+                    >
+                      {subscriptionGroupName}
+                    </button>
+                  );
+                }
+
+                return null;
+              }
             )}
           </div>
-        )}
+          <div style={isMounted ? mountedStyle : unmountedStyle}>
+            {sortedSubscriptionPlans[activeSubscriptionGroup].length && (
+              <div className={cardContainerClassNames}>
+                {sortedSubscriptionPlans[activeSubscriptionGroup].map(
+                  (
+                    { stripePriceId, name, price, interval, description },
+                    i
+                  ) => (
+                    <SubscriptionPlanCard
+                      key={stripePriceId}
+                      stripePriceId={stripePriceId}
+                      name={name}
+                      price={price}
+                      interval={interval}
+                      description={description}
+                    />
+                  )
+                )}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );

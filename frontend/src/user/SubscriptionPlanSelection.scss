@@ -1,0 +1,44 @@
+// TODO think about it in future
+//div.grid.xl\:grid-cols-2 {
+//  div.card {
+//    &:first-child {
+//      margin-left: calc(100vw - 85vw);
+//    }
+//
+//    &:last-child {
+//      margin-right: calc(100vw - 85vw);
+//    }
+//  }
+//}
+
+@keyframes inAnimation {
+  0% {
+    transform: scale(0.25);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes outAnimation {
+  0% {
+    transform: scale(0.25);
+    opacity: 0;
+  }
+
+  60% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
