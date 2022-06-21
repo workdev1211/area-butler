@@ -160,7 +160,10 @@ const SearchParamsPage: FunctionComponent = () => {
     !searchContextState.location?.lng ||
     searchContextState.transportationParams.length === 0 ||
     searchContextState.transportationParams.some((t) => !t.amount) ||
-    searchContextState.localityParams.length === 0;
+    searchContextState.localityParams.length === 0 ||
+    searchContextState.preferredLocations?.some(
+      ({ coordinates }) => !coordinates
+    );
 
   const hasFederalElectionData =
     user.subscriptionPlan?.config.appFeatures.dataSources.includes(
@@ -413,10 +416,10 @@ const SearchParamsPage: FunctionComponent = () => {
           <div className="sub-content">
             <ImportantAddresses
               inputValues={searchContextState.preferredLocations}
-              onChange={(importantAdresses) =>
+              onChange={(importantAddresses) =>
                 searchContextDispatch({
                   type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-                  payload: importantAdresses,
+                  payload: importantAddresses,
                 })
               }
             />
