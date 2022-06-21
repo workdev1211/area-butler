@@ -61,6 +61,7 @@ import { useCensusData } from "../hooks/censusdata";
 import { useHttp } from "../hooks/http";
 import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
+import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 
 const SearchParamsPage: FunctionComponent = () => {
   const { get, post } = useHttp();
@@ -203,7 +204,7 @@ const SearchParamsPage: FunctionComponent = () => {
   );
 
   let limitType: ApiSubscriptionLimitsEnum | undefined;
-  let modelName: string | undefined;
+  let modelName: LimitIncreaseModelNameEnum | undefined;
   let modelId: string | undefined;
 
   if (isNewRequest && requestLimitExceeded) {
@@ -211,7 +212,7 @@ const SearchParamsPage: FunctionComponent = () => {
   }
 
   if (existingRequest && dayjs().isAfter(existingRequest.endsAt)) {
-    modelName = "LocationSearch";
+    modelName = LimitIncreaseModelNameEnum.LocationSearch;
     modelId = existingRequest.id;
     limitType = ApiSubscriptionLimitsEnum.AddressExpiration;
   }

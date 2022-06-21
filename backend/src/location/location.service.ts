@@ -47,6 +47,7 @@ import {
   IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
+import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 
 @Injectable()
 export class LocationService {
@@ -413,7 +414,7 @@ export class LocationService {
   }
 
   async prolongAddressDuration(
-    modelName: string,
+    modelName: LimitIncreaseModelNameEnum,
     modelId: string,
     { value, unit }: IApiSubscriptionLimitAmount,
   ) {
@@ -422,7 +423,7 @@ export class LocationService {
       .toDate();
 
     switch (modelName) {
-      case 'LocationSearch': {
+      case LimitIncreaseModelNameEnum.LocationSearch: {
         await this.locationSearchModel.updateOne(
           {
             _id: modelId,
@@ -432,7 +433,7 @@ export class LocationService {
         break;
       }
 
-      case 'SearchResultSnapshot': {
+      case LimitIncreaseModelNameEnum.SearchResultSnapshot: {
         await this.searchResultSnapshotModel.updateOne(
           {
             _id: modelId,

@@ -17,6 +17,7 @@ import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
 import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
+import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 
 export interface EmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
@@ -101,7 +102,7 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
     <FormModal modalConfig={increaseLimitModalConfig}>
       <IncreaseLimitFormHandler
         limitType={ApiSubscriptionLimitsEnum.AddressExpiration}
-        modelName="SearchResultSnapshot"
+        modelName={LimitIncreaseModelNameEnum.SearchResultSnapshot}
         modelId={modelId}
       />
     </FormModal>

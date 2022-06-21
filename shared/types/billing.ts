@@ -10,7 +10,12 @@ export interface IApiCheckoutMetadata {
   [name: string]: string | number | null;
 }
 
+export enum LimitIncreaseModelNameEnum {
+  LocationSearch = "LocationSearch",
+  SearchResultSnapshot = "SearchResultSnapshot",
+}
+
 export interface ILimitIncreaseMetadata extends IApiCheckoutMetadata {
-  modelName: string;
+  modelName: LimitIncreaseModelNameEnum;
   modelId: string;
 }

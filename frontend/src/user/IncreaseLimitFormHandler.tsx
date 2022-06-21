@@ -10,6 +10,7 @@ import {
   IApiSubscriptionLimitAmount,
 } from "../../../shared/types/subscription-plan";
 import IncreaseLimitForm from "./IncreaseLimitForm";
+import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 
 export interface ILimitIncreasePriceId {
   priceId: string;
@@ -28,7 +29,7 @@ export interface IIncreaseLimitFormHandlerProps {
   postSubmit?: (success: boolean) => void;
   limitType: ApiSubscriptionLimitsEnum;
   // TODO change to enum or whatever
-  modelName?: string;
+  modelName?: LimitIncreaseModelNameEnum;
   modelId?: string;
 }
 
@@ -58,15 +59,10 @@ const IncreaseLimitFormHandler: FunctionComponent<
     subscriptionPlan?.limits?.[limitType]?.increaseParams ||
     [];
 
-  let label: string;
-  let description: string;
-
   const filteredParams = limitIncreaseParams.reduce<ILimitIncreaseParams[]>(
-    (result, { id, amount, name, description: limitDescription }) => {
+    (result, { id, amount, name, description }) => {
       if (id[stripeEnv]) {
-        result.push({ priceId: id[stripeEnv]!, amount });
-        label = name;
-        description = limitDescription;
+        result.push({ priceId: id[stripeEnv]!, amount, name, description });
       }
 
       return result;
@@ -104,8 +100,6 @@ const IncreaseLimitFormHandler: FunctionComponent<
       formId={formId!}
       onSubmit={onSubmit}
       limitIncreaseParams={filteredParams}
-      label={label!}
-      description={description!}
     />
   ) : null;
 };

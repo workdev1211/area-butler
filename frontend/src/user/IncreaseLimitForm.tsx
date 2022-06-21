@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState, BaseSyntheticEvent } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -12,18 +12,18 @@ export interface IncreaseRequestLimitFormProps {
   formId: string;
   onSubmit: (values: ILimitIncreasePriceId) => void;
   limitIncreaseParams: ILimitIncreaseParams[];
-  label: string;
-  description: string;
 }
 
 const IncreaseLimitForm: FunctionComponent<IncreaseRequestLimitFormProps> = ({
   formId,
   onSubmit,
   limitIncreaseParams,
-  label,
-  description,
 }) => {
   const validationSchema = Yup.object({ priceId: Yup.string() });
+  const [labelDescription, setLabelDescription] = useState({
+    label: limitIncreaseParams[0].name,
+    description: limitIncreaseParams[0].description,
+  });
 
   return (
     <Formik
@@ -33,24 +33,38 @@ const IncreaseLimitForm: FunctionComponent<IncreaseRequestLimitFormProps> = ({
         onSubmit(values);
       }}
     >
-      <Form id={formId}>
-        <p>{description}</p>
-        <div className="form-control">
-          <Select
-            className="input input-bordered w-full"
-            label={label}
-            placeholder={label}
-            name="priceId"
-            disabled={limitIncreaseParams.length === 1}
-          >
-            {limitIncreaseParams.map((param) => (
-              <option value={param.priceId} key={param.priceId}>
-                {param.amount.value}
-              </option>
-            ))}
-          </Select>
-        </div>
-      </Form>
+      {({ setFieldValue }) => (
+        <Form id={formId}>
+          <p>{labelDescription.description}</p>
+          <div className="form-control">
+            <Select
+              className="input input-bordered w-full"
+              label={labelDescription.label}
+              placeholder={labelDescription.label}
+              name="priceId"
+              disabled={limitIncreaseParams.length === 1}
+              onChange={(e: BaseSyntheticEvent<ILimitIncreaseParams>) => {
+                const foundParam = limitIncreaseParams.find(
+                  (param) => param.priceId === e.target.value
+                );
+
+                setLabelDescription({
+                  label: foundParam?.name,
+                  description: foundParam?.description,
+                });
+
+                setFieldValue("priceId", e.target.value);
+              }}
+            >
+              {limitIncreaseParams.map((param) => (
+                <option value={param.priceId} key={param.priceId}>
+                  {param.amount.value}
+                </option>
+              ))}
+            </Select>
+          </div>
+        </Form>
+      )}
     </Formik>
   );
 };
