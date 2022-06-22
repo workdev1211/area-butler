@@ -1,12 +1,12 @@
-import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
-  IsNotEmpty,
   IsObject,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 import { ApiUpsertPotentialCustomer } from '@area-butler-types/potential-customer';
 import { OsmName, TransportationParam } from '@area-butler-types/types';
@@ -16,10 +16,12 @@ import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 
 class ApiUpsertPotentialCustomerDto implements ApiUpsertPotentialCustomer {
   @IsOptional()
+  @IsString()
   email?: string;
 
-  @IsNotEmpty()
-  name: string;
+  @IsOptional()
+  @IsString()
+  name?: string;
 
   @IsOptional()
   @IsArray()

@@ -167,7 +167,7 @@ export class PotentialCustomerService {
     const user = await this.userService.findById(userId);
     const customers = await this.fetchPotentialCustomers(user);
     const existingCustomer = customers.find(
-      (c) => c.email.toLowerCase() === email.toLowerCase(),
+      (c) => c.email?.toLowerCase() === email.toLowerCase(),
     );
 
     const upsertData = {

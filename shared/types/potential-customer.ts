@@ -2,13 +2,13 @@ import { ApiRealEstateCharacteristics, ApiRealEstateCost } from "./real-estate";
 import { ApiCoordinates, OsmName, TransportationParam } from "./types";
 
 export interface ApiUpsertPotentialCustomer {
-    name: string;
-    email?: string;
-    routingProfiles?: TransportationParam[];
-    preferredAmenities?: OsmName[];
-    preferredLocations?: ApiPreferredLocation[];
-    realEstateCostStructure?: ApiRealEstateCost;
-    realEstateCharacteristics?: ApiRealEstateCharacteristics;
+  name?: string;
+  email?: string;
+  routingProfiles?: TransportationParam[];
+  preferredAmenities?: OsmName[];
+  preferredLocations?: ApiPreferredLocation[];
+  realEstateCostStructure?: ApiRealEstateCost;
+  realEstateCharacteristics?: ApiRealEstateCharacteristics;
 }
 
 export interface ApiPotentialCustomer {
@@ -41,7 +41,7 @@ export interface ApiUpsertQuestionnaire {
 }
 
 export interface ApiPreferredLocation {
-  title: string,
-  address: string,
-  coordinates?: ApiCoordinates
+  title: string;
+  address: string;
+  coordinates?: ApiCoordinates;
 }
