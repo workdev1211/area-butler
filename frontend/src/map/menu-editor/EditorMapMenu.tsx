@@ -4,6 +4,7 @@ import { EntityGroup, ResultEntity } from "components/SearchResultContainer";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
+  ApiSearchResultSnapshotResponse,
   ApiSnippetEntitVisiblity,
   MeansOfTransportation,
 } from "../../../../shared/types/types";
@@ -17,30 +18,103 @@ import {
   realEstateListingsTitleEmbed,
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
+import { useHttp } from "../../hooks/http";
+
+export interface IRecentSnippetConfig {
+  id: string;
+  label: string;
+  config: ApiSearchResultSnapshotConfig;
+}
 
 export interface EditorMapMenuProps {
   availableMeans: MeansOfTransportation[];
   groupedEntries: EntityGroup[];
   config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
+  snapshotId: string;
   additionalMapBoxStyles?: { key: string; label: string }[];
 }
 
 const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
   config,
   onConfigChange,
+  snapshotId,
   availableMeans = [],
   groupedEntries = [],
   additionalMapBoxStyles = [],
 }) => {
+  const currentSnippetConfigLabel = "Aktuell";
+
+  const { get } = useHttp();
   const [configOptionsOpen, setConfigOptionsOpen] = useState<boolean>(true);
   const [poiVisibilityOpen, setPoiVisibilityOpen] = useState<boolean>(true);
   const [preselectedGroupVisibilityOpen, setPreselectedGroupVisibilityOpen] =
     useState<boolean>(true);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
-
   const [color, setColor] = useState(config?.primaryColor);
   const [mapIcon, setMapIcon] = useState(config?.mapIcon);
+  const [recentSnippetConfigs, setRecentSnippetConfigs] = useState<
+    IRecentSnippetConfig[]
+  >([]);
+  const [selectedSnippetConfigId, setSelectedSnippetConfigId] = useState(
+    currentSnippetConfigLabel.toLowerCase()
+  );
+
+  useEffect(() => {
+    if (!config.defaultActiveGroups && groupedEntries?.length) {
+      onConfigChange({
+        ...config,
+        defaultActiveGroups: groupedEntries.map((g) => g.title),
+      });
+    }
+  }, [config, groupedEntries, onConfigChange]);
+
+  useEffect(() => {
+    const fetchEmbeddableMaps = async () => {
+      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
+        await get<ApiSearchResultSnapshotResponse[]>(
+          "/api/location/user-embeddable-maps?limit=5"
+        )
+      ).data;
+
+      const snippetConfigs = embeddableMaps.reduce<IRecentSnippetConfig[]>(
+        (
+          result,
+          {
+            id,
+            snapshot: {
+              placesLocation: { label },
+            },
+            config,
+          }
+        ) => {
+          if (id && label && config) {
+            const snippetConfig = { config };
+
+            if (id === snapshotId) {
+              Object.assign(snippetConfig, {
+                id: currentSnippetConfigLabel.toLowerCase(),
+                label: currentSnippetConfigLabel,
+              });
+            } else {
+              Object.assign(snippetConfig, { id, label });
+            }
+
+            result.push(snippetConfig as IRecentSnippetConfig);
+          }
+
+          return result;
+        },
+        []
+      );
+
+      setRecentSnippetConfigs(snippetConfigs);
+    };
+
+    fetchEmbeddableMaps();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const mapStyles: { key: string; label: string }[] = [
     { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
@@ -52,12 +126,14 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme) => {
     let newConfig = { ...config, theme: value };
     const oldGroups = config.defaultActiveGroups ?? [];
+
     if (value === "KF" && oldGroups.length > 1) {
       newConfig = {
         ...newConfig,
         defaultActiveGroups: [oldGroups[0]],
       };
     }
+
     onConfigChange({ ...newConfig });
   };
 
@@ -111,6 +187,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
 
   const changeDefaultActiveMeans = (activeMeans: MeansOfTransportation) => {
     let defaultActiveMeans = config.defaultActiveMeans || [];
+
     if (defaultActiveMeans.includes(activeMeans)) {
       defaultActiveMeans = [
         ...defaultActiveMeans.filter((a) => a !== activeMeans),
@@ -118,11 +195,13 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     } else {
       defaultActiveMeans.push(activeMeans);
     }
+
     onConfigChange({ ...config, defaultActiveMeans: [...defaultActiveMeans] });
   };
 
   const changeDefaultActiveGroups = (activeGroup: string) => {
     let defaultActiveGroups = config.defaultActiveGroups || [];
+
     if (defaultActiveGroups.includes(activeGroup)) {
       defaultActiveGroups = [
         ...defaultActiveGroups.filter((g) => g !== activeGroup),
@@ -131,8 +210,10 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
       if (config.theme === "KF") {
         defaultActiveGroups = [];
       }
+
       defaultActiveGroups.push(activeGroup);
     }
+
     onConfigChange({
       ...config,
       defaultActiveGroups: [...defaultActiveGroups],
@@ -157,6 +238,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
 
   const isGroupHidden = (group: EntityGroup) => {
     const groupEntityIds = group.items.map((i) => i.id);
+
     return groupEntityIds.every((id) =>
       (config.entityVisibility || []).some((ev) => ev.id === id && ev.excluded)
     );
@@ -166,7 +248,9 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     const visiblityWithoutGroup = (config.entityVisibility || []).filter(
       (ev) => !group.items.some((i) => i.id === ev.id)
     );
+
     const wasGroupHidden = isGroupHidden(group);
+
     const newGroup = [
       ...visiblityWithoutGroup,
       ...group.items.map((i) => ({
@@ -174,17 +258,9 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
         excluded: !wasGroupHidden,
       })),
     ];
+
     changeEntityVisiblity(newGroup);
   };
-
-  useEffect(() => {
-    if (!config.defaultActiveGroups && groupedEntries?.length) {
-      onConfigChange({
-        ...config,
-        defaultActiveGroups: groupedEntries.map((g) => g.title),
-      });
-    }
-  }, [config, groupedEntries, onConfigChange]);
 
   const toggleSingleEntityVisibility = (entity: ResultEntity) => {
     changeEntityVisiblity(toggleEntityVisibility(entity, config));
@@ -207,7 +283,33 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
           <ul>
             <li>
               <div className="flex items-center gap-6 py-1">
-                <h4 className="w-12 font-bold">Menu</h4>
+                <h4 className="w-14 font-bold">Vorlagen</h4>
+                <select
+                  className="select select-bordered select-sm w-full flex"
+                  value={selectedSnippetConfigId}
+                  disabled={recentSnippetConfigs.length === 1}
+                  onChange={(e) => {
+                    const changedSnippetConfigId = e.target.value;
+                    setSelectedSnippetConfigId(changedSnippetConfigId);
+
+                    onConfigChange({
+                      ...recentSnippetConfigs.find(
+                        ({ id }) => id === changedSnippetConfigId
+                      )!.config,
+                    });
+                  }}
+                >
+                  {recentSnippetConfigs.map((snippetConfig) => (
+                    <option value={snippetConfig.id} key={snippetConfig.id}>
+                      {snippetConfig.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <h4 className="w-14 font-bold">Menu</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -232,7 +334,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1">
-                <h4 className="w-12 font-bold">Karte</h4>
+                <h4 className="w-14 font-bold">Karte</h4>
                 <select
                   className="select select-bordered select-sm w-full flex"
                   value={

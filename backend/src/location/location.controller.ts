@@ -6,11 +6,14 @@ import {
   Param,
   Post,
   Put,
+  Req,
 } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Request } from 'express';
+
 import { LocationService } from './location.service';
 import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import ApiSearchDto from '../dto/api-search.dto';
 import ApiSearchResponseDto from '../dto/api-search-response.dto';
 import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
@@ -100,6 +103,7 @@ export class LocationController extends AuthenticatedController {
   @Get('user-embeddable-maps')
   async getEmbeddableMaps(
     @InjectUser() user: UserDocument,
+    @Req() request: Request,
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
     const includedFields = {
       token: 1,
@@ -117,6 +121,8 @@ export class LocationController extends AuthenticatedController {
     return (
       await this.locationService.fetchEmbeddableMaps(
         user,
+        Number(request.query.skip) || 0,
+        Number(request.query.limit) || 0,
         includedFields,
         sortOptions,
       )

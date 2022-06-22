@@ -448,6 +448,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
                 payload: { ...config },
               })
             }
+            snapshotId={snapshotId}
             additionalMapBoxStyles={
               userState?.user?.additionalMapBoxStyles || []
             }

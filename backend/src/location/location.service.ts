@@ -294,6 +294,8 @@ export class LocationService {
 
   async fetchEmbeddableMaps(
     user: UserDocument,
+    skip = 0,
+    limit = 0,
     includedFields?: { [key: string]: number },
     sortOptions?: { [key: string]: number },
   ): Promise<SearchResultSnapshotDocument[]> {
@@ -305,7 +307,9 @@ export class LocationService {
 
     return this.searchResultSnapshotModel
       .find({ userId: user.id }, includedFields)
-      .sort(sortOptions);
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
   }
 
   async fetchEmbeddableMap(
