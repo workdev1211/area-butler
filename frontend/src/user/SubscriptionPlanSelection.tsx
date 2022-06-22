@@ -7,7 +7,7 @@ import {
   payPerUse10Subscription,
   payPerUse1Subscription,
   payPerUse5Subscription,
-  TRIAL_DAYS,
+  // TRIAL_DAYS,
 } from "../../../shared/constants/subscription-plan";
 import {
   ApiSubscriptionIntervalEnum,
@@ -150,7 +150,8 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     window.location.href = (
       await post<string>("/api/billing/create-checkout-url", {
         priceId,
-        trialPeriod: TRIAL_DAYS,
+        trialPeriod: undefined,
+        // trialPeriod: TRIAL_DAYS,
       })
     ).data;
   };
@@ -179,13 +180,13 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
               zzgl. USt.
             </span>
           </div>
-          {!hadPreviousSubscriptionPlans && (
-            <div className="flex justify-end">
-              <div className="badge badge-primary">
-                {TRIAL_DAYS} Tage kostenfrei testen!
-              </div>
-            </div>
-          )}
+          {/*{!hadPreviousSubscriptionPlans && (*/}
+          {/*  <div className="flex justify-end">*/}
+          {/*    <div className="badge badge-primary">*/}
+          {/*      {TRIAL_DAYS} Tage kostenfrei testen!*/}
+          {/*    </div>*/}
+          {/*  </div>*/}
+          {/*)}*/}
           <div className="flex flex-col my-10 h-64">
             <span className="font-semibold">Eigenschaften:</span>
             <ul className="list-disc ml-5 mt-2">

@@ -6,6 +6,7 @@ import { Model } from 'mongoose';
 import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
+  TRIAL_DAYS,
 } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
@@ -72,10 +73,13 @@ export class UserService {
       throw new HttpException('Unknown User', 400);
     }
 
+    // TODO remove after returning the Trial subscription
+    existingUser.consentGiven = new Date();
+
     if (!existingUser.consentGiven) {
       existingUser.consentGiven = new Date();
       const endsAt = new Date();
-      endsAt.setDate(new Date().getDate() + 14);
+      endsAt.setDate(new Date().getDate() + TRIAL_DAYS);
 
       await this.subscriptionService.upsertByUserId(
         existingUser._id,

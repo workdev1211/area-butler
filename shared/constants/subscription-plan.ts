@@ -76,11 +76,13 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "minutes" },
+          // amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
-              amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "minutes" },
+              // amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 13,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
@@ -129,11 +131,13 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "minutes" },
+          // amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
-              amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "minutes" },
+              // amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
@@ -182,11 +186,13 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "minutes" },
+          // amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
-              amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "minutes" },
+              // amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",

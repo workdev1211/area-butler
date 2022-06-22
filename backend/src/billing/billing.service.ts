@@ -2,7 +2,7 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
 import Stripe from 'stripe';
 
-import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
+// import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
 import { SubscriptionService } from '../user/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
@@ -38,12 +38,13 @@ export class BillingService {
     user: UserDocument,
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
-    const existingSubscriptions =
-      await this.subscriptionService.fetchAllUserSubscriptions(user._id);
+    // const existingSubscriptions =
+    //   await this.subscriptionService.fetchAllUserSubscriptions(user._id);
 
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,
-      trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
+      trialPeriod: undefined,
+      // trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
     });
   }
 
