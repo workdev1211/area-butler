@@ -44,6 +44,7 @@ import { ApiDataSource } from "../../../shared/types/subscription-plan";
 import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
+import { defaultMapZoom } from "../map/Map";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -55,6 +56,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
+  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
   const history = useHistory();
   const currentLocation = useLocation<{ from: string }>();
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
@@ -119,6 +121,10 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
         payload: { ...enhancedConfig },
       });
+
+      if (enhancedConfig.zoomLevel) {
+        setMapZoomLevel(enhancedConfig.zoomLevel);
+      }
 
       setDirectLink(createDirectLink(snapshotResponse.token));
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
@@ -435,6 +441,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             embedMode={true}
             editorMode={true}
             onPoiAdd={onPoiAdd}
+            mapZoomLevel={mapZoomLevel}
           />
           <EditorMapMenu
             availableMeans={deriveAvailableMeansFromResponse(

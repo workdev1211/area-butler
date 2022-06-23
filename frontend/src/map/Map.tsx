@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useState } from "react";
+import {memo, useCallback, useEffect, useState, useContext} from "react";
 import center from "@turf/center";
 import { toJpeg } from "html-to-image";
 
@@ -13,7 +13,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 import FormModal, { ModalConfig } from "components/FormModal";
-import { Poi } from "context/SearchContext";
+import {Poi, SearchContext, SearchContextActionTypes} from "context/SearchContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
 import {
@@ -360,6 +360,7 @@ const Map = memo<MapProps>(
     isShownPreferredLocationsModal,
     togglePreferredLocationsModal,
   }) => {
+    const { searchContextDispatch } = useContext(SearchContext);
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
@@ -425,13 +426,24 @@ const Map = memo<MapProps>(
       zoomControl.addTo(localMap);
 
       localMap.on("zoomend", function () {
-        if (config && !config.groupItems) {
+        if (!config) {
+          return;
+        }
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: { ...config, zoomLevel: localMap.getZoom() }
+        });
+
+        if (!config.groupItems) {
           const container = document.querySelector(".leaflet-container");
+
           if (localMap.getZoom() < 15) {
             container?.classList.add("no-group");
           } else {
             container?.classList.remove("no-group");
           }
+
           if (localMap.getZoom() < 13) {
             container?.classList.add("small-markers");
           } else {

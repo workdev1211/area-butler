@@ -1,28 +1,37 @@
 import {
+  IsNotEmpty,
+  ValidateNested,
+  IsOptional,
+  IsArray,
+  IsEnum,
+  IsBoolean,
+  IsIn,
+  IsNumber,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
+import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisiblityDto from './api-snippet-entity-visiblity.dto';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested, IsOptional, IsArray, IsEnum, IsBoolean, IsIn } from 'class-validator';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
-
   @IsOptional()
   @IsArray()
   defaultActiveGroups?: string[];
 
   @IsOptional()
   @IsArray()
-  @IsEnum(MeansOfTransportation, {each: true})
+  @IsEnum(MeansOfTransportation, { each: true })
   defaultActiveMeans?: MeansOfTransportation[];
 
   @IsOptional()
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => ApiSnippetEntityVisiblityDto)
   entityVisibility?: ApiSnippetEntityVisiblityDto[];
 
@@ -52,12 +61,16 @@ class ApiSearchResultSnapshotConfigDto
   showAddress?: boolean;
 
   @IsOptional()
-  @IsIn(["DEFAULT", "KF"])
+  @IsIn(['DEFAULT', 'KF'])
   theme?: ApiSearchResultSnapshotConfigTheme;
 
   @IsOptional()
   @IsBoolean()
   showStreetViewLink?: boolean;
+
+  @IsOptional()
+  @IsNumber()
+  zoomLevel?: number;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

@@ -15,6 +15,7 @@ import {
   RealEstateActionTypes,
   RealEstateContext
 } from "../context/RealEstateContext";
+import {defaultMapZoom} from "../map/Map";
 
 window.addEventListener('resize', () => {
   calculateViewHeight();
@@ -36,6 +37,7 @@ const EmbedContainer: React.FunctionComponent = () => {
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
 
   const [mapBoxToken, setMapBoxToken] = useState("");
+  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
   const [searchConfig, setSearchConfig] = useState<
     ApiSearchResultSnapshotConfig
   >();
@@ -71,6 +73,10 @@ const EmbedContainer: React.FunctionComponent = () => {
       
       if (!!config && !("showStreetViewLink" in config)) {
         config["showStreetViewLink"] = true;
+      }
+
+      if (config?.zoomLevel) {
+        setMapZoomLevel(config.zoomLevel);
       }
 
       setMapBoxToken(response.mapboxToken);
@@ -164,7 +170,7 @@ const EmbedContainer: React.FunctionComponent = () => {
       searchResponse={searchContextState.searchResponse}
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
-      mapZoomLevel={searchContextState.mapZoomLevel!}
+      mapZoomLevel={mapZoomLevel}
       embedMode={true}
     />
   );

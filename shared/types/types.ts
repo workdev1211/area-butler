@@ -264,6 +264,7 @@ export interface ApiSearchResultSnapshotConfig {
   fixedRealEstates?: boolean;
   showStreetViewLink?: boolean;
   hideIsochrones?: boolean;
+  zoomLevel?: number;
 }
 
 export interface ApiSearchResultSnapshotResponse {
