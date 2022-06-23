@@ -11,7 +11,7 @@
 
     .timeline-step-line {
       flex-grow: 1;
-      border-bottom: 0.5rem solid white;
+      border-bottom: 0.3rem solid white;
     }
 
     .timeline-step-title {
@@ -19,19 +19,19 @@
       color: var(--primary);
       background-color: lightgray;
       border-radius: var(--btn-border-radius);
-      opacity: 0.8;
+      opacity: 0.9;
       @apply text-center;
     }
 
     .timeline-step-arrow {
-      border-top: 0.5rem solid transparent;
-      border-bottom: 0.5rem solid transparent;
-      border-left: 0.7rem solid white;
+      border-top: 0.35rem solid transparent;
+      border-bottom: 0.35rem solid transparent;
+      border-left: 0.6rem solid white;
 
       @media (min-width: 640px) {
-        border-top: 0.7rem solid transparent;
-        border-bottom: 0.7rem solid transparent;
-        border-left: 1.2rem solid white;
+        border-top: 0.5rem solid transparent;
+        border-bottom: 0.5rem solid transparent;
+        border-left: 0.9rem solid white;
       }
     }
 
