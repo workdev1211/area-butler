@@ -442,12 +442,12 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             )}
             groupedEntries={editorGroups}
             config={searchContextState.responseConfig!}
-            onConfigChange={(config) =>
+            onConfigChange={(config) => {
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
                 payload: { ...config },
-              })
-            }
+              });
+            }}
             snapshotId={snapshotId}
             additionalMapBoxStyles={
               userState?.user?.additionalMapBoxStyles || []

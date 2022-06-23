@@ -22,15 +22,15 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
 
   // filter / hide real estate listings
   const mappedListings = realEstateListings.reduce<ApiRealEstateListingDto[]>(
-    (accum, curVal) => {
-      if (!curVal.showInSnippet) {
-        return accum;
+    (result, currentEstate) => {
+      if (!currentEstate.showInSnippet) {
+        return result;
       }
 
       const mappedApiRealEstateListing =
         mapRealEstateListingToApiRealEstateListing(
-          curVal,
-          !!searchResultSnapshot?.config?.showLocation,
+          currentEstate,
+          !!searchResultSnapshot?.config?.showAddress,
         );
 
       const isNotEstateAtCenter =
@@ -38,19 +38,21 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
         mappedApiRealEstateListing.coordinates.lng !== centerOfLocation.lng;
 
       if (isNotEstateAtCenter) {
-        accum.push(mappedApiRealEstateListing);
+        result.push(mappedApiRealEstateListing);
       } else {
         realEstateListing = mappedApiRealEstateListing;
       }
 
-      return accum;
+      return result;
     },
     [],
   );
 
   const { config, snapshot } = searchResultSnapshot;
+
   if (config && config.fixedRealEstates) {
     const { entityVisibility = [] } = config;
+
     config.entityVisibility = [
       ...entityVisibility,
       ...mappedListings

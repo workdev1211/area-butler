@@ -4,15 +4,15 @@ import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
-  showLocation = true,
+  showAddress = true,
 ): ApiRealEstateListingDto => {
   return {
     id: realEstateListing.id,
     name: realEstateListing.name,
-    address: showLocation ? realEstateListing.address : '',
+    address: showAddress ? realEstateListing.address : '',
     externalUrl: realEstateListing.externalUrl,
     coordinates: realEstateListing.location
-      ? showLocation
+      ? showAddress
         ? {
             lat: realEstateListing.location.coordinates[0],
             lng: realEstateListing.location.coordinates[1],

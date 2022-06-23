@@ -157,8 +157,8 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     onConfigChange({ ...config, fixedRealEstates: !config?.fixedRealEstates });
   };
 
-  const changeEntityVisiblity = (visiblity: ApiSnippetEntitVisiblity[]) => {
-    onConfigChange({ ...config, entityVisibility: [...visiblity] });
+  const changeEntityVisibility = (visibility: ApiSnippetEntitVisiblity[]) => {
+    onConfigChange({ ...config, entityVisibility: [...visibility] });
   };
 
   const changeShowStreetViewLink = () => {
@@ -245,25 +245,25 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
   };
 
   const toggleGroupVisibility = (group: EntityGroup) => {
-    const visiblityWithoutGroup = (config.entityVisibility || []).filter(
+    const visibilityWithoutGroup = (config.entityVisibility || []).filter(
       (ev) => !group.items.some((i) => i.id === ev.id)
     );
 
     const wasGroupHidden = isGroupHidden(group);
 
     const newGroup = [
-      ...visiblityWithoutGroup,
+      ...visibilityWithoutGroup,
       ...group.items.map((i) => ({
         id: i.id,
         excluded: !wasGroupHidden,
       })),
     ];
 
-    changeEntityVisiblity(newGroup);
+    changeEntityVisibility(newGroup);
   };
 
   const toggleSingleEntityVisibility = (entity: ResultEntity) => {
-    changeEntityVisiblity(toggleEntityVisibility(entity, config));
+    changeEntityVisibility(toggleEntityVisibility(entity, config));
   };
 
   return (
@@ -436,7 +436,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="showLocation"
+                    name="showAddress"
                     checked={!!config?.showAddress}
                     onChange={() => changeShowAddress()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -450,7 +450,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="showLocation"
+                    name="showStreetViewLink"
                     checked={!!config?.showStreetViewLink}
                     onChange={() => changeShowStreetViewLink()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
@@ -464,7 +464,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="showLocation"
+                    name="groupItems"
                     checked={!!config?.groupItems}
                     onChange={() => changeGroupItems()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
