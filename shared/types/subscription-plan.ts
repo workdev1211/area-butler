@@ -57,6 +57,7 @@ export enum ApiSubscriptionPlanType {
   BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
   // TODO will be released later
   // ENTERPRISE = "ENTERPRISE",
+  // TODO should be removed after complete approval of the New Pricing Model
   TRIAL = "TRIAL",
 }
 
@@ -72,6 +73,9 @@ export interface ApiSubscriptionPricing {
   interval: ApiSubscriptionIntervalEnum;
   limits?: IApiSubscriptionLimits;
   description?: string[];
+  vatStatus?: string;
+  footnote?: string;
+  purchaseButtonLabel?: string;
 }
 
 export interface ApiSubscriptionPlan {
@@ -80,6 +84,8 @@ export interface ApiSubscriptionPlan {
   prices: ApiSubscriptionPricing[];
   limits?: IApiSubscriptionLimits;
   description?: string[];
+  footnote?: string;
+  purchaseButtonLabel?: string;
   appFeatures: {
     sendCustomerQuestionnaireRequest: boolean;
     dataSources: ApiDataSource[];

@@ -7,7 +7,7 @@ import {
   IApiSubscriptionLimitIncreaseParams,
 } from "../types/subscription-plan";
 
-export const TRIAL_DAYS = 4;
+export const TRIAL_DAYS = 2;
 
 export const allSubscriptionTypes: {
   type: ApiSubscriptionPlanType;
@@ -18,7 +18,8 @@ export const allSubscriptionTypes: {
   { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use x10" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS, name: "Business+" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2, name: "Business+" },
-  { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },
+  // TODO should be removed after complete approval of the New Pricing Model
+  // { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },
   // TODO will be released later
   // { type: ApiSubscriptionPlanType.ENTERPRISE, name: "Enterprise" },
 ];
@@ -34,7 +35,8 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.PAY_PER_USE_1,
   ApiSubscriptionPlanType.PAY_PER_USE_5,
   ApiSubscriptionPlanType.PAY_PER_USE_10,
-  ApiSubscriptionPlanType.TRIAL,
+  // TODO should be removed after complete approval of the New Pricing Model
+  // ApiSubscriptionPlanType.TRIAL,
 ];
 
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
@@ -61,14 +63,29 @@ const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   },
 ];
 
+const payPerUsePlanDescription = [
+  "Interaktive Karten als iFrame",
+  "Umfeldanalyse & Überblick als pdf & word",
+  "Hochauflösende Kartenausschnitte als .png",
+  "Sie können Ihre Farben, Logos und Icons integrieren",
+  "E-Mail-Support & FAQ",
+  "Daten: OSM, Zensus, Wahlergebnisse, Luftqualität",
+  "Optional: Individuell designter Kartenstil",
+  "Optional: KI-Lagetextgenerator für Ihre Exposés",
+];
+
 export const payPerUse1Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use x1",
+  name: "Einzelabfrage",
   type: ApiSubscriptionPlanType.PAY_PER_USE_1,
   prices: [
     {
       id: { dev: "price_1LAUOVLcbb2Q3qBpRhqjaCb5" },
-      name: "Per 1",
-      price: "49",
+      name: "Einzelabfrage",
+      price: "49<sup>*</sup>",
+      vatStatus: "zzgl. MwSt",
+      footnote:
+        '<strong>*</strong> 58,31€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 12 € inkl. MwSt optional möglich.',
+      purchaseButtonLabel: "Elnzelabfrage kaufen",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -90,18 +107,12 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
           ],
         },
       },
+      description: [
+        "Eine Adresse in Deutschland analysieren, aufbereiten & präsentieren",
+      ],
     },
   ],
-  description: [
-    "pro Adresse",
-    "iFrame / Widget mit Ihren Farben & Logos",
-    "PDF & Word Exporte mit Ihren Farben & Logos",
-    "Hochauflösende Kartenausschnitte",
-    "Fragebögen an Ihre Kunden verschicken",
-    "Karten & POI Daten",
-    "Sozio-Ökonomische Analyse-Daten",
-    "Email Support und FAQs",
-  ],
+  description: payPerUsePlanDescription,
   appFeatures: {
     sendCustomerQuestionnaireRequest: false,
     dataSources: [
@@ -117,13 +128,17 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
 };
 
 export const payPerUse5Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use x5",
+  name: "5er Karte",
   type: ApiSubscriptionPlanType.PAY_PER_USE_5,
   prices: [
     {
       id: { dev: "price_1LCIZwLcbb2Q3qBpYMEmHHTO" },
-      name: "Per 5",
-      price: "190",
+      name: "5er Karte",
+      price: "190<sup>*</sup>",
+      vatStatus: "zzgl. MwSt",
+      footnote:
+        '<strong>*</strong> 226,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 10 € inkl. MwSt optional möglich.',
+      purchaseButtonLabel: "5er Karte kaufen",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -135,7 +150,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
           // amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
-              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              id: { dev: "price_1LCHoxLcbb2Q3qBpZfdy2LRM" },
               amount: { value: 4, unit: "minutes" },
               // amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
@@ -145,18 +160,12 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
           ],
         },
       },
+      description: [
+        "5 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+      ],
     },
   ],
-  description: [
-    "pro Adresse",
-    "iFrame / Widget mit Ihren Farben & Logos",
-    "PDF & Word Exporte mit Ihren Farben & Logos",
-    "Hochauflösende Kartenausschnitte",
-    "Fragebögen an Ihre Kunden verschicken",
-    "Karten & POI Daten",
-    "Sozio-Ökonomische Analyse-Daten",
-    "Email Support und FAQs",
-  ],
+  description: payPerUsePlanDescription,
   appFeatures: {
     sendCustomerQuestionnaireRequest: false,
     dataSources: [
@@ -172,13 +181,17 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
 };
 
 export const payPerUse10Subscription: ApiSubscriptionPlan = {
-  name: "Pay per Use x10",
+  name: "10er Karte",
   type: ApiSubscriptionPlanType.PAY_PER_USE_10,
   prices: [
     {
       id: { dev: "price_1LAUPsLcbb2Q3qBpmM72R6DK" },
-      name: "Per 10",
-      price: "290",
+      name: "10er Karte",
+      price: "290<sup>*</sup>",
+      vatStatus: "zzgl. MwSt",
+      footnote:
+        '<strong>*</strong> 345,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 6 € inkl. MwSt optional möglich.',
+      purchaseButtonLabel: "10er Karte kaufen",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -190,7 +203,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
           // amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
-              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              id: { dev: "price_1LCHpWLcbb2Q3qBpfiSiJ1RY" },
               amount: { value: 4, unit: "minutes" },
               // amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
@@ -200,18 +213,12 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
           ],
         },
       },
+      description: [
+        "10 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+      ],
     },
   ],
-  description: [
-    "pro Adresse",
-    "iFrame / Widget mit Ihren Farben & Logos",
-    "PDF & Word Exporte mit Ihren Farben & Logos",
-    "Hochauflösende Kartenausschnitte",
-    "Fragebögen an Ihre Kunden verschicken",
-    "Karten & POI Daten",
-    "Sozio-Ökonomische Analyse-Daten",
-    "Email Support und FAQs",
-  ],
+  description: payPerUsePlanDescription,
   appFeatures: {
     sendCustomerQuestionnaireRequest: false,
     dataSources: [
@@ -306,8 +313,11 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   prices: [
     {
       id: { dev: "price_1LCIdULcbb2Q3qBpprbknZcZ" },
-      name: "Per 100",
-      price: "1770",
+      name: "Business+ Monats-Abo",
+      price: "590<sup>*</sup>",
+      vatStatus: "Monat zzgl. MwSt",
+      footnote:
+        "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat/ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
       interval: ApiSubscriptionIntervalEnum.QUARTERLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -315,12 +325,17 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
           increaseParams: businessPlusRequestLimitIncrease,
         },
       },
-      description: ["100 Adressen pro Monat"],
+      description: [
+        "150 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+      ],
     },
     {
       id: { dev: "price_1LCIdULcbb2Q3qBp42UdqzxG" },
-      name: "Per 200",
-      price: "6490",
+      name: "Business+ Jahres-Abo",
+      price: "6490<sup>*</sup>",
+      vatStatus: "Jahr zzgl. MwSt",
+      footnote:
+        "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat/ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -328,14 +343,18 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
           increaseParams: businessPlusRequestLimitIncrease,
         },
       },
-      description: ["200 Adressen pro Monat"],
+      description: [
+        "250 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+      ],
     },
   ],
   description: [
-    'Alle Funktionen aus "Pay per use"',
-    "+ Karten Stile in eigenem Design",
-    "+ individuelles onboarding",
-    "+ 24*7 persönlicher Kundenservice",
+    'Alle "Pay per Use" Funktionen',
+    "iFrames online gehostet für Ihren gesamten Abonnementzeitraum",
+    "1 individuell designter Kartenstil inklusive",
+    "Automatisches verschicken von Kriterienabfragen an Kundinnen",
+    "Individuelles Onboarding Ihres Teams",
+    "24/7 individueller Service",
   ],
   appFeatures: {
     sendCustomerQuestionnaireRequest: true,
@@ -351,6 +370,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   },
 };
 
+// TODO should be removed after complete approval of the New Pricing Model
 export const trialSubscription: ApiSubscriptionPlan = {
   ...businessPlusV2Subscription,
   type: ApiSubscriptionPlanType.TRIAL,
@@ -370,5 +390,6 @@ export const allSubscriptions: Record<
   [ApiSubscriptionPlanType.BUSINESS_PLUS_V2]: businessPlusV2Subscription,
   // TODO will be released later
   // [ApiSubscriptionPlanType.ENTERPRISE]: enterpriseSubscription,
+  // TODO should be removed after complete approval of the New Pricing Model
   [ApiSubscriptionPlanType.TRIAL]: trialSubscription,
 };

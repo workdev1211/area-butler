@@ -7,10 +7,9 @@ import {
   payPerUse10Subscription,
   payPerUse1Subscription,
   payPerUse5Subscription,
-  // TRIAL_DAYS,
+  TRIAL_DAYS,
 } from "../../../shared/constants/subscription-plan";
 import {
-  ApiSubscriptionIntervalEnum,
   ApiSubscriptionPlanType,
   ApiSubscriptionPlanTypeGroupEnum,
   ApiUserSubscription,
@@ -21,8 +20,10 @@ interface ISubscriptionPlan {
   stripePriceId: string;
   name: string;
   price: string;
-  interval: string;
+  vatStatus?: string;
   description: string[];
+  footnote?: string;
+  purchaseButtonLabel?: string;
 }
 
 type TSubscriptionPlanGroups = {
@@ -74,27 +75,6 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   }, [get, hadPreviousSubscriptionPlans]);
 
   useEffect(() => {
-    const getSubscriptionIntervalName = (
-      interval: ApiSubscriptionIntervalEnum
-    ) => {
-      switch (interval) {
-        case ApiSubscriptionIntervalEnum.MONTHLY:
-          return "Monthly";
-
-        case ApiSubscriptionIntervalEnum.ANNUALLY:
-          return "Each year";
-
-        case ApiSubscriptionIntervalEnum.TWELVE_WEEKS:
-          return "Each twelve weeks";
-
-        case ApiSubscriptionIntervalEnum.QUARTERLY:
-          return "Each quartile";
-
-        default:
-          return "Monthly";
-      }
-    };
-
     const getSubscriptionGroup = (
       type: ApiSubscriptionPlanType
     ): ApiSubscriptionPlanTypeGroupEnum => {
@@ -115,9 +95,27 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       payPerUse10Subscription,
       businessPlusV2Subscription,
     ].reduce<TSubscriptionPlanGroups>(
-      (result, { name, prices, description: planDescription = [], type }) => {
+      (
+        result,
+        {
+          name: planName,
+          prices,
+          description: planDescription = [],
+          type,
+          footnote: planFootnote,
+          purchaseButtonLabel: planButtonLabel,
+        }
+      ) => {
         prices.forEach(
-          ({ id, price, interval, description: priceDescription = [] }) => {
+          ({
+            id,
+            name: priceName,
+            price,
+            vatStatus,
+            description: priceDescription = [],
+            footnote: priceFootnote,
+            purchaseButtonLabel: priceButtonLabel,
+          }) => {
             if (!id[stripeEnv]) {
               return;
             }
@@ -126,10 +124,12 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
             result[getSubscriptionGroup(type)].push({
               stripePriceId: id[stripeEnv]!,
-              name,
+              name: priceName || planName,
               price,
-              interval: getSubscriptionIntervalName(interval),
+              vatStatus,
               description,
+              footnote: priceFootnote || planFootnote,
+              purchaseButtonLabel: priceButtonLabel || planButtonLabel,
             });
           }
         );
@@ -160,8 +160,10 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     stripePriceId,
     name,
     price,
-    interval,
+    vatStatus,
     description,
+    footnote,
+    purchaseButtonLabel,
   }) => {
     return (
       <div className="card shadow-lg w-auto flex flex-col justify-center items-center bg-gray-50">
@@ -170,58 +172,38 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
         </div>
         <div className="card-body py-10">
           <div className="flex justify-center items-baseline">
-            <span className="text-4xl font-semibold w-auto">{price} €</span>
-            <span className="text-lg ml-2">
-              {" "}
-              /
-              {interval === ApiSubscriptionIntervalEnum.MONTHLY
-                ? "Monat "
-                : "Jahr "}
-              zzgl. USt.
-            </span>
+            <span
+              className="text-4xl font-semibold w-auto"
+              dangerouslySetInnerHTML={{ __html: `${price} €` }}
+            />
+            {vatStatus && <span className="text-lg ml-2"> / {vatStatus}</span>}
           </div>
-          {/*{!hadPreviousSubscriptionPlans && (*/}
-          {/*  <div className="flex justify-end">*/}
-          {/*    <div className="badge badge-primary">*/}
-          {/*      {TRIAL_DAYS} Tage kostenfrei testen!*/}
-          {/*    </div>*/}
-          {/*  </div>*/}
-          {/*)}*/}
+          {!hadPreviousSubscriptionPlans && (
+            <div className="flex justify-end">
+              <div className="badge badge-primary">
+                {TRIAL_DAYS} Tage kostenfrei testen!
+              </div>
+            </div>
+          )}
           <div className="flex flex-col my-10 h-64">
-            <span className="font-semibold">Eigenschaften:</span>
+            <span className="font-semibold">Beinhaltet:</span>
             <ul className="list-disc ml-5 mt-2">
               {description.map((p, i) => (
                 <li key={`${i}-${p}`}>{p}</li>
               ))}
             </ul>
           </div>
-          <p className="text-sm">
-            Wird der Vertrag nicht innerhalb von 14 Tagen nach Vertragsschluss
-            gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit
-            dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über.
-            Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die
-            Laufzeit des Vertrags automatisch um einen weiteren Monat/ein
-            weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des
-            aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber
-            KuDiBa kündigt
-          </p>
-          {interval === ApiSubscriptionIntervalEnum.MONTHLY && (
-            <p className="text-sm">
-              Das Abo ist zum Ende des jeweiligen Abonnementzeitraums mit einer
-              Frist von 2 Wochen monatlich kündbar.
-            </p>
-          )}
-          {interval === ApiSubscriptionIntervalEnum.ANNUALLY && (
-            <p className="text-sm">
-              Das Abo ist zum Ende des Abonnementzeitraums mit einer Frist von 2
-              Wochen jährlich kündbar.
-            </p>
+          {footnote && (
+            <p
+              className="text-sm text-justify"
+              dangerouslySetInnerHTML={{ __html: footnote }}
+            />
           )}
           <button
             onClick={() => forwardToCheckoutUrl(stripePriceId)}
             className="btn bg-primary-gradient w-56 self-center mt-5"
           >
-            Abonnieren
+            {purchaseButtonLabel || "Abonnieren"}
           </button>
         </div>
       </div>
@@ -247,11 +229,11 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     <div className="mt-20 flex flex-col gap-5">
       <div>
         <h1 className="font-bold text-xl">
-          Aktuell besitzen Sie kein aktives Abonnement, bitte wählen Sie das
-          passende Abonnement für sich aus.
+          Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
+          Abonnement, bitte wählen Sie das passende Abonnement für sich aus:
         </h1>
         <div className="p-20 flex flex-col items-center justify-center">
-          <h2>Abrechnungsintervall</h2>
+          <h2>Einzelabfragen oder Abo</h2>
           <div className="btn-group mt-5">
             {Object.entries(sortedSubscriptionPlans).map(
               ([subscriptionGroupName, subscriptionPlans]) => {
@@ -285,7 +267,15 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
               <div className={cardContainerClassNames}>
                 {sortedSubscriptionPlans[activeSubscriptionGroup].map(
                   (
-                    { stripePriceId, name, price, interval, description },
+                    {
+                      stripePriceId,
+                      name,
+                      price,
+                      vatStatus,
+                      description,
+                      footnote,
+                      purchaseButtonLabel,
+                    },
                     i
                   ) => (
                     <SubscriptionPlanCard
@@ -293,8 +283,10 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
                       stripePriceId={stripePriceId}
                       name={name}
                       price={price}
-                      interval={interval}
+                      vatStatus={vatStatus}
                       description={description}
+                      footnote={footnote}
+                      purchaseButtonLabel={purchaseButtonLabel}
                     />
                   )
                 )}

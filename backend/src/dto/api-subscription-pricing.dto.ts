@@ -47,6 +47,18 @@ class ApiSubscriptionPricingDto implements ApiSubscriptionPricing {
   @IsArray()
   @ValidateNested({ each: true })
   description?: string[];
+
+  @IsOptional()
+  @IsString()
+  vatStatus?: string;
+
+  @IsOptional()
+  @IsString()
+  footnote?: string;
+
+  @IsOptional()
+  @IsString()
+  purchaseButtonLabel?: string;
 }
 
 export default ApiSubscriptionPricingDto;

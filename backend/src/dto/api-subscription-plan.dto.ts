@@ -44,6 +44,14 @@ class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
   @ValidateNested({ each: true })
   description?: string[];
 
+  @IsOptional()
+  @IsString()
+  footnote?: string;
+
+  @IsOptional()
+  @IsString()
+  purchaseButtonLabel?: string;
+
   @IsNotEmpty()
   @IsObject()
   appFeatures: {
