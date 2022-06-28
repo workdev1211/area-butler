@@ -74,28 +74,64 @@ const SearchParamsPage: FunctionComponent = () => {
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
   const [isNewRequest, setIsNewRequest] = useState(true);
-  const [existingRequest, setExistingRequest] = useState<ApiSearch>();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
+  const [limitType, setLimitType] = useState<ApiSubscriptionLimitsEnum>();
+  const [modelData, setModelData] = useState<{
+    name: LimitIncreaseModelNameEnum;
+    id: string | undefined;
+  }>();
+
   const history = useHistory();
 
-  useEffect(() => {
-    const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
-    const coordinates = searchContextState.location;
+  const user: ApiUser = userState.user!;
 
-    if (coordinates) {
-      const existingRequest = latestUserRequests.requests.find(
-        ({ coordinates: requestCoordinates }) =>
-          JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
-      );
+  useEffect(
+    () => {
+      const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
+      const coordinates = searchContextState.location;
+      let isNewRequest = true;
+      let limitType;
+      let modelData;
 
-      if (existingRequest) {
-        setExistingRequest(existingRequest);
+      if (coordinates) {
+        const existingRequest = latestUserRequests.requests.find(
+          ({ coordinates: requestCoordinates }) =>
+            JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
+        );
+
+        if (dayjs().isAfter(existingRequest?.endsAt)) {
+          limitType = ApiSubscriptionLimitsEnum.AddressExpiration;
+
+          modelData = {
+            name: LimitIncreaseModelNameEnum.LocationSearch,
+            id: existingRequest?.id,
+          };
+        }
+
+        const totalRequestContingent = deriveTotalRequestContingent(user);
+        const requestLimitExceeded =
+          user.requestsExecuted >= totalRequestContingent;
+
+        if (!existingRequest && requestLimitExceeded) {
+          limitType = ApiSubscriptionLimitsEnum.NumberOfRequests;
+        }
+
+        isNewRequest = !existingRequest;
       }
 
-      setIsNewRequest(!existingRequest);
-    }
-  }, [searchContextState, userState.latestUserRequests]);
+      setIsNewRequest(isNewRequest);
+      setLimitType(limitType);
+      setModelData(modelData);
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [
+      searchContextState.location,
+      userState.latestUserRequests,
+      user.requestContingents,
+      user.requestsExecuted,
+    ]
+  );
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -160,11 +196,6 @@ const SearchParamsPage: FunctionComponent = () => {
     });
   };
 
-  const user: ApiUser = userState.user!;
-  const totalRequestContingent = deriveTotalRequestContingent(user);
-  const requestsExecuted = user?.requestsExecuted;
-  const requestLimitExceeded = requestsExecuted >= totalRequestContingent;
-
   const searchButtonDisabled =
     searchContextState.searchBusy ||
     !searchContextState.location?.lat ||
@@ -175,6 +206,35 @@ const SearchParamsPage: FunctionComponent = () => {
     searchContextState.preferredLocations?.some(
       ({ coordinates }) => !coordinates
     );
+
+  const increaseLimitButton: ReactNode = (
+    <button
+      type="button"
+      disabled={searchButtonDisabled}
+      data-tour="start-search"
+      className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
+    >
+      {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
+      <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
+    </button>
+  );
+
+  const increaseRequestLimitModalConfig: ModalConfig = {
+    modalTitle: "Abfragelimit erreicht",
+    buttonTitle: "Analyse starten",
+    submitButtonTitle: "Neues Kontingent kaufen",
+    modalButton: increaseLimitButton,
+  };
+
+  const IncreaseLimitModal: FunctionComponent = () => (
+    <FormModal modalConfig={increaseRequestLimitModalConfig}>
+      <IncreaseLimitFormHandler
+        limitType={limitType || ApiSubscriptionLimitsEnum.NumberOfRequests}
+        modelName={modelData?.name}
+        modelId={modelData?.id}
+      />
+    </FormModal>
+  );
 
   const hasFederalElectionData =
     user.subscriptionPlan?.config.appFeatures.dataSources.includes(
@@ -190,49 +250,6 @@ const SearchParamsPage: FunctionComponent = () => {
     user.subscriptionPlan?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
     );
-
-  const increaseLimitButton: ReactNode = (
-    <button
-      type="button"
-      disabled={searchButtonDisabled}
-      data-tour="start-search"
-      className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
-    >
-      {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
-      <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
-    </button>
-  );
-
-  let limitType: ApiSubscriptionLimitsEnum | undefined;
-  let modelName: LimitIncreaseModelNameEnum | undefined;
-  let modelId: string | undefined;
-
-  if (isNewRequest && requestLimitExceeded) {
-    limitType = ApiSubscriptionLimitsEnum.NumberOfRequests;
-  }
-
-  if (existingRequest && dayjs().isAfter(existingRequest.endsAt)) {
-    modelName = LimitIncreaseModelNameEnum.LocationSearch;
-    modelId = existingRequest.id;
-    limitType = ApiSubscriptionLimitsEnum.AddressExpiration;
-  }
-
-  const increaseRequestLimitModalConfig: ModalConfig = {
-    modalTitle: "Abfragelimit erreicht",
-    buttonTitle: "Analyse starten",
-    submitButtonTitle: "Neues Kontingent kaufen",
-    modalButton: increaseLimitButton,
-  };
-
-  const IncreaseLimitModal: FunctionComponent = () => (
-    <FormModal modalConfig={increaseRequestLimitModalConfig}>
-      <IncreaseLimitFormHandler
-        limitType={limitType || ApiSubscriptionLimitsEnum.NumberOfRequests}
-        modelName={modelName}
-        modelId={modelId}
-      />
-    </FormModal>
-  );
 
   const performLocationSearch = async () => {
     try {
@@ -265,14 +282,14 @@ const SearchParamsPage: FunctionComponent = () => {
         ),
       };
 
-      const result = await post<ApiSearchResponse>(
+      const { data: result } = await post<ApiSearchResponse>(
         "/api/location/search",
         search
       );
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
-        payload: result.data,
+        payload: result,
       });
 
       if (hasFederalElectionData) {
@@ -338,7 +355,7 @@ const SearchParamsPage: FunctionComponent = () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups(
-          result.data,
+          result,
           undefined,
           filteredRealEstateListings,
           searchContextState.preferredLocations

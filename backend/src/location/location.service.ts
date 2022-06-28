@@ -73,6 +73,7 @@ export class LocationService {
         'locationSearch.coordinates': search.coordinates,
       },
       { endsAt: 1 },
+      { sort: { createdAt: -1 } },
     );
 
     this.checkAddressExpiration(existingLocation);
@@ -192,6 +193,8 @@ export class LocationService {
             .toDate(),
         });
       }
+    } else {
+      Object.assign(location, { endsAt: existingLocation.endsAt });
     }
 
     // TODO ask Kai what is the purpose of saving a new locationSearch record after each search request
@@ -429,6 +432,7 @@ export class LocationService {
             _id: modelId,
           },
           { endsAt },
+          { sort: { createdAt: -1 } },
         );
         break;
       }
