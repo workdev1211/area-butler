@@ -229,7 +229,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       <div>
         <h1 className="font-bold text-xl">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
-          Abonnement, bitte wählen Sie das passende Abonnement für sich aus:
+          Abonnement, bitte wählen Sie das Passende für sich aus:
         </h1>
         <div className="p-20 flex flex-col items-center justify-center">
           <h2>Einzelabfragen oder Abo</h2>

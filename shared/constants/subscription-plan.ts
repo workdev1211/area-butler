@@ -89,13 +89,11 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "minutes" },
-          // amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
-              amount: { value: 4, unit: "minutes" },
-              // amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 13,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
@@ -142,13 +140,11 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "minutes" },
-          // amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHoxLcbb2Q3qBpZfdy2LRM" },
-              amount: { value: 4, unit: "minutes" },
-              // amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
@@ -195,13 +191,11 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
           increaseParams: payPerUseRequestLimitIncrease,
         },
         [ApiSubscriptionLimitsEnum.AddressExpiration]: {
-          amount: { value: 12, unit: "minutes" },
-          // amount: { value: 12, unit: "weeks" },
+          amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
               id: { dev: "price_1LCHpWLcbb2Q3qBpfiSiJ1RY" },
-              amount: { value: 4, unit: "minutes" },
-              // amount: { value: 4, unit: "weeks" },
+              amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
                 "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
@@ -308,12 +302,12 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
   prices: [
     {
-      id: { dev: "price_1LCIdULcbb2Q3qBpprbknZcZ" },
+      id: { dev: "price_1LCIdULcbb2Q3qBpFXIv5stI" },
       name: "Business+ Monats-Abo",
       price: "590<sup>*</sup>",
       vatStatus: "Monat zzgl. MwSt",
       footnote:
-        "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat/ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
+        "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt. Die initiale Mindestvertragslaufzeit beträgt 3 Monate, danach monatlich kündbar.",
       interval: ApiSubscriptionIntervalEnum.QUARTERLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
@@ -331,7 +325,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
       price: "6490<sup>*</sup>",
       vatStatus: "Jahr zzgl. MwSt",
       footnote:
-        "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat/einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat/ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
+        "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
