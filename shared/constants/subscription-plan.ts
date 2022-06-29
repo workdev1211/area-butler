@@ -18,8 +18,6 @@ export const allSubscriptionTypes: {
   { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use x10" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS, name: "Business+" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2, name: "Business+" },
-  // TODO should be removed after complete approval of the New Pricing Model
-  // { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },
   // TODO will be released later
   // { type: ApiSubscriptionPlanType.ENTERPRISE, name: "Enterprise" },
 ];
@@ -35,8 +33,6 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.PAY_PER_USE_1,
   ApiSubscriptionPlanType.PAY_PER_USE_5,
   ApiSubscriptionPlanType.PAY_PER_USE_10,
-  // TODO should be removed after complete approval of the New Pricing Model
-  // ApiSubscriptionPlanType.TRIAL,
 ];
 
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
@@ -370,15 +366,6 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   },
 };
 
-// TODO should be removed after complete approval of the New Pricing Model
-export const trialSubscription: ApiSubscriptionPlan = {
-  ...businessPlusV2Subscription,
-  type: ApiSubscriptionPlanType.TRIAL,
-  limits: {
-    [ApiSubscriptionLimitsEnum.NumberOfRequests]: { amount: { value: 1 } },
-  },
-};
-
 export const allSubscriptions: Record<
   ApiSubscriptionPlanType,
   ApiSubscriptionPlan
@@ -390,6 +377,4 @@ export const allSubscriptions: Record<
   [ApiSubscriptionPlanType.BUSINESS_PLUS_V2]: businessPlusV2Subscription,
   // TODO will be released later
   // [ApiSubscriptionPlanType.ENTERPRISE]: enterpriseSubscription,
-  // TODO should be removed after complete approval of the New Pricing Model
-  [ApiSubscriptionPlanType.TRIAL]: trialSubscription,
 };

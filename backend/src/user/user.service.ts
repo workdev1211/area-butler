@@ -73,24 +73,8 @@ export class UserService {
       throw new HttpException('Unknown User', 400);
     }
 
-    // TODO remove after returning the Trial subscription
-    existingUser.consentGiven = new Date();
-
     if (!existingUser.consentGiven) {
       existingUser.consentGiven = new Date();
-      const endsAt = new Date();
-      endsAt.setDate(new Date().getDate() + TRIAL_DAYS);
-
-      await this.subscriptionService.upsertByUserId(
-        existingUser._id,
-        ApiSubscriptionPlanType.TRIAL,
-        'trialSubscription',
-        'trialSubscription',
-        endsAt,
-        endsAt,
-      );
-
-      await this.setRequestContingents(existingUser, endsAt);
     }
 
     return existingUser.save();

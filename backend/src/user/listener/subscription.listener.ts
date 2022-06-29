@@ -25,7 +25,6 @@ export class SubscriptionListener {
     stripePriceId,
     stripeSubscriptionId,
     endsAt,
-    trialEndsAt,
   }: SubscriptionCreateEvent): Promise<void> {
     const user = await this.userService.findByStripeCustomerId(
       stripeCustomerId,
@@ -45,7 +44,6 @@ export class SubscriptionListener {
       stripeSubscriptionId,
       stripePriceId,
       endsAt,
-      trialEndsAt,
     );
 
     await this.userService.setRequestContingents(user, endsAt);

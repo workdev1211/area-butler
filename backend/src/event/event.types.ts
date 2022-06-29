@@ -20,7 +20,6 @@ export interface SubscriptionCreateEvent {
   stripePriceId: string;
   stripeSubscriptionId: string;
   endsAt: Date;
-  trialEndsAt: Date;
 }
 
 export interface ILimitIncreaseEvent {

@@ -2,7 +2,7 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { EventEmitter2 } from 'eventemitter2';
 import Stripe from 'stripe';
 
-// import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
+import { TRIAL_DAYS } from '../../../shared/constants/subscription-plan';
 import { SubscriptionService } from '../user/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
@@ -38,13 +38,12 @@ export class BillingService {
     user: UserDocument,
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
-    // const existingSubscriptions =
-    //   await this.subscriptionService.fetchAllUserSubscriptions(user._id);
+    const existingSubscriptions =
+      await this.subscriptionService.fetchAllUserSubscriptions(user._id);
 
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,
-      trialPeriod: undefined,
-      // trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
+      trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
     });
   }
 
@@ -143,14 +142,12 @@ export class BillingService {
     const stripeCustomerId = payload.customer;
     const stripePriceId = payload.items.data[0].price.id;
     const stripeSubscriptionId = payload.id;
-    const trialEndsAt = payload.trial_end;
     const endsAt = payload.current_period_end;
 
     const subscriptionUpsertEvent: SubscriptionCreateEvent = {
       stripeCustomerId,
       stripePriceId,
       stripeSubscriptionId,
-      trialEndsAt: new Date(trialEndsAt * 1000),
       endsAt: new Date(endsAt * 1000),
     };
 

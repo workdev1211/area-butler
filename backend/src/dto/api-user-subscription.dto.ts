@@ -28,10 +28,6 @@ class ApiUserSubscriptionDto implements ApiUserSubscription {
   endsAt: Date;
 
   @IsNotEmpty()
-  @IsDate()
-  trialEndsAt: Date;
-
-  @IsNotEmpty()
   @IsEnum(ApiSubscriptionPlanType)
   type: ApiSubscriptionPlanType;
 

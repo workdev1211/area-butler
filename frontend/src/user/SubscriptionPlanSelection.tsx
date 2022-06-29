@@ -150,8 +150,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     window.location.href = (
       await post<string>("/api/billing/create-checkout-url", {
         priceId,
-        trialPeriod: undefined,
-        // trialPeriod: TRIAL_DAYS,
+        trialPeriod: TRIAL_DAYS,
       })
     ).data;
   };

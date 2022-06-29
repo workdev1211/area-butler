@@ -1,18 +1,15 @@
 import {
   MapClipping,
   SearchContext,
-  SearchContextActionTypes
+  SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import React, { useContext, useState } from "react";
-import {
-  ApiDataSource,
-  ApiSubscriptionPlanType
-} from "../../../shared/types/subscription-plan";
+import { ApiDataSource } from "../../../shared/types/subscription-plan";
 import {
   ApiGeojsonFeature,
   ApiUser,
-  MeansOfTransportation
+  MeansOfTransportation,
 } from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
@@ -20,7 +17,7 @@ import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
 import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
-  SelectedMapClipping
+  SelectedMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 
@@ -37,30 +34,29 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   groupedEntries,
   censusData,
   activeMeans,
-  exportType = "EXPOSE"
+  exportType = "EXPOSE",
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
     .filter((group: EntityGroup) => group.title !== "Meine Objekte")
     .filter((group: EntityGroup) => group.items.length > 0);
-  const { searchContextState, searchContextDispatch } = useContext(
-    SearchContext
-  );
-  const [filteredEntites, setFilteredEntities] = useState<EntityGroup[]>(
-    groupCopy
-  );
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
+  const [filteredEntites, setFilteredEntities] =
+    useState<EntityGroup[]>(groupCopy);
   const { userState } = useContext(UserContext);
   const user = userState.user as ApiUser;
   const subscriptionPlan = user.subscriptionPlan?.config;
 
-  const hasFederalElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
-    ApiDataSource.FEDERAL_ELECTION
-  );
-  const hasCensusElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
-    ApiDataSource.CENSUS
-  );
-  const hasParticlePollutionElectionInSubscription = !!subscriptionPlan?.appFeatures.dataSources.includes(
-    ApiDataSource.PARTICLE_POLLUTION
-  );
+  const hasFederalElectionInSubscription =
+    !!subscriptionPlan?.appFeatures.dataSources.includes(
+      ApiDataSource.FEDERAL_ELECTION
+    );
+  const hasCensusElectionInSubscription =
+    !!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
+  const hasParticlePollutionElectionInSubscription =
+    !!subscriptionPlan?.appFeatures.dataSources.includes(
+      ApiDataSource.PARTICLE_POLLUTION
+    );
 
   const [showFederalElection, setShowFederalElection] = useState(
     hasFederalElectionInSubscription
@@ -70,12 +66,11 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
     hasParticlePollutionElectionInSubscription
   );
 
-  const selectableClippings = (
-    searchContextState.mapClippings || []
-  ).map((c: MapClipping) => ({ selected: true, ...c }));
-  const [selectedMapClippings, setSelectedMapClippings] = useState<
-    SelectedMapClipping[]
-  >(selectableClippings);
+  const selectableClippings = (searchContextState.mapClippings || []).map(
+    (c: MapClipping) => ({ selected: true, ...c })
+  );
+  const [selectedMapClippings, setSelectedMapClippings] =
+    useState<SelectedMapClipping[]>(selectableClippings);
 
   const buttonTitle =
     exportType !== "CHEATSHEET"
@@ -85,15 +80,15 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   const onClose = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-      payload: false
+      payload: false,
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-      payload: false
+      payload: false,
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-      payload: false
+      payload: false,
     });
   };
 
@@ -163,11 +158,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       : undefined
                   }
                   onAfterPrint={onClose}
-                  user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
-                      ? user
-                      : null
-                  }
+                  user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                 />
               )}
@@ -194,11 +185,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       : undefined
                   }
                   onAfterPrint={onClose}
-                  user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
-                      ? user
-                      : null
-                  }
+                  user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                 />
               )}
@@ -222,11 +209,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                       ? searchContextState.particlePollutionData
                       : undefined
                   }
-                  user={
-                    subscriptionPlan?.type !== ApiSubscriptionPlanType.TRIAL
-                      ? user
-                      : null
-                  }
+                  user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                 />
               )}

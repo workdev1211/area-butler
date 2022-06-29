@@ -16,7 +16,6 @@ export class Subscription {
       ApiSubscriptionPlanType.PAY_PER_USE_10,
       ApiSubscriptionPlanType.BUSINESS_PLUS,
       ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
-      ApiSubscriptionPlanType.TRIAL,
     ],
   })
   type: ApiSubscriptionPlanType;
@@ -29,9 +28,6 @@ export class Subscription {
 
   @Prop({ type: Date, required: true })
   endsAt: Date;
-
-  @Prop({ type: Date, required: true })
-  trialEndsAt: Date;
 
   @Prop({ required: true })
   stripeSubscriptionId: string;

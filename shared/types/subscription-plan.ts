@@ -2,7 +2,6 @@ export interface ApiUserSubscription {
   type: ApiSubscriptionPlanType;
   createdAt: Date;
   endsAt: Date;
-  trialEndsAt: Date;
   priceId: string;
   config: ApiSubscriptionPlan;
 }
@@ -57,8 +56,6 @@ export enum ApiSubscriptionPlanType {
   BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
   // TODO will be released later
   // ENTERPRISE = "ENTERPRISE",
-  // TODO should be removed after complete approval of the New Pricing Model
-  TRIAL = "TRIAL",
 }
 
 export enum ApiSubscriptionPlanTypeGroupEnum {

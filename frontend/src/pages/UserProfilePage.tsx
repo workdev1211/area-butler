@@ -8,15 +8,13 @@ import React, {
   FunctionComponent,
   useContext,
   useEffect,
-  useState
+  useState,
 } from "react";
-import { dateDiffInDays } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { v4 as uuid } from "uuid";
-import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 import { ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 
@@ -67,28 +65,16 @@ const UserProfilePage: FunctionComponent = () => {
     );
   };
 
-  const remainingDays = !!user?.subscriptionPlan?.endsAt
-    ? dateDiffInDays(new Date(user?.subscriptionPlan?.endsAt))
-    : 0;
-
   return (
     <DefaultLayout
       title="Ihr Profil"
       withHorizontalPadding={true}
       actionsBottom={[
         <BackButton to="/" key="user-profile-back" />,
-        <SubmitButton key="user-profile-submit" />
+        <SubmitButton key="user-profile-submit" />,
       ]}
     >
       {hasSubscription && <TourStarter tour="profile" />}
-      {user?.subscriptionPlan?.type === ApiSubscriptionPlanType.TRIAL && (
-        <h3 className="mb-5 font-bold">
-          Sie nutzen aktuell die kostenfreie Testphase. Diese endet{" "}
-          {remainingDays === 1
-            ? " Morgen."
-            : " in " + remainingDays + " Tagen."}
-        </h3>
-      )}
       <div className="mt-10" data-tour="profile-form">
         <ProfileFormHandler
           user={userState.user!}

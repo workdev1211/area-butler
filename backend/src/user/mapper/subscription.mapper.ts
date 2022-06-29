@@ -8,7 +8,6 @@ export const mapSubscriptionToApiSubscription = (
   type: subscription.type,
   createdAt: subscription.createdAt,
   endsAt: subscription.endsAt,
-  trialEndsAt: subscription.trialEndsAt,
   priceId: subscription.stripePriceId,
   config: allSubscriptions[subscription.type],
 });

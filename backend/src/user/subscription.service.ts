@@ -139,13 +139,11 @@ export class SubscriptionService {
       await this.fetchAllUserSubscriptions(userId);
 
     const activeSubscriptions = userSubscriptions.filter(
-      (s) =>
-        s.trialEndsAt >= new Date() ||
-        (s.trialEndsAt < new Date() && s.endsAt >= new Date()),
+      (s) => s.endsAt >= new Date(),
     );
 
     if (activeSubscriptions.length > 1) {
-      throw new HttpException('user has multliple active subscriptions', 400);
+      throw new HttpException('User has multiple active subscriptions', 400);
     }
 
     if (activeSubscriptions.length < 1) {
@@ -167,23 +165,7 @@ export class SubscriptionService {
     stripeSubscriptionId = 'unverified-new',
     stripePriceId: string,
     endsAt: Date,
-    trialEndsAt: Date,
   ): Promise<SubscriptionDocument> {
-    if (type === 'TRIAL') {
-      if (await this.findActiveByUserId(userId)) {
-        throw new HttpException('User already has an active subscription', 400);
-      }
-
-      return new this.subscriptionModel({
-        userId,
-        type,
-        stripePriceId,
-        endsAt,
-        trialEndsAt,
-        stripeSubscriptionId,
-      }).save();
-    }
-
     const subscription = await this.findByStripeSubscriptionId(
       stripeSubscriptionId,
     );
@@ -193,7 +175,6 @@ export class SubscriptionService {
         stripePriceId,
         type,
         endsAt,
-        trialEndsAt,
       });
 
       this.logger.log(`Update ${type} subscription for ${userId} user`);
@@ -211,7 +192,6 @@ export class SubscriptionService {
         type,
         stripePriceId,
         endsAt,
-        trialEndsAt,
         stripeSubscriptionId,
       }).save();
     }
