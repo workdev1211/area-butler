@@ -35,7 +35,7 @@ const IncreaseLimitForm: FunctionComponent<IncreaseRequestLimitFormProps> = ({
     >
       {({ setFieldValue }) => (
         <Form id={formId}>
-          <p>{labelDescription.description}</p>
+          <p className="text-justify">{labelDescription.description}</p>
           <div className="form-control">
             <Select
               className="input input-bordered w-full"

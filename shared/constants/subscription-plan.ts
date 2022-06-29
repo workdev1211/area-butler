@@ -37,25 +37,34 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
 
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   {
-    id: { dev: "price_1LCHlOLcbb2Q3qBpZltd36hh" },
+    id: {
+      dev: "price_1LCHlOLcbb2Q3qBpZltd36hh",
+      prod: "price_1LG07gLcbb2Q3qBpiHOGArxB",
+    },
     amount: { value: 1 },
     name: "Abfrage Kontingent",
     description:
-      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 39,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+      "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 39,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
   {
-    id: { dev: "price_1LCHm5Lcbb2Q3qBp0CRFBhib" },
+    id: {
+      dev: "price_1LCHm5Lcbb2Q3qBp0CRFBhib",
+      prod: "price_1LG08DLcbb2Q3qBp2j4YrmLi",
+    },
     amount: { value: 5 },
     name: "Abfrage Kontingent",
     description:
-      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 156,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+      "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 156,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
   {
-    id: { dev: "price_1LCHmyLcbb2Q3qBpM8txQGt1" },
+    id: {
+      dev: "price_1LCHmyLcbb2Q3qBpM8txQGt1",
+      prod: "price_1LG08gLcbb2Q3qBp6vHlkpHP",
+    },
     amount: { value: 10 },
     name: "Abfrage Kontingent",
     description:
-      "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 232,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+      "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 232,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
 ];
 
@@ -75,7 +84,10 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PAY_PER_USE_1,
   prices: [
     {
-      id: { dev: "price_1LAUOVLcbb2Q3qBpRhqjaCb5" },
+      id: {
+        dev: "price_1LAUOVLcbb2Q3qBpRhqjaCb5",
+        prod: "price_1LFzpKLcbb2Q3qBpuRsjhPNa",
+      },
       name: "Einzelabfrage",
       price: "49<sup>*</sup>",
       vatStatus: "zzgl. MwSt",
@@ -92,11 +104,14 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
           amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
-              id: { dev: "price_1LCHoTLcbb2Q3qBp9jt47xMN" },
+              id: {
+                dev: "price_1LCHoxLcbb2Q3qBpZfdy2LRM",
+                prod: "price_1LG09ZLcbb2Q3qBp6BObksux",
+              },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
-                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 13,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
+                "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
           ],
         },
@@ -126,7 +141,10 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PAY_PER_USE_5,
   prices: [
     {
-      id: { dev: "price_1LCIZwLcbb2Q3qBpYMEmHHTO" },
+      id: {
+        dev: "price_1LCIZwLcbb2Q3qBpYMEmHHTO",
+        prod: "price_1LFzpPLcbb2Q3qBpNDijoJqd",
+      },
       name: "5er Karte",
       price: "190<sup>*</sup>",
       vatStatus: "zzgl. MwSt",
@@ -143,11 +161,14 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
           amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
-              id: { dev: "price_1LCHoxLcbb2Q3qBpZfdy2LRM" },
+              id: {
+                dev: "price_1LCHpWLcbb2Q3qBpfiSiJ1RY",
+                prod: "price_1LG0AFLcbb2Q3qBp0pf6joUm",
+              },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
-                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
+                "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
           ],
         },
@@ -177,7 +198,10 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.PAY_PER_USE_10,
   prices: [
     {
-      id: { dev: "price_1LAUPsLcbb2Q3qBpmM72R6DK" },
+      id: {
+        dev: "price_1LAUPsLcbb2Q3qBpmM72R6DK",
+        prod: "price_1LFzpULcbb2Q3qBplTPeFi36",
+      },
       name: "10er Karte",
       price: "290<sup>*</sup>",
       vatStatus: "zzgl. MwSt",
@@ -194,11 +218,14 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
           amount: { value: 12, unit: "weeks" },
           increaseParams: [
             {
-              id: { dev: "price_1LCHpWLcbb2Q3qBpfiSiJ1RY" },
+              id: {
+                dev: "price_1LG0DdLcbb2Q3qBpkZ9XNmhq",
+                prod: "price_1LG0AdLcbb2Q3qBpWdpzdoQ1",
+              },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
               description:
-                "Ihr aktuelles Adressablauf kontingent erlaubt es nicht mit iFrames / Karten zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan",
+                "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 5,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
           ],
         },
@@ -288,7 +315,10 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
 const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
   [
     {
-      id: { dev: "price_1LCHqFLcbb2Q3qBpmxFBI6TE" },
+      id: {
+        dev: "price_1LCHqFLcbb2Q3qBpmxFBI6TE",
+        prod: "price_1LG0EVLcbb2Q3qBpKUn7uEFu",
+      },
       amount: { value: 50 },
       name: "Abfrage Kontingent",
       description:
@@ -302,7 +332,10 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
   prices: [
     {
-      id: { dev: "price_1LCIdULcbb2Q3qBpFXIv5stI" },
+      id: {
+        dev: "price_1LG01pLcbb2Q3qBp75uFSyCx",
+        prod: "price_1LFznwLcbb2Q3qBp3acGp9ni",
+      },
       name: "Business+ Monats-Abo",
       price: "590<sup>*</sup>",
       vatStatus: "Monat zzgl. MwSt",
@@ -320,7 +353,10 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
       ],
     },
     {
-      id: { dev: "price_1LCIdULcbb2Q3qBp42UdqzxG" },
+      id: {
+        dev: "price_1LG1QDLcbb2Q3qBpuSArUSwU",
+        prod: "price_1LFznwLcbb2Q3qBpgxksSRhO",
+      },
       name: "Business+ Jahres-Abo",
       price: "6490<sup>*</sup>",
       vatStatus: "Jahr zzgl. MwSt",
@@ -329,7 +365,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
       interval: ApiSubscriptionIntervalEnum.ANNUALLY,
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
-          amount: { value: 200 },
+          amount: { value: 250 },
           increaseParams: businessPlusRequestLimitIncrease,
         },
       },
