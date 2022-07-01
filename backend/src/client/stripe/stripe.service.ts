@@ -1,7 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import Stripe from 'stripe';
 
-import { ApiCreateCheckout } from '@area-butler-types/billing';
+import {
+  ApiCreateCheckout,
+  ApiStripeCheckoutModeEnum,
+} from '@area-butler-types/billing';
 import { configService } from '../../config/config.service';
 import { UserDocument } from '../../user/schema/user.schema';
 
@@ -35,15 +38,22 @@ export class StripeService {
       priceId,
       amount = 1,
       trialPeriod,
-      mode = 'subscription',
+      mode = ApiStripeCheckoutModeEnum.Subscription,
       metadata,
     }: ApiCreateCheckout,
   ): Promise<string> {
+    const paymentMethodTypes: Stripe.Checkout.SessionCreateParams.PaymentMethodType[] =
+      ['card'];
+
+    if (mode === ApiStripeCheckoutModeEnum.Payment) {
+      paymentMethodTypes.push('giropay');
+    }
+
     const checkoutUrl: Stripe.Checkout.Session =
       await this.stripeClient.checkout.sessions.create({
         customer: user.stripeCustomerId,
         mode,
-        payment_method_types: ['card'],
+        payment_method_types: paymentMethodTypes,
         billing_address_collection: 'required',
         allow_promotion_codes: true,
         locale: 'de',

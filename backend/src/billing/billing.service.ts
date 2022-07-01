@@ -18,6 +18,7 @@ import {
 } from '../event/event.types';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiSubscriptionLimitsEnum } from '@area-butler-types/subscription-plan';
+import { ApiStripeCheckoutPaymentStatusEnum } from '@area-butler-types/billing';
 
 @Injectable()
 export class BillingService {
@@ -54,7 +55,15 @@ export class BillingService {
 
       switch (event.type) {
         case 'checkout.session.completed': {
-          await this.handleCheckoutSessionCompleted(event.data);
+          if (
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore
+            event.data.object.payment_status ===
+            ApiStripeCheckoutPaymentStatusEnum.Paid
+          ) {
+            await this.handleCheckoutSessionCompleted(event.data);
+          }
+
           break;
         }
 

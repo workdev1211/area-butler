@@ -10,7 +10,10 @@ import {
   IApiSubscriptionLimitAmount,
 } from "../../../shared/types/subscription-plan";
 import IncreaseLimitForm from "./IncreaseLimitForm";
-import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
+import {
+  ApiStripeCheckoutModeEnum,
+  LimitIncreaseModelNameEnum,
+} from "../../../shared/types/billing";
 
 export interface ILimitIncreasePriceId {
   priceId: string;
@@ -83,7 +86,7 @@ const IncreaseLimitFormHandler: FunctionComponent<
           priceId,
           amount: selectedParams?.amount.value,
           metadata: modelName && modelId ? { modelName, modelId } : undefined,
-          mode: "payment",
+          mode: ApiStripeCheckoutModeEnum.Payment,
         })
       ).data;
 

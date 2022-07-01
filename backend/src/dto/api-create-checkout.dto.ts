@@ -1,5 +1,5 @@
 import {
-  IsIn,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -9,6 +9,7 @@ import {
 
 import {
   ApiCreateCheckout,
+  ApiStripeCheckoutModeEnum,
   IApiCheckoutMetadata,
 } from '@area-butler-types/billing';
 import { IsStripeCheckoutMetadata } from '../shared/isStripeCheckoutMetadata.validator';
@@ -19,8 +20,8 @@ export class ApiCreateCheckoutDto implements ApiCreateCheckout {
   amount?: number;
 
   @IsOptional()
-  @IsIn(['subscription', 'payment'])
-  mode?: 'subscription' | 'payment';
+  @IsEnum(ApiStripeCheckoutModeEnum)
+  mode?: ApiStripeCheckoutModeEnum;
 
   @IsNotEmpty()
   @IsString()
