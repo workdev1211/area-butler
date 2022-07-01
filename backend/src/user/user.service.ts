@@ -2,19 +2,16 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
+import * as dayjs from 'dayjs';
 
 import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
-  TRIAL_DAYS,
 } from '../../../shared/constants/subscription-plan';
 import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
-import {
-  ApiRequestContingentType,
-  ApiSubscriptionPlanType,
-} from '@area-butler-types/subscription-plan';
+import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import { ApiTour } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType, UserEvent } from '../event/event.types';
@@ -200,20 +197,23 @@ export class UserService {
     untilMonthIncluded: Date,
     numberOfRequests: number,
   ): Promise<void> {
-    const currentDate = new Date();
+    const currentDate = dayjs();
 
     const requestContingents = [
       {
         type: ApiRequestContingentType.RECURRENT,
         amount: numberOfRequests,
-        date: currentDate,
+        date: currentDate.toDate(),
       },
-      {
+    ];
+
+    if (!dayjs(currentDate).isSame(untilMonthIncluded, 'month')) {
+      requestContingents.push({
         type: ApiRequestContingentType.RECURRENT,
         amount: numberOfRequests,
         date: untilMonthIncluded,
-      },
-    ];
+      });
+    }
 
     await this.userModel.updateOne(
       { _id: userId },
