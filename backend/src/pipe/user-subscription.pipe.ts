@@ -8,6 +8,10 @@ export class UserSubscriptionPipe implements PipeTransform {
   constructor(private subscriptionService: SubscriptionService) {}
 
   async transform(user: UserDocument): Promise<UserDocument> {
+    if (!user) {
+      throw new HttpException('Unknown User', 400);
+    }
+
     const userSubscription = await this.subscriptionService.findActiveByUserId(
       user.id,
     );

@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import { SubscriptionListener } from './listener/subscription.listener';
 import { User, Userschema } from './schema/user.schema';
 import { UserController } from './user.controller';
@@ -7,6 +8,7 @@ import { UserService } from './user.service';
 import { Subscription, SubscriptionSchema } from './schema/subscription.schema';
 import { SubscriptionService } from './subscription.service';
 import { ClientModule } from '../client/client.module';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @Module({
   imports: [
@@ -19,7 +21,12 @@ import { ClientModule } from '../client/client.module';
     ]),
     ClientModule,
   ],
-  providers: [UserService, SubscriptionService, SubscriptionListener],
+  providers: [
+    UserService,
+    SubscriptionService,
+    SubscriptionListener,
+    UserSubscriptionPipe,
+  ],
   exports: [UserService, SubscriptionService],
   controllers: [UserController],
 })

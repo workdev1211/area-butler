@@ -16,6 +16,7 @@ import { ApiTour } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType, UserEvent } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
+import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 
 @Injectable()
 export class UserService {
@@ -24,6 +25,7 @@ export class UserService {
     private subscriptionService: SubscriptionService,
     private eventEmitter: EventEmitter2,
     private mapboxService: MapboxService,
+    private userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
   async upsertUser(email: string, fullname: string): Promise<UserDocument> {
@@ -266,9 +268,12 @@ export class UserService {
   }
 
   async updateSettings(
-    user: UserDocument,
+    email: string,
     settings: ApiUserSettingsDto,
   ): Promise<UserDocument> {
+    const user = await this.findByEmail(email);
+    await this.userSubscriptionPipe.transform(user);
+
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
       (subscription) => !subscription.appFeatures.canCustomizeExport,
