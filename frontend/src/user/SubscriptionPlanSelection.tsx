@@ -171,10 +171,9 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
         </div>
         <div className="card-body py-10">
           <div className="flex justify-center items-baseline">
-            <span
-              className="text-4xl font-semibold w-auto"
-              dangerouslySetInnerHTML={{ __html: `${price} €` }}
-            />
+            <span className="text-4xl font-semibold w-auto">
+              {price} €<sup>*</sup>
+            </span>
             {vatStatus && <span className="text-lg ml-2"> / {vatStatus}</span>}
           </div>
           {!hadPreviousSubscriptionPlans && (

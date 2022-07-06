@@ -89,7 +89,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
         prod: "price_1LFzpKLcbb2Q3qBpuRsjhPNa",
       },
       name: "Einzelabfrage",
-      price: "49<sup>*</sup>",
+      price: "49",
       vatStatus: "zzgl. MwSt",
       footnote:
         '<strong>*</strong> 58,31€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 12 € inkl. MwSt optional möglich.',
@@ -146,7 +146,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
         prod: "price_1LFzpPLcbb2Q3qBpNDijoJqd",
       },
       name: "5er Karte",
-      price: "190<sup>*</sup>",
+      price: "190",
       vatStatus: "zzgl. MwSt",
       footnote:
         '<strong>*</strong> 226,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 10 € inkl. MwSt optional möglich.',
@@ -203,7 +203,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
         prod: "price_1LFzpULcbb2Q3qBplTPeFi36",
       },
       name: "10er Karte",
-      price: "290<sup>*</sup>",
+      price: "290",
       vatStatus: "zzgl. MwSt",
       footnote:
         '<strong>*</strong> 345,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 6 € inkl. MwSt optional möglich.',
@@ -337,7 +337,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
         prod: "price_1LFznwLcbb2Q3qBp3acGp9ni",
       },
       name: "Business+ Monats-Abo",
-      price: "590<sup>*</sup>",
+      price: "590",
       vatStatus: "Monat zzgl. MwSt",
       footnote:
         "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt. Die initiale Mindestvertragslaufzeit beträgt 3 Monate, danach monatlich kündbar.",
@@ -349,7 +349,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
         },
       },
       description: [
-        "150 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+        "100 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
       ],
     },
     {
@@ -358,7 +358,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
         prod: "price_1LFznwLcbb2Q3qBpgxksSRhO",
       },
       name: "Business+ Jahres-Abo",
-      price: "6490<sup>*</sup>",
+      price: "6.490",
       vatStatus: "Jahr zzgl. MwSt",
       footnote:
         "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
