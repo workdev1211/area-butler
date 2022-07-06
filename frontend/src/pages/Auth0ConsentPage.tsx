@@ -34,20 +34,18 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
   return (
     <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
       <div className="w-1/3 mx-auto pt-20">
-        <h2>Herzlich Willkommen !</h2>
+        <h2>Herzlich willkommen !</h2>
         <p className="mt-5">
-          Mit der Zustimmung der AGBs und Datenschutzbestimmungen erhalten Sie
+          Mit der Zustimmung der AGB und Datenschutzbestimmungen erhalten Sie
           für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
-          <strong>kostenfreie Business+ Lizenz</strong>, um den vollen
-          Funktionsumfang des Area Butlers testen zu können. Sie müssen hierfür{" "}
-          <strong>keinerlei</strong> Zahlungsdaten hinterlegen.
+          <strong>kostenfreie Lizenz</strong>, um den vollen
+          Umfang des AreaButlers testen zu können. Zu unserer und Ihrer Sicherheit müssen Sie ein{" "}
+          <strong>keinerlei</strong> Zahlungsmittel wählen und Zahlungsdaten hinterlegen. Diese werden erst aktiviert, wenn Sie sich nach der Testphase, aktiv für ein Angebot entscheiden.
         </p>
         <p>
-          Nach Ablauf der Testphase können Sie ein Abonemment wählen, das Ihre
-          Anforderungen am Besten abdeckt. Auch danach können Sie{" "}
-          <strong>jederzeit</strong> in ein anderes Abonnement wechseln.
+        Es gibt keine automatische Verlängerung und nach Ablauf Ihrer Testphase müssen Sie aktiv ein Angebot auswählen, welches am besten zu Ihren Anforderungen passt. Auch können Sie danach jederzeit zum Beispiel zu einem anderen Abonnement wechseln.
         </p>
-        <p>Viel Spaß beim Entdecken des Area Butlers !</p>
+        <p>Viel Spaß beim Entdecken des AreaButlers !</p>
         <Formik
           initialValues={{
             consentGiven: false,
