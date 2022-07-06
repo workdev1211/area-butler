@@ -16,13 +16,13 @@ export const LoginPage: React.FunctionComponent = () => {
   return (
     <DefaultLayout title="Anmeldung/Registrierung" withHorizontalPadding={true}>
       <div className="pt-20 md:w-1/3 mx-auto">
-        <h2>Willkommen bei Ihrem Area Butler</h2>
+        <h2>Willkommen bei Ihrem AreaButler</h2>
         <p className="pt-5">
-          Bitte melden Sie sich an, um diesen Service nutzen zu können.
+          Bitte melden Sie sich an um den AreaButler nutzen zu können.
         </p>
         <p>
-          Ein Klick auf den nachfolgenden Button führt Sie zu der Anmeldung bzw.
-          Registerierung bei Auth0.
+          Ein Klick auf den Button „Anmelden/Registrieren“ startet den Prozess zur Anmeldung/Registrierung beim AreaButler. 
+Dieser Prozess wird von unserem Partner Auth0 unterstützt. Dem Marktführer für Sichere Anmelde- & Registrierungsprozesse.
         </p>
         <button
           type="button"
