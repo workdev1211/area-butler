@@ -14,7 +14,7 @@ export const TermsPage = () => {
           Amtsgericht Hamburg für die Nutzung der über die Website
           www.areabutler.de angebotenen Services
         </p>
-        <p>Stand: 11/2021</p>
+        <p>Stand: 07/2022</p>
         <h2>§1 Geltungsbereich</h2>
         <ol>
           <li data-start="1">
