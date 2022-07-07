@@ -24,16 +24,16 @@ export const TermsPage = () => {
             eingetragen im Handelsregister des Amtsgerichts Hamburg unter HRB
             171915 (nachfolgend „KuDiBa“) und dem Nutzer der unter
             www.areabutler.de („Website“) von KuDiBa angebotenen entgeltlichen
-            Web-App Area Butler (nachfolgend „Area Butler“) entstehen.
+            Web-App AreaButler (nachfolgend „AreaButler“) entstehen.
           </li>
           <li data-start="1">
-            Area Butler richtet sich ausschließlich an Unternehmer gemäß § 14
+            AreaButler richtet sich ausschließlich an Unternehmer gemäß § 14
             BGB.
           </li>
           <li data-start="1">
             Maßgeblich ist die zum Zeitpunkt des Vertragsschlusses gültige
             Fassung dieser AGB. Ergänzend zu diesen AGB gelten die aktuellen
-            Preislisten von Area Butler (abrufbar unter www.areabutler.de) sowie
+            Preislisten von AreaButler (abrufbar unter www.areabutler.de) sowie
             sonstige in schriftlicher Form individuell vereinbarte
             Vertragsbestimmungen.
           </li>
@@ -42,10 +42,10 @@ export const TermsPage = () => {
             KuDiBa nicht ausdrücklich schriftlich zugestimmt hat.
           </li>
         </ol>
-        <h2>§2 Leistungen von Area Butler</h2>
+        <h2>§2 Leistungen von AreaButler</h2>
         <ol>
           <li data-start="2">
-            Area Butler liefert Maklern und selbst makelnden Hausverwaltungen
+            AreaButler liefert Maklern und selbst makelnden Hausverwaltungen
             (nachfolgend: „Nutzer“) automatisiert Standort- und
             Umgebungsanalysen (nachfolgend „Analysen“) zu vom Nutzer
             vorgegebenen Immobilienobjekten (nachfolgend „Objekte“), ermöglicht
@@ -64,7 +64,7 @@ export const TermsPage = () => {
           <li data-start="2">
             Vertragsgegenstand sind
             <br />
-            a) die entgeltliche Bereitstellung von Area Butler durch KuDiBa zur
+            a) die entgeltliche Bereitstellung von AreaButler durch KuDiBa zur
             Nutzung über das Internet für die Dauer des Vertrags, wobei die
             damit ermöglichten Analysen zahlenmäßig auf die vertraglich
             vereinbarte Anzahl entsprechend des Aboplans begrenzt sind,
@@ -74,7 +74,7 @@ export const TermsPage = () => {
             <br />
           </li>
           <li data-start="2">
-            KuDiBa ist berechtigt, bei der Bereitstellung von Area Butler sowie
+            KuDiBa ist berechtigt, bei der Bereitstellung von AreaButler sowie
             der hierfür erforderlichen IT-Infrastrukturen oder bei der
             Einräumung von Speicherplatz Nachunternehmer einzubeziehen.
             Hierdurch wird die Pflicht von KuDiBa zur Vertragserfüllung nicht
@@ -84,7 +84,7 @@ export const TermsPage = () => {
         <h2>§3 Vertragsschluss/Registrierung durch den Nutzer </h2>
         <ol>
           <li data-start="3">
-            Die Verwendung der vorgenannten Leistungen von Area Butler setzt die
+            Die Verwendung der vorgenannten Leistungen von AreaButler setzt die
             Registrierung auf der Website sowie den Abschluss eines
             kostenpflichtigen Vertrags mit KuDiBa voraus (nachfolgend „der
             Vertrag“), wobei der Nutzer zwischen verschiedenen Aboplänen
@@ -94,8 +94,8 @@ export const TermsPage = () => {
           <li data-start="3">
             KuDiBa kann neben den Aboplänen auch spezielle Aktionen oder Dienste
             anbieten. Insbesondere können von Zeit zu Zeit kostenpflichtige
-            Abopläne für Area Butler probeweise, für einen bestimmten Zeitraum
-            kostenlos oder zu einem reduzierten Preis angeboten werden.
+            Abopläne für AreaButler probeweise, für einen bestimmten Zeitraum
+            kostenlos oder zu einem reduzierten Preis angeboten werden. Es sind auch Einzelabfragen, 5er Karten und 10er Karten möglich
           </li>
           <li data-start="3">
             Mit der Übermittlung der Registrierungsdaten und Auswahl eines
@@ -116,45 +116,45 @@ export const TermsPage = () => {
           </li>
           <li data-start="3">
             Auf Aufforderung hat der Nutzer KuDiBa seine Unternehmereigenschaft
-            nachzuweisen.
+            nachzuweisen. Dies gilt nicht für Einzelabfragen, die theoretisch auf Privatpersonen beziehen könnten.
           </li>
           <li data-start="3">
             § 312i Abs. 1 S. 1 Nr. 1 bis 3 und S. 2 BGB finden keine Anwendung.
           </li>
         </ol>
-        <h2>§4 Rechte an Area Butler</h2>
+        <h2>§4 Rechte an AreaButler</h2>
         <ol>
           <li data-start="4">
-            Area Butler ist als Sprachwerk (Computerprogramm) urheberrechtlich
-            geschützt. Die über Area Butler bereitgestellten Daten stellen in
+            AreaButler ist als Sprachwerk (Computerprogramm) urheberrechtlich
+            geschützt. Die über AreaButler bereitgestellten Daten stellen in
             deren Zusammenschau eine Datenbank bzw. ein Datenbankwerk dar und
             genießen als solche(s) ebenfalls urheberrechtlichen Schutz.
           </li>
           <li data-start="4">
-            Sämtliche Urheber- und sonstigen Schutzrechte an Area Butler und den
+            Sämtliche Urheber- und sonstigen Schutzrechte an AreaButler und den
             hierüber verfügbaren Inhalten, Daten und sonstigen Elementen stehen
-            KuDiBa zu. Dasselbe gilt für die über Area Butler erstellten
+            KuDiBa zu. Dasselbe gilt für die über AreaButler erstellten
             Analysen und Objekt-Spickzettel. Etwaige Rechte des Nutzers oder
             Dritter an den vom Nutzer hinzugefügten Inhalten, Markenzeichen und
             Daten bleiben hiervon unberührt.
           </li>
           <li data-start="4">
-            Area Butler räumt dem Nutzer das nicht ausschließliche und nicht
-            übertragbare Recht ein, Area Butler während der Dauer des Vertrages
+            AreaButler räumt dem Nutzer das nicht ausschließliche und nicht
+            übertragbare Recht ein, AreaButler während der Dauer des Vertrages
             als Software as a Service-Dienst (SaaS) bestimmungsgemäß für eigene
             Geschäftszwecke zu nutzen.
           </li>
           <li data-start="4">
-            Der Nutzer darf Area Butler nur vervielfältigen, soweit dies zur
+            Der Nutzer darf AreaButler nur vervielfältigen, soweit dies zur
             bestimmungsgemäßen Benutzung der Software erforderlich ist. Zur
-            erforderlichen Vervielfältigung zählt das Laden von Area Butler in
+            erforderlichen Vervielfältigung zählt das Laden von AreaButler in
             den Arbeitsspeicher auf dem Server von KuDiBa, nicht jedoch die auch
-            nur vorübergehende Installation oder das Speichern von Area Butler
+            nur vorübergehende Installation oder das Speichern von AreaButler
             auf Datenträgern (wie etwa Festplatten) der vom Nutzer eingesetzten
             Hardware.
           </li>
           <li data-start="4">
-            Der Nutzer ist nicht berechtigt, Area Butler Dritten entgeltlich
+            Der Nutzer ist nicht berechtigt, AreaButler Dritten entgeltlich
             oder unentgeltlich zur Nutzung zur Verfügung zu stellen.
           </li>
           <li data-start="4">
@@ -196,9 +196,9 @@ export const TermsPage = () => {
           <li data-start="5">
             Der Nutzer stellt KuDiBa von sämtlichen Ansprüchen, einschließlich
             Schadensersatzansprüchen, frei, die Dritte gegen KuDiBa wegen einer
-            Verletzung ihrer Rechte durch die vom Nutzer auf Area Butler
+            Verletzung ihrer Rechte durch die vom Nutzer auf AreaButler
             hochgeladenen oder generierten Inhalte oder wegen einer sonstigen
-            Nutzung von Area Butler durch den Nutzer geltend machen. Der Nutzer
+            Nutzung von AreaButler durch den Nutzer geltend machen. Der Nutzer
             übernimmt alle KuDiBa aufgrund einer Verletzung von Rechten Dritter
             entstehenden angemessenen Kosten, einschließlich solcher der
             Rechtsverteidigung. Alle weitergehenden Rechte sowie
@@ -239,21 +239,18 @@ export const TermsPage = () => {
           </li>
           <li data-start="6">
             Sofern dem Nutzer nach dem Vertrag die Möglichkeit gegeben wird,
-            Area Butler zunächst für eine bestimmte Dauer kostenfrei zu nutzen,
+            AreaButler zunächst für eine bestimmte Dauer kostenfrei zu nutzen,
             kann der Nutzer den Vertrag während dieses Zeitraums jederzeit ohne
             Angabe von Gründen mittels einer eindeutigen Erklärung gegenüber
-            KuDiBa kündigen. Kündigt der Nutzer den Vertrag nicht innerhalb
-            dieses Zeitraums, geht der Vertrag im Anschluss in einen
-            kostenpflichtigen Vertrag entsprechend des ausgewählten Aboplans und
-            der vereinbarten Laufzeitoption über. Die Mindestvertragslaufzeit
+            KuDiBa kündigen. Die Mindestvertragslaufzeit
             und die entsprechenden Kündigungsfristen richten sich ab diesem
-            Zeitpunkt nach der gewählten Laufzeitoption.
+            Zeitpunkt nach der gewählten Laufzeitoption. Die initiale Mindestvertragslaufzeit im Business+ Abo beträgt 3 Monate. Die Pay-Per-Use Optionen haben keine Mindestvertragslaufzeit.
           </li>
           <li data-start="6">
             Die Vertragslaufzeit verlängert sich automatisch wiederkehrend um
             den für die jeweilige Laufzeitoption vorgesehenen Abozeitraum,
             sofern der Nutzer seinen Vertrag vor dessen Ablauf nicht innerhalb
-            der jeweils geltenden Kündigungsfrist kündigt.
+            der jeweils geltenden Kündigungsfrist kündigt. Die Pay-Per-Use Optionen haben keine Mindestvertragslaufzeit.
           </li>
           <li data-start="6">
             In der Laufzeitoption "Monatlich" beträgt der Abonnement-Zeitraum
@@ -272,7 +269,7 @@ export const TermsPage = () => {
             kündigt.
           </li>
           <li data-start="6">
-            Soweit KuDiBa auf Area Butler im Bereich für registrierte Nutzer ein
+            Soweit KuDiBa auf AreaButler im Bereich für registrierte Nutzer ein
             auszufüllendes Online-Formular für die Vertragsbeendigung zur
             Verfügung stellt, ist dem Nutzer eine Vertragsbeendigung auch
             mittels dieses Formulars gestattet. Im Übrigen ist die
@@ -292,10 +289,10 @@ export const TermsPage = () => {
             KuDiBa kann die Preise für laufende Abopläne in angemessenem Umfang,
             jedoch höchstens bis zu zehn Prozent einmal kalenderjährlich, mit
             Wirkung für die Zukunft entsprechend der Entwicklung der im
-            Zusammenhang mit Area Butler anfallenden Kosten, die der
+            Zusammenhang mit AreaButler anfallenden Kosten, die der
             Preisberechnung zugrunde liegen (Gesamtkosten), anpassen. Die
             Gesamtkosten setzen sich insbesondere aus den Kosten für den
-            Betrieb, die Weiterentwicklung und die Wartung von Area Butler und
+            Betrieb, die Weiterentwicklung und die Wartung von AreaButler und
             der Website, Kosten für die Kundenbetreuung, Energiekosten,
             Verwaltungskosten, Marketingausgaben, Mieten, Zinsen sowie Steuern
             und sonstigen Abgaben zusammen. KuDiBa ist berechtigt, die Preise
@@ -315,14 +312,14 @@ export const TermsPage = () => {
           </li>
           <li data-start="7">
             Für die Zahlung der Abopläne stehen die zum Zeitpunkt des
-            Vertragsschlusses auf Area Butler angebotenen Zahlungsmöglichkeiten
+            Vertragsschlusses auf AreaButler angebotenen Zahlungsmöglichkeiten
             zur Verfügung. KuDiBa behält sich das Recht vor, das
             Zahlungsmittelangebot (auch für einzelne Abopläne oder Services)
             jederzeit zu erweitern oder einzuschränken.
           </li>
           <li data-start="7">
             Im Falle des Zahlungsverzugs behält sich KuDiBa vor, den Nutzer bis
-            zur Zahlung des ausstehenden Betrags von der Nutzung von Area Butler
+            zur Zahlung des ausstehenden Betrags von der Nutzung von AreaButler
             auszuschließen. Die Verpflichtung des Nutzers zur Zahlung der
             Vergütung während der Zurückbehaltung bleibt unberührt.
           </li>
@@ -330,7 +327,7 @@ export const TermsPage = () => {
         <h2>§8 Pflichten des Nutzers</h2>
         <ol>
           <li data-start="8">
-            Der Nutzer ist nicht berechtigt, die mit Area Butler generierten
+            Der Nutzer ist nicht berechtigt, die mit AreaButler generierten
             Analysen und damit zusammenhängende Dokumente Dritten entgeltlich
             oder unentgeltlich zur Nutzung zur Verfügung zu stellen. Als Dritte
             gelten nicht Interessenten des Nutzers.
@@ -348,12 +345,12 @@ export const TermsPage = () => {
         <ol>
           <li data-start="9">
             KuDiBa ist berechtigt, die Funktionen, Inhalte und das
-            Erscheinungsbild von Area Butler nach dem Stand der Technik und im
+            Erscheinungsbild von AreaButler nach dem Stand der Technik und im
             Rahmen der Marktüblichkeit unter Berücksichtigung der Interessen
             seiner Nutzer weiterzuentwickeln.
           </li>
           <li data-start="9">
-            Treten technische Störungen auf, die die Nutzung von Area Butler
+            Treten technische Störungen auf, die die Nutzung von AreaButler
             beeinträchtigen, beseitigt KuDiBa diese nach Maßgabe ihrer
             technischen Möglichkeiten unverzüglich, sobald sie von ihnen
             Kenntnis erlangt hat.
@@ -370,7 +367,7 @@ export const TermsPage = () => {
         <h2>§10 Haftung</h2>
         <p>
           KuDiBa haftet für etwaige Schäden, die dem Nutzer im Zusammenhang mit
-          Area Butler entstehen, ausschließlich nach den folgenden Grundsätzen:{" "}
+          AreaButler entstehen, ausschließlich nach den folgenden Grundsätzen:{" "}
         </p>
         <p>
           Bei Vorsatz oder grober Fahrlässigkeit sowie bei Vorliegen einer
@@ -399,12 +396,12 @@ export const TermsPage = () => {
         <ol>
           <li data-start="12">
             Die Rechtsverhältnisse zwischen KuDiBa und dem Nutzer im
-            Zusammenhang mit der Nutzung von Area Butler unterliegen deutschem
+            Zusammenhang mit der Nutzung von AreaButler unterliegen deutschem
             Recht unter Ausschluss des UN-Kaufrechts.
           </li>
           <li data-start="12">
             Ausschließlicher Erfüllungsort und Gerichtsstand für Streitigkeiten
-            zwischen KuDiBa und dem Nutzer im Zusammenhang mit Area Butler ist
+            zwischen KuDiBa und dem Nutzer im Zusammenhang mit AreaButler ist
             Hamburg, soweit der Nutzer Kaufmann oder eine juristische Person des
             öffentlichen Rechts oder öffentlich-rechtliches Sondervermögen ist.
             Dasselbe gilt, wenn der Nutzer keinen allgemeinen Gerichtsstand in
@@ -415,7 +412,7 @@ export const TermsPage = () => {
         <h2>§13 Änderung dieser AGB</h2>
         <ol>
           <li data-start="13">
-            Area Butler behält sich vor, diese AGB jederzeit unter
+            AreaButler behält sich vor, diese AGB jederzeit unter
             Berücksichtigung der berechtigten Interessen des Nutzers und unter
             Wahrung einer angemessenen Ankündigungsfrist von mindestens fünfzehn
             Tagen zu ändern. Die Ankündigung erfolgt durch Mitteilung der
@@ -436,7 +433,7 @@ export const TermsPage = () => {
           <li data-start="13">
             Der Nutzer kann nach Erhalt der Mitteilung jederzeit auf die Frist
             gemäß Ziffer 13.1 verzichten. Die Stellung von Analyseanfragen auf
-            Area Butler vor Ablauf der Frist gemäß Ziffer 13.1 gilt als
+            AreaButler vor Ablauf der Frist gemäß Ziffer 13.1 gilt als
             eindeutige bestätigende Handlung zu einem solchen Verzicht.
           </li>
         </ol>
