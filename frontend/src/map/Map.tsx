@@ -1,4 +1,11 @@
-import {memo, useCallback, useEffect, useState, useContext} from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useState,
+  useContext,
+  useReducer,
+} from "react";
 import center from "@turf/center";
 import { toJpeg } from "html-to-image";
 
@@ -13,7 +20,11 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 import FormModal, { ModalConfig } from "components/FormModal";
-import {Poi, SearchContext, SearchContextActionTypes} from "context/SearchContext";
+import {
+  Poi,
+  SearchContext,
+  SearchContextActionTypes,
+} from "context/SearchContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
 import {
@@ -366,6 +377,8 @@ const Map = memo<MapProps>(
       ApiCoordinates | undefined
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
+    const [fullscreen, setFullscreen] = useState(false);
+    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel);
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -378,7 +391,15 @@ const Map = memo<MapProps>(
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
-    const [fullscreen, setFullscreen] = useState(false);
+    useEffect(() => {
+      if (config) {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: { ...config, zoomLevel: zoomLevel },
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [zoomLevel]);
 
     useEffect(() => {
       document.body.classList.toggle("fullscreen", fullscreen);
@@ -430,10 +451,7 @@ const Map = memo<MapProps>(
           return;
         }
 
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: { ...config, zoomLevel: localMap.getZoom() }
-        });
+        setZoomLevel(localMap.getZoom());
 
         if (!config.groupItems) {
           const container = document.querySelector(".leaflet-container");
