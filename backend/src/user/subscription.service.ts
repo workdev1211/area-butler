@@ -13,8 +13,14 @@ import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
   IApiSubscriptionLimitAmount,
+  IApiSubscriptionLimitIncreaseParams,
+  PaymentSystemTypeEnum,
 } from '@area-butler-types/subscription-plan';
-import ApiSubscriptionPricingDto from '../dto/api-subscription-pricing.dto';
+import {
+  IPaymentItem,
+  ISubscriptionPlanPrice,
+  PaymentItemTypeEnum,
+} from '../shared/subscription.types';
 
 @Injectable()
 export class SubscriptionService {
@@ -25,11 +31,7 @@ export class SubscriptionService {
     private subscriptionModel: Model<SubscriptionDocument>,
   ) {}
 
-  getApiSubscriptionPlanPrice(
-    stripePriceId: string,
-  ):
-    | { plan: ApiSubscriptionPlanDto; price: ApiSubscriptionPricingDto }
-    | undefined {
+  getApiSubscriptionPlanPrice(stripePriceId: string): ISubscriptionPlanPrice {
     const stripeEnv = configService.getStripeEnv();
     let foundPlanPrice;
 
@@ -48,13 +50,11 @@ export class SubscriptionService {
     return foundPlanPrice;
   }
 
-  getLimitIncreaseParams(itemPriceId: string): {
-    type: ApiSubscriptionLimitsEnum;
-    amount: IApiSubscriptionLimitAmount;
-  } {
+  getLimitIncreaseParams(
+    itemPriceId: string,
+  ): IApiSubscriptionLimitIncreaseParams {
     const stripeEnv = configService.getStripeEnv();
-
-    let foundItem;
+    let foundLimitIncreaseItem;
 
     Object.values(allSubscriptions).some(({ limits: planLimits, prices }) => {
       const hasPriceLimitIncreaseItem = prices.some(
@@ -62,18 +62,18 @@ export class SubscriptionService {
           return (
             priceLimits &&
             Object.keys(priceLimits).some((limitType) => {
-              const priceIncreaseParams = priceLimits[
+              const priceLimitIncreaseItem = priceLimits[
                 limitType
               ].increaseParams?.find(({ id }) => id[stripeEnv] === itemPriceId);
 
-              if (priceIncreaseParams) {
-                foundItem = {
+              if (priceLimitIncreaseItem) {
+                foundLimitIncreaseItem = {
+                  ...priceLimitIncreaseItem,
                   type: limitType,
-                  amount: priceIncreaseParams.amount,
                 };
               }
 
-              return !!priceIncreaseParams;
+              return !!priceLimitIncreaseItem;
             })
           );
         },
@@ -87,20 +87,23 @@ export class SubscriptionService {
       return (
         planLimits &&
         Object.keys(planLimits).some((limitType) => {
-          const planIncreaseParams = planLimits[limitType].increaseParams?.find(
-            ({ id }) => id[stripeEnv] === itemPriceId,
-          );
+          const planLimitIncreaseItem = planLimits[
+            limitType
+          ].increaseParams?.find(({ id }) => id[stripeEnv] === itemPriceId);
 
-          if (planIncreaseParams) {
-            foundItem = { type: limitType, amount: planIncreaseParams.amount };
+          if (planLimitIncreaseItem) {
+            foundLimitIncreaseItem = {
+              ...planLimitIncreaseItem,
+              type: limitType,
+            };
           }
 
-          return !!planIncreaseParams;
+          return !!planLimitIncreaseItem;
         })
       );
     });
 
-    return foundItem;
+    return foundLimitIncreaseItem;
   }
 
   // TODO think about refactoring as custom decorator
@@ -159,20 +162,37 @@ export class SubscriptionService {
     return this.subscriptionModel.findOne({ stripeSubscriptionId });
   }
 
+  async findByPaypalSubscriptionId(
+    paypalSubscriptionId: string,
+  ): Promise<SubscriptionDocument> {
+    return this.subscriptionModel.findOne({ paypalSubscriptionId });
+  }
+
   async upsertByUserId(
     userId: string,
     type: ApiSubscriptionPlanType,
-    stripeSubscriptionId = 'unverified-new',
-    stripePriceId: string,
+    subscriptionId = 'unverified-new',
+    priceId: string,
     endsAt: Date,
+    paymentSystemType: PaymentSystemTypeEnum,
   ): Promise<SubscriptionDocument> {
-    const subscription = await this.findByStripeSubscriptionId(
-      stripeSubscriptionId,
-    );
+    let subscription;
+
+    switch (paymentSystemType) {
+      case PaymentSystemTypeEnum.Stripe: {
+        subscription = await this.findByStripeSubscriptionId(subscriptionId);
+        break;
+      }
+
+      case PaymentSystemTypeEnum.PayPal: {
+        subscription = await this.findByPaypalSubscriptionId(subscriptionId);
+        break;
+      }
+    }
 
     if (subscription) {
       Object.assign(subscription, {
-        stripePriceId,
+        stripePriceId: priceId,
         type,
         endsAt,
       });
@@ -187,13 +207,26 @@ export class SubscriptionService {
 
       this.logger.log(`Create ${type} subscription for ${userId} user`);
 
-      return new this.subscriptionModel({
+      const newSubscription: Partial<SubscriptionDocument> = {
         userId,
         type,
-        stripePriceId,
+        stripePriceId: priceId,
         endsAt,
-        stripeSubscriptionId,
-      }).save();
+      };
+
+      switch (paymentSystemType) {
+        case PaymentSystemTypeEnum.Stripe: {
+          newSubscription.stripeSubscriptionId = subscriptionId;
+          break;
+        }
+
+        case PaymentSystemTypeEnum.PayPal: {
+          newSubscription.paypalSubscriptionId = subscriptionId;
+          break;
+        }
+      }
+
+      return new this.subscriptionModel(newSubscription).save();
     }
   }
 
@@ -206,5 +239,29 @@ export class SubscriptionService {
     return (
       price?.limits?.[limitType]?.amount || plan?.limits?.[limitType]?.amount
     );
+  }
+
+  getPaymentItem(priceId: string): IPaymentItem {
+    const planPrice = this.getApiSubscriptionPlanPrice(priceId);
+    const limitIncreaseParams = this.getLimitIncreaseParams(priceId);
+    let paymentItem;
+
+    if (planPrice) {
+      paymentItem = {
+        type: PaymentItemTypeEnum.SubscriptionPrice,
+        item: planPrice.price,
+      };
+    } else if (limitIncreaseParams) {
+      paymentItem = {
+        type: PaymentItemTypeEnum.LimitIncrease,
+        item: limitIncreaseParams,
+      };
+    }
+
+    if (!paymentItem) {
+      throw new HttpException('Payment item not found!', 400);
+    }
+
+    return paymentItem;
   }
 }

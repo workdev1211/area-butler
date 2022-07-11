@@ -1,9 +1,9 @@
 import {
   ApiDataSource,
-  ApiSubscriptionPlan,
   ApiSubscriptionIntervalEnum,
-  ApiSubscriptionPlanType,
   ApiSubscriptionLimitsEnum,
+  ApiSubscriptionPlan,
+  ApiSubscriptionPlanType,
   IApiSubscriptionLimitIncreaseParams,
 } from "../types/subscription-plan";
 
@@ -22,7 +22,7 @@ export const allSubscriptionTypes: {
   // { type: ApiSubscriptionPlanType.ENTERPRISE, name: "Enterprise" },
 ];
 
-// Number of requests (addresses) is set for each month
+// Number of requests (addresses) is set on monthly basis
 export const cumulativeRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.BUSINESS_PLUS,
   ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
@@ -35,6 +35,13 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.PAY_PER_USE_10,
 ];
 
+const subscriptionIntervals = {
+  [ApiSubscriptionIntervalEnum.Monthly]: { value: 1, unit: "month" },
+  [ApiSubscriptionIntervalEnum.Annually]: { value: 1, unit: "year" },
+  [ApiSubscriptionIntervalEnum.TwelveWeeks]: { value: 12, unit: "weeks" },
+  [ApiSubscriptionIntervalEnum.Quarterly]: { value: 3, unit: "months" },
+};
+
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   {
     id: {
@@ -43,6 +50,7 @@ const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
     },
     amount: { value: 1 },
     name: "Abfrage Kontingent",
+    price: "39",
     description:
       "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 39,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
@@ -53,6 +61,7 @@ const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
     },
     amount: { value: 5 },
     name: "Abfrage Kontingent",
+    price: "156",
     description:
       "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 156,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
@@ -63,6 +72,7 @@ const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
     },
     amount: { value: 10 },
     name: "Abfrage Kontingent",
+    price: "232",
     description:
       "Ihr aktuelles Adress-Kontingent ist aufgebraucht und lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 232,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan.",
   },
@@ -94,7 +104,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
       footnote:
         '<strong>*</strong> 58,31€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 12 € inkl. MwSt optional möglich.',
       purchaseButtonLabel: "Elnzelabfrage kaufen",
-      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Annually],
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
           amount: { value: 1 },
@@ -110,6 +120,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
               },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
+              price: "10",
               description:
                 "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 10,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
@@ -151,7 +162,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
       footnote:
         '<strong>*</strong> 226,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 10 € inkl. MwSt optional möglich.',
       purchaseButtonLabel: "5er Karte kaufen",
-      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Annually],
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
           amount: { value: 5 },
@@ -167,6 +178,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
               },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
+              price: "8",
               description:
                 "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 8,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
@@ -208,7 +220,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
       footnote:
         '<strong>*</strong> 345,1€ total inkl. MwSt. Die gekauften Einzelabfragen haben eine Gültigkeit von 12 Monaten und müssen in dieser Zeit verbraucht werden. Nicht verbrauchte Adressen verfallen. Die iFrames/Widgets aus den "Pay per Use" Plänen werden für 12 Wochen, nach Veröffentlichung durch den User im AreaButler Karten-Editor, online gehosted. Eine Verlängerung dieses Zeitraums ist für 6 € inkl. MwSt optional möglich.',
       purchaseButtonLabel: "10er Karte kaufen",
-      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Annually],
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
           amount: { value: 10 },
@@ -224,6 +236,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
               },
               amount: { value: 4, unit: "weeks" },
               name: "Adressablauf Kontingent",
+              price: "5",
               description:
                 "Ihre aktuelle Online-Hosting-Zeit ist aufgebraucht und erlaubt es nicht mit iFrames / Snippets zu arbeiten. Bitte erwerben Sie ein weiteres Kontingent für 5,00 € (zzgl. MwSt.) oder upgraden Sie auf einen höheren Plan.",
             },
@@ -262,7 +275,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
       },
       name: "Per 500",
       price: "250",
-      interval: ApiSubscriptionIntervalEnum.MONTHLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Monthly],
     },
     {
       id: {
@@ -271,7 +284,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
       },
       name: "Per 500",
       price: "2750",
-      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Annually],
     },
   ],
   limits: {
@@ -285,6 +298,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
           },
           amount: { value: 100 },
           name: "Abfrage Kontingent",
+          price: "30",
           description:
             "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 30,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
         },
@@ -321,6 +335,7 @@ const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
       },
       amount: { value: 50 },
       name: "Abfrage Kontingent",
+      price: "125",
       description:
         "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
     },
@@ -341,7 +356,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
       vatStatus: "Monat zzgl. MwSt",
       footnote:
         "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt. Die initiale Mindestvertragslaufzeit beträgt 3 Monate, danach monatlich kündbar.",
-      interval: ApiSubscriptionIntervalEnum.QUARTERLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Monthly],
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
           amount: { value: 100 },
@@ -362,7 +377,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
       vatStatus: "Jahr zzgl. MwSt",
       footnote:
         "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
-      interval: ApiSubscriptionIntervalEnum.ANNUALLY,
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.Annually],
       limits: {
         [ApiSubscriptionLimitsEnum.NumberOfRequests]: {
           amount: { value: 250 },
@@ -408,3 +423,11 @@ export const allSubscriptions: Record<
   // TODO will be released later
   // [ApiSubscriptionPlanType.ENTERPRISE]: enterpriseSubscription,
 };
+
+export const stripeToPaypalPriceIdMapping = new Map([
+  [payPerUse1Subscription.prices[0].id.dev, "P-17K48145Y7328734UMLFO4RY"],
+  [payPerUse5Subscription.prices[0].id.dev, "P-7YD09266W3894572UMLFO2UY"],
+  [payPerUse10Subscription.prices[0].id.dev, "P-34474291VV339831KMLFO5CA"],
+  [businessPlusV2Subscription.prices[0].id.dev, "P-45809131KX012483RMLCGSTI"], // monthly
+  [businessPlusV2Subscription.prices[1].id.dev, "P-68T51639N10206632MLCGTCI"], // yearly
+]);

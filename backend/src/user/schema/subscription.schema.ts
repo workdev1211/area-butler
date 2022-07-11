@@ -29,8 +29,12 @@ export class Subscription {
   @Prop({ type: Date, required: true })
   endsAt: Date;
 
-  @Prop({ required: true })
+  // the id of the user specific subscription, not the product id from the Stripe dashboard
+  @Prop()
   stripeSubscriptionId: string;
+
+  @Prop()
+  paypalSubscriptionId: string;
 
   @Prop({ required: true })
   stripePriceId: string;

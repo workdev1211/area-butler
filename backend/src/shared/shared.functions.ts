@@ -17,3 +17,6 @@ export const randomizeCoordinates = ({
     lng: lng + d2,
   };
 };
+
+export const getRawPriceValue = (priceValue: string) =>
+  priceValue.replace('.', '');

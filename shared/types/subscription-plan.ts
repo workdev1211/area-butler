@@ -7,12 +7,13 @@ export interface ApiUserSubscription {
 }
 
 export enum ApiSubscriptionIntervalEnum {
-  MONTHLY = "monthly",
-  ANNUALLY = "annually",
-  TWELVE_WEEKS = "twelveWeeks",
-  QUARTERLY = "quarterly",
+  Monthly = "monthly",
+  Annually = "annually",
+  TwelveWeeks = "twelveWeeks",
+  Quarterly = "quarterly",
 }
 
+// TODO think about splitting into Stripe and PayPal
 export interface IApiSubscriptionEnvIds {
   dev?: string;
   prod?: string;
@@ -23,10 +24,13 @@ export interface IApiSubscriptionLimitAmount {
   unit?: string;
 }
 
+// TODO think about making two "prices" - the value itself and its text representation
 export interface IApiSubscriptionLimitIncreaseParams {
   id: IApiSubscriptionEnvIds;
   amount: IApiSubscriptionLimitAmount;
   name: string;
+  type?: ApiSubscriptionLimitsEnum;
+  price: string;
   description: string;
 }
 
@@ -67,7 +71,7 @@ export interface ApiSubscriptionPricing {
   id: IApiSubscriptionEnvIds;
   name?: string;
   price: string;
-  interval: ApiSubscriptionIntervalEnum;
+  interval: IApiSubscriptionLimitAmount;
   limits?: IApiSubscriptionLimits;
   description?: string[];
   vatStatus?: string;
@@ -76,6 +80,7 @@ export interface ApiSubscriptionPricing {
 }
 
 export interface ApiSubscriptionPlan {
+  id?: IApiSubscriptionEnvIds;
   name: string;
   type: ApiSubscriptionPlanType;
   prices: ApiSubscriptionPricing[];
@@ -108,4 +113,9 @@ export enum ApiDataSource {
   CENSUS = "CENSUS",
   FEDERAL_ELECTION = "FEDERAL_ELECTION",
   PARTICLE_POLLUTION = "PARTICLE_POLLUTION",
+}
+
+export enum PaymentSystemTypeEnum {
+  Stripe = "stripe",
+  PayPal = "paypal",
 }

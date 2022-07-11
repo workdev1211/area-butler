@@ -121,6 +121,12 @@ export class UserService {
     return this.userModel.findOne({ stripeCustomerId });
   }
 
+  async findByPaypalCustomerId(
+    paypalCustomerId: string,
+  ): Promise<UserDocument> {
+    return this.userModel.findOne({ paypalCustomerId });
+  }
+
   async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById({ _id: id });
   }

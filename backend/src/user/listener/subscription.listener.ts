@@ -10,6 +10,7 @@ import {
 } from '../../event/event.types';
 import { SubscriptionService } from '../subscription.service';
 import { UserService } from '../user.service';
+import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class SubscriptionListener {
@@ -21,18 +22,29 @@ export class SubscriptionListener {
 
   @OnEvent(EventType.SUBSCRIPTION_UPSERT_EVENT, { async: true })
   private async handleSubscriptionUpsertEvent({
-    stripeCustomerId,
-    stripePriceId,
-    stripeSubscriptionId,
+    customerId,
+    subscriptionId,
+    priceId,
     endsAt,
+    paymentSystemType,
   }: SubscriptionCreateEvent): Promise<void> {
-    const user = await this.userService.findByStripeCustomerId(
-      stripeCustomerId,
-    );
+    let user;
+
+    switch (paymentSystemType) {
+      case PaymentSystemTypeEnum.Stripe: {
+        user = await this.userService.findByStripeCustomerId(customerId);
+        break;
+      }
+
+      case PaymentSystemTypeEnum.PayPal: {
+        user = await this.userService.findByPaypalCustomerId(customerId);
+        break;
+      }
+    }
 
     const {
       plan: { type },
-    } = this.subscriptionService.getApiSubscriptionPlanPrice(stripePriceId);
+    } = this.subscriptionService.getApiSubscriptionPlanPrice(priceId);
 
     if (!user || !type) {
       return;
@@ -41,9 +53,10 @@ export class SubscriptionListener {
     await this.subscriptionService.upsertByUserId(
       user._id,
       type,
-      stripeSubscriptionId,
-      stripePriceId,
+      subscriptionId,
+      priceId,
       endsAt,
+      paymentSystemType,
     );
 
     await this.userService.setRequestContingents(user, endsAt);
@@ -76,12 +89,18 @@ export class SubscriptionListener {
 
   @OnEvent(EventType.REQUEST_CONTINGENT_INCREASE_EVENT, { async: true })
   private async handleRequestContingentIncreaseEvent({
-    stripeCustomerId,
+    customer: { stripeCustomerId, email },
     amount,
   }: ILimitIncreaseEvent): Promise<void> {
-    const user = await this.userService.findByStripeCustomerId(
-      stripeCustomerId,
-    );
+    let user;
+
+    if (stripeCustomerId) {
+      user = await this.userService.findByStripeCustomerId(stripeCustomerId);
+    }
+
+    if (email) {
+      user = await this.userService.findByEmail(email);
+    }
 
     if (user) {
       await this.userService.addRequestContingentIncrease(user, amount.value);

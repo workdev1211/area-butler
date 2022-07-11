@@ -1,6 +1,9 @@
 import { UserDocument } from '../user/schema/user.schema';
 import { ILimitIncreaseMetadata } from '@area-butler-types/billing';
-import { IApiSubscriptionLimitAmount } from '@area-butler-types/subscription-plan';
+import {
+  IApiSubscriptionLimitAmount,
+  PaymentSystemTypeEnum,
+} from '@area-butler-types/subscription-plan';
 
 export enum EventType {
   USER_CREATED_EVENT = 'USER_CREATED_EVENT',
@@ -16,15 +19,16 @@ export interface UserEvent {
 }
 
 export interface SubscriptionCreateEvent {
-  stripeCustomerId: string;
-  stripePriceId: string;
-  stripeSubscriptionId: string;
+  customerId: string;
+  subscriptionId?: string;
+  priceId: string;
   endsAt: Date;
+  paymentSystemType: PaymentSystemTypeEnum;
 }
 
 export interface ILimitIncreaseEvent {
-  stripeCustomerId?: string;
   amount: IApiSubscriptionLimitAmount;
+  customer?: { stripeCustomerId?: string; email?: string };
   metadata?: ILimitIncreaseMetadata;
 }
 

@@ -50,6 +50,9 @@ services:
       - ROLLBAR_ACCESS_TOKEN
       - ROLLBAR_ENVIRONMENT
       - CI_COMMIT_SHORT_SHA
+      - PAYPAL_CLIENT_ID
+      - PAYPAL_CLIENT_SECRET
+      - PAYPAL_WEBHOOK_ID
     labels:
       - 'traefik.docker.network=web'
       - 'traefik.http.middlewares.redirect.redirectscheme.scheme=https'

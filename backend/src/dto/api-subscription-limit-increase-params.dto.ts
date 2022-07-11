@@ -1,12 +1,15 @@
 import {
+  IsEnum,
   IsNotEmpty,
   IsObject,
+  IsOptional,
   IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
+  ApiSubscriptionLimitsEnum,
   IApiSubscriptionEnvIds,
   IApiSubscriptionLimitAmount,
   IApiSubscriptionLimitIncreaseParams,
@@ -32,6 +35,14 @@ class ApiSubscriptionLimitIncreaseParamsDto
   @IsNotEmpty()
   @IsString()
   name: string;
+
+  @IsOptional()
+  @IsEnum(ApiSubscriptionLimitsEnum)
+  type?: ApiSubscriptionLimitsEnum;
+
+  @IsNotEmpty()
+  @IsString()
+  price: string;
 
   @IsNotEmpty()
   @IsString()

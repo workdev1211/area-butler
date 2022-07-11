@@ -20,7 +20,7 @@ export class User {
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date })
   consentGiven: Date;
 
   @Prop({ type: Number, default: 0 })
@@ -29,28 +29,31 @@ export class User {
   @Prop({ type: Array, default: [] })
   requestContingents: ApiRequestContingent[];
 
-  @Prop({ required: false })
+  @Prop()
   stripeCustomerId: string;
+
+  @Prop()
+  paypalCustomerId: string;
 
   @Prop({ type: Object, default: { ...initialShowTour } })
   showTour: ApiShowTour;
 
-  @Prop({ required: false })
+  @Prop()
   logo: string;
 
-  @Prop({ required: false })
+  @Prop()
   mapIcon: string;
 
-  @Prop({ required: false })
+  @Prop()
   color: string;
 
-  @Prop({ required: false })
+  @Prop()
   mapboxAccessToken: string;
 
-  @Prop({ required: false, type: Array, default: [] })
+  @Prop({ type: Array, default: [] })
   allowedUrls: string[];
 
-  @Prop({ required: false, type: Array, default: [] })
+  @Prop({ type: Array, default: [] })
   additionalMapBoxStyles: { key: string; label: string }[];
 }
 
@@ -68,4 +71,4 @@ export const retrieveTotalRequestContingent = (
   );
 };
 
-export const Userschema = SchemaFactory.createForClass(User);
+export const UserSchema = SchemaFactory.createForClass(User);

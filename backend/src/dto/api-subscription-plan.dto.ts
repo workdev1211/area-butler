@@ -13,12 +13,20 @@ import {
   ApiDataSource,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
+  IApiSubscriptionEnvIds,
   IApiSubscriptionLimits,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionPricingDto from './api-subscription-pricing.dto';
 import ApiSubscriptionLimitsDto from './api-subscription-limits.dto';
+import ApiSubscriptionEnvIdsDto from './api-subscription-env-ids.dto';
 
 class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiSubscriptionEnvIdsDto)
+  id?: IApiSubscriptionEnvIds;
+
   @IsNotEmpty()
   @IsString()
   name: string;

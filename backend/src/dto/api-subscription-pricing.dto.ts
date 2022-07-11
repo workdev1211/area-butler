@@ -3,20 +3,20 @@ import {
   IsOptional,
   IsObject,
   IsString,
-  IsEnum,
   ValidateNested,
   IsArray,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
-  ApiSubscriptionIntervalEnum,
   ApiSubscriptionPricing,
   IApiSubscriptionEnvIds,
+  IApiSubscriptionLimitAmount,
   IApiSubscriptionLimits,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionLimitsDto from './api-subscription-limits.dto';
 import ApiSubscriptionEnvIdsDto from './api-subscription-env-ids.dto';
+import ApiSubscriptionLimitAmountDto from './api-subscription-limit-amount.dto';
 
 class ApiSubscriptionPricingDto implements ApiSubscriptionPricing {
   @IsNotEmpty()
@@ -34,8 +34,10 @@ class ApiSubscriptionPricingDto implements ApiSubscriptionPricing {
   price: string;
 
   @IsNotEmpty()
-  @IsEnum(ApiSubscriptionIntervalEnum)
-  interval: ApiSubscriptionIntervalEnum;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiSubscriptionLimitAmountDto)
+  interval: IApiSubscriptionLimitAmount;
 
   @IsOptional()
   @IsObject()

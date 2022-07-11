@@ -84,6 +84,7 @@ class ConfigService {
     return this.getValue('HERE_API_KEY');
   }
 
+  // TODO rename to the "paymentEnv"
   public getStripeEnv(): 'dev' | 'prod' {
     const env = this.getValue('STRIPE_ENV');
     return env === 'prod' ? 'prod' : 'dev';
@@ -99,6 +100,14 @@ class ConfigService {
 
   public getStripeTaxId(): string {
     return this.getValue('STRIPE_TAX_ID');
+  }
+
+  getPaypalClientId(): string {
+    return this.getValue('PAYPAL_CLIENT_ID');
+  }
+
+  getPaypalClientSecret(): string {
+    return this.getValue('PAYPAL_CLIENT_SECRET');
   }
 
   public getJwtRolesClaim(): string {

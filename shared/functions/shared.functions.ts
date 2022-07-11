@@ -6,3 +6,15 @@ export const groupBy = (xs: any, f: any): Record<string, any> =>
     ),
     {}
   );
+
+export const getBidirectionalMapping = <R, T>(
+  mapping: Map<R, T>
+): Map<R | T, T | R> => {
+  return new Map(
+    [...mapping].reduce((result, [key, value]) => {
+      result.push([key, value], [value, key]);
+
+      return result;
+    }, [])
+  );
+};
