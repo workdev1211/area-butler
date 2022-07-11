@@ -1,10 +1,18 @@
+import {
+  FunctionComponent,
+  lazy,
+  Suspense,
+  useContext,
+  useEffect,
+} from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { PayPalScriptProvider } from "@paypal/react-paypal-js";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+
 import FormModal, { ModalConfig } from "components/FormModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import React, { lazy, Suspense, useContext, useEffect } from "react";
-import { Route, Switch, useHistory, useLocation } from "react-router-dom";
-import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
@@ -36,16 +44,16 @@ const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
 
 const SearchResultPage = lazy(() => import("./pages/SearchResultPage"));
 
-const PotentialCustomersPage = lazy(() =>
-  import("./pages/PotentialCustomersPage")
+const PotentialCustomersPage = lazy(
+  () => import("./pages/PotentialCustomersPage")
 );
 
-const PotentialCustomerPage = lazy(() =>
-  import("./pages/PotentialCustomerPage")
+const PotentialCustomerPage = lazy(
+  () => import("./pages/PotentialCustomerPage")
 );
 
-const CustomerQuestionnairePage = lazy(() =>
-  import("./pages/CustomerQuestionnairePage")
+const CustomerQuestionnairePage = lazy(
+  () => import("./pages/CustomerQuestionnairePage")
 );
 
 const RealEstatesPage = lazy(() => import("./pages/RealEstatesPage"));
@@ -64,10 +72,22 @@ const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
   buttonStyle:
     "fixed -bottom-80 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white",
-  modalTitle: "Hilfe & Feedback"
+  modalTitle: "Hilfe & Feedback",
 };
 
-const ScrollToTop: React.FunctionComponent = () => {
+const initialPaypalOptions = {
+  "client-id": "test",
+  components: "buttons",
+  currency: "EUR",
+  // for Order payments
+  // intent: "capture",
+  // for Subscription payments
+  intent: "subscription",
+  // for Subscription payments
+  vault: true,
+};
+
+const ScrollToTop: FunctionComponent = () => {
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -89,36 +109,44 @@ function App() {
       const validateEmailVerified = async () => {
         const idToken = await getIdTokenClaims();
         const { email_verified } = idToken;
+
         if (!email_verified) {
           history.push("/verify");
         }
       };
+
       const consumeConsentGiven = async () => {
         try {
           const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
             .data;
+
           userDispatch({
             type: UserActionTypes.SET_USER,
-            payload: updatedUser
+            payload: updatedUser,
           });
+
           localStorage.removeItem(localStorageConsentGivenKey);
         } catch (error) {
           console.error(error);
         }
       };
+
       const fetchUser = async () => {
         const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
         userDispatch({ type: UserActionTypes.SET_USER, payload: user });
+
         const latestUserRequests: ApiUserRequests = (
           await get<ApiUserRequests>("/api/location/latest-user-requests")
         ).data;
+
         userDispatch({
           type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-          payload: latestUserRequests
+          payload: latestUserRequests,
         });
       };
 
       validateEmailVerified();
+
       if (localStorage.getItem(localStorageConsentGivenKey) === "true") {
         consumeConsentGiven();
       } else {
@@ -152,87 +180,90 @@ function App() {
               <FeedbackFormHandler />
             </FormModal>
           </Authenticated>
-          <PotentialCustomerContextProvider>
-            <RealEstateContextProvider>
-              <SearchContextProvider>
-                <Switch>
-                  <Route path="/register">
-                    <Auth0ConsentPage />
-                  </Route>
-                  <Route path="/verify">
-                    <Authenticated>
-                      <VerifyEmailPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/profile">
-                    <Authenticated>
-                      <UserProfilePage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/callback">
-                    <Authenticated>
-                      <CallbackPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/impress">
-                    <ImpressPage />
-                  </Route>
-                  <Route path="/privacy">
-                    <PrivacyPage />
-                  </Route>
-                  <Route path="/terms">
-                    <TermsPage />
-                  </Route>
-                  <Route path="/search-result">
-                    <Authenticated>
-                      <SearchResultPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/snippet-editor/:snapshotId">
-                    <Authenticated>
-                      <SnippetEditorPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/potential-customers/:customerId">
-                    <Authenticated>
-                      <PotentialCustomerPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/potential-customers">
-                    <Authenticated>
-                      <PotentialCustomersPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/questionnaire/:inputToken">
-                    <CustomerQuestionnairePage />
-                  </Route>
-                  <Route path="/real-estates/:realEstateId">
-                    <Authenticated>
-                      <RealEstatePage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/real-estates">
-                    <Authenticated>
-                      <RealEstatesPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/search">
-                    <Authenticated>
-                      <SearchParamsPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/map-snippets">
-                    <Authenticated>
-                      <MapSnippetsPage />
-                    </Authenticated>
-                  </Route>
-                  <Route path="/">
-                    <LoginPage />
-                  </Route>
-                </Switch>
-              </SearchContextProvider>
-            </RealEstateContextProvider>
-          </PotentialCustomerContextProvider>
+          <PayPalScriptProvider options={initialPaypalOptions}>
+            <PotentialCustomerContextProvider>
+              <RealEstateContextProvider>
+                <SearchContextProvider>
+                  <Switch>
+                    <Route path="/register">
+                      <Auth0ConsentPage />
+                    </Route>
+                    <Route path="/verify">
+                      <Authenticated>
+                        <VerifyEmailPage />
+                      </Authenticated>
+                    </Route>
+                    {/*Subscription Selection*/}
+                    <Route path="/profile">
+                      <Authenticated>
+                        <UserProfilePage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/callback">
+                      <Authenticated>
+                        <CallbackPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/impress">
+                      <ImpressPage />
+                    </Route>
+                    <Route path="/privacy">
+                      <PrivacyPage />
+                    </Route>
+                    <Route path="/terms">
+                      <TermsPage />
+                    </Route>
+                    <Route path="/search-result">
+                      <Authenticated>
+                        <SearchResultPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/snippet-editor/:snapshotId">
+                      <Authenticated>
+                        <SnippetEditorPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/potential-customers/:customerId">
+                      <Authenticated>
+                        <PotentialCustomerPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/potential-customers">
+                      <Authenticated>
+                        <PotentialCustomersPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/questionnaire/:inputToken">
+                      <CustomerQuestionnairePage />
+                    </Route>
+                    <Route path="/real-estates/:realEstateId">
+                      <Authenticated>
+                        <RealEstatePage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/real-estates">
+                      <Authenticated>
+                        <RealEstatesPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/search">
+                      <Authenticated>
+                        <SearchParamsPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/map-snippets">
+                      <Authenticated>
+                        <MapSnippetsPage />
+                      </Authenticated>
+                    </Route>
+                    <Route path="/">
+                      <LoginPage />
+                    </Route>
+                  </Switch>
+                </SearchContextProvider>
+              </RealEstateContextProvider>
+            </PotentialCustomerContextProvider>
+          </PayPalScriptProvider>
         </Suspense>
         <Footer />
       </div>

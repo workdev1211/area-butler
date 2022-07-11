@@ -15,6 +15,7 @@ import {
   ApiUserSubscription,
 } from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
+import PaymentMethodModal from "./PaymentMethodModal";
 
 interface ISubscriptionPlan {
   stripePriceId: string;
@@ -31,7 +32,7 @@ type TSubscriptionPlanGroups = {
 };
 
 const SubscriptionPlanSelection: FunctionComponent = () => {
-  const { get, post } = useHttp();
+  const { get } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
 
   const [hadPreviousSubscriptionPlans, setHadPreviousSubscriptionPlans] =
@@ -49,6 +50,8 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
   const [isMounted, setIsMounted] = useState(true);
   const [shouldRender, setShouldRender] = useState(false);
+  const [isShownPaymentModal, setIsShownPaymentModal] = useState(false);
+  const [paymentStripePriceId, setPaymentStripePriceId] = useState("");
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -139,21 +142,12 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       {
         [ApiSubscriptionPlanTypeGroupEnum.PayPerUse]: [],
         [ApiSubscriptionPlanTypeGroupEnum.BusinessPlus]: [],
-      }
+      } as TSubscriptionPlanGroups
     );
 
     setSortedSubscriptionPlans(resultingSubscriptionPlans);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  const forwardToCheckoutUrl = async (priceId: string) => {
-    window.location.href = (
-      await post<string>("/api/billing/create-checkout-url", {
-        priceId,
-        trialPeriod: TRIAL_DAYS,
-      })
-    ).data;
-  };
 
   const SubscriptionPlanCard: FunctionComponent<ISubscriptionPlan> = ({
     stripePriceId,
@@ -198,7 +192,10 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
             />
           )}
           <button
-            onClick={() => forwardToCheckoutUrl(stripePriceId)}
+            onClick={() => {
+              setPaymentStripePriceId(stripePriceId);
+              setIsShownPaymentModal(true);
+            }}
             className="btn bg-primary-gradient w-56 self-center mt-5"
           >
             {purchaseButtonLabel || "Abonnieren"}
@@ -225,6 +222,14 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
   return (
     <div className="mt-20 flex flex-col gap-5">
+      {isShownPaymentModal && (
+        <PaymentMethodModal
+          stripePriceId={paymentStripePriceId}
+          closeModal={() => {
+            setIsShownPaymentModal(false);
+          }}
+        />
+      )}
       <div>
         <h1 className="font-bold text-xl">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives

@@ -1,11 +1,4 @@
-import {
-  memo,
-  useCallback,
-  useEffect,
-  useState,
-  useContext,
-  useReducer,
-} from "react";
+import { memo, useCallback, useEffect, useState, useContext } from "react";
 import center from "@turf/center";
 import { toJpeg } from "html-to-image";
 
