@@ -33,6 +33,7 @@ export interface ILimitIncreaseEvent {
 }
 
 export interface SubscriptionRenewEvent {
-  stripeCustomerId: string;
-  stripeSubscriptionId: string;
+  customerId?: string;
+  subscriptionId: string;
+  paymentSystemType: PaymentSystemTypeEnum;
 }

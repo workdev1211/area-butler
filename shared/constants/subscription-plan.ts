@@ -6,6 +6,7 @@ import {
   ApiSubscriptionPlanType,
   IApiSubscriptionLimitIncreaseParams,
 } from "../types/subscription-plan";
+import { getBidirectionalMapping } from "../functions/shared.functions";
 
 export const TRIAL_DAYS = 2;
 
@@ -424,10 +425,14 @@ export const allSubscriptions: Record<
   // [ApiSubscriptionPlanType.ENTERPRISE]: enterpriseSubscription,
 };
 
-export const stripeToPaypalPriceIdMapping = new Map([
+const stripeToPaypalPriceIdInnerMapping = new Map([
   [payPerUse1Subscription.prices[0].id.dev, "P-17K48145Y7328734UMLFO4RY"],
   [payPerUse5Subscription.prices[0].id.dev, "P-7YD09266W3894572UMLFO2UY"],
   [payPerUse10Subscription.prices[0].id.dev, "P-34474291VV339831KMLFO5CA"],
   [businessPlusV2Subscription.prices[0].id.dev, "P-45809131KX012483RMLCGSTI"], // monthly
   [businessPlusV2Subscription.prices[1].id.dev, "P-68T51639N10206632MLCGTCI"], // yearly
 ]);
+
+export const stripeToPaypalPriceIdMapping = getBidirectionalMapping(
+  stripeToPaypalPriceIdInnerMapping
+);

@@ -24,7 +24,7 @@ import {
 
 @Injectable()
 export class SubscriptionService {
-  private logger: Logger = new Logger(SubscriptionService.name);
+  private readonly logger: Logger = new Logger(SubscriptionService.name);
 
   constructor(
     @InjectModel(Subscription.name)
@@ -124,15 +124,32 @@ export class SubscriptionService {
   }
 
   async renewSubscription(
-    stripeSubscriptionId: string,
+    subscriptionId: string,
     newEndDate: Date,
+    paymentSystemType: PaymentSystemTypeEnum,
   ): Promise<SubscriptionDocument> {
-    await this.subscriptionModel.updateOne(
-      { stripeSubscriptionId },
-      { $set: { endsAt: newEndDate } },
-    );
+    const findFilter: {
+      stripeSubscriptionId?: string;
+      paypalSubscriptionId?: string;
+    } = {};
 
-    return this.subscriptionModel.findOne({ stripeSubscriptionId });
+    switch (paymentSystemType) {
+      case PaymentSystemTypeEnum.Stripe: {
+        findFilter.stripeSubscriptionId = subscriptionId;
+        break;
+      }
+
+      case PaymentSystemTypeEnum.PayPal: {
+        findFilter.paypalSubscriptionId = subscriptionId;
+        break;
+      }
+    }
+
+    await this.subscriptionModel.updateOne(findFilter, {
+      $set: { endsAt: newEndDate },
+    });
+
+    return this.subscriptionModel.findOne(findFilter);
   }
 
   async findActiveByUserId(

@@ -34,6 +34,7 @@ import {
 import { PaypalService } from '../client/paypal/paypal.service';
 import { PaymentItemTypeEnum } from '../shared/subscription.types';
 import { configService } from '../config/config.service';
+import { PaypalWebhookEventTypeEnum } from '../shared/paypal.types';
 
 @Injectable()
 export class BillingService {
@@ -166,14 +167,11 @@ export class BillingService {
     const stripeCustomerId = payload.customer;
     const stripeSubscriptionId = payload.subscription;
 
-    const event: SubscriptionRenewEvent = {
-      stripeCustomerId,
-      stripeSubscriptionId,
-    };
-
-    if (stripeSubscriptionId) {
-      this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEW_EVENT, event);
-    }
+    this.emitSubscriptionRenewEvent({
+      customerId: stripeCustomerId,
+      subscriptionId: stripeSubscriptionId,
+      paymentSystemType: PaymentSystemTypeEnum.Stripe,
+    });
   }
 
   async createPaypalOrder(
@@ -339,6 +337,15 @@ export class BillingService {
     this.logger.log(
       `Consumed PayPal event with the type: ${webhookEvent.event_type}`,
     );
+
+    switch (webhookEvent.event_type) {
+      case PaypalWebhookEventTypeEnum.PaymentSaleCompleted: {
+        this.emitSubscriptionRenewEvent({
+          subscriptionId: webhookEvent.resource.billing_agreement_id,
+          paymentSystemType: PaymentSystemTypeEnum.PayPal,
+        });
+      }
+    }
   }
 
   private emitLimitIncreaseEvent(
@@ -398,5 +405,11 @@ export class BillingService {
       EventType.SUBSCRIPTION_UPSERT_EVENT,
       subscriptionUpsertEvent,
     );
+  }
+
+  private emitSubscriptionRenewEvent(event: SubscriptionRenewEvent) {
+    if (event.subscriptionId) {
+      this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEW_EVENT, event);
+    }
   }
 }
