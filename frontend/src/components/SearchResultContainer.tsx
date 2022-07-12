@@ -507,7 +507,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
             config={searchContextState.responseConfig}
             onPoiAdd={onPoiAdd}
             hideEntity={hideEntity}
-            centerZoomCoordinates={(zoom, coordinates) =>
+            centerZoomCoordinates={(zoom, coordinates) => {
               searchContextDispatch({
                 type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
                 payload: {
@@ -516,17 +516,17 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
                   },
                   zoom,
                 },
-              })
-            }
-            addMapClipping={(zoomLevel, mapClippingDataUrl) =>
+              });
+            }}
+            addMapClipping={(zoomLevel, mapClippingDataUrl) => {
               searchContextDispatch({
                 type: SearchContextActionTypes.ADD_MAP_CLIPPING,
                 payload: {
                   zoomLevel,
                   mapClippingDataUrl,
                 },
-              })
-            }
+              });
+            }}
             hideIsochrones={!!hideIsochrones}
             setHideIsochrones={setHideIsochrones}
             mapWithLegendId={mapWithLegendId}

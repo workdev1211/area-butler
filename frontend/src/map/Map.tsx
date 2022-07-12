@@ -558,7 +558,7 @@ const Map = memo<MapProps>(
     useEffect(() => {
       if (currentMap && mapCenter && mapZoomLevel) {
         // center and zoom view
-        currentMap.setView(mapCenter, mapZoomLevel);
+        // currentMap.setView(mapCenter, mapZoomLevel);
         // handle growing/shrinking of icons based on zoom level
         if (amenityMarkerGroup) {
           const markers = amenityMarkerGroup.getLayers() as IdMarker[];
