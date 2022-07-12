@@ -15,21 +15,18 @@ import {
 import { configService } from '../../config/config.service';
 import { getRawPriceValue } from '../../shared/shared.functions';
 import { IPaymentItem } from '../../shared/subscription.types';
-
-interface IPaypalAccessToken {
-  scope: string;
-  access_token: string;
-  token_type: string;
-  app_id: string;
-  expires_in: number;
-  nonce: string;
-}
+import {
+  IPaypalAccessToken,
+  IPaypalWebhookVerificationBody,
+  PaypalWebhookVerificationStatusEnum,
+} from '../../shared/paypal.types';
 
 @Injectable()
 export class PaypalService {
   private readonly paymentEnv = configService.getStripeEnv();
   private readonly paypalClientId = configService.getPaypalClientId();
   private readonly paypalClientSecret = configService.getPaypalClientSecret();
+  private readonly paypalWebhookId = configService.getPaypalWebhookId();
 
   private readonly baseUrl =
     this.paymentEnv === 'prod'
@@ -179,6 +176,33 @@ export class PaypalService {
         },
       ),
     );
+  }
+
+  async verifyWebhookSignature(
+    webhookVerificationBody: Partial<IPaypalWebhookVerificationBody<unknown>>,
+  ): Promise<void> {
+    const accessToken = await this.generateAccessToken();
+    const url = `${this.baseUrl}/v1/notifications/verify-webhook-signature`;
+    webhookVerificationBody.webhook_id = this.paypalWebhookId;
+
+    const {
+      data: { verification_status: verificationStatus },
+    } = await firstValueFrom<{
+      data: { verification_status: PaypalWebhookVerificationStatusEnum };
+    }>(
+      this.http.post<{
+        verification_status: PaypalWebhookVerificationStatusEnum;
+      }>(url, webhookVerificationBody, {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${accessToken}`,
+        },
+      }),
+    );
+
+    if (verificationStatus === PaypalWebhookVerificationStatusEnum.Failure) {
+      throw new HttpException('PayPal webhook verification failed!', 400);
+    }
   }
 
   // Could become useful later

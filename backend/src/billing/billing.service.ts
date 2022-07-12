@@ -316,6 +316,31 @@ export class BillingService {
     }`;
   }
 
+  async consumePaypalWebhook(request: any): Promise<void> {
+    const {
+      'paypal-auth-algo': authAlgo,
+      'paypal-cert-url': certUrl,
+      'paypal-transmission-id': transmissionId,
+      'paypal-transmission-sig': transmissionSig,
+      'paypal-transmission-time': transmissionTime,
+    } = request.headers;
+
+    const webhookEvent = request.body;
+
+    await this.paypalService.verifyWebhookSignature({
+      auth_algo: authAlgo,
+      cert_url: certUrl,
+      transmission_id: transmissionId,
+      transmission_sig: transmissionSig,
+      transmission_time: transmissionTime,
+      webhook_event: webhookEvent,
+    });
+
+    this.logger.log(
+      `Consumed PayPal event with the type: ${webhookEvent.event_type}`,
+    );
+  }
+
   private emitLimitIncreaseEvent(
     limitIncreaseParams: IApiSubscriptionLimitIncreaseParams,
     {

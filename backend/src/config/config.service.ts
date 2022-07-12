@@ -110,6 +110,10 @@ class ConfigService {
     return this.getValue('PAYPAL_CLIENT_SECRET');
   }
 
+  getPaypalWebhookId(): string {
+    return this.getValue('PAYPAL_WEBHOOK_ID');
+  }
+
   public getJwtRolesClaim(): string {
     return this.getValue('JWT_ROLES_CLAIM');
   }
