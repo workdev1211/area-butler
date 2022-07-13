@@ -205,30 +205,6 @@ export class PaypalService {
     }
   }
 
-  // Could become useful later
-  // Generate client token, needed for the card fields of advanced integration
-  // async generateClientToken() {
-  //   const accessToken = await this.generateAccessToken();
-  //
-  //   const {
-  //     data: { client_token: clientToken },
-  //   } = await firstValueFrom<{ data: { client_token: string } }>(
-  //     this.http.post<any>(
-  //       `${this.baseUrl}/v1/identity/generate-token`,
-  //       undefined,
-  //       {
-  //         headers: {
-  //           'Content-Type': 'application/json',
-  //           'Accept-Language': 'en_US',
-  //           Authorization: `Bearer ${accessToken}`,
-  //         },
-  //       },
-  //     ),
-  //   );
-  //
-  //   return clientToken;
-  // }
-
   // Generate access token
   private async generateAccessToken(): Promise<string> {
     const basicAuth = Buffer.from(
@@ -254,4 +230,49 @@ export class PaypalService {
 
     return accessToken;
   }
+
+  // Could become useful later
+  // async showPlanDetails(
+  //   planId: string,
+  // ): Promise<SubscriptionDetail['value']['plan']> {
+  //   const accessToken = await this.generateAccessToken();
+  //   const url = `${this.baseUrl}/v1/billing/plans/${planId}`;
+  //
+  //   const { data: planDetails } = await firstValueFrom<{
+  //     data: SubscriptionDetail['value']['plan'];
+  //   }>(
+  //     this.http.get<SubscriptionDetail['value']['plan']>(url, {
+  //       headers: {
+  //         'Content-Type': 'application/json',
+  //         Authorization: `Bearer ${accessToken}`,
+  //       },
+  //     }),
+  //   );
+  //
+  //   return planDetails;
+  // }
+
+  // Could become useful later
+  // Generate client token, needed for the card fields of advanced integration
+  // async generateClientToken() {
+  //   const accessToken = await this.generateAccessToken();
+  //
+  //   const {
+  //     data: { client_token: clientToken },
+  //   } = await firstValueFrom<{ data: { client_token: string } }>(
+  //     this.http.post<any>(
+  //       `${this.baseUrl}/v1/identity/generate-token`,
+  //       undefined,
+  //       {
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'Accept-Language': 'en_US',
+  //           Authorization: `Bearer ${accessToken}`,
+  //         },
+  //       },
+  //     ),
+  //   );
+  //
+  //   return clientToken;
+  // }
 }

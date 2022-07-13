@@ -123,6 +123,10 @@ export class SubscriptionService {
     return this.subscriptionModel.find({ userId });
   }
 
+  async countAllUserSubscriptions(userId: string): Promise<number> {
+    return this.subscriptionModel.count({ userId });
+  }
+
   async renewSubscription(
     subscriptionId: string,
     newEndDate: Date,

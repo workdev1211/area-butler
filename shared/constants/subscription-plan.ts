@@ -436,3 +436,11 @@ const stripeToPaypalPriceIdInnerMapping = new Map([
 export const stripeToPaypalPriceIdMapping = getBidirectionalMapping(
   stripeToPaypalPriceIdInnerMapping
 );
+
+export const paypalWithWoTrialPriceIdMapping = new Map([
+  ["P-17K48145Y7328734UMLFO4RY", "P-5LG886410T224820FMLHHYAQ"],
+  ["P-7YD09266W3894572UMLFO2UY", "P-4G735745B4688602UMLHHXTI"],
+  ["P-34474291VV339831KMLFO5CA", "P-8K1945607B4163147MLHHYMQ"],
+  ["P-45809131KX012483RMLCGSTI", "P-2PG60537FY898243FMLHHYYI"], // monthly
+  ["P-68T51639N10206632MLCGTCI", "P-4MF22929P7113410TMLHHZJY"], // yearly
+]);

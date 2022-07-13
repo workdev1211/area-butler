@@ -5,6 +5,7 @@ import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
 import {
+  paypalWithWoTrialPriceIdMapping,
   stripeToPaypalPriceIdMapping,
   TRIAL_DAYS,
 } from '../../../shared/constants/subscription-plan';
@@ -41,11 +42,11 @@ export class BillingService {
   private readonly logger = new Logger(BillingService.name);
 
   constructor(
-    private stripeService: StripeService,
-    private paypalService: PaypalService,
-    private subscriptionService: SubscriptionService,
-    private eventEmitter: EventEmitter2,
-    private slackSenderService: SlackSenderService,
+    private readonly stripeService: StripeService,
+    private readonly paypalService: PaypalService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly slackSenderService: SlackSenderService,
   ) {}
 
   async createCustomerPortalLink(user: UserDocument): Promise<string> {
@@ -220,7 +221,7 @@ export class BillingService {
     { _id: userId }: UserDocument,
     priceId: string,
   ): Promise<string> {
-    const paypalSubscriptionPlanId = stripeToPaypalPriceIdMapping.get(priceId);
+    let paypalSubscriptionPlanId = stripeToPaypalPriceIdMapping.get(priceId);
     const paymentItem = this.subscriptionService.getPaymentItem(priceId);
 
     if (
@@ -230,6 +231,12 @@ export class BillingService {
       throw new HttpException(
         'PayPal subscription not found or this is not a subscription!',
         400,
+      );
+    }
+
+    if (await this.subscriptionService.countAllUserSubscriptions(userId)) {
+      paypalSubscriptionPlanId = paypalWithWoTrialPriceIdMapping.get(
+        paypalSubscriptionPlanId,
       );
     }
 
