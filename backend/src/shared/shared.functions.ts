@@ -20,3 +20,6 @@ export const randomizeCoordinates = ({
 
 export const getRawPriceValue = (priceValue: string) =>
   priceValue.replace('.', '');
+
+export const getPriceValueWithVat = (priceValue: string) =>
+  `${Math.round(+priceValue * 119) / 100}`;

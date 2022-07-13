@@ -27,9 +27,10 @@ export interface SubscriptionCreateEvent {
 }
 
 export interface ILimitIncreaseEvent {
+  customerId?: string;
   amount: IApiSubscriptionLimitAmount;
-  customer?: { stripeCustomerId?: string; email?: string };
   metadata?: ILimitIncreaseMetadata;
+  paymentSystemType: PaymentSystemTypeEnum;
 }
 
 export interface SubscriptionRenewEvent {

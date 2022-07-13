@@ -76,7 +76,7 @@ const feedbackModalConfig: ModalConfig = {
 };
 
 const initialPaypalOptions = {
-  "client-id": "test",
+  "client-id": process.env.PAYPAL_CLIENT_ID || "test",
   components: "buttons",
   currency: "EUR",
   // for Order payments

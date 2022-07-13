@@ -6,6 +6,7 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { BillingService } from './billing.service';
+import { ILimitIncreaseMetadata } from '@area-butler-types/billing';
 
 @ApiTags('billing')
 @Controller('api/billing')
@@ -49,11 +50,16 @@ export class BillingController extends AuthenticatedController {
   async capturePaypalOrderPayment(
     @InjectUser() user: UserDocument,
     // TODO create DTOs
-    @Body() capturePaypalPayment: { orderId: string },
+    @Body()
+    capturePaypalPayment: {
+      orderId: string;
+      metadata?: ILimitIncreaseMetadata;
+    },
   ): Promise<string> {
     return this.billingService.capturePaypalOrderPayment(
       user,
       capturePaypalPayment.orderId,
+      capturePaypalPayment.metadata,
     );
   }
 

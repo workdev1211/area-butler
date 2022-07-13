@@ -15,13 +15,15 @@ import {
 import "./PaymentMethodModal.scss";
 import { useHttp } from "hooks/http";
 import CloseCross from "../assets/icons/cross.svg";
-import { TRIAL_DAYS } from "../../../shared/constants/subscription-plan";
 import { toastError } from "shared/shared.functions";
+import { ILimitIncreaseMetadata } from "../../../shared/types/billing";
 
-export interface PaymentMethodModalProps {
+interface PaymentMethodModalProps {
   stripePriceId: string;
   closeModal: () => void;
   isNotRecurring?: boolean;
+  stripeCheckoutUrl: string;
+  paymentMetadata?: ILimitIncreaseMetadata;
 }
 
 const paypalHandlersInitialState = {
@@ -34,10 +36,15 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
   stripePriceId,
   closeModal,
   isNotRecurring = false,
+  stripeCheckoutUrl,
+  paymentMetadata,
 }) => {
   const { post } = useHttp();
-  const [, setPaypalScriptSettings] = usePayPalScriptReducer();
+  const [paypalScriptSetting, setPaypalScriptSettings] =
+    usePayPalScriptReducer();
 
+  const [wasPaypalSetup, setWasPaypalSetup] = useState(false);
+  const [hasPaypalLoaded, setHasPaypalLoaded] = useState(false);
   const [paypalHandlers, setPaypalHandlers] = useState(
     paypalHandlersInitialState
   );
@@ -46,7 +53,11 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
     const currentPaypalHandlers = { ...paypalHandlersInitialState };
     const dispatchParams: ScriptReducerAction = {
       type: "resetOptions",
-      value: { "client-id": "test", components: "buttons", currency: "EUR" },
+      value: {
+        "client-id": process.env.PAYPAL_CLIENT_ID || "test",
+        components: "buttons",
+        currency: "EUR",
+      },
     };
 
     if (isNotRecurring) {
@@ -71,11 +82,12 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
             "/api/billing/capture-paypal-order-payment",
             {
               orderId: data.orderID,
+              metadata: paymentMetadata,
             }
           );
 
           closeModal();
-          window.location.href = redirectUrl || "";
+          window.location.href = redirectUrl;
         },
       });
     } else {
@@ -108,17 +120,28 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           );
 
           closeModal();
-          window.location.href = redirectUrl || "";
+          window.location.href = redirectUrl;
         },
       });
     }
 
     setPaypalHandlers(currentPaypalHandlers);
     setPaypalScriptSettings(dispatchParams);
+    setWasPaypalSetup(true);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isNotRecurring]);
 
-  return (
+  useEffect(() => {
+    // @ts-ignore
+    if (paypalScriptSetting.loadingStatus === "resolved" && wasPaypalSetup) {
+      setHasPaypalLoaded(true);
+      setWasPaypalSetup(false);
+    }
+
+    // @ts-ignore
+  }, [wasPaypalSetup, paypalScriptSetting.loadingStatus]);
+
+  return hasPaypalLoaded ? (
     <div className="payment-methods modal modal-open z-9999">
       <div className="modal-box">
         <div className="modal-header">
@@ -143,12 +166,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           <div
             className="other-payment-methods"
             onClick={async () => {
-              window.location.href = (
-                await post<string>("/api/billing/create-checkout-url", {
-                  priceId: stripePriceId,
-                  trialPeriod: TRIAL_DAYS,
-                })
-              ).data;
+              window.location.href = stripeCheckoutUrl;
             }}
           >
             Andere Methoden
@@ -156,7 +174,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
         </div>
       </div>
     </div>
-  );
+  ) : null;
 };
 
 export default PaymentMethodModal;

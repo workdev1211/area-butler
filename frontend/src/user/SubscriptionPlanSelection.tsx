@@ -32,7 +32,7 @@ type TSubscriptionPlanGroups = {
 };
 
 const SubscriptionPlanSelection: FunctionComponent = () => {
-  const { get } = useHttp();
+  const { get, post } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
 
   const [hadPreviousSubscriptionPlans, setHadPreviousSubscriptionPlans] =
@@ -52,6 +52,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   const [shouldRender, setShouldRender] = useState(false);
   const [isShownPaymentModal, setIsShownPaymentModal] = useState(false);
   const [paymentStripePriceId, setPaymentStripePriceId] = useState("");
+  const [stripeCheckoutUrl, setStripeCheckoutUrl] = useState("");
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout;
@@ -75,7 +76,8 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     };
 
     fetchSubscriptions();
-  }, [get, hadPreviousSubscriptionPlans]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hadPreviousSubscriptionPlans]);
 
   useEffect(() => {
     const getSubscriptionGroup = (
@@ -148,6 +150,24 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     setSortedSubscriptionPlans(resultingSubscriptionPlans);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  useEffect(() => {
+    const getStripeCheckoutUrl = async () => {
+      const innerStripeCheckoutUrl = (
+        await post<string>("/api/billing/create-checkout-url", {
+          priceId: paymentStripePriceId,
+          trialPeriod: TRIAL_DAYS,
+        })
+      ).data;
+
+      setStripeCheckoutUrl(innerStripeCheckoutUrl);
+    };
+
+    if (paymentStripePriceId) {
+      getStripeCheckoutUrl();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [paymentStripePriceId]);
 
   const SubscriptionPlanCard: FunctionComponent<ISubscriptionPlan> = ({
     stripePriceId,
@@ -228,6 +248,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
           closeModal={() => {
             setIsShownPaymentModal(false);
           }}
+          stripeCheckoutUrl={stripeCheckoutUrl}
         />
       )}
       <div>

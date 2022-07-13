@@ -13,13 +13,17 @@ import {
 } from '@paypal/paypal-js/types/apis/subscriptions/subscriptions';
 
 import { configService } from '../../config/config.service';
-import { getRawPriceValue } from '../../shared/shared.functions';
+import {
+  getPriceValueWithVat,
+  getRawPriceValue,
+} from '../../shared/shared.functions';
 import { IPaymentItem } from '../../shared/subscription.types';
 import {
   IPaypalAccessToken,
   IPaypalWebhookVerificationBody,
   PaypalWebhookVerificationStatusEnum,
 } from '../../shared/paypal.types';
+import { IApiSubscriptionLimitIncreaseParams } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class PaypalService {
@@ -38,7 +42,7 @@ export class PaypalService {
   // Create an order
   async createOrder(
     email: string,
-    { item: { id, price } }: IPaymentItem,
+    { id, price }: IApiSubscriptionLimitIncreaseParams,
   ): Promise<OrderResponseBody> {
     const accessToken = await this.generateAccessToken();
     const url = `${this.baseUrl}/v2/checkout/orders`;
@@ -54,7 +58,7 @@ export class PaypalService {
         {
           amount: {
             currency_code: 'EUR',
-            value: getRawPriceValue(price),
+            value: getPriceValueWithVat(getRawPriceValue(price)),
           },
           invoice_id: invoiceId,
           custom_id: id[this.paymentEnv],

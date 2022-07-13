@@ -1,6 +1,7 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import * as dayjs from 'dayjs';
+import { ManipulateType } from 'dayjs';
 
 import { StripeService } from '../../client/stripe/stripe.service';
 import {
@@ -14,7 +15,6 @@ import { UserService } from '../user.service';
 import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
 import { PaypalService } from '../../client/paypal/paypal.service';
 import { stripeToPaypalPriceIdMapping } from '../../../../shared/constants/subscription-plan';
-import { ManipulateType } from 'dayjs';
 
 @Injectable()
 export class SubscriptionListener {
@@ -134,17 +134,22 @@ export class SubscriptionListener {
 
   @OnEvent(EventType.REQUEST_CONTINGENT_INCREASE_EVENT, { async: true })
   private async handleRequestContingentIncreaseEvent({
-    customer: { stripeCustomerId, email },
+    customerId,
     amount,
+    paymentSystemType,
   }: ILimitIncreaseEvent): Promise<void> {
     let user;
 
-    if (stripeCustomerId) {
-      user = await this.userService.findByStripeCustomerId(stripeCustomerId);
-    }
+    switch (paymentSystemType) {
+      case PaymentSystemTypeEnum.Stripe: {
+        user = await this.userService.findByStripeCustomerId(customerId);
+        break;
+      }
 
-    if (email) {
-      user = await this.userService.findByEmail(email);
+      case PaymentSystemTypeEnum.PayPal: {
+        user = await this.userService.findByPaypalCustomerId(customerId);
+        break;
+      }
     }
 
     if (user) {

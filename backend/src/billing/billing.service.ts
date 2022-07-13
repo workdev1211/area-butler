@@ -120,11 +120,7 @@ export class BillingService {
   private async handleCheckoutSessionCompleted(eventData: Stripe.Event.Data) {
     const payload = eventData.object as any;
 
-    const {
-      id: checkoutSessionId,
-      customer: stripeCustomerId,
-      metadata,
-    } = payload;
+    const { id: checkoutSessionId, customer: customerId, metadata } = payload;
 
     const lineItems =
       await this.stripeService.fetchLineItemsFromCheckoutSession(
@@ -140,8 +136,9 @@ export class BillingService {
       // skips if there are no increase package items (adds the number of requests) in the checkout
       if (limitIncreaseParams) {
         this.emitLimitIncreaseEvent(limitIncreaseParams, {
-          customer: { stripeCustomerId },
+          customerId,
           metadata,
+          paymentSystemType: PaymentSystemTypeEnum.Stripe,
         });
       }
     }
@@ -179,22 +176,33 @@ export class BillingService {
     user: UserDocument,
     priceId: string,
   ): Promise<string> {
+    const paymentItem = this.subscriptionService.getPaymentItem(priceId);
+
+    if (paymentItem.type !== PaymentItemTypeEnum.LimitIncrease) {
+      throw new HttpException(
+        'Current payment item is not a limit increase one.',
+        400,
+      );
+    }
+
     const orderData = await this.paypalService.createOrder(
       user.email,
-      this.subscriptionService.getPaymentItem(priceId),
+      paymentItem.item as IApiSubscriptionLimitIncreaseParams,
     );
-
-    user.paypalCustomerId = orderData.payer.payer_id;
-    await user.save();
 
     return orderData.id;
   }
 
   async capturePaypalOrderPayment(
-    { email }: UserDocument,
+    user: UserDocument,
     orderId: string,
+    metadata?: ILimitIncreaseMetadata,
   ): Promise<string> {
     const capturedPayment = await this.paypalService.capturePayment(orderId);
+
+    this.logger.debug(
+      `Captured PayPal payment from the user ${capturedPayment.payer.payer_id} with the status ${capturedPayment.status}`,
+    );
 
     const paymentItem = this.subscriptionService.getPaymentItem(
       `${capturedPayment.purchase_units[0].payments.captures[0].custom_id}`,
@@ -207,14 +215,19 @@ export class BillingService {
       );
     }
 
+    user.paypalCustomerId = capturedPayment.payer.payer_id;
+    await user.save();
+
     this.emitLimitIncreaseEvent(
       paymentItem.item as IApiSubscriptionLimitIncreaseParams,
       {
-        customer: { email },
+        customerId: user.paypalCustomerId,
+        metadata,
+        paymentSystemType: PaymentSystemTypeEnum.PayPal,
       },
     );
 
-    return `${configService.getCallbackUrl()}?orderId=${capturedPayment.id}`;
+    return `${configService.getBaseAppUrl()}/profile`;
   }
 
   async createPaypalSubscription(
@@ -358,15 +371,18 @@ export class BillingService {
   private emitLimitIncreaseEvent(
     limitIncreaseParams: IApiSubscriptionLimitIncreaseParams,
     {
-      customer,
+      customerId,
       metadata,
+      paymentSystemType,
     }: {
-      customer?: { stripeCustomerId: string } | { email: string };
+      customerId: string;
+      paymentSystemType: PaymentSystemTypeEnum;
       metadata?: ILimitIncreaseMetadata;
     },
     quantity?: number,
   ) {
     const limitIncreaseEvent: ILimitIncreaseEvent = {
+      paymentSystemType,
       amount: { ...limitIncreaseParams.amount },
     };
 
@@ -378,7 +394,7 @@ export class BillingService {
       case ApiSubscriptionLimitsEnum.NumberOfRequests: {
         this.eventEmitter.emitAsync(
           EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
-          { ...limitIncreaseEvent, customer },
+          { ...limitIncreaseEvent, customerId },
         );
         break;
       }

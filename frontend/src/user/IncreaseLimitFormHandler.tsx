@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 
 import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
@@ -12,8 +12,10 @@ import {
 import IncreaseLimitForm from "./IncreaseLimitForm";
 import {
   ApiStripeCheckoutModeEnum,
+  ILimitIncreaseMetadata,
   LimitIncreaseModelNameEnum,
 } from "../../../shared/types/billing";
+import PaymentMethodModal from "./PaymentMethodModal";
 
 export interface ILimitIncreasePriceId {
   priceId: string;
@@ -31,7 +33,6 @@ export interface IIncreaseLimitFormHandlerProps {
   beforeSubmit?: () => void;
   postSubmit?: (success: boolean) => void;
   limitType: ApiSubscriptionLimitsEnum;
-  // TODO change to enum or whatever
   modelName?: LimitIncreaseModelNameEnum;
   modelId?: string;
 }
@@ -47,8 +48,18 @@ const IncreaseLimitFormHandler: FunctionComponent<
   modelId,
 }) => {
   const { post } = useHttp();
+
+  const [paymentStripePriceId, setPaymentStripePriceId] = useState("");
+  const [isShownPaymentModal, setIsShownPaymentModal] = useState(false);
+  const [paymentMetadata, setPaymentMetadata] =
+    useState<ILimitIncreaseMetadata>();
+  const [stripeCheckoutUrl, setStripeCheckoutUrl] = useState(
+    process.env.REACT_APP_BASE_URL || ""
+  );
+
   const { userState } = useContext(UserContext);
   const { stripeEnv } = useContext(ConfigContext);
+
   const user: ApiUser = userState.user!;
   const subscriptionPriceId = user.subscriptionPlan?.priceId;
   const subscriptionPlan = user.subscriptionPlan?.config;
@@ -81,16 +92,23 @@ const IncreaseLimitFormHandler: FunctionComponent<
         (param) => param.priceId === priceId
       );
 
-      window.location.href = (
-        await post<string>("/api/billing/create-checkout-url", {
-          priceId,
-          amount: selectedParams?.amount.value,
-          metadata: modelName && modelId ? { modelName, modelId } : undefined,
-          mode: ApiStripeCheckoutModeEnum.Payment,
-        })
-      ).data;
+      const metadata =
+        modelName && modelId ? { modelName, modelId } : undefined;
 
-      postSubmit(true);
+      setStripeCheckoutUrl(
+        (
+          await post<string>("/api/billing/create-checkout-url", {
+            priceId,
+            amount: selectedParams?.amount.value,
+            metadata,
+            mode: ApiStripeCheckoutModeEnum.Payment,
+          })
+        ).data
+      );
+
+      setPaymentStripePriceId(priceId);
+      setPaymentMetadata(metadata);
+      setIsShownPaymentModal(true);
     } catch (err) {
       console.log(err);
       toastError("Fehler bei der Erhöhung des Limits");
@@ -99,11 +117,25 @@ const IncreaseLimitFormHandler: FunctionComponent<
   };
 
   return filteredParams.length ? (
-    <IncreaseLimitForm
-      formId={formId!}
-      onSubmit={onSubmit}
-      limitIncreaseParams={filteredParams}
-    />
+    <>
+      {isShownPaymentModal && (
+        <PaymentMethodModal
+          stripePriceId={paymentStripePriceId}
+          closeModal={() => {
+            setIsShownPaymentModal(false);
+            postSubmit(true);
+          }}
+          stripeCheckoutUrl={stripeCheckoutUrl}
+          isNotRecurring={true}
+          paymentMetadata={paymentMetadata}
+        />
+      )}
+      <IncreaseLimitForm
+        formId={formId!}
+        onSubmit={onSubmit}
+        limitIncreaseParams={filteredParams}
+      />
+    </>
   ) : null;
 };
 
