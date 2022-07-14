@@ -18,6 +18,7 @@ export interface ApiConfig {
   mapBoxAccessToken: string;
   stripeEnv: "dev" | "prod";
   rollbarConfig: RollbarConfig;
+  paypalClientId: string;
 }
 
 export interface MapBoxStyle {

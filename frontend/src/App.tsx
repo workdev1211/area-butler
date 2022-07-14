@@ -25,6 +25,7 @@ import { SearchContextProvider } from "./context/SearchContext";
 import { useHttp } from "./hooks/http";
 import Footer from "./layout/Footer";
 import Nav from "./layout/Nav";
+import { ConfigContext } from "./context/ConfigContext";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -75,18 +76,6 @@ const feedbackModalConfig: ModalConfig = {
   modalTitle: "Hilfe & Feedback",
 };
 
-const initialPaypalOptions = {
-  "client-id": process.env.PAYPAL_CLIENT_ID || "test",
-  components: "buttons",
-  currency: "EUR",
-  // for Order payments
-  // intent: "capture",
-  // for Subscription payments
-  intent: "subscription",
-  // for Subscription payments
-  vault: true,
-};
-
 const ScrollToTop: FunctionComponent = () => {
   const { pathname } = useLocation();
 
@@ -102,7 +91,20 @@ function App() {
   const { get, post } = useHttp();
   const history = useHistory();
 
+  const { paypalClientId } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
+
+  const initialPaypalOptions = {
+    "client-id": paypalClientId || "test",
+    components: "buttons",
+    currency: "EUR",
+    // for Order payments
+    // intent: "capture",
+    // for Subscription payments
+    intent: "subscription",
+    // for Subscription payments
+    vault: true,
+  };
 
   useEffect(() => {
     if (isAuthenticated) {

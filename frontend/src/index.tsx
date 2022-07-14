@@ -1,10 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
+import { Auth0Provider } from "@auth0/auth0-react";
+import { BrowserRouter as Router } from "react-router-dom";
+import { ErrorBoundary, Provider } from "@rollbar/react";
+
 import "./index.scss";
 import App from "./App";
 import { ApiConfig } from "../../shared/types/types";
-import { Auth0Provider } from "@auth0/auth0-react";
-import { BrowserRouter as Router } from "react-router-dom";
 import { ConfigContext } from "context/ConfigContext";
 import { UserContextProvider } from "./context/UserContext";
 import "assets/fonts/archia-light-webfont.eot";
@@ -19,17 +21,17 @@ import "assets/fonts/archia-semibold-webfont.eot";
 import "assets/fonts/archia-semibold-webfont.ttf";
 import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
-import { ErrorBoundary, Provider } from "@rollbar/react";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
-fetch(`${baseUrl}/api/config`).then(async result => {
+fetch(`${baseUrl}/api/config`).then(async (result) => {
   const {
     auth,
     googleApiKey,
     mapBoxAccessToken,
     stripeEnv,
-    rollbarConfig
+    rollbarConfig,
+    paypalClientId,
   } = (await result.json()) as ApiConfig;
   ReactDOM.render(
     <Provider config={rollbarConfig}>
@@ -46,7 +48,8 @@ fetch(`${baseUrl}/api/config`).then(async result => {
                 googleApiKey,
                 mapBoxAccessToken,
                 stripeEnv,
-                rollbarConfig
+                rollbarConfig,
+                paypalClientId,
               }}
             >
               <UserContextProvider>

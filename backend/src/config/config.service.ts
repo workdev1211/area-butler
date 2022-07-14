@@ -144,6 +144,8 @@ class ConfigService {
     const mapBoxAccessToken = this.getMapBoxAccessToken();
     const stripeEnv = this.getStripeEnv();
     const rollbarConfig = this.getRollbarConfig();
+    const paypalClientId = this.getPaypalClientId();
+
     return {
       auth: {
         domain,
@@ -153,6 +155,7 @@ class ConfigService {
       mapBoxAccessToken,
       stripeEnv,
       rollbarConfig,
+      paypalClientId,
     };
   }
 }

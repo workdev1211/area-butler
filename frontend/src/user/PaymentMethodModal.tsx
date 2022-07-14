@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import {
   PayPalButtons,
   ScriptReducerAction,
@@ -17,6 +17,7 @@ import { useHttp } from "hooks/http";
 import CloseCross from "../assets/icons/cross.svg";
 import { toastError } from "shared/shared.functions";
 import { ILimitIncreaseMetadata } from "../../../shared/types/billing";
+import { ConfigContext } from "../context/ConfigContext";
 
 interface PaymentMethodModalProps {
   stripePriceId: string;
@@ -39,6 +40,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
   stripeCheckoutUrl,
   paymentMetadata,
 }) => {
+  const { paypalClientId } = useContext(ConfigContext);
   const { post } = useHttp();
   const [paypalScriptSetting, setPaypalScriptSettings] =
     usePayPalScriptReducer();
@@ -54,7 +56,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
     const dispatchParams: ScriptReducerAction = {
       type: "resetOptions",
       value: {
-        "client-id": process.env.PAYPAL_CLIENT_ID || "test",
+        "client-id": paypalClientId || "test",
         components: "buttons",
         currency: "EUR",
       },
