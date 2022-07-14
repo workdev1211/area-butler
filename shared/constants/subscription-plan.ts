@@ -426,11 +426,21 @@ export const allSubscriptions: Record<
 };
 
 const stripeToPaypalPriceIdInnerMapping = new Map([
+  // 1 address
   [payPerUse1Subscription.prices[0].id.dev, "P-17K48145Y7328734UMLFO4RY"],
+  [payPerUse1Subscription.prices[0].id.prod, "P-7N9424775B0301810MLIBGTI"],
+  // 5 addresses
   [payPerUse5Subscription.prices[0].id.dev, "P-7YD09266W3894572UMLFO2UY"],
+  [payPerUse5Subscription.prices[0].id.prod, "P-8D848275SA475523LMLIBHOY"],
+  // 10 addresses
   [payPerUse10Subscription.prices[0].id.dev, "P-34474291VV339831KMLFO5CA"],
-  [businessPlusV2Subscription.prices[0].id.dev, "P-45809131KX012483RMLCGSTI"], // monthly
-  [businessPlusV2Subscription.prices[1].id.dev, "P-68T51639N10206632MLCGTCI"], // yearly
+  [payPerUse10Subscription.prices[0].id.prod, "P-11E643387Y299972YMLIBIHA"],
+  // Business+ Monthly
+  [businessPlusV2Subscription.prices[0].id.dev, "P-3R391770XM061051LMLIBLFI"],
+  [businessPlusV2Subscription.prices[0].id.prod, "P-5RA118077B3617738MLIBEFA"],
+  // Business+ Yearly
+  [businessPlusV2Subscription.prices[1].id.dev, "P-68T51639N10206632MLCGTCI"],
+  [businessPlusV2Subscription.prices[1].id.prod, "P-40013915V4840211HMLIBEZQ"],
 ]);
 
 export const stripeToPaypalPriceIdMapping = getBidirectionalMapping(
@@ -438,9 +448,19 @@ export const stripeToPaypalPriceIdMapping = getBidirectionalMapping(
 );
 
 export const paypalWithWoTrialPriceIdMapping = new Map([
-  ["P-17K48145Y7328734UMLFO4RY", "P-5LG886410T224820FMLHHYAQ"],
+  // 1 address
+  ["P-17K48145Y7328734UMLFO4RY", "P-5LG886410T224820FMLHHYAQ"], // dev
+  ["P-7N9424775B0301810MLIBGTI", "P-4A545690LT0026012MLIBG4I"], // prod
+  // 5 addresses
   ["P-7YD09266W3894572UMLFO2UY", "P-4G735745B4688602UMLHHXTI"],
+  ["P-8D848275SA475523LMLIBHOY", "P-2PU61420N09695708MLIBHYI"],
+  // 10 addresses
   ["P-34474291VV339831KMLFO5CA", "P-8K1945607B4163147MLHHYMQ"],
-  ["P-45809131KX012483RMLCGSTI", "P-2PG60537FY898243FMLHHYYI"], // monthly
-  ["P-68T51639N10206632MLCGTCI", "P-4MF22929P7113410TMLHHZJY"], // yearly
+  ["P-11E643387Y299972YMLIBIHA", "P-07K80946HM441550FMLIBIOI"],
+  // Business+ Monthly
+  ["P-3R391770XM061051LMLIBLFI", "P-38V72829JY6379617MLIBL2Y"],
+  ["P-5RA118077B3617738MLIBEFA", "P-5N1640967J2210027MLIBFMY"],
+  // Business+ Yearly
+  ["P-68T51639N10206632MLCGTCI", "P-4MF22929P7113410TMLHHZJY"],
+  ["P-40013915V4840211HMLIBEZQ", "P-3RC37657WF249540KMLIBF7I"],
 ]);
