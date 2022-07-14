@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiUser } from "../../../shared/types/types";
@@ -7,6 +7,8 @@ import RequestContingentDropDown from "./RequestContingentDropdown";
 import { deriveTotalRequestContingent } from "shared/shared.functions";
 import { useHttp } from "hooks/http";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
+import { PaymentSystemTypeEnum } from "../../../shared/types/subscription-plan";
+import { ConfigContext } from "../context/ConfigContext";
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -17,6 +19,7 @@ export interface SubscriptionPlanLimitsProps {
 const SubscriptionPlanLimits: FunctionComponent<
   SubscriptionPlanLimitsProps
 > = ({ user }) => {
+  const { stripeEnv } = useContext(ConfigContext);
   const subscription = user.subscriptionPlan;
 
   const subscriptionLabel =
@@ -27,9 +30,24 @@ const SubscriptionPlanLimits: FunctionComponent<
   const { post } = useHttp();
 
   const forwardToCustomerPortal = async () => {
-    window.location.href = (
-      await post<string>("/api/billing/create-customer-portal-link", {})
-    ).data;
+    switch (subscription?.paymentSystemType) {
+      case PaymentSystemTypeEnum.Stripe: {
+        window.location.href = (
+          await post<string>("/api/billing/create-customer-portal-link", {})
+        ).data;
+        break;
+      }
+
+      case PaymentSystemTypeEnum.PayPal: {
+        window.open(
+          `https://${
+            stripeEnv === "dev" ? "sandbox." : ""
+          }paypal.com/myaccount/autopay/`,
+          "_blank"
+        );
+        break;
+      }
+    }
   };
 
   return (

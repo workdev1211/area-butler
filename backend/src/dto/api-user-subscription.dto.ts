@@ -10,6 +10,7 @@ import { Type } from 'class-transformer';
 import {
   ApiSubscriptionPlanType,
   ApiUserSubscription,
+  PaymentSystemTypeEnum,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionPlanDto from './api-subscription-plan.dto';
 
@@ -30,6 +31,10 @@ class ApiUserSubscriptionDto implements ApiUserSubscription {
   @IsNotEmpty()
   @IsEnum(ApiSubscriptionPlanType)
   type: ApiSubscriptionPlanType;
+
+  @IsNotEmpty()
+  @IsEnum(PaymentSystemTypeEnum)
+  paymentSystemType: PaymentSystemTypeEnum;
 
   @IsNotEmpty()
   @IsString()

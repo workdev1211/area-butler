@@ -1,5 +1,6 @@
 export interface ApiUserSubscription {
   type: ApiSubscriptionPlanType;
+  paymentSystemType: PaymentSystemTypeEnum;
   createdAt: Date;
   endsAt: Date;
   priceId: string;
