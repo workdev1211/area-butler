@@ -653,6 +653,7 @@ const Map = memo<MapProps>(
       config?.groupItems,
       config?.hideIsochrones,
       hideIsochrones,
+      mapboxMapId,
     ]);
 
     // draw routes
@@ -777,7 +778,14 @@ const Map = memo<MapProps>(
             }
           });
       }
-    }, [routes, transitRoutes, means, groupedEntities, config?.mapIcon]);
+    }, [
+      routes,
+      transitRoutes,
+      means,
+      groupedEntities,
+      config?.mapIcon,
+      mapboxMapId,
+    ]);
 
     const entitiesStringified = JSON.stringify(
       groupedEntities.map((g) => g.items).flat()
@@ -924,6 +932,7 @@ const Map = memo<MapProps>(
       groupedEntitiesStringified,
       config?.mapIcon,
       config?.groupItems,
+      mapboxMapId,
     ]);
 
     const takePicture = () => {
