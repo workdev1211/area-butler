@@ -84,7 +84,7 @@ const CustomerQuestionnairePage: FunctionComponent = () => {
                                     <strong>Fragebogen absenden</strong> klicke?
                                     <ul className="list-disc ml-10">
                                         <li className="mt-2">
-                                            Ihr Area Butler macht sich nun daran, dass für Sie
+                                            Ihr AreaButler macht sich nun daran, dass für Sie
                                             passende Objekt am für Sie perfekten Ort zu finden
                                         </li>
                                         <li>
@@ -107,7 +107,7 @@ const CustomerQuestionnairePage: FunctionComponent = () => {
                                             Die Antworten sieht nur Ihr Immobilienmakler
                                         </li>
                                         <li>
-                                            Der Area Butler nutzt die Daten zu Aufbereitung Ihrer
+                                            Der AreaButler nutzt die Daten zu Aufbereitung Ihrer
                                             persönlichen Umfeldanalyse
                                         </li>
                                     </ul>
@@ -135,7 +135,7 @@ const CustomerQuestionnairePage: FunctionComponent = () => {
                     <p>
                         Ich hoffe Ihnen hat diese Abfrage gefallen. Ideen zu{" "}
                         <strong>Verbesserung</strong>?<br/>
-                        Geben Sie gern kurz Feedback Mit freundlichen Grüßen Ihr Area Butler
+                        Geben Sie gern kurz Feedback Mit freundlichen Grüßen Ihr AreaButler
                     </p>
                     <p>
                         Mehr Infos:{" "}<br/>

@@ -24,7 +24,7 @@ async function bootstrap() {
     const config = new DocumentBuilder()
       .addBearerAuth()
       .setTitle('AreaButler')
-      .setDescription('The Area Butler API description')
+      .setDescription('The AreaButler API description')
       .setVersion('1.0')
       .addTag('areabutler')
       .build();

@@ -45,7 +45,7 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
       Keine Zeit und Lust die Kriterien Ihrer Interessenten selbst einzugeben?
     </p>
     <p className="my-5">
-      Mit dem automatisch versendeten Fragebogen erfasst Ihr Area Butler die
+      Mit dem automatisch versendeten Fragebogen erfasst Ihr AreaButler die
       Mobilitätspräferenz und die persönlichen Kriterien Ihrer Interessenten.
       Sie müssen diese so nicht mehr manuell eingeben. Ein noch persönlicheres
       Betreuungserlebnis für ihre Interessenten.

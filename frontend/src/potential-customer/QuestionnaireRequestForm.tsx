@@ -63,7 +63,7 @@ export const QuestionnaireRequestForm: React.FunctionComponent<QuestionnaireRequ
             </p>
             <ul className="list-decimal m-5 flex flex-col gap-3 text-sm">
               <li>
-                Der Area Butler verschickt eine E-Mail an Ihren Interessenten.
+                Der AreaButler verschickt eine E-Mail an Ihren Interessenten.
                 Diese E-Mail enthält einen Link.
               </li>
               <li>

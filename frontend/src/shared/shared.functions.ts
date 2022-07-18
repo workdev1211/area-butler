@@ -489,7 +489,7 @@ export const createCodeSnippet = (token: string) => {
   width="100%"
   height="100%"
   src="${createDirectLink(token)}"
-  title="Area Butler Map Snippet"
+  title="AreaButler Map Snippet"
 ></iframe>
   `;
 };
