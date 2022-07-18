@@ -118,7 +118,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
       <>
         <li>
           <Link to="/potential-customers/new" className="btn btn-link">
-            <img src={plusIcon} alt="pdf-icon" /> Interessent anlegen
+            <img src={plusIcon} alt="pdf-icon" /> Zielgruppe anlegen
           </Link>
         </li>
         <li>
