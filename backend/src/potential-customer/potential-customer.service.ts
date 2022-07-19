@@ -17,11 +17,15 @@ import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-re
 import ApiUpsertQuestionnaireDto from '../dto/api-upsert-questionnaire.dto';
 import {
   MailSenderService,
-  MailProps,
+  IMailProps,
 } from '../client/mail/mail-sender.service';
 import { configService } from '../config/config.service';
 import { UserDocument } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
+import {
+  questionnaireInvitationTemplateId,
+  questionnaireSubmissionTemplateId,
+} from '../shared/email.constants';
 
 @Injectable()
 export class PotentialCustomerService {
@@ -134,9 +138,9 @@ export class PotentialCustomerService {
       document,
     ).save();
 
-    const mailProps: MailProps = {
+    const mailProps: IMailProps = {
       to: [{ name: questionnaire.name, email: questionnaire.email }],
-      templateId: 1,
+      templateId: questionnaireInvitationTemplateId,
       params: {
         href: `${configService.getBaseAppUrl()}/questionnaire/${
           questionnaire.token
@@ -149,7 +153,7 @@ export class PotentialCustomerService {
       mailProps.replyTo = { name: user.fullname, email: user.email };
     }
 
-    await this.mailSender.sendMail(mailProps);
+    await this.mailSender.batchSendMail(mailProps);
 
     return questionnaire;
   }
@@ -183,9 +187,9 @@ export class PotentialCustomerService {
     if (!existingCustomer) {
       const newCustomer = await this.insertPotentialCustomer(user, upsertData);
 
-      const mailProps: MailProps = {
+      const mailProps: IMailProps = {
         to: [{ name: user.fullname, email: user.email }],
-        templateId: 2,
+        templateId: questionnaireSubmissionTemplateId,
         params: {
           href: `${configService.getBaseAppUrl()}/potential-customers/${
             newCustomer.id
@@ -193,7 +197,7 @@ export class PotentialCustomerService {
         },
       };
 
-      await this.mailSender.sendMail(mailProps);
+      await this.mailSender.batchSendMail(mailProps);
     } else {
       await this.updatePotentialCustomer(user, existingCustomer.id, upsertData);
     }

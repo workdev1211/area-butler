@@ -58,7 +58,7 @@ export class SubscriptionListener {
     }
 
     await this.subscriptionService.upsertByUserId(
-      user._id,
+      user,
       type,
       subscriptionId,
       priceId,

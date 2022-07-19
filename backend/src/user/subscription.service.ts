@@ -1,6 +1,8 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
+import { Cron } from '@nestjs/schedule';
 import { Model } from 'mongoose';
+import * as dayjs from 'dayjs';
 
 import {
   Subscription,
@@ -21,6 +23,13 @@ import {
   ISubscriptionPlanPrice,
   PaymentItemTypeEnum,
 } from '../shared/subscription.types';
+import { MailSenderService } from '../client/mail/mail-sender.service';
+import {
+  newUserBusinessPlusSubscriptionTemplateId,
+  newUserPayPerUseSubscriptionTemplateId,
+  subscriptionRenewalTemplateId,
+} from '../shared/email.constants';
+import { UserDocument } from './schema/user.schema';
 
 @Injectable()
 export class SubscriptionService {
@@ -28,8 +37,23 @@ export class SubscriptionService {
 
   constructor(
     @InjectModel(Subscription.name)
-    private subscriptionModel: Model<SubscriptionDocument>,
+    private readonly subscriptionModel: Model<SubscriptionDocument>,
+    private readonly mailSenderService: MailSenderService,
   ) {}
+
+  private getSubscriptionCancelUrl(
+    paymentSystemType?: PaymentSystemTypeEnum,
+  ): string {
+    let subscriptionCancelUrl = `${configService.getBaseAppUrl()}/profile`;
+
+    if (paymentSystemType === PaymentSystemTypeEnum.PayPal) {
+      subscriptionCancelUrl = `https://${
+        configService.getStripeEnv() !== 'prod' ? 'sandbox.' : ''
+      }paypal.com/myaccount/autopay/`;
+    }
+
+    return subscriptionCancelUrl;
+  }
 
   getApiSubscriptionPlanPrice(stripePriceId: string): ISubscriptionPlanPrice {
     const stripeEnv = configService.getStripeEnv();
@@ -190,7 +214,7 @@ export class SubscriptionService {
   }
 
   async upsertByUserId(
-    userId: string,
+    { _id: userId, fullname: userName, email: userEmail }: UserDocument,
     type: ApiSubscriptionPlanType,
     subscriptionId = 'unverified-new',
     priceId: string,
@@ -247,6 +271,17 @@ export class SubscriptionService {
         }
       }
 
+      await this.mailSenderService.batchSendMail({
+        to: [{ name: userName, email: userEmail }],
+        templateId:
+          type === ApiSubscriptionPlanType.BUSINESS_PLUS_V2
+            ? newUserBusinessPlusSubscriptionTemplateId
+            : newUserPayPerUseSubscriptionTemplateId,
+        params: {
+          href: this.getSubscriptionCancelUrl(paymentSystemType),
+        },
+      });
+
       return new this.subscriptionModel(newSubscription).save();
     }
   }
@@ -284,5 +319,58 @@ export class SubscriptionService {
     }
 
     return paymentItem;
+  }
+
+  @Cron('0 45 9 * * *')
+  async sendSubscriptionExpirationEmail() {
+    const dateTimePattern = new RegExp(/(.+)T(.+)Z/);
+    const specificIsoDate = dayjs()
+      .toISOString()
+      .replace(dateTimePattern, `$1T09:45:00.000Z`);
+    const currentDate = dayjs(specificIsoDate);
+
+    const subscriptions = await this.subscriptionModel.aggregate([
+      {
+        $match: {
+          endsAt: {
+            $gte: currentDate.add(2, 'days').toDate(),
+            $lt: currentDate.add(3, 'days').toDate(),
+          },
+        },
+      },
+      { $project: { userId: 1 } },
+      { $set: { userId: { $toObjectId: '$userId' } } },
+      {
+        $lookup: {
+          from: 'users',
+          localField: 'userId',
+          foreignField: '_id',
+          as: 'user',
+          pipeline: [{ $project: { fullname: 1, email: 1 } }],
+        },
+      },
+      { $project: { user: { $arrayElemAt: ['$user', 0] } } },
+    ]);
+
+    const emails = [];
+    const sendTo = subscriptions.map(({ user: { fullname: name, email } }) => {
+      emails.push(email);
+
+      return { name, email };
+    });
+
+    await this.mailSenderService.batchSendMail({
+      to: sendTo,
+      templateId: subscriptionRenewalTemplateId,
+      params: {
+        href: this.getSubscriptionCancelUrl(),
+      },
+    });
+
+    this.logger.log(
+      `The emails have been sent to ${emails.join(
+        ', ',
+      )} on ${currentDate.toISOString()}`,
+    );
   }
 }
