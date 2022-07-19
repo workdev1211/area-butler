@@ -130,6 +130,7 @@ export class IdMarker extends L.Marker {
     this.unbindPopup();
     if (!this.getPopup()) {
       const entityTitle = this.entity.name || this.entity.label;
+
       const street =
         this.entity?.address?.street &&
         this.entity?.address?.street !== "undefined"
@@ -152,16 +153,19 @@ export class IdMarker extends L.Marker {
           ? this.entity?.address?.city
           : cityFromSearch.trim(),
       ].join(" ");
+
       const title =
         this.entity.type !== "property"
           ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
               searchString
             )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
           : `${entityTitle}`;
+
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
       const isRealEstateListingOrPreferredAdress =
         isPreferredLocation || isRealEstateListing;
+
       const byFoot = this.entity.byFoot
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
             deriveMinutesFromMeters(
@@ -170,6 +174,7 @@ export class IdMarker extends L.Marker {
             )
           )}</span></span>`
         : "";
+
       const byBike = this.entity.byBike
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(
             deriveMinutesFromMeters(
@@ -178,6 +183,7 @@ export class IdMarker extends L.Marker {
             )
           )}</span></span>`
         : "";
+
       const byCar = this.entity.byCar
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(
             deriveMinutesFromMeters(
@@ -186,11 +192,12 @@ export class IdMarker extends L.Marker {
             )
           )}</span></span>`
         : "";
+
       if (this.entity.type === "property") {
         const realEstateData = this.entity.realEstateData;
         const realEstateInformationParts = [];
 
-        if (!!street) {
+        if (street) {
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Adresse: </span> ${street}`
           );
@@ -200,6 +207,7 @@ export class IdMarker extends L.Marker {
           const startingAt = realEstateData?.characteristics?.startingAt
             ? "Ab"
             : "";
+
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
           );
@@ -209,6 +217,7 @@ export class IdMarker extends L.Marker {
           const startingAt = realEstateData?.costStructure?.startingAt
             ? "Ab"
             : "";
+
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Preis: </span> ${startingAt} ${realEstateData?.costStructure?.price.amount} €`
           );
@@ -244,7 +253,7 @@ export class IdMarker extends L.Marker {
           !isRealEstateListingOrPreferredAdress ? byCar : ""
         }</div>`;
 
-        if (!!this.hideEntityFunction) {
+        if (this.hideEntityFunction) {
           content =
             content +
             `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`;
@@ -253,9 +262,12 @@ export class IdMarker extends L.Marker {
         this.bindPopup(content);
       }
     }
+
     this.openPopup();
-    if (!!this.hideEntityFunction) {
+
+    if (this.hideEntityFunction) {
       const element = document.getElementById(`hide-btn-${this.entity.id}`);
+
       if (element) {
         element.onclick = () => {
           this.hideEntityFunction!(this.entity);
@@ -371,7 +383,14 @@ const Map = memo<MapProps>(
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
     const [fullscreen, setFullscreen] = useState(false);
-    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel);
+    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel || defaultMapZoom);
+    const [centerCoordinates, setCenterCoordinates] = useState(
+      searchResponse.centerOfInterest.coordinates
+    );
+
+    const [isDrawnMeans, setIsDrawnMeans] = useState(false);
+    const [isDrawnRoutes, setIsDrawnRoutes] = useState(false);
+    const [isDrawnPois, setIsDrawnPois] = useState(false);
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -402,9 +421,11 @@ const Map = memo<MapProps>(
     useEffect(() => {
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
+
       const attributionEmbedded =
         'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
         attribution;
+
       const url = embedMode
         ? `${
             process.env.REACT_APP_BASE_URL || ""
@@ -415,7 +436,6 @@ const Map = memo<MapProps>(
         currentMap.off();
         currentMap.remove();
       }
-      const initialPosition: L.LatLngExpression = [lat, lng];
 
       L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
@@ -434,7 +454,7 @@ const Map = memo<MapProps>(
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
-      } as any).setView(initialPosition, zoom);
+      } as any);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
@@ -463,9 +483,10 @@ const Map = memo<MapProps>(
         }
       });
 
-      if (!!onPoiAdd) {
+      if (onPoiAdd) {
         localMap.on("contextmenu", async (e: any) => {
           const coordinates: ApiCoordinates = e.latlng;
+
           const place = (await deriveAddressFromCoordinates(coordinates)) || {
             label: "Mein Standort",
             value: { place_id: "123" },
@@ -473,7 +494,6 @@ const Map = memo<MapProps>(
 
           setAddPoiCoordinates(coordinates);
           setAddPoiAddress(place);
-
           setAddPoiModalOpen(true);
         });
       }
@@ -486,10 +506,11 @@ const Map = memo<MapProps>(
         tileSize: 512,
         maxZoom: 18,
       }).addTo(localMap);
+
       if (!embedMode || config?.showLocation) {
         let detailContent = `${searchAddress}`;
 
-        if (!embedMode || !!config?.showStreetViewLink) {
+        if (!embedMode || config?.showStreetViewLink) {
           const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
 
           const streetViewContent = `
@@ -499,6 +520,7 @@ const Map = memo<MapProps>(
                <span>Street View</span>
             </a>
           `;
+
           detailContent = `${detailContent}${streetViewContent}`;
         }
 
@@ -518,11 +540,12 @@ const Map = memo<MapProps>(
             config?.mapIcon ?? mylocationIcon
           }" alt="marker-icon" style="${iconStyle}" />`,
         });
+
         const myLocationMarker = L.marker([lat, lng], {
           icon: positionIcon,
         }).addTo(localMap);
 
-        if (!!config?.showAddress || !embedMode) {
+        if (config?.showAddress || !embedMode) {
           myLocationMarker.on("click", function (event) {
             const marker = event.target;
             marker.unbindPopup();
@@ -531,6 +554,7 @@ const Map = memo<MapProps>(
           });
         }
       }
+
       currentMap = localMap;
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -552,11 +576,14 @@ const Map = memo<MapProps>(
       if (currentMap && mapCenter && mapZoomLevel) {
         // center and zoom view
         // currentMap.setView(mapCenter, mapZoomLevel);
+
         // handle growing/shrinking of icons based on zoom level
         if (amenityMarkerGroup) {
           const markers = amenityMarkerGroup.getLayers() as IdMarker[];
+
           if (markers.length) {
             const currentSize = markers[0].getIcon().options.iconSize;
+
             if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
               markers.forEach((marker) => {
                 const icon = marker.getIcon();
@@ -564,6 +591,7 @@ const Map = memo<MapProps>(
                 marker.setIcon(icon);
               });
             }
+
             if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
               markers.forEach((marker) => {
                 const icon = marker.getIcon();
@@ -571,9 +599,11 @@ const Map = memo<MapProps>(
                 marker.setIcon(icon);
               });
             }
+
             const marker = markers.find(
               (m) => m.getEntity().id === highlightId
             );
+
             if (marker) {
               // use timeout to wait for de-spider animation of cluster
               setTimeout(() => {
@@ -592,58 +622,69 @@ const Map = memo<MapProps>(
     // draw means
     useEffect(() => {
       const parsedMeans = JSON.parse(meansStringified);
-      if (currentMap) {
-        if (meansGroup) {
-          currentMap.removeLayer(meansGroup);
-        }
-        if (!hideIsochrones) {
-          meansGroup = L.layerGroup();
-          currentMap.addLayer(meansGroup);
-          const derivePositionForTransportationMean = (
-            profile: MeansOfTransportation
-          ) => {
-            return searchResponse.routingProfiles[
-              profile
-            ].isochrone.features[0].geometry.coordinates[0].map(
-              (item: number[]) => {
-                return [item[1], item[0]];
-              }
-            );
-          };
-          if (parsedMeans.byFoot) {
-            L.polygon(
-              derivePositionForTransportationMean(MeansOfTransportation.WALK),
-              {
-                color: WALK_COLOR,
-                opacity: 0.7,
-                fillOpacity: 0.0,
-              }
-            ).addTo(meansGroup);
-          }
-          if (parsedMeans.byBike) {
-            L.polygon(
-              derivePositionForTransportationMean(
-                MeansOfTransportation.BICYCLE
-              ),
-              {
-                color: BICYCLE_COLOR,
-                opacity: 0.7,
-                fillOpacity: 0.0,
-              }
-            ).addTo(meansGroup);
-          }
-          if (parsedMeans.byCar) {
-            L.polygon(
-              derivePositionForTransportationMean(MeansOfTransportation.CAR),
-              {
-                color: CAR_COLOR,
-                opacity: 0.7,
-                fillOpacity: 0.0,
-              }
-            ).addTo(meansGroup);
-          }
-        }
+
+      if (!currentMap) {
+        return;
       }
+
+      if (meansGroup) {
+        currentMap.removeLayer(meansGroup);
+      }
+
+      if (hideIsochrones) {
+        setIsDrawnMeans(true);
+        return;
+      }
+
+      meansGroup = L.layerGroup();
+      currentMap.addLayer(meansGroup);
+
+      const derivePositionForTransportationMean = (
+        profile: MeansOfTransportation
+      ) => {
+        return searchResponse.routingProfiles[
+          profile
+        ].isochrone.features[0].geometry.coordinates[0].map(
+          (item: number[]) => {
+            return [item[1], item[0]];
+          }
+        );
+      };
+
+      if (parsedMeans.byFoot) {
+        L.polygon(
+          derivePositionForTransportationMean(MeansOfTransportation.WALK),
+          {
+            color: WALK_COLOR,
+            opacity: 0.7,
+            fillOpacity: 0.0,
+          }
+        ).addTo(meansGroup);
+      }
+
+      if (parsedMeans.byBike) {
+        L.polygon(
+          derivePositionForTransportationMean(MeansOfTransportation.BICYCLE),
+          {
+            color: BICYCLE_COLOR,
+            opacity: 0.7,
+            fillOpacity: 0.0,
+          }
+        ).addTo(meansGroup);
+      }
+
+      if (parsedMeans.byCar) {
+        L.polygon(
+          derivePositionForTransportationMean(MeansOfTransportation.CAR),
+          {
+            color: CAR_COLOR,
+            opacity: 0.7,
+            fillOpacity: 0.0,
+          }
+        ).addTo(meansGroup);
+      }
+
+      setIsDrawnMeans(true);
     }, [
       meansStringified,
       searchResponse.routingProfiles,
@@ -661,6 +702,7 @@ const Map = memo<MapProps>(
       const activeEntities = groupedEntities
         ?.filter((ge) => ge.active)
         .flatMap((value) => value.items);
+
       const getIcon = (m: MeansOfTransportation | string) => {
         switch (m) {
           case MeansOfTransportation.CAR:
@@ -694,90 +736,101 @@ const Map = memo<MapProps>(
             value.coordinates.lng === r.destination.lng
         );
 
-      if (currentMap) {
-        if (routesGroup) {
-          currentMap.removeLayer(routesGroup);
-        }
-        routesGroup = L.layerGroup();
-        currentMap.addLayer(routesGroup);
-        routes
-          .filter((e) => e.show.length > 0)
-          .forEach((entityRoute) => {
-            entityRoute.routes
-              .filter((r) => entityRoute.show.includes(r.meansOfTransportation))
-              .filter(isVisibleDestination)
-              .forEach((r) => {
-                r.sections.forEach((s) => {
-                  const durationInMinutes = r.sections
-                    .map((s) => s.duration)
-                    .reduce((p, c) => p + c);
-                  const line = L.geoJSON(s.geometry, {
-                    style: function () {
-                      return { color: MEAN_COLORS[r.meansOfTransportation] };
-                    },
-                  })
-                    .bindPopup(
-                      `<h4 class="font-semibold">Route zu ${
-                        entityRoute.title
-                      }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
-                        r.meansOfTransportation
-                      )} alt="icon" /><span>${
-                        Number.isNaN(durationInMinutes)
-                          ? durationInMinutes
-                          : timeToHumanReadable(durationInMinutes)
-                      }</span></span></div>`
-                    )
-                    .addTo(routesGroup);
-                  // @ts-ignore
-                  L.path.touchHelper(line).addTo(routesGroup);
-                });
-              });
-          });
-        transitRoutes
-          .filter((e) => e.show)
-          .forEach((entityRoute) => {
-            const { route } = entityRoute;
-            if (isVisibleDestination(route)) {
-              const popupContent = route.sections
-                .map(
-                  (s) =>
-                    `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
-                      s.transportMode
-                    )} alt="icon"/><span>${
-                      Number.isNaN(s.duration)
-                        ? s.duration
-                        : timeToHumanReadable(s.duration)
-                    }</span></span>`
-                )
-                .join("➟");
-              const fullDuration = route.sections
-                .map((s) => s.duration)
-                .reduce((p, c) => p + c);
-              route.sections.forEach((s) => {
+      if (!currentMap) {
+        return;
+      }
+
+      if (routesGroup) {
+        currentMap.removeLayer(routesGroup);
+      }
+
+      routesGroup = L.layerGroup();
+      currentMap.addLayer(routesGroup);
+
+      routes
+        .filter((e) => e.show.length > 0)
+        .forEach((entityRoute) => {
+          entityRoute.routes
+            .filter((r) => entityRoute.show.includes(r.meansOfTransportation))
+            .filter(isVisibleDestination)
+            .forEach((r) => {
+              r.sections.forEach((s) => {
+                const durationInMinutes = r.sections
+                  .map((s) => s.duration)
+                  .reduce((p, c) => p + c);
                 const line = L.geoJSON(s.geometry, {
                   style: function () {
-                    return {
-                      color: "#fcba03",
-                      dashArray: getDashArray(s.transportMode),
-                    };
+                    return { color: MEAN_COLORS[r.meansOfTransportation] };
                   },
                 })
                   .bindPopup(
-                    `<h4 class="font-semibold">ÖPNV Route zu ${
+                    `<h4 class="font-semibold">Route zu ${
                       entityRoute.title
-                    } (${
-                      Number.isNaN(fullDuration)
-                        ? fullDuration
-                        : timeToHumanReadable(fullDuration)
-                    })</h4><br/><div class="flex flex-wrap items-center gap-2">${popupContent}</div>`
+                    }</h4><br/><div><span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
+                      r.meansOfTransportation
+                    )} alt="icon" /><span>${
+                      Number.isNaN(durationInMinutes)
+                        ? durationInMinutes
+                        : timeToHumanReadable(durationInMinutes)
+                    }</span></span></div>`
                   )
                   .addTo(routesGroup);
                 // @ts-ignore
                 L.path.touchHelper(line).addTo(routesGroup);
               });
-            }
-          });
-      }
+            });
+        });
+
+      transitRoutes
+        .filter((e) => e.show)
+        .forEach((entityRoute) => {
+          const { route } = entityRoute;
+
+          if (isVisibleDestination(route)) {
+            const popupContent = route.sections
+              .map(
+                (s) =>
+                  `<span class="flex"><img class="w-4 h-4 mr-1" src=${getIcon(
+                    s.transportMode
+                  )} alt="icon"/><span>${
+                    Number.isNaN(s.duration)
+                      ? s.duration
+                      : timeToHumanReadable(s.duration)
+                  }</span></span>`
+              )
+              .join("➟");
+
+            const fullDuration = route.sections
+              .map((s) => s.duration)
+              .reduce((p, c) => p + c);
+
+            route.sections.forEach((s) => {
+              const line = L.geoJSON(s.geometry, {
+                style: function () {
+                  return {
+                    color: "#fcba03",
+                    dashArray: getDashArray(s.transportMode),
+                  };
+                },
+              })
+                .bindPopup(
+                  `<h4 class="font-semibold">ÖPNV Route zu ${
+                    entityRoute.title
+                  } (${
+                    Number.isNaN(fullDuration)
+                      ? fullDuration
+                      : timeToHumanReadable(fullDuration)
+                  })</h4><br/><div class="flex flex-wrap items-center gap-2">${popupContent}</div>`
+                )
+                .addTo(routesGroup);
+
+              // @ts-ignore
+              L.path.touchHelper(line).addTo(routesGroup);
+            });
+          }
+        });
+
+      setIsDrawnRoutes(true);
     }, [
       routes,
       transitRoutes,
@@ -790,6 +843,7 @@ const Map = memo<MapProps>(
     const entitiesStringified = JSON.stringify(
       groupedEntities.map((g) => g.items).flat()
     );
+
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
     // draw amenities (POIs)
@@ -802,124 +856,122 @@ const Map = memo<MapProps>(
       );
 
       const drawAmenityMarkers = () => {
-        if (currentMap) {
-          currentMap.removeLayer(amenityMarkerGroup);
+        currentMap!.removeLayer(amenityMarkerGroup);
 
-          amenityMarkerGroup = L.markerClusterGroup({
-            iconCreateFunction: function (cluster) {
-              const groupedMarkers = groupBy(
-                cluster.getAllChildMarkers().map((m) => m.getIcon().options),
-                (i: any) => i.className
-              );
+        amenityMarkerGroup = L.markerClusterGroup({
+          iconCreateFunction: function (cluster) {
+            const groupedMarkers = groupBy(
+              cluster.getAllChildMarkers().map((m) => m.getIcon().options),
+              (i: any) => i.className
+            );
 
-              const countedMarkers = Object.entries(groupedMarkers)
-                .map(([key, value]) => ({
-                  key,
-                  icon: (value as any)[0].html,
-                  count: (value as any).length,
-                }))
-                .sort((a, b) => b.count - a.count);
+            const countedMarkers = Object.entries(groupedMarkers)
+              .map(([key, value]) => ({
+                key,
+                icon: (value as any)[0].html,
+                count: (value as any).length,
+              }))
+              .sort((a, b) => b.count - a.count);
 
-              const markerIcons = countedMarkers.map(
-                (cm) =>
-                  '<div class="flex items-center gap-0.5">' +
-                  cm.icon +
-                  cm.count +
-                  "</div>"
-              );
+            const markerIcons = countedMarkers.map(
+              (cm) =>
+                '<div class="flex items-center gap-0.5">' +
+                cm.icon +
+                cm.count +
+                "</div>"
+            );
 
-              return L.divIcon({
-                html:
-                  '<div class="cluster-icon-wrapper">' +
-                  markerIcons.join("") +
-                  "</div>",
-                className: "cluster-icon",
-              });
-            },
-            maxClusterRadius: 200,
-            disableClusteringAtZoom: config?.groupItems ? 15 : 1,
-            spiderfyOnMaxZoom: false,
-            animate: false,
-            zoomToBoundsOnClick: false,
-          });
+            return L.divIcon({
+              html:
+                '<div class="cluster-icon-wrapper">' +
+                markerIcons.join("") +
+                "</div>",
+              className: "cluster-icon",
+            });
+          },
+          maxClusterRadius: 200,
+          disableClusteringAtZoom: config?.groupItems ? 15 : 1,
+          spiderfyOnMaxZoom: false,
+          animate: false,
+          zoomToBoundsOnClick: false,
+        });
 
-          // set realEstateListing to active if theme is KF and group is real estate listings
-          if (config?.theme === "KF") {
-            parsedEntityGroups = parsedEntityGroups.map((peg) => ({
-              ...peg,
-              active:
-                config.theme === "KF" && peg.title === realEstateListingsTitle
-                  ? true
-                  : peg.active,
-            }));
-          }
-
-          // Add each POI to the marker cluster group
-          parsedEntities?.forEach((entity) => {
-            if (
-              parsedEntityGroups.some(
-                (eg) => eg.title === entity.label && eg.active
-              )
-            ) {
-              const isRealEstateListing = entity.type === "property";
-              const isPreferredLocation = entity.type === "favorite";
-
-              const markerIcon = isRealEstateListing
-                ? config?.mapIcon
-                  ? {
-                      icon: config?.mapIcon,
-                      color:
-                        config.primaryColor ?? realEstateListingsIcon.color,
-                    }
-                  : realEstateListingsIcon
-                : isPreferredLocation
-                ? preferredLocationsIcon
-                : deriveIconForOsmName(entity.type as OsmName);
-
-              const icon = L.divIcon({
-                iconUrl: markerIcon.icon,
-                shadowUrl: leafletShadow,
-                shadowSize: [0, 0],
-                iconSize: defaultAmenityIconSize,
-                className: `locality-marker-wrapper ${
-                  isRealEstateListing && config?.mapIcon
-                    ? "locality-marker-wrapper-custom"
-                    : ""
-                } icon-${entity.type}`,
-                html:
-                  config?.mapIcon && isRealEstateListing
-                    ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
-                    : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
-              });
-
-              const hideEntityFunction = editorMode ? hideEntity : undefined;
-
-              const marker = new IdMarker(
-                entity.coordinates,
-                entity,
-                searchAddress,
-                {
-                  icon,
-                },
-                hideEntityFunction
-              ).on("click", function (e) {
-                const marker = e.target;
-                marker.createOpenPopup();
-              });
-
-              amenityMarkerGroup.addLayer(marker);
-            }
-          });
-
-          amenityMarkerGroup.on("clusterclick", function (a) {
-            const centerOfGroup = center(a.layer.toGeoJSON());
-            const lat = centerOfGroup.geometry.coordinates[1];
-            const lng = centerOfGroup.geometry.coordinates[0];
-            centerZoomCoordinates(17, { lat, lng });
-          });
-
-          currentMap.addLayer(amenityMarkerGroup);
+        // set realEstateListing to active if theme is KF and group is real estate listings
+        if (config?.theme === "KF") {
+          parsedEntityGroups = parsedEntityGroups.map((peg) => ({
+            ...peg,
+            active:
+              config.theme === "KF" && peg.title === realEstateListingsTitle
+                ? true
+                : peg.active,
+          }));
         }
+
+        // Add each POI to the marker cluster group
+        parsedEntities?.forEach((entity) => {
+          if (
+            parsedEntityGroups.some(
+              (eg) => eg.title === entity.label && eg.active
+            )
+          ) {
+            const isRealEstateListing = entity.type === "property";
+            const isPreferredLocation = entity.type === "favorite";
+
+            const markerIcon = isRealEstateListing
+              ? config?.mapIcon
+                ? {
+                    icon: config?.mapIcon,
+                    color: config.primaryColor ?? realEstateListingsIcon.color,
+                  }
+                : realEstateListingsIcon
+              : isPreferredLocation
+              ? preferredLocationsIcon
+              : deriveIconForOsmName(entity.type as OsmName);
+
+            const icon = L.divIcon({
+              iconUrl: markerIcon.icon,
+              shadowUrl: leafletShadow,
+              shadowSize: [0, 0],
+              iconSize: defaultAmenityIconSize,
+              className: `locality-marker-wrapper ${
+                isRealEstateListing && config?.mapIcon
+                  ? "locality-marker-wrapper-custom"
+                  : ""
+              } icon-${entity.type}`,
+              html:
+                config?.mapIcon && isRealEstateListing
+                  ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
+                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
+            });
+
+            const hideEntityFunction = editorMode ? hideEntity : undefined;
+
+            const marker = new IdMarker(
+              entity.coordinates,
+              entity,
+              searchAddress,
+              {
+                icon,
+              },
+              hideEntityFunction
+            ).on("click", function (e) {
+              const marker = e.target;
+              marker.createOpenPopup();
+            });
+
+            amenityMarkerGroup.addLayer(marker);
+          }
+        });
+
+        amenityMarkerGroup.on("clusterclick", function (a) {
+          const centerOfGroup = center(a.layer.toGeoJSON());
+          const lat = centerOfGroup.geometry.coordinates[1];
+          const lng = centerOfGroup.geometry.coordinates[0];
+          centerZoomCoordinates(17, { lat, lng });
+        });
+
+        currentMap!.addLayer(amenityMarkerGroup);
+        setIsDrawnPois(true);
       };
 
       if (currentMap) {
@@ -934,6 +986,18 @@ const Map = memo<MapProps>(
       config?.groupItems,
       mapboxMapId,
     ]);
+
+    // returns the view to the previous place when changing from satellite view to the normal one and vice versa
+    useEffect(() => {
+      if (isDrawnMeans && isDrawnRoutes && isDrawnPois) {
+        currentMap?.setView(centerCoordinates, zoomLevel, { animate: false });
+        setIsDrawnMeans(false);
+        setIsDrawnRoutes(false);
+        setIsDrawnPois(false);
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [isDrawnMeans, isDrawnRoutes, isDrawnPois]);
 
     const takePicture = () => {
       const poiSearchContainer = document.getElementById(poiSearchContainerId);
@@ -1185,6 +1249,13 @@ const Map = memo<MapProps>(
               role="button"
               onClick={(event) => {
                 event.preventDefault();
+
+                setZoomLevel(currentMap?.getZoom() || defaultMapZoom);
+                setCenterCoordinates(
+                  currentMap?.getCenter() ||
+                    searchResponse.centerOfInterest.coordinates
+                );
+
                 toggleSatelliteMapMode();
               }}
             >
