@@ -7,10 +7,9 @@ module.exports = {
             '0': 0,
             '10': 10,
             '20': 20,
+            '25': 25,
             '30': 30,
             '40': 40,
-            '50': 50,
-            '25': 25,
             '50': 50,
             '75': 75,
             '900': 900,
@@ -51,7 +50,11 @@ module.exports = {
         extend: {
             screens: {
                 'print': {'raw': 'print'},
-                }
+                },
+            spacing: {
+                '82': '20.5rem',
+                '84': '21rem',
+            },
         },
         fontFamily: {
             'serif': ['archia'],
