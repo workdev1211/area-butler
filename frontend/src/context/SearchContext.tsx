@@ -11,7 +11,7 @@ import {
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
   OsmName,
-  TransportationParam
+  TransportationParam,
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
@@ -61,6 +61,7 @@ export interface SearchContextState {
   responseRoutes: EntityRoute[];
   responseTransitRoutes: EntityTransitRoute[];
   responseToken: string;
+  gotoMapCenter?: boolean;
 }
 
 export const initialState: SearchContextState = {
@@ -74,7 +75,7 @@ export const initialState: SearchContextState = {
   responseActiveMeans: [],
   responseRoutes: [],
   responseTransitRoutes: [],
-  responseToken: '' 
+  responseToken: "",
 };
 
 export enum SearchContextActionTypes {
@@ -97,6 +98,7 @@ export enum SearchContextActionTypes {
   SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
   SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
   SET_MAP_CENTER = "SET_MAP_CENTER",
+  GOTO_MAP_CENTER = "GOTO_MAP_CENTER",
   SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
   CENTER_ZOOM_COORDINATES = "CENTER_ZOOM_COORDINATES",
   SET_HIGHLIGHT_ID = "SET_HIGHLIGHT_ID",
@@ -108,7 +110,7 @@ export enum SearchContextActionTypes {
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
-  ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE"
+  ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
 }
 
 type SearchContextActionsPayload = {
@@ -133,6 +135,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
+  [SearchContextActionTypes.GOTO_MAP_CENTER]: boolean;
   [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
   [SearchContextActionTypes.CENTER_ZOOM_COORDINATES]: {
     zoom: number;
@@ -150,9 +153,8 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: Poi;
 };
 
-export type SearchContextActions = ActionMap<
-  SearchContextActionsPayload
->[keyof ActionMap<SearchContextActionsPayload>];
+export type SearchContextActions =
+  ActionMap<SearchContextActionsPayload>[keyof ActionMap<SearchContextActionsPayload>];
 
 export const searchContextReducer = (
   state: SearchContextState,
@@ -182,61 +184,62 @@ export const searchContextReducer = (
         ...state,
         searchResponse: { ...action.payload },
         location: action.payload?.centerOfInterest?.coordinates,
-        mapCenter: action.payload?.centerOfInterest?.coordinates
+        mapCenter: action.payload?.centerOfInterest?.coordinates,
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_CONFIG: {
       return {
         ...state,
-        responseConfig: !!action.payload ? { ...action.payload } : undefined
+        responseConfig: !!action.payload ? { ...action.payload } : undefined,
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS: {
       return {
         ...state,
-        responseActiveMeans: [...action.payload]
+        responseActiveMeans: [...action.payload],
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_TOKEN: {
       return {
         ...state,
-        responseToken: action.payload
+        responseToken: action.payload,
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_ROUTES: {
       return {
         ...state,
-        responseRoutes: [...action.payload]
+        responseRoutes: [...action.payload],
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES: {
       return {
         ...state,
-        responseTransitRoutes: [...action.payload]
+        responseTransitRoutes: [...action.payload],
       };
     }
     case SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES: {
       return {
         ...state,
-        responseGroupedEntities: [...action.payload]
+        responseGroupedEntities: [...action.payload],
       };
     }
     case SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP: {
       return {
         ...state,
-        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(g =>
-          g.title === action.payload
-            ? { ...g, active: true }
-            : { ...g, active: false }
-        )
+        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(
+          (g) =>
+            g.title === action.payload
+              ? { ...g, active: true }
+              : { ...g, active: false }
+        ),
       };
     }
     case SearchContextActionTypes.TOGGLE_RESPONSE_GROUP: {
       return {
         ...state,
-        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(g =>
-          g.title === action.payload ? { ...g, active: !g.active } : g
-        )
+        responseGroupedEntities: (state.responseGroupedEntities ?? []).map(
+          (g) => (g.title === action.payload ? { ...g, active: !g.active } : g)
+        ),
       };
     }
     case SearchContextActionTypes.SET_ZENSUS_DATA: {
@@ -254,11 +257,14 @@ export const searchContextReducer = (
     case SearchContextActionTypes.SET_MAP_CENTER: {
       return { ...state, mapCenter: action.payload };
     }
+    case SearchContextActionTypes.GOTO_MAP_CENTER: {
+      return { ...state, gotoMapCenter: action.payload };
+    }
     case SearchContextActionTypes.CENTER_ZOOM_COORDINATES: {
       return {
         ...state,
         mapZoomLevel: action.payload.zoom,
-        mapCenter: action.payload.center
+        mapCenter: action.payload.center,
       };
     }
     case SearchContextActionTypes.SET_HIGHLIGHT_ID: {
@@ -268,21 +274,21 @@ export const searchContextReducer = (
       return {
         ...state,
         printingActive: action.payload,
-        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates,
       };
     }
     case SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE: {
       return {
         ...state,
         printingCheatsheetActive: action.payload,
-        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates,
       };
     }
     case SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE: {
       return {
         ...state,
         printingDocxActive: action.payload,
-        mapCenter: state.searchResponse?.centerOfInterest.coordinates
+        mapCenter: state.searchResponse?.centerOfInterest.coordinates,
       };
     }
     case SearchContextActionTypes.ADD_MAP_CLIPPING: {
@@ -292,7 +298,7 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.REMOVE_MAP_CLIPPING: {
       const newMapClippings = [...(state.mapClippings || [])].filter(
-        c => c.mapClippingDataUrl !== action.payload.mapClippingDataUrl
+        (c) => c.mapClippingDataUrl !== action.payload.mapClippingDataUrl
       );
       return { ...state, mapClippings: newMapClippings };
     }
@@ -312,13 +318,13 @@ export const searchContextReducer = (
         JSON.stringify(state.searchResponse)
       ) as ApiSearchResponse;
       searchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-        (poi as any) as ApiOsmLocation
+        poi as any as ApiOsmLocation
       );
       searchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-        (poi as any) as ApiOsmLocation
+        poi as any as ApiOsmLocation
       );
       searchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-        (poi as any) as ApiOsmLocation
+        poi as any as ApiOsmLocation
       );
 
       return { ...state, searchResponse };
@@ -333,11 +339,11 @@ export const SearchContext = React.createContext<{
   searchContextDispatch: Dispatch<SearchContextActions>;
 }>({
   searchContextState: initialState,
-  searchContextDispatch: () => undefined
+  searchContextDispatch: () => undefined,
 });
 
 export const SearchContextProvider: React.FunctionComponent = ({
-  children
+  children,
 }) => {
   const [state, dispatch] = React.useReducer(
     searchContextReducer,

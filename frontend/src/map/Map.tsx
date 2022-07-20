@@ -376,7 +376,8 @@ const Map = memo<MapProps>(
     isShownPreferredLocationsModal,
     togglePreferredLocationsModal,
   }) => {
-    const { searchContextDispatch } = useContext(SearchContext);
+    const { searchContextState, searchContextDispatch } =
+      useContext(SearchContext);
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
@@ -573,10 +574,7 @@ const Map = memo<MapProps>(
 
     // react on zoom and center change
     useEffect(() => {
-      if (currentMap && mapCenter && mapZoomLevel) {
-        // center and zoom view
-        // currentMap.setView(mapCenter, mapZoomLevel);
-
+      if (currentMap && mapZoomLevel) {
         // handle growing/shrinking of icons based on zoom level
         if (amenityMarkerGroup) {
           const markers = amenityMarkerGroup.getLayers() as IdMarker[];
@@ -615,7 +613,24 @@ const Map = memo<MapProps>(
         }
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mapCenter, mapZoomLevel, highlightId]);
+    }, [mapZoomLevel, highlightId]);
+
+    useEffect(() => {
+      if (
+        currentMap &&
+        searchContextState.mapCenter &&
+        searchContextState.gotoMapCenter
+      ) {
+        currentMap.setView(searchContextState.mapCenter);
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.GOTO_MAP_CENTER,
+          payload: false,
+        });
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchContextState.gotoMapCenter]);
 
     const meansStringified = JSON.stringify(means);
 

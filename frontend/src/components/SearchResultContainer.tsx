@@ -546,6 +546,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           toggleAllLocalities={() => {
             const oldGroupedEntities =
               searchContextState.responseGroupedEntities ?? [];
+
             searchContextDispatch({
               type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
               payload: oldGroupedEntities.map((g) => ({
@@ -563,19 +564,24 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           }
           transitRoutes={searchContextState.responseTransitRoutes}
           searchAddress={placesLocation?.label}
-          resetPosition={() =>
+          resetPosition={() => {
             searchContextDispatch({
               type: SearchContextActionTypes.SET_MAP_CENTER,
               payload: searchResponse?.centerOfInterest?.coordinates!,
-            })
-          }
+            });
+
+            searchContextDispatch({
+              type: SearchContextActionTypes.GOTO_MAP_CENTER,
+              payload: true,
+            });
+          }}
           user={user}
-          openUpgradeSubscriptionModal={(message) =>
+          openUpgradeSubscriptionModal={(message) => {
             userDispatch({
               type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
               payload: { open: true, message },
-            })
-          }
+            });
+          }}
           showInsights={!embedMode}
           config={searchContextState.responseConfig}
           isShownPreferredLocationsModal={isShownPreferredLocationsModal}
