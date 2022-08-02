@@ -44,6 +44,7 @@
     "class-transformer": "^0.5.1",
     "class-validator": "^0.13.2",
     "clone-buffer": "^1.0.0",
+    "csv-parse": "^5.3.0",
     "dayjs": "^1.11.3",
     "dotenv": "^16.0.0",
     "fuse.js": "^6.5.3",

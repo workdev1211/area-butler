@@ -6,8 +6,11 @@ import {
   Param,
   Post,
   Put,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
@@ -17,6 +20,7 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import FileUploadDto from '../dto/file-upload.dto';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -72,5 +76,19 @@ export class RealEstateListingController extends AuthenticatedController {
     @InjectUser() user: UserDocument,
   ) {
     await this.realEstateListingService.deleteRealEstateListing(user, id);
+  }
+
+  @ApiOperation({ description: 'Import a csv file' })
+  @ApiConsumes('multipart/form-data')
+  @ApiBody({ description: 'The file to upload', type: FileUploadDto })
+  @Post('upload')
+  @UseInterceptors(FileInterceptor('file'))
+  async uploadFile(
+    @InjectUser() user: UserDocument,
+    @UploadedFile() file: Express.Multer.File,
+  ) {
+    await this.realEstateListingService.importRealEstateListings(user, file);
+
+    return 'done';
   }
 }

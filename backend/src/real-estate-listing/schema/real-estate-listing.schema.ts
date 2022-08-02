@@ -1,9 +1,10 @@
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Document } from 'mongoose';
+
 import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
 } from '@area-butler-types/real-estate';
-import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
@@ -19,7 +20,7 @@ export class RealEstateListing {
   @Prop({ required: true })
   address: string;
 
-  @Prop({ required: false })
+  @Prop()
   externalUrl: string;
 
   @Prop({ type: Date, default: Date.now })
@@ -34,7 +35,7 @@ export class RealEstateListing {
   @Prop({ type: Object })
   characteristics: ApiRealEstateCharacteristics;
 
-  @Prop({ type: Object })
+  @Prop({ type: Object, required: true })
   location: GeoJsonPoint;
 }
 
