@@ -14,6 +14,7 @@ interface IBusyModalProps {
   totalItems?: number;
   isRandomMessages?: boolean;
   isAnimated?: boolean;
+  isDisabledLoadingBar?: boolean;
 }
 
 const BusyModal: FunctionComponent<IBusyModalProps> = ({
@@ -21,26 +22,29 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
   totalItems,
   isRandomMessages,
   isAnimated,
+  isDisabledLoadingBar,
 }) => {
   const [randomMessages, setRandomMessages] = useState<string[]>([]);
 
   useEffect(() => {
-    if (isRandomMessages && totalItems) {
-      let messages = [...busyModalMessages];
-      const resultingMessages = [];
+    if (!isRandomMessages || !totalItems) {
+      return;
+    }
 
-      for (let i = 0; i < totalItems; i += 1) {
-        if (!messages.length) {
-          messages = [...busyModalMessages];
-        }
+    let messages = [...busyModalMessages];
+    const resultingMessages = [];
 
-        const randomMessageNumber = Math.floor(Math.random() * messages.length);
-        const randomMessage = messages.splice(randomMessageNumber, 1);
-        resultingMessages.push(...randomMessage);
+    for (let i = 0; i < totalItems; i += 1) {
+      if (!messages.length) {
+        messages = [...busyModalMessages];
       }
 
-      setRandomMessages(resultingMessages);
+      const randomMessageNumber = Math.floor(Math.random() * messages.length);
+      const randomMessage = messages.splice(randomMessageNumber, 1);
+      resultingMessages.push(...randomMessage);
     }
+
+    setRandomMessages(resultingMessages);
   }, [isRandomMessages, totalItems]);
 
   let filledPercentage: number;
@@ -61,7 +65,14 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
         <div className="modal-header">Wird geladen</div>
         <div className="modal-content">
           {items.map((item, i) => (
-            <div key={item.key}>
+            <div
+              key={item.key}
+              style={
+                isDisabledLoadingBar && items.length - 1 === i
+                  ? { marginBottom: 0 }
+                  : { marginBottom: "5px" }
+              }
+            >
               {isAnimated && (
                 <>
                   <img
@@ -77,7 +88,8 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
               <span>{isRandomMessages ? randomMessages[i] : item.text}</span>
             </div>
           ))}
-          {totalItems && (
+          {isDisabledLoadingBar && <div />}
+          {totalItems && !isDisabledLoadingBar && (
             <div className="progress-bar">
               <div
                 className="filled-progress-bar"

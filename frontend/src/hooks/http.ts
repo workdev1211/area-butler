@@ -26,14 +26,17 @@ export const useHttp = () => {
     });
   };
 
-  const post = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
-    const headers: any = { ...defaultHeaders };
+  const post = async <T>(
+    url: string,
+    body: any,
+    requestHeaders = {}
+  ): Promise<AxiosResponse<T>> => {
+    const headers: any = { ...defaultHeaders, ...requestHeaders };
     const idToken = await getIdTokenClaims();
 
-    if (!!idToken) {
+    if (idToken) {
       const { __raw } = await getIdTokenClaims();
-      const authorization = `Bearer ${__raw}`;
-      headers["Authorization"] = authorization;
+      headers["Authorization"] = `Bearer ${__raw}`;
     }
 
     return axios.post(`${baseUrl}${url}`, body, {

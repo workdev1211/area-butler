@@ -1,4 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { Link, useHistory, useLocation } from "react-router-dom";
+
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import {
@@ -6,11 +8,11 @@ import {
   allRealEstateCostTypes,
 } from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
+import uploadIcon from "../assets/icons/upload_file.svg";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import locationIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
-import { Link, useHistory, useLocation } from "react-router-dom";
 import FormModal from "../components/FormModal";
 import {
   RealEstateActionTypes,
@@ -24,17 +26,19 @@ import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
+import BusyModal from "../components/BusyModal";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
   submitButtonTitle: "Löschen",
 };
 
-const RealEstatesPage: React.FunctionComponent = () => {
-  const { get } = useHttp();
+const RealEstatesPage: FunctionComponent = () => {
+  const { get, post } = useHttp();
   const history = useHistory();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
+
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
@@ -44,6 +48,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
   >([]);
   const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] =
     useState<boolean>(false);
+  const [isShownBusyModal, setIsShownBusyModal] = useState<boolean>(false);
 
   const user = userState.user!;
   const hasSubscription = !!user?.subscriptionPlan;
@@ -51,13 +56,14 @@ const RealEstatesPage: React.FunctionComponent = () => {
     hasSubscription && user?.subscriptionPlan!.config.appFeatures.htmlSnippet;
 
   useEffect(() => {
-    if (!!user) {
+    if (user) {
       const fetchEmbeddableMaps = async () => {
         const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
           await get<ApiSearchResultSnapshotResponse[]>(
             "/api/location/user-embeddable-maps"
           )
         ).data;
+
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAPS,
           payload: embeddableMaps,
@@ -75,17 +81,21 @@ const RealEstatesPage: React.FunctionComponent = () => {
 
   const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing) => {
     const { lat, lng } = realEstate.coordinates!;
+
     setRealEstateEmbeddableMaps(
       userState.embeddableMaps.filter(
         (map) =>
           map.snapshot.location.lat === lat && map.snapshot.location.lng === lng
       )
     );
+
     setShowEmbeddableMapsModal(true);
   };
+
   const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
     const result = await deriveGeocodeByAddress(listing.address);
     const { lat, lng } = result;
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: { label: listing.address, value: { place_id: "123" } },
@@ -101,6 +111,7 @@ const RealEstatesPage: React.FunctionComponent = () => {
         lng,
       },
     });
+
     history.push("/");
   };
 
@@ -109,21 +120,57 @@ const RealEstatesPage: React.FunctionComponent = () => {
       const response = await get<ApiRealEstateListing[]>(
         "/api/real-estate-listings"
       );
+
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: response.data,
       });
     };
+
     fetchRealEstates();
   }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const ActionsTop: React.FunctionComponent = () => {
+  const uploadCsvFile = async (file: File) => {
+    const formData = new FormData();
+    formData.append("file", file);
+    setIsShownBusyModal(true);
+
+    await post("/api/real-estate-listings/upload", formData, {
+      "Content-Type": "multipart/form-data",
+    });
+
+    setIsShownBusyModal(false);
+    history.go(0);
+  };
+
+  const ActionsTop: FunctionComponent = () => {
     return (
       <>
         <li>
           <Link to="/real-estates/new" className="btn btn-link">
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
+          <button className="btn btn-link">
+            <img
+              src={uploadIcon}
+              alt="upload-icon"
+              style={{ filter: "invert(100%)" }}
+            />
+            <label htmlFor="file" style={{ cursor: "pointer" }}>
+              Import aus CSV-Datei
+            </label>
+            <input
+              type="file"
+              id="file"
+              accept=".csv"
+              style={{ display: "none" }}
+              onChange={async (e) => {
+                await uploadCsvFile(e.target.files![0]);
+                e.target.files = null;
+                e.target.value = "";
+              }}
+            />
+          </button>
         </li>
       </>
     );
@@ -141,6 +188,13 @@ const RealEstatesPage: React.FunctionComponent = () => {
           showModal={showEmbeddableMapsModal}
           setShowModal={setShowEmbeddableMapsModal}
           embeddableMaps={realEstateEmbeddableMaps}
+        />
+      )}
+      {isShownBusyModal && (
+        <BusyModal
+          items={[{ key: "csv-import", text: "CSV-Datei wird importiert" }]}
+          isDisabledLoadingBar={true}
+          isAnimated={true}
         />
       )}
       <div className="overflow-x-auto" data-tour="real-estates-table">
