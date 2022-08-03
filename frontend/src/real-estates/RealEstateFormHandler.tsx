@@ -1,49 +1,53 @@
+import { FunctionComponent, useContext } from "react";
+import { useHistory } from "react-router-dom";
+
 import { FormModalData } from "components/FormModal";
 import { useHttp } from "hooks/http";
-import React from "react";
 import {
   deriveGeocodeByAddress,
   toastError,
-  toastSuccess
+  toastSuccess,
 } from "shared/shared.functions";
 import {
   ApiFurnishing,
   ApiRealEstateListing,
-  ApiUpsertRealEstateListing
+  ApiUpsertRealEstateListing,
 } from "../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
-  RealEstateContext
+  RealEstateContext,
 } from "../context/RealEstateContext";
 import RealEstateForm from "./RealEstateForm";
-import { useHistory } from "react-router-dom";
 
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
 ): Promise<ApiUpsertRealEstateListing> => {
   const availableFurnishing = Object.keys(ApiFurnishing);
+
+  // TODO convert to reduce
   const furnishing = Object.entries(values)
     .filter(([_, v]) => Boolean(v))
     .filter(([k, _]) => availableFurnishing.includes(k))
     .map(([k, _]) => k) as ApiFurnishing[];
 
   const { lat, lng } = await deriveGeocodeByAddress(values.address);
+
   return {
     name: values.name,
     address: values.address,
     externalUrl: values.externalUrl,
     coordinates: {
       lat,
-      lng
+      lng,
     },
     showInSnippet: values.showInSnippet,
     costStructure: {
       startingAt: values.startingAt,
       price: {
         amount: values.price,
-        currency: "€"
+        currency: "€",
       },
-      type: values.type
+      type: values.type,
     },
     characteristics: {
       startingAt: values.propertyStartingAt,
@@ -51,8 +55,9 @@ const mapFormToApiUpsertRealEstateListing = async (
       propertySizeInSquareMeters: values.propertySizeInSquareMeters,
       realEstateSizeInSquareMeters: values.realEstateSizeInSquareMeters,
       energyEfficiency: values.energyEfficiency,
-      furnishing
-    }
+      furnishing,
+    },
+    status: values.status,
   };
 };
 
@@ -60,24 +65,26 @@ export interface RealEstateFormHandlerProps extends FormModalData {
   realEstate: Partial<ApiRealEstateListing>;
 }
 
-export const RealEstateFormHandler: React.FunctionComponent<RealEstateFormHandlerProps> = ({
+export const RealEstateFormHandler: FunctionComponent<
+  RealEstateFormHandlerProps
+> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
-  realEstate
+  realEstate,
 }) => {
   const history = useHistory();
   const { post, put } = useHttp();
-  const { realEstateDispatch } = React.useContext(RealEstateContext);
+  const { realEstateDispatch } = useContext(RealEstateContext);
 
   const onSubmit = async (values: any) => {
-    const mappedRealEstateListing: ApiUpsertRealEstateListing = await mapFormToApiUpsertRealEstateListing(
-      values
-    );
+    const mappedRealEstateListing: ApiUpsertRealEstateListing =
+      await mapFormToApiUpsertRealEstateListing(values);
 
     try {
       let response;
       beforeSubmit();
+
       if (realEstate.id) {
         response = await put(
           `/api/real-estate-listings/${realEstate.id}`,
@@ -89,11 +96,14 @@ export const RealEstateFormHandler: React.FunctionComponent<RealEstateFormHandle
           mappedRealEstateListing
         );
       }
+
       const newRealEstate = response.data as ApiRealEstateListing;
+
       realEstateDispatch({
         type: RealEstateActionTypes.PUT_REAL_ESTATE,
-        payload: newRealEstate
+        payload: newRealEstate,
       });
+
       postSubmit(true);
       toastSuccess("Objekt erfolgreich gespeichert!");
       history.push(`/real-estates?id=${newRealEstate.id}`);

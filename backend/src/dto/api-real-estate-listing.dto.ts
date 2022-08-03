@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsEnum,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -7,12 +8,16 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import {
+  ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+} from '@area-butler-types/real-estate';
 import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 
 class ApiRealEstateListingDto implements ApiRealEstateListing {
+  @IsNotEmpty()
   @IsString()
   address: string;
 
@@ -32,17 +37,24 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   costStructure?: ApiRealEstateCostDto;
 
   @IsOptional()
+  @IsString()
   externalUrl?: string;
 
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @IsNotEmpty()
+  @IsString()
   name: string;
 
   @IsNotEmpty()
   @IsBoolean()
   showInSnippet: boolean;
+
+  @IsNotEmpty()
+  @IsEnum(ApiRealEstateStatusEnum)
+  status: ApiRealEstateStatusEnum;
 }
 
 export default ApiRealEstateListingDto;

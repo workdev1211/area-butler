@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
+  ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 
@@ -37,6 +38,9 @@ export class RealEstateListing {
 
   @Prop({ type: Object, required: true })
   location: GeoJsonPoint;
+
+  @Prop({ default: ApiRealEstateStatusEnum.IN_PREPARATION })
+  status: ApiRealEstateStatusEnum;
 }
 
 export const RealEstateListingSchema =

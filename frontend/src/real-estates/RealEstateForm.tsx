@@ -1,5 +1,7 @@
+import { FunctionComponent, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
+
 import {
   allFurnishing,
   allRealEstateCostTypes,
@@ -8,11 +10,13 @@ import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
   ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+  RealEstateStatusEnum,
 } from "../../../shared/types/real-estate";
 import Input from "../components/Input";
 import Select from "../components/Select";
 import Checkbox from "../components/Checkbox";
-import React, { useEffect, useState } from "react";
+
 import LocationAutocomplete from "../components/LocationAutocomplete";
 
 export interface RealEstateFormProps {
@@ -21,12 +25,13 @@ export interface RealEstateFormProps {
   realEstate: Partial<ApiRealEstateListing>;
 }
 
-export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
+export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
   realEstate,
   onSubmit,
   formId,
 }) => {
   const furnishing = {} as any;
+
   (realEstate?.characteristics?.furnishing || []).map(
     (f) => (furnishing[f] = true)
   );
@@ -35,6 +40,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
     useState<Partial<ApiRealEstateListing>>(realEstate);
 
   const realEstateString = JSON.stringify(realEstate);
+
   useEffect(() => {
     const parsedEstate = JSON.parse(realEstateString);
     setLocalRealEstate(parsedEstate);
@@ -46,6 +52,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
       address: payload.value.label,
       coordinates: payload.coordinates,
     };
+
     setLocalRealEstate(updatedRealEstate);
   };
 
@@ -71,6 +78,8 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
           localRealEstate.characteristics?.propertySizeInSquareMeters ?? 0,
         energyEfficiency:
           localRealEstate.characteristics?.energyEfficiency ?? "A",
+        status:
+          localRealEstate.status ?? ApiRealEstateStatusEnum.IN_PREPARATION,
         ...furnishing,
       }}
       validationSchema={Yup.object({
@@ -81,6 +90,7 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
         realEstateSizeInSquareMeters: Yup.number(),
         propertySizeInSquareMeters: Yup.number(),
         energyEfficiency: Yup.string(),
+        status: Yup.string(),
       })}
       enableReinitialize={true}
       onSubmit={(values) => {
@@ -96,6 +106,15 @@ export const RealEstateForm: React.FunctionComponent<RealEstateFormProps> = ({
           <Checkbox name="showInSnippet" key="showInSnippet">
             In Snippet anzeigen
           </Checkbox>
+        </div>
+        <div className="form-control">
+          <Select label="Typ" name="status" placeholder="Typ">
+            {Object.entries(RealEstateStatusEnum).map(([key, value]) => (
+              <option value={key} key={key}>
+                {value}
+              </option>
+            ))}
+          </Select>
         </div>
         <div className="form-control">
           <Input

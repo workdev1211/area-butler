@@ -25,5 +25,6 @@ export const mapRealEstateListingToApiRealEstateListing = (
     showInSnippet: realEstateListing.showInSnippet,
     costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,
+    status: realEstateListing.status,
   };
 };
