@@ -359,18 +359,20 @@ export class SubscriptionService {
       return { name, email };
     });
 
-    await this.mailSenderService.batchSendMail({
-      to: sendTo,
-      templateId: subscriptionRenewalTemplateId,
-      params: {
-        href: this.getSubscriptionCancelUrl(),
-      },
-    });
+    let loggerMessage = 'There are no users with expiring subscriptions.';
 
-    this.logger.log(
-      `The emails have been sent to ${emails.join(
-        ', ',
-      )} on ${currentDate.toISOString()}`,
-    );
+    if (sendTo.length > 0) {
+      await this.mailSenderService.batchSendMail({
+        to: sendTo,
+        templateId: subscriptionRenewalTemplateId,
+        params: {
+          href: this.getSubscriptionCancelUrl(),
+        },
+      });
+
+      loggerMessage = `The emails have been sent to ${emails.join(', ')}.`;
+    }
+
+    this.logger.log(loggerMessage);
   }
 }
