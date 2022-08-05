@@ -24,6 +24,7 @@ import { osmEntityTypes } from "../../../shared/constants/constants";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiUser } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
+import { getRealEstateCost } from "../shared/real-estate.functions";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -200,9 +201,10 @@ const PotentialCustomersPage: FunctionComponent = () => {
                       : "-"}
                   </td>
                   <td>
-                    {!!customer?.realEstateCostStructure?.type &&
-                    !!customer?.realEstateCostStructure.price
-                      ? `${customer?.realEstateCostStructure.price.amount} € (${
+                    {customer?.realEstateCostStructure
+                      ? `${getRealEstateCost(
+                          customer.realEstateCostStructure
+                        )} (${
                           allRealEstateCostTypes.find(
                             (t) =>
                               t.type === customer?.realEstateCostStructure?.type

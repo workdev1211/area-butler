@@ -60,6 +60,7 @@ import {
 import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import "./Map.scss";
 import satelliteIcon from "../assets/icons/satellite.svg";
+import { getRealEstateCost } from "../shared/real-estate.functions";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -213,23 +214,21 @@ export class IdMarker extends L.Marker {
           );
         }
 
-        if ((realEstateData?.costStructure?.price?.amount || 0) > 0) {
-          const startingAt = realEstateData?.costStructure?.startingAt
-            ? "Ab"
-            : "";
-
+        if (realEstateData?.costStructure) {
           realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Preis: </span> ${startingAt} ${realEstateData?.costStructure?.price.amount} €`
+            `<span class="font-semibold mt-2">Preis: </span> ${getRealEstateCost(
+              realEstateData.costStructure
+            )}`
           );
         }
 
-        if (!!this.entity.externalUrl && this.entity.externalUrl.length) {
+        if (this.entity.externalUrl && this.entity.externalUrl.length) {
           realEstateInformationParts.push(
             `<a target="_blank" href="${this.entity.externalUrl}" class="real-estate-cta">Direkt zum Objekt ></a>`
           );
         }
 
-        if (!!this.hideEntityFunction) {
+        if (this.hideEntityFunction) {
           realEstateInformationParts.push(
             `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`
           );

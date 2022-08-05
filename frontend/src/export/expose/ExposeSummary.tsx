@@ -1,20 +1,23 @@
+import {FunctionComponent} from "react";
+
 import EntityGridSummary from "export/EntityGridSummary";
 import { deriveColorPalette } from "shared/shared.functions";
 import {
   meansOfTransportations,
-  unitsOfTransportation
+  unitsOfTransportation,
 } from "../../../../shared/constants/constants";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import "./ExposeSummary.scss";
 import { EntityGroup } from "../../components/SearchResultContainer";
+import { getRealEstateCost } from "../../shared/real-estate.functions";
 
 export interface ExposeSummaryProps {
   groupedEntries: EntityGroup[];
@@ -25,19 +28,19 @@ export interface ExposeSummaryProps {
   primaryColor: string;
 }
 
-const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
+const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
   realEstateListing,
   listingAddress,
   groupedEntries,
   transportationParams,
   activeMeans,
-  primaryColor
+  primaryColor,
 }) => {
   const colorPalette = deriveColorPalette(primaryColor);
 
   const mobilityTypeStyle = {
     background: `linear-gradient(to right, ${colorPalette.primaryColor}, ${colorPalette.primaryColorDark} 40%)`,
-    color: colorPalette.textColor
+    color: colorPalette.textColor,
   };
 
   return (
@@ -58,34 +61,33 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
                 <div className="font-bold">{listingAddress}</div>
               </>
             )}
-            {!!realEstateListing && (
+            {realEstateListing && (
               <>
                 <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
                 <div className="font-bold">{realEstateListing.address}</div>
 
-                {!!realEstateListing?.costStructure?.type &&
-                  !!realEstateListing?.costStructure?.price && (
-                    <div>
-                      <strong>Kosten:</strong>{" "}
-                      {realEstateListing.costStructure.price.amount} € (
-                      {
-                        allRealEstateCostTypes.find(
-                          t => t.type === realEstateListing.costStructure?.type
-                        )?.label
-                      }
-                      )
-                    </div>
-                  )}
+                {realEstateListing?.costStructure && (
+                  <div>
+                    <strong>Kosten:</strong>{" "}
+                    {getRealEstateCost(realEstateListing?.costStructure)} (
+                    {
+                      allRealEstateCostTypes.find(
+                        (t) => t.type === realEstateListing.costStructure?.type
+                      )?.label
+                    }
+                    )
+                  </div>
+                )}
                 {realEstateListing.characteristics?.furnishing && (
                   <div>
                     <strong>Ausstattung:</strong>{" "}
                     {allFurnishing
-                      .filter(f =>
+                      .filter((f) =>
                         realEstateListing.characteristics?.furnishing.includes(
                           f.type
                         )
                       )
-                      .map(f => f.label)
+                      .map((f) => f.label)
                       .join(", ")}
                   </div>
                 )}
@@ -105,13 +107,13 @@ const ExposeSummary: React.FunctionComponent<ExposeSummaryProps> = ({
                 <span>
                   {
                     meansOfTransportations.find(
-                      means => means.type === routingProfile.type
+                      (means) => means.type === routingProfile.type
                     )?.label
                   }{" "}
                   ({routingProfile.amount}{" "}
                   {
                     unitsOfTransportation.find(
-                      unit => unit.type === routingProfile.unit
+                      (unit) => unit.type === routingProfile.unit
                     )?.label
                   }
                   )

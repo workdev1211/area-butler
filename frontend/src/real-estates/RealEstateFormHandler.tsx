@@ -42,11 +42,18 @@ const mapFormToApiUpsertRealEstateListing = async (
     },
     showInSnippet: values.showInSnippet,
     costStructure: {
-      startingAt: values.startingAt,
-      price: {
-        amount: values.price,
-        currency: "€",
-      },
+      minPrice: values.minPrice
+        ? {
+            amount: values.minPrice,
+            currency: "€",
+          }
+        : undefined,
+      maxPrice: values.maxPrice
+        ? {
+            amount: values.maxPrice,
+            currency: "€",
+          }
+        : undefined,
       type: values.type,
     },
     characteristics: {
@@ -59,6 +66,20 @@ const mapFormToApiUpsertRealEstateListing = async (
     },
     status: values.status,
   };
+};
+
+const validateBeforeSubmit = (values: any): boolean => {
+  if (!values.address) {
+    toastError("Bitte geben Sie die Immobilien-Adresse an");
+    return false;
+  }
+
+  if (!Number.isFinite(values.minPrice) && !Number.isFinite(values.maxPrice)) {
+    toastError("Bitte geben Sie entweder Mindest- oder Höchstpreise an");
+    return false;
+  }
+
+  return true;
 };
 
 export interface RealEstateFormHandlerProps extends FormModalData {
@@ -78,6 +99,13 @@ export const RealEstateFormHandler: FunctionComponent<
   const { realEstateDispatch } = useContext(RealEstateContext);
 
   const onSubmit = async (values: any) => {
+    const isValidated = validateBeforeSubmit(values);
+
+    if (!isValidated) {
+      postSubmit(false);
+      return;
+    }
+
     const mappedRealEstateListing: ApiUpsertRealEstateListing =
       await mapFormToApiUpsertRealEstateListing(values);
 

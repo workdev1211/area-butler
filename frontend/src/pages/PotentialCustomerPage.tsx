@@ -1,11 +1,12 @@
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
+
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import {
   PotentialCustomerActionTypes,
-  PotentialCustomerContext
+  PotentialCustomerContext,
 } from "../context/PotentialCustomerContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import PotentialCustomerFormHandler from "../potential-customer/PotentialCustomerFormHandler";
@@ -20,35 +21,35 @@ export interface PotentialCustomerPageRouterProps {
 const defaultCustomer: Partial<ApiPotentialCustomer> = {
   name: "Neuer Interessent",
   preferredLocations: [],
-  routingProfiles: []
+  routingProfiles: [],
 };
 
-const PotentialCustomerPage: React.FunctionComponent = () => {
+const PotentialCustomerPage: FunctionComponent = () => {
   const { customerId } = useParams<PotentialCustomerPageRouterProps>();
   const isNewCustomer = customerId === "new" || customerId === "from-result";
-
   let initialCustomer = { ...defaultCustomer };
 
   const searchContextFromLocalStorageString = window.localStorage.getItem(
     localStorageSearchContext
   );
-  if (customerId === "from-result" && !!searchContextFromLocalStorageString) {
+
+  if (customerId === "from-result" && searchContextFromLocalStorageString) {
     const searchContextFromLocalStorage = JSON.parse(
       searchContextFromLocalStorageString!
     ) as SearchContextState;
+
     initialCustomer = {
       ...initialCustomer,
       preferredLocations: searchContextFromLocalStorage.preferredLocations,
       routingProfiles: searchContextFromLocalStorage.transportationParams,
       preferredAmenities: searchContextFromLocalStorage.localityParams.map(
-        l => l.name
-      )
+        (l) => l.name
+      ),
     };
   }
 
-  const [customer, setCustomer] = useState<Partial<ApiPotentialCustomer>>(
-    initialCustomer
-  );
+  const [customer, setCustomer] =
+    useState<Partial<ApiPotentialCustomer>>(initialCustomer);
   const [busy, setBusy] = useState(false);
 
   const { get } = useHttp();
@@ -61,13 +62,15 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
       const response = await get<ApiPotentialCustomer[]>(
         "/api/potential-customers"
       );
+
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data
+        payload: response.data,
       });
     };
+
     void fetchCustomers();
-  }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isNewCustomer) {
@@ -84,7 +87,7 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
     potentialCustomerState.customers,
     isNewCustomer,
     customerId,
-    setCustomer
+    setCustomer,
   ]);
 
   const formId = `form-${uuid()}`;
@@ -95,7 +98,7 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
-  const SubmitButton: React.FunctionComponent = () => {
+  const SubmitButton: FunctionComponent = () => {
     const classes = baseClasses + " ml-auto";
     return (
       <button
@@ -116,7 +119,7 @@ const PotentialCustomerPage: React.FunctionComponent = () => {
       withHorizontalPadding={true}
       actionsBottom={[
         <BackButton to="/potential-customers" key="customer-back" />,
-        <SubmitButton key="customer-submit" />
+        <SubmitButton key="customer-submit" />,
       ]}
     >
       <div className="py-20">

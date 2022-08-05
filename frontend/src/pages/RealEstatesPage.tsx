@@ -27,6 +27,7 @@ import { UserActionTypes, UserContext } from "context/UserContext";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
 import BusyModal from "../components/BusyModal";
+import { getRealEstateCost } from "../shared/real-estate.functions";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -220,10 +221,8 @@ const RealEstatesPage: FunctionComponent = () => {
                   <th>{realEstate.name}</th>
                   <td>{realEstate.address}</td>
                   <td>
-                    {!!realEstate.costStructure?.startingAt ? "Ab " : ""}
-                    {!!realEstate?.costStructure?.type &&
-                    !!realEstate?.costStructure?.price
-                      ? `${realEstate.costStructure.price.amount} € (${
+                    {realEstate?.costStructure
+                      ? `${getRealEstateCost(realEstate.costStructure)} (${
                           allRealEstateCostTypes.find(
                             (t) => t.type === realEstate.costStructure?.type
                           )?.label

@@ -1,17 +1,17 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState, ChangeEvent } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import {
   allFurnishing,
   allRealEstateCostTypes,
+  allRealEstateStatuses,
 } from "../../../shared/constants/real-estate";
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
-  RealEstateStatusEnum,
 } from "../../../shared/types/real-estate";
 import Input from "../components/Input";
 import Select from "../components/Select";
@@ -39,12 +39,17 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
   const [localRealEstate, setLocalRealEstate] =
     useState<Partial<ApiRealEstateListing>>(realEstate);
 
+  const [isNeededMinPrice, setIsNeededMinPrice] = useState(false);
   const realEstateString = JSON.stringify(realEstate);
 
   useEffect(() => {
     const parsedEstate = JSON.parse(realEstateString);
     setLocalRealEstate(parsedEstate);
-  }, [realEstateString, setLocalRealEstate]);
+
+    setIsNeededMinPrice(
+      Number.isFinite(parsedEstate?.costStructure?.minPrice?.amount)
+    );
+  }, [realEstateString, setLocalRealEstate, setIsNeededMinPrice]);
 
   const onLocationAutocompleteChange = (payload: any) => {
     const updatedRealEstate = {
@@ -56,13 +61,19 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
     setLocalRealEstate(updatedRealEstate);
   };
 
+  const minPrice = localRealEstate?.costStructure?.minPrice?.amount;
+  const maxPrice = localRealEstate?.costStructure?.maxPrice?.amount;
+
   return (
     <Formik
       initialValues={{
         name: localRealEstate?.name ?? "",
         externalUrl: localRealEstate?.externalUrl ?? "",
-        price: localRealEstate?.costStructure?.price?.amount || 0,
-        startingAt: localRealEstate?.costStructure?.startingAt,
+        minPrice: minPrice || "",
+        maxPrice: !minPrice && !maxPrice ? 0 : maxPrice || "",
+        priceStartingAt: Number.isFinite(
+          localRealEstate?.costStructure?.minPrice?.amount
+        ), // keep in mind that Number.isFinite is used instead of the global isFinite
         propertyStartingAt: localRealEstate?.characteristics?.startingAt,
         showInSnippet:
           localRealEstate === undefined ||
@@ -85,7 +96,11 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
       validationSchema={Yup.object({
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
         externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
-        price: Yup.number(),
+        minPrice: Yup.number(),
+        maxPrice: Yup.number(),
+        priceStartingAt: Yup.boolean(),
+        propertyStartingAt: Yup.boolean(),
+        showInSnippet: Yup.boolean(),
         type: Yup.string(),
         realEstateSizeInSquareMeters: Yup.number(),
         propertySizeInSquareMeters: Yup.number(),
@@ -101,123 +116,153 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
         });
       }}
     >
-      <Form id={formId}>
-        <div className="mb-5">
-          <Checkbox name="showInSnippet" key="showInSnippet">
-            In Snippet anzeigen
-          </Checkbox>
-        </div>
-        <div className="form-control">
-          <Select label="Typ" name="status" placeholder="Typ">
-            {Object.entries(RealEstateStatusEnum).map(([key, value]) => (
-              <option value={key} key={key}>
-                {value}
-              </option>
+      {(props) => {
+        const { setFieldValue } = props;
+
+        return (
+          <Form id={formId}>
+            <div className="mb-5">
+              <Checkbox name="showInSnippet" key="showInSnippet">
+                In Snippet anzeigen
+              </Checkbox>
+            </div>
+            <div className="form-control">
+              <Select label="Typ" name="status" placeholder="Typ">
+                {allRealEstateStatuses.map(({ label, status }) => (
+                  <option value={status} key={status}>
+                    {label}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <div className="form-control">
+              <Input
+                label="Objektname"
+                name="name"
+                type="text"
+                placeholder="Objektname eingeben"
+                className="input input-bordered w-full"
+              />
+            </div>
+            <div className="form-control">
+              <Input
+                label="Externer Link"
+                name="externalUrl"
+                type="text"
+                placeholder="Externer Link (z.B. https://www.google.de)"
+                className="input input-bordered w-full"
+              />
+            </div>
+            <LocationAutocomplete
+              value={localRealEstate.address}
+              setValue={() => {}}
+              afterChange={onLocationAutocompleteChange}
+            />
+            <div className="flex flex-wrap items-end justify-start gap-6">
+              <div className="form-control mr-5 mb-2">
+                <Checkbox
+                  name="startingAt"
+                  key="startingAt"
+                  onChange={({
+                    target: { checked },
+                  }: ChangeEvent<HTMLInputElement>) => {
+                    setFieldValue("startingAt", checked);
+                    setIsNeededMinPrice(checked);
+
+                    if (!checked) {
+                      setFieldValue("minPrice", "");
+                    }
+                  }}
+                >
+                  Ab
+                </Checkbox>
+              </div>
+              {isNeededMinPrice && (
+                <div className="form-control flex-1">
+                  <Input
+                    label="Mindestpreis (€)"
+                    name="minPrice"
+                    type="number"
+                    placeholder="Preis eingeben"
+                    className="input input-bordered w-full"
+                  />
+                </div>
+              )}
+              <div className="form-control flex-1">
+                <Input
+                  label={`${isNeededMinPrice ? "Höchstpreis" : "Preis"} (€)`}
+                  name="maxPrice"
+                  type="number"
+                  placeholder="Preis eingeben"
+                  className="input input-bordered w-full"
+                />
+              </div>
+              <div className="form-control flex-1">
+                <Select
+                  label="Kostenart"
+                  name="type"
+                  type="number"
+                  placeholder="Kostenart eingeben"
+                >
+                  {allRealEstateCostTypes.map((costType) => (
+                    <option value={costType.type} key={costType.type}>
+                      {costType.label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            </div>
+            <div className="flex flex-wrap items-end gap-6">
+              <div className="form-control mr-5 mb-2">
+                <Checkbox name="propertyStartingAt" key="propertyStartingAt">
+                  Ab
+                </Checkbox>
+              </div>
+              <div className="form-control flex-1">
+                <Input
+                  label="Größe in Quadratmeer"
+                  name="realEstateSizeInSquareMeters"
+                  type="number"
+                  placeholder="Größe in Quadrameter"
+                  className="input input-bordered w-full"
+                />
+              </div>
+              <div className="form-control flex-1">
+                <Input
+                  label="Grundstück in Quadratmeer"
+                  name="propertySizeInSquareMeters"
+                  type="number"
+                  placeholder="Grundstück in Quadrameter"
+                  className="input input-bordered w-full"
+                />
+              </div>
+            </div>
+            <div className="form-control">
+              <Select
+                label="Energieeffizienklasse"
+                name="energyEfficiency"
+                placeholder="Energieeffizienzklasse"
+              >
+                {Object.keys(ApiEnergyEfficiency).map((aee) => (
+                  <option value={aee} key={aee}>
+                    {aee}
+                  </option>
+                ))}
+              </Select>
+            </div>
+            <label className="label mt-4">
+              <span className="label-text">
+                <strong>Ausstattung</strong>
+              </span>
+            </label>
+            {allFurnishing.map((furnishing) => (
+              <Checkbox name={furnishing.type} key={furnishing.type}>
+                {furnishing.label}
+              </Checkbox>
             ))}
-          </Select>
-        </div>
-        <div className="form-control">
-          <Input
-            label="Objektname"
-            name="name"
-            type="text"
-            placeholder="Objektname eingeben"
-            className="input input-bordered w-full"
-          />
-        </div>
-        <div className="form-control">
-          <Input
-            label="Externer Link"
-            name="externalUrl"
-            type="text"
-            placeholder="Externer Link (z.B. https://www.google.de)"
-            className="input input-bordered w-full"
-          />
-        </div>
-        <LocationAutocomplete
-          value={localRealEstate.address}
-          setValue={() => {}}
-          afterChange={onLocationAutocompleteChange}
-        />
-        <div className="flex flex-wrap items-end justify-start gap-6">
-          <div className="form-control mr-5 mb-2">
-            <Checkbox name="startingAt" key="startingAt">
-              Ab
-            </Checkbox>
-          </div>
-          <div className="form-control flex-1">
-            <Input
-              label="Preis (€)"
-              name="price"
-              type="number"
-              placeholder="Preis eingeben"
-              className="input input-bordered w-full"
-            />
-          </div>
-          <div className="form-control flex-1">
-            <Select
-              label="Kostenart"
-              name="type"
-              type="number"
-              placeholder="Kostenart eingeben"
-            >
-              {allRealEstateCostTypes.map((costType) => (
-                <option value={costType.type} key={costType.type}>
-                  {costType.label}
-                </option>
-              ))}
-            </Select>
-          </div>
-        </div>
-        <div className="flex flex-wrap items-end gap-6">
-          <div className="form-control mr-5 mb-2">
-            <Checkbox name="propertyStartingAt" key="propertyStartingAt">
-              Ab
-            </Checkbox>
-          </div>
-          <div className="form-control flex-1">
-            <Input
-              label="Größe in Quadratmeer"
-              name="realEstateSizeInSquareMeters"
-              type="number"
-              placeholder="Größe in Quadrameter"
-              className="input input-bordered w-full"
-            />
-          </div>
-          <div className="form-control flex-1">
-            <Input
-              label="Grundstück in Quadratmeer"
-              name="propertySizeInSquareMeters"
-              type="number"
-              placeholder="Grundstück in Quadrameter"
-              className="input input-bordered w-full"
-            />
-          </div>
-        </div>
-        <div className="form-control">
-          <Select
-            label="Energieeffizienklasse"
-            name="energyEfficiency"
-            placeholder="Energieeffizienzklasse"
-          >
-            {Object.keys(ApiEnergyEfficiency).map((aee) => (
-              <option value={aee} key={aee}>
-                {aee}
-              </option>
-            ))}
-          </Select>
-        </div>
-        <label className="label mt-4">
-          <span className="label-text">
-            <strong>Ausstattung</strong>
-          </span>
-        </label>
-        {allFurnishing.map((furnishing) => (
-          <Checkbox name={furnishing.type} key={furnishing.type}>
-            {furnishing.label}
-          </Checkbox>
-        ))}
-      </Form>
+          </Form>
+        );
+      }}
     </Formik>
   );
 };

@@ -1,11 +1,10 @@
-import { Type } from 'class-transformer';
 import {
-  IsBoolean,
   IsNotEmpty,
-  IsOptional,
   ValidateNested,
   IsEnum,
+  ValidateIf,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 
 import {
   ApiRealEstateCost,
@@ -14,14 +13,18 @@ import {
 import ApiMoneyAmountDto from './api-money-amount.dto';
 
 class ApiRealEstateCostDto implements ApiRealEstateCost {
+  // should be present either minPrice or maxPrice, or both
+  @ValidateIf((realEstate) => realEstate.minPrice || !realEstate.maxPrice)
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiMoneyAmountDto)
-  price: ApiMoneyAmountDto;
+  minPrice?: ApiMoneyAmountDto;
 
-  @IsOptional()
-  @IsBoolean()
-  startingAt?: boolean;
+  @ValidateIf((realEstate) => realEstate.maxPrice || !realEstate.minPrice)
+  @IsNotEmpty()
+  @ValidateNested()
+  @Type(() => ApiMoneyAmountDto)
+  maxPrice?: ApiMoneyAmountDto;
 
   @IsNotEmpty()
   @IsEnum(ApiRealEstateCostType)

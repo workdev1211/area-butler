@@ -6,14 +6,14 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import React from "react";
 import {
   allFurnishing,
-  allRealEstateCostTypes
+  allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
   ApiUser,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
@@ -21,8 +21,9 @@ import { PdfPage } from "../PdfPage";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import {
   EntityGroup,
-  ResultEntity
+  ResultEntity,
 } from "../../components/SearchResultContainer";
+import { getRealEstateCost } from "../../shared/real-estate.functions";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -41,9 +42,10 @@ export interface CheatsheetProps {
 }
 
 export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
+  // TODO change to reduce
   const groupedEntries = props.groupedEntries
     .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
-    .filter(group => group.active && group.items.length > 0);
+    .filter((group) => group.active && group.items.length > 0);
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
@@ -52,7 +54,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
   const logo = user?.logo || AreaButlerLogo;
   const particlePollutionData = props.particlePollutionData;
 
-  const filteredGroups = groupedEntries.filter(group => group.active);
+  const filteredGroups = groupedEntries.filter((group) => group.active);
 
   let page = 0;
   const nextPageNumber = () => {
@@ -71,35 +73,34 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
         nextPageNumber={nextPageNumber}
       >
         <div className="m-10 flex flex-col gap-2">
-          {!!props.realEstateListing && (
+          {props.realEstateListing && (
             <>
               <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
 
-              {!!props.realEstateListing?.costStructure?.type &&
-                !!props.realEstateListing?.costStructure?.price && (
-                  <div>
-                    <strong>Kosten:</strong>{" "}
-                    {props.realEstateListing.costStructure.price.amount} € (
-                    {
-                      allRealEstateCostTypes.find(
-                        t =>
-                          t.type === props.realEstateListing.costStructure?.type
-                      )?.label
-                    }
-                    )
-                  </div>
-                )}
+              {props.realEstateListing?.costStructure && (
+                <div>
+                  <strong>Kosten:</strong>{" "}
+                  {getRealEstateCost(props.realEstateListing?.costStructure)} (
+                  {
+                    allRealEstateCostTypes.find(
+                      (t) =>
+                        t.type === props.realEstateListing.costStructure?.type
+                    )?.label
+                  }
+                  )
+                </div>
+              )}
               {props.realEstateListing.characteristics?.furnishing && (
                 <div>
                   <strong>Ausstattung:</strong>{" "}
                   {allFurnishing
-                    .filter(f =>
+                    .filter((f) =>
                       props.realEstateListing.characteristics?.furnishing.includes(
                         f.type
                       )
                     )
-                    .map(f => f.label)
+                    .map((f) => f.label)
                     .join(", ")}
                 </div>
               )}
@@ -110,7 +111,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           {filteredGroups.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
           ) : (
-            filteredGroups.map(group => {
+            filteredGroups.map((group) => {
               return (
                 <div className="text-xs" key={"tab-content-" + group.title}>
                   <EntityList

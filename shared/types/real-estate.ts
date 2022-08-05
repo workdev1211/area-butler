@@ -23,9 +23,10 @@ export interface ApiUpsertRealEstateListing {
   status: ApiRealEstateStatusEnum;
 }
 
+// should be present either minPrice or maxPrice, or both
 export interface ApiRealEstateCost {
-  price: ApiMoneyAmount;
-  startingAt?: boolean;
+  minPrice?: ApiMoneyAmount;
+  maxPrice?: ApiMoneyAmount;
   type: ApiRealEstateCostType;
 }
 
@@ -71,11 +72,4 @@ export enum ApiRealEstateStatusEnum {
   FOR_RENT = "FOR_RENT",
   FOR_SALE = "FOR_SALE",
   RENTED_SOLD = "RENTED_SOLD",
-}
-
-export enum RealEstateStatusEnum {
-  IN_PREPARATION = "In Vorbereitung",
-  FOR_RENT = "Miete",
-  FOR_SALE = "Kauf",
-  RENTED_SOLD = "Vermietet/Verkauft",
 }

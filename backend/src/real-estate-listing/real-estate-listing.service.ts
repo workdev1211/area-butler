@@ -127,8 +127,22 @@ export class RealEstateListingService {
               return result;
             }
 
-            const priceAmount = convertStringToNumber(listing[23]);
+            const minPriceAmount = convertStringToNumber(listing[23]);
+            const maxPriceAmount = convertStringToNumber(listing[24]);
 
+            let minPrice = minPriceAmount
+              ? { amount: minPriceAmount, currency: '€' }
+              : undefined;
+            let maxPrice = maxPriceAmount
+              ? { amount: maxPriceAmount, currency: '€' }
+              : undefined;
+
+            if (minPriceAmount && !maxPriceAmount) {
+              minPrice = undefined;
+              maxPrice = { amount: minPriceAmount, currency: '€' };
+            }
+
+            // TODO change to plainToClass via the class-transformer
             const listingDocument = {
               userId: user._id,
               name: listing[0],
@@ -140,12 +154,14 @@ export class RealEstateListingService {
                 propertySizeInSquareMeters: convertStringToNumber(listing[22]),
                 furnishing: [],
               },
-              costStructure: priceAmount
-                ? {
-                    price: { amount: priceAmount, currency: '€' },
-                    type: ApiRealEstateCostType.SELL,
-                  }
-                : undefined,
+              costStructure:
+                minPrice || maxPrice
+                  ? {
+                      minPrice,
+                      maxPrice,
+                      type: ApiRealEstateCostType.SELL,
+                    }
+                  : undefined,
               location: {
                 type: 'Point',
                 coordinates: [longitude, latitude],
