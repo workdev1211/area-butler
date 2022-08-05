@@ -172,6 +172,9 @@ export class PotentialCustomerService {
 
     const { name, email, userId } = questionnaireRequest;
     const user = await this.userService.findById(userId);
+    user.subscription = await this.subscriptionService.findActiveByUserId(
+      user._id,
+    );
     const customers = await this.fetchPotentialCustomers(user);
 
     const existingCustomer = customers.find(

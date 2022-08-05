@@ -1,6 +1,7 @@
 import { Body, Controller, Post } from '@nestjs/common';
-import { PotentialCustomerService } from './potential-customer.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { PotentialCustomerService } from './potential-customer.service';
 import ApiUpsertQuestionnaireDto from '../dto/api-upsert-questionnaire.dto';
 
 @ApiTags('questionnaire')
@@ -10,7 +11,7 @@ export class QuestionnaireController {
 
   @ApiOperation({ description: 'Add a new questionnaire' })
   @Post()
-  public async insertQuestionnaire(
+  async insertQuestionnaire(
     @Body() questionnaireRequest: ApiUpsertQuestionnaireDto,
   ) {
     try {
