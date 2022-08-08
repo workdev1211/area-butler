@@ -14,7 +14,7 @@ export const TermsPage = () => {
           Amtsgericht Hamburg für die Nutzung der über die Website
           www.areabutler.de angebotenen Services
         </p>
-        <p>Stand: 07/2022</p>
+        <p>Stand: 08/2022</p>
         <h2>§1 Geltungsbereich</h2>
         <ol>
           <li data-start="1">
@@ -116,7 +116,7 @@ export const TermsPage = () => {
           </li>
           <li data-start="3">
             Auf Aufforderung hat der Nutzer KuDiBa seine Unternehmereigenschaft
-            nachzuweisen. Dies gilt nicht für Einzelabfragen, die theoretisch auf Privatpersonen beziehen könnten.
+            nachzuweisen. Dies gilt nicht für Einzelabfragen, die theoretisch auch durch eine Privatperson bezogen worden sein können.
           </li>
           <li data-start="3">
             § 312i Abs. 1 S. 1 Nr. 1 bis 3 und S. 2 BGB finden keine Anwendung.
@@ -201,7 +201,7 @@ export const TermsPage = () => {
             Nutzung von AreaButler durch den Nutzer geltend machen. Der Nutzer
             übernimmt alle KuDiBa aufgrund einer Verletzung von Rechten Dritter
             entstehenden angemessenen Kosten, einschließlich solcher der
-            Rechtsverteidigung. Alle weitergehenden Rechte sowie
+            Rechtsverteidigung, diese jedoch der Höhe nach begrenzt auf die nach Gerichtskostengesetz (GKG) und Rechtsanwaltsvergütungsgesetz (RVG) abrechenbaren Gebühren. . Alle weitergehenden Rechte sowie
             Schadensersatzansprüche von KuDiBa bleiben unberührt. Der Nutzer ist
             verpflichtet, soweit Dritte aufgrund seiner Rechtsverletzung
             Ansprüche gegenüber KuDiBa geltend machen, KuDiBa umfassend und
@@ -211,9 +211,7 @@ export const TermsPage = () => {
           <li data-start="5">
             KuDiBa ist verpflichtet, geeignete Vorkehrungen gegen Datenverlust
             und zur Verhinderung unbefugten Zugriffs Dritter auf die Daten des
-            Nutzers zu treffen. Zu diesem Zweck wird KuDiBa tägliche Backups
-            vornehmen sowie nach dem Stand der Technik eine Firewall
-            installieren.
+            Nutzers zu treffen. Zu diesem Zweck wird KuDiBa tägliche Backups vornehmen sowie eine Firewall nach dem jeweils aktuellen Stand der Technik installieren.
           </li>
           <li data-start="5">
             Der Nutzer bleibt in jedem Fall Alleinberechtigter an den von ihm
@@ -304,7 +302,7 @@ export const TermsPage = () => {
             gebuchten Aboplan und Abozeitraum kann der Nutzer den Vertrag
             innerhalb einer Frist von sieben Tagen nach Zugang der Information
             über die Preissteigerung mit Wirkung zum Ende des aktuellen
-            Abozeitraums kündigen, wobei die Textform (E-Mail) genügt.
+            Abozeitraums außerordentlich kündigen, wobei die Textform (E-Mail) genügt.
           </li>
           <li data-start="7">
             Der Preis für den vereinbarten Aboplan ist im Voraus für den
