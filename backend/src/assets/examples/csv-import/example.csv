@@ -1,7 +1,7 @@
 Name,Adresse,Mindestpreis,Höchstpreis / Preis,Größe in Quadratmeter,Grundstück in Quadratmeter,Energieeffizienz,Externe URL
 Objekt 1,"Schadowstraße 11, Düsseldorf",,2995000,238,,A,http://example.com
-Objekt 2,"Schadowstraße 22, Düsseldorf",,2695000,204,,A,
+,"Schadowstraße 22, Düsseldorf",,2695000,204,,A,
 Objekt 3,"Schadowstraße 33, Düsseldorf",,3050000,252,,C,
-Objekt 4,"Schadowstraße 44, Hamburg",,7200000,245,,,
+Objekt 4,Unbekannte Straße,,7200000,245,,,
 Objekt 5,"Schadowstraße 55, Düsseldorf",4250000,5520000,242,345,,
 Objekt 6,"Schadowstraße 66, Düsseldorf",,5650000,315,,,

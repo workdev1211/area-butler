@@ -258,6 +258,6 @@ export class RealEstateListingService {
       }),
     );
 
-    return errorLineNumbers;
+    return errorLineNumbers.sort();
   }
 }

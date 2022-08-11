@@ -59,6 +59,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
       if (errorLineNumbers.length > 0) {
         setIsShownBusyModal(false);
         closeModal();
+
         toastError(
           `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers}`,
           () => {

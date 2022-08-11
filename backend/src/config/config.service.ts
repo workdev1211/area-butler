@@ -52,6 +52,10 @@ class ConfigService {
     return this.getValue('GOOGLE_API_KEY');
   }
 
+  public getGoogleServerApiKey(): string {
+    return this.getValue('GOOGLE_SERVER_API_KEY');
+  }
+
   public getFeedbackSlackWebhook(): string {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK', false);
   }

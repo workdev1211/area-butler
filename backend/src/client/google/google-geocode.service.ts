@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
@@ -20,14 +20,14 @@ export interface IGoogleGeocodeResult {
 
 @Injectable()
 export class GoogleGeocodeService {
-  private readonly googleApiKey = configService.getGoogleApiKey();
+  private readonly googleServerApiKey = configService.getGoogleServerApiKey();
   private readonly baseUrl = 'https://maps.googleapis.com/maps/api/geocode';
 
   constructor(private readonly http: HttpService) {}
 
   async getCoordinatesByAddress(address: string): Promise<ApiCoordinates> {
     const url = `${this.baseUrl}/json?key=${
-      this.googleApiKey
+      this.googleServerApiKey
     }&address=${encodeURIComponent(address)}`;
 
     const {
