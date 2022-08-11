@@ -128,7 +128,7 @@ export class SubscriptionListener {
         paymentSystemType,
       );
 
-      await this.userService.setRequestContingents(user, newEndDate);
+      await this.userService.setRequestContingents(user, newEndDate.toDate());
     }
   }
 
