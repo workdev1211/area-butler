@@ -7,7 +7,7 @@ const cloneBuffer = require('clone-buffer');
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
-  app.enableCors();
+  app.enableCors({ exposedHeaders: ['Content-Disposition'] });
   app.use(
     json({
       limit: '5mb',

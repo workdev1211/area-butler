@@ -26,7 +26,7 @@ export interface ApiUpsertRealEstateListing {
 // should be present either minPrice or maxPrice, or both
 export interface ApiRealEstateCost {
   minPrice?: ApiMoneyAmount;
-  maxPrice?: ApiMoneyAmount;
+  price?: ApiMoneyAmount;
   type: ApiRealEstateCostType;
 }
 
@@ -72,4 +72,9 @@ export enum ApiRealEstateStatusEnum {
   FOR_RENT = "FOR_RENT",
   FOR_SALE = "FOR_SALE",
   RENTED_SOLD = "RENTED_SOLD",
+}
+
+export enum ApiExampleFileTypeEnum {
+  CSV = "csv",
+  XLS = "xls",
 }

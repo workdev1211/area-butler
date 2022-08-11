@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -10,16 +10,19 @@ import { SubscriptionService } from '../user/subscription.service';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import { convertStringToNumber, parseCsv } from '../shared/shared.functions';
-import { ApiRealEstateCostType } from '@area-butler-types/real-estate';
+import {
+  ApiEnergyEfficiency,
+  ApiRealEstateCostType,
+} from '@area-butler-types/real-estate';
+import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 
 @Injectable()
 export class RealEstateListingService {
-  private readonly logger: Logger = new Logger(RealEstateListingService.name);
-
   constructor(
     @InjectModel(RealEstateListing.name)
-    private realEstateListingModel: Model<RealEstateListingDocument>,
-    private subscriptionService: SubscriptionService,
+    private readonly realEstateListingModel: Model<RealEstateListingDocument>,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly googleGeocodeService: GoogleGeocodeService,
   ) {}
 
   async getRealEstateListings({
@@ -113,22 +116,90 @@ export class RealEstateListingService {
   async importRealEstateListings(
     user: UserDocument,
     file: Express.Multer.File,
-  ): Promise<any> {
-    const realEstateListings = await parseCsv(file, ';');
+  ): Promise<number[]> {
+    const chunkSize = 1000;
+    const fromLine = 2;
+    const realEstateListingChunks = await parseCsv(
+      file,
+      ',',
+      fromLine,
+      chunkSize,
+    );
+
+    const errorLineNumbers = [];
+
+    const processedChunks = await Promise.allSettled(
+      realEstateListingChunks.map(async (listingChunk, listingChunkIndex) => {
+        const result = await Promise.allSettled(
+          listingChunk.map(
+            async ([name, address, ...otherParameters], listingIndex) => {
+              if (!address || address === '') {
+                errorLineNumbers.push(
+                  (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
+                    listingIndex +
+                    1 +
+                    (fromLine - 1),
+                );
+
+                return [];
+              }
+
+              const coordinates =
+                await this.googleGeocodeService.getCoordinatesByAddress(
+                  address,
+                );
+
+              if (coordinates) {
+                return [name, address, ...otherParameters, coordinates];
+              }
+
+              errorLineNumbers.push(
+                (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
+                  listingIndex +
+                  1 +
+                  (fromLine - 1),
+              );
+
+              return [];
+            },
+          ),
+        );
+
+        return result.reduce((result, listing) => {
+          if (listing.status === 'fulfilled' && listing.value.length > 0) {
+            result.push(listing.value);
+          }
+
+          return result;
+        }, []);
+      }),
+    );
 
     await Promise.allSettled(
-      realEstateListings.map(async (listing) => {
-        const listingDocuments = listing.reduce<RealEstateListingDocument[]>(
-          (result, listing) => {
-            const longitude = convertStringToNumber(listing[35]);
-            const latitude = convertStringToNumber(listing[36]);
+      processedChunks.map(async (processedChunk) => {
+        if (processedChunk.status !== 'fulfilled') {
+          return;
+        }
 
-            if (!longitude || !latitude) {
-              return result;
-            }
-
-            const minPriceAmount = convertStringToNumber(listing[23]);
-            const maxPriceAmount = convertStringToNumber(listing[24]);
+        const listingDocuments = processedChunk.value.reduce<
+          RealEstateListingDocument[]
+        >(
+          (
+            result,
+            [
+              name,
+              address,
+              minPriceRaw,
+              maxPriceRaw,
+              realEstateSizeInSquareMeters,
+              propertySizeInSquareMeters,
+              energyEfficiency,
+              externalUrl,
+              coordinates,
+            ],
+          ) => {
+            const minPriceAmount = convertStringToNumber(minPriceRaw);
+            const maxPriceAmount = convertStringToNumber(maxPriceRaw);
 
             let minPrice = minPriceAmount
               ? { amount: minPriceAmount, currency: '€' }
@@ -145,27 +216,35 @@ export class RealEstateListingService {
             // TODO change to plainToClass via the class-transformer
             const listingDocument = {
               userId: user._id,
-              name: listing[0],
-              address: listing[1],
+              name: name || address,
+              address,
               characteristics: {
                 realEstateSizeInSquareMeters: convertStringToNumber(
-                  listing[20],
+                  realEstateSizeInSquareMeters,
                 ),
-                propertySizeInSquareMeters: convertStringToNumber(listing[22]),
+                propertySizeInSquareMeters: convertStringToNumber(
+                  propertySizeInSquareMeters,
+                ),
+                energyEfficiency: Object.values(ApiEnergyEfficiency).includes(
+                  energyEfficiency,
+                )
+                  ? energyEfficiency
+                  : undefined,
                 furnishing: [],
               },
               costStructure:
                 minPrice || maxPrice
                   ? {
                       minPrice,
-                      maxPrice,
+                      price: maxPrice,
                       type: ApiRealEstateCostType.SELL,
                     }
                   : undefined,
               location: {
                 type: 'Point',
-                coordinates: [longitude, latitude],
+                coordinates: [coordinates.lat, coordinates.lng],
               },
+              externalUrl,
             } as RealEstateListingDocument;
 
             result.push(listingDocument);
@@ -178,5 +257,7 @@ export class RealEstateListingService {
         await this.realEstateListingModel.insertMany(listingDocuments);
       }),
     );
+
+    return errorLineNumbers;
   }
 }
