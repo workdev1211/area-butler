@@ -8,6 +8,7 @@ import { SlackSenderService } from './slack/slack-sender.service';
 import { StripeService } from './stripe/stripe.service';
 import { MapboxService } from './mapbox/mapbox.service';
 import { PaypalService } from './paypal/paypal.service';
+import { GoogleGeocodeService } from './google/google-geocode.service';
 
 @Module({
   providers: [
@@ -18,6 +19,7 @@ import { PaypalService } from './paypal/paypal.service';
     StripeService,
     MapboxService,
     PaypalService,
+    GoogleGeocodeService,
   ],
   imports: [HttpModule],
   exports: [
@@ -28,6 +30,7 @@ import { PaypalService } from './paypal/paypal.service';
     StripeService,
     MapboxService,
     PaypalService,
+    GoogleGeocodeService,
   ],
 })
 export class ClientModule {}
