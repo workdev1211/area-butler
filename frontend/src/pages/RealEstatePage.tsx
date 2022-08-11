@@ -63,7 +63,7 @@ const RealEstatePage: FunctionComponent = () => {
     };
 
     fetchRealEstates();
-  }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (!isNewRealEstate) {

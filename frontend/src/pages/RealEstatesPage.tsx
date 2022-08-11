@@ -26,8 +26,8 @@ import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
-import BusyModal from "../components/BusyModal";
 import { getRealEstateCost } from "../shared/real-estate.functions";
+import CsvImportModal from "../real-estates/CsvImportModal";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -35,7 +35,7 @@ const deleteRealEstateModalConfig = {
 };
 
 const RealEstatesPage: FunctionComponent = () => {
-  const { get, post } = useHttp();
+  const { get } = useHttp();
   const history = useHistory();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
@@ -47,9 +47,9 @@ const RealEstatesPage: FunctionComponent = () => {
   const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
     ApiSearchResultSnapshotResponse[]
   >([]);
-  const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] =
-    useState<boolean>(false);
-  const [isShownBusyModal, setIsShownBusyModal] = useState<boolean>(false);
+
+  const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] = useState(false);
+  const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
 
   const user = userState.user!;
   const hasSubscription = !!user?.subscriptionPlan;
@@ -129,20 +129,7 @@ const RealEstatesPage: FunctionComponent = () => {
     };
 
     fetchRealEstates();
-  }, [true]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  const uploadCsvFile = async (file: File) => {
-    const formData = new FormData();
-    formData.append("file", file);
-    setIsShownBusyModal(true);
-
-    await post("/api/real-estate-listings/upload", formData, {
-      "Content-Type": "multipart/form-data",
-    });
-
-    setIsShownBusyModal(false);
-    history.go(0);
-  };
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ActionsTop: FunctionComponent = () => {
     return (
@@ -151,7 +138,12 @@ const RealEstatesPage: FunctionComponent = () => {
           <Link to="/real-estates/new" className="btn btn-link">
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
-          <button className="btn btn-link">
+          <button
+            className="btn btn-link"
+            onClick={() => {
+              setIsShownCsvImportModal(true);
+            }}
+          >
             <img
               src={uploadIcon}
               alt="upload-icon"
@@ -160,17 +152,6 @@ const RealEstatesPage: FunctionComponent = () => {
             <label htmlFor="file" style={{ cursor: "pointer" }}>
               Import aus CSV-Datei
             </label>
-            <input
-              type="file"
-              id="file"
-              accept=".csv"
-              style={{ display: "none" }}
-              onChange={async (e) => {
-                await uploadCsvFile(e.target.files![0]);
-                e.target.files = null;
-                e.target.value = "";
-              }}
-            />
           </button>
         </li>
       </>
@@ -191,11 +172,11 @@ const RealEstatesPage: FunctionComponent = () => {
           embeddableMaps={realEstateEmbeddableMaps}
         />
       )}
-      {isShownBusyModal && (
-        <BusyModal
-          items={[{ key: "csv-import", text: "CSV-Datei wird importiert" }]}
-          isDisabledLoadingBar={true}
-          isAnimated={true}
+      {isShownCsvImportModal && (
+        <CsvImportModal
+          closeModal={() => {
+            setIsShownCsvImportModal(false);
+          }}
         />
       )}
       <div className="overflow-x-auto" data-tour="real-estates-table">
@@ -247,17 +228,13 @@ const RealEstatesPage: FunctionComponent = () => {
                         alt="icon-search"
                         className="cursor-pointer"
                         onClick={() => startSearchFromRealEstate(realEstate)}
-                        data-tour={
-                          "real-estates-table-item-search-button-" + index
-                        }
+                        data-tour={`real-estates-table-item-search-button-${index}`}
                       />
                       <img
                         src={editIcon}
                         alt="icon-edit"
                         className="cursor-pointer"
-                        data-tour={
-                          "real-estates-table-item-edit-button-" + index
-                        }
+                        data-tour={`"real-estates-table-item-edit-button-${index}`}
                         onClick={() =>
                           history.push(`/real-estates/${realEstate.id}`)
                         }
@@ -277,9 +254,7 @@ const RealEstatesPage: FunctionComponent = () => {
                             <img
                               src={deleteIcon}
                               alt="icon-delete"
-                              data-tour={
-                                "real-estates-table-item-delete-button-" + index
-                              }
+                              data-tour={`real-estates-table-item-delete-button-${index}`}
                               className="cursor-pointer"
                             />
                           ),

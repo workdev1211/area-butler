@@ -160,10 +160,15 @@ export const toastSuccess = (message: string) => {
   });
 };
 
-export const toastError = (message: string) => {
+export const toastError = (
+  message: string,
+  onClose = () => {},
+  closeTimeMs = 3000
+) => {
   toast.error(message, {
+    onClose,
     position: "top-right",
-    autoClose: 3000,
+    autoClose: closeTimeMs,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,

@@ -42,15 +42,15 @@ const mapFormToApiUpsertRealEstateListing = async (
     },
     showInSnippet: values.showInSnippet,
     costStructure: {
-      minPrice: values.minPrice
+      minPrice: Number.isFinite(values.minPrice)
         ? {
             amount: values.minPrice,
             currency: "€",
           }
         : undefined,
-      maxPrice: values.maxPrice
+      price: Number.isFinite(values.price)
         ? {
-            amount: values.maxPrice,
+            amount: values.price,
             currency: "€",
           }
         : undefined,
@@ -74,7 +74,7 @@ const validateBeforeSubmit = (values: any): boolean => {
     return false;
   }
 
-  if (!Number.isFinite(values.minPrice) && !Number.isFinite(values.maxPrice)) {
+  if (!Number.isFinite(values.minPrice) && !Number.isFinite(values.price)) {
     toastError("Bitte geben Sie entweder Mindest- oder Höchstpreise an");
     return false;
   }

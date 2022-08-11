@@ -1,0 +1,36 @@
+.csv-import.modal.modal-open {
+  align-items: center;
+  padding: 0 0.75rem 0 0.75rem;
+  backdrop-filter: blur(1px);
+
+  .modal-box {
+    padding: 0;
+    border-bottom-left-radius: 1rem;
+    border-bottom-right-radius: 1rem;
+
+    .modal-header {
+      padding: 0 1.5rem 0 1.5rem;
+      height: 3.5rem;
+      color: white;
+      background: var(--primary);
+      border-top-left-radius: 1rem;
+      border-top-right-radius: 1rem;
+      @apply text-lg font-medium items-center justify-between flex;
+
+      img {
+        filter: brightness(0) invert(1);
+        opacity: 0.9;
+        @apply cursor-pointer;
+      }
+    }
+
+    .modal-content {
+      padding: 0.75rem 1.5rem 0.75rem 1.5rem;
+      @apply text-justify;
+    }
+
+    .modal-action {
+      padding: 0.75rem 1.5rem 0.75rem 1.5rem;
+    }
+  }
+}

@@ -23,7 +23,7 @@ const RealEstateCostStructureControl: FunctionComponent<
     !!inputValues?.minPrice
   );
 
-  const setAmount = (type: "minPrice" | "maxPrice", value: number | string) => {
+  const setAmount = (type: "minPrice" | "price", value: number | string) => {
     const newCostStructure: ApiRealEstateCost = { ...inputValues };
     newCostStructure[type] = Number.isFinite(value)
       ? {
@@ -93,10 +93,10 @@ const RealEstateCostStructureControl: FunctionComponent<
         </label>
         <input
           className="input input-bordered"
-          value={inputValues?.maxPrice?.amount || ""}
+          value={inputValues?.price?.amount || ""}
           onChange={(event) => {
             setAmount(
-              "maxPrice",
+              "price",
               event.target.value ? +event.target.value : ""
             );
           }}

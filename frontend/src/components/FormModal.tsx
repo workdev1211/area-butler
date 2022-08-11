@@ -117,6 +117,7 @@ export const FormModal: FunctionComponent<{
                     ? "loading btn btn-primary btn-sm"
                     : "btn btn-primary btn-sm"
                 }
+                autoFocus={true}
               >
                 {props.modalConfig.submitButtonTitle || "Speichern"}
               </button>

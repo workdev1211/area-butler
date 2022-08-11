@@ -62,7 +62,7 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
   };
 
   const minPrice = localRealEstate?.costStructure?.minPrice?.amount;
-  const maxPrice = localRealEstate?.costStructure?.maxPrice?.amount;
+  const maxPrice = localRealEstate?.costStructure?.price?.amount;
 
   return (
     <Formik
@@ -70,19 +70,19 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
         name: localRealEstate?.name ?? "",
         externalUrl: localRealEstate?.externalUrl ?? "",
         minPrice: minPrice || "",
-        maxPrice: !minPrice && !maxPrice ? 0 : maxPrice || "",
+        price: !minPrice && !maxPrice ? 0 : maxPrice || "",
         priceStartingAt: Number.isFinite(
           localRealEstate?.costStructure?.minPrice?.amount
         ), // keep in mind that Number.isFinite is used instead of the global isFinite
+        type:
+          localRealEstate?.costStructure?.type ||
+          ApiRealEstateCostType.RENT_MONTHLY_COLD,
         propertyStartingAt: localRealEstate?.characteristics?.startingAt,
         showInSnippet:
           localRealEstate === undefined ||
           localRealEstate.showInSnippet === undefined
             ? true
             : localRealEstate.showInSnippet,
-        type:
-          localRealEstate?.costStructure?.type ||
-          ApiRealEstateCostType.RENT_MONTHLY_COLD,
         realEstateSizeInSquareMeters:
           localRealEstate.characteristics?.realEstateSizeInSquareMeters ?? 0,
         propertySizeInSquareMeters:
@@ -97,7 +97,7 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
         externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
         minPrice: Yup.number(),
-        maxPrice: Yup.number(),
+        price: Yup.number(),
         priceStartingAt: Yup.boolean(),
         propertyStartingAt: Yup.boolean(),
         showInSnippet: Yup.boolean(),
@@ -191,7 +191,7 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
               <div className="form-control flex-1">
                 <Input
                   label={`${isNeededMinPrice ? "Höchstpreis" : "Preis"} (€)`}
-                  name="maxPrice"
+                  name="price"
                   type="number"
                   placeholder="Preis eingeben"
                   className="input input-bordered w-full"

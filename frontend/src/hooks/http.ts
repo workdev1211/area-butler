@@ -11,17 +11,21 @@ export const useHttp = () => {
   const { getIdTokenClaims } = useAuth0();
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
-  const get = async <T>(url: string): Promise<AxiosResponse<T>> => {
-    const headers: any = { ...defaultHeaders };
+  const get = async <T>(
+    url: string,
+    requestHeaders = {},
+    options = {}
+  ): Promise<AxiosResponse<T>> => {
+    const headers: any = { ...defaultHeaders, ...requestHeaders };
     const idToken = await getIdTokenClaims();
 
-    if (!!idToken) {
+    if (idToken) {
       const { __raw } = await getIdTokenClaims();
-      const authorization = `Bearer ${__raw}`;
-      headers["Authorization"] = authorization;
+      headers["Authorization"] = `Bearer ${__raw}`;
     }
 
     return axios.get<T>(`${baseUrl}${url}`, {
+      ...options,
       headers,
     });
   };

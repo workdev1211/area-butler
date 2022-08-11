@@ -2,15 +2,15 @@ import { ApiRealEstateCost } from "../../../shared/types/real-estate";
 
 export const getRealEstateCost = ({
   minPrice,
-  maxPrice,
+  price,
 }: ApiRealEstateCost): string => {
-  let cost = `${maxPrice?.amount} ${maxPrice?.currency}`;
+  let cost = `${price?.amount} ${price?.currency}`;
 
-  if (minPrice && maxPrice) {
-    cost = `ab ${minPrice.amount} ${minPrice.currency} bis ${maxPrice.amount} ${maxPrice.currency}`;
+  if (minPrice && price) {
+    cost = `ab ${minPrice.amount} ${minPrice.currency} bis ${price.amount} ${price.currency}`;
   }
 
-  if (minPrice && !maxPrice) {
+  if (minPrice && !price) {
     cost = `ab ${minPrice.amount} ${minPrice.currency}`;
   }
 
