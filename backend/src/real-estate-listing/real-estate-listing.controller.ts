@@ -8,9 +8,14 @@ import {
   Put,
   UploadedFile,
   UseInterceptors,
+  Res,
+  StreamableFile,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
+import { Response } from 'express';
+import { createReadStream } from 'fs';
+import { join as joinPath } from 'path';
 
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
@@ -21,6 +26,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import FileUploadDto from '../dto/file-upload.dto';
+import { ApiExampleFileTypeEnum } from '@area-butler-types/real-estate';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -83,12 +89,46 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiBody({ description: 'The file to upload', type: FileUploadDto })
   @Post('upload')
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(
+  async importCsvFile(
     @InjectUser() user: UserDocument,
     @UploadedFile() file: Express.Multer.File,
-  ) {
-    await this.realEstateListingService.importRealEstateListings(user, file);
+  ): Promise<number[]> {
+    return this.realEstateListingService.importRealEstateListings(user, file);
+  }
 
-    return 'done';
+  @ApiOperation({ description: 'Download an example csv or xls file' })
+  @Get('examples/:type')
+  downloadExampleFile(
+    @Param('type') fileType: ApiExampleFileTypeEnum,
+    @Res({ passthrough: true }) res: Response,
+  ): StreamableFile {
+    switch (fileType) {
+      case ApiExampleFileTypeEnum.CSV: {
+        res.set({
+          'Content-Type': 'text/csv',
+        });
+
+        break;
+      }
+
+      case ApiExampleFileTypeEnum.XLS: {
+        res.set({
+          'Content-Type': 'application/vnd.ms-excel',
+        });
+
+        break;
+      }
+    }
+
+    res.set({
+      'Content-Disposition': `attachment; filename="example.${fileType}"`,
+    });
+
+    const path = joinPath(
+      __dirname,
+      `../../../assets/examples/csv-import/example.${fileType}`,
+    );
+
+    return new StreamableFile(createReadStream(path));
   }
 }
