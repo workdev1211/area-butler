@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   Res,
   StreamableFile,
+  Query,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -26,7 +27,10 @@ import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import FileUploadDto from '../dto/file-upload.dto';
-import { ApiExampleFileTypeEnum } from '@area-butler-types/real-estate';
+import {
+  ApiExampleFileTypeEnum,
+  ApiRealEstateStatusEnum,
+} from '@area-butler-types/real-estate';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -39,9 +43,10 @@ export class RealEstateListingController extends AuthenticatedController {
   @Get()
   async fetchRealEstateListings(
     @InjectUser() user: UserDocument,
+    @Query('status') status: ApiRealEstateStatusEnum,
   ): Promise<ApiRealEstateListingDto[]> {
     return (
-      await this.realEstateListingService.getRealEstateListings(user)
+      await this.realEstateListingService.getRealEstateListings(user, status)
     ).map((l) => mapRealEstateListingToApiRealEstateListing(l));
   }
 

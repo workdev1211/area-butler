@@ -13,6 +13,7 @@ import { convertStringToNumber, parseCsv } from '../shared/shared.functions';
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
+  ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 
@@ -25,10 +26,19 @@ export class RealEstateListingService {
     private readonly googleGeocodeService: GoogleGeocodeService,
   ) {}
 
-  async getRealEstateListings({
-    id,
-  }: UserDocument): Promise<RealEstateListingDocument[]> {
-    return this.realEstateListingModel.find({ userId: id });
+  async getRealEstateListings(
+    { id }: UserDocument,
+    status?: ApiRealEstateStatusEnum,
+  ): Promise<RealEstateListingDocument[]> {
+    const filter: { userId: string; status?: ApiRealEstateStatusEnum } = {
+      userId: id,
+    };
+
+    if (status) {
+      filter.status = status;
+    }
+
+    return this.realEstateListingModel.find(filter);
   }
 
   async insertRealEstateListing(

@@ -1,11 +1,20 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
+import Select, {
+  ActionMeta,
+  ControlProps,
+  CSSObjectWithLabel,
+  GroupBase,
+  MenuProps,
+  SingleValue,
+} from "react-select";
 
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import {
   allFurnishing,
   allRealEstateCostTypes,
+  allRealEstateStatuses,
 } from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import uploadIcon from "../assets/icons/upload_file.svg";
@@ -18,7 +27,10 @@ import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "../context/RealEstateContext";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import {
+  ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+} from "../../../shared/types/real-estate";
 import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
@@ -33,6 +45,11 @@ const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
   submitButtonTitle: "Löschen",
 };
+
+interface IRealEstateStatusOption {
+  label: string;
+  value?: ApiRealEstateStatusEnum;
+}
 
 const RealEstatesPage: FunctionComponent = () => {
   const { get } = useHttp();
@@ -116,18 +133,18 @@ const RealEstatesPage: FunctionComponent = () => {
     history.push("/");
   };
 
+  const fetchRealEstates = async (status?: ApiRealEstateStatusEnum) => {
+    const response = await get<ApiRealEstateListing[]>(
+      `/api/real-estate-listings${status ? `?status=${status}` : ""}`
+    );
+
+    realEstateDispatch({
+      type: RealEstateActionTypes.SET_REAL_ESTATES,
+      payload: response.data,
+    });
+  };
+
   useEffect(() => {
-    const fetchRealEstates = async () => {
-      const response = await get<ApiRealEstateListing[]>(
-        "/api/real-estate-listings"
-      );
-
-      realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: response.data,
-      });
-    };
-
     fetchRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -158,6 +175,55 @@ const RealEstatesPage: FunctionComponent = () => {
     );
   };
 
+  const customStyles = {
+    menu: (
+      provided: CSSObjectWithLabel,
+      state: MenuProps<
+        IRealEstateStatusOption,
+        false,
+        GroupBase<IRealEstateStatusOption>
+      >
+    ) => ({
+      ...provided,
+      zIndex: 99,
+    }),
+    control: (
+      provided: CSSObjectWithLabel,
+      state: ControlProps<
+        IRealEstateStatusOption,
+        false,
+        GroupBase<IRealEstateStatusOption>
+      >
+    ) => ({
+      ...provided,
+      boxShadow: undefined,
+      borderWidth: "2px",
+      borderColor: "var(--primary)",
+      "&:hover": { borderColor: "var(--primary)" },
+      width: "20rem",
+    }),
+  };
+
+  const values: IRealEstateStatusOption[] = allRealEstateStatuses.map(
+    ({ label, status: value }) => ({
+      value,
+      label,
+    })
+  );
+
+  const defaultValue = {
+    label: "Alle",
+  } as IRealEstateStatusOption;
+
+  values.unshift(defaultValue);
+
+  const onRealEstateStatusChange = async (
+    option: SingleValue<IRealEstateStatusOption>,
+    action: ActionMeta<IRealEstateStatusOption>
+  ) => {
+    await fetchRealEstates(option!.value);
+  };
+
   return (
     <DefaultLayout
       title="Meine Immobilien"
@@ -179,10 +245,27 @@ const RealEstatesPage: FunctionComponent = () => {
           }}
         />
       )}
+      <div
+        className="w-1/2 sm:w-1/6 flex items-center gap-2"
+        style={{ padding: "5px 5px 5px 5px" }}
+      >
+        <Select
+          styles={customStyles}
+          options={values}
+          isSearchable={false}
+          defaultValue={defaultValue}
+          placeholder="Wählen Sie einen Typ..."
+          onChange={async (option, action) => {
+            await onRealEstateStatusChange(option, action);
+          }}
+        />
+        <span>Typfilter</span>
+      </div>
       <div className="overflow-x-auto" data-tour="real-estates-table">
         <table className="table w-full">
           <thead>
             <tr>
+              <th>Typ</th>
               <th>Name</th>
               <th>Addresse</th>
               <th>Kosten</th>
@@ -199,6 +282,14 @@ const RealEstatesPage: FunctionComponent = () => {
                     realEstateHighlightId === realEstate.id ? "active" : ""
                   }
                 >
+                  <th>
+                    {/*TODO move all such text table things to the useEffect and a specific table entity*/}
+                    {
+                      allRealEstateStatuses.find(
+                        (estate) => estate.status === realEstate.status
+                      )?.label
+                    }
+                  </th>
                   <th>{realEstate.name}</th>
                   <td>{realEstate.address}</td>
                   <td>
