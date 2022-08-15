@@ -1,5 +1,4 @@
 import { FunctionComponent, useState } from "react";
-import { useHistory } from "react-router-dom";
 
 import "./CsvImportModal.scss";
 import CloseCross from "../assets/icons/cross.svg";
@@ -17,8 +16,6 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
   closeModal,
 }) => {
   const { get, post } = useHttp();
-  const history = useHistory();
-
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
 
   const downloadFile = async (
@@ -62,13 +59,8 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
 
         toastError(
           `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers}`,
-          () => {
-            history.go(0);
-          },
           5000
         );
-      } else {
-        history.go(0);
       }
     } catch (e) {
       setIsShownBusyModal(false);
@@ -104,8 +96,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
           <div className="modal-content">
             Bitte bereiten Sie die CSV-Dateistruktur gemäß den bereitgestellten
             Beispielen vor. Alle Spalten sollten sich an den angegebenen Stellen
-            befinden. Die erste Reihe Zeile entfällt. Adresse ist ein
-            Pflichtfeld.
+            befinden. Die erste Zeile entfällt. Adresse ist ein Pflichtfeld.
           </div>
           <div className="modal-action">
             <button
@@ -114,7 +105,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
                 await downloadFile(ApiExampleFileTypeEnum.XLS);
               }}
             >
-              XLS-Datei
+              XLS-Beispiel
             </button>
             <button
               className="btn btn-sm btn-default"
@@ -122,7 +113,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
                 await downloadFile(ApiExampleFileTypeEnum.CSV);
               }}
             >
-              CSV-Datei
+              CSV-Beispiel
             </button>
             <div>
               <label

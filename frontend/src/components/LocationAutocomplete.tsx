@@ -5,14 +5,15 @@ import "./LocationAutocomplete.scss";
 import { ConfigContext } from "../context/ConfigContext";
 import {
   deriveGeocodeByAddress,
-  deriveGeocodeByPlaceId
+  deriveGeocodeByPlaceId,
 } from "../shared/shared.functions";
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
+import { googleMapsApiOptions } from "../shared/shared.constants";
 
 export interface LocationAutocompleteProps {
   afterChange?: ({
     value,
-    coordinates
+    coordinates,
   }: {
     value: any;
     coordinates?: any;
@@ -26,7 +27,7 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
   afterChange = () => {},
   value = null,
   setValue = () => {},
-  menuZIndex = 99
+  menuZIndex = 99,
 }) => {
   const { googleApiKey } = useContext(ConfigContext);
   const Menu = (props: any) => {
@@ -95,19 +96,16 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
         }
       >
         <GooglePlacesAutocomplete
-          apiOptions={{
-            language: "de",
-            region: "de"
-          }}
+          apiOptions={googleMapsApiOptions}
           autocompletionRequest={{
             componentRestrictions: {
-              country: ["de"]
-            }
+              country: ["de"],
+            },
           }}
           minLengthAutocomplete={5}
           selectProps={{
             components: {
-              Menu
+              Menu,
             },
             value: selectValue,
             inputValue: inputValue,
@@ -123,8 +121,8 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
             onBlur: () => setFocus(false),
             menuPortalTarget: document.body,
             styles: {
-              menuPortal: (base: any) => ({ ...base, zIndex: menuZIndex })
-            }
+              menuPortal: (base: any) => ({ ...base, zIndex: menuZIndex }),
+            },
           }}
           apiKey={googleApiKey}
         />

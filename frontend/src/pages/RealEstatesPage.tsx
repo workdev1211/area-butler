@@ -8,6 +8,7 @@ import Select, {
   MenuProps,
   SingleValue,
 } from "react-select";
+import { Loader } from "@googlemaps/js-api-loader";
 
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
@@ -40,6 +41,8 @@ import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import CsvImportModal from "../real-estates/CsvImportModal";
+import { ConfigContext } from "../context/ConfigContext";
+import { googleMapsApiOptions } from "../shared/shared.constants";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -60,6 +63,11 @@ const RealEstatesPage: FunctionComponent = () => {
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
+  const { googleApiKey } = useContext(ConfigContext);
+
+  const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState<
+    ApiRealEstateStatusEnum | undefined
+  >(undefined);
 
   const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
     ApiSearchResultSnapshotResponse[]
@@ -72,6 +80,16 @@ const RealEstatesPage: FunctionComponent = () => {
   const hasSubscription = !!user?.subscriptionPlan;
   const hasHtmlSnippet =
     hasSubscription && user?.subscriptionPlan!.config.appFeatures.htmlSnippet;
+
+  useEffect(() => {
+    const googleMapsApiLoader = new Loader({
+      apiKey: googleApiKey,
+      id: googleMapsApiOptions.id,
+      libraries: ["places"],
+    });
+
+    googleMapsApiLoader.load();
+  }, [googleApiKey]);
 
   useEffect(() => {
     if (user) {
@@ -133,9 +151,11 @@ const RealEstatesPage: FunctionComponent = () => {
     history.push("/");
   };
 
-  const fetchRealEstates = async (status?: ApiRealEstateStatusEnum) => {
+  const fetchRealEstates = async () => {
     const response = await get<ApiRealEstateListing[]>(
-      `/api/real-estate-listings${status ? `?status=${status}` : ""}`
+      `/api/real-estate-listings${
+        selectedRealEstateStatus ? `?status=${selectedRealEstateStatus}` : ""
+      }`
     );
 
     realEstateDispatch({
@@ -146,7 +166,7 @@ const RealEstatesPage: FunctionComponent = () => {
 
   useEffect(() => {
     fetchRealEstates();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+  }, [selectedRealEstateStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const ActionsTop: FunctionComponent = () => {
     return (
@@ -221,7 +241,7 @@ const RealEstatesPage: FunctionComponent = () => {
     option: SingleValue<IRealEstateStatusOption>,
     action: ActionMeta<IRealEstateStatusOption>
   ) => {
-    await fetchRealEstates(option!.value);
+    setSelectedRealEstateStatus(option!.value);
   };
 
   return (
@@ -240,7 +260,8 @@ const RealEstatesPage: FunctionComponent = () => {
       )}
       {isShownCsvImportModal && (
         <CsvImportModal
-          closeModal={() => {
+          closeModal={async () => {
+            await fetchRealEstates();
             setIsShownCsvImportModal(false);
           }}
         />

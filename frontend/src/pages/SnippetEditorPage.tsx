@@ -45,6 +45,7 @@ import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
 import { defaultMapZoom } from "../map/Map";
+import { googleMapsApiOptions } from "../shared/shared.constants";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -411,10 +412,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         <TourStarter tour="editor" />
         <div className="hidden">
           <GooglePlacesAutocomplete
-            apiOptions={{
-              language: "de",
-              region: "de",
-            }}
+            apiOptions={googleMapsApiOptions}
             autocompletionRequest={{
               componentRestrictions: {
                 country: ["de"],

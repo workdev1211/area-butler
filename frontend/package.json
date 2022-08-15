@@ -4,6 +4,7 @@
   "private": true,
   "dependencies": {
     "@auth0/auth0-react": "^1.6.0",
+    "@googlemaps/js-api-loader": "^1.14.3",
     "@laststance/use-app-state": "^1.2.14",
     "@paypal/react-paypal-js": "^7.8.1",
     "@rollbar/react": "^0.8.0",

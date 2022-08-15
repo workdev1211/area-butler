@@ -162,8 +162,8 @@ export const toastSuccess = (message: string) => {
 
 export const toastError = (
   message: string,
-  onClose = () => {},
-  closeTimeMs = 3000
+  closeTimeMs = 3000,
+  onClose = () => {}
 ) => {
   toast.error(message, {
     onClose,
