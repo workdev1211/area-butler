@@ -17,7 +17,7 @@ import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.d
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 
 class ApiRealEstateListingDto implements ApiRealEstateListing {
-  @IsNotEmpty()
+  // could be an empty string when showAddress is false
   @IsString()
   address: string;
 
