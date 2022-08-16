@@ -158,7 +158,7 @@ const SearchResultPage: FunctionComponent = () => {
             href="/real-estates/from-result"
             className="btn btn-link"
           >
-            <img src={plusIcon} alt="pdf-icon" /> Adresse speichern
+            <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </a>
         </li>
         <li>
