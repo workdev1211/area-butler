@@ -9,6 +9,7 @@ import { StripeService } from './stripe/stripe.service';
 import { MapboxService } from './mapbox/mapbox.service';
 import { PaypalService } from './paypal/paypal.service';
 import { GoogleGeocodeService } from './google/google-geocode.service';
+import { OpenAiService } from './open-ai/open-ai.service';
 
 @Module({
   providers: [
@@ -20,6 +21,7 @@ import { GoogleGeocodeService } from './google/google-geocode.service';
     MapboxService,
     PaypalService,
     GoogleGeocodeService,
+    OpenAiService,
   ],
   imports: [HttpModule],
   exports: [
@@ -31,6 +33,7 @@ import { GoogleGeocodeService } from './google/google-geocode.service';
     MapboxService,
     PaypalService,
     GoogleGeocodeService,
+    OpenAiService,
   ],
 })
 export class ClientModule {}

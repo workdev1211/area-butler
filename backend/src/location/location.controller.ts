@@ -6,6 +6,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -24,6 +25,10 @@ import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { SubscriptionService } from '../user/subscription.service';
+import { MeansOfTransportation } from '@area-butler-types/types';
+import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import { OpenAiService } from '../client/open-ai/open-ai.service';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -31,6 +36,8 @@ export class LocationController extends AuthenticatedController {
   constructor(
     private locationService: LocationService,
     private realEstateListingService: RealEstateListingService,
+    private subscriptionService: SubscriptionService,
+    private openAiService: OpenAiService,
   ) {
     super();
   }
@@ -152,5 +159,34 @@ export class LocationController extends AuthenticatedController {
       false,
       realEstateListings,
     );
+  }
+
+  @ApiOperation({ description: 'Get Open AI location description' })
+  @Get('open-ai-location-description')
+  async getOpenAiLocationDescription(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Query('searchResultSnapshotId') searchResultSnapshotId: string,
+    @Query('meanOfTransportation') meanOfTransportation: MeansOfTransportation,
+    @Query('tonality') tonality: OpenAiTonalityEnum,
+  ): Promise<any> {
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscription) => !subscription.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const { address, poiData } =
+      await this.locationService.fetchOpenAiSnapshotData(
+        searchResultSnapshotId,
+        meanOfTransportation,
+      );
+
+    const openAiText = this.openAiService.prepareLocationDescriptionQuery(
+      address,
+      poiData,
+      tonality,
+    );
+
+    return this.openAiService.fetchTextCompletion(openAiText);
   }
 }

@@ -23,6 +23,7 @@ import ApiSearchDto from '../dto/api-search.dto';
 import TransportationParamDto from '../dto/transportation-param.dto';
 import {
   ApiOsmEntityCategory,
+  ApiOsmLocation,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -317,6 +318,38 @@ export class LocationService {
     snapshotDoc.save();
 
     return snapshotDoc;
+  }
+
+  async fetchOpenAiSnapshotData(
+    searchResultSnapshotId: string,
+    meanOfTransportation: MeansOfTransportation,
+  ): Promise<{ address: string; poiData: ApiOsmLocation[] }> {
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
+      searchResultSnapshotId,
+    });
+
+    const address = snapshotDoc?.snapshot.placesLocation.label;
+
+    const isPoisPresent =
+      snapshotDoc?.snapshot.searchResponse.routingProfiles[meanOfTransportation]
+        ?.locationsOfInterest.length > 0;
+
+    if (!snapshotDoc || !address || !isPoisPresent) {
+      throw new HttpException(
+        'Incorrect data for Open AI text generation',
+        422,
+      );
+    }
+
+    this.checkAddressExpiration(snapshotDoc);
+
+    return {
+      address: `${address}`,
+      poiData:
+        snapshotDoc.snapshot.searchResponse.routingProfiles[
+          meanOfTransportation
+        ].locationsOfInterest,
+    };
   }
 
   async updateSearchResultSnapshot(

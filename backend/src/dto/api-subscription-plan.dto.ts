@@ -68,6 +68,7 @@ class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
     canCustomizeExport: boolean;
     fullyCustomizableExpose: boolean;
     htmlSnippet: boolean;
+    openAi: boolean;
   };
 }
 

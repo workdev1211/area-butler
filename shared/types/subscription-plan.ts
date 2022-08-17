@@ -95,6 +95,7 @@ export interface ApiSubscriptionPlan {
     canCustomizeExport: boolean;
     fullyCustomizableExpose: boolean;
     htmlSnippet: boolean;
+    openAi: boolean;
   };
 }
 

@@ -145,6 +145,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
     canCustomizeExport: true,
     fullyCustomizableExpose: true,
     htmlSnippet: true,
+    openAi: false,
   },
 };
 
@@ -203,6 +204,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
     canCustomizeExport: true,
     fullyCustomizableExpose: true,
     htmlSnippet: true,
+    openAi: false,
   },
 };
 
@@ -261,6 +263,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
     canCustomizeExport: true,
     fullyCustomizableExpose: true,
     htmlSnippet: true,
+    openAi: false,
   },
 };
 
@@ -324,6 +327,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     canCustomizeExport: true,
     fullyCustomizableExpose: true,
     htmlSnippet: true,
+    openAi: false,
   },
 };
 
@@ -409,6 +413,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
     canCustomizeExport: true,
     fullyCustomizableExpose: true,
     htmlSnippet: true,
+    openAi: false,
   },
 };
 
