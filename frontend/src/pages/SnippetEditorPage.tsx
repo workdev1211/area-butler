@@ -1,3 +1,7 @@
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { useHistory, useParams, useLocation } from "react-router-dom";
+
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
@@ -13,9 +17,6 @@ import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
 import EditorMapMenu from "map/menu-editor/EditorMapMenu";
-import React, { useContext, useEffect, useState } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useHistory, useParams, useLocation } from "react-router-dom";
 import {
   buildEntityData,
   createCodeSnippet,
@@ -46,39 +47,50 @@ import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
 import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
+import FormModal, { ModalConfig } from "../components/FormModal";
+import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
 }
 
-const SnippetEditorPage: React.FunctionComponent = () => {
-  const [showModal, setShowModal] = useState(false);
-  const [codeSnippet, setCodeSnippet] = useState("");
-  const [directLink, setDirectLink] = useState("");
-  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
-  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
+const SnippetEditorPage: FunctionComponent = () => {
   const history = useHistory();
   const currentLocation = useLocation<{ from: string }>();
-  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const { userState, userDispatch } = useContext(UserContext);
-  const { searchContextDispatch, searchContextState } =
-    useContext(SearchContext);
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
 
+  const [showModal, setShowModal] = useState(false);
+  const [codeSnippet, setCodeSnippet] = useState("");
+  const [directLink, setDirectLink] = useState("");
+  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
+  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
+  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
+  const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
+    useState(false);
+
+  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
+  const { userState, userDispatch } = useContext(UserContext);
+  const { searchContextDispatch, searchContextState } =
+    useContext(SearchContext);
+
   const user = userState.user;
+
   const hasFullyCustomizableExpose =
     user?.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
+
+  // TODO allow by user email
+  const hasOpenAiFeature = user?.subscriptionPlan?.config.appFeatures.openAi;
 
   useEffect(() => {
     if (!user?.subscriptionPlan?.config.appFeatures.htmlSnippet) {
       toastError(
         "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors."
       );
+
       history.push("/profile");
     }
 
@@ -92,11 +104,11 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       let snapshotConfig = (snapshotResponse.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
 
-      if (!!user?.color && !("primaryColor" in snapshotConfig)) {
+      if (user?.color && !("primaryColor" in snapshotConfig)) {
         snapshotConfig["primaryColor"] = user.color;
       }
 
-      if (!!user?.mapIcon && !("mapIcon" in snapshotConfig)) {
+      if (user?.mapIcon && !("mapIcon" in snapshotConfig)) {
         snapshotConfig["mapIcon"] = user.mapIcon;
       }
 
@@ -131,7 +143,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
       setSnapshot(snapshotResponse.snapshot);
 
-      if (!!snapshotResponse.snapshot && !!snapshotConfig) {
+      if (snapshotResponse.snapshot && snapshotConfig) {
         const { searchResponse, realEstateListings, preferredLocations } =
           snapshotResponse.snapshot;
 
@@ -237,7 +249,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
 
   // react to changes
   useEffect(() => {
-    if (!!snapshot) {
+    if (snapshot) {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups(
@@ -255,10 +267,11 @@ const SnippetEditorPage: React.FunctionComponent = () => {
   ]);
 
   const onPoiAdd = (poi: Poi) => {
-    if (!!snapshot) {
+    if (snapshot) {
       const copiedSearchResponse = JSON.parse(
         JSON.stringify(snapshot!.searchResponse)
       ) as ApiSearchResponse;
+
       copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
         poi as any as ApiOsmLocation
       );
@@ -285,6 +298,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
               }
         ),
       });
+
       // update dedicated entity groups for editor
       setEditorGroups(
         editorGroups.map((ge) =>
@@ -296,7 +310,31 @@ const SnippetEditorPage: React.FunctionComponent = () => {
     }
   };
 
-  const ActionsTop: React.FunctionComponent = () => {
+  const openAiLocationModalConfig: ModalConfig = {
+    modalTitle: "Standortbeschreibung generieren",
+    submitButtonTitle: "Generieren",
+    modalOpen: isShownOpenAiLocationModal,
+    postSubmit: (success) => {
+      if (!success) {
+        // if a user clicks on the "Schließen" button
+        setIsShownOpenAiLocationModal(false);
+      }
+    },
+  };
+
+  const OpenAiLocationModal: FunctionComponent<{}> = () => (
+    <FormModal modalConfig={openAiLocationModalConfig}>
+      <OpenAiLocationFormHandler
+        searchResultSnapshotId={snapshotId}
+        closeModal={() => {
+          // if an error is thrown on the submit step
+          setIsShownOpenAiLocationModal(false);
+        }}
+      />
+    </FormModal>
+  );
+
+  const ActionsTop: FunctionComponent = () => {
     return (
       <>
         <li>
@@ -349,6 +387,19 @@ const SnippetEditorPage: React.FunctionComponent = () => {
             <img src={pdfIcon} alt="pdf-icon" /> Export Überblick PDF
           </button>
         </li>
+        {hasOpenAiFeature && (
+          <li>
+            <button
+              type="button"
+              onClick={() => {
+                setIsShownOpenAiLocationModal(true);
+              }}
+              className="btn btn-link"
+            >
+              <img src={pdfIcon} alt="pdf-icon" /> Lagetext generieren
+            </button>
+          </li>
+        )}
         <li>
           <button
             type="button"
@@ -410,6 +461,7 @@ const SnippetEditorPage: React.FunctionComponent = () => {
         timelineStep={3}
       >
         <TourStarter tour="editor" />
+        {isShownOpenAiLocationModal && <OpenAiLocationModal />}
         <div className="hidden">
           <GooglePlacesAutocomplete
             apiOptions={googleMapsApiOptions}
