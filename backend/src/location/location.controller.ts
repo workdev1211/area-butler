@@ -3,6 +3,7 @@ import {
   Controller,
   Delete,
   Get,
+  HttpException,
   Param,
   Post,
   Put,
@@ -29,6 +30,7 @@ import { SubscriptionService } from '../user/subscription.service';
 import { MeansOfTransportation } from '@area-butler-types/types';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
+import { openAiFeatureAllowedEmails } from '../../../shared/constants/exclusion';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -169,11 +171,19 @@ export class LocationController extends AuthenticatedController {
     @Query('meanOfTransportation') meanOfTransportation: MeansOfTransportation,
     @Query('tonality') tonality: OpenAiTonalityEnum,
   ): Promise<any> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscription) => !subscription.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    // TODO allow by user email
+    // await this.subscriptionService.checkSubscriptionViolation(
+    //   user.subscription.type,
+    //   (subscription) => !subscription.appFeatures.openAi,
+    //   'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    // );
+
+    if (!openAiFeatureAllowedEmails.includes(user.email)) {
+      throw new HttpException(
+        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+        400,
+      );
+    }
 
     const { address, poiData } =
       await this.locationService.fetchOpenAiSnapshotData(

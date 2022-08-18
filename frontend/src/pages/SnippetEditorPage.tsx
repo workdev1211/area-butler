@@ -49,6 +49,7 @@ import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
+import { openAiFeatureAllowedEmails } from "../../../shared/constants/exclusion";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -83,7 +84,9 @@ const SnippetEditorPage: FunctionComponent = () => {
     user?.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
 
   // TODO allow by user email
-  const hasOpenAiFeature = user?.subscriptionPlan?.config.appFeatures.openAi;
+  const hasOpenAiFeature =
+    openAiFeatureAllowedEmails.includes(user?.email || "") ||
+    user?.subscriptionPlan?.config.appFeatures.openAi;
 
   useEffect(() => {
     if (!user?.subscriptionPlan?.config.appFeatures.htmlSnippet) {
