@@ -31,6 +31,7 @@ import { MeansOfTransportation } from '@area-butler-types/types';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
 import { openAiFeatureAllowedEmails } from '../../../shared/constants/exclusion';
+import { openAiTonalities } from '../../../shared/constants/open-ai';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -185,16 +186,16 @@ export class LocationController extends AuthenticatedController {
       );
     }
 
-    const { address, poiData } =
-      await this.locationService.fetchOpenAiSnapshotData(
-        searchResultSnapshotId,
-        meanOfTransportation,
-      );
+    const searchResultSnapshot = await this.locationService.fetchEmbeddableMap(
+      user,
+      searchResultSnapshotId,
+    );
 
     const openAiText = this.openAiService.prepareLocationDescriptionQuery(
-      address,
-      poiData,
-      tonality,
+      searchResultSnapshot,
+      meanOfTransportation,
+      openAiTonalities.find(({ type }) => type === tonality).label ||
+        openAiTonalities[0].label,
     );
 
     return this.openAiService.fetchTextCompletion(openAiText);

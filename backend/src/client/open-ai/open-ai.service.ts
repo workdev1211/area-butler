@@ -3,9 +3,9 @@ import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
 
 import { configService } from '../../config/config.service';
 import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
-import { ApiOsmLocation, OsmName } from '@area-butler-types/types';
+import { MeansOfTransportation, OsmName } from '@area-butler-types/types';
 import { openAiTranslationDictionary } from '../../../../shared/constants/open-ai';
-import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import { SearchResultSnapshotDocument } from '../../location/schema/search-result-snapshot.schema';
 
 @Injectable()
 export class OpenAiService {
@@ -16,12 +16,14 @@ export class OpenAiService {
   private readonly openAiApi = new OpenAIApi(this.openAiConfig);
 
   prepareLocationDescriptionQuery(
-    address: string,
-    poiData: ApiOsmLocation[],
-    tonality: OpenAiTonalityEnum,
+    snapshotDoc: SearchResultSnapshotDocument,
+    meanOfTransportation: MeansOfTransportation,
+    tonality: string,
   ): string {
-    const poiCount: Partial<Record<OsmName, number>> = poiData.reduce(
-      (result, { entity: { type } }) => {
+    const poiCount: Partial<Record<OsmName, number>> =
+      snapshotDoc.snapshot.searchResponse.routingProfiles[
+        meanOfTransportation
+      ].locationsOfInterest.reduce((result, { entity: { type } }) => {
         if (!result[type]) {
           result[type] = 0;
         }
@@ -29,14 +31,18 @@ export class OpenAiService {
         result[type] += 1;
 
         return result;
-      },
-      {},
-    );
+      }, {});
 
-    const initialOpenAiText =
+    let initialOpenAiText =
       `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für Immobilien-Anzeige unter Anderem aus den folgenden Daten.\n` +
       'Füge Umgebungsinformationen hinzu:\n' +
-      `Adresse: ${address}\n`;
+      `Adresse: ${snapshotDoc.snapshot.placesLocation.label}\n`;
+
+    snapshotDoc.snapshot.preferredLocations.forEach(
+      ({ address: preferredLocation }) => {
+        initialOpenAiText += `Verwende dabei einige der folgenden, wichtigen Plätze: ${preferredLocation}\n`;
+      },
+    );
 
     return Object.entries(poiCount).reduce((result, [type, count]) => {
       result += `Anzahl ${openAiTranslationDictionary[type].plural}: ${count}\n`;
@@ -55,7 +61,7 @@ export class OpenAiService {
         temperature: 1,
         max_tokens: 1200,
         top_p: 1,
-        n: 2,
+        n: 1,
         frequency_penalty: 0,
         presence_penalty: 0,
       },

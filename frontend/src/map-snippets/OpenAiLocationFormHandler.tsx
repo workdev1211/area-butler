@@ -63,25 +63,37 @@ const OpenAiLocationFormHandler: FunctionComponent<
       <OpenAiLocationForm formId={formId!} onSubmit={onSubmit} />
       {locationDescription && (
         <div>
-          <h3 className="flex items-center gap-2">
-            <span>Ortsbeschreibung</span>
+          <h3>Ihr KI-generierter Textvorschlag</h3>
+          <div className="text-justify">{locationDescription}</div>
+          <div
+            className="flex items-center gap-2 mt-3 cursor-pointer"
+            style={{ width: "fit-content" }}
+            onClick={async () => {
+              await navigator.clipboard.writeText(locationDescription);
+              toastSuccess("Kopiert");
+            }}
+          >
             <img
               src={copyIcon}
               alt="copy-icon"
-              onClick={async () => {
-                await navigator.clipboard.writeText(locationDescription);
-                toastSuccess("Kopiert");
-              }}
               style={{
                 width: "16px",
                 height: "16px",
                 filter:
                   "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
-                cursor: "pointer",
               }}
             />
-          </h3>
-          <span className="break-all text-justify">{locationDescription}</span>
+            <span className="text-sm font-bold">
+              In Zwischenablage kopieren
+            </span>
+          </div>
+          <div
+            className="text-sm font-bold pt-3 mt-3"
+            style={{ border: 0, borderTop: "1px solid black" }}
+          >
+            Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text für
+            Sie erstellt!
+          </div>
         </div>
       )}
     </>

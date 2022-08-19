@@ -25,18 +25,18 @@ export const openAiTranslationDictionary: Record<
   supermarket: { singular: "Supermarkt", plural: "Supermärkte" },
   swimming_pool: { singular: "Schwimmbad", plural: "Schwimmbäder" },
   theatre: { singular: "Theater", plural: "Theater" },
-  university: { singular: "Theater", plural: "Theater" },
-  bar: { singular: "Theater", plural: "Theater" },
-  kiosk: { singular: "Theater", plural: "Theater" },
-  sports_hall: { singular: "Theater", plural: "Theater" },
-  favorite: { singular: "Theater", plural: "Theater" },
-  property: { singular: "Theater", plural: "Theater" },
+  university: { singular: "Univerität", plural: "Universitäten" },
+  bar: { singular: "Bar", plural: "Bars" },
+  kiosk: { singular: "Kiosk", plural: "Kioske" },
+  sports_hall: { singular: "Sportplatz", plural: "Sportplätze" },
+  favorite: { singular: "Favorit", plural: "Favoriten" },
+  property: { singular: "Besitze", plural: "Besitze" },
 };
 
 export const openAiTonalities = [
-  { label: "formal und seriöse", type: OpenAiTonalityEnum.FORMAL_SERIOUS },
+  { label: "formal und seriös", type: OpenAiTonalityEnum.FORMAL_SERIOUS },
   {
-    label: "locker und jugendliche",
+    label: "locker und jugendlich",
     type: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
   },
 ];
