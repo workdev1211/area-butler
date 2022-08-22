@@ -28,13 +28,13 @@ export class RealEstateListingService {
 
   async getRealEstateListings(
     { id }: UserDocument,
-    status?: ApiRealEstateStatusEnum,
+    status = ApiRealEstateStatusEnum.ALLE,
   ): Promise<RealEstateListingDocument[]> {
     const filter: { userId: string; status?: ApiRealEstateStatusEnum } = {
       userId: id,
     };
 
-    if (status) {
+    if (status !== ApiRealEstateStatusEnum.ALLE) {
       filter.status = status;
     }
 

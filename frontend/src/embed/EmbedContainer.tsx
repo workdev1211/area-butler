@@ -18,6 +18,7 @@ import {
 } from "../context/RealEstateContext";
 import { addressExpiredMessage } from "../../../shared/messages/error.message";
 import { defaultMapZoom } from "../map/Map";
+import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -39,9 +40,8 @@ const EmbedContainer: FunctionComponent = () => {
   const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
-  const [searchConfig, setSearchConfig] = useState<
-    ApiSearchResultSnapshotConfig
-  >();
+  const [searchConfig, setSearchConfig] =
+    useState<ApiSearchResultSnapshotConfig>();
 
   const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1);
@@ -112,6 +112,14 @@ const EmbedContainer: FunctionComponent = () => {
         realEstateListings = [],
       } = result.snapshot;
 
+      const filteredRealEstateListings = searchConfig.realEstateStatus
+        ? realEstateListings.filter(
+            ({ status }) =>
+              searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+              status === searchConfig.realEstateStatus
+          )
+        : realEstateListings;
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
         payload: searchResponse,
@@ -172,7 +180,7 @@ const EmbedContainer: FunctionComponent = () => {
         payload: deriveInitialEntityGroups(
           searchResponse,
           searchConfig,
-          realEstateListings,
+          filteredRealEstateListings,
           preferredLocations
         ),
       });

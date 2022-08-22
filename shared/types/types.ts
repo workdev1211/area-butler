@@ -1,7 +1,7 @@
 import { ApiPreferredLocation } from "./potential-customer";
 import { EntityRoute, EntityTransitRoute } from "./routing";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
-import { ApiRealEstateListing } from "./real-estate";
+import { ApiRealEstateListing, ApiRealEstateStatusEnum } from "./real-estate";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -269,6 +269,7 @@ export interface ApiSearchResultSnapshotConfig {
   showStreetViewLink?: boolean;
   hideIsochrones?: boolean;
   zoomLevel?: number;
+  realEstateStatus?: ApiRealEstateStatusEnum;
 }
 
 export interface ApiSearchResultSnapshotResponse {

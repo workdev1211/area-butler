@@ -19,6 +19,8 @@ import {
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
 import { useHttp } from "../../hooks/http";
+import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
+import { allRealEstateStatuses } from "../../../../shared/constants/real-estate";
 
 export interface IRecentSnippetConfig {
   id: string;
@@ -220,6 +222,16 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     });
   };
 
+  const changeRealEstateStatusFilter = (value: string) => {
+    onConfigChange({
+      ...config,
+      realEstateStatus:
+        value !== ApiRealEstateStatusEnum.ALLE
+          ? (value as ApiRealEstateStatusEnum)
+          : undefined,
+    });
+  };
+
   const isDefaultActiveGroup = (activeGroup: string) => {
     return (config.defaultActiveGroups ?? []).includes(activeGroup);
   };
@@ -346,6 +358,24 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                   {mapStyles.map((style) => (
                     <option value={style.key} key={style.key}>
                       {style.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <h4 className="w-14 font-bold">Typfilter</h4>
+                <select
+                  className="select select-bordered select-sm w-full flex"
+                  value={config?.realEstateStatus}
+                  onChange={(event) => {
+                    changeRealEstateStatusFilter(event.target.value);
+                  }}
+                >
+                  {allRealEstateStatuses.map(({ label, status }) => (
+                    <option value={status} key={`${status ? status : "alle"}`}>
+                      {label}
                     </option>
                   ))}
                 </select>

@@ -7,6 +7,7 @@ import {
   IsBoolean,
   IsIn,
   IsNumber,
+  NotEquals,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -16,6 +17,7 @@ import {
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisiblityDto from './api-snippet-entity-visiblity.dto';
+import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
@@ -71,6 +73,11 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsNumber()
   zoomLevel?: number;
+
+  @IsOptional()
+  @IsEnum(ApiRealEstateStatusEnum)
+  @NotEquals(ApiRealEstateStatusEnum.ALLE)
+  realEstateStatus?: ApiRealEstateStatusEnum;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

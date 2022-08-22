@@ -1,4 +1,10 @@
-import { FunctionComponent, useEffect, useState, ChangeEvent } from "react";
+import {
+  ChangeEvent,
+  FunctionComponent,
+  ReactNode,
+  useEffect,
+  useState,
+} from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -128,11 +134,20 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
             </div>
             <div className="form-control">
               <Select label="Typ" name="status" placeholder="Typ">
-                {allRealEstateStatuses.map(({ label, status }) => (
-                  <option value={status} key={status}>
-                    {label}
-                  </option>
-                ))}
+                {allRealEstateStatuses.reduce(
+                  (result: ReactNode[], { label, status }) => {
+                    if (status !== ApiRealEstateStatusEnum.ALLE) {
+                      result.push(
+                        <option value={status} key={status}>
+                          {label}
+                        </option>
+                      );
+                    }
+
+                    return result;
+                  },
+                  []
+                )}
               </Select>
             </div>
             <div className="form-control">

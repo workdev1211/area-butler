@@ -68,10 +68,17 @@ export enum ApiEnergyEfficiency {
 }
 
 export enum ApiRealEstateStatusEnum {
+  ALLE = "ALLE",
   IN_PREPARATION = "IN_PREPARATION",
   FOR_RENT = "FOR_RENT",
   FOR_SALE = "FOR_SALE",
   RENTED_SOLD = "RENTED_SOLD",
+  NEW_CONSTRUCTION = "NEW_CONSTRUCTION",
+}
+
+export interface IApiRealEstateStatus {
+  label: string;
+  status: ApiRealEstateStatusEnum;
 }
 
 export enum ApiExampleFileTypeEnum {

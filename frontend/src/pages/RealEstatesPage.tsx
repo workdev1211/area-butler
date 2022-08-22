@@ -31,6 +31,7 @@ import {
 import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
+  IApiRealEstateStatus,
 } from "../../../shared/types/real-estate";
 import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
@@ -49,11 +50,6 @@ const deleteRealEstateModalConfig = {
   submitButtonTitle: "Löschen",
 };
 
-interface IRealEstateStatusOption {
-  label: string;
-  value?: ApiRealEstateStatusEnum;
-}
-
 const RealEstatesPage: FunctionComponent = () => {
   const { get } = useHttp();
   const history = useHistory();
@@ -65,9 +61,9 @@ const RealEstatesPage: FunctionComponent = () => {
   const { searchContextDispatch } = useContext(SearchContext);
   const { googleApiKey } = useContext(ConfigContext);
 
-  const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState<
-    ApiRealEstateStatusEnum | undefined
-  >(undefined);
+  const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState(
+    ApiRealEstateStatusEnum.ALLE
+  );
 
   const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
     ApiSearchResultSnapshotResponse[]
@@ -153,9 +149,7 @@ const RealEstatesPage: FunctionComponent = () => {
 
   const fetchRealEstates = async () => {
     const response = await get<ApiRealEstateListing[]>(
-      `/api/real-estate-listings${
-        selectedRealEstateStatus ? `?status=${selectedRealEstateStatus}` : ""
-      }`
+      `/api/real-estate-listings?status=${selectedRealEstateStatus}`
     );
 
     realEstateDispatch({
@@ -199,9 +193,9 @@ const RealEstatesPage: FunctionComponent = () => {
     menu: (
       provided: CSSObjectWithLabel,
       state: MenuProps<
-        IRealEstateStatusOption,
+        IApiRealEstateStatus,
         false,
-        GroupBase<IRealEstateStatusOption>
+        GroupBase<IApiRealEstateStatus>
       >
     ) => ({
       ...provided,
@@ -210,9 +204,9 @@ const RealEstatesPage: FunctionComponent = () => {
     control: (
       provided: CSSObjectWithLabel,
       state: ControlProps<
-        IRealEstateStatusOption,
+        IApiRealEstateStatus,
         false,
-        GroupBase<IRealEstateStatusOption>
+        GroupBase<IApiRealEstateStatus>
       >
     ) => ({
       ...provided,
@@ -224,24 +218,11 @@ const RealEstatesPage: FunctionComponent = () => {
     }),
   };
 
-  const values: IRealEstateStatusOption[] = allRealEstateStatuses.map(
-    ({ label, status: value }) => ({
-      value,
-      label,
-    })
-  );
-
-  const defaultValue = {
-    label: "Alle",
-  } as IRealEstateStatusOption;
-
-  values.unshift(defaultValue);
-
   const onRealEstateStatusChange = async (
-    option: SingleValue<IRealEstateStatusOption>,
-    action: ActionMeta<IRealEstateStatusOption>
+    option: SingleValue<IApiRealEstateStatus>,
+    action: ActionMeta<IApiRealEstateStatus>
   ) => {
-    setSelectedRealEstateStatus(option!.value);
+    setSelectedRealEstateStatus(option!.status);
   };
 
   return (
@@ -272,13 +253,16 @@ const RealEstatesPage: FunctionComponent = () => {
       >
         <Select
           styles={customStyles}
-          options={values}
+          options={allRealEstateStatuses}
           isSearchable={false}
-          defaultValue={defaultValue}
+          defaultValue={allRealEstateStatuses.find(
+            ({ status }) => status === ApiRealEstateStatusEnum.ALLE
+          )}
           placeholder="Wählen Sie einen Typ..."
           onChange={async (option, action) => {
             await onRealEstateStatusChange(option, action);
           }}
+          getOptionValue={(option) => option.status}
         />
         <span>Typfilter</span>
       </div>

@@ -2,6 +2,7 @@ import {
   ApiFurnishing,
   ApiRealEstateCostType,
   ApiRealEstateStatusEnum,
+  IApiRealEstateStatus,
 } from "../types/real-estate";
 
 export const allFurnishing = [
@@ -21,9 +22,11 @@ export const allRealEstateCostTypes = [
   { label: "Monatl. Kaltmiete", type: ApiRealEstateCostType.RENT_MONTHLY_COLD },
 ];
 
-export const allRealEstateStatuses = [
+export const allRealEstateStatuses: IApiRealEstateStatus[] = [
+  { label: "Alle", status: ApiRealEstateStatusEnum.ALLE },
   { label: "In Vorbereitung", status: ApiRealEstateStatusEnum.IN_PREPARATION },
   { label: "Miete", status: ApiRealEstateStatusEnum.FOR_RENT },
   { label: "Kauf", status: ApiRealEstateStatusEnum.FOR_SALE },
+  { label: "Neubau", status: ApiRealEstateStatusEnum.NEW_CONSTRUCTION },
   { label: "Vermietet/Verkauft", status: ApiRealEstateStatusEnum.RENTED_SOLD },
 ];

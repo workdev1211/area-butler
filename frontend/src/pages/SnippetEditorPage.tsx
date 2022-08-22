@@ -1,6 +1,6 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useHistory, useParams, useLocation } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
@@ -50,6 +50,7 @@ import { googleMapsApiOptions } from "../shared/shared.constants";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { openAiFeatureAllowedEmails } from "../../../shared/constants/exclusion";
+import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -150,12 +151,21 @@ const SnippetEditorPage: FunctionComponent = () => {
         const { searchResponse, realEstateListings, preferredLocations } =
           snapshotResponse.snapshot;
 
+        const filteredRealEstateListings = snapshotConfig.realEstateStatus
+          ? realEstateListings.filter(
+              ({ status }) =>
+                snapshotConfig.realEstateStatus ===
+                  ApiRealEstateStatusEnum.ALLE ||
+                status === snapshotConfig.realEstateStatus
+            )
+          : realEstateListings;
+
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
           payload: deriveInitialEntityGroups(
             searchResponse,
             enhancedConfig,
-            realEstateListings,
+            filteredRealEstateListings,
             preferredLocations
           ),
         });
@@ -238,7 +248,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           deriveInitialEntityGroups(
             searchResponse,
             enhancedConfig,
-            realEstateListings,
+            filteredRealEstateListings,
             preferredLocations,
             true
           )
@@ -253,12 +263,23 @@ const SnippetEditorPage: FunctionComponent = () => {
   // react to changes
   useEffect(() => {
     if (snapshot) {
+      const configRealEstateStatus =
+        searchContextState.responseConfig?.realEstateStatus;
+
+      const filteredRealEstateListings = configRealEstateStatus
+        ? snapshot.realEstateListings.filter(
+            ({ status }) =>
+              configRealEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+              status === configRealEstateStatus
+          )
+        : snapshot.realEstateListings;
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups(
           snapshot?.searchResponse!,
           searchContextState.responseConfig,
-          snapshot.realEstateListings,
+          filteredRealEstateListings,
           snapshot.preferredLocations
         ),
       });
@@ -267,6 +288,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   }, [
     searchContextState.responseConfig?.defaultActiveGroups,
     searchContextState.responseConfig?.entityVisibility,
+    searchContextState.responseConfig?.realEstateStatus,
   ]);
 
   const onPoiAdd = (poi: Poi) => {

@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  NotEquals,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -54,6 +55,7 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
 
   @IsNotEmpty()
   @IsEnum(ApiRealEstateStatusEnum)
+  @NotEquals(ApiRealEstateStatusEnum.ALLE)
   status: ApiRealEstateStatusEnum;
 }
 
