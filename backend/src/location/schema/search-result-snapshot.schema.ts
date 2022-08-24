@@ -34,6 +34,9 @@ export class SearchResultSnapshot {
   @Prop({ type: Date, required: false })
   lastAccess: Date;
 
+  @Prop({ type: Date, required: false })
+  updatedAt: Date;
+
   @Prop({ type: Date })
   endsAt: Date;
 }

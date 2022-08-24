@@ -36,6 +36,10 @@ class ApiSearchResultSnapshotResponseDto
   @IsDate()
   lastAccess?: Date;
 
+  @IsOptional()
+  @IsDate()
+  updatedAt?: Date;
+
   @IsNotEmpty()
   mapboxToken: string;
 

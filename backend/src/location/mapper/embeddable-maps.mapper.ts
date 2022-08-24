@@ -84,6 +84,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
     mapboxToken: searchResultSnapshot.mapboxAccessToken,
     createdAt: searchResultSnapshot.createdAt,
     endsAt: searchResultSnapshot.endsAt,
+    updatedAt: searchResultSnapshot.updatedAt,
   };
 };
 

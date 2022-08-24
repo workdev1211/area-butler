@@ -133,7 +133,7 @@ export class LocationController extends AuthenticatedController {
       'snapshot.placesLocation.label': 1,
     };
 
-    const sortOptions = { lastAccess: -1, createdAt: -1 };
+    const sortOptions = { updatedAt: -1, lastAccess: -1 };
 
     return (
       await this.locationService.fetchEmbeddableMaps(
@@ -153,6 +153,9 @@ export class LocationController extends AuthenticatedController {
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     const map = await this.locationService.fetchEmbeddableMap(user, id);
+
+    map.updatedAt = new Date();
+    await map.save();
 
     const realEstateListings =
       await this.realEstateListingService.getRealEstateListings(user);

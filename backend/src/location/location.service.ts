@@ -315,9 +315,8 @@ export class LocationService {
     this.checkAddressExpiration(snapshotDoc);
 
     snapshotDoc.lastAccess = new Date();
-    snapshotDoc.save();
 
-    return snapshotDoc;
+    return snapshotDoc.save();
   }
 
   async updateSearchResultSnapshot(

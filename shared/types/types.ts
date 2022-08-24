@@ -282,4 +282,5 @@ export interface ApiSearchResultSnapshotResponse {
   createdAt: Date;
   lastAccess?: Date;
   endsAt?: Date;
+  updatedAt?: Date;
 }
