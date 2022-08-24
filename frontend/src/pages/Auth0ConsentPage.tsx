@@ -38,14 +38,16 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
         <p className="mt-5">
           Mit der Zustimmung der AGB und Datenschutzbestimmungen erhalten Sie
           für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
-          <strong>kostenfreie Lizenz</strong>, um den vollen
-          Umfang des AreaButlers testen zu können. Zu unserer und Ihrer Sicherheit müssen Sie ein{" "}
-          <strong>keinerlei</strong> Zahlungsmittel wählen und Zahlungsdaten hinterlegen. Diese werden erst aktiviert, wenn Sie sich nach der Testphase, aktiv für ein Angebot entscheiden.
+          <strong>kostenfreie Testphase</strong>, um den vollen
+          Umfang des AreaButlers testen zu können. 
+          <p>
+          Zu unserer Sicherheit und um Missbrauch zu vermeiden, erfordert die Testphase ein hinterlegtes Zahlungsmittel. Dieses wird erst nach der Testphase belastet.
+          </p>
         </p>
         <p>
-        Es gibt keine automatische Verlängerung und nach Ablauf Ihrer Testphase müssen Sie aktiv ein Angebot auswählen, welches am besten zu Ihren Anforderungen passt. Auch können Sie danach jederzeit zum Beispiel zu einem anderen Abonnement wechseln.
+        Sollten Sie während der Testphase nicht zufrieden sein, können Sie über Ihr Profil im AreaButler vom Kauf zurücktrete und die Testphase kostenfrei beenden.
         </p>
-        <p>Viel Spaß beim Entdecken des AreaButlers !</p>
+        <p>Viel Spaß beim Entdecken des AreaButlers, wir freuen uns auf Ihr Feedback!</p>
         <Formik
           initialValues={{
             consentGiven: false,
