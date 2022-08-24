@@ -70,7 +70,6 @@ const SnippetEditorPage: FunctionComponent = () => {
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
   const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
     useState(false);
 
@@ -140,7 +139,10 @@ const SnippetEditorPage: FunctionComponent = () => {
       });
 
       if (enhancedConfig.zoomLevel) {
-        setMapZoomLevel(enhancedConfig.zoomLevel);
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
+          payload: enhancedConfig.zoomLevel || defaultMapZoom,
+        });
       }
 
       setDirectLink(createDirectLink(snapshotResponse.token));
@@ -516,7 +518,6 @@ const SnippetEditorPage: FunctionComponent = () => {
             embedMode={true}
             editorMode={true}
             onPoiAdd={onPoiAdd}
-            mapZoomLevel={mapZoomLevel}
           />
           <EditorMapMenu
             availableMeans={deriveAvailableMeansFromResponse(

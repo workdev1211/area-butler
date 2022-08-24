@@ -61,7 +61,12 @@ export interface SearchContextState {
   responseRoutes: EntityRoute[];
   responseTransitRoutes: EntityTransitRoute[];
   responseToken: string;
-  gotoMapCenter?: boolean;
+  gotoMapCenter?: IGotoMapCenter;
+}
+
+interface IGotoMapCenter {
+  goto: boolean;
+  withZoom?: boolean;
 }
 
 export const initialState: SearchContextState = {
@@ -135,7 +140,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
-  [SearchContextActionTypes.GOTO_MAP_CENTER]: boolean;
+  [SearchContextActionTypes.GOTO_MAP_CENTER]: IGotoMapCenter | undefined;
   [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
   [SearchContextActionTypes.CENTER_ZOOM_COORDINATES]: {
     zoom: number;

@@ -39,7 +39,6 @@ const EmbedContainer: FunctionComponent = () => {
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
   const [isAddressExpired, setIsAddressExpired] = useState(false);
   const [mapBoxToken, setMapBoxToken] = useState("");
-  const [mapZoomLevel, setMapZoomLevel] = useState(defaultMapZoom);
   const [searchConfig, setSearchConfig] =
     useState<ApiSearchResultSnapshotConfig>();
 
@@ -78,10 +77,6 @@ const EmbedContainer: FunctionComponent = () => {
 
         if (config && !("showStreetViewLink" in config)) {
           config["showStreetViewLink"] = true;
-        }
-
-        if (config?.zoomLevel) {
-          setMapZoomLevel(config.zoomLevel);
         }
 
         setMapBoxToken(response.mapboxToken);
@@ -146,6 +141,11 @@ const EmbedContainer: FunctionComponent = () => {
       });
 
       searchContextDispatch({
+        type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
+        payload: searchConfig.zoomLevel || defaultMapZoom,
+      });
+
+      searchContextDispatch({
         type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
         payload: preferredLocations,
       });
@@ -203,7 +203,6 @@ const EmbedContainer: FunctionComponent = () => {
       searchResponse={searchContextState.searchResponse}
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
-      mapZoomLevel={mapZoomLevel}
       embedMode={true}
     />
   );

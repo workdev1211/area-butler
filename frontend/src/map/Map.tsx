@@ -375,6 +375,7 @@ const Map = memo<MapProps>(
     isShownPreferredLocationsModal,
     togglePreferredLocationsModal,
   }) => {
+    // TODO remove searchContext form the Map component
     const { searchContextState, searchContextDispatch } =
       useContext(SearchContext);
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
@@ -573,43 +574,43 @@ const Map = memo<MapProps>(
 
     // react on zoom and center change
     useEffect(() => {
-      if (currentMap && mapZoomLevel) {
-        // handle growing/shrinking of icons based on zoom level
-        if (amenityMarkerGroup) {
-          const markers = amenityMarkerGroup.getLayers() as IdMarker[];
+      if (!currentMap || !mapZoomLevel || !amenityMarkerGroup) {
+        return;
+      }
 
-          if (markers.length) {
-            const currentSize = markers[0].getIcon().options.iconSize;
+      // handle growing/shrinking of icons based on zoom level
+      const markers = amenityMarkerGroup.getLayers() as IdMarker[];
 
-            if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
-              markers.forEach((marker) => {
-                const icon = marker.getIcon();
-                icon.options.iconSize = new L.Point(25, 25);
-                marker.setIcon(icon);
-              });
-            }
+      if (!markers.length) {
+        return;
+      }
 
-            if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
-              markers.forEach((marker) => {
-                const icon = marker.getIcon();
-                icon.options.iconSize = defaultAmenityIconSize;
-                marker.setIcon(icon);
-              });
-            }
+      const currentSize = markers[0].getIcon().options.iconSize;
 
-            const marker = markers.find(
-              (m) => m.getEntity().id === highlightId
-            );
+      if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
+        markers.forEach((marker) => {
+          const icon = marker.getIcon();
+          icon.options.iconSize = new L.Point(25, 25);
+          marker.setIcon(icon);
+        });
+      }
 
-            if (marker) {
-              // use timeout to wait for de-spider animation of cluster
-              setTimeout(() => {
-                marker.createOpenPopup();
-                setHighlightId(null);
-              }, 1200);
-            }
-          }
-        }
+      if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
+        markers.forEach((marker) => {
+          const icon = marker.getIcon();
+          icon.options.iconSize = defaultAmenityIconSize;
+          marker.setIcon(icon);
+        });
+      }
+
+      const marker = markers.find((m) => m.getEntity().id === highlightId);
+
+      if (marker) {
+        // use timeout to wait for de-spider animation of cluster
+        setTimeout(() => {
+          marker.createOpenPopup();
+          setHighlightId(null);
+        }, 1200);
       }
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapZoomLevel, highlightId]);
@@ -618,18 +619,27 @@ const Map = memo<MapProps>(
       if (
         currentMap &&
         searchContextState.mapCenter &&
-        searchContextState.gotoMapCenter
+        searchContextState.gotoMapCenter?.goto
       ) {
-        currentMap.setView(searchContextState.mapCenter);
+        const setViewArgs: [
+          centerCoordinates: ApiCoordinates,
+          zoomLevel?: number
+        ] = [searchContextState.mapCenter];
+
+        if (searchContextState.gotoMapCenter.withZoom) {
+          setViewArgs.push(searchContextState.mapZoomLevel);
+        }
+
+        currentMap.setView(...setViewArgs);
 
         searchContextDispatch({
           type: SearchContextActionTypes.GOTO_MAP_CENTER,
-          payload: false,
+          payload: undefined,
         });
       }
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchContextState.gotoMapCenter]);
+    }, [searchContextState.gotoMapCenter?.goto]);
 
     const meansStringified = JSON.stringify(means);
 
@@ -1003,8 +1013,8 @@ const Map = memo<MapProps>(
 
     // returns the view to the previous place when changing from satellite view to the normal one and vice versa
     useEffect(() => {
-      if (isDrawnMeans && isDrawnRoutes && isDrawnPois) {
-        currentMap?.setView(centerCoordinates, zoomLevel, { animate: false });
+      if (currentMap && isDrawnMeans && isDrawnRoutes && isDrawnPois) {
+        currentMap.setView(centerCoordinates, zoomLevel, { animate: false });
         setIsDrawnMeans(false);
         setIsDrawnRoutes(false);
         setIsDrawnPois(false);
@@ -1132,16 +1142,16 @@ const Map = memo<MapProps>(
             );
           }
         };
+
         const polygon = derivePolygonForMean(mean);
         currentMap!.fitBounds(polygon!.getBounds(), {
           padding: L.point(10, 10),
         });
-        setTimeout(() => {
-          centerZoomCoordinates(
-            currentMap?.getZoom()!,
-            searchResponse.centerOfInterest.coordinates
-          );
-        }, 1000);
+
+        centerZoomCoordinates(
+          currentMap?.getZoom()!,
+          searchResponse.centerOfInterest.coordinates
+        );
       }
     };
 

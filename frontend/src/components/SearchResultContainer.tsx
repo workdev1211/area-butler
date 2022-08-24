@@ -92,7 +92,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   searchResponse,
   placesLocation,
   location,
-  mapZoomLevel = defaultMapZoom,
+  mapZoomLevel,
   user,
   userDispatch = () => null,
   embedMode = false,
@@ -108,30 +108,24 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
     useContext(SearchContext);
 
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [availableMeans, setAvailableMeans] = useState<any>([]);
-
   const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
     EntityGroup[]
   >([]);
-
   const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
     EntityGroup[]
   >([]);
-
   const [poiSearchOptions, setPoiSearchOptions] = useState<IPoiSearchOption[]>(
     []
   );
-
   const [hideIsochrones, setHideIsochrones] = useState(
     searchContextState.responseConfig?.hideIsochrones
   );
-
   const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
-
   const [preferredLocationsGroup, setPreferredLocationsGroup] =
     useState<EntityGroup>();
-
   const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
     useState(false);
 
@@ -499,7 +493,9 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
               ),
             }}
             mapCenter={location}
-            mapZoomLevel={mapZoomLevel}
+            mapZoomLevel={
+              mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
+            }
             routes={searchContextState.responseRoutes}
             transitRoutes={searchContextState.responseTransitRoutes}
             embedMode={embedMode}
@@ -516,6 +512,11 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
                   },
                   zoom,
                 },
+              });
+
+              searchContextDispatch({
+                type: SearchContextActionTypes.GOTO_MAP_CENTER,
+                payload: { goto: true, withZoom: true },
               });
             }}
             addMapClipping={(zoomLevel, mapClippingDataUrl) => {
@@ -572,7 +573,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
             searchContextDispatch({
               type: SearchContextActionTypes.GOTO_MAP_CENTER,
-              payload: true,
+              payload: { goto: true },
             });
           }}
           user={user}
