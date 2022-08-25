@@ -3,11 +3,13 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
-  HttpService,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
-import { SlackChannel, SlackSenderService } from '../client/slack/slack-sender.service';
 
+import {
+  SlackChannel,
+  SlackSenderService,
+} from '../client/slack/slack-sender.service';
 
 @Catch()
 export class CustomExceptionFilter extends BaseExceptionFilter {
@@ -18,7 +20,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
   catch(exception: unknown, host: ArgumentsHost) {
     const httpContext = host.switchToHttp();
     const req = httpContext.getRequest();
-    const res = httpContext.getResponse();
+    // const res = httpContext.getResponse();
 
     const status =
       exception instanceof HttpException
@@ -27,11 +29,16 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
     console.error('Error while performing a request');
 
-    if (status === HttpStatus.INTERNAL_SERVER_ERROR || status === HttpStatus.BAD_REQUEST) {
+    if (
+      status === HttpStatus.INTERNAL_SERVER_ERROR ||
+      status === HttpStatus.BAD_REQUEST
+    ) {
       const headers = { ...req.headers };
       delete headers.authorization;
 
-      const errorTitle = `Error while performing a request - more information in log`;
+      const errorTitle =
+        'Error while performing a request - more information in log';
+      const userEmail = `*User email:* ${req.user?.email}`;
       const reqUrlDescription = `*Request Url:* ${JSON.stringify(req.url)}`;
       const reqStatusDescription = `*Request Status:* ${JSON.stringify(
         status,
@@ -49,6 +56,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
       const textBlocks = [
         errorTitle,
+        userEmail,
         reqUrlDescription,
         reqHeadersDescription,
         reqParamsDescription,
