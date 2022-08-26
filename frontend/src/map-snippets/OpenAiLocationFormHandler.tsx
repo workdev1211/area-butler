@@ -1,4 +1,5 @@
 import { FunctionComponent, useState } from "react";
+import copy from "copy-to-clipboard";
 
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
@@ -66,11 +67,13 @@ const OpenAiLocationFormHandler: FunctionComponent<
           <h3>Ihr KI-generierter Textvorschlag</h3>
           <div className="text-justify">{locationDescription}</div>
           <div
-            className="flex items-center gap-2 mt-3 cursor-pointer"
-            style={{ width: "fit-content" }}
-            onClick={async () => {
-              await navigator.clipboard.writeText(locationDescription);
-              toastSuccess("Kopiert");
+            className="mt-3 inline-flex gap-2 cursor-pointer items-center mt-3"
+            onClick={() => {
+              const success = copy(locationDescription);
+
+              if (success) {
+                toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+              }
             }}
           >
             <img
@@ -88,7 +91,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
             </span>
           </div>
           <div
-            className="text-sm font-bold pt-3 mt-3"
+            className="text-sm font-bold pt-3 mt-1.5"
             style={{ border: 0, borderTop: "1px solid black" }}
           >
             Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text für

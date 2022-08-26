@@ -1,7 +1,8 @@
-import { UserActionTypes, UserContext } from "context/UserContext";
+import { FunctionComponent, useContext, useState } from "react";
 import copy from "copy-to-clipboard";
+
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import React, { useContext, useState } from "react";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
@@ -14,13 +15,13 @@ export interface CodeSnippetModalProps {
   snapshot?: ApiSearchResultSnapshotResponse;
 }
 
-const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
+const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   codeSnippet,
   directLink,
   setShowModal,
   showModal,
   editDescription = false,
-  snapshot
+  snapshot,
 }) => {
   const { put } = useHttp();
   const { userDispatch } = useContext(UserContext);
@@ -29,6 +30,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
+
     if (success) {
       toastSuccess("Erfolgreich in Zwischenablage kopiert!");
     }
@@ -36,6 +38,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
 
   const closeModal = async () => {
     setShowModal(false);
+
     if (
       editDescription &&
       snapshot?.id &&
@@ -43,11 +46,12 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
     ) {
       try {
         await put(`/api/location/snapshot/${snapshot.id}/description`, {
-          description
+          description,
         });
+
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION,
-          payload: { id: snapshot.id, description: description || "" }
+          payload: { id: snapshot.id, description: description || "" },
         });
       } catch (err) {
         toastError("Fehler beim Ändern der Notiz");
@@ -73,8 +77,8 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
               <textarea
                 className="textarea textarea-primary"
                 value={description}
-                onChange={event => setDescription(event.target.value)}
-              ></textarea>
+                onChange={(event) => setDescription(event.target.value)}
+              />
             </div>
           </div>
         )}
@@ -100,7 +104,7 @@ const CodeSnippetModal: React.FunctionComponent<CodeSnippetModalProps> = ({
             Snippet Kopieren
           </button>
           <button
-            className="btn btn-sm btn-primary"
+            className="btn btn-sm btn-default"
             onClick={() => closeModal()}
           >
             Schließen

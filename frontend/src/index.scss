@@ -61,6 +61,7 @@ html {
   --signal-error: #cb513b;
 
   --primary-gradient: linear-gradient(to right, #aa0c54, #cd1543 40%);
+  --secondary-gradient: linear-gradient(to right, #461fc2, #5f45b5 40%);
 
   --h1-size: 24px;
   --h1-weight: 500;
@@ -129,6 +130,22 @@ html {
   border: 1px solid var(--base-silver);
 }
 .bg-primary-gradient:disabled img {
+  filter: brightness(0.7);
+}
+
+.bg-secondary-gradient {
+  color: white;
+  background: var(--secondary-gradient);
+}
+.bg-secondary-gradient.loading {
+  color: white;
+}
+.bg-secondary-gradient:disabled {
+  background: white;
+  color: var(--base-silver);
+  border: 1px solid var(--base-silver);
+}
+.bg-secondary-gradient:disabled img {
   filter: brightness(0.7);
 }
 

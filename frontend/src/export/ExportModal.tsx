@@ -1,10 +1,11 @@
+import { FunctionComponent, useContext, useState } from "react";
+
 import {
   MapClipping,
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import React, { useContext, useState } from "react";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
 import {
   ApiGeojsonFeature,
@@ -29,7 +30,7 @@ export interface ExportModalProps {
   exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX";
 }
 
-const ExportModal: React.FunctionComponent<ExportModalProps> = ({
+const ExportModal: FunctionComponent<ExportModalProps> = ({
   entities,
   groupedEntries,
   censusData,
@@ -39,11 +40,11 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
     .filter((group: EntityGroup) => group.title !== "Meine Objekte")
     .filter((group: EntityGroup) => group.items.length > 0);
+
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const [filteredEntites, setFilteredEntities] =
-    useState<EntityGroup[]>(groupCopy);
   const { userState } = useContext(UserContext);
+
   const user = userState.user as ApiUser;
   const subscriptionPlan = user.subscriptionPlan?.config;
 
@@ -57,17 +58,18 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
     !!subscriptionPlan?.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     );
+  const selectableClippings = (searchContextState.mapClippings || []).map(
+    (c: MapClipping) => ({ selected: true, ...c })
+  );
 
+  const [filteredEntities, setFilteredEntities] =
+    useState<EntityGroup[]>(groupCopy);
   const [showFederalElection, setShowFederalElection] = useState(
     hasFederalElectionInSubscription
   );
   const [showCensus, setShowCensus] = useState(hasCensusElectionInSubscription);
   const [showParticlePollution, setShowParticlePollution] = useState(
     hasParticlePollutionElectionInSubscription
-  );
-
-  const selectableClippings = (searchContextState.mapClippings || []).map(
-    (c: MapClipping) => ({ selected: true, ...c })
   );
   const [selectedMapClippings, setSelectedMapClippings] =
     useState<SelectedMapClipping[]>(selectableClippings);
@@ -126,7 +128,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
                 setSelectedMapClippings={setSelectedMapClippings}
               />
               <EntitySelection
-                groupedEntries={filteredEntites}
+                groupedEntries={filteredEntities}
                 setGroupedEntries={setFilteredEntities}
                 limit={exportType !== "CHEATSHEET" ? 10 : 3}
               />
@@ -139,7 +141,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               {exportType === "EXPOSE" && (
                 <ExposeDownload
                   entities={entities}
-                  groupedEntries={filteredEntites!}
+                  groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
                   activeMeans={activeMeans}
@@ -166,7 +168,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               {exportType === "CHEATSHEET" && (
                 <CheatsheetDownload
                   entities={entities}
-                  groupedEntries={filteredEntites!}
+                  groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : []}
                   searchResponse={searchContextState.searchResponse!}
                   transportationParams={searchContextState.transportationParams}
@@ -193,7 +195,7 @@ const ExportModal: React.FunctionComponent<ExportModalProps> = ({
               {exportType === "EXPOSE_DOCX" && (
                 <DocxExpose
                   activeMeans={activeMeans}
-                  groupedEntries={filteredEntites!}
+                  groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : []}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}

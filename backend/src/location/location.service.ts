@@ -295,6 +295,7 @@ export class LocationService {
       id: savedSnapshotDoc.id,
       token,
       snapshot,
+      config,
       mapboxToken: mapboxAccessToken,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,

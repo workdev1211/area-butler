@@ -2,25 +2,16 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 
 import BusyModal, { IBusyModalItem } from "components/BusyModal";
-import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import ExportModal from "export/ExportModal";
 import { useHttp } from "hooks/http";
-import { useRouting } from "hooks/routing";
 import {
   deriveEntityGroupsByActiveMeans,
   toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
-import {
-  ApiSearchResultSnapshotResponse,
-  ApiUser,
-  ApiUserRequests,
-  MeansOfTransportation,
-} from "../../../shared/types/types";
+import { ApiUser, ApiUserRequests } from "../../../shared/types/types";
 import SearchResultContainer from "../components/SearchResultContainer";
 import { ConfigContext } from "../context/ConfigContext";
 import {
@@ -32,20 +23,22 @@ import DefaultLayout from "../layout/defaultLayout";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import arrowIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
+import { useAnalysis } from "../hooks/analysis";
 
 export const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
 
+// TODO try to fix the following error
+// Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchResultPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-
   const { mapBoxAccessToken } = useContext(ConfigContext);
-  const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
 
-  const { get, post } = useHttp();
-  const { fetchRoutes, fetchTransitRoutes } = useRouting();
+  const { get } = useHttp();
+  const { createSnapshot } = useAnalysis();
+
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
 
@@ -169,97 +162,9 @@ const SearchResultPage: FunctionComponent = () => {
               const items: IBusyModalItem[] = [];
 
               try {
-                const routes: EntityRoute[] = [];
-                const transitRoutes: EntityTransitRoute[] = [];
-                const location = searchContextState.location!;
-                const preferredLocations: ApiPreferredLocation[] =
-                  searchContextState.preferredLocations || [];
+                const { id } = await createSnapshot(items, setBusyModalItems);
 
-                let index = 0;
-
-                // TODO change to Promise.all?
-                for (const preferredLocation of preferredLocations) {
-                  items.push({
-                    key: `fetch-routes-${preferredLocation.title}-${index}`,
-                  });
-                  setBusyModalItems([...items]);
-
-                  const routesResult = await fetchRoutes({
-                    meansOfTransportation: [
-                      MeansOfTransportation.BICYCLE,
-                      MeansOfTransportation.CAR,
-                      MeansOfTransportation.WALK,
-                    ],
-                    origin: location,
-                    destinations: [
-                      {
-                        title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!,
-                      },
-                    ],
-                  });
-
-                  routes.push({
-                    routes: routesResult[0].routes,
-                    title: routesResult[0].title,
-                    show: [],
-                    coordinates: preferredLocation.coordinates!,
-                  });
-
-                  items.push({
-                    key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
-                  });
-                  setBusyModalItems([...items]);
-
-                  const transitRoutesResult = await fetchTransitRoutes({
-                    origin: location,
-                    destinations: [
-                      {
-                        title: preferredLocation.title,
-                        coordinates: preferredLocation.coordinates!,
-                      },
-                    ],
-                  });
-
-                  if (
-                    transitRoutesResult.length &&
-                    transitRoutesResult[0].route
-                  ) {
-                    transitRoutes.push({
-                      route: transitRoutesResult[0].route,
-                      title: transitRoutesResult[0].title,
-                      show: false,
-                      coordinates: preferredLocation.coordinates!,
-                    });
-                  }
-
-                  index += 1;
-                }
-
-                items.push({
-                  key: "save-map-snippet",
-                });
-                setBusyModalItems([...items]);
-
-                const response: ApiSearchResultSnapshotResponse = (
-                  await post<ApiSearchResultSnapshotResponse>(
-                    "/api/location/snapshot",
-                    {
-                      placesLocation: searchContextState.placesLocation,
-                      location,
-                      transportationParams:
-                        searchContextState.transportationParams,
-                      localityParams: searchContextState.localityParams,
-                      searchResponse: searchContextState.searchResponse,
-                      realEstateListings: realEstateState.listings,
-                      preferredLocations,
-                      routes,
-                      transitRoutes,
-                    }
-                  )
-                ).data;
-
-                history.push(`snippet-editor/${response.id}`, {
+                history.push(`snippet-editor/${id}`, {
                   from: currentLocation.pathname,
                 });
               } catch (e) {
@@ -297,7 +202,7 @@ const SearchResultPage: FunctionComponent = () => {
         {isShownBusyModal && (
           <BusyModal
             items={busyModalItems}
-            totalItems={
+            itemCount={
               searchContextState.preferredLocations?.length
                 ? searchContextState.preferredLocations.length * 2 + 1
                 : 1

@@ -11,7 +11,7 @@ export interface IBusyModalItem {
 
 interface IBusyModalProps {
   items: IBusyModalItem[];
-  totalItems?: number;
+  itemCount?: number;
   isRandomMessages?: boolean;
   isAnimated?: boolean;
   isDisabledLoadingBar?: boolean;
@@ -19,7 +19,7 @@ interface IBusyModalProps {
 
 const BusyModal: FunctionComponent<IBusyModalProps> = ({
   items,
-  totalItems,
+  itemCount,
   isRandomMessages,
   isAnimated,
   isDisabledLoadingBar,
@@ -27,14 +27,14 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
   const [randomMessages, setRandomMessages] = useState<string[]>([]);
 
   useEffect(() => {
-    if (!isRandomMessages || !totalItems) {
+    if (!isRandomMessages || !itemCount) {
       return;
     }
 
     let messages = [...busyModalMessages];
     const resultingMessages = [];
 
-    for (let i = 0; i < totalItems; i += 1) {
+    for (let i = 0; i < itemCount; i += 1) {
       if (!messages.length) {
         messages = [...busyModalMessages];
       }
@@ -45,13 +45,13 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
     }
 
     setRandomMessages(resultingMessages);
-  }, [isRandomMessages, totalItems]);
+  }, [isRandomMessages, itemCount]);
 
   let filledPercentage: number;
   let filledProgressBarStyle: CSSProperties;
 
-  if (totalItems) {
-    filledPercentage = Math.round(((items.length - 1) / totalItems) * 100);
+  if (itemCount) {
+    filledPercentage = Math.round(((items.length - 1) / itemCount) * 100);
 
     filledProgressBarStyle = {
       width: `${filledPercentage}%`,
@@ -89,7 +89,7 @@ const BusyModal: FunctionComponent<IBusyModalProps> = ({
             </div>
           ))}
           {isDisabledLoadingBar && <div />}
-          {totalItems && !isDisabledLoadingBar && (
+          {itemCount && !isDisabledLoadingBar && (
             <div className="progress-bar">
               <div
                 className="filled-progress-bar"
