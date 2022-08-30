@@ -153,7 +153,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Meine Interessenten"
+      title="Meine Zielgruppen"
       withHorizontalPadding={false}
       actionsTop={<ActionsTop />}
     >
