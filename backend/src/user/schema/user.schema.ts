@@ -7,7 +7,7 @@ import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 
 export type UserDocument = User &
-  Document & { subscription?: SubscriptionDocument };
+  Document & { subscription?: SubscriptionDocument; parentUser?: UserDocument };
 
 @Schema()
 export class User {
@@ -55,12 +55,15 @@ export class User {
 
   @Prop({ type: Array, default: [] })
   additionalMapBoxStyles: { key: string; label: string }[];
+
+  @Prop()
+  parentId: string;
 }
 
 export const retrieveTotalRequestContingent = (
   user: UserDocument,
   date: Date = new Date(),
-) => {
+): ApiRequestContingent[] => {
   const contingents = user.requestContingents || [];
 
   return contingents.filter(

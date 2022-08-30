@@ -38,6 +38,14 @@ export interface ApiUser {
   mapIcon?: string;
   color?: string;
   additionalMapBoxStyles: MapBoxStyle[];
+  isChild: boolean;
+  parentSettings?: IApiUserParentSettings;
+}
+
+export interface IApiUserParentSettings {
+  logo?: string;
+  mapIcon?: string;
+  color?: string;
 }
 
 export interface ApiUpsertUser {

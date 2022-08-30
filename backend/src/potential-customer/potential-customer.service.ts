@@ -41,8 +41,11 @@ export class PotentialCustomerService {
 
   async fetchPotentialCustomers({
     id,
+    parentId,
   }: UserDocument): Promise<PotentialCustomerDocument[]> {
-    return this.potentialCustomerModel.find({ userId: id });
+    return this.potentialCustomerModel.find({
+      userId: { $in: [id, parentId] },
+    });
   }
 
   async insertPotentialCustomer(
@@ -173,7 +176,7 @@ export class PotentialCustomerService {
     const { name, email, userId } = questionnaireRequest;
     const user = await this.userService.findById(userId);
     user.subscription = await this.subscriptionService.findActiveByUserId(
-      user._id,
+      user.parentId || user.id,
     );
     const customers = await this.fetchPotentialCustomers(user);
 

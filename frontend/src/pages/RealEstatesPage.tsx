@@ -326,15 +326,19 @@ const RealEstatesPage: FunctionComponent = () => {
                         onClick={() => startSearchFromRealEstate(realEstate)}
                         data-tour={`real-estates-table-item-search-button-${index}`}
                       />
-                      <img
-                        src={editIcon}
-                        alt="icon-edit"
-                        className="cursor-pointer"
-                        data-tour={`"real-estates-table-item-edit-button-${index}`}
-                        onClick={() =>
-                          history.push(`/real-estates/${realEstate.id}`)
-                        }
-                      />
+                      {!realEstate.belongsToParent ? (
+                        <img
+                          src={editIcon}
+                          alt="icon-edit"
+                          className="cursor-pointer"
+                          data-tour={`"real-estates-table-item-edit-button-${index}`}
+                          onClick={() =>
+                            history.push(`/real-estates/${realEstate.id}`)
+                          }
+                        />
+                      ) : (
+                        <div style={{ width: "16px", height: "16px" }} />
+                      )}
                       <img
                         src={locationIcon}
                         alt="icon-location"
@@ -343,21 +347,23 @@ const RealEstatesPage: FunctionComponent = () => {
                           openEmbeddableMapsModal(realEstate);
                         }}
                       />
-                      <FormModal
-                        modalConfig={{
-                          ...deleteRealEstateModalConfig,
-                          modalButton: (
-                            <img
-                              src={deleteIcon}
-                              alt="icon-delete"
-                              data-tour={`real-estates-table-item-delete-button-${index}`}
-                              className="cursor-pointer"
-                            />
-                          ),
-                        }}
-                      >
-                        <RealEstateDeleteHandler realEstate={realEstate} />
-                      </FormModal>
+                      {!realEstate.belongsToParent && (
+                        <FormModal
+                          modalConfig={{
+                            ...deleteRealEstateModalConfig,
+                            modalButton: (
+                              <img
+                                src={deleteIcon}
+                                alt="icon-delete"
+                                data-tour={`real-estates-table-item-delete-button-${index}`}
+                                className="cursor-pointer"
+                              />
+                            ),
+                          }}
+                        >
+                          <RealEstateDeleteHandler realEstate={realEstate} />
+                        </FormModal>
+                      )}
                     </div>
                   </td>
                 </tr>

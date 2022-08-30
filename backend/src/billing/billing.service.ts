@@ -58,7 +58,7 @@ export class BillingService {
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
     const existingSubscriptions =
-      await this.subscriptionService.fetchAllUserSubscriptions(user._id);
+      await this.subscriptionService.fetchAllUserSubscriptions(user.id);
 
     return this.stripeService.createCheckoutSessionUrl(user, {
       ...createCheckout,
@@ -231,7 +231,7 @@ export class BillingService {
   }
 
   async createPaypalSubscription(
-    { _id: userId }: UserDocument,
+    { id: userId }: UserDocument,
     priceId: string,
   ): Promise<string> {
     let paypalSubscriptionPlanId = stripeToPaypalPriceIdMapping.get(priceId);

@@ -10,6 +10,7 @@ export interface ApiRealEstateListing {
   characteristics?: ApiRealEstateCharacteristics;
   showInSnippet: boolean;
   status: ApiRealEstateStatusEnum;
+  belongsToParent: boolean;
 }
 
 export interface ApiUpsertRealEstateListing {

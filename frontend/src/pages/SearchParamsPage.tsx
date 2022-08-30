@@ -490,8 +490,6 @@ const SearchParamsPage: FunctionComponent = () => {
           }
         );
 
-      console.log(1, updatedSnapshotResponse.config);
-
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
         payload: updatedSnapshotResponse.config,

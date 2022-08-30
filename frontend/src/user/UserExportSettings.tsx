@@ -9,14 +9,15 @@ import { toastSuccess } from "../shared/shared.functions";
 const UserExportSettings: React.FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
   const { post } = useHttp();
-  const [image, setImage] = useState<string | undefined>(
+
+  const [color, setColor] = useState<string | undefined>(
+    userState.user!.color || ""
+  );
+  const [logo, setLogo] = useState<string | undefined>(
     userState.user!.logo || ""
   );
   const [mapIcon, setMapIcon] = useState<string | undefined>(
     userState.user!.mapIcon || ""
-  );
-  const [color, setColor] = useState<string | undefined>(
-    userState.user!.color || ""
   );
 
   const updateLogo = async (logo: string) => {
@@ -38,13 +39,33 @@ const UserExportSettings: React.FunctionComponent = () => {
   };
 
   const rollbackSettings = async () => {
-    userDispatch({ type: UserActionTypes.SET_LOGO, payload: undefined });
-    userDispatch({ type: UserActionTypes.SET_COLOR, payload: undefined });
-    userDispatch({ type: UserActionTypes.SET_MAP_ICON, payload: undefined });
-    setImage(undefined);
-    setColor(undefined);
-    setMapIcon(undefined);
-    await post<ApiUser>("/api/users/me/settings", { color: null, logo: null, mapIcon: null });
+    const newColor = userState.user!.parentSettings?.color || undefined;
+    const newLogo = userState.user!.parentSettings?.logo || undefined;
+    const newMapIcon = userState.user!.parentSettings?.mapIcon || undefined;
+
+    userDispatch({
+      type: UserActionTypes.SET_COLOR,
+      payload: newColor,
+    });
+    userDispatch({
+      type: UserActionTypes.SET_LOGO,
+      payload: newLogo,
+    });
+    userDispatch({
+      type: UserActionTypes.SET_MAP_ICON,
+      payload: newMapIcon,
+    });
+
+    setColor(newColor);
+    setLogo(newLogo);
+    setMapIcon(newMapIcon);
+
+    await post<ApiUser>("/api/users/me/settings", {
+      color: newColor || null,
+      logo: newLogo || null,
+      mapIcon: newMapIcon || null,
+    });
+
     toastSuccess("Export Einstellungen zurückgesetzt.");
   };
 
@@ -55,7 +76,7 @@ const UserExportSettings: React.FunctionComponent = () => {
         Die nachfolgenden Einstellungen verändern das enthaltene Logo und die
         verwendete Primärfarbe beim Export von Standortanalysen.
       </p>
-      <ImageUpload image={image} setImage={setImage} onChange={updateLogo} />
+      <ImageUpload image={logo} setImage={setLogo} onChange={updateLogo} />
       <ImageUpload
         image={mapIcon}
         setImage={setMapIcon}
@@ -67,12 +88,11 @@ const UserExportSettings: React.FunctionComponent = () => {
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
       </div>
-      {(!!userState.user!.logo || !!userState.user!.color || !!userState.user!.mapIcon) && (
+      {(!!userState.user!.logo ||
+        !!userState.user!.color ||
+        !!userState.user!.mapIcon) && (
         <div className="mt-5">
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => rollbackSettings()}
-          >
+          <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
             Export Einstellungen Zurücksetzen
           </button>
         </div>

@@ -37,7 +37,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   ): Promise<ApiPotentialCustomerDto[]> {
     return (
       await this.potentialCustomerService.fetchPotentialCustomers(user)
-    ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p));
+    ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
   }
 
   @ApiOperation({ description: 'Add potential customers' })
@@ -51,6 +51,7 @@ export class PotentialCustomerController extends AuthenticatedController {
         user,
         potentialCustomer,
       ),
+      user.id,
     );
   }
 
@@ -81,6 +82,7 @@ export class PotentialCustomerController extends AuthenticatedController {
         id,
         potentialCustomer,
       ),
+      user.id,
     );
   }
 

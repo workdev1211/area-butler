@@ -8,10 +8,17 @@ import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
 } from '../../../shared/constants/subscription-plan';
-import { User, UserDocument } from './schema/user.schema';
+import {
+  retrieveTotalRequestContingent,
+  User,
+  UserDocument,
+} from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
-import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
+import {
+  ApiRequestContingent,
+  ApiRequestContingentType,
+} from '@area-butler-types/subscription-plan';
 import { ApiTour } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType, UserEvent } from '../event/event.types';
@@ -131,9 +138,16 @@ export class UserService {
     return this.userModel.findById({ _id: id });
   }
 
-  async incrementExecutedRequestCount(id: string): Promise<void> {
+  async incrementExecutedRequestCount(user: UserDocument): Promise<void> {
+    if (user.parentId) {
+      await this.userModel.updateOne(
+        { _id: user.parentId },
+        { $inc: { requestsExecuted: 1 } },
+      );
+    }
+
     await this.userModel.updateOne(
-      { _id: id },
+      { _id: user.id },
       { $inc: { requestsExecuted: 1 } },
     );
   }
@@ -161,7 +175,7 @@ export class UserService {
     untilMonthIncluded: Date,
   ): Promise<UserDocument> {
     const userSubscription = await this.subscriptionService.findActiveByUserId(
-      user.id,
+      user.parentId || user.id,
     );
 
     if (!userSubscription) {
@@ -271,6 +285,21 @@ export class UserService {
       { _id: userId },
       { $set: { requestContingents } },
     );
+  }
+
+  async getUserRequestContingent(
+    user: UserDocument,
+  ): Promise<ApiRequestContingent[]> {
+    let requestContingent;
+
+    if (user.parentId) {
+      const parentUser = await this.findById(user.parentId);
+      requestContingent = retrieveTotalRequestContingent(parentUser);
+    } else {
+      requestContingent = retrieveTotalRequestContingent(user);
+    }
+
+    return requestContingent;
   }
 
   async updateSettings(

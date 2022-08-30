@@ -5,6 +5,7 @@ import ApiQuestionnaireRequestDto from '../../dto/api-questionnaire-request.dto'
 
 export const mapPotentialCustomerToApiPotentialCustomer = (
   potentialCustomer: PotentialCustomerDocument,
+  userId: string,
 ): ApiPotentialCustomerDto => ({
   id: potentialCustomer.id,
   name: potentialCustomer.name,
@@ -14,6 +15,7 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   preferredLocations: potentialCustomer.preferredLocations,
   realEstateCharacteristics: potentialCustomer.realEstateCharacteristics,
   realEstateCostStructure: potentialCustomer.realEstateCostStructure,
+  belongsToParent: potentialCustomer.userId !== userId,
 });
 
 export const mapQuestionnaireRequestToApiQuestionnaireRequest = (

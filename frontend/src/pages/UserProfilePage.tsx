@@ -1,20 +1,16 @@
+import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { v4 as uuid } from "uuid";
+
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
 import TourStarter from "tour/TourStarter";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
-import { v4 as uuid } from "uuid";
 import { ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 
@@ -33,6 +29,7 @@ const UserProfilePage: FunctionComponent = () => {
 
   const user: ApiUser = userState.user!;
   const hasSubscription = !!user.subscriptionPlan;
+  const isChild = user.isChild;
   const canCustomizeExport =
     hasSubscription &&
     user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
@@ -46,22 +43,39 @@ const UserProfilePage: FunctionComponent = () => {
     fetchUser();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [true]);
+  }, []);
 
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
-  const SubmitButton: React.FunctionComponent = () => {
-    const classes = baseClasses + " ml-auto";
+  const SubmitButton: FunctionComponent = () => {
+    const classes = `${baseClasses} ml-auto`;
+
     return (
       <button
         form={formId}
         key="submit"
         type="submit"
         disabled={busy}
-        className={busy ? "busy " + classes : classes}
+        className={busy ? `busy ${classes}` : classes}
       >
         Speichern
       </button>
+    );
+  };
+
+  const SubscriptionLimitsOrSelection: FunctionComponent = () => {
+    if (isChild) {
+      return null;
+    }
+
+    return hasSubscription ? (
+      <SubscriptionPlanLimits
+        realEstates={realEstateState.listings}
+        user={userState.user!}
+        customers={potentialCustomerState.customers}
+      />
+    ) : (
+      <SubscriptionPlanSelection />
     );
   };
 
@@ -84,15 +98,7 @@ const UserProfilePage: FunctionComponent = () => {
         />
       </div>
       {canCustomizeExport && <UserExportSettings />}
-      {hasSubscription ? (
-        <SubscriptionPlanLimits
-          realEstates={realEstateState.listings}
-          user={userState.user!}
-          customers={potentialCustomerState.customers}
-        />
-      ) : (
-        <SubscriptionPlanSelection />
-      )}
+      <SubscriptionLimitsOrSelection />
     </DefaultLayout>
   );
 };

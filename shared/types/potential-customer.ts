@@ -20,6 +20,7 @@ export interface ApiPotentialCustomer {
   preferredLocations?: ApiPreferredLocation[];
   realEstateCostStructure?: ApiRealEstateCost;
   realEstateCharacteristics?: ApiRealEstateCharacteristics;
+  belongsToParent: boolean;
 }
 
 export interface ApiUpsertQuestionnaireRequest {

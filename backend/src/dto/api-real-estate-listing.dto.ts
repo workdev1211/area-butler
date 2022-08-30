@@ -57,6 +57,10 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   @IsEnum(ApiRealEstateStatusEnum)
   @NotEquals(ApiRealEstateStatusEnum.ALLE)
   status: ApiRealEstateStatusEnum;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  belongsToParent: boolean;
 }
 
 export default ApiRealEstateListingDto;

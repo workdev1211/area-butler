@@ -4,6 +4,7 @@ import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,
+  userId: string,
   showAddress = true,
 ): ApiRealEstateListingDto => {
   return {
@@ -26,5 +27,6 @@ export const mapRealEstateListingToApiRealEstateListing = (
     costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,
     status: realEstateListing.status,
+    belongsToParent: realEstateListing.userId !== userId,
   };
 };

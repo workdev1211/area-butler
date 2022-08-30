@@ -13,7 +13,7 @@ export class UserSubscriptionPipe implements PipeTransform {
     }
 
     const userSubscription = await this.subscriptionService.findActiveByUserId(
-      user.id,
+      user.parentId || user.id,
     );
 
     if (!userSubscription) {

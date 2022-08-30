@@ -30,6 +30,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
       const mappedApiRealEstateListing =
         mapRealEstateListingToApiRealEstateListing(
           currentEstate,
+          searchResultSnapshot.userId,
           !!searchResultSnapshot?.config?.showAddress,
         );
 

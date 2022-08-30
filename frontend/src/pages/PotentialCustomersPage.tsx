@@ -229,38 +229,40 @@ const PotentialCustomersPage: FunctionComponent = () => {
                         alt="icon-search"
                         className="cursor-pointer"
                         onClick={() => startSearchFromCustomer(customer)}
-                        data-tour={
-                          "customers-table-item-search-button-" + index
-                        }
+                        data-tour={`customers-table-item-search-button-${index}`}
                       />
-                      <img
-                        src={editIcon}
-                        alt="icon-edit"
-                        className="cursor-pointer"
-                        onClick={() =>
-                          history.push(`/potential-customers/${customer.id}`)
-                        }
-                        data-tour={"customers-table-item-edit-button-" + index}
-                      />
-                      <FormModal
-                        modalConfig={{
-                          ...deleteCustomerModalConfig,
-                          modalButton: (
-                            <img
-                              src={deleteIcon}
-                              alt="icon-delete"
-                              className="cursor-pointer"
-                              data-tour={
-                                "customers-table-item-delete-button-" + index
-                              }
+                      {!customer.belongsToParent && (
+                        <>
+                          <img
+                            src={editIcon}
+                            alt="icon-edit"
+                            className="cursor-pointer"
+                            onClick={() =>
+                              history.push(
+                                `/potential-customers/${customer.id}`
+                              )
+                            }
+                            data-tour={`customers-table-item-edit-button-${index}`}
+                          />
+                          <FormModal
+                            modalConfig={{
+                              ...deleteCustomerModalConfig,
+                              modalButton: (
+                                <img
+                                  src={deleteIcon}
+                                  alt="icon-delete"
+                                  className="cursor-pointer"
+                                  data-tour={`customers-table-item-delete-button-${index}`}
+                                />
+                              ),
+                            }}
+                          >
+                            <PotentialCustomerFormDeleteHandler
+                              potentialCustomer={customer}
                             />
-                          ),
-                        }}
-                      >
-                        <PotentialCustomerFormDeleteHandler
-                          potentialCustomer={customer}
-                        />
-                      </FormModal>
+                          </FormModal>
+                        </>
+                      )}
                     </div>
                   </td>
                 </tr>

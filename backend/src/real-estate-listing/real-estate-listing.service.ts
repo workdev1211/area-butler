@@ -27,11 +27,14 @@ export class RealEstateListingService {
   ) {}
 
   async getRealEstateListings(
-    { id }: UserDocument,
+    { id: userId, parentId }: UserDocument,
     status = ApiRealEstateStatusEnum.ALLE,
   ): Promise<RealEstateListingDocument[]> {
-    const filter: { userId: string; status?: ApiRealEstateStatusEnum } = {
-      userId: id,
+    const filter: {
+      userId: { $in: string[] };
+      status?: ApiRealEstateStatusEnum;
+    } = {
+      userId: { $in: [userId, parentId] },
     };
 
     if (status !== ApiRealEstateStatusEnum.ALLE) {
@@ -225,7 +228,7 @@ export class RealEstateListingService {
 
             // TODO change to plainToClass via the class-transformer
             const listingDocument = {
-              userId: user._id,
+              userId: user.id,
               name: name || address,
               address,
               characteristics: {

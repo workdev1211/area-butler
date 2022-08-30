@@ -23,7 +23,6 @@ import ApiSearchDto from '../dto/api-search.dto';
 import TransportationParamDto from '../dto/transportation-param.dto';
 import {
   ApiOsmEntityCategory,
-  ApiOsmLocation,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -70,7 +69,7 @@ export class LocationService {
   ): Promise<ApiSearchResponseDto> {
     const existingLocation = await this.locationSearchModel.findOne(
       {
-        userId: user._id,
+        userId: user.id,
         'locationSearch.coordinates': search.coordinates,
       },
       { endsAt: 1 },
@@ -80,12 +79,21 @@ export class LocationService {
     this.checkAddressExpiration(existingLocation);
 
     if (!existingLocation) {
+      let parentUser = user;
+
+      if (user.parentId) {
+        parentUser = await this.userService.findById(user.parentId);
+
+        parentUser.subscription =
+          await this.subscriptionService.findActiveByUserId(parentUser.id);
+      }
+
       // TODO change map and reduce to reduce only
       await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
+        parentUser.subscription.type,
         () =>
-          user.requestsExecuted + 1 >
-          retrieveTotalRequestContingent(user)
+          parentUser.requestsExecuted + 1 >
+          retrieveTotalRequestContingent(parentUser)
             .map((c) => c.amount)
             .reduce((acc, inc) => acc + inc),
         'Im aktuellen Monat sind keine weiteren Abfragen möglich',
@@ -137,6 +145,7 @@ export class LocationService {
       }
     }
 
+    // TODO think about changing to Promise.all
     for (const routingProfile of search.meansOfTransportation) {
       const locationsOfInterest = !!configService.useOverpassDb()
         ? await this.overpassDataService.findForCenterAndDistance(
@@ -170,7 +179,7 @@ export class LocationService {
     }
 
     const location: Partial<LocationSearchDocument> = {
-      userId: user._id,
+      userId: user.id,
       locationSearch: search,
     };
 
@@ -202,7 +211,7 @@ export class LocationService {
     await new this.locationSearchModel(location).save();
 
     if (!existingLocation) {
-      await this.userService.incrementExecutedRequestCount(user.id);
+      await this.userService.incrementExecutedRequestCount(user);
     }
 
     return {
@@ -230,9 +239,9 @@ export class LocationService {
     // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationSearchModel
-        .find({ userId: user._id }, { _id: 1, locationSearch: 1, endsAt: 1 })
+        .find({ userId: user.id }, { id: 1, locationSearch: 1, endsAt: 1 })
         .sort({ createdAt: -1 })
-    ).map(({ locationSearch, endsAt, _id: id }) => ({
+    ).map(({ locationSearch, endsAt, id }) => ({
       ...locationSearch,
       id,
       endsAt,
@@ -361,7 +370,7 @@ export class LocationService {
   async deleteSearchResultSnapshot(user: UserDocument, id: string) {
     await this.searchResultSnapshotModel.deleteOne({
       _id: id,
-      userId: user._id,
+      userId: user.id,
     });
   }
 
@@ -369,8 +378,9 @@ export class LocationService {
     user: UserDocument,
     skip = 0,
     limit = 0,
-    includedFields?: { [key: string]: number },
-    sortOptions?: { [key: string]: number },
+    includedFields?: { [p: string]: number },
+    sortOptions?: { [p: string]: number },
+    filter?: { [p: string]: unknown },
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -378,8 +388,10 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
+    const filterQuery = filter || { userId: user.id };
+
     return this.searchResultSnapshotModel
-      .find({ userId: user.id }, includedFields)
+      .find(filterQuery, includedFields)
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
