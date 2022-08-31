@@ -10,4 +10,5 @@ export const openAiFeatureAllowedEmails = [
   "vldnik84@gmail.com",
   "philipp_huhn@hotmail.com",
   "martin.kuett@live.de",
+  "amelie.wuest@neubaukontor.de",
 ];
