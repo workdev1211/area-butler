@@ -1,4 +1,5 @@
-import React from "react";
+import { FunctionComponent } from "react";
+
 import { SelectedMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
 
@@ -8,18 +9,19 @@ export interface MapClippingsProps {
   nextPageNumber?: () => string;
 }
 
-export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
+export const MapClippings: FunctionComponent<MapClippingsProps> = ({
   mapClippings,
   logo,
-  nextPageNumber = () => "01"
+  nextPageNumber = () => "01",
 }) => {
   const imageSize = {
     width: "auto",
-    height: "400px"
+    height: "400px",
   };
 
+  // TODO change to reduce only
   const mapClippingPairs: SelectedMapClipping[][] = mapClippings
-    .filter(c => c.selected)
+    .filter((c) => c.selected)
     .reduce(
       (
         result: SelectedMapClipping[][],
@@ -35,21 +37,22 @@ export const MapClippings: React.FunctionComponent<MapClippingsProps> = ({
 
   return (
     <>
-      {mapClippingPairs.map(pairs => (
+      {mapClippingPairs.map((pairs, pairIndex) => (
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={logo}
           title="Kartenausschnitte"
+          key={pairIndex}
         >
           <div className="m-10 flex flex-col gap-12" id="expose-map-clippings">
-            {pairs.map((clipping, index) => (
-              <div className="flex-1" key={index}>
+            {pairs.map((clipping, clippingIndex) => (
+              <div className="flex-1" key={clippingIndex}>
                 <div className="mt-5" style={imageSize}>
                   <img
                     style={{
                       objectFit: "cover",
                       height: "100%",
-                      width: "100%"
+                      width: "100%",
                     }}
                     src={clipping.mapClippingDataUrl}
                     alt="img-clipping"

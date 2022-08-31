@@ -1171,7 +1171,7 @@ const Map = memo<MapProps>(
             />
           </FormModal>
         )}
-        <div className={`leaflet-bottom leaflet-left mb-20 cursor-pointer`}>
+        <div className={"leaflet-bottom leaflet-left mb-20 cursor-pointer"}>
           <div
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"
@@ -1289,7 +1289,7 @@ const Map = memo<MapProps>(
               <a
                 href="/"
                 data-tour="take-map-picture"
-                className="leaflet-control-zoom-in cursor-pointer"
+                className="leaflet-control-zoom-in cursor-pointer take-screenshot"
                 role="button"
                 onClick={(event) => {
                   event.preventDefault();

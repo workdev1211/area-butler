@@ -39,6 +39,7 @@ import {
 import "./SnippetEditorPage.scss";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import copyMapIcon from "../assets/icons/copy-map.svg";
+import aiIcon from "../assets/icons/ai-big.svg";
 import { subscriptionUpgradeFullyCustomizableExpose } from "./SearchResultPage";
 import ExportModal from "../export/ExportModal";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
@@ -423,7 +424,7 @@ const SnippetEditorPage: FunctionComponent = () => {
               }}
               className="btn btn-link"
             >
-              <img src={pdfIcon} alt="pdf-icon" /> Lagetext generieren
+              <img src={aiIcon} alt="ai-icon" /> Lagetext generieren
             </button>
           </li>
         )}

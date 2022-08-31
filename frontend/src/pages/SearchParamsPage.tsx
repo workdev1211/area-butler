@@ -427,7 +427,7 @@ const SearchParamsPage: FunctionComponent = () => {
     );
   };
 
-  const performExpressAnalysis = async () => {
+  const performExpressAnalysis = async (): Promise<void> => {
     try {
       setIsShownBusyModal(true);
 
@@ -539,7 +539,7 @@ const SearchParamsPage: FunctionComponent = () => {
           searchContextState.searchBusy ? `${classes} loading` : classes
         }
       >
-        <span>Express-Analyse</span>
+        <span>One-Klick</span>
       </button>
     );
   };
@@ -573,7 +573,9 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <ExpressAnalysisModal
         snapshotResponse={snapshotResponse!}
-        setIsShownModal={setIsShownMapSnippetModal}
+        closeModal={() => {
+          setIsShownMapSnippetModal(false);
+        }}
         isShownModal={isShownMapSnippetModal}
       />
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>

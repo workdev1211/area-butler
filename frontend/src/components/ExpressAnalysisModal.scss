@@ -1,7 +1,22 @@
-.modal.modal-open.z-9999 {
+.default-layout .default-layout-content h3 {
+  padding: 1rem 0 1rem 0;
+}
+
+.embedded-map-modal.modal.modal-open.z-9999 {
   .modal-box {
-    h3 {
-      padding: 0.5rem;
+    .search-result-container {
+      height: 100vh;
+      max-height: 100vh;
+
+      .leaflet-container {
+        .leaflet-bottom {
+          bottom: 50px !important;
+        }
+
+        .take-screenshot {
+          background-color: lawngreen;
+        }
+      }
     }
   }
 }

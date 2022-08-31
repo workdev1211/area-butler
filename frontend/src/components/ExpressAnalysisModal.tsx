@@ -20,19 +20,23 @@ import {
 } from "../context/SearchContext";
 import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import copyIcon from "../assets/icons/copy.svg";
+import screenshotIcon from "../assets/icons/screenshot.svg";
+import closeIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
+import aiIcon from "../assets/icons/ai.svg";
 import FormModal, { ModalConfig } from "./FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { openAiFeatureAllowedEmails } from "../../../shared/constants/exclusion";
+import SearchResultContainer from "./SearchResultContainer";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
-  setIsShownModal: (isShownModal: boolean) => void;
+  closeModal: () => void;
   isShownModal: boolean;
 }
 
 const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   snapshotResponse,
-  setIsShownModal,
+  closeModal,
   isShownModal,
 }) => {
   const { put } = useHttp();
@@ -45,6 +49,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   const [description, setDescription] = useState(snapshotResponse?.description);
   const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
     useState(false);
+  const [isShownEmbeddedMapModal, setIsShownEmbeddedMapModal] = useState(false);
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
@@ -60,8 +65,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
     openAiFeatureAllowedEmails.includes(user?.email || "") ||
     user?.subscriptionPlan?.config.appFeatures.openAi;
 
-  const closeModal = async () => {
-    setIsShownModal(false);
+  const performCloseModal = async () => {
+    closeModal();
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SEARCH_BUSY,
@@ -123,7 +128,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
       {!isShownOpenAiLocationModal && (
         <div className="modal modal-open z-9999">
           <div className="modal-box">
-            <div className="mb-3">Express-Analyseergebnisse</div>
+            <div className="mb-3">Ihre One-Klick Ergebnisse:</div>
             {/*TODO move Export modals to another component*/}
             {searchContextState.printingActive && (
               <ExportModal
@@ -175,9 +180,26 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 exportType="CHEATSHEET"
               />
             )}
-            <div>
+            <div className="flex flex-col modal-block">
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
+                onClick={() => {
+                  setIsShownEmbeddedMapModal(true);
+                }}
+              >
+                <img
+                  src={screenshotIcon}
+                  alt="screenshot-icon"
+                  style={{
+                    width: "1.5rem",
+                    height: "1.5rem",
+                  }}
+                />
+                Kartenausschnitte erstellen PNG
+              </h3>
+              <h3
+                className="cursor-pointer inline-flex gap-2 items-center"
+                style={{ borderTop: "1px solid black" }}
                 onClick={() => {
                   searchContextDispatch({
                     type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
@@ -194,10 +216,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.5rem",
                   }}
                 />
-                Export Analyse PDF
+                Umfeldanalyse PDF
               </h3>
-            </div>
-            <div>
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
                 onClick={() => {
@@ -216,10 +236,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.5rem",
                   }}
                 />
-                Export Analyse DOCX
+                Umfeldanalyse DOC
               </h3>
-            </div>
-            <div>
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
                 onClick={() => {
@@ -238,20 +256,19 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.5rem",
                   }}
                 />
-                Export Überblick PDF
+                Überblick PDF
               </h3>
-            </div>
-            {hasOpenAiFeature && (
-              <div>
+              {hasOpenAiFeature && (
                 <h3
                   className="cursor-pointer inline-flex gap-2 items-center"
+                  style={{ borderTop: "1px solid black" }}
                   onClick={() => {
                     setIsShownOpenAiLocationModal(true);
                   }}
                 >
                   <img
-                    src={pdfIcon}
-                    alt="pdf-icon"
+                    src={aiIcon}
+                    alt="ai-icon"
                     style={{
                       filter: "invert(100%)",
                       width: "1.5rem",
@@ -260,9 +277,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   />
                   Lagetext generieren
                 </h3>
-              </div>
-            )}
-            <div className="mb-2">
+              )}
               <div className="form-control">
                 <label className="label">
                   <span className="label-text">Notizfeld</span>
@@ -275,8 +290,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   }}
                 />
               </div>
-            </div>
-            <div>
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
                 onClick={() => {
@@ -291,10 +304,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.25rem",
                   }}
                 />
-                Direkt Link
+                Hyperlink zur Vollbild-Karte
               </h3>
-            </div>
-            <div>
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
                 onClick={() => {
@@ -311,23 +322,61 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.25rem",
                   }}
                 />
-                HTML Snippet
+                Snippet (iFrame) HTML
               </h3>
             </div>
             <div className="modal-action">
-              <button className="btn btn-sm btn-default" onClick={closeModal}>
+              <button
+                className="btn btn-sm btn-default"
+                onClick={async () => {
+                  await performCloseModal();
+                }}
+              >
                 Schließen
               </button>
               <button
                 className="btn btn-sm btn-primary"
                 onClick={async () => {
-                  await closeModal();
+                  await performCloseModal();
                   history.push(`snippet-editor/${snapshotResponse.id}`);
                 }}
               >
                 Editor öffnen
               </button>
             </div>
+          </div>
+        </div>
+      )}
+      {isShownEmbeddedMapModal && (
+        <div className="embedded-map-modal modal modal-open z-9999">
+          <div
+            className="modal-box max-w-97-5 max-h-19/20 h-19/20 p-0 overflow-hidden"
+            style={{ border: "0.25rem solid var(--primary)" }}
+          >
+            <SearchResultContainer
+              mapBoxToken={snapshotResponse.mapboxToken}
+              mapBoxMapId={
+                snapshotResponse.config?.mapBoxMapId ||
+                searchContextState.responseConfig?.mapBoxMapId
+              }
+              searchResponse={searchContextState.searchResponse!}
+              placesLocation={searchContextState.placesLocation}
+              location={searchContextState.location!}
+            />
+            <img
+              src={closeIcon}
+              alt="close-icon"
+              className="absolute right-5 top-1 h-10 w-10 z-1000 cursor-pointer"
+              style={{
+                background: "var(--primary)",
+                borderLeft: "2px solid transparent",
+                borderRight: "2px solid transparent",
+                borderRadius: "50%",
+              }}
+              onClick={() => {
+                setIsShownEmbeddedMapModal(false);
+              }}
+            />
           </div>
         </div>
       )}

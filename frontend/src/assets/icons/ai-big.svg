@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   width="16"
+   height="16"
+   version="1.1"
+   id="svg323"
+   sodipodi:docname="ai-big.svg"
+   inkscape:version="1.2.1 (9c6d41e410, 2022-07-14)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs327" />
+  <sodipodi:namedview
+     id="namedview325"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="47.375"
+     inkscape:cx="15.525066"
+     inkscape:cy="9.7941953"
+     inkscape:window-width="2560"
+     inkscape:window-height="1359"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg323" />
+  <path
+     d="m 10.5,0.5 h -7 a 1,1 0 0 0 -1,1 v 13 a 1,1 0 0 0 1,1 h 9 a 1,1 0 0 0 1,-1 v -11 z"
+     stroke-linejoin="round"
+     id="path313"
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff" />
+  <path
+     stroke-linejoin="round"
+     d="m 10.5,0.5 v 3 H 13"
+     id="path315"
+     style="fill:none;fill-rule:evenodd;stroke:#ffffff" />
+  <text
+     xml:space="preserve"
+     style="font-style:normal;font-weight:normal;font-size:9.55109px;line-height:1.25;font-family:sans-serif;fill:#000000;fill-opacity:1;stroke:none;stroke-width:1.43266"
+     x="2.9650886"
+     y="13.448204"
+     id="text387"><tspan
+       sodipodi:role="line"
+       id="tspan385"
+       x="2.9650886"
+       y="13.448204"
+       style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-size:9.55109px;font-family:sans-serif;-inkscape-font-specification:'sans-serif Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.43266">AI</tspan></text>
+</svg>
