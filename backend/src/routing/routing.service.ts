@@ -1,11 +1,28 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { configService } from '../config/config.service';
-import { ApiRoute, ApiTransitRoute } from '@area-butler-types/routing';
 import * as poly from '@liberty-rider/flexpolyline';
 import { HttpService } from '@nestjs/axios';
-import { MeansOfTransportation } from '@area-butler-types/types';
+import { firstValueFrom } from 'rxjs';
+
+import { configService } from '../config/config.service';
+import {
+  ApiRoute,
+  ApiRouteQuery,
+  ApiRouteQueryResultItem,
+  ApiTransitRoute,
+  ApiTransitRouteQuery,
+  ApiTransitRouteQueryResultItem,
+  EntityRoute,
+  EntityTransitRoute,
+  IApiPreferredLocationRouteQuery,
+  IApiPreferredLocationRouteQueryResult,
+} from '@area-butler-types/routing';
+import {
+  ApiCoordinates,
+  MeansOfTransportation,
+} from '@area-butler-types/types';
 import ApiCoordinatesDto from '../dto/api-coordinates.dto';
 import ApiGeometryDto from '../dto/api-geometry.dto';
+import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 
 // We only map a subset. Additional Info:
 //https://developer.here.com/documentation/routing-api/api-reference-swagger.html
@@ -81,17 +98,37 @@ interface HereApiTransitRoutingResponse {
   routes: HereApiTransitRoute[];
 }
 
-const switchCoords = (array) => {
-  return array.reverse();
-};
+const switchCoords = (array: unknown[]): unknown[] => array.reverse();
 
 @Injectable()
 export class RoutingService {
   private readonly logger = new Logger(RoutingService.name);
 
-  constructor(private httpService: HttpService) {}
+  constructor(private readonly httpService: HttpService) {}
 
-  async getRoute(
+  async fetchRoutes(query: ApiRouteQuery): Promise<ApiRouteQueryResultItem[]> {
+    return Promise.all(
+      query.destinations.map(async (destination) => {
+        return {
+          coordinates: destination.coordinates,
+          title: destination.title,
+          routes: (
+            await Promise.all(
+              query.meansOfTransportation.map(async (transportType) => {
+                return await this.fetchRoute(
+                  query.origin,
+                  destination.coordinates,
+                  transportType,
+                );
+              }),
+            )
+          ).filter((value) => !!value),
+        };
+      }),
+    );
+  }
+
+  private async fetchRoute(
     origin: ApiCoordinatesDto,
     destination: ApiCoordinatesDto,
     meansOfTransportation: MeansOfTransportation,
@@ -105,11 +142,15 @@ export class RoutingService {
         return: 'summary,polyline',
       };
 
-      const { data } = await this.httpService
-        .get<HereApiRoutingResponse>(configService.getHereRouterApiUrl(), {
-          params: request,
-        })
-        .toPromise();
+      const { data } = await firstValueFrom<{ data: HereApiRoutingResponse }>(
+        this.httpService.get<HereApiRoutingResponse>(
+          configService.getHereRouterApiUrl(),
+          {
+            params: request,
+          },
+        ),
+      );
+
       if (
         data.routes.length &&
         data.routes.length === 1 &&
@@ -131,16 +172,35 @@ export class RoutingService {
           })),
         };
       }
+
       // we should already have returned
       this.logger.error(`Invalid route response: ${JSON.stringify(data)}`);
     } catch (e) {
       this.logger.error('Could not fetch route', e);
       throw e;
     }
+
     throw Error('Invalid Route Response');
   }
 
-  async getTransitRoute(
+  async fetchTransitRoutes(
+    query: ApiTransitRouteQuery,
+  ): Promise<ApiTransitRouteQueryResultItem[]> {
+    return Promise.all(
+      query.destinations.map(async (destination) => {
+        return {
+          coordinates: destination.coordinates,
+          title: destination.title,
+          route: await this.fetchTransitRoute(
+            query.origin,
+            destination.coordinates,
+          ),
+        };
+      }),
+    );
+  }
+
+  private async fetchTransitRoute(
     origin: ApiCoordinatesDto,
     destination: ApiCoordinatesDto,
   ): Promise<ApiTransitRoute | undefined> {
@@ -152,12 +212,15 @@ export class RoutingService {
         return: 'travelSummary,polyline',
       };
 
-      const { data } = await this.httpService
-        .get<HereApiTransitRoutingResponse>(
+      const { data } = await firstValueFrom<{
+        data: HereApiTransitRoutingResponse;
+      }>(
+        this.httpService.get<HereApiTransitRoutingResponse>(
           configService.getHereTransitRouterApiUrl(),
           { params: request },
-        )
-        .toPromise();
+        ),
+      );
+
       if (
         data.routes.length &&
         data.routes.length === 1 &&
@@ -179,12 +242,69 @@ export class RoutingService {
           })),
         };
       }
+
       // we should already have returned
       this.logger.error(`Invalid route response: ${JSON.stringify(data)}`);
     } catch (e) {
       this.logger.error('Could not fetch transit route', e);
       throw e;
     }
+
     throw Error('Invalid Route Response');
+  }
+
+  async fetchPreferredLocationRoutes({
+    origin,
+    preferredLocations,
+  }: IApiPreferredLocationRouteQuery): Promise<IApiPreferredLocationRouteQueryResult> {
+    const routes: EntityRoute[] = [];
+    const transitRoutes: EntityTransitRoute[] = [];
+
+    await Promise.all(
+      preferredLocations.map(async (preferredLocation) => {
+        const routesResult = await this.fetchRoutes({
+          meansOfTransportation: [
+            MeansOfTransportation.BICYCLE,
+            MeansOfTransportation.CAR,
+            MeansOfTransportation.WALK,
+          ],
+          origin,
+          destinations: [
+            {
+              title: preferredLocation.title,
+              coordinates: preferredLocation.coordinates,
+            },
+          ],
+        });
+
+        routes.push({
+          routes: routesResult[0].routes,
+          title: routesResult[0].title,
+          show: [],
+          coordinates: preferredLocation.coordinates,
+        });
+
+        const transitRoutesResult = await this.fetchTransitRoutes({
+          origin,
+          destinations: [
+            {
+              title: preferredLocation.title,
+              coordinates: preferredLocation.coordinates,
+            },
+          ],
+        });
+
+        if (transitRoutesResult.length && transitRoutesResult[0].route) {
+          transitRoutes.push({
+            route: transitRoutesResult[0].route,
+            title: transitRoutesResult[0].title,
+            show: false,
+            coordinates: preferredLocation.coordinates,
+          });
+        }
+      }),
+    );
+
+    return { routes, transitRoutes };
   }
 }

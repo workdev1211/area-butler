@@ -1,27 +1,36 @@
-import { ApiRouteQuery } from '@area-butler-types/routing';
-import { MeansOfTransportation } from '@area-butler-types/types';
+import {
+  IsArray,
+  IsEnum,
+  IsNotEmpty,
+  ValidateNested,
+  IsOptional,
+} from 'class-validator';
 import { Type } from 'class-transformer';
-import { IsArray, IsEnum, IsNotEmpty, ValidateNested, IsOptional } from 'class-validator';
+
+import { ApiRouteDestination, ApiRouteQuery } from '@area-butler-types/routing';
+import {
+  ApiCoordinates,
+  MeansOfTransportation,
+} from '@area-butler-types/types';
 import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiRouteDestinationDto from './api-route-destination.dto';
 
 class ApiRouteQueryDto implements ApiRouteQuery {
-
   @IsNotEmpty()
   @IsArray()
-  @ValidateNested({each: true})
-  @Type(() => ApiRouteDestinationDto) 
-  destinations: ApiRouteDestinationDto[];
+  @ValidateNested({ each: true })
+  @Type(() => ApiRouteDestinationDto)
+  destinations: ApiRouteDestination[];
 
   @IsOptional()
   @IsArray()
-  @IsEnum(MeansOfTransportation, {each: true})
+  @IsEnum(MeansOfTransportation, { each: true })
   meansOfTransportation: MeansOfTransportation[];
 
   @IsNotEmpty()
   @ValidateNested()
-  @Type(() => ApiCoordinatesDto) 
-  origin: ApiCoordinatesDto;
+  @Type(() => ApiCoordinatesDto)
+  origin: ApiCoordinates;
 }
 
 export default ApiRouteQueryDto;

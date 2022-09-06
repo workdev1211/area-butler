@@ -1,20 +1,28 @@
-import {useHttp} from "./http";
+import { useHttp } from "./http";
 import {
-    ApiRouteQuery,
-    ApiRouteQueryResultItem,
-    ApiTransitRouteQuery,
-    ApiTransitRouteQueryResultItem
+  ApiRouteQuery,
+  ApiRouteQueryResultItem,
+  ApiTransitRouteQuery,
+  ApiTransitRouteQueryResultItem,
+  IApiPreferredLocationRouteQuery,
+  IApiPreferredLocationRouteQueryResult,
 } from "../../../shared/types/routing";
 
 export const useRouting = () => {
-    const { post } = useHttp();
+  const { post } = useHttp();
 
-    const fetchRoutes = async (query: ApiRouteQuery) => {
-        return (await post("/api/routes/search", query)).data as ApiRouteQueryResultItem[]
-    }
+  const fetchRoutes = async (query: ApiRouteQuery) =>
+    (await post("/api/routes/fetch", query)).data as ApiRouteQueryResultItem[];
 
-    const fetchTransitRoutes = async (query: ApiTransitRouteQuery) => {
-        return (await post("/api/routes/search-transit", query)).data as ApiTransitRouteQueryResultItem[]
-    }
-    return {fetchRoutes, fetchTransitRoutes}
-}
+  const fetchTransitRoutes = async (query: ApiTransitRouteQuery) =>
+    (await post("/api/routes/fetch-transit", query))
+      .data as ApiTransitRouteQueryResultItem[];
+
+  const fetchPreferredLocationRoutes = async (
+    query: IApiPreferredLocationRouteQuery
+  ) =>
+    (await post("/api/routes/fetch-preferred", query))
+      .data as IApiPreferredLocationRouteQueryResult;
+
+  return { fetchRoutes, fetchTransitRoutes, fetchPreferredLocationRoutes };
+};

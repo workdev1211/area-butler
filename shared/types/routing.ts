@@ -1,4 +1,5 @@
 import { ApiCoordinates, ApiGeometry, MeansOfTransportation } from "./types";
+import { ApiPreferredLocation } from "./potential-customer";
 
 export interface EntityRoute {
   title: string;
@@ -43,7 +44,7 @@ export interface ApiRouteDestination {
 export interface ApiRouteQuery {
   origin: ApiCoordinates;
   destinations: ApiRouteDestination[];
-  meansOfTransportation: MeansOfTransportation[];
+  meansOfTransportation?: MeansOfTransportation[];
 }
 
 export interface ApiTransitRouteQuery {
@@ -52,6 +53,11 @@ export interface ApiTransitRouteQuery {
     title: string;
     coordinates: ApiCoordinates;
   }[];
+}
+
+export interface IApiPreferredLocationRouteQuery {
+  origin: ApiCoordinates;
+  preferredLocations: ApiPreferredLocation[];
 }
 
 export interface ApiRouteQueryResultItem {
@@ -64,4 +70,9 @@ export interface ApiTransitRouteQueryResultItem {
   coordinates: ApiCoordinates;
   title: string;
   route: ApiTransitRoute;
+}
+
+export interface IApiPreferredLocationRouteQueryResult {
+  routes: EntityRoute[];
+  transitRoutes: EntityTransitRoute[];
 }
