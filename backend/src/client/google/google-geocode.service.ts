@@ -3,7 +3,7 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 import { configService } from '../../config/config.service';
-import { ApiCoordinates } from '@area-butler-types/types';
+import { ApiCoordinates, IApiPlacesLocation } from '@area-butler-types/types';
 
 export interface IGoogleGeocodeResult {
   address_components: unknown[];
@@ -25,7 +25,9 @@ export class GoogleGeocodeService {
 
   constructor(private readonly http: HttpService) {}
 
-  async getCoordinatesByAddress(address: string): Promise<ApiCoordinates> {
+  async fetchPlaceByAddress(
+    address: string,
+  ): Promise<IGoogleGeocodeResult | undefined> {
     const url = `${this.baseUrl}/json?key=${
       this.googleServerApiKey
     }&address=${encodeURIComponent(address)}`;
@@ -42,6 +44,6 @@ export class GoogleGeocodeService {
       }),
     );
 
-    return results[0]?.geometry?.location;
+    return results[0];
   }
 }

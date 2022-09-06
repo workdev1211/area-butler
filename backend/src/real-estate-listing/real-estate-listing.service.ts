@@ -157,10 +157,9 @@ export class RealEstateListingService {
                 return [];
               }
 
-              const coordinates =
-                await this.googleGeocodeService.getCoordinatesByAddress(
-                  address,
-                );
+              const coordinates = (
+                await this.googleGeocodeService.fetchPlaceByAddress(address)
+              ).geometry?.location;
 
               if (coordinates) {
                 return [name, address, ...otherParameters, coordinates];
