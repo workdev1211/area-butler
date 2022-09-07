@@ -57,7 +57,7 @@ interface ZensusDataGeojson {
 
 @ApiTags('zensus-atlas')
 @Controller('api/zensus-atlas')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard('auth0-spa'), RolesGuard)
 export class ZensusAtlasController extends AuthenticatedController {
   constructor(private readonly zensusAtlasService: ZensusAtlasService) {
     super();

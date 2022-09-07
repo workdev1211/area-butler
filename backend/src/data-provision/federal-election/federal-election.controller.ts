@@ -1,4 +1,3 @@
-import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
 import {
   Body,
   Controller,
@@ -11,6 +10,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+import { ApiFederalElectionFeature } from '@area-butler-types/federal-election';
 import { FederalElectionService } from './federal-election.service';
 import FileUploadDto from '../../dto/file-upload.dto';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
@@ -23,9 +23,9 @@ import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 
 @ApiTags('federal-election')
 @Controller('api/federal-election')
-@UseGuards(AuthGuard('jwt'), RolesGuard)
+@UseGuards(AuthGuard('auth0-spa'), RolesGuard)
 export class FederalElectionController extends AuthenticatedController {
-  constructor(private federalElectionService: FederalElectionService) {
+  constructor(private readonly federalElectionService: FederalElectionService) {
     super();
   }
 

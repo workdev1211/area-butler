@@ -8,6 +8,7 @@ class ConfigService {
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
+
     if (!value && throwOnMissing) {
       throw new Error(`config error - missing env.${key}`);
     }
@@ -37,10 +38,17 @@ class ConfigService {
     return this.getValue('MAPBOX_CREATE_TOKEN');
   }
 
-  public getAuthConfig(): { domain: string; audience: string } {
+  public getAuth0ApiConfig(): { domain: string; audience: string } {
     return {
-      domain: this.getValue('AUTH0_DOMAIN'),
-      audience: this.getValue('AUTH0_AUDIENCE'),
+      domain: this.getValue('AUTH0_API_DOMAIN'),
+      audience: this.getValue('AUTH0_API_AUDIENCE'),
+    };
+  }
+
+  public getAuth0SpaConfig(): { domain: string; audience: string } {
+    return {
+      domain: this.getValue('AUTH0_SPA_DOMAIN'),
+      audience: this.getValue('AUTH0_SPA_AUDIENCE'),
     };
   }
 
@@ -147,7 +155,7 @@ class ConfigService {
   }
 
   getFrontendConfig(): ApiConfigDto {
-    const { domain, audience } = this.getAuthConfig();
+    const { domain, audience } = this.getAuth0SpaConfig();
     const googleApiKey = this.getGoogleApiKey();
     const mapBoxAccessToken = this.getMapBoxAccessToken();
     const stripeEnv = this.getStripeEnv();

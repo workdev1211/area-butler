@@ -26,11 +26,11 @@ import { UserDocument } from './schema/user.schema';
 @ApiTags('users')
 @ApiBearerAuth()
 @Controller('api/users')
-@UseGuards(AuthGuard('jwt'))
+@UseGuards(AuthGuard('auth0-spa'))
 export class UserController {
   constructor(
-    private userService: UserService,
-    private subscriptionService: SubscriptionService,
+    private readonly userService: UserService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   @ApiProperty({ description: 'Get the current user' })
