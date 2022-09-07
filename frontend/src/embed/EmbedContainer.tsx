@@ -65,7 +65,9 @@ const EmbedContainer: FunctionComponent = () => {
       try {
         const response = (
           await axios.get<ApiSearchResultSnapshotResponse>(
-            `${baseUrl}/api/location/snapshot/${getQueryVariable("token")}`
+            `${baseUrl}/api/location/snapshot/iframe/${getQueryVariable(
+              "token"
+            )}`
           )
         ).data;
 

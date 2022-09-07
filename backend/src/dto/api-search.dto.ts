@@ -7,13 +7,20 @@ import {
   ValidateNested,
   IsDate,
   IsString,
+  IsEnum,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { ApiSearch, OsmName } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiSearch,
+  OsmName,
+  TransportationParam,
+} from '@area-butler-types/types';
 import ApiCoordinatesDto from './api-coordinates.dto';
 import TransportationParamDto from './transportation-param.dto';
 import ApiPreferredLocationDto from './api-preferred-location.dto';
+import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 
 class ApiSearchDto implements ApiSearch {
   @IsOptional()
@@ -24,23 +31,27 @@ class ApiSearchDto implements ApiSearch {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
-  coordinates: ApiCoordinatesDto;
+  coordinates: ApiCoordinates;
 
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => TransportationParamDto)
-  meansOfTransportation: TransportationParamDto[];
+  meansOfTransportation: TransportationParam[];
 
   @IsNotEmpty()
   @IsArray()
+  @IsEnum(OsmName, { each: true })
   preferredAmenities: OsmName[];
 
   @IsOptional()
   @IsArray()
-  preferredLocations?: ApiPreferredLocationDto[];
+  @ValidateNested({ each: true })
+  @Type(() => ApiPreferredLocationDto)
+  preferredLocations?: ApiPreferredLocation[];
 
   @IsOptional()
+  @IsString()
   searchTitle?: string;
 
   @IsOptional()

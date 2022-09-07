@@ -9,7 +9,7 @@ import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import ApiSearchResponseDto from '../../dto/api-search-response.dto';
 import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 
-export const mapSearchResultSnapshotToApiEmbeddableMap = (
+export const mapSnapshotToEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
   embed = false,
   realEstateListings: RealEstateListingDocument[] = [],
@@ -69,7 +69,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
 
   return {
     id: searchResultSnapshot.id,
-    snapshot: mapSearchResultSnapshot(
+    snapshot: mapSnapshot(
       {
         ...searchResultSnapshot.snapshot,
         realEstateListing,
@@ -89,7 +89,7 @@ export const mapSearchResultSnapshotToApiEmbeddableMap = (
   };
 };
 
-const mapSearchResultSnapshot = (
+const mapSnapshot = (
   snapshot: ApiSearchResultSnapshotDto,
   config: ApiSearchResultSnapshotConfigDto,
   embed: boolean,

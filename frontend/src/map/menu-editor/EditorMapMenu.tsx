@@ -75,7 +75,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     const fetchEmbeddableMaps = async () => {
       const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
         await get<ApiSearchResultSnapshotResponse[]>(
-          "/api/location/user-embeddable-maps?limit=5"
+          "/api/location/snapshots?limit=5"
         )
       ).data;
 

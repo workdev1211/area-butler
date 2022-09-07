@@ -101,7 +101,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     const fetchSnapshot = async () => {
       const snapshotResponse = (
         await get<ApiSearchResultSnapshotResponse>(
-          `/api/location/user-embeddable-maps/${snapshotId}`
+          `/api/location/snapshot/${snapshotId}`
         )
       ).data;
 

@@ -14,7 +14,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Request } from 'express';
 
 import { LocationService } from './location.service';
-import { mapSearchResultSnapshotToApiEmbeddableMap } from './mapper/embeddable-maps.mapper';
+import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import ApiSearchDto from '../dto/api-search.dto';
 import ApiSearchResponseDto from '../dto/api-search-response.dto';
@@ -52,42 +52,44 @@ export class LocationController extends AuthenticatedController {
   @Post('search')
   async searchLocation(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() search: ApiSearchDto,
+    @Body() searchData: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
-    return this.locationService.searchLocation(user, search);
+    return this.locationService.searchLocation(user, searchData);
   }
 
-  @ApiOperation({ description: 'Create a new snapshot' })
+  @ApiOperation({ description: 'Create a new embeddable map' })
   @Post('snapshot')
   async createSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSearchResultSnapshot(user, snapshot);
+    return this.locationService.createSnapshot(user, snapshot);
   }
 
   // TODO think about merging updateSnapshot and updateSnapshotDescription
   // TODO think about using class-transformer instead of a mapper
-  @ApiOperation({ description: 'Update an existing snapshot' })
+  @ApiOperation({ description: 'Update an existing embeddable map' })
   @Put('snapshot/:id')
   async updateSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return mapSearchResultSnapshotToApiEmbeddableMap(
-      await this.locationService.updateSearchResultSnapshot(user, id, body),
+    return mapSnapshotToEmbeddableMap(
+      await this.locationService.updateSnapshot(user, id, body),
     );
   }
 
-  @ApiOperation({ description: 'Update an existing snapshot description' })
+  @ApiOperation({
+    description: 'Update an existing embeddable map description',
+  })
   @Put('snapshot/:id/description')
   async updateSnapshotDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() { description }: { description: string },
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return mapSearchResultSnapshotToApiEmbeddableMap(
+    return mapSnapshotToEmbeddableMap(
       await this.locationService.updateSnapshotDescription(
         user,
         id,
@@ -96,13 +98,13 @@ export class LocationController extends AuthenticatedController {
     );
   }
 
-  @ApiOperation({ description: 'Delete an existing snapshot' })
+  @ApiOperation({ description: 'Delete an existing embeddable map' })
   @Delete('snapshot/:id')
   async deleteSnapshot(
     @InjectUser() user: UserDocument,
     @Param('id') id: string,
   ) {
-    await this.locationService.deleteSearchResultSnapshot(user, id);
+    await this.locationService.deleteSnapshot(user, id);
   }
 
   @ApiOperation({ description: 'Query latest user requests' })
@@ -114,10 +116,10 @@ export class LocationController extends AuthenticatedController {
   }
 
   @ApiOperation({
-    description: 'Query the embeddable maps for the current user',
+    description: 'Fetch the embeddable maps for the current user',
   })
-  @Get('user-embeddable-maps')
-  async getEmbeddableMaps(
+  @Get('snapshots')
+  async fetchSnapshots(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Req() request: Request,
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
@@ -136,23 +138,23 @@ export class LocationController extends AuthenticatedController {
     const sortOptions = { updatedAt: -1, lastAccess: -1 };
 
     return (
-      await this.locationService.fetchEmbeddableMaps(
+      await this.locationService.fetchSnapshots(
         user,
         Number(request.query.skip) || 0,
         Number(request.query.limit) || 0,
         includedFields,
         sortOptions,
       )
-    ).map((r) => mapSearchResultSnapshotToApiEmbeddableMap(r));
+    ).map((r) => mapSnapshotToEmbeddableMap(r));
   }
 
-  @ApiOperation({ description: 'Get a specific embeddable map' })
-  @Get('user-embeddable-maps/:id')
-  async getEmbeddableMap(
+  @ApiOperation({ description: 'Fetch a specific embeddable map' })
+  @Get('snapshot/:id')
+  async fetchSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const map = await this.locationService.fetchEmbeddableMap(user, id);
+    const map = await this.locationService.fetchSnapshot(user, id);
 
     map.updatedAt = new Date();
     await map.save();
@@ -160,11 +162,7 @@ export class LocationController extends AuthenticatedController {
     const realEstateListings =
       await this.realEstateListingService.getRealEstateListings(user);
 
-    return mapSearchResultSnapshotToApiEmbeddableMap(
-      map,
-      false,
-      realEstateListings,
-    );
+    return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
   }
 
   @ApiOperation({ description: 'Get Open AI location description' })
@@ -174,7 +172,7 @@ export class LocationController extends AuthenticatedController {
     @Query('searchResultSnapshotId') searchResultSnapshotId: string,
     @Query('meanOfTransportation') meanOfTransportation: MeansOfTransportation,
     @Query('tonality') tonality: OpenAiTonalityEnum,
-  ): Promise<any> {
+  ): Promise<string> {
     // TODO allow by user email
     // await this.subscriptionService.checkSubscriptionViolation(
     //   user.subscription.type,
@@ -189,7 +187,7 @@ export class LocationController extends AuthenticatedController {
       );
     }
 
-    const searchResultSnapshot = await this.locationService.fetchEmbeddableMap(
+    const searchResultSnapshot = await this.locationService.fetchSnapshot(
       user,
       searchResultSnapshotId,
     );

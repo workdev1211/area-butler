@@ -500,7 +500,7 @@ const SearchParamsPage: FunctionComponent = () => {
         payload: updatedSnapshotResponse.snapshot.transportationParams,
       });
 
-      if (createdSnapshotResponse.snapshot.realEstateListing) {
+      if (updatedSnapshotResponse.snapshot.realEstateListing) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
           payload: updatedSnapshotResponse.snapshot.realEstateListing,

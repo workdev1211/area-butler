@@ -24,7 +24,7 @@ const MapSnippetsPage: FunctionComponent = () => {
       const fetchEmbeddableMaps = async () => {
         const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
           await get<ApiSearchResultSnapshotResponse[]>(
-            "/api/location/user-embeddable-maps"
+            "/api/location/snapshots"
           )
         ).data;
 

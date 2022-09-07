@@ -18,22 +18,23 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
-import ApiSearchResponseDto from '../dto/api-search-response.dto';
 import ApiSearchDto from '../dto/api-search.dto';
-import TransportationParamDto from '../dto/transportation-param.dto';
 import {
+  ApiIsochrone,
   ApiOsmEntityCategory,
+  ApiOsmLocation,
+  ApiSearch,
+  ApiSearchResponse,
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
   OsmType,
+  TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import ApiOsmLocationDto from '../dto/api-osm-location.dto';
-import ApiIsochroneDto from '../dto/api-isochrone.dto';
 import ApiUserRequestsDto from '../dto/api-user-requests.dto';
-import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
-import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
-import ApiSearchResultSnapshotConfigDto from '../dto/api-search-result-snapshot-config.dto';
 import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 import { IsochroneService } from '../client/isochrone/isochrone.service';
 import { OverpassService } from '../client/overpass/overpass.service';
@@ -65,8 +66,8 @@ export class LocationService {
 
   async searchLocation(
     user: UserDocument,
-    search: ApiSearchDto,
-  ): Promise<ApiSearchResponseDto> {
+    search: ApiSearch,
+  ): Promise<ApiSearchResponse> {
     const existingLocation = await this.locationSearchModel.findOne(
       {
         userId: user.id,
@@ -104,7 +105,7 @@ export class LocationService {
     const preferredAmenities = search.preferredAmenities;
     const routingProfiles = {};
 
-    function deriveMeterEquivalent(routingProfile: TransportationParamDto) {
+    function deriveMeterEquivalent(routingProfile: TransportationParam) {
       const { amount } = routingProfile;
 
       if (routingProfile.unit === UnitsOfTransportation.KILOMETERS) {
@@ -230,7 +231,7 @@ export class LocationService {
       },
       routingProfiles: routingProfiles as Record<
         MeansOfTransportation,
-        { locationsOfInterest: ApiOsmLocationDto[]; isochrone: ApiIsochroneDto }
+        { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }
       >,
     };
   }
@@ -259,20 +260,19 @@ export class LocationService {
     };
   }
 
-  async createSearchResultSnapshot(
+  async createSnapshot(
     user: UserDocument,
-    snapshot: ApiSearchResultSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const token = randomBytes(60).toString('hex');
-    const { mapboxAccessToken } =
-      await this.userService.createMapboxAccessToken(user);
-
-    const config: ApiSearchResultSnapshotConfigDto = {
+    snapshot: ApiSearchResultSnapshot,
+    config: ApiSearchResultSnapshotConfig = {
       showLocation: true,
       showAddress: true,
       groupItems: true,
       showStreetViewLink: true,
-    };
+    },
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const token = randomBytes(60).toString('hex');
+    const { mapboxAccessToken } =
+      await this.userService.createMapboxAccessToken(user);
 
     const snapshotDoc = {
       userId: user.id,
@@ -311,9 +311,7 @@ export class LocationService {
     };
   }
 
-  async fetchSearchResultSnapshot(
-    token: string,
-  ): Promise<SearchResultSnapshotDocument> {
+  async fetchEmbeddedMap(token: string): Promise<SearchResultSnapshotDocument> {
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       token,
     });
@@ -329,7 +327,7 @@ export class LocationService {
     return snapshotDoc.save();
   }
 
-  async updateSearchResultSnapshot(
+  async updateSnapshot(
     user: UserDocument,
     id: string,
     { snapshot, config }: ApiUpdateSearchResultSnapshotDto,
@@ -340,8 +338,10 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchEmbeddableMap(user, id);
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchSnapshot(
+      user,
+      id,
+    );
 
     Object.assign(snapshotDoc, { snapshot, config });
 
@@ -359,22 +359,24 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchEmbeddableMap(user, id);
+    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchSnapshot(
+      user,
+      id,
+    );
 
     snapshotDoc.description = description;
 
     return snapshotDoc.save();
   }
 
-  async deleteSearchResultSnapshot(user: UserDocument, id: string) {
+  async deleteSnapshot(user: UserDocument, id: string) {
     await this.searchResultSnapshotModel.deleteOne({
       _id: id,
       userId: user.id,
     });
   }
 
-  async fetchEmbeddableMaps(
+  async fetchSnapshots(
     user: UserDocument,
     skip = 0,
     limit = 0,
@@ -397,7 +399,7 @@ export class LocationService {
       .limit(limit);
   }
 
-  async fetchEmbeddableMap(
+  async fetchSnapshot(
     user: UserDocument,
     id: string,
   ): Promise<SearchResultSnapshotDocument> {
@@ -413,7 +415,7 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown token', 404);
+      throw new HttpException('Unknown snapshot id', 404);
     }
 
     this.checkAddressExpiration(snapshotDoc);
