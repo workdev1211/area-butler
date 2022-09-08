@@ -251,8 +251,21 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
-  realEstateListing: ApiRealEstateListing;
+  realEstateListing?: ApiRealEstateListing;
   realEstateListings: ApiRealEstateListing[];
+}
+
+export interface IApiCreateRouteSnapshotQuery {
+  searchData: ApiSearch;
+  searchResponse: ApiSearchResponse;
+  placesLocation: IApiPlacesLocation;
+  config?: ApiSearchResultSnapshotConfig;
+}
+
+export interface IApiCreateSnapshotFromTemplateQuery {
+  coordinates?: ApiCoordinates;
+  address?: string;
+  snapshotId: string;
 }
 
 export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
@@ -291,4 +304,13 @@ export interface ApiSearchResultSnapshotResponse {
   lastAccess?: Date;
   endsAt?: Date;
   updatedAt?: Date;
+}
+
+export interface IApiPlacesLocation {
+  label: string;
+  value: IApiPlacesLocationValue;
+}
+
+export interface IApiPlacesLocationValue {
+  place_id: string;
 }

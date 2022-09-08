@@ -12,31 +12,49 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotSchema,
 } from './schema/search-result-snapshot.schema';
-import { SearchResultSnapshotController } from './search-result-snapshot.controller';
+import { ApiSnapshotController } from './api-snapshot.controller';
 import { TilesController } from './tiles.controller';
-import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { ClientModule } from '../client/client.module';
 import { AuthModule } from '../auth/auth.module';
 import { UserModule } from '../user/user.module';
 import { LocationListener } from './listener/location.listener';
+import { EmbeddedMapController } from './embedded-map.controller';
+import { RoutingService } from '../routing/routing.service';
+import { HttpModule } from '@nestjs/axios';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import {
+  RealEstateListing,
+  RealEstateListingSchema,
+} from '../real-estate-listing/schema/real-estate-listing.schema';
+import { ApiSnapshotService } from './api-snapshot.service';
+import { ApiGuard } from './api.guard';
 
 @Module({
   imports: [
     ClientModule,
     AuthModule,
     UserModule,
-    RealEstateListingModule,
     DataProvisionModule,
+    HttpModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
+      { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
   controllers: [
     LocationController,
-    SearchResultSnapshotController,
+    EmbeddedMapController,
+    ApiSnapshotController,
     TilesController,
   ],
-  providers: [LocationService, LocationListener],
+  providers: [
+    LocationService,
+    LocationListener,
+    RoutingService,
+    RealEstateListingService,
+    ApiSnapshotService,
+    ApiGuard,
+  ],
 })
 export class LocationModule {}

@@ -32,15 +32,18 @@ import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
 import { openAiFeatureAllowedEmails } from '../../../shared/constants/exclusion';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
+import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
+import { ApiSnapshotService } from './api-snapshot.service';
 
 @ApiTags('location')
 @Controller('api/location')
 export class LocationController extends AuthenticatedController {
   constructor(
-    private locationService: LocationService,
-    private realEstateListingService: RealEstateListingService,
-    private subscriptionService: SubscriptionService,
-    private openAiService: OpenAiService,
+    private readonly locationService: LocationService,
+    private readonly realEstateListingService: RealEstateListingService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly openAiService: OpenAiService,
+    private readonly apiSnapshotService: ApiSnapshotService,
   ) {
     super();
   }
@@ -64,6 +67,17 @@ export class LocationController extends AuthenticatedController {
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     return this.locationService.createSnapshot(user, snapshot);
+  }
+
+  @ApiOperation({
+    description: 'Create a new embeddable map with route fetching',
+  })
+  @Post('route-snapshot')
+  async createRouteSnapshot(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() snapshotData: ApiCreateRouteSnapshotQueryDto,
+  ): Promise<ApiSearchResultSnapshotResponseDto> {
+    return this.apiSnapshotService.createRouteSnapshot(user, snapshotData);
   }
 
   // TODO think about merging updateSnapshot and updateSnapshotDescription
