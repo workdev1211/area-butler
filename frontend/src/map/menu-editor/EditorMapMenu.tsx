@@ -516,7 +516,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Neue Einträge in "Meine Immobilien" automatisch einfügen
+                    Neue "Meine Immobilien" in Zukunft anzeigen
                   </span>
                 </label>
               </div>
@@ -531,9 +531,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
                     onChange={() => changeHideIsochrones()}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">
-                    Grenzen der Bewegungsprofile ausblenden
-                  </span>
+                  <span className="label-text">Linien ausblenden</span>
                 </label>
               </div>
             </li>

@@ -304,7 +304,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                     height: "1.25rem",
                   }}
                 />
-                Hyperlink zur Vollbild-Karte
+                Hyperlink zur Vollbild-Karte URL
               </h3>
               <h3
                 className="cursor-pointer inline-flex gap-2 items-center"
