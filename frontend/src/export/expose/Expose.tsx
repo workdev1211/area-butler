@@ -1,15 +1,16 @@
+import { ForwardedRef, forwardRef } from "react";
+
 import { EntityTable } from "export/EntityTable";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import React, { ForwardedRef } from "react";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
@@ -17,6 +18,7 @@ import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { EntityGroup } from "../../components/SearchResultContainer";
+import { ILegendItem, Legend } from "../Legend";
 
 export interface ExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -31,16 +33,20 @@ export interface ExposeProps {
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
   color?: string;
+  legend: ILegendItem[];
 }
 
-export const Expose = React.forwardRef(
+export const Expose = forwardRef(
   (props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
+    // TODO change to reduce only
     const groupedEntries = props.groupedEntries
-      .filter(group => group.title !== "Wichtige Adressen")
-      .filter(group => group.active && group.items.length > 0);
-    const importantEntites = props.groupedEntries.find(
-      group => group.active && group.title === "Wichtige Adressen"
+      .filter((group) => group.title !== "Wichtige Adressen")
+      .filter((group) => group.active && group.items.length > 0);
+
+    const importantEntities = props.groupedEntries.find(
+      (group) => group.active && group.title === "Wichtige Adressen"
     );
+
     const transportationParams = props.transportationParams;
     const mapClippings = props.mapClippings;
     const censusData = props.censusData;
@@ -78,17 +84,17 @@ export const Expose = React.forwardRef(
               primaryColor={color}
             />
           </PdfPage>
-          {!!importantEntites?.items?.length && (
+          {importantEntities?.items?.length && (
             <PdfPage
               nextPageNumber={nextPageNumber}
               logo={logo}
               title="Umgebung"
             >
-              {!!importantEntites && importantEntites.items.length > 0 && (
+              {importantEntities && importantEntities.items.length > 0 && (
                 <div className="m-10">
                   <EntityTable
                     activeMeans={activeMeans}
-                    entityGroup={importantEntites!}
+                    entityGroup={importantEntities!}
                     primaryColor={color}
                   />
                 </div>
@@ -102,11 +108,22 @@ export const Expose = React.forwardRef(
               logo={logo}
             />
           )}
+          {mapClippings.length > 0 && props.legend.length > 0 && (
+            <PdfPage
+              nextPageNumber={nextPageNumber}
+              logo={logo}
+              title="Kartenlegende"
+            >
+              <div className="m-10">
+                <Legend legend={props.legend} />
+              </div>
+            </PdfPage>
+          )}
           {groupedEntries
             .filter(
-              entityGroup =>
+              (entityGroup) =>
                 entityGroup.active &&
-                entityGroup.items.filter(i => i.selected).length > 0
+                entityGroup.items.filter((i) => i.selected).length > 0
             )
             .map((entityGroup: EntityGroup) => {
               return (
@@ -134,7 +151,7 @@ export const Expose = React.forwardRef(
             logo={logo}
             nextPageNumber={nextPageNumber}
           >
-            {!!censusData && censusData.length > 0 && (
+            {censusData && censusData.length > 0 && (
               <>
                 <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
                   Nachbarschaftsdemographie
@@ -142,7 +159,7 @@ export const Expose = React.forwardRef(
                 <CensusSummary primaryColor={color} censusData={censusData} />
               </>
             )}
-            {!!federalElectionData && (
+            {federalElectionData && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
                   Bundestagswahl 2021
@@ -153,7 +170,7 @@ export const Expose = React.forwardRef(
                 />
               </>
             )}
-            {!!particlePollutionData && particlePollutionData.length > 0 && (
+            {particlePollutionData && particlePollutionData.length > 0 && (
               <>
                 <h4 className="mx-10 text-xl w-56 font-bold">
                   Feinstaubbelastung

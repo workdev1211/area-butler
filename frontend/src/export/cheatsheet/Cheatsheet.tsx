@@ -1,9 +1,10 @@
+import { forwardRef } from "react";
+
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import React from "react";
 import {
   allFurnishing,
   allRealEstateCostTypes,
@@ -24,6 +25,7 @@ import {
   ResultEntity,
 } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
+import { ILegendItem, Legend } from "../Legend";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -39,13 +41,15 @@ export interface CheatsheetProps {
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
   color?: string;
+  legend: ILegendItem[];
 }
 
-export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
-  // TODO change to reduce
+export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
+  // TODO change to a single reduce
   const groupedEntries = props.groupedEntries
     .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
     .filter((group) => group.active && group.items.length > 0);
+
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
@@ -58,7 +62,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
 
   let page = 0;
   const nextPageNumber = () => {
-    page++;
+    page += 1;
     return page < 9 ? "0" + page : "" + page;
   };
 
@@ -77,7 +81,6 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             <>
               <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
-
               {props.realEstateListing?.costStructure && (
                 <div>
                   <strong>Kosten:</strong>{" "}
@@ -132,8 +135,19 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
           nextPageNumber={nextPageNumber}
         />
       )}
+      {mapClippings.length > 0 && props.legend.length > 0 && (
+        <PdfPage
+          nextPageNumber={nextPageNumber}
+          logo={logo}
+          title="Kartenlegende"
+        >
+          <div className="ml-10 mt-3">
+            <Legend legend={props.legend} />
+          </div>
+        </PdfPage>
+      )}
       <PdfPage title="Einblicke" logo={logo} nextPageNumber={nextPageNumber}>
-        {!!censusData && censusData.length > 0 && (
+        {censusData && censusData.length > 0 && (
           <>
             <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
               Nachbarschaftsdemographie
@@ -141,7 +155,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             <CensusSummary primaryColor={color} censusData={censusData} />
           </>
         )}
-        {!!federalElectionData && (
+        {federalElectionData && (
           <>
             <h4 className="mx-10 text-xl w-56 font-bold">
               Bundestagswahl 2021
@@ -152,7 +166,7 @@ export const Cheatsheet = React.forwardRef((props: CheatsheetProps, ref) => {
             />
           </>
         )}
-        {!!particlePollutionData && particlePollutionData.length > 0 && (
+        {particlePollutionData && particlePollutionData.length > 0 && (
           <>
             <h4 className="mx-10 text-xl w-56 font-bold">Feinstaubbelastung</h4>
             <ParticlePollutionSummary

@@ -53,6 +53,7 @@ export interface SearchContextState {
   printingActive: boolean;
   printingCheatsheetActive: boolean;
   printingDocxActive: boolean;
+  printingZipActive: boolean;
   mapClippings: MapClipping[];
   realEstateListing?: ApiRealEstateListing;
   responseGroupedEntities?: EntityGroup[];
@@ -76,6 +77,7 @@ export const initialState: SearchContextState = {
   printingActive: false,
   printingCheatsheetActive: false,
   printingDocxActive: false,
+  printingZipActive: false,
   mapClippings: [],
   responseActiveMeans: [],
   responseRoutes: [],
@@ -110,6 +112,7 @@ export enum SearchContextActionTypes {
   SET_PRINTING_ACTIVE = "SET_PRINTING_ACTIVE",
   SET_PRINTING_CHEATSHEET_ACTIVE = "SET_PRINTING_CHEATSHEET_ACTIVE",
   SET_PRINTING_DOCX_ACTIVE = "SET_PRINTING_DOCX_ACTIVE",
+  SET_PRINTING_ZIP_ACTIVE = "SET_PRINTING_ZIP_ACTIVE",
   ADD_MAP_CLIPPING = "ADD_MAP_CLIPPING",
   REMOVE_MAP_CLIPPING = "REMOVE_MAP_CLIPPING",
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
@@ -150,6 +153,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_PRINTING_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE]: boolean;
+  [SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE]: boolean;
   [SearchContextActionTypes.ADD_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.REMOVE_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
@@ -294,6 +298,12 @@ export const searchContextReducer = (
         ...state,
         printingDocxActive: action.payload,
         mapCenter: state.searchResponse?.centerOfInterest.coordinates,
+      };
+    }
+    case SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE: {
+      return {
+        ...state,
+        printingZipActive: action.payload,
       };
     }
     case SearchContextActionTypes.ADD_MAP_CLIPPING: {

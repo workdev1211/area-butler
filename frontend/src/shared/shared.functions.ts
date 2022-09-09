@@ -4,6 +4,10 @@ import {
   geocodeByPlaceId,
   getLatLng,
 } from "react-google-places-autocomplete";
+import harversine from "haversine";
+import { toast } from "react-toastify";
+import { v4 } from "uuid";
+
 import {
   ApiCoordinates,
   ApiSearchResponse,
@@ -12,7 +16,6 @@ import {
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
-import harversine from "haversine";
 import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
 import fuelIcon from "../assets/icons/icons-20-x-20-outline-ic-gasstation.svg";
 import chemistIcon from "../assets/icons/icons-20-x-20-outline-ic-chemist.svg";
@@ -32,14 +35,12 @@ import highwayIcon from "../assets/icons/icons-20-x-20-outline-ic-highway.svg";
 import sportIcon from "../assets/icons/icons-20-x-20-outline-ic-sport.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
-import { toast } from "react-toastify";
 import {
   calculateMinutesToMeters,
   meansOfTransportations,
 } from "../../../shared/constants/constants";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { v4 } from "uuid";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { groupBy } from "../../../shared/functions/shared.functions";
 
@@ -56,6 +57,7 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
   const oneDay = 24 * 60 * 60 * 1000;
   d1.setHours(0, 0, 0);
   d2.setHours(0, 0, 0);
+
   return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
 };
 
@@ -73,8 +75,10 @@ export const deriveAddressFromCoordinates = async (
   coordinates: ApiCoordinates
 ): Promise<{ label: string; value: { place_id: string } } | null> => {
   const places = await geocodeByLatLng(coordinates);
-  if (!!places && places.length > 0) {
+
+  if (places && places.length > 0) {
     const { formatted_address, place_id } = places[0];
+
     return {
       label: formatted_address,
       value: {
@@ -126,6 +130,7 @@ export const distanceToHumanReadable = (distanceInMeters: number): string => {
   if (distanceInMeters < 1000) {
     return `${Math.floor(distanceInMeters)}m`;
   }
+
   if (distanceInMeters % 1000 === 0) {
     return `${Math.floor(distanceInMeters / 1000)}km`;
   } else {
@@ -139,6 +144,7 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
   if (timeInMinutes < 60) {
     return `${Math.floor(timeInMinutes)} Min.`;
   }
+
   if (timeInMinutes % 60 === 0) {
     return `${Math.floor(timeInMinutes / 60)} Std.`;
   } else {
@@ -191,6 +197,7 @@ export const realEstateListingsIcon = {
 
 export const deriveColorPalette = (hexColor: string): ColorPalette => {
   const hexColorTinyColor = new tinyColor(hexColor);
+
   return {
     primaryColor: hexColor,
     primaryColorLight: hexColorTinyColor
@@ -333,6 +340,7 @@ export const deriveAvailableMeansFromResponse = (
   searchResponse?: ApiSearchResponse
 ): MeansOfTransportation[] => {
   const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
+
   return meansOfTransportations
     .filter((mot) => routingKeys.includes(mot.type))
     .map((mot) => mot.type);
@@ -346,6 +354,7 @@ export const buildEntityData = (
   if (!locationSearchResult) {
     return null;
   }
+
   const allLocations = Object.values(locationSearchResult.routingProfiles)
     .map((a) =>
       a.locationsOfInterest.sort(
@@ -353,17 +362,21 @@ export const buildEntityData = (
       )
     )
     .flat();
+
   let allLocationIds = Array.from(
     new Set(allLocations.map((location) => location.entity.id))
   );
+
   if (config && config.entityVisibility && !ignoreVisibility) {
     const { entityVisibility = [] } = config;
     allLocationIds = allLocationIds.filter(
       (id) => !entityVisibility.some((ev) => ev.id === id && ev.excluded)
     );
   }
+
   return allLocationIds.map((locationId) => {
     const location = allLocations.find((l) => l.entity.id === locationId)!;
+
     return {
       id: locationId!,
       name: location.entity.name,
@@ -420,12 +433,14 @@ export const buildEntityDataFromRealEstateListings = (
 ): ResultEntity[] => {
   const deriveName = (realEstateListing: ApiRealEstateListing) => {
     const showLocation = config?.showLocation ?? false;
+
     if (!showLocation) {
       return `${realEstateListing.name}`;
     } else {
       return `${realEstateListing.name}`;
     }
   };
+
   const mappedRealEstateListings = realEstateListings
     .filter((realEstateListing) => !!realEstateListing.coordinates)
     .map((realEstateListing) => ({
@@ -451,12 +466,15 @@ export const buildEntityDataFromRealEstateListings = (
       selected: false,
       externalUrl: realEstateListing.externalUrl,
     }));
+
   if (config && config.entityVisibility) {
     const { entityVisibility = [] } = config;
+
     return mappedRealEstateListings.filter(
       (rel) => !entityVisibility.some((ev) => ev.id === rel.id && ev.excluded)
     );
   }
+
   return mappedRealEstateListings;
 };
 
@@ -517,6 +535,7 @@ export const deriveEntityGroupsByActiveMeans = (
       ),
     };
   };
+
   return entityGroups.map((group) => filterByMeans(group, activeMeans));
 };
 
@@ -533,11 +552,13 @@ export const deriveInitialEntityGroups = (
   const deriveActiveState = (title: string, index?: number): boolean => {
     if (config?.theme === "KF") {
       const activeGroups = config?.defaultActiveGroups ?? [];
+
       return (
         [realEstateListingsTitle].includes(title) ||
         (activeGroups.length < 1 ? index === 0 : activeGroups.includes(title))
       );
     }
+
     return config?.defaultActiveGroups
       ? config.defaultActiveGroups.includes(title)
       : true;
@@ -550,6 +571,7 @@ export const deriveInitialEntityGroups = (
       items: buildEntityDataFromPreferredLocations(centerOfSearch, locations),
     });
   }
+
   if (!!listings && !!centerOfSearch) {
     groupedEntities.push({
       title: realEstateListingsTitle,
@@ -561,6 +583,7 @@ export const deriveInitialEntityGroups = (
       ),
     });
   }
+
   const allEntities = buildEntityData(searchResponse, config, ignoreVisibility);
   const newGroupedEntries: any[] = Object.entries(
     groupBy(allEntities, (item: ResultEntity) => item.label)
@@ -573,5 +596,9 @@ export const deriveInitialEntityGroups = (
       items,
     }))
     .forEach((e) => groupedEntities.push(e));
+
   return groupedEntities;
 };
+
+export const sanitizeFilename = (filename: string): string =>
+  filename.replace(/[/\\?%*:|"<>]/g, "-");

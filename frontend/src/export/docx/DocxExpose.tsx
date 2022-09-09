@@ -1,6 +1,21 @@
-import { Document, Packer, Paragraph, PageBreak, HeadingLevel } from "docx";
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { FunctionComponent } from "react";
+import {
+  BorderStyle,
+  Document,
+  HeadingLevel,
+  ImageRun,
+  Packer,
+  PageBreak,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  TextRun,
+  WidthType,
+} from "docx";
 import { saveAs } from "file-saver";
+
+import { SelectedMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -8,7 +23,7 @@ import {
   ApiGeojsonFeature,
   ApiUser,
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import { createFooter } from "./creator/footer.creator";
 import { createHeader } from "./creator/header.creator";
@@ -19,10 +34,13 @@ import {
   mapTableDataFromEntityGrid,
   mapTableDataFromEntityGroup,
   mapTableDataFromFederalElectionData,
-  mapTableDataFromParticlePollutiondata
+  mapTableDataFromParticlePollutiondata,
 } from "./creator/table.creator";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { EntityGroup } from "../../components/SearchResultContainer";
+import { base64PrefixRegex } from "../../shared/shared.constants";
+import { getRenderedLegend } from "../RenderedLegend";
+import { ILegendItem } from "../Legend";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -36,9 +54,10 @@ export interface DocxExposeProps {
   mapClippings: SelectedMapClipping[];
   user: ApiUser | null;
   color?: string;
+  legend: ILegendItem[];
 }
 
-const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
+const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   groupedEntries,
   mapClippings,
   censusData,
@@ -49,23 +68,24 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
   user,
   realEstateListing,
   listingAddress,
-  color
+  color,
+  legend,
 }) => {
   const colorPalette = deriveColorPalette(color || user?.color || "#AA0C54");
 
   let documentTitle = "MeinStandort_AreaButler";
 
-  if (!!realEstateListing?.name) {
+  if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
   }
 
-  if (!!listingAddress) {
+  if (listingAddress) {
     documentTitle = `${
       listingAddress.replace(/\s/g, "").split(",")[0]
     }_AreaButler`;
   }
 
-  const generate = async () => {
+  const generate = async (): Promise<void> => {
     const gridSummary = createTable({
       title: "Die Umgebung",
       pageBreak: false,
@@ -76,21 +96,21 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
         groupedEntries,
         transportationParams,
         activeMeans
-      )
+      ),
     });
 
-    const tables = groupedEntries.map(group =>
+    const tables = groupedEntries.map((group) =>
       createTable({
         title: group.title,
         columnWidths: [5000, 2000, 1500, 1500, 1500],
         headerColor: colorPalette.primaryColor,
         headerTextColor: colorPalette.textColor,
-        ...mapTableDataFromEntityGroup(group, activeMeans)
+        ...mapTableDataFromEntityGroup(group, activeMeans),
       })
     );
 
     const censusTable =
-      !!censusData && censusData.length > 0
+      censusData && censusData.length > 0
         ? [
             createTable({
               pageBreak: false,
@@ -98,12 +118,12 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
               columnWidths: [5000, 2000, 3000],
               headerColor: colorPalette.primaryColor,
               headerTextColor: colorPalette.textColor,
-              ...mapTableDataFromCensusData(censusData)
-            })
+              ...mapTableDataFromCensusData(censusData),
+            }),
           ]
         : [];
 
-    const federalElectionTable = !!federalElectionData
+    const federalElectionTable = federalElectionData
       ? [
           createTable({
             pageBreak: false,
@@ -111,12 +131,12 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             columnWidths: [2000, 5000, 5000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromFederalElectionData(federalElectionData)
-          })
+            ...mapTableDataFromFederalElectionData(federalElectionData),
+          }),
         ]
       : [];
 
-    const particlePollutionTable = !!particlePollutionData
+    const particlePollutionTable = particlePollutionData
       ? [
           createTable({
             pageBreak: false,
@@ -124,32 +144,107 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromParticlePollutiondata(particlePollutionData)
-          })
+            ...mapTableDataFromParticlePollutiondata(particlePollutionData),
+          }),
         ]
       : [];
 
-    const base64PrefixRegex = /data:.+;base64,/;
-
+    // TODO leave only reduce
     let images = mapClippings
-      .filter(c => c.selected)
-      .map(c =>
+      .filter((c) => c.selected)
+      .map((c) =>
         createImage(c.mapClippingDataUrl.replace(base64PrefixRegex, ""))
       );
 
     if (images.length > 0) {
       images = [
-        new Paragraph({ children: [new PageBreak()] }),
         new Paragraph({
+          pageBreakBefore: true,
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
-          text: "Kartenausschnitte"
+          text: "Kartenausschnitte",
         }),
-        ...images
+        ...images,
       ];
     }
 
-    const imageBase64Data = !!user?.logo
+    if (images.length > 0 && legend.length > 0) {
+      const renderedLegend = await getRenderedLegend(legend);
+      const legendColumn1: Paragraph[] = [];
+      const legendColumn2: Paragraph[] = [];
+
+      renderedLegend.forEach(({ title, icon }, index) => {
+        const legendParagraph = new Paragraph({
+          spacing: {
+            before: 100,
+            after: 100,
+          },
+          children: [
+            new ImageRun({
+              data: Uint8Array.from(atob(icon), (c) => c.charCodeAt(0)),
+              transformation: {
+                width: 36,
+                height: 36,
+              },
+            }),
+            new TextRun({ text: title, font: "Arial" }),
+          ],
+        });
+
+        if (index < Math.ceil(renderedLegend.length / 2)) {
+          legendColumn1.push(legendParagraph);
+        } else {
+          legendColumn2.push(legendParagraph);
+        }
+      });
+
+      const legendTableParagraph = new Paragraph({
+        children: [
+          new Table({
+            width: {
+              size: 100,
+              type: WidthType.PERCENTAGE,
+            },
+            rows: [
+              new TableRow({
+                children: [
+                  new TableCell({
+                    borders: {
+                      top: { style: BorderStyle.NONE },
+                      right: { style: BorderStyle.NONE },
+                      bottom: { style: BorderStyle.NONE },
+                      left: { style: BorderStyle.NONE },
+                    },
+                    children: [...legendColumn1],
+                  }),
+                  new TableCell({
+                    borders: {
+                      top: { style: BorderStyle.NONE },
+                      right: { style: BorderStyle.NONE },
+                      bottom: { style: BorderStyle.NONE },
+                      left: { style: BorderStyle.NONE },
+                    },
+                    children: [...legendColumn2],
+                  }),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+
+      images.push(
+        new Paragraph({
+          pageBreakBefore: true,
+          spacing: { before: 500, after: 500 },
+          heading: HeadingLevel.HEADING_1,
+          text: "Kartenlegende",
+        }),
+        legendTableParagraph
+      );
+    }
+
+    const imageBase64Data = user?.logo
       ? user?.logo!.replace(base64PrefixRegex, "")!
       : await (await fetch(AreaButlerLogo)).blob();
 
@@ -183,25 +278,25 @@ const DocxExpose: React.FunctionComponent<DocxExposeProps> = ({
             run: {
               font: "Arial",
               size: 32,
-              color: "000000"
-            }
-          }
-        ]
+              color: "000000",
+            },
+          },
+        ],
       },
       sections: [
         {
           headers: {
-            ...createHeader(imageBase64Data)
+            ...createHeader(imageBase64Data),
           },
           children: sectionChildren,
           footers: {
-            ...createFooter()
-          }
-        }
-      ]
+            ...createFooter(),
+          },
+        },
+      ],
     });
 
-    Packer.toBlob(doc).then(blob => {
+    Packer.toBlob(doc).then((blob) => {
       saveAs(blob, `${documentTitle}.docx`);
     });
   };

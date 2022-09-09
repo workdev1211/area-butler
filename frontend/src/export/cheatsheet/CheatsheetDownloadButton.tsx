@@ -1,16 +1,18 @@
-import React, { useRef, useState } from "react";
+import { FunctionComponent, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
+
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
   ApiUser,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
+import { ILegendItem } from "../Legend";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];
@@ -27,9 +29,10 @@ export interface CheatsheetDownloadProps {
   onAfterPrint: () => void;
   user: ApiUser | null;
   color?: string;
+  legend: ILegendItem[];
 }
 
-export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps> = ({
+export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
   groupedEntries,
   transportationParams,
   listingAddress,
@@ -43,7 +46,8 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
   particlePollutionData,
   user,
   onAfterPrint,
-  color
+  color,
+  legend,
 }) => {
   const componentRef = useRef();
 
@@ -51,11 +55,11 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
 
   let documentTitle = "MeinStandort_AreaButler";
 
-  if (!!realEstateListing?.name) {
+  if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
   }
 
-  if (!!listingAddress) {
+  if (listingAddress) {
     documentTitle = `${
       listingAddress.replace(/\s/g, "").split(",")[0]
     }_AreaButler`;
@@ -98,6 +102,7 @@ export const CheatsheetDownload: React.FunctionComponent<CheatsheetDownloadProps
         particlePollutionData={particlePollutionData!}
         user={user}
         color={color}
+        legend={legend}
       />
     </div>
   );

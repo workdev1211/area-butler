@@ -5,6 +5,7 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
+  ResultEntity,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import {
@@ -73,6 +74,10 @@ const SnippetEditorPage: FunctionComponent = () => {
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
     useState(false);
+  const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
+  const [resultingEntities, setResultingEntities] = useState<ResultEntity[]>(
+    []
+  );
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
   const { userState, userDispatch } = useContext(UserContext);
@@ -294,6 +299,24 @@ const SnippetEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.realEstateStatus,
   ]);
 
+  useEffect(() => {
+    if (
+      searchContextState.responseGroupedEntities &&
+      searchContextState.responseActiveMeans
+    ) {
+      const derivedGroupedEntities = deriveEntityGroupsByActiveMeans(
+        searchContextState.responseGroupedEntities,
+        searchContextState.responseActiveMeans
+      );
+
+      setGroupedEntities(derivedGroupedEntities);
+      setResultingEntities(derivedGroupedEntities.map((g) => g.items).flat());
+    }
+  }, [
+    searchContextState.responseGroupedEntities,
+    searchContextState.responseActiveMeans,
+  ]);
+
   const onPoiAdd = (poi: Poi) => {
     if (snapshot) {
       const copiedSearchResponse = JSON.parse(
@@ -415,6 +438,29 @@ const SnippetEditorPage: FunctionComponent = () => {
             <img src={pdfIcon} alt="pdf-icon" /> Export Überblick PDF
           </button>
         </li>
+        <li>
+          <button
+            type="button"
+            onClick={() => {
+              hasFullyCustomizableExpose
+                ? searchContextDispatch({
+                    type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
+                    payload: true,
+                  })
+                : userDispatch({
+                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                    payload: {
+                      open: true,
+                      message: subscriptionUpgradeFullyCustomizableExpose,
+                    },
+                  });
+            }}
+            className="btn btn-link"
+          >
+            <img src={pdfIcon} alt="pdf-icon" /> Export Kartenlegende ZIP
+          </button>
+        </li>
+        <li style={{ borderBottom: "1px white solid" }} />
         {hasOpenAiFeature && (
           <li>
             <button
@@ -454,7 +500,7 @@ const SnippetEditorPage: FunctionComponent = () => {
               src={copyMapIcon}
               alt="copy-map-icon"
               style={{ filter: "invert(1)" }}
-            />{" "}
+            />
             Karte veröffentlichen
           </button>
         </li>
@@ -539,35 +585,20 @@ const SnippetEditorPage: FunctionComponent = () => {
           />
         </div>
       </DefaultLayout>
+      {/*TODO refactor to the single ExportModal call with parameters*/}
       {searchContextState.printingActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )
-            .map((g) => g.items)
-            .flat()}
-          groupedEntries={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )}
+          entities={resultingEntities}
+          groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
         />
       )}
       {searchContextState.printingDocxActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )
-            .map((g) => g.items)
-            .flat()}
-          groupedEntries={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )}
+          entities={resultingEntities}
+          groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
           exportType="EXPOSE_DOCX"
         />
@@ -575,18 +606,18 @@ const SnippetEditorPage: FunctionComponent = () => {
       {searchContextState.printingCheatsheetActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )
-            .map((g) => g.items)
-            .flat()}
-          groupedEntries={deriveEntityGroupsByActiveMeans(
-            searchContextState.responseGroupedEntities,
-            searchContextState.responseActiveMeans
-          )}
+          entities={resultingEntities}
+          groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
           exportType="CHEATSHEET"
+        />
+      )}
+      {searchContextState.printingZipActive && (
+        <ExportModal
+          activeMeans={searchContextState.responseActiveMeans}
+          entities={resultingEntities}
+          groupedEntries={groupedEntities}
+          exportType="ARCHIVE"
         />
       )}
     </>

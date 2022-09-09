@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import {
   MapClipping,
@@ -21,19 +21,28 @@ import MapClippingSelection, {
   SelectedMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { osmEntityTypes } from "../../../shared/constants/constants";
+import {
+  deriveIconForOsmName,
+  sanitizeFilename,
+} from "../shared/shared.functions";
+import JsZip from "jszip";
+import { saveAs } from "file-saver";
+import { getRenderedLegend } from "./RenderedLegend";
+import { ILegendItem } from "./Legend";
 
 export interface ExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
-  censusData: ApiGeojsonFeature[];
+  censusData?: ApiGeojsonFeature[];
   activeMeans: MeansOfTransportation[];
-  exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX";
+  exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX" | "ARCHIVE";
 }
 
 const ExportModal: FunctionComponent<ExportModalProps> = ({
   entities,
   groupedEntries,
-  censusData,
+  censusData = [],
   activeMeans,
   exportType = "EXPOSE",
 }) => {
@@ -62,22 +71,24 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
     (c: MapClipping) => ({ selected: true, ...c })
   );
 
-  const [filteredEntities, setFilteredEntities] =
-    useState<EntityGroup[]>(groupCopy);
-  const [showFederalElection, setShowFederalElection] = useState(
-    hasFederalElectionInSubscription
-  );
-  const [showCensus, setShowCensus] = useState(hasCensusElectionInSubscription);
-  const [showParticlePollution, setShowParticlePollution] = useState(
-    hasParticlePollutionElectionInSubscription
-  );
-  const [selectedMapClippings, setSelectedMapClippings] =
-    useState<SelectedMapClipping[]>(selectableClippings);
+  const getFilteredLegend = (groupedEntities: EntityGroup[]) =>
+    groupedEntities
+      .reduce<ILegendItem[]>((result, { title, active }) => {
+        const foundOsmEntityType =
+          active && osmEntityTypes.find(({ label }) => title === label);
 
-  const buttonTitle =
-    exportType !== "CHEATSHEET"
-      ? "Umgebungsanalyse exportieren"
-      : "Spickzettel exportieren";
+        if (foundOsmEntityType) {
+          result.push({
+            title,
+            icon: deriveIconForOsmName(foundOsmEntityType.name),
+          });
+        }
+
+        return result;
+      }, [])
+      .sort((a, b) =>
+        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+      );
 
   const onClose = () => {
     searchContextDispatch({
@@ -92,7 +103,63 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
       type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
       payload: false,
     });
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
+      payload: false,
+    });
   };
+
+  const [filteredEntities, setFilteredEntities] =
+    useState<EntityGroup[]>(groupCopy);
+  const [legend, setLegend] = useState<ILegendItem[]>(
+    getFilteredLegend(groupCopy)
+  );
+  const [selectedMapClippings, setSelectedMapClippings] =
+    useState<SelectedMapClipping[]>(selectableClippings);
+
+  const [showFederalElection, setShowFederalElection] = useState(
+    hasFederalElectionInSubscription
+  );
+  const [showCensus, setShowCensus] = useState(hasCensusElectionInSubscription);
+  const [showParticlePollution, setShowParticlePollution] = useState(
+    hasParticlePollutionElectionInSubscription
+  );
+
+  useEffect(() => {
+    setLegend(getFilteredLegend(filteredEntities));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filteredEntities]);
+
+  useEffect(() => {
+    if (exportType === "ARCHIVE" && searchContextState.printingZipActive) {
+      const downloadZipArchive = async () => {
+        const zip = new JsZip();
+
+        (await getRenderedLegend(legend)).forEach(({ title, icon }) => {
+          zip.file(`icons/${sanitizeFilename(title)}.png`, icon, {
+            base64: true,
+          });
+        });
+
+        const archive = await zip.generateAsync({ type: "blob" });
+        saveAs(archive, "AreaButler-Icons.zip");
+        onClose();
+      };
+
+      downloadZipArchive();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [exportType, searchContextState.printingZipActive]);
+
+  const buttonTitle =
+    exportType !== "CHEATSHEET"
+      ? "Umgebungsanalyse exportieren"
+      : "Spickzettel exportieren";
+
+  if (searchContextState.printingZipActive) {
+    return null;
+  }
 
   return (
     <>
@@ -162,6 +229,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   onAfterPrint={onClose}
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
+                  legend={legend}
                 />
               )}
 
@@ -189,6 +257,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   onAfterPrint={onClose}
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
+                  legend={legend}
                 />
               )}
 
@@ -213,6 +282,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   }
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
+                  legend={legend}
                 />
               )}
             </div>

@@ -1,16 +1,18 @@
+import { FunctionComponent, useRef, useState, PureComponent } from "react";
+import ReactToPrint from "react-to-print";
+
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import React, { useRef, useState } from "react";
-import ReactToPrint from "react-to-print";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiUser,
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../../shared/types/types";
 import Expose from "./Expose";
 import { ResultEntity } from "../../components/SearchResultContainer";
+import { ILegendItem } from "../Legend";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];
@@ -27,15 +29,16 @@ export interface ExposeDownloadProps {
   user: ApiUser | null;
   onAfterPrint: () => void;
   color?: string;
+  legend: ILegendItem[];
 }
 
-export class ComponentToPrint extends React.PureComponent {
+export class ComponentToPrint extends PureComponent {
   render() {
     return <div>Test</div>;
   }
 }
 
-export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
+export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
   groupedEntries = [],
   transportationParams = [],
   activeMeans,
@@ -49,18 +52,19 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
   particlePollutionData,
   user,
   onAfterPrint,
-  color
+  color,
+  legend,
 }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const [activePrinting, setActivePrinting] = useState(false);
 
   let documentTitle = "MeinStandort_AreaButler";
 
-  if (!!realEstateListing?.name) {
+  if (realEstateListing?.name) {
     documentTitle = `${realEstateListing.name.replace(/\s/g, "")}_AreaButler`;
   }
 
-  if (!!listingAddress) {
+  if (listingAddress) {
     documentTitle = `${
       listingAddress.replace(/\s/g, "").split(",")[0]
     }_AreaButler`;
@@ -102,6 +106,7 @@ export const ExposeDownload: React.FunctionComponent<ExposeDownloadProps> = ({
         activePrinting={activePrinting}
         user={user}
         color={color}
+        legend={legend}
       />
     </div>
   );

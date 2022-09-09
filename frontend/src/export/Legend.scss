@@ -1,0 +1,19 @@
+// Any appropriate changes here should be reflected in the "RenderedLegend.tsx" file
+.legend-container {
+  @apply flex flex-wrap;
+
+  .legend-item {
+    @apply flex items-center w-3/6 my-1;
+
+    .img-container {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      @apply flex items-center justify-center mr-2;
+
+      img {
+        filter: brightness(0) invert(1);
+      }
+    }
+  }
+}
