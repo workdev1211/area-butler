@@ -25,10 +25,11 @@ export class MailSenderService {
     new SibApiV3Sdk.SendSmtpEmail();
   }
 
-  async batchSendMail(mailProps: IMailProps) {
+  async sendMail(mailProps: IMailProps) {
     this.logger.log('Sending Mail', mailProps);
 
     try {
+      // if "mailProps" contain several items in the "to" array, then every mail will contain all recipients in the "to" field
       await this.apiInstance.sendTransacEmail(mailProps);
     } catch (err) {
       this.logger.error(JSON.stringify(err));

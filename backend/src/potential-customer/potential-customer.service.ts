@@ -156,7 +156,7 @@ export class PotentialCustomerService {
       mailProps.replyTo = { name: user.fullname, email: user.email };
     }
 
-    await this.mailSender.batchSendMail(mailProps);
+    await this.mailSender.sendMail(mailProps);
 
     return questionnaire;
   }
@@ -203,7 +203,7 @@ export class PotentialCustomerService {
         },
       };
 
-      await this.mailSender.batchSendMail(mailProps);
+      await this.mailSender.sendMail(mailProps);
     } else {
       await this.updatePotentialCustomer(user, existingCustomer.id, upsertData);
     }

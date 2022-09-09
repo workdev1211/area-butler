@@ -271,7 +271,7 @@ export class SubscriptionService {
         }
       }
 
-      await this.mailSenderService.batchSendMail({
+      await this.mailSenderService.sendMail({
         to: [{ name: userName, email: userEmail }],
         templateId:
           type === ApiSubscriptionPlanType.BUSINESS_PLUS_V2
@@ -362,13 +362,17 @@ export class SubscriptionService {
     let loggerMessage = 'There are no users with expiring subscriptions.';
 
     if (sendTo.length > 0) {
-      await this.mailSenderService.batchSendMail({
-        to: sendTo,
-        templateId: subscriptionRenewalTemplateId,
-        params: {
-          href: this.getSubscriptionCancelUrl(),
-        },
-      });
+      await Promise.all(
+        sendTo.map((to) =>
+          this.mailSenderService.sendMail({
+            to: [to],
+            templateId: subscriptionRenewalTemplateId,
+            params: {
+              href: this.getSubscriptionCancelUrl(),
+            },
+          }),
+        ),
+      );
 
       loggerMessage = `The emails have been sent to ${emails.join(', ')}.`;
     }
