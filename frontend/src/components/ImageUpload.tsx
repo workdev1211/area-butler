@@ -1,4 +1,5 @@
-import React from "react";
+import { FunctionComponent, ChangeEvent } from "react";
+
 import "./ImageUpload.scss";
 import { toastError } from "../shared/shared.functions";
 
@@ -11,32 +12,34 @@ export interface ImageUploadProps {
   onChange: (logo: string) => void;
 }
 
-const ImageUpload: React.FunctionComponent<ImageUploadProps> = ({
+const ImageUpload: FunctionComponent<ImageUploadProps> = ({
   image,
   setImage,
   label = "Dein Logo",
   uploadLabel = "Logo hochladen",
   inputId = "upload-button",
-  onChange
+  onChange,
 }) => {
-  const getBase64 = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const getBase64 = (event: ChangeEvent<HTMLInputElement>) => {
     let file = event.target.files![0];
+
     if (file.size > 5242880) {
       toastError("Dein Logo darf nicht größer als 5 MB sein!");
       return;
     }
+
     let reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = function() {
+    reader.onload = function () {
       setImage(`${reader.result}`);
       onChange(`${reader.result}`);
     };
-    reader.onerror = function(error) {
+    reader.onerror = function (error) {
       console.log("Error: ", error);
     };
   };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.files!.length && e.target.files![0]) {
       getBase64(e);
     }

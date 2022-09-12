@@ -279,7 +279,7 @@ export class IdMarker extends L.Marker {
 export const defaultMapZoom = 16.5;
 const defaultAmenityIconSize = new L.Point(32, 32);
 const myLocationIconSize = new L.Point(46, 46);
-const customMyLocationIconSize = new L.Point(32, 32);
+const customMyLocationIconSize = new L.Point(46, 46);
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -526,7 +526,7 @@ const Map = memo<MapProps>(
         }
 
         const iconStyle = config?.mapIcon
-          ? "height: auto; width: 46px;"
+          ? "height: 46px; width: auto;"
           : "height: 100%; width: auto;";
 
         const positionIcon = L.divIcon({
@@ -539,7 +539,7 @@ const Map = memo<MapProps>(
           className: "my-location-icon-wrapper",
           html: `<img src="${
             config?.mapIcon ?? mylocationIcon
-          }" alt="marker-icon" style="${iconStyle}" />`,
+          }" alt="marker-icon-address" style="${iconStyle}" />`,
         });
 
         const myLocationMarker = L.marker([lat, lng], {
@@ -952,11 +952,17 @@ const Map = memo<MapProps>(
               ? preferredLocationsIcon
               : deriveIconForOsmName(entity.type as OsmName);
 
+            const iconStyle = config?.mapIcon
+              ? `height: 32px; width: auto !important;`
+              : "height: 100%; width: auto;";
+
             const icon = L.divIcon({
               iconUrl: markerIcon.icon,
               shadowUrl: leafletShadow,
               shadowSize: [0, 0],
-              iconSize: defaultAmenityIconSize,
+              iconSize: config?.mapIcon
+                ? customMyLocationIconSize
+                : myLocationIconSize,
               className: `locality-marker-wrapper ${
                 isRealEstateListing && config?.mapIcon
                   ? "locality-marker-wrapper-custom"
@@ -964,8 +970,8 @@ const Map = memo<MapProps>(
               } icon-${entity.type}`,
               html:
                 config?.mapIcon && isRealEstateListing
-                  ? `<img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon-custom" />`
-                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
+                  ? `<img src="${markerIcon.icon}" alt="marker-icon-real-estate-custom" class="${entity.type} locality-icon-custom" style="${iconStyle}" />`
+                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon-real-estate" class="${entity.type} locality-icon" /></div>`,
             });
 
             const hideEntityFunction = editorMode ? hideEntity : undefined;
