@@ -16,16 +16,12 @@ import {
   IApiPreferredLocationRouteQuery,
   IApiPreferredLocationRouteQueryResult,
 } from '@area-butler-types/routing';
-import {
-  ApiCoordinates,
-  MeansOfTransportation,
-} from '@area-butler-types/types';
+import { MeansOfTransportation } from '@area-butler-types/types';
 import ApiCoordinatesDto from '../dto/api-coordinates.dto';
 import ApiGeometryDto from '../dto/api-geometry.dto';
-import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 
 // We only map a subset. Additional Info:
-//https://developer.here.com/documentation/routing-api/api-reference-swagger.html
+// https://developer.here.com/documentation/routing-api/api-reference-swagger.html
 
 interface HereApiRoutingRequest {
   apiKey: string;
@@ -56,8 +52,8 @@ interface HereApiRouteSection {
   id: string;
   type: 'pedestrian' | 'vehicle' | 'transit';
   summary: {
-    duration: number; //in seconds
-    length: number; //in meters
+    duration: number; // in seconds
+    length: number; // in meters
     baseDuration: number;
   };
   polyline: string; // Format: https://github.com/heremaps/flexible-polyline
@@ -79,8 +75,8 @@ interface HereApiTransitRouteSection {
   id: string;
   type: string;
   travelSummary: {
-    duration: number; //in seconds
-    length: number; //in meters
+    duration: number; // in seconds
+    length: number; // in meters
     baseDuration: number;
   };
   polyline: string;
@@ -180,7 +176,7 @@ export class RoutingService {
       throw e;
     }
 
-    throw Error('Invalid Route Response');
+    throw Error('Invalid route response');
   }
 
   async fetchTransitRoutes(
@@ -221,9 +217,13 @@ export class RoutingService {
         ),
       );
 
+      if (data.routes.length && data.routes.length > 1) {
+        this.logger.warn(`Transit route number is ${data.routes.length}`);
+      }
+
+      // "data.routes.length === 1" check was removed due to the return of two routes from Here API in case of "Am Strandkai, Hamburg"
       if (
         data.routes.length &&
-        data.routes.length === 1 &&
         data.routes[0].sections &&
         data.routes[0].sections.length
       ) {
@@ -244,13 +244,15 @@ export class RoutingService {
       }
 
       // we should already have returned
-      this.logger.error(`Invalid route response: ${JSON.stringify(data)}`);
+      this.logger.error(
+        `Invalid transit route response: ${JSON.stringify(data)}`,
+      );
     } catch (e) {
       this.logger.error('Could not fetch transit route', e);
       throw e;
     }
 
-    throw Error('Invalid Route Response');
+    throw Error('Invalid transit route response');
   }
 
   async fetchPreferredLocationRoutes({
