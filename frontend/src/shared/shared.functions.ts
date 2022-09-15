@@ -16,23 +16,23 @@ import {
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
-import parkIcon from "../assets/icons/icons-20-x-20-outline-ic-park.svg";
-import fuelIcon from "../assets/icons/icons-20-x-20-outline-ic-gasstation.svg";
-import chemistIcon from "../assets/icons/icons-20-x-20-outline-ic-chemist.svg";
-import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
-import barIcon from "../assets/icons/icons-20-x-20-outline-ic-bar.svg";
-import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
-import restaurantIcon from "../assets/icons/icons-20-x-20-outline-ic-gastro.svg";
-import theaterIcon from "../assets/icons/icons-20-x-20-outline-ic-theater.svg";
-import playgroundIcon from "../assets/icons/icons-20-x-20-outline-ic-playground.svg";
-import kindergartenIcon from "../assets/icons/icons-20-x-20-outline-ic-kindergarten.svg";
-import schoolIcon from "../assets/icons/icons-20-x-20-outline-ic-school.svg";
-import universityIcon from "../assets/icons/icons-20-x-20-outline-ic-university.svg";
-import doctorIcon from "../assets/icons/icons-20-x-20-outline-ic-doctor.svg";
-import clinicIcon from "../assets/icons/icons-20-x-20-outline-ic-hospital.svg";
-import postofficeIcon from "../assets/icons/icons-20-x-20-outline-ic-paketshop.svg";
-import highwayIcon from "../assets/icons/icons-20-x-20-outline-ic-highway.svg";
-import sportIcon from "../assets/icons/icons-20-x-20-outline-ic-sport.svg";
+import parkIcon from "../assets/icons/pois/park.svg";
+import fuelIcon from "../assets/icons/pois/fuel.svg";
+import chemistIcon from "../assets/icons/pois/chemist.svg";
+import stationIcon from "../assets/icons/pois/station.svg";
+import barIcon from "../assets/icons/pois/bar.svg";
+import busStopIcon from "../assets/icons/pois/bus_stop.svg";
+import restaurantIcon from "../assets/icons/pois/restaurant.svg";
+import theatreIcon from "../assets/icons/pois/theatre.svg";
+import playgroundIcon from "../assets/icons/pois/playground.svg";
+import kindergartenIcon from "../assets/icons/pois/kindergarten.svg";
+import schoolIcon from "../assets/icons/pois/school.svg";
+import universityIcon from "../assets/icons/pois/university.svg";
+import doctorsIcon from "../assets/icons/pois/doctors.svg";
+import clinicIcon from "../assets/icons/pois/hospital.svg";
+import postOfficeIcon from "../assets/icons/pois/post_office.svg";
+import motorwayLinkIcon from "../assets/icons/pois/motorway_link.svg";
+import sportIcon from "../assets/icons/pois/sport.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {
@@ -240,12 +240,12 @@ export const deriveIconForOsmName = (
       };
     case OsmName.station:
       return {
-        icon: trainIcon,
+        icon: stationIcon,
         color: "#CB513B",
       };
     case OsmName.bus_stop:
       return {
-        icon: busIcon,
+        icon: busStopIcon,
         color: "#C71362",
       };
     case OsmName.bar:
@@ -260,7 +260,7 @@ export const deriveIconForOsmName = (
       };
     case OsmName.theatre:
       return {
-        icon: theaterIcon,
+        icon: theatreIcon,
         color: "#C91444",
       };
     case OsmName.playground:
@@ -285,12 +285,12 @@ export const deriveIconForOsmName = (
       };
     case OsmName.doctors:
       return {
-        icon: doctorIcon,
+        icon: doctorsIcon,
         color: "#10A877",
       };
     case OsmName.dentist:
       return {
-        icon: doctorIcon,
+        icon: doctorsIcon,
         color: "#10A877",
       };
     case OsmName.clinic:
@@ -305,12 +305,12 @@ export const deriveIconForOsmName = (
       };
     case OsmName.post_office:
       return {
-        icon: postofficeIcon,
+        icon: postOfficeIcon,
         color: "#66A3B7",
       };
     case OsmName.motorway_link:
       return {
-        icon: highwayIcon,
+        icon: motorwayLinkIcon,
         color: "#579BE4",
       };
     case OsmName.sports_centre:

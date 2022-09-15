@@ -25,6 +25,8 @@ services:
       - web
     ports:
       - 8073:3000
+    volumes:
+      - area-butler-assets:/home/node/app/shared/assets
     environment:
       - PORT=3000
       - MAPBOX_ACCESS_TOKEN
@@ -77,6 +79,8 @@ volumes:
   area-butler-db:
     external: true
   area-butler-db-dump:
+    external: true
+  area-butler-assets:
     external: true
 
 networks:
