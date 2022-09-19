@@ -2,12 +2,16 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
-import { ApiShowTour } from '@area-butler-types/types';
+import { ApiShowTour, IApiUserPoiIcon } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 
 export type UserDocument = User &
-  Document & { subscription?: SubscriptionDocument; parentUser?: UserDocument };
+  Document & {
+    subscription?: SubscriptionDocument;
+    parentUser?: UserDocument;
+    poiIcons?: IApiUserPoiIcon[];
+  };
 
 @Schema()
 export class User {

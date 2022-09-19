@@ -41,6 +41,7 @@ export interface ApiUser {
   additionalMapBoxStyles: MapBoxStyle[];
   isChild: boolean;
   parentSettings?: IApiUserParentSettings;
+  poiIcons?: IApiUserPoiIcon[];
 }
 
 export interface IApiUserParentSettings {
@@ -307,6 +308,7 @@ export interface ApiSearchResultSnapshotResponse {
   endsAt?: Date;
   updatedAt?: Date;
   isTrial?: boolean;
+  userPoiIcons?: IApiUserPoiIcon[];
 }
 
 export interface IApiPlacesLocation {
@@ -338,4 +340,9 @@ export interface IApiCapturePaypalPaymentQuery {
 export enum CsvFileFormatEnum {
   AREA_BUTLER = "AREA_BUTLER",
   ON_OFFICE = "ON_OFFICE",
+}
+
+export interface IApiUserPoiIcon {
+  name: OsmName;
+  file: string;
 }

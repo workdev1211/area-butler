@@ -64,3 +64,24 @@ export const convertStringToNumber = (value: string): number => {
 
 export const checkAnyStringIsEmpty = (...texts: string[]) =>
   texts.some((text) => !text || text === '');
+
+export const getImageTypeFromFileType = (fileType: string): string => {
+  switch (fileType) {
+    case 'png': {
+      return 'image/png';
+    }
+
+    case 'jpeg':
+    case 'jpg': {
+      return 'image/jpeg';
+    }
+
+    case 'svg': {
+      return 'image/svg+xml';
+    }
+
+    case 'gif': {
+      return 'image/gif';
+    }
+  }
+};

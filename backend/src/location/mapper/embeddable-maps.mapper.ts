@@ -8,12 +8,14 @@ import ApiSearchResultSnapshotConfigDto from '../../dto/api-search-result-snapsh
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import ApiSearchResponseDto from '../../dto/api-search-response.dto';
 import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
+import { IApiUserPoiIcon } from '@area-butler-types/types';
 
 export const mapSnapshotToEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
   embed = false,
   realEstateListings: RealEstateListingDocument[] = [],
   isTrial = false,
+  userPoiIcons?: IApiUserPoiIcon[],
 ): ApiSearchResultSnapshotResponseDto => {
   const centerOfLocation = searchResultSnapshot.snapshot.location;
 
@@ -89,6 +91,7 @@ export const mapSnapshotToEmbeddableMap = (
     endsAt: searchResultSnapshot.endsAt,
     updatedAt: searchResultSnapshot.updatedAt,
     isTrial,
+    userPoiIcons,
   };
 };
 

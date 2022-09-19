@@ -27,7 +27,7 @@ export class EmbeddedMapController {
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     const snapshot = await this.locationService.fetchEmbeddedMap(token);
     const { userId } = snapshot;
-    const user = await this.userService.findById(userId);
+    const user = await this.userService.fetchByIdWithAssets(userId);
     const userSubscription = await this.subscriptionService.findActiveByUserId(
       userId,
     );
@@ -44,6 +44,7 @@ export class EmbeddedMapController {
       true,
       realEstateListings,
       userSubscription.type === ApiSubscriptionPlanType.TRIAL,
+      user.poiIcons,
     );
   }
 }

@@ -21,7 +21,6 @@ dist/
 
 # Maven
 target/
-dist/
 
 # JetBrains IDE
 .idea/
@@ -52,3 +51,6 @@ Thumbs.db
 .vscode/
 
 db
+
+# assets are kept in the external docker volume
+shared/assets/*

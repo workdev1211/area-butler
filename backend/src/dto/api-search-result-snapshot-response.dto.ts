@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsArray,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -10,9 +11,15 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import {
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotResponse,
+  IApiUserPoiIcon,
+} from '@area-butler-types/types';
 import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-config.dto';
 import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
+import ApiUserPoiIconDto from './api-user-poi-icon.dto';
 
 class ApiSearchResultSnapshotResponseDto
   implements ApiSearchResultSnapshotResponse
@@ -21,7 +28,7 @@ class ApiSearchResultSnapshotResponseDto
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResultSnapshotConfigDto)
-  config?: ApiSearchResultSnapshotConfigDto;
+  config?: ApiSearchResultSnapshotConfig;
 
   @IsNotEmpty()
   @IsDate()
@@ -59,7 +66,7 @@ class ApiSearchResultSnapshotResponseDto
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResultSnapshotDto)
-  snapshot: ApiSearchResultSnapshotDto;
+  snapshot: ApiSearchResultSnapshot;
 
   @IsNotEmpty()
   @IsString()
@@ -68,6 +75,12 @@ class ApiSearchResultSnapshotResponseDto
   @IsOptional()
   @IsBoolean()
   isTrial?: boolean;
+
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ApiUserPoiIconDto)
+  userPoiIcons?: IApiUserPoiIcon[];
 }
 
 export default ApiSearchResultSnapshotResponseDto;

@@ -3,6 +3,9 @@ import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
 import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
+import { readdir, readFile } from 'fs/promises';
+import { join as joinPath } from 'path';
+import { ManipulateType } from 'dayjs';
 
 import {
   cumulativeRequestSubscriptionTypes,
@@ -20,12 +23,12 @@ import {
   ApiRequestContingent,
   ApiRequestContingentType,
 } from '@area-butler-types/subscription-plan';
-import { ApiTour } from '@area-butler-types/types';
+import { ApiTour, IApiUserPoiIcon } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { ManipulateType } from 'dayjs';
+import { getImageTypeFromFileType } from '../shared/shared.functions';
 
 @Injectable()
 export class UserService {
@@ -41,6 +44,12 @@ export class UserService {
     const existingUser = await this.userModel.findOne({ email });
 
     if (existingUser) {
+      const userPoiIcons = await this.fetchUserPoiIcons(existingUser.email);
+
+      if (userPoiIcons.length > 0) {
+        existingUser.poiIcons = userPoiIcons;
+      }
+
       return existingUser;
     }
 
@@ -149,6 +158,18 @@ export class UserService {
 
   async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById({ _id: id });
+  }
+
+  async fetchByIdWithAssets(id: string): Promise<UserDocument> {
+    const user = await this.userModel.findById({ _id: id });
+
+    const userPoiIcons = await this.fetchUserPoiIcons(user.email);
+
+    if (userPoiIcons.length > 0) {
+      user.poiIcons = userPoiIcons;
+    }
+
+    return user;
   }
 
   async incrementExecutedRequestCount(user: UserDocument): Promise<void> {
@@ -361,5 +382,39 @@ export class UserService {
     }
 
     return user;
+  }
+
+  private async fetchUserPoiIcons(
+    userEmail: string,
+  ): Promise<IApiUserPoiIcon[]> {
+    const dirPath = joinPath(
+      process.cwd(),
+      `../shared/assets/${userEmail}/icons/pois`,
+    );
+
+    let dirContent;
+
+    try {
+      dirContent = await readdir(dirPath, {
+        withFileTypes: true,
+      });
+    } catch {
+      dirContent = [];
+    }
+
+    return Promise.all(
+      dirContent.map(async ({ name: filename }) => {
+        const name = filename.split('.');
+        const type = name.pop();
+        const file = await readFile(joinPath(dirPath, filename), {
+          encoding: 'base64',
+        });
+
+        return {
+          name: name.join('.'),
+          file: `data:${getImageTypeFromFileType(type)};base64,${file}`,
+        } as IApiUserPoiIcon;
+      }),
+    );
   }
 }

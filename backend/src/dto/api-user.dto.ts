@@ -11,7 +11,7 @@ import {
 } from 'class-validator';
 import { Type, Transform, Expose, Exclude } from 'class-transformer';
 
-import { ApiUser } from '@area-butler-types/types';
+import { ApiUser, IApiUserPoiIcon } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
 import ApiUserSubscriptionDto from './api-user-subscription.dto';
@@ -19,10 +19,12 @@ import MapBoxStyleDto from './map-box-style.dto';
 import { mapSubscriptionToApiSubscription } from '../user/mapper/subscription.mapper';
 import { retrieveTotalRequestContingent } from '../user/schema/user.schema';
 import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
+import ApiUserPoiIconDto from './api-user-poi-icon.dto';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
   @Expose()
+  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MapBoxStyleDto)
@@ -125,6 +127,13 @@ class ApiUserDto implements ApiUser {
     { toClassOnly: true },
   )
   parentSettings?: ApiUserParentSettingsDto;
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ApiUserPoiIconDto)
+  poiIcons?: IApiUserPoiIcon[];
 }
 
 export default ApiUserDto;
