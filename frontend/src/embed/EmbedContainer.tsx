@@ -5,6 +5,7 @@ import "./EmbedContainer.scss";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  IApiUserPoiIcon,
 } from "../../../shared/types/types";
 import {
   SearchContext,
@@ -44,6 +45,7 @@ const EmbedContainer: FunctionComponent = () => {
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [searchConfig, setSearchConfig] =
     useState<ApiSearchResultSnapshotConfig>();
+  const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcon[]>([]);
 
   const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1);
@@ -87,8 +89,10 @@ const EmbedContainer: FunctionComponent = () => {
         setMapBoxToken(response.mapboxToken);
         setResult(response);
         setSearchConfig(config);
+        setUserPoiIcons(response.userPoiIcons || []);
       } catch (e: any) {
         const { statusCode, message } = e.response.data;
+
         setIsAddressExpired(
           statusCode === 402 &&
             [addressExpiredMessage, subscriptionExpiredMessage].includes(
@@ -99,7 +103,13 @@ const EmbedContainer: FunctionComponent = () => {
     };
 
     void fetchData();
-  }, [setMapBoxToken, searchContextDispatch]);
+  }, [
+    setMapBoxToken,
+    setResult,
+    setSearchConfig,
+    setUserPoiIcons,
+    searchContextDispatch,
+  ]);
 
   useEffect(() => {
     if (result && searchConfig) {
@@ -213,6 +223,7 @@ const EmbedContainer: FunctionComponent = () => {
       location={searchContextState.mapCenter ?? searchContextState.location!}
       embedMode={true}
       isTrial={!!result?.isTrial}
+      userPoiIcons={userPoiIcons}
     />
   );
 };

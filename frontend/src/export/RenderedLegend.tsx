@@ -13,27 +13,41 @@ export const getRenderedLegend = async (
   legend: ILegendItem[]
 ): Promise<IRenderedLegendItem[]> =>
   Promise.all(
-    legend.map(async ({ title, icon: { icon, color } }) => {
+    legend.map(async ({ title, icon: { icon, color, isCustom } }) => {
       // Appropriate icon element styles must match the "Legend.scss" file
+      // Inline styles are not applied
       const renderedIcon = renderToStaticMarkup(
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "36px",
-            height: "36px",
-            borderRadius: "50%",
-            marginRight: "0.5rem",
-            background: color,
-          }}
-        >
-          <img
-            style={{ filter: "brightness(0) invert(1)" }}
-            src={icon}
-            alt="group-icon"
-          />
-        </div>
+        isCustom ? (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "36px",
+              height: "36px",
+            }}
+          >
+            <img src={icon} alt="group-icon" />
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              width: "36px",
+              height: "36px",
+              borderRadius: "50%",
+              background: color,
+            }}
+          >
+            <img
+              style={{ filter: "brightness(0) invert(1)" }}
+              src={icon}
+              alt="group-icon"
+            />
+          </div>
+        )
       );
 
       const iconElement = document.createElement("div");

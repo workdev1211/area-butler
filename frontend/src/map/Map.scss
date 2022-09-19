@@ -1,111 +1,120 @@
 .leaflet-container {
-    height: 100%;
+  height: 100%;
 }
 
 .leaflet-control-zoom {
-    margin-bottom: 18px !important;
+  margin-bottom: 18px !important;
 }
 
 .leaflet-control-attribution {
-    font-size: 10px;
+  font-size: 10px;
 }
 
 .cluster-icon {
-    width: 120px !important;
-    height: auto !important;
-    background: rgba(255,255,255,0.9);
-    border-radius: 50%;
-    padding: 6px;
-    aspect-ratio: 1 !important;
-    display: flex !important;
-    justify-content: center;
-    align-items: center;
+  width: 120px !important;
+  height: auto !important;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 50%;
+  padding: 6px;
+  aspect-ratio: 1 !important;
+  display: flex !important;
+  justify-content: center;
+  align-items: center;
 }
 
 .cluster-icon-wrapper {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    justify-content: center;
-    align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+  align-items: center;
 }
+
 .cluster-icon-wrapper .locality-marker-wrapper {
-    background: none !important;
+  background: none !important;
 }
 
 .leaflet-popup-content {
-    min-width: 250px;
+  min-width: 250px;
 }
 
-
 .locality-marker-wrapper {
-    display: flex !important;
-    border-radius: 100%;
-    padding: 2px;
-    height: 32px !important;
-    width: 32px !important;
-    @apply bg-white justify-center items-center;
-    &.locality-marker-wrapper-custom {
-        @apply bg-transparent;
-    }
+  display: flex !important;
+  border-radius: 100%;
+  padding: 2px;
+  height: 32px !important;
+  width: 32px !important;
+  @apply bg-white justify-center items-center;
+
+  &.locality-marker-wrapper-custom {
+    @apply bg-transparent;
+  }
 }
 
 .leaflet-container.no-group {
+  .locality-marker-wrapper {
+    height: 22px !important;
+    width: 22px !important;
+    padding: 1px;
+  }
+
+  &.small-markers {
     .locality-marker-wrapper {
-        height: 22px !important;
-        width: 22px !important;
-        padding: 1px;
+      height: 16px !important;
+      width: 16px !important;
+      padding: 1px;
     }
-    &.small-markers {
-        .locality-marker-wrapper {
-            height: 16px !important;
-            width: 16px !important;
-            padding: 1px;
-        }
-    }
+  }
 }
 
 .locality-marker {
-    display: flex;
-    padding: 4px;
-    border-radius: 100%;
-    border: 0.1rem solid rgba(0,0,0,0.2);
-    @apply justify-center items-center h-full w-full;
+  display: flex;
+  padding: 4px;
+  border-radius: 100%;
+  border: 0.1rem solid rgba(0, 0, 0, 0.2);
+  @apply justify-center items-center h-full w-full;
 }
 
 .locality-icon {
-    width: 16px !important;
-    height: 16px !important;
+  width: 16px !important;
+  height: 16px !important;
 }
+
 .locality-icon-custom {
-    width: 46px !important;
-    height: auto;
+  width: 46px !important;
+  height: auto;
 }
 
 .real-estate-cta {
-    color: var(--primary) !important;
-    border-color: var(--primary) !important;
-    @apply btn bg-white hover:bg-white;
+  color: var(--primary) !important;
+  border-color: var(--primary) !important;
+  @apply btn bg-white hover:bg-white;
 }
 
-.fullscreen nav, .fullscreen .default-layout-header, .fullscreen .action-bottom, .fullscreen #footer {
-    display: none;
+.fullscreen nav,
+.fullscreen .default-layout-header,
+.fullscreen .action-bottom,
+.fullscreen #footer {
+  display: none;
 }
-.fullscreen .default-layout, .fullscreen .default-layout-content, .fullscreen .search-result-container {
-    width: 100vw;
-    max-width: 100vw;
-    height: 100vh;
-    max-height: 100vh;
+
+.fullscreen .default-layout,
+.fullscreen .default-layout-content,
+.fullscreen .search-result-container {
+  width: 100vw;
+  max-width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
 }
 
 .leaflet-left {
-    bottom: 20px !important;
+  bottom: 20px !important;
 }
 
 @media (min-width: 1024px) {
-    .leaflet-container-KF {
-        .leaflet-left {
-            left: 10% !important;
-        }
+  .leaflet-container-KF {
+    .leaflet-left {
+      left: 10% !important;
     }
+  }
 }

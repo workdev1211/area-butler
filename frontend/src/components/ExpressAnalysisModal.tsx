@@ -346,6 +346,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               isTrial={
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
               }
+              userPoiIcons={user?.poiIcons}
             />
             <img
               src={closeIcon}

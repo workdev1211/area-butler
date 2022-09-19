@@ -11,6 +11,7 @@ import {
   ApiOsmEntityCategory,
   ApiSearchResultSnapshotConfig,
   ApiUser,
+  IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
 } from "../../../../shared/types/types";
@@ -37,28 +38,7 @@ import {
   EntityTransitRoute,
 } from "../../../../shared/types/routing";
 import MapMenuListItem from "./menu-item/MapMenuListItem";
-
-export interface MapMenuProps {
-  censusData?: CensusData[];
-  federalElectionData?: FederalElectionDistrict;
-  groupedEntries: EntityGroup[];
-  toggleAllLocalities: () => void;
-  particlePollutionData?: ApiGeojsonFeature[];
-  clippings: MapClipping[];
-  mobileMenuOpen: boolean;
-  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
-  routes: EntityRoute[];
-  toggleTransitRoute: (item: ResultEntity) => void;
-  transitRoutes: EntityTransitRoute[];
-  searchAddress: string;
-  resetPosition: () => void;
-  user?: ApiUser;
-  openUpgradeSubscriptionModal?: (message: ReactNode) => void;
-  showInsights?: boolean;
-  config?: ApiSearchResultSnapshotConfig;
-  isShownPreferredLocationsModal: boolean;
-  togglePreferredLocationsModal: (isShown: boolean) => void;
-}
+import { IPoiIcon } from "../../shared/shared.types";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -91,6 +71,29 @@ const federalElectionNotInSubscriptionPlanMessage = (
   </div>
 );
 
+export interface MapMenuProps {
+  censusData?: CensusData[];
+  federalElectionData?: FederalElectionDistrict;
+  groupedEntries: EntityGroup[];
+  toggleAllLocalities: () => void;
+  particlePollutionData?: ApiGeojsonFeature[];
+  clippings: MapClipping[];
+  mobileMenuOpen: boolean;
+  toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
+  routes: EntityRoute[];
+  toggleTransitRoute: (item: ResultEntity) => void;
+  transitRoutes: EntityTransitRoute[];
+  searchAddress: string;
+  resetPosition: () => void;
+  user?: ApiUser;
+  openUpgradeSubscriptionModal?: (message: ReactNode) => void;
+  showInsights?: boolean;
+  config?: ApiSearchResultSnapshotConfig;
+  isShownPreferredLocationsModal: boolean;
+  togglePreferredLocationsModal: (isShown: boolean) => void;
+  userPoiIcons?: IApiUserPoiIcon[];
+}
+
 const MapMenu: FunctionComponent<MapMenuProps> = ({
   censusData,
   federalElectionData,
@@ -111,6 +114,7 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
   config,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
+  userPoiIcons,
 }) => {
   const [viewOptionsOpen, setViewOptionsOpen] = useState(true);
   const [mapClippingsOpen, setMapClippingsOpen] = useState(false);
@@ -148,6 +152,7 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
             mobileMenuOpen={false}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={togglePreferredLocationsModal}
+            userPoiIcons={userPoiIcons}
           />
         );
       default:
@@ -327,22 +332,30 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
               .map((ge, geIndex) => {
                 const isRealEstateListing =
                   ge.items[0].label === realEstateListingsTitle;
+
                 const isPreferredLocation =
                   ge.items[0].label === preferredLocationsTitle;
-                const groupIconInfo = isRealEstateListing
+
+                const groupIconInfo: IPoiIcon = isRealEstateListing
                   ? !!config?.mapIcon
                     ? { icon: config.mapIcon, color: "transparent" }
                     : realEstateListingsIcon
                   : isPreferredLocation
                   ? preferredLocationsIcon
-                  : deriveIconForOsmName(ge.items[0].type as OsmName);
+                  : deriveIconForOsmName(
+                      ge.items[0].type as OsmName,
+                      userPoiIcons
+                    );
 
                 return (
                   <MapMenuListItem
                     entityGroup={ge}
                     groupIcon={groupIconInfo}
                     entityGroupIndex={geIndex}
-                    customIcon={isRealEstateListing && !!config?.mapIcon}
+                    isCustomIcon={
+                      (isRealEstateListing && !!config?.mapIcon) ||
+                      groupIconInfo.isCustom
+                    }
                     routes={routes}
                     toggleRoute={toggleRoute}
                     transitRoutes={transitRoutes}
@@ -384,17 +397,24 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                       .map((ge, geIndex) => {
                         const isRealEstateListing =
                           ge.items[0].label === realEstateListingsTitle;
+
                         const isPreferredLocation =
                           ge.items[0].label === preferredLocationsTitle;
-                        const groupIconInfo = isRealEstateListing
+
+                        const groupIconInfo: IPoiIcon = isRealEstateListing
                           ? realEstateListingsIcon
                           : isPreferredLocation
                           ? preferredLocationsIcon
-                          : deriveIconForOsmName(ge.items[0].type as OsmName);
+                          : deriveIconForOsmName(
+                              ge.items[0].type as OsmName,
+                              userPoiIcons
+                            );
+
                         return (
                           <MapMenuListItem
                             entityGroup={ge}
                             groupIcon={groupIconInfo}
+                            isCustomIcon={groupIconInfo.isCustom}
                             entityGroupIndex={geIndex}
                             config={config}
                             routes={routes}

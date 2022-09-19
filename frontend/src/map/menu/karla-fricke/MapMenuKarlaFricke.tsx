@@ -9,7 +9,7 @@ import {
   realEstateListingsIcon,
   realEstateListingsTitle,
 } from "../../../shared/shared.functions";
-import { OsmName } from "../../../../../shared/types/types";
+import { IApiUserPoiIcon, OsmName } from "../../../../../shared/types/types";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -20,6 +20,7 @@ export interface MapMenuKarlaFrickeProps {
   mobileMenuOpen: boolean;
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
+  userPoiIcons?: IApiUserPoiIcon[];
 }
 
 const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
@@ -27,6 +28,7 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
   groupedEntries,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
+  userPoiIcons,
 }) => {
   interface ListItemProps {
     group: EntityGroup;
@@ -49,12 +51,14 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
       ? realEstateListingsIcon
       : isPreferredLocation
       ? preferredLocationsIcon
-      : deriveIconForOsmName(group.items[0].type as OsmName);
+      : deriveIconForOsmName(group.items[0].type as OsmName, userPoiIcons);
 
     return (
       <li
         onClick={() => {
-          togglePreferredLocationsModal(isPreferredLocation ? !isShownPreferredLocationsModal : false);
+          togglePreferredLocationsModal(
+            isPreferredLocation ? !isShownPreferredLocationsModal : false
+          );
 
           searchContextDispatch({
             type: SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP,

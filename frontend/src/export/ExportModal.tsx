@@ -92,7 +92,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
         if (foundOsmEntityType) {
           result.push({
             title,
-            icon: deriveIconForOsmName(foundOsmEntityType.name),
+            icon: deriveIconForOsmName(foundOsmEntityType.name, user?.poiIcons),
           });
         }
 

@@ -36,6 +36,7 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
@@ -70,8 +71,9 @@ import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { mapBoxMapIds } from "../shared/shared.constants";
+import { IPoiIcon } from "../shared/shared.types";
 
-class IdMarker extends L.Marker {
+export class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
   hideEntityFunction?: (entity: ResultEntity) => void;
@@ -306,6 +308,7 @@ interface MapProps {
   gotoMapCenter: IGotoMapCenter | undefined;
   setGotoMapCenter: (data: IGotoMapCenter | undefined) => void;
   isTrial: boolean;
+  userPoiIcons?: IApiUserPoiIcon[];
 }
 
 interface MapMemoProps extends MapProps {
@@ -340,6 +343,9 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     JSON.stringify(prevProps.gotoMapCenter) ===
     JSON.stringify(nextProps.gotoMapCenter);
   const isTrialEqual = prevProps.isTrial === nextProps.isTrial;
+  const userPoiIconsEqual =
+    JSON.stringify(prevProps.userPoiIcons) ===
+    JSON.stringify(nextProps.userPoiIcons);
 
   return (
     mapboxKeyEqual &&
@@ -355,7 +361,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     mapboxMapIdEqual &&
     hideIsochronesEqual &&
     gotoMapCenterEqual &&
-    isTrialEqual
+    isTrialEqual &&
+    userPoiIconsEqual
   );
 };
 
@@ -392,6 +399,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       gotoMapCenter,
       setGotoMapCenter,
       isTrial,
+      userPoiIcons,
     },
     parentMapRef
   ) => {
@@ -993,7 +1001,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             const isRealEstateListing = entity.type === "property";
             const isPreferredLocation = entity.type === "favorite";
 
-            const markerIcon = isRealEstateListing
+            const markerIcon: IPoiIcon = isRealEstateListing
               ? config?.mapIcon
                 ? {
                     icon: config?.mapIcon,
@@ -1002,7 +1010,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 : realEstateListingsIcon
               : isPreferredLocation
               ? preferredLocationsIcon
-              : deriveIconForOsmName(entity.type as OsmName);
+              : deriveIconForOsmName(entity.type as OsmName, userPoiIcons);
 
             const iconStyle = config?.mapIcon
               ? `height: 32px; width: auto !important;`
@@ -1016,14 +1024,14 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 ? customMyLocationIconSize
                 : myLocationIconSize,
               className: `locality-marker-wrapper ${
-                isRealEstateListing && config?.mapIcon
+                (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
                   ? "locality-marker-wrapper-custom"
                   : ""
               } icon-${entity.type}`,
               html:
-                config?.mapIcon && isRealEstateListing
-                  ? `<img src="${markerIcon.icon}" alt="marker-icon-real-estate-custom" class="${entity.type} locality-icon-custom" style="${iconStyle}" />`
-                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon-real-estate" class="${entity.type} locality-icon" /></div>`,
+                (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
+                  ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.type} locality-icon-custom" style="${iconStyle}" />`
+                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
             });
 
             const hideEntityFunction = editorMode ? hideEntity : undefined;

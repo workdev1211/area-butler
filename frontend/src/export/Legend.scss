@@ -8,11 +8,14 @@
     .img-container {
       width: 36px;
       height: 36px;
-      border-radius: 50%;
       @apply flex items-center justify-center mr-2;
 
-      img {
-        filter: brightness(0) invert(1);
+      &.default {
+        border-radius: 50%;
+
+        img {
+          filter: brightness(0) invert(1);
+        }
       }
     }
   }

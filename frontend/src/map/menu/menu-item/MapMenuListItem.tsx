@@ -22,11 +22,12 @@ import {
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
 import CategoryContent from "./CategoryContent";
+import { IPoiIcon } from "../../../shared/shared.types";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;
-  groupIcon: any;
-  customIcon?: boolean;
+  groupIcon: IPoiIcon;
+  isCustomIcon?: boolean;
   entityGroupIndex: number;
   routes: EntityRoute[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
@@ -38,7 +39,7 @@ export interface MapMenuListItemProps {
 const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   entityGroup,
   groupIcon,
-  customIcon,
+  isCustomIcon,
   entityGroupIndex,
   routes,
   toggleRoute,
@@ -48,7 +49,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
 }) => {
   const [isListOpen, setIsListOpen] = useState(false);
   const { searchContextDispatch } = useContext(SearchContext);
-  const imgClass = !customIcon ? "item" : "";
+  const imgClass = !isCustomIcon ? "item" : "";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
     ? "checkbox checkbox-custom checkbox-sm"

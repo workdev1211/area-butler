@@ -13,6 +13,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   ApiUser,
+  IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
@@ -43,6 +44,7 @@ import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { groupBy } from "../../../shared/functions/shared.functions";
+import { IPoiIcon } from "./shared.types";
 
 const tinyColor = require("tinycolor2");
 
@@ -210,8 +212,15 @@ export const deriveColorPalette = (hexColor: string): ColorPalette => {
 };
 
 export const deriveIconForOsmName = (
-  osmName: OsmName
-): { icon: string; color: string } => {
+  osmName: OsmName,
+  userPoiIcons?: IApiUserPoiIcon[]
+): IPoiIcon => {
+  const customIcon = userPoiIcons?.find(({ name }) => name === osmName)?.file;
+
+  if (customIcon) {
+    return { icon: customIcon, color: "transparent", isCustom: true };
+  }
+
   switch (osmName) {
     case OsmName.fuel:
       return {

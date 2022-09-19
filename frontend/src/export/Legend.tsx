@@ -1,10 +1,11 @@
 import { FunctionComponent } from "react";
 
 import "./Legend.scss";
+import { IPoiIcon } from "../shared/shared.types";
 
 export interface ILegendItem {
   title: string;
-  icon: { icon: string; color: string };
+  icon: IPoiIcon;
 }
 
 export interface LegendProps {
@@ -14,15 +15,15 @@ export interface LegendProps {
 export const Legend: FunctionComponent<LegendProps> = ({ legend }) => {
   return (
     <div className="legend-container">
-      {legend.map((legendItem) => (
-        <div className="legend-item" key={`legend-item-${legendItem.title}`}>
+      {legend.map(({ title, icon: { icon, color, isCustom } }) => (
+        <div className="legend-item" key={`legend-item-${title}`}>
           <div
-            className="img-container"
-            style={{ background: legendItem.icon.color }}
+            className={`img-container ${isCustom ? "" : "default"}`}
+            style={{ background: color }}
           >
-            <img src={legendItem.icon.icon} alt="group-icon" />
+            <img src={icon} alt="group-icon" />
           </div>
-          {legendItem.title}
+          {title}
         </div>
       ))}
     </div>

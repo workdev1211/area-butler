@@ -27,6 +27,7 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiUser,
+  IApiUserPoiIcon,
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import {
@@ -101,6 +102,7 @@ export interface SearchResultContainerProps {
   editorMode?: boolean;
   onPoiAdd?: (poi: Poi) => void;
   isTrial: boolean;
+  userPoiIcons?: IApiUserPoiIcon[];
 }
 
 const SearchResultContainer = forwardRef<
@@ -121,6 +123,7 @@ const SearchResultContainer = forwardRef<
       editorMode = false,
       onPoiAdd,
       isTrial,
+      userPoiIcons = user?.poiIcons,
     },
     parentMapRef
   ) => {
@@ -586,6 +589,7 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               isTrial={isTrial}
+              userPoiIcons={userPoiIcons}
               ref={mapRef}
             />
           </div>
@@ -630,6 +634,7 @@ const SearchResultContainer = forwardRef<
               });
             }}
             user={user}
+            userPoiIcons={userPoiIcons}
             openUpgradeSubscriptionModal={(message) => {
               userDispatch({
                 type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
