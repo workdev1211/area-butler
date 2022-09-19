@@ -4,9 +4,9 @@ import { EntityGroup } from "../../../components/SearchResultContainer";
 import "./MapMenuKarlaFricke.scss";
 import {
   deriveIconForOsmName,
-  preferredLocationsIcon,
+  getPreferredLocationsIcon,
   preferredLocationsTitle,
-  realEstateListingsIcon,
+  getRealEstateListingsIcon,
   realEstateListingsTitle,
 } from "../../../shared/shared.functions";
 import { IApiUserPoiIcon, OsmName } from "../../../../../shared/types/types";
@@ -48,9 +48,9 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
       group.items[0].label === preferredLocationsTitle;
 
     const groupIconInfo = isRealEstateListing
-      ? realEstateListingsIcon
+      ? getRealEstateListingsIcon(userPoiIcons)
       : isPreferredLocation
-      ? preferredLocationsIcon
+      ? getPreferredLocationsIcon(userPoiIcons)
       : deriveIconForOsmName(group.items[0].type as OsmName, userPoiIcons);
 
     return (

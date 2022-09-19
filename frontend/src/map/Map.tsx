@@ -61,8 +61,8 @@ import {
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
   deriveMinutesFromMeters,
-  preferredLocationsIcon,
-  realEstateListingsIcon,
+  getPreferredLocationsIcon,
+  getRealEstateListingsIcon,
   realEstateListingsTitle,
   timeToHumanReadable,
   toastSuccess,
@@ -1005,11 +1005,12 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
               ? config?.mapIcon
                 ? {
                     icon: config?.mapIcon,
-                    color: config.primaryColor ?? realEstateListingsIcon.color,
+                    color:
+                      config.primaryColor ?? getRealEstateListingsIcon().color,
                   }
-                : realEstateListingsIcon
+                : getRealEstateListingsIcon(userPoiIcons)
               : isPreferredLocation
-              ? preferredLocationsIcon
+              ? getPreferredLocationsIcon(userPoiIcons)
               : deriveIconForOsmName(entity.type as OsmName, userPoiIcons);
 
             const iconStyle = config?.mapIcon

@@ -17,9 +17,9 @@ import {
 } from "../../../../shared/types/types";
 import {
   deriveIconForOsmName,
-  preferredLocationsIcon,
+  getPreferredLocationsIcon,
   preferredLocationsTitle,
-  realEstateListingsIcon,
+  getRealEstateListingsIcon,
   realEstateListingsTitle,
 } from "../../shared/shared.functions";
 import { ApiDataSource } from "../../../../shared/types/subscription-plan";
@@ -339,9 +339,9 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                 const groupIconInfo: IPoiIcon = isRealEstateListing
                   ? !!config?.mapIcon
                     ? { icon: config.mapIcon, color: "transparent" }
-                    : realEstateListingsIcon
+                    : getRealEstateListingsIcon(userPoiIcons)
                   : isPreferredLocation
-                  ? preferredLocationsIcon
+                  ? getPreferredLocationsIcon(userPoiIcons)
                   : deriveIconForOsmName(
                       ge.items[0].type as OsmName,
                       userPoiIcons
@@ -402,9 +402,9 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                           ge.items[0].label === preferredLocationsTitle;
 
                         const groupIconInfo: IPoiIcon = isRealEstateListing
-                          ? realEstateListingsIcon
+                          ? getRealEstateListingsIcon(userPoiIcons)
                           : isPreferredLocation
-                          ? preferredLocationsIcon
+                          ? getPreferredLocationsIcon(userPoiIcons)
                           : deriveIconForOsmName(
                               ge.items[0].type as OsmName,
                               userPoiIcons

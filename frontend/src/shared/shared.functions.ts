@@ -185,16 +185,32 @@ export const toastError = (
   });
 };
 
+// TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method
 export const preferredLocationsTitle = "Wichtige Adressen";
-export const preferredLocationsIcon = {
-  icon: preferredLocationIcon,
-  color: "#c91444",
+export const getPreferredLocationsIcon = (
+  userPoiIcons?: IApiUserPoiIcon[]
+): IPoiIcon => {
+  const customIcon = userPoiIcons?.find(
+    ({ name }) => name === OsmName.favorite
+  )?.file;
+
+  return customIcon
+    ? { icon: customIcon, color: "transparent", isCustom: true }
+    : { icon: preferredLocationIcon, color: "#c91444" };
 };
+
 export const realEstateListingsTitle = "Meine Objekte";
 export const realEstateListingsTitleEmbed = "Weitere Objekte";
-export const realEstateListingsIcon = {
-  icon: realEstateListingIcon,
-  color: "#c91444",
+export const getRealEstateListingsIcon = (
+  userPoiIcons?: IApiUserPoiIcon[]
+): IPoiIcon => {
+  const customIcon = userPoiIcons?.find(
+    ({ name }) => name === OsmName.property
+  )?.file;
+
+  return customIcon
+    ? { icon: customIcon, color: "transparent", isCustom: true }
+    : { icon: realEstateListingIcon, color: "#c91444" };
 };
 
 export const deriveColorPalette = (hexColor: string): ColorPalette => {
