@@ -1,29 +1,45 @@
 import {
-  Header, ImageRun, Paragraph, Table, TableCell, TableRow, WidthType, AlignmentType, BorderStyle
+  Header,
+  ImageRun,
+  Paragraph,
+  Table,
+  TableCell,
+  TableRow,
+  WidthType,
+  AlignmentType,
+  BorderStyle,
 } from "docx";
 
-export const createHeader = (imageData: string | Blob ) => {
+export const createHeader = (imageData: string, imageRatio = 1) => {
+  const height = 100;
+
   return {
     default: new Header({
       children: [
         new Table({
           width: {
             size: 100,
-            type: WidthType.PERCENTAGE
+            type: WidthType.PERCENTAGE,
           },
           borders: {
             top: {
-              style: BorderStyle.NONE
+              style: BorderStyle.NONE,
             },
             bottom: {
-              style: BorderStyle.NONE
+              style: BorderStyle.NONE,
             },
             left: {
-              style: BorderStyle.NONE
+              style: BorderStyle.NONE,
             },
             right: {
-              style: BorderStyle.NONE
-            }
+              style: BorderStyle.NONE,
+            },
+            insideHorizontal: {
+              style: BorderStyle.NONE,
+            },
+            insideVertical: {
+              style: BorderStyle.NONE,
+            },
           },
           rows: [
             new TableRow({
@@ -34,12 +50,12 @@ export const createHeader = (imageData: string | Blob ) => {
                       alignment: AlignmentType.RIGHT,
                       children: [
                         new ImageRun({
-                          data: typeof imageData === 'string' ?  Uint8Array.from(atob(imageData), (c) =>
+                          data: Uint8Array.from(atob(imageData), (c) =>
                             c.charCodeAt(0)
-                          ) : imageData as any as Buffer,
+                          ),
                           transformation: {
-                            width: 300,
-                            height: 100,
+                            width: height * imageRatio,
+                            height,
                           },
                         }),
                       ],

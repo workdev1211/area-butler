@@ -2,17 +2,21 @@ import { FunctionComponent } from "react";
 
 import { SelectedMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
+import { QrCode } from "./QrCode";
+import { IQrCodeState } from "./ExportModal";
 
 export interface MapClippingsProps {
   mapClippings: SelectedMapClipping[];
   logo?: string;
   nextPageNumber?: () => string;
+  qrCode: IQrCodeState;
 }
 
 export const MapClippings: FunctionComponent<MapClippingsProps> = ({
   mapClippings,
   logo,
   nextPageNumber = () => "01",
+  qrCode,
 }) => {
   const imageSize = {
     width: "auto",
@@ -43,6 +47,11 @@ export const MapClippings: FunctionComponent<MapClippingsProps> = ({
           logo={logo}
           title="Kartenausschnitte"
           key={pairIndex}
+          leftHeaderElement={
+            qrCode.isShownQrCode && (
+              <QrCode snapshotToken={qrCode.snapshotToken} />
+            )
+          }
         >
           <div className="m-10 flex flex-col gap-12" id="expose-map-clippings">
             {pairs.map((clipping, clippingIndex) => (

@@ -592,6 +592,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           entities={resultingEntities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
+          snapshotToken={searchContextState.responseToken}
         />
       )}
       {searchContextState.printingDocxActive && (
@@ -600,6 +601,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           entities={resultingEntities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
+          snapshotToken={searchContextState.responseToken}
           exportType="EXPOSE_DOCX"
         />
       )}
@@ -609,6 +611,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           entities={resultingEntities}
           groupedEntries={groupedEntities}
           censusData={searchContextState.censusData!}
+          snapshotToken={searchContextState.responseToken}
           exportType="CHEATSHEET"
         />
       )}

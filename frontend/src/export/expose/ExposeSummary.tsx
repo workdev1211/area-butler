@@ -1,4 +1,4 @@
-import {FunctionComponent} from "react";
+import { FunctionComponent } from "react";
 
 import EntityGridSummary from "export/EntityGridSummary";
 import { deriveColorPalette } from "shared/shared.functions";
@@ -18,6 +18,8 @@ import {
 import "./ExposeSummary.scss";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
+import { QrCode } from "../QrCode";
+import { IQrCodeState } from "../ExportModal";
 
 export interface ExposeSummaryProps {
   groupedEntries: EntityGroup[];
@@ -26,6 +28,7 @@ export interface ExposeSummaryProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   primaryColor: string;
+  qrCode: IQrCodeState;
 }
 
 const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
@@ -35,6 +38,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
   transportationParams,
   activeMeans,
   primaryColor,
+  qrCode,
 }) => {
   const colorPalette = deriveColorPalette(primaryColor);
 
@@ -45,16 +49,56 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
 
   return (
     <>
-      <div className="p-10">
-        <h1 className="headline mb-5">Hallo !</h1>
-        <div className="flex gap-6">
-          <p>
-            Wir freuen uns sehr, Ihnen Ihre persönliche Umgebungs-analyse
-            präsentieren zu dürfen. Auf Basis Ihrer Bedürfnisse konnten wir ein
-            passendes Objekt in unserem Bestand auswählen, das perfekt auf Ihre
-            Kriterien abgestimmt ist.
-          </p>
-          <div className="flex flex-col gap-2 flex-1">
+      <div className={`px-10 pt-10 ${qrCode.isShownQrCode ? "pb-5" : "pb-10"}`}>
+        <div
+          className={`flex gap-6 ${!qrCode.isShownQrCode && "items-center"}`}
+        >
+          {/* Column 1 */}
+          <div className="flex flex-col gap-5">
+            <div>
+              <h1 className="headline">Hallo !</h1>
+              <p className="text-justify mt-5">
+                Wir freuen uns sehr, Ihnen Ihre persönliche Umgebungs-analyse
+                präsentieren zu dürfen. Auf Basis Ihrer Bedürfnisse konnten wir
+                ein passendes Objekt in unserem Bestand auswählen, das perfekt
+                auf Ihre Kriterien abgestimmt ist.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-xl w-96 font-bold">
+                Ihre Mobilitätskriterien
+              </h3>
+              <div className="flex gap-2">
+                {transportationParams.map(
+                  (routingProfile: TransportationParam) => (
+                    <div
+                      className="mobility-type"
+                      style={mobilityTypeStyle}
+                      key={routingProfile.type}
+                    >
+                      <span>
+                        {
+                          meansOfTransportations.find(
+                            (means) => means.type === routingProfile.type
+                          )?.label
+                        }{" "}
+                        ({routingProfile.amount}{" "}
+                        {
+                          unitsOfTransportation.find(
+                            (unit) => unit.type === routingProfile.unit
+                          )?.label
+                        }
+                        )
+                      </span>
+                    </div>
+                  )
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Column 2 */}
+          <div className="flex flex-col gap-2">
             {!realEstateListing && (
               <>
                 <h3 className="text-xl w-96 font-bold">Ihr Umfeld</h3>
@@ -67,7 +111,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                 <div className="font-bold">{realEstateListing.address}</div>
 
                 {realEstateListing?.costStructure && (
-                  <div>
+                  <div className="text-justify">
                     <strong>Kosten:</strong>{" "}
                     {getRealEstateCost(realEstateListing?.costStructure)} (
                     {
@@ -79,7 +123,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                   </div>
                 )}
                 {realEstateListing.characteristics?.furnishing && (
-                  <div>
+                  <div className="text-justify">
                     <strong>Ausstattung:</strong>{" "}
                     {allFurnishing
                       .filter((f) =>
@@ -93,33 +137,13 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                 )}
               </>
             )}
-          </div>
-        </div>
-        <div className="mt-3">
-          <h3 className="text-xl w-96 font-bold">Ihre Mobilitätskriterien</h3>
-          <div className="flex gap-2">
-            {transportationParams.map((routingProfile: TransportationParam) => (
-              <div
-                className="mobility-type"
-                style={mobilityTypeStyle}
-                key={routingProfile.type}
-              >
-                <span>
-                  {
-                    meansOfTransportations.find(
-                      (means) => means.type === routingProfile.type
-                    )?.label
-                  }{" "}
-                  ({routingProfile.amount}{" "}
-                  {
-                    unitsOfTransportation.find(
-                      (unit) => unit.type === routingProfile.unit
-                    )?.label
-                  }
-                  )
-                </span>
-              </div>
-            ))}
+            {qrCode.isShownQrCode && (
+              <QrCode
+                snapshotToken={qrCode.snapshotToken}
+                containerClasses="mt-3"
+                imageClasses="h-28"
+              />
+            )}
           </div>
         </div>
       </div>

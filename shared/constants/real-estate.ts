@@ -12,7 +12,7 @@ export const allFurnishing = [
   { label: "Gäste WC", type: ApiFurnishing.GUEST_REST_ROOMS },
   { label: "Fußbodenheizung", type: ApiFurnishing.UNDERFLOOR_HEATING },
   { label: "Einbauküche", type: ApiFurnishing.FITTED_KITCHEN },
-  { label: "Garage/Stellplatz", type: ApiFurnishing.GARAGE_PARKING_SPACE },
+  { label: "Garage / Stellplatz", type: ApiFurnishing.GARAGE_PARKING_SPACE },
   { label: "Barrierefreie", type: ApiFurnishing.ACCESSIBLE },
 ];
 
@@ -28,5 +28,5 @@ export const allRealEstateStatuses: IApiRealEstateStatus[] = [
   { label: "Miete", status: ApiRealEstateStatusEnum.FOR_RENT },
   { label: "Kauf", status: ApiRealEstateStatusEnum.FOR_SALE },
   { label: "Neubau", status: ApiRealEstateStatusEnum.NEW_CONSTRUCTION },
-  { label: "Vermietet/Verkauft", status: ApiRealEstateStatusEnum.RENTED_SOLD },
+  { label: "Vermietet / Verkauft", status: ApiRealEstateStatusEnum.RENTED_SOLD },
 ];

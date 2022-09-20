@@ -19,6 +19,7 @@ import ExposeSummary from "./ExposeSummary";
 import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem, Legend } from "../Legend";
+import { IQrCodeState } from "../ExportModal";
 
 export interface ExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -34,6 +35,7 @@ export interface ExposeProps {
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
+  qrCode: IQrCodeState;
 }
 
 export const Expose = forwardRef(
@@ -82,6 +84,7 @@ export const Expose = forwardRef(
               activeMeans={activeMeans}
               listingAddress={props.listingAddress}
               primaryColor={color}
+              qrCode={props.qrCode}
             />
           </PdfPage>
           {importantEntities?.items?.length && (
@@ -106,6 +109,7 @@ export const Expose = forwardRef(
               mapClippings={mapClippings}
               nextPageNumber={nextPageNumber}
               logo={logo}
+              qrCode={props.qrCode}
             />
           )}
           {mapClippings.length > 0 && props.legend.length > 0 && (

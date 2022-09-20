@@ -13,6 +13,7 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
+import { IQrCodeState } from "../ExportModal";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];
@@ -30,6 +31,7 @@ export interface CheatsheetDownloadProps {
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
+  qrCode: IQrCodeState;
 }
 
 export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
@@ -48,6 +50,7 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
   onAfterPrint,
   color,
   legend,
+  qrCode,
 }) => {
   const componentRef = useRef();
 
@@ -103,6 +106,7 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
         user={user}
         color={color}
         legend={legend}
+        qrCode={qrCode}
       />
     </div>
   );

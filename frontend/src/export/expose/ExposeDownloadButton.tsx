@@ -1,4 +1,4 @@
-import { FunctionComponent, useRef, useState, PureComponent } from "react";
+import { FunctionComponent, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 
 import { SelectedMapClipping } from "export/MapClippingSelection";
@@ -13,6 +13,7 @@ import {
 import Expose from "./Expose";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
+import { IQrCodeState } from "../ExportModal";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];
@@ -30,12 +31,7 @@ export interface ExposeDownloadProps {
   onAfterPrint: () => void;
   color?: string;
   legend: ILegendItem[];
-}
-
-export class ComponentToPrint extends PureComponent {
-  render() {
-    return <div>Test</div>;
-  }
+  qrCode: IQrCodeState;
 }
 
 export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
@@ -54,6 +50,7 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
   onAfterPrint,
   color,
   legend,
+  qrCode,
 }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const [activePrinting, setActivePrinting] = useState(false);
@@ -107,6 +104,7 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
         user={user}
         color={color}
         legend={legend}
+        qrCode={qrCode}
       />
     </div>
   );

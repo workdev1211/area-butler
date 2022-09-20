@@ -1,4 +1,9 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import React, {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   MapClipping,
@@ -31,11 +36,17 @@ import { saveAs } from "file-saver";
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 
+export interface IQrCodeState {
+  isShownQrCode: boolean;
+  snapshotToken?: string;
+}
+
 export interface ExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
   censusData?: ApiGeojsonFeature[];
   activeMeans: MeansOfTransportation[];
+  snapshotToken?: string;
   exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX" | "ARCHIVE";
 }
 
@@ -44,6 +55,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   groupedEntries,
   censusData = [],
   activeMeans,
+  snapshotToken,
   exportType = "EXPOSE",
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
@@ -116,6 +128,10 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   );
   const [selectedMapClippings, setSelectedMapClippings] =
     useState<SelectedMapClipping[]>(selectableClippings);
+  const [qrCodeState, setQrCodeState] = useState<IQrCodeState>({
+    snapshotToken,
+    isShownQrCode: true,
+  });
 
   const [showFederalElection, setShowFederalElection] = useState(
     hasFederalElectionInSubscription
@@ -131,24 +147,25 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   }, [filteredEntities]);
 
   useEffect(() => {
-    if (exportType === "ARCHIVE" && searchContextState.printingZipActive) {
-      const downloadZipArchive = async () => {
-        const zip = new JsZip();
-
-        (await getRenderedLegend(legend)).forEach(({ title, icon }) => {
-          zip.file(`icons/${sanitizeFilename(title)}.png`, icon, {
-            base64: true,
-          });
-        });
-
-        const archive = await zip.generateAsync({ type: "blob" });
-        saveAs(archive, "AreaButler-Icons.zip");
-        onClose();
-      };
-
-      downloadZipArchive();
+    if (exportType !== "ARCHIVE" || !searchContextState.printingZipActive) {
+      return;
     }
 
+    const downloadZipArchive = async () => {
+      const zip = new JsZip();
+
+      (await getRenderedLegend(legend)).forEach(({ title, icon }) => {
+        zip.file(`icons/${sanitizeFilename(title)}.png`, icon, {
+          base64: true,
+        });
+      });
+
+      const archive = await zip.generateAsync({ type: "blob" });
+      saveAs(archive, "AreaButler-Icons.zip");
+      onClose();
+    };
+
+    void downloadZipArchive();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exportType, searchContextState.printingZipActive]);
 
@@ -171,6 +188,26 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
             <h1 className="text-xl text-bold">{buttonTitle}</h1>
 
             <div className="overflow-y-scroll flex flex-col h-96">
+              <div className="mt-5">
+                <label
+                  className="cursor-pointer label justify-start gap-3"
+                  key="show-qr-code"
+                >
+                  <input
+                    type="checkbox"
+                    checked={qrCodeState.isShownQrCode}
+                    className="checkbox checkbox-primary"
+                    onChange={() => {
+                      setQrCodeState(
+                        qrCodeState.isShownQrCode
+                          ? { isShownQrCode: false }
+                          : { snapshotToken, isShownQrCode: true }
+                      );
+                    }}
+                  />
+                  <span className="label-text">QR code</span>
+                </label>
+              </div>
               {(hasCensusElectionInSubscription ||
                 hasFederalElectionInSubscription ||
                 hasParticlePollutionElectionInSubscription) && (
@@ -230,6 +267,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                   legend={legend}
+                  qrCode={qrCodeState}
                 />
               )}
 
@@ -258,6 +296,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                   legend={legend}
+                  qrCode={qrCodeState}
                 />
               )}
 
@@ -283,6 +322,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   user={user}
                   color={searchContextState.responseConfig?.primaryColor}
                   legend={legend}
+                  qrCode={qrCodeState}
                 />
               )}
             </div>

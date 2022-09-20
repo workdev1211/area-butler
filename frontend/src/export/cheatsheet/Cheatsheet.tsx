@@ -26,6 +26,8 @@ import {
 } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
+import { QrCode } from "../QrCode";
+import { IQrCodeState } from "../ExportModal";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -42,9 +44,16 @@ export interface CheatsheetProps {
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
+  qrCode: IQrCodeState;
 }
 
 export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
+  const qrCodeElement = props.qrCode.isShownQrCode ? (
+    <QrCode snapshotToken={props.qrCode.snapshotToken} />
+  ) : (
+    <div />
+  );
+
   // TODO change to a single reduce
   const groupedEntries = props.groupedEntries
     .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
@@ -75,6 +84,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
         title="Zusammenfassung"
         logo={logo}
         nextPageNumber={nextPageNumber}
+        leftHeaderElement={qrCodeElement}
       >
         <div className="m-10 flex flex-col gap-2">
           {props.realEstateListing && (
@@ -133,6 +143,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
           mapClippings={mapClippings}
           logo={logo}
           nextPageNumber={nextPageNumber}
+          qrCode={props.qrCode}
         />
       )}
       {mapClippings.length > 0 && props.legend.length > 0 && (
@@ -140,13 +151,19 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
           nextPageNumber={nextPageNumber}
           logo={logo}
           title="Kartenlegende"
+          leftHeaderElement={qrCodeElement}
         >
           <div className="ml-10 mt-3">
             <Legend legend={props.legend} />
           </div>
         </PdfPage>
       )}
-      <PdfPage title="Einblicke" logo={logo} nextPageNumber={nextPageNumber}>
+      <PdfPage
+        title="Einblicke"
+        logo={logo}
+        nextPageNumber={nextPageNumber}
+        leftHeaderElement={qrCodeElement}
+      >
         {censusData && censusData.length > 0 && (
           <>
             <h4 className="mx-10 mt-5 text-xl w-56 font-bold">

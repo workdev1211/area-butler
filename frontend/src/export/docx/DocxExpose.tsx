@@ -5,7 +5,6 @@ import {
   HeadingLevel,
   ImageRun,
   Packer,
-  PageBreak,
   Paragraph,
   Table,
   TableCell,
@@ -17,7 +16,7 @@ import { saveAs } from "file-saver";
 
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { deriveColorPalette } from "shared/shared.functions";
+import {  deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
@@ -41,6 +40,8 @@ import { EntityGroup } from "../../components/SearchResultContainer";
 import { base64PrefixRegex } from "../../shared/shared.constants";
 import { getRenderedLegend } from "../RenderedLegend";
 import { ILegendItem } from "../Legend";
+import { IQrCodeState } from "../ExportModal";
+import { createQrCodeHeader } from "./creator/qr-code-header.creator";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -55,6 +56,7 @@ export interface DocxExposeProps {
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
+  qrCode: IQrCodeState;
 }
 
 const DocxExpose: FunctionComponent<DocxExposeProps> = ({
@@ -70,6 +72,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   listingAddress,
   color,
   legend,
+  qrCode,
 }) => {
   const colorPalette = deriveColorPalette(color || user?.color || "#AA0C54");
 
@@ -159,7 +162,6 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
     if (images.length > 0) {
       images = [
         new Paragraph({
-          pageBreakBefore: true,
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
           text: "Kartenausschnitte",
@@ -244,23 +246,41 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
       );
     }
 
+    const metadata = user?.logo
+      ? user?.logo.match(base64PrefixRegex)![0]
+      : "data:image/svg+xml;base64,";
+
     const imageBase64Data = user?.logo
       ? user?.logo!.replace(base64PrefixRegex, "")!
-      : await (await fetch(AreaButlerLogo)).blob();
+      : btoa(
+          String.fromCharCode(
+            // TODO check the compiler settings
+            // @ts-ignore
+            ...new Uint8Array(await (await fetch(AreaButlerLogo)).arrayBuffer())
+          )
+        );
 
-    const sectionChildren = [
+    const logoImage = new Image();
+    logoImage.src = `${metadata}${imageBase64Data}`;
+    await logoImage.decode();
+
+    const logoRatio =
+      Math.round((logoImage.width / logoImage.height) * 10) / 10;
+
+    const gridAndTablesSectionChildren = [
       ...gridSummary,
       ...tables.flatMap((t) => t),
-      ...images,
     ];
+
+    const mapSectionChildren = [...images];
+    const externalDataSectionChildren = [];
 
     if (
       censusTable.length ||
       federalElectionTable.length ||
       particlePollutionTable.length
     ) {
-      sectionChildren.push(
-        new Paragraph({ children: [new PageBreak()] }),
+      externalDataSectionChildren.push(
         ...censusTable.flatMap((t) => t),
         ...federalElectionTable.flatMap((t) => t),
         ...particlePollutionTable.flatMap((t) => t)
@@ -286,9 +306,33 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
       sections: [
         {
           headers: {
-            ...createHeader(imageBase64Data),
+            ...createHeader(imageBase64Data, logoRatio),
           },
-          children: sectionChildren,
+          children: gridAndTablesSectionChildren,
+          footers: {
+            ...createFooter(),
+          },
+        },
+        {
+          headers: {
+            ...(qrCode.isShownQrCode
+              ? await createQrCodeHeader(
+                  qrCode.snapshotToken!,
+                  imageBase64Data,
+                  logoRatio
+                )
+              : createHeader(imageBase64Data, logoRatio)),
+          },
+          children: mapSectionChildren,
+          footers: {
+            ...createFooter(),
+          },
+        },
+        {
+          headers: {
+            ...createHeader(imageBase64Data, logoRatio),
+          },
+          children: externalDataSectionChildren,
           footers: {
             ...createFooter(),
           },

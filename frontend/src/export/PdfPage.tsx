@@ -1,13 +1,21 @@
-import React, { CSSProperties } from "react";
+import { FunctionComponent, CSSProperties, ReactNode } from "react";
+
 import AreaButlerLogo from "../assets/img/logo.jpg";
 
 export interface PdfPageProps {
-    nextPageNumber?: () => string;
-    logo?: any;
-    title?: string
+  nextPageNumber?: () => string;
+  logo?: any;
+  title?: string;
+  leftHeaderElement?: ReactNode;
 }
 
-export const PdfPage: React.FunctionComponent<PdfPageProps> = ({ nextPageNumber = () => "01", title = 'Umgebungsanalyse', children, logo = AreaButlerLogo }) => {
+export const PdfPage: FunctionComponent<PdfPageProps> = ({
+  nextPageNumber = () => "01",
+  title = "Umgebungsanalyse",
+  children,
+  logo = AreaButlerLogo,
+  leftHeaderElement = <div />,
+}) => {
   const style = {
     pageBreakAfter: "always",
     minHeight: "29.6cm",
@@ -17,21 +25,18 @@ export const PdfPage: React.FunctionComponent<PdfPageProps> = ({ nextPageNumber 
 
   return (
     <div className="flex flex-col justify-between" style={style}>
-      <div className="flex justify-end py-6 px-8 border-b-2">
+      <div className="flex justify-between items-center py-6 px-8 border-b-2">
+        {leftHeaderElement}
         <img className="h-14 w-auto" src={logo} alt="Logo" />
       </div>
-      <div className="page flex-1" >
-        {children}
-      </div>
+      <div className="page flex-1">{children}</div>
       <div className="flex border-t-2 justify-between items-center">
         <div className="py-5 px-10 border-r-2">
-            <img className="h-12 w-auto" src={logo} alt="Logo" />
+          <img className="h-12 w-auto" src={logo} alt="Logo" />
         </div>
-        <div className="flex-1 py-5 px-10 text-2xl">
-            {title}
-        </div>
+        <div className="flex-1 py-5 px-10 text-2xl">{title}</div>
         <div className="py-5 px-10 text-2xl border-l-2">
-            Seite - {pageNumber}
+          Seite - {pageNumber}
         </div>
       </div>
     </div>
