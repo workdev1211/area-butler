@@ -51,7 +51,7 @@ import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
-import { openAiFeatureAllowedEmails } from "../../../shared/constants/exclusion";
+import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 
 export interface SnippetEditorRouterProps {

@@ -30,7 +30,7 @@ import { SubscriptionService } from '../user/subscription.service';
 import { MeansOfTransportation } from '@area-butler-types/types';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
-import { openAiFeatureAllowedEmails } from '../../../shared/constants/exclusion';
+import { openAiFeatureAllowedEmails } from '../../../shared/constants/open-ai';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
 import { ApiSnapshotService } from './api-snapshot.service';

@@ -25,7 +25,7 @@ import closeIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import aiIcon from "../assets/icons/ai.svg";
 import FormModal, { ModalConfig } from "./FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
-import { openAiFeatureAllowedEmails } from "../../../shared/constants/exclusion";
+import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import SearchResultContainer from "./SearchResultContainer";
 
 export interface ExpressAnalysisModalProps {
