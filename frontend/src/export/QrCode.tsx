@@ -9,6 +9,12 @@ export interface QrCodeProps {
   imageClasses?: string;
 }
 
+export const getQrCodeBase64 = async (text: string): Promise<string> =>
+  toDataURL(text, {
+    type: "image/png",
+    margin: 0,
+  });
+
 export const QrCode: FunctionComponent<QrCodeProps> = ({
   snapshotToken,
   containerClasses = "",
@@ -22,12 +28,7 @@ export const QrCode: FunctionComponent<QrCodeProps> = ({
     }
 
     const createQrCode = async () => {
-      setQrCode(
-        await toDataURL(createDirectLink(snapshotToken), {
-          type: "image/png",
-          margin: 0,
-        })
-      );
+      setQrCode(await getQrCodeBase64(createDirectLink(snapshotToken)));
     };
 
     void createQrCode();

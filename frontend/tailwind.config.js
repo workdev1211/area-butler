@@ -59,6 +59,7 @@ module.exports = {
                 '97-5': '97.5vw',
             },
             maxWidth: {
+                'fit': 'fit-content',
                 '1/2': '50vw',
                 '19/20': '95vw',
                 '97-5': '97.5vw',

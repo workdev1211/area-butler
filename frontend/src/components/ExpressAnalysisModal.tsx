@@ -27,17 +27,21 @@ import FormModal, { ModalConfig } from "./FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import SearchResultContainer from "./SearchResultContainer";
+import { svgPrimaryColorFilter } from "../shared/shared.constants";
+import { saveAs } from "file-saver";
+import { getQrCodeBase64 } from "../export/QrCode";
+import downloadIcon from "../assets/icons/download.svg";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
-  closeModal: () => void;
   isShownModal: boolean;
+  closeModal: () => void;
 }
 
 const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   snapshotResponse,
-  closeModal,
   isShownModal,
+  closeModal,
 }) => {
   const { put } = useHttp();
   const history = useHistory();
@@ -119,16 +123,21 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
     return null;
   }
 
+  // TODO split into ExpressAnalysis and the modal components
+
   // TODO think about memoizing the second subcomponent (!isShownOpenAiLocationModal)
   return (
     <>
       {isShownOpenAiLocationModal && hasOpenAiFeature && (
         <OpenAiLocationModal />
       )}
+
+      {/*TODO MODAL COMPONENT*/}
       {!isShownOpenAiLocationModal && (
         <div className="modal modal-open z-9999">
-          <div className="modal-box">
+          <div className="modal-box flex flex-col">
             <div className="mb-3">Ihre One-Klick Ergebnisse:</div>
+
             {/*TODO move Export modals to another component*/}
             {searchContextState.printingActive && (
               <ExportModal
@@ -180,151 +189,159 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 exportType="CHEATSHEET"
               />
             )}
-            <div className="flex flex-col modal-block">
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                onClick={() => {
-                  setIsShownEmbeddedMapModal(true);
-                }}
-              >
-                <img
-                  src={screenshotIcon}
-                  alt="screenshot-icon"
-                  style={{
-                    width: "1.5rem",
-                    height: "1.5rem",
-                  }}
-                />
-                Kartenausschnitte erstellen PNG
-              </h3>
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                style={{ borderTop: "1px solid black" }}
-                onClick={() => {
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                    payload: true,
-                  });
-                }}
-              >
-                <img
-                  src={pdfIcon}
-                  alt="pdf-icon"
-                  style={{
-                    filter: "invert(100%)",
-                    width: "1.5rem",
-                    height: "1.5rem",
-                  }}
-                />
-                Umfeldanalyse PDF
-              </h3>
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                onClick={() => {
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                    payload: true,
-                  });
-                }}
-              >
-                <img
-                  src={pdfIcon}
-                  alt="pdf-icon"
-                  style={{
-                    filter: "invert(100%)",
-                    width: "1.5rem",
-                    height: "1.5rem",
-                  }}
-                />
-                Umfeldanalyse DOC
-              </h3>
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                onClick={() => {
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                    payload: true,
-                  });
-                }}
-              >
-                <img
-                  src={pdfIcon}
-                  alt="pdf-icon"
-                  style={{
-                    filter: "invert(100%)",
-                    width: "1.5rem",
-                    height: "1.5rem",
-                  }}
-                />
-                Überblick PDF
-              </h3>
-              {hasOpenAiFeature && (
+
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                setIsShownEmbeddedMapModal(true);
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={screenshotIcon}
+                alt="screenshot"
+              />
+              Kartenausschnitte erstellen PNG
+            </h3>
+
+            <div style={{ borderTop: "1px solid black" }} />
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
+                  payload: true,
+                });
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Umfeldanalyse PDF
+            </h3>
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
+                  payload: true,
+                });
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Umfeldanalyse DOC
+            </h3>
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
+                  payload: true,
+                });
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Überblick PDF
+            </h3>
+
+            {hasOpenAiFeature && (
+              <>
+                <div style={{ borderTop: "1px solid black" }} />
                 <h3
-                  className="cursor-pointer inline-flex gap-2 items-center"
-                  style={{ borderTop: "1px solid black" }}
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
                     setIsShownOpenAiLocationModal(true);
                   }}
                 >
                   <img
+                    className="w-6 h-6"
+                    style={svgPrimaryColorFilter}
                     src={aiIcon}
-                    alt="ai-icon"
-                    style={{
-                      filter: "invert(100%)",
-                      width: "1.5rem",
-                      height: "1.5rem",
-                    }}
+                    alt="ai"
                   />
                   Lagetext generieren
                 </h3>
-              )}
-              <div className="form-control">
-                <label className="label">
-                  <span className="label-text">Notizfeld</span>
-                </label>
-                <textarea
-                  className="textarea textarea-primary"
-                  value={description}
-                  onChange={(event) => {
-                    setDescription(event.target.value);
-                  }}
-                />
-              </div>
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                onClick={() => {
-                  copyCodeToClipBoard(createDirectLink(snapshotResponse.token));
+              </>
+            )}
+
+            <div className="form-control">
+              <label className="label">
+                <span className="label-text">Notizfeld</span>
+              </label>
+              <textarea
+                className="textarea textarea-primary"
+                value={description}
+                onChange={(event) => {
+                  setDescription(event.target.value);
                 }}
-              >
-                <img
-                  src={copyIcon}
-                  alt="copy-icon"
-                  style={{
-                    width: "1.25rem",
-                    height: "1.25rem",
-                  }}
-                />
-                Hyperlink zur Vollbild-Karte URL
-              </h3>
-              <h3
-                className="cursor-pointer inline-flex gap-2 items-center"
-                onClick={() => {
-                  copyCodeToClipBoard(
-                    createCodeSnippet(snapshotResponse.token)
-                  );
-                }}
-              >
-                <img
-                  src={copyIcon}
-                  alt="copy-icon"
-                  style={{
-                    width: "1.25rem",
-                    height: "1.25rem",
-                  }}
-                />
-                Snippet (iFrame) HTML
-              </h3>
+              />
             </div>
+
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                copyCodeToClipBoard(createDirectLink(snapshotResponse.token));
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={copyIcon}
+                alt="copy"
+              />
+              Hyperlink zur Vollbild-Karte URL
+            </h3>
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={async () => {
+                saveAs(
+                  await getQrCodeBase64(
+                    createDirectLink(snapshotResponse.token)
+                  ),
+                  `${snapshotResponse.snapshot.placesLocation.label.replace(
+                    /[\s|,]+/g,
+                    "-"
+                  )}-QR-Code.png`
+                );
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={downloadIcon}
+                alt="download-qr-code"
+              />
+              QR Code
+            </h3>
+            <h3
+              className="flex max-w-fit items-center cursor-pointer gap-2"
+              onClick={() => {
+                copyCodeToClipBoard(createCodeSnippet(snapshotResponse.token));
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={svgPrimaryColorFilter}
+                src={copyIcon}
+                alt="copy"
+              />
+              Snippet (iFrame) HTML
+            </h3>
+
             <div className="modal-action">
               <button
                 className="btn btn-sm btn-default"
@@ -347,6 +364,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
           </div>
         </div>
       )}
+
+      {/*TODO EMBEDDED MODAL COMPONENT*/}
       {isShownEmbeddedMapModal && (
         <div className="embedded-map-modal modal modal-open z-9999">
           <div
@@ -365,7 +384,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             />
             <img
               src={closeIcon}
-              alt="close-icon"
+              alt="close"
               className="absolute right-5 top-1 h-10 w-10 z-1000 cursor-pointer"
               style={{
                 background: "var(--primary)",

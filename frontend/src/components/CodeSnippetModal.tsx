@@ -1,27 +1,35 @@
 import { FunctionComponent, useContext, useState } from "react";
 import copy from "copy-to-clipboard";
+import { saveAs } from "file-saver";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import closeIcon from "../assets/icons/cross.svg";
+import copyIcon from "../assets/icons/copy.svg";
+import downloadIcon from "../assets/icons/download.svg";
+import { svgPrimaryColorFilter } from "../shared/shared.constants";
+import { getQrCodeBase64 } from "../export/QrCode";
 
 export interface CodeSnippetModalProps {
   codeSnippet: string;
   directLink: string;
-  setShowModal: (show: boolean) => void;
-  showModal: boolean;
+  isShownModal: boolean;
+  closeModal: () => void;
   editDescription?: boolean;
   snapshot?: ApiSearchResultSnapshotResponse;
+  label?: string;
 }
 
 const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   codeSnippet,
   directLink,
-  setShowModal,
-  showModal,
+  isShownModal = false,
+  closeModal,
   editDescription = false,
   snapshot,
+  label,
 }) => {
   const { put } = useHttp();
   const { userDispatch } = useContext(UserContext);
@@ -36,8 +44,8 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
     }
   };
 
-  const closeModal = async () => {
-    setShowModal(false);
+  const handleCloseModal = async () => {
+    closeModal();
 
     if (
       editDescription &&
@@ -60,16 +68,26 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
     }
   };
 
-  if (!showModal) {
+  if (!isShownModal) {
     return null;
   }
 
   return (
     <div className="modal modal-open z-9999">
-      <div className="modal-box">
-        Ihr Karten-Snippet
+      <div className="modal-box flex flex-col">
+        <div className="flex justify-between items-center">
+          <div>Ihr Karten-Snippet</div>
+          <img
+            className="cursor-pointer w-5 h-5"
+            style={svgPrimaryColorFilter}
+            src={closeIcon}
+            alt="close"
+            onClick={handleCloseModal}
+          />
+        </div>
+
         {editDescription && (
-          <div className="my-5">
+          <div>
             <div className="form-control">
               <label className="label">
                 <span className="label-text">Notizfeld</span>
@@ -77,38 +95,73 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
               <textarea
                 className="textarea textarea-primary"
                 value={description}
-                onChange={(event) => setDescription(event.target.value)}
+                onChange={(event) => {
+                  setDescription(event.target.value);
+                }}
               />
             </div>
           </div>
         )}
-        <div className="my-10">
-          <h3>Direkt Link</h3>
+
+        <div>
+          <h3
+            className="flex max-w-fit items-center cursor-pointer gap-2"
+            onClick={() => {
+              copyCodeToClipBoard(directLink);
+            }}
+          >
+            <img
+              className="w-6 h-6"
+              style={svgPrimaryColorFilter}
+              src={copyIcon}
+              alt="copy"
+            />
+            Direkt Link
+          </h3>
           <code className="break-all text-sm">{directLink}</code>
         </div>
-        <div className="my-10">
-          <h3>HTML Snippet</h3>
-          <code className="break-all text-sm">{codeSnippet}</code>
+
+        <div>
+          <h3
+            className="flex max-w-fit items-center cursor-pointer gap-2"
+            onClick={async () => {
+              const qrCodeLabel =
+                label ||
+                snapshot?.snapshot.placesLocation.label ||
+                "AreaButler";
+
+              saveAs(
+                await getQrCodeBase64(directLink),
+                `${qrCodeLabel.replace(/[\s|,]+/g, "-")}-QR-Code.png`
+              );
+            }}
+          >
+            <img
+              className="w-6 h-6"
+              style={svgPrimaryColorFilter}
+              src={downloadIcon}
+              alt="download-qr-code"
+            />
+            QR Code
+          </h3>
         </div>
-        <div className="modal-action">
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => copyCodeToClipBoard(directLink)}
+
+        <div>
+          <h3
+            className="flex max-w-fit items-center cursor-pointer gap-2"
+            onClick={() => {
+              copyCodeToClipBoard(codeSnippet);
+            }}
           >
-            Link Kopieren
-          </button>
-          <button
-            className="btn btn-sm btn-primary"
-            onClick={() => copyCodeToClipBoard(codeSnippet)}
-          >
-            Snippet Kopieren
-          </button>
-          <button
-            className="btn btn-sm btn-default"
-            onClick={() => closeModal()}
-          >
-            Schließen
-          </button>
+            <img
+              className="w-6 h-6"
+              style={svgPrimaryColorFilter}
+              src={copyIcon}
+              alt="copy"
+            />
+            HTML Snippet
+          </h3>
+          <code className="break-all text-sm">{codeSnippet}</code>
         </div>
       </div>
     </div>

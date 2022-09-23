@@ -573,10 +573,10 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <ExpressAnalysisModal
         snapshotResponse={snapshotResponse!}
+        isShownModal={isShownMapSnippetModal}
         closeModal={() => {
           setIsShownMapSnippetModal(false);
         }}
-        isShownModal={isShownMapSnippetModal}
       />
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>

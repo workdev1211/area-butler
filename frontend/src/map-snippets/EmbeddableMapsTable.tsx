@@ -26,7 +26,7 @@ export interface EmbeddableMapsTableProps {
 const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
-  const [showModal, setShowModal] = useState(false);
+  const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
@@ -46,7 +46,7 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
     setCodeSnippet(createCodeSnippet(snapshot.token));
     setDirectLink(createDirectLink(snapshot.token));
     setSnapshot(snapshot);
-    setShowModal(true);
+    setIsShownModal(true);
   };
 
   const deleteSnippet = async (id: string) => {
@@ -111,16 +111,16 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
   return (
     // TODO data tour
     <div className="overflow-x-auto" data-tour="real-estates-table">
-      {showModal && (
-        <CodeSnippetModal
-          showModal={showModal}
-          setShowModal={setShowModal}
-          codeSnippet={codeSnippet}
-          directLink={directLink}
-          editDescription={true}
-          snapshot={snapshot}
-        />
-      )}
+      <CodeSnippetModal
+        codeSnippet={codeSnippet}
+        directLink={directLink}
+        editDescription={true}
+        snapshot={snapshot}
+        isShownModal={isShownModal}
+        closeModal={() => {
+          setIsShownModal(false);
+        }}
+      />
       <table className="table w-full">
         <thead>
           <tr>

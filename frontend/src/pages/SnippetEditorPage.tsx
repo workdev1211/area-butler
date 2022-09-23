@@ -67,7 +67,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
 
-  const [showModal, setShowModal] = useState(false);
+  const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
@@ -488,7 +488,7 @@ const SnippetEditorPage: FunctionComponent = () => {
                     },
                   }
                 );
-                setShowModal(true);
+                setIsShownModal(true);
                 toastSuccess("Erfolgreich in Zwischenablage kopiert!");
               } catch (e) {
                 toastError("Fehler beim Veröffentlichen der Karte");
@@ -550,10 +550,13 @@ const SnippetEditorPage: FunctionComponent = () => {
           />
         </div>
         <CodeSnippetModal
-          showModal={showModal}
-          setShowModal={setShowModal}
           directLink={directLink}
           codeSnippet={codeSnippet}
+          label={snapshot.placesLocation.label}
+          isShownModal={isShownModal}
+          closeModal={() => {
+            setIsShownModal(false);
+          }}
         />
         <div className="editor-container">
           <SearchResultContainer
