@@ -105,20 +105,25 @@ export class RoutingService {
   async fetchRoutes(query: ApiRouteQuery): Promise<ApiRouteQueryResultItem[]> {
     return Promise.all(
       query.destinations.map(async (destination) => {
+        const routes = [];
+
+        // Was hitting Here API rate limits
+        for await (const transportType of query.meansOfTransportation) {
+          const route = await this.fetchRoute(
+            query.origin,
+            destination.coordinates,
+            transportType,
+          );
+
+          if (route) {
+            routes.push(route);
+          }
+        }
+
         return {
           coordinates: destination.coordinates,
           title: destination.title,
-          routes: (
-            await Promise.all(
-              query.meansOfTransportation.map(async (transportType) => {
-                return await this.fetchRoute(
-                  query.origin,
-                  destination.coordinates,
-                  transportType,
-                );
-              }),
-            )
-          ).filter((value) => !!value),
+          routes,
         };
       }),
     );
