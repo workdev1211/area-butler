@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { CSSProperties, FunctionComponent, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
 
@@ -27,7 +27,6 @@ import FormModal, { ModalConfig } from "./FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import SearchResultContainer from "./SearchResultContainer";
-import { svgPrimaryColorFilter } from "../shared/shared.constants";
 import { saveAs } from "file-saver";
 import { getQrCodeBase64 } from "../export/QrCode";
 import downloadIcon from "../assets/icons/download.svg";
@@ -68,6 +67,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   const hasOpenAiFeature =
     openAiFeatureAllowedEmails.includes(user?.email || "") ||
     user?.subscriptionPlan?.config.appFeatures.openAi;
+
+  const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
   const performCloseModal = async () => {
     closeModal();
@@ -152,6 +153,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
+                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
               />
             )}
@@ -168,6 +170,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
+                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
                 exportType="EXPOSE_DOCX"
               />
@@ -185,6 +188,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                   searchContextState.responseGroupedEntities,
                   searchContextState.responseActiveMeans
                 )}
+                snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
                 exportType="CHEATSHEET"
               />
@@ -198,7 +202,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
                 src={screenshotIcon}
                 alt="screenshot"
               />
@@ -217,7 +220,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
+                style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"
               />
@@ -234,7 +237,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
+                style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"
               />
@@ -251,7 +254,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
+                style={invertFilter}
                 src={pdfIcon}
                 alt="pdf"
               />
@@ -269,7 +272,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 >
                   <img
                     className="w-6 h-6"
-                    style={svgPrimaryColorFilter}
+                    style={invertFilter}
                     src={aiIcon}
                     alt="ai"
                   />
@@ -299,7 +302,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
                 src={copyIcon}
                 alt="copy"
               />
@@ -321,9 +323,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
                 src={downloadIcon}
-                alt="download-qr-code"
+                alt="download"
               />
               QR Code
             </h3>
@@ -335,7 +336,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             >
               <img
                 className="w-6 h-6"
-                style={svgPrimaryColorFilter}
                 src={copyIcon}
                 alt="copy"
               />

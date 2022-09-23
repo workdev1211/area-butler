@@ -87,6 +87,13 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
         leftHeaderElement={qrCodeElement}
       >
         <div className="m-10 flex flex-col gap-2">
+          {!props.realEstateListing && (
+            <>
+              <h3 className="text-2xl w-56 font-bold">Ihr Umfeld</h3>
+              <div className="font-bold">{props.listingAddress}</div>
+            </>
+          )}
+
           {props.realEstateListing && (
             <>
               <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
@@ -104,6 +111,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
                   )
                 </div>
               )}
+
               {props.realEstateListing.characteristics?.furnishing && (
                 <div>
                   <strong>Ausstattung:</strong>{" "}
@@ -120,6 +128,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
             </>
           )}
         </div>
+
         <div className="mx-5 flex gap-2 flex-wrap">
           {filteredGroups.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
@@ -138,6 +147,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
           )}
         </div>
       </PdfPage>
+
       {mapClippings.length > 0 && (
         <MapClippings
           mapClippings={mapClippings}
@@ -146,6 +156,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
           qrCode={props.qrCode}
         />
       )}
+
       {mapClippings.length > 0 && props.legend.length > 0 && (
         <PdfPage
           nextPageNumber={nextPageNumber}
@@ -158,6 +169,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
           </div>
         </PdfPage>
       )}
+
       <PdfPage
         title="Einblicke"
         logo={logo}
@@ -172,6 +184,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
             <CensusSummary primaryColor={color} censusData={censusData} />
           </>
         )}
+
         {federalElectionData && (
           <>
             <h4 className="mx-10 text-xl w-56 font-bold">
@@ -183,6 +196,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
             />
           </>
         )}
+
         {particlePollutionData && particlePollutionData.length > 0 && (
           <>
             <h4 className="mx-10 text-xl w-56 font-bold">Feinstaubbelastung</h4>

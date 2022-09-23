@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import copy from "copy-to-clipboard";
 import { saveAs } from "file-saver";
 
@@ -68,6 +68,19 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
     }
   };
 
+  useEffect(() => {
+    const handleEscape = async (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        await handleCloseModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   if (!isShownModal) {
     return null;
   }
@@ -110,12 +123,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
               copyCodeToClipBoard(directLink);
             }}
           >
-            <img
-              className="w-6 h-6"
-              style={svgPrimaryColorFilter}
-              src={copyIcon}
-              alt="copy"
-            />
+            <img className="w-6 h-6" src={copyIcon} alt="copy" />
             Direkt Link
           </h3>
           <code className="break-all text-sm">{directLink}</code>
@@ -138,7 +146,6 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
           >
             <img
               className="w-6 h-6"
-              style={svgPrimaryColorFilter}
               src={downloadIcon}
               alt="download-qr-code"
             />
@@ -153,12 +160,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
               copyCodeToClipBoard(codeSnippet);
             }}
           >
-            <img
-              className="w-6 h-6"
-              style={svgPrimaryColorFilter}
-              src={copyIcon}
-              alt="copy"
-            />
+            <img className="w-6 h-6" src={copyIcon} alt="copy" />
             HTML Snippet
           </h3>
           <code className="break-all text-sm">{codeSnippet}</code>

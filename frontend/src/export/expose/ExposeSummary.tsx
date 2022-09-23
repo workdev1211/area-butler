@@ -105,6 +105,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                 <div className="font-bold">{listingAddress}</div>
               </>
             )}
+
             {realEstateListing && (
               <>
                 <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
@@ -122,6 +123,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                     )
                   </div>
                 )}
+
                 {realEstateListing.characteristics?.furnishing && (
                   <div className="text-justify">
                     <strong>Ausstattung:</strong>{" "}
@@ -137,6 +139,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                 )}
               </>
             )}
+
             {qrCode.isShownQrCode && (
               <QrCode
                 snapshotToken={qrCode.snapshotToken}
@@ -147,6 +150,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
           </div>
         </div>
       </div>
+
       <div>
         <h3 className="text-xl w-96 font-bold mx-10">Die Umgebung</h3>
         <EntityGridSummary

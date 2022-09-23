@@ -1,6 +1,7 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useLocation, useParams } from "react-router-dom";
+import { saveAs } from "file-saver";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
@@ -53,6 +54,7 @@ import FormModal, { ModalConfig } from "../components/FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
+import { getQrCodeBase64 } from "../export/QrCode";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -399,7 +401,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse PDF
+            <img src={pdfIcon} alt="pdf" /> Export Analyse PDF
           </button>
         </li>
         <li>
@@ -421,7 +423,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Export Analyse DOCX
+            <img src={pdfIcon} alt="docx" /> Export Analyse DOCX
           </button>
         </li>
         <li>
@@ -435,7 +437,24 @@ const SnippetEditorPage: FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Export Überblick PDF
+            <img src={pdfIcon} alt="pdf" /> Export Überblick PDF
+          </button>
+        </li>
+        <li>
+          <button
+            type="button"
+            onClick={async () => {
+              saveAs(
+                await getQrCodeBase64(directLink),
+                `${snapshot!.placesLocation.label.replace(
+                  /[\s|,]+/g,
+                  "-"
+                )}-QR-Code.png`
+              );
+            }}
+            className="btn btn-link"
+          >
+            <img src={pdfIcon} alt="qr-code" /> Export QR Code
           </button>
         </li>
         <li>
@@ -457,7 +476,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             }}
             className="btn btn-link"
           >
-            <img src={pdfIcon} alt="pdf-icon" /> Export Kartenlegende ZIP
+            <img src={pdfIcon} alt="pdf" /> Export Kartenlegende ZIP
           </button>
         </li>
         <li style={{ borderBottom: "1px white solid" }} />
@@ -470,7 +489,7 @@ const SnippetEditorPage: FunctionComponent = () => {
               }}
               className="btn btn-link"
             >
-              <img src={aiIcon} alt="ai-icon" /> Lagetext generieren
+              <img src={aiIcon} alt="ai" /> Lagetext generieren
             </button>
           </li>
         )}
@@ -498,7 +517,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           >
             <img
               src={copyMapIcon}
-              alt="copy-map-icon"
+              alt="copy-map"
               style={{ filter: "invert(1)" }}
             />
             Karte veröffentlichen
