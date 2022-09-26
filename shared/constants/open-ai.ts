@@ -15,6 +15,7 @@ export const openAiFeatureAllowedEmails = [
   "martin.kuett@live.de",
   "amelie.wuest@neubaukontor.de",
   "info@langimmobilien.de",
+  "service@david-borck.de",
 ];
 
 export const openAiTranslationDictionary: Record<
