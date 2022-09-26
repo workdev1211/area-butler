@@ -73,9 +73,9 @@ const RealEstatesPage: FunctionComponent = () => {
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
 
   const user = userState.user!;
-  const hasSubscription = !!user?.subscriptionPlan;
+  const hasSubscription = !!user?.subscription;
   const hasHtmlSnippet =
-    hasSubscription && user?.subscriptionPlan!.config.appFeatures.htmlSnippet;
+    hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet;
 
   useEffect(() => {
     const googleMapsApiLoader = new Loader({

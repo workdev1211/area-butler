@@ -68,8 +68,13 @@ export class ZensusAtlasService {
   async findIntersecting(user: UserDocument, query: ApiGeometryDto) {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) =>
-        !subscription?.appFeatures.dataSources.includes(ApiDataSource.CENSUS),
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.dataSources?.includes(
+          ApiDataSource.CENSUS,
+        ) &&
+        !subscriptionPlan?.appFeatures.dataSources.includes(
+          ApiDataSource.CENSUS,
+        ),
       'Der Zensus Atlas ist im aktuellem Abonnement nicht verfügbar',
     );
 

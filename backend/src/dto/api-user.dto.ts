@@ -4,6 +4,7 @@ import {
   IsDate,
   IsNotEmpty,
   IsNumber,
+  IsObject,
   IsOptional,
   IsString,
   ValidateNested,
@@ -22,46 +23,39 @@ import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
 @Exclude()
 class ApiUserDto implements ApiUser {
   @Expose()
-  @ValidateNested({ each: true })
   @IsArray()
+  @ValidateNested({ each: true })
   @Type(() => MapBoxStyleDto)
-  @Transform(({ value }) => value, { toClassOnly: true })
   additionalMapBoxStyles: MapBoxStyleDto[];
 
   @Expose()
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value, { toClassOnly: true })
   color?: string;
 
   @Expose()
   @IsOptional()
   @IsDate()
-  @Transform(({ value }) => value, { toClassOnly: true })
   consentGiven?: Date;
 
   @Expose()
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }) => value, { toClassOnly: true })
   email: string;
 
   @Expose()
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }) => value, { toClassOnly: true })
   fullname: string;
 
   @Expose()
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value, { toClassOnly: true })
   logo?: string;
 
   @Expose()
   @IsOptional()
   @IsString()
-  @Transform(({ value }) => value, { toClassOnly: true })
   mapIcon?: string;
 
   @Expose()
@@ -88,13 +82,14 @@ class ApiUserDto implements ApiUser {
 
   @Expose()
   @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiShowTourDto)
-  @Transform(({ value }) => value, { toClassOnly: true })
   showTour: ApiShowTourDto;
 
   @Expose({ name: 'subscription', toClassOnly: true })
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiUserSubscriptionDto)
   @Transform(
@@ -104,7 +99,7 @@ class ApiUserDto implements ApiUser {
         : null,
     { toClassOnly: true },
   )
-  subscriptionPlan?: ApiUserSubscriptionDto;
+  subscription?: ApiUserSubscriptionDto;
 
   @Expose({ name: 'parentId' })
   @IsNotEmpty()
@@ -115,6 +110,7 @@ class ApiUserDto implements ApiUser {
   // TODO change it to the new API request
   @Expose()
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiUserParentSettingsDto)
   @Transform(

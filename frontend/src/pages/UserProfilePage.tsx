@@ -28,11 +28,10 @@ const UserProfilePage: FunctionComponent = () => {
   };
 
   const user: ApiUser = userState.user!;
-  const hasSubscription = !!user.subscriptionPlan;
+  const hasSubscription = !!user.subscription;
   const isChild = user.isChild;
   const canCustomizeExport =
-    hasSubscription &&
-    user.subscriptionPlan!.config.appFeatures.canCustomizeExport;
+    hasSubscription && user.subscription!.config.appFeatures.canCustomizeExport;
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -40,7 +39,7 @@ const UserProfilePage: FunctionComponent = () => {
       userDispatch({ type: UserActionTypes.SET_USER, payload: user });
     };
 
-    fetchUser();
+    void fetchUser();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

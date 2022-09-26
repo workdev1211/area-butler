@@ -66,8 +66,11 @@ export class FederalElectionService {
   async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) =>
-        !subscription?.appFeatures.dataSources.includes(
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.dataSources?.includes(
+          ApiDataSource.FEDERAL_ELECTION,
+        ) &&
+        !subscriptionPlan?.appFeatures.dataSources.includes(
           ApiDataSource.FEDERAL_ELECTION,
         ),
       'Bundestagswahldaten sind im aktuellem Abonnement nicht verfügbar',

@@ -56,7 +56,7 @@ export class PotentialCustomerService {
     subscriptionCheck &&
       this.subscriptionService.checkSubscriptionViolation(
         user.subscription.type,
-        (subscription) => !subscription,
+        (subscriptionPlan) => !subscriptionPlan,
         'Weitere Interessentenerstellung ist im aktuellen Plan nicht mehr möglich',
       );
 
@@ -122,8 +122,9 @@ export class PotentialCustomerService {
   ): Promise<QuestionnaireRequestDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) =>
-        !subscription?.appFeatures.sendCustomerQuestionnaireRequest,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.sendCustomerQuestionnaireRequest &&
+        !subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest,
       'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
     );
 

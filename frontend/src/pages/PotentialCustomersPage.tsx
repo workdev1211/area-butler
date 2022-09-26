@@ -68,7 +68,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
   const user: ApiUser = userState.user!;
-  const subscriptionPlan = user.subscriptionPlan?.config;
+  const subscriptionPlan = user.subscription?.config;
   const canSendCustomerRequest =
     subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
 

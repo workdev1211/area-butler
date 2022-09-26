@@ -2,6 +2,7 @@ import {
   IsDate,
   IsEnum,
   IsNotEmpty,
+  IsObject,
   IsString,
   ValidateNested,
 } from 'class-validator';
@@ -16,6 +17,7 @@ import ApiSubscriptionPlanDto from './api-subscription-plan.dto';
 
 class ApiUserSubscriptionDto implements ApiUserSubscription {
   @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiSubscriptionPlanDto)
   config: ApiSubscriptionPlanDto;

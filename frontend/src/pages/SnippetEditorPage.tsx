@@ -52,7 +52,6 @@ import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
-import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { getQrCodeBase64 } from "../export/QrCode";
 
@@ -89,15 +88,12 @@ const SnippetEditorPage: FunctionComponent = () => {
   const user = userState.user;
 
   const hasFullyCustomizableExpose =
-    user?.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
-
-  // TODO allow by user email
-  const hasOpenAiFeature =
-    openAiFeatureAllowedEmails.includes(user?.email || "") ||
-    user?.subscriptionPlan?.config.appFeatures.openAi;
+    user?.subscription?.config.appFeatures.fullyCustomizableExpose;
+  const hasOpenAiFeature = user?.subscription?.config.appFeatures.openAi;
+  const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
 
   useEffect(() => {
-    if (!user?.subscriptionPlan?.config.appFeatures.htmlSnippet) {
+    if (!hasHtmlSnippet) {
       toastError(
         "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors."
       );
@@ -212,13 +208,14 @@ const SnippetEditorPage: FunctionComponent = () => {
         }
 
         if (
-          user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+          user?.subscription?.config.appFeatures.dataSources.includes(
             ApiDataSource.CENSUS
           )
         ) {
           const zensusData = await fetchNearData(
             snapshotResponse.snapshot.location
           );
+
           searchContextDispatch({
             type: SearchContextActionTypes.SET_ZENSUS_DATA,
             payload: zensusData!,
@@ -226,13 +223,14 @@ const SnippetEditorPage: FunctionComponent = () => {
         }
 
         if (
-          user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+          user?.subscription?.config.appFeatures.dataSources.includes(
             ApiDataSource.FEDERAL_ELECTION
           )
         ) {
           const federalElectionData = await fetchElectionData(
             snapshotResponse.snapshot.location!
           );
+
           searchContextDispatch({
             type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
             payload: federalElectionData!,
@@ -240,13 +238,14 @@ const SnippetEditorPage: FunctionComponent = () => {
         }
 
         if (
-          user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+          user?.subscription?.config.appFeatures.dataSources.includes(
             ApiDataSource.PARTICLE_POLLUTION
           )
         ) {
           const particlePollutionData = await fetchParticlePollutionData(
             snapshotResponse.snapshot.location!
           );
+
           searchContextDispatch({
             type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
             payload: particlePollutionData,

@@ -1,23 +1,6 @@
 import { OpenAiTonalityEnum } from "../types/open-ai";
 import { OsmName } from "../types/types";
 
-export const openAiFeatureAllowedEmails = [
-  "immoservice-paderborn@remax.de",
-  "g.behrend@area-butler.de",
-  "anmelden@immobilien-makler-akademie.com",
-  "info@am-buschkamp.de",
-  "ef@immobilien-makler-akademie.com",
-  "info@karla-fricke.de",
-  "a.timper@area-butler.de",
-  "vladimir.kuznetsov@brocoders.team",
-  "vldnik84@gmail.com",
-  "philipp_huhn@hotmail.com",
-  "martin.kuett@live.de",
-  "amelie.wuest@neubaukontor.de",
-  "info@langimmobilien.de",
-  "service@david-borck.de",
-];
-
 export const openAiTranslationDictionary: Record<
   OsmName,
   { singular: string; plural: string }

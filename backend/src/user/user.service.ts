@@ -311,7 +311,9 @@ export class UserService {
 
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) => !subscription.appFeatures.canCustomizeExport,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.canCustomizeExport &&
+        !subscriptionPlan.appFeatures.canCustomizeExport,
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 

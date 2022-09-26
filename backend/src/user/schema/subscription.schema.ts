@@ -1,9 +1,10 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
-
-export type SubscriptionDocument = Subscription & Document;
+import {
+  ApiSubscriptionPlanType,
+  IApiSubscriptionPlanAppFeatures,
+} from '@area-butler-types/subscription-plan';
 
 @Schema()
 export class Subscription {
@@ -36,8 +37,13 @@ export class Subscription {
   @Prop()
   paypalSubscriptionId: string;
 
+  // TODO remove, use "type" instead
   @Prop({ required: true })
   stripePriceId: string;
+
+  @Prop({ type: Object })
+  appFeatures: IApiSubscriptionPlanAppFeatures;
 }
 
 export const SubscriptionSchema = SchemaFactory.createForClass(Subscription);
+export type SubscriptionDocument = Subscription & Document;

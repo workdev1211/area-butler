@@ -54,13 +54,13 @@ const SearchResultPage: FunctionComponent = () => {
       });
     };
 
-    fetchUserRequests();
+    void fetchUserRequests();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const user: ApiUser = userState.user!;
   const hasFullyCustomizableExpose =
-    user.subscriptionPlan?.config.appFeatures.fullyCustomizableExpose;
+    user.subscription?.config.appFeatures.fullyCustomizableExpose;
 
   const history = useHistory();
   const currentLocation = useLocation();

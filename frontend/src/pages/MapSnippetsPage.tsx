@@ -13,9 +13,9 @@ const MapSnippetsPage: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
 
   const user = userState.user!;
-  const hasSubscription = !!user?.subscriptionPlan;
+  const hasSubscription = !!user?.subscription;
   const hasHtmlSnippet =
-    hasSubscription && user?.subscriptionPlan!.config.appFeatures.htmlSnippet;
+    hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet;
 
   const embeddableMaps = userState.embeddableMaps || [];
 

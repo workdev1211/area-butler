@@ -16,13 +16,13 @@ export class SearchResultSnapshot {
   @Prop()
   token: string;
 
-  @Prop({ required: false })
+  @Prop()
   description: string;
 
   @Prop()
   mapboxAccessToken: string;
 
-  @Prop({ type: Object, required: false })
+  @Prop({ type: Object })
   config: ApiSearchResultSnapshotConfig;
 
   @Prop({ type: Object })
@@ -31,10 +31,10 @@ export class SearchResultSnapshot {
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date })
   lastAccess: Date;
 
-  @Prop({ type: Date, required: false })
+  @Prop({ type: Date })
   updatedAt: Date;
 
   @Prop({ type: Date })

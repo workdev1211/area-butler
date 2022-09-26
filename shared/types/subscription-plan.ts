@@ -80,6 +80,15 @@ export interface ApiSubscriptionPricing {
   purchaseButtonLabel?: string;
 }
 
+export interface IApiSubscriptionPlanAppFeatures {
+  sendCustomerQuestionnaireRequest: boolean;
+  dataSources: ApiDataSource[];
+  canCustomizeExport: boolean;
+  fullyCustomizableExpose: boolean;
+  htmlSnippet: boolean;
+  openAi: boolean;
+}
+
 export interface ApiSubscriptionPlan {
   id?: IApiSubscriptionEnvIds;
   name: string;
@@ -89,14 +98,7 @@ export interface ApiSubscriptionPlan {
   description?: string[];
   footnote?: string;
   purchaseButtonLabel?: string;
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: boolean;
-    dataSources: ApiDataSource[];
-    canCustomizeExport: boolean;
-    fullyCustomizableExpose: boolean;
-    htmlSnippet: boolean;
-    openAi: boolean;
-  };
+  appFeatures: IApiSubscriptionPlanAppFeatures;
 }
 
 export interface ApiRequestContingent {

@@ -61,8 +61,11 @@ export class ParticlePollutionService {
   async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) =>
-        !subscription?.appFeatures.dataSources.includes(
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.dataSources?.includes(
+          ApiDataSource.PARTICLE_POLLUTION,
+        ) &&
+        !subscriptionPlan?.appFeatures.dataSources.includes(
           ApiDataSource.PARTICLE_POLLUTION,
         ),
       'Feinstaubdaten sind im aktuellem Abonnement nicht verfügbar',

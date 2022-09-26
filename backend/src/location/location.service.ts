@@ -334,7 +334,9 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.htmlSnippet &&
+        !subscriptionPlan.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
@@ -355,7 +357,9 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.htmlSnippet &&
+        !subscriptionPlan.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
@@ -386,7 +390,9 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.htmlSnippet &&
+        !subscriptionPlan.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
@@ -405,7 +411,9 @@ export class LocationService {
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
-      (subscription) => !subscription.appFeatures.htmlSnippet,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.htmlSnippet &&
+        !subscriptionPlan.appFeatures.htmlSnippet,
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 

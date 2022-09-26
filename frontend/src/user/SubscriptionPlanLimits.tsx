@@ -20,7 +20,7 @@ const SubscriptionPlanLimits: FunctionComponent<
   SubscriptionPlanLimitsProps
 > = ({ user }) => {
   const { stripeEnv } = useContext(ConfigContext);
-  const subscription = user.subscriptionPlan;
+  const subscription = user.subscription;
 
   const subscriptionLabel =
     allSubscriptionTypes.find((item) => subscription?.type === item.type)

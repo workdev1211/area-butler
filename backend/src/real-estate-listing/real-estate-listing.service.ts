@@ -52,7 +52,7 @@ export class RealEstateListingService {
     subscriptionCheck &&
       this.subscriptionService.checkSubscriptionViolation(
         user.subscription.type,
-        (subscription) => !subscription,
+        (subscriptionPlan) => !subscriptionPlan,
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       );
 

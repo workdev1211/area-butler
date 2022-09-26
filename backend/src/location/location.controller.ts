@@ -30,7 +30,6 @@ import { SubscriptionService } from '../user/subscription.service';
 import { MeansOfTransportation } from '@area-butler-types/types';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
-import { openAiFeatureAllowedEmails } from '../../../shared/constants/open-ai';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
 import { ApiSnapshotService } from './api-snapshot.service';
@@ -179,27 +178,22 @@ export class LocationController extends AuthenticatedController {
     return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
   }
 
-  @ApiOperation({ description: 'Get Open AI location description' })
+  @ApiOperation({ description: 'Fetch Open AI location description' })
   @Get('open-ai-location-description')
-  async getOpenAiLocationDescription(
+  async fetchOpenAiLocationDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query('searchResultSnapshotId') searchResultSnapshotId: string,
     @Query('meanOfTransportation') meanOfTransportation: MeansOfTransportation,
     @Query('tonality') tonality: OpenAiTonalityEnum,
   ): Promise<string> {
-    // TODO allow by user email
-    // await this.subscriptionService.checkSubscriptionViolation(
-    //   user.subscription.type,
-    //   (subscription) => !subscription.appFeatures.openAi,
-    //   'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    // );
-
-    if (!openAiFeatureAllowedEmails.includes(user.email)) {
-      throw new HttpException(
-        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-        400,
-      );
-    }
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
 
     const searchResultSnapshot = await this.locationService.fetchSnapshot(
       user,

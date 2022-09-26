@@ -25,7 +25,6 @@ import closeIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import aiIcon from "../assets/icons/ai.svg";
 import FormModal, { ModalConfig } from "./FormModal";
 import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
-import { openAiFeatureAllowedEmails } from "../../../shared/constants/open-ai";
 import SearchResultContainer from "./SearchResultContainer";
 import { saveAs } from "file-saver";
 import { getQrCodeBase64 } from "../export/QrCode";
@@ -64,9 +63,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
 
   const user = userState.user;
 
-  const hasOpenAiFeature =
-    openAiFeatureAllowedEmails.includes(user?.email || "") ||
-    user?.subscriptionPlan?.config.appFeatures.openAi;
+  const hasOpenAiFeature = user?.subscription?.config.appFeatures.openAi;
 
   const invertFilter: CSSProperties = { filter: "invert(100%)" };
 

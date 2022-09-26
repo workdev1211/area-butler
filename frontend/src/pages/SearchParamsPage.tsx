@@ -158,7 +158,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    fetchCustomers();
+    void fetchCustomers();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -173,7 +173,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    fetchRealEstates();
+    void fetchRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLocationAutocompleteChange = (payload: any) => {
@@ -249,19 +249,19 @@ const SearchParamsPage: FunctionComponent = () => {
     </FormModal>
   );
 
-  const hasFederalElectionData =
-    user.subscriptionPlan?.config.appFeatures.dataSources.includes(
+  const hasCensusData =
+    user.subscription?.config.appFeatures.dataSources.includes(
+      ApiDataSource.CENSUS
+    );
+
+  const hasElectionData =
+    user.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     );
 
-  const hasParticlePollutionData =
-    user.subscriptionPlan?.config.appFeatures.dataSources.includes(
+  const hasPollutionData =
+    user.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
-    );
-
-  const hasCensusData =
-    user.subscriptionPlan?.config.appFeatures.dataSources.includes(
-      ApiDataSource.CENSUS
     );
 
   const fetchLocationSearchData = async (
@@ -297,7 +297,7 @@ const SearchParamsPage: FunctionComponent = () => {
       payload: searchResponse,
     });
 
-    if (hasFederalElectionData) {
+    if (hasElectionData) {
       items.push({
         key: "fetch-election-data",
       });
@@ -313,7 +313,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     }
 
-    if (hasParticlePollutionData) {
+    if (hasPollutionData) {
       items.push({
         key: "fetch-particle-pollution-data",
       });
@@ -374,8 +374,8 @@ const SearchParamsPage: FunctionComponent = () => {
     try {
       setIsShownBusyModal(true);
       setBusyModalItemCount(
-        +(hasFederalElectionData || 0) +
-          +(hasParticlePollutionData || 0) +
+        +(hasElectionData || 0) +
+          +(hasPollutionData || 0) +
           +(hasCensusData || 0) +
           1
       );
@@ -437,8 +437,8 @@ const SearchParamsPage: FunctionComponent = () => {
       });
 
       setBusyModalItemCount(
-        +(hasFederalElectionData || 0) +
-          +(hasParticlePollutionData || 0) +
+        +(hasElectionData || 0) +
+          +(hasPollutionData || 0) +
           +(hasCensusData || 0) +
           1 +
           (searchContextState.preferredLocations?.length!

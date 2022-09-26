@@ -119,18 +119,19 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
   const mobileMenuButtonClasses = `map-menu ${
     mobileMenuOpen ? "mobile-open" : ""
   }`;
-  const censusInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+
+  const hasCensusData =
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
     )!;
 
-  const federalElectionInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+  const hasElectionData =
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     )!;
 
-  const particlePollutionInSubscriptionPlan =
-    user?.subscriptionPlan?.config.appFeatures.dataSources.includes(
+  const hasPollutionData =
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     )!;
 
@@ -234,13 +235,13 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
               <li className="locality-option-li" key="list-item-zensus">
                 <MapMenuCollapsable
                   title="Zensus Atlas"
-                  subscriptionCheck={() => censusInSubscriptionPlan}
-                  openUpgradeSubcriptionModal={() =>
-                    !!openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(
-                      censusNotInSubscriptionPlanMessage
-                    )
-                  }
+                  subscriptionCheck={() => hasCensusData}
+                  openUpgradeSubcriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        censusNotInSubscriptionPlanMessage
+                      );
+                  }}
                 >
                   <CensusTable censusData={censusData!} />
                 </MapMenuCollapsable>
@@ -248,13 +249,13 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
               <li className="locality-option-li" key="list-item-btw">
                 <MapMenuCollapsable
                   title="Bundestagswahl 2021"
-                  subscriptionCheck={() => federalElectionInSubscriptionPlan}
-                  openUpgradeSubcriptionModal={() =>
-                    !!openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(
-                      federalElectionNotInSubscriptionPlanMessage
-                    )
-                  }
+                  subscriptionCheck={() => hasElectionData}
+                  openUpgradeSubcriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        federalElectionNotInSubscriptionPlanMessage
+                      );
+                  }}
                 >
                   <FederalElectionTable
                     federalElectionData={federalElectionData!}
@@ -267,13 +268,11 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
               >
                 <MapMenuCollapsable
                   title="Feinstaubbelastung"
-                  subscriptionCheck={() => particlePollutionInSubscriptionPlan}
-                  openUpgradeSubcriptionModal={() =>
-                    !!openUpgradeSubscriptionModal &&
-                    openUpgradeSubscriptionModal(
-                      particlePollutionInSubscriptionPlan
-                    )
-                  }
+                  subscriptionCheck={() => hasPollutionData}
+                  openUpgradeSubcriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(hasPollutionData);
+                  }}
                 >
                   <ParticlePollutionTable
                     particlePollutionData={particlePollutionData!}

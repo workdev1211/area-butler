@@ -10,15 +10,16 @@ import {
 import { Type } from 'class-transformer';
 
 import {
-  ApiDataSource,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
   IApiSubscriptionEnvIds,
   IApiSubscriptionLimits,
+  IApiSubscriptionPlanAppFeatures,
 } from '@area-butler-types/subscription-plan';
 import ApiSubscriptionPricingDto from './api-subscription-pricing.dto';
 import ApiSubscriptionLimitsDto from './api-subscription-limits.dto';
 import ApiSubscriptionEnvIdsDto from './api-subscription-env-ids.dto';
+import ApiSubscriptionPlanAppFeaturesDto from './api-subscription-plan-app-features.dto';
 
 class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
   @IsOptional()
@@ -62,14 +63,9 @@ class ApiSubscriptionPlanDto implements ApiSubscriptionPlan {
 
   @IsNotEmpty()
   @IsObject()
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: boolean;
-    dataSources: ApiDataSource[];
-    canCustomizeExport: boolean;
-    fullyCustomizableExpose: boolean;
-    htmlSnippet: boolean;
-    openAi: boolean;
-  };
+  @ValidateNested()
+  @Type(() => ApiSubscriptionPlanAppFeaturesDto)
+  appFeatures: IApiSubscriptionPlanAppFeatures;
 }
 
 export default ApiSubscriptionPlanDto;

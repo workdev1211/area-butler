@@ -1,11 +1,12 @@
-import React, { useEffect } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { useHistory, useLocation } from "react-router-dom";
+
 import DefaultLayout from "../layout/defaultLayout";
 import { useHttp } from "../hooks/http";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { ApiUser } from "../../../shared/types/types";
 
-const CallbackPage: React.FunctionComponent = () => {
+const CallbackPage: FunctionComponent = () => {
   const { get } = useHttp();
   const history = useHistory();
   const queryParams = new URLSearchParams(useLocation().search);
@@ -17,7 +18,7 @@ const CallbackPage: React.FunctionComponent = () => {
     const refetchMe = async () => {
       try {
         const user = (await get<ApiUser>("/api/users/me")).data;
-        if (user.subscriptionPlan) {
+        if (user.subscription) {
           toastSuccess("Abonnement erfolgreich abgeschlossen");
           history.push("/");
         } else {
@@ -27,6 +28,7 @@ const CallbackPage: React.FunctionComponent = () => {
         toastError("Fehler beim Anlegen des Abonnements");
       }
     };
+
     subscriptionId && refetchMe();
   }, [get, history, subscriptionId]);
 

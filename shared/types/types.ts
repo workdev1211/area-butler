@@ -1,6 +1,10 @@
 import { ApiPreferredLocation } from "./potential-customer";
 import { EntityRoute, EntityTransitRoute } from "./routing";
-import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
+import {
+  ApiRequestContingent,
+  ApiUserSubscription,
+  IApiSubscriptionPlanAppFeatures,
+} from "./subscription-plan";
 import { ApiRealEstateListing, ApiRealEstateStatusEnum } from "./real-estate";
 
 export interface RollbarConfig {
@@ -29,7 +33,7 @@ export interface MapBoxStyle {
 export interface ApiUser {
   fullname: string;
   email: string;
-  subscriptionPlan?: ApiUserSubscription;
+  subscription?: ApiUserSubscription;
   requestsExecuted: number;
   consentGiven?: Date;
   requestContingents: ApiRequestContingent[];

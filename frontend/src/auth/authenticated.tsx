@@ -6,9 +6,10 @@ import React, {
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
+
 import { UserContext } from "context/UserContext";
 
-const pathWithoutAuth = ['/terms', '/privacy', '/impress'];
+const pathWithoutAuth = ["/terms", "/privacy", "/impress"];
 
 const Authenticated = withRouter<
   RouteComponentProps,
@@ -28,15 +29,16 @@ const Authenticated = withRouter<
 
       if (
         !pathWithoutAuth.includes(location.pathname) &&
-        !!userState?.user?.consentGiven &&
-        !!idToken &&
-        !!idToken.email_verified &&
-        !userState?.user?.subscriptionPlan
+        userState?.user?.consentGiven &&
+        idToken &&
+        idToken.email_verified &&
+        !userState?.user?.subscription
       ) {
         history.push("/profile");
       }
     };
-    chooseSubscription();
+
+    void chooseSubscription();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userState, window.location.href]);
@@ -44,6 +46,8 @@ const Authenticated = withRouter<
   if (!isLoggedIn || !userState.user) {
     return <></>;
   }
+
   return <>{children}</>;
 });
+
 export default Authenticated;

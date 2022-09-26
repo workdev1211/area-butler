@@ -61,8 +61,8 @@ const IncreaseLimitFormHandler: FunctionComponent<
   const { stripeEnv } = useContext(ConfigContext);
 
   const user: ApiUser = userState.user!;
-  const subscriptionPriceId = user.subscriptionPlan?.priceId;
-  const subscriptionPlan = user.subscriptionPlan?.config;
+  const subscriptionPriceId = user.subscription?.priceId;
+  const subscriptionPlan = user.subscription?.config;
 
   const currentPrice = subscriptionPlan?.prices.find(
     ({ id }) => id[stripeEnv] === subscriptionPriceId

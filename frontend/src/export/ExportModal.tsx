@@ -67,7 +67,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   const { userState } = useContext(UserContext);
 
   const user = userState.user as ApiUser;
-  const subscriptionPlan = user.subscriptionPlan?.config;
+  const subscriptionPlan = user.subscription?.config;
 
   const hasFederalElectionInSubscription =
     !!subscriptionPlan?.appFeatures.dataSources.includes(
