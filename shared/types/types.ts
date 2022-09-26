@@ -318,3 +318,7 @@ export interface IApiPlacesLocation {
 export interface IApiPlacesLocationValue {
   place_id: string;
 }
+
+export interface IApiMongoParams {
+  [key: string]: number;
+}

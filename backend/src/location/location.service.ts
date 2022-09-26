@@ -28,6 +28,7 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  IApiMongoParams,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -384,8 +385,8 @@ export class LocationService {
     user: UserDocument,
     skip = 0,
     limit = 0,
-    includedFields?: { [p: string]: number },
-    sortOptions?: { [p: string]: number },
+    includedFields?: IApiMongoParams,
+    sortOptions?: IApiMongoParams,
     filter?: { [p: string]: unknown },
   ): Promise<SearchResultSnapshotDocument[]> {
     await this.subscriptionService.checkSubscriptionViolation(

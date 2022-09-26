@@ -75,7 +75,9 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
     const fetchEmbeddableMaps = async () => {
       const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
         await get<ApiSearchResultSnapshotResponse[]>(
-          "/api/location/snapshots?limit=5"
+          `/api/location/snapshots?limit=5&sort=${JSON.stringify({
+            updatedAt: -1,
+          })}`
         )
       ).data;
 
@@ -113,7 +115,7 @@ const EditorMapMenu: FunctionComponent<EditorMapMenuProps> = ({
       setRecentSnippetConfigs(snippetConfigs);
     };
 
-    fetchEmbeddableMaps();
+    void fetchEmbeddableMaps();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

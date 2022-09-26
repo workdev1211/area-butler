@@ -5,7 +5,7 @@ import { SubscriptionService } from '../user/subscription.service';
 
 @Injectable()
 export class UserSubscriptionPipe implements PipeTransform {
-  constructor(private subscriptionService: SubscriptionService) {}
+  constructor(private readonly subscriptionService: SubscriptionService) {}
 
   async transform(user: UserDocument): Promise<UserDocument> {
     if (!user) {

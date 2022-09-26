@@ -28,6 +28,8 @@ import {
 } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { ApiSnapshotService } from './api-snapshot.service';
 import { ApiGuard } from './api.guard';
+import { MongoParamPipe } from '../pipe/mongo-param.pipe';
+import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 
 @Module({
   imports: [
@@ -55,6 +57,8 @@ import { ApiGuard } from './api.guard';
     RealEstateListingService,
     ApiSnapshotService,
     ApiGuard,
+    MongoParamPipe,
+    MongoSortParamPipe,
   ],
 })
 export class LocationModule {}

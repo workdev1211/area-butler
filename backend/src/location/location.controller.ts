@@ -3,15 +3,12 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   Post,
   Put,
   Query,
-  Req,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { Request } from 'express';
 
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
@@ -27,12 +24,17 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
-import { MeansOfTransportation } from '@area-butler-types/types';
+import {
+  IApiMongoParams,
+  MeansOfTransportation,
+} from '@area-butler-types/types';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
 import { ApiSnapshotService } from './api-snapshot.service';
+import { MongoParamPipe } from '../pipe/mongo-param.pipe';
+import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -134,7 +136,10 @@ export class LocationController extends AuthenticatedController {
   @Get('snapshots')
   async fetchSnapshots(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Req() request: Request,
+    @Query('skip', MongoParamPipe) skip: number,
+    @Query('limit', MongoParamPipe) limit: number,
+    @Query('sort', MongoSortParamPipe)
+    sort: IApiMongoParams = { 'snapshot.placesLocation.label': 1 },
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
     const includedFields = {
       token: 1,
@@ -148,15 +153,13 @@ export class LocationController extends AuthenticatedController {
       'snapshot.placesLocation.label': 1,
     };
 
-    const sortOptions = { updatedAt: -1, lastAccess: -1 };
-
     return (
       await this.locationService.fetchSnapshots(
         user,
-        Number(request.query.skip) || 0,
-        Number(request.query.limit) || 0,
+        skip,
+        limit,
         includedFields,
-        sortOptions,
+        sort,
       )
     ).map((r) => mapSnapshotToEmbeddableMap(r));
   }

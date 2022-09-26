@@ -103,7 +103,7 @@ const RealEstatesPage: FunctionComponent = () => {
       };
 
       if (hasHtmlSnippet) {
-        fetchEmbeddableMaps();
+        void fetchEmbeddableMaps();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
