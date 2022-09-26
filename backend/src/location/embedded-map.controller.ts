@@ -26,7 +26,7 @@ export class EmbeddedMapController {
     const user = await this.userService.findById(userId);
 
     const realEstateListings =
-      await this.realEstateListingService.getRealEstateListings(user);
+      await this.realEstateListingService.fetchRealEstateListings(user);
 
     return mapSnapshotToEmbeddableMap(snapshot, true, realEstateListings);
   }

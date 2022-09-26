@@ -26,7 +26,7 @@ export class RealEstateListingService {
     private readonly googleGeocodeService: GoogleGeocodeService,
   ) {}
 
-  async getRealEstateListings(
+  async fetchRealEstateListings(
     { id: userId, parentId }: UserDocument,
     status = ApiRealEstateStatusEnum.ALLE,
   ): Promise<RealEstateListingDocument[]> {

@@ -40,7 +40,7 @@ export class ApiSnapshotService {
       });
 
     const realEstateListings = (
-      await this.realEstateListingService.getRealEstateListings(user)
+      await this.realEstateListingService.fetchRealEstateListings(user)
     ).map((l) => mapRealEstateListingToApiRealEstateListing(l, user.id));
 
     const localityParams = searchData.preferredAmenities

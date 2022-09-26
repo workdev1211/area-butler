@@ -80,6 +80,7 @@ export const mapSnapshotToEmbeddableMap = (
     ),
     description: embed ? undefined : searchResultSnapshot.description,
     lastAccess: searchResultSnapshot.lastAccess,
+    visitAmount: searchResultSnapshot.visitAmount,
     config: searchResultSnapshot.config,
     token: searchResultSnapshot.token,
     mapboxToken: searchResultSnapshot.mapboxAccessToken,

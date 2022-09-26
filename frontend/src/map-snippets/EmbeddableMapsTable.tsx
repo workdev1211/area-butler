@@ -128,6 +128,7 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
             <th>Notiz</th>
             <th>Erstellt am</th>
             <th>Letzter Aufruf</th>
+            <th>Anzahl der Besuche</th>
             <th />
           </tr>
         </thead>
@@ -154,6 +155,7 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
                     )
                   : "Kein Aufruf"}
               </td>
+              <td>{embeddableMap.visitAmount || "Keine Besuche"}</td>
               <td>
                 {!embeddableMap.endsAt ||
                 dayjs().isBefore(embeddableMap.endsAt) ? (

@@ -148,6 +148,7 @@ export class LocationController extends AuthenticatedController {
       createdAt: 1,
       endsAt: 1,
       lastAccess: 1,
+      visitAmount: 1,
       'snapshot.location': 1,
       'snapshot.description': 1,
       'snapshot.placesLocation.label': 1,
@@ -176,7 +177,7 @@ export class LocationController extends AuthenticatedController {
     await map.save();
 
     const realEstateListings =
-      await this.realEstateListingService.getRealEstateListings(user);
+      await this.realEstateListingService.fetchRealEstateListings(user);
 
     return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
   }

@@ -1,7 +1,10 @@
 import {
   IsDate,
   IsNotEmpty,
+  IsNumber,
+  IsObject,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -14,6 +17,7 @@ class ApiSearchResultSnapshotResponseDto
   implements ApiSearchResultSnapshotResponse
 {
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResultSnapshotConfigDto)
   config?: ApiSearchResultSnapshotConfigDto;
@@ -27,9 +31,11 @@ class ApiSearchResultSnapshotResponseDto
   endsAt?: Date;
 
   @IsOptional()
+  @IsString()
   description?: string;
 
   @IsNotEmpty()
+  @IsString()
   id: string;
 
   @IsOptional()
@@ -37,18 +43,25 @@ class ApiSearchResultSnapshotResponseDto
   lastAccess?: Date;
 
   @IsOptional()
+  @IsNumber()
+  visitAmount?: number;
+
+  @IsOptional()
   @IsDate()
   updatedAt?: Date;
 
   @IsNotEmpty()
+  @IsString()
   mapboxToken: string;
 
   @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResultSnapshotDto)
   snapshot: ApiSearchResultSnapshotDto;
 
   @IsNotEmpty()
+  @IsString()
   token: string;
 }
 

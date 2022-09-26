@@ -39,6 +39,9 @@ export class SearchResultSnapshot {
 
   @Prop({ type: Date })
   endsAt: Date;
+
+  @Prop({ default: 0 })
+  visitAmount: number;
 }
 
 export const SearchResultSnapshotSchema =

@@ -46,7 +46,7 @@ export class RealEstateListingController extends AuthenticatedController {
     @Query('status') status: ApiRealEstateStatusEnum,
   ): Promise<ApiRealEstateListingDto[]> {
     return (
-      await this.realEstateListingService.getRealEstateListings(user, status)
+      await this.realEstateListingService.fetchRealEstateListings(user, status)
     ).map((l) => mapRealEstateListingToApiRealEstateListing(l, user.id));
   }
 

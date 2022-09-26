@@ -324,6 +324,7 @@ export class LocationService {
     this.checkAddressExpiration(snapshotDoc);
 
     snapshotDoc.lastAccess = new Date();
+    snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
 
     return snapshotDoc.save();
   }

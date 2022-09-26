@@ -306,6 +306,7 @@ export interface ApiSearchResultSnapshotResponse {
   description?: string;
   createdAt: Date;
   lastAccess?: Date;
+  visitAmount?: number;
   endsAt?: Date;
   updatedAt?: Date;
 }
