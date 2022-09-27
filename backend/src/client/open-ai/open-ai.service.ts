@@ -33,16 +33,17 @@ export class OpenAiService {
         return result;
       }, {});
 
-    let initialOpenAiText =
+    const initialOpenAiText =
       `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für Immobilien-Anzeige unter Anderem aus den folgenden Daten.\n` +
       'Füge Umgebungsinformationen hinzu:\n' +
       `Adresse: ${snapshotDoc.snapshot.placesLocation.label}\n`;
 
-    snapshotDoc.snapshot.preferredLocations.forEach(
-      ({ address: preferredLocation }) => {
-        initialOpenAiText += `Verwende dabei einige der folgenden, wichtigen Plätze: ${preferredLocation}\n`;
-      },
-    );
+    // TODO wait for the change from Philipp
+    // snapshotDoc.snapshot.preferredLocations.forEach(
+    //   ({ address: preferredLocation }) => {
+    //     initialOpenAiText += `Verwende dabei einige der folgenden, wichtigen Plätze: ${preferredLocation}\n`;
+    //   },
+    // );
 
     return Object.entries(poiCount).reduce((result, [type, count]) => {
       result += `Anzahl ${openAiTranslationDictionary[type].plural}: ${count}\n`;
