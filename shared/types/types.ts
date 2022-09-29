@@ -1,11 +1,8 @@
 import { ApiPreferredLocation } from "./potential-customer";
 import { EntityRoute, EntityTransitRoute } from "./routing";
-import {
-  ApiRequestContingent,
-  ApiUserSubscription,
-  IApiSubscriptionPlanAppFeatures,
-} from "./subscription-plan";
+import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 import { ApiRealEstateListing, ApiRealEstateStatusEnum } from "./real-estate";
+import { ILimitIncreaseMetadata } from "./billing";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -322,4 +319,17 @@ export interface IApiPlacesLocationValue {
 
 export interface IApiMongoParams {
   [key: string]: number;
+}
+
+export interface IApiCreatePaypalOrderQuery {
+  priceId: string;
+}
+
+export interface IApiApprovePaypalSubscriptionQuery {
+  subscriptionId: string;
+}
+
+export interface IApiCapturePaypalPaymentQuery {
+  orderId: string;
+  metadata?: ILimitIncreaseMetadata;
 }

@@ -6,7 +6,9 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { BillingService } from './billing.service';
-import { ILimitIncreaseMetadata } from '@area-butler-types/billing';
+import ApiCreatePaypalOrderQueryDto from '../dto/api-create-paypal-order-query.dto';
+import ApiCapturePaypalPaymentQueryDto from '../dto/api-capture-paypal-payment-query.dto';
+import ApiApprovePaypalSubscriptionQueryDto from '../dto/api-approve-paypal-subscription-query.dto';
 
 @ApiTags('billing')
 @Controller('api/billing')
@@ -36,8 +38,7 @@ export class BillingController extends AuthenticatedController {
   @Post('create-paypal-order')
   async createPaypalOrder(
     @InjectUser() user: UserDocument,
-    // TODO create DTOs
-    @Body() createPaypalOrder: { priceId: string },
+    @Body() createPaypalOrder: ApiCreatePaypalOrderQueryDto,
   ): Promise<string> {
     return this.billingService.createPaypalOrder(
       user,
@@ -49,12 +50,8 @@ export class BillingController extends AuthenticatedController {
   @Post('capture-paypal-order-payment')
   async capturePaypalOrderPayment(
     @InjectUser() user: UserDocument,
-    // TODO create DTOs
     @Body()
-    capturePaypalPayment: {
-      orderId: string;
-      metadata?: ILimitIncreaseMetadata;
-    },
+    capturePaypalPayment: ApiCapturePaypalPaymentQueryDto,
   ): Promise<string> {
     return this.billingService.capturePaypalOrderPayment(
       user,
@@ -67,8 +64,7 @@ export class BillingController extends AuthenticatedController {
   @Post('create-paypal-subscription')
   async createPaypalSubscription(
     @InjectUser() user: UserDocument,
-    // TODO create DTOs
-    @Body() createPaypalSubscription: { priceId: string },
+    @Body() createPaypalSubscription: ApiCreatePaypalOrderQueryDto,
   ): Promise<string> {
     return this.billingService.createPaypalSubscription(
       user,
@@ -80,8 +76,7 @@ export class BillingController extends AuthenticatedController {
   @Post('approve-paypal-subscription')
   async approvePaypalSubscription(
     @InjectUser() user: UserDocument,
-    // TODO create DTOs
-    @Body() approvePaypalSubscription: { subscriptionId: string },
+    @Body() approvePaypalSubscription: ApiApprovePaypalSubscriptionQueryDto,
   ): Promise<string> {
     return this.billingService.approvePaypalSubscription(
       user,

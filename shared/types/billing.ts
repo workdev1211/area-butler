@@ -18,15 +18,15 @@ export enum ApiStripeCheckoutPaymentStatusEnum {
 }
 
 export interface IApiCheckoutMetadata {
-  [name: string]: string | number | null;
+  [key: string]: string | number | null;
+}
+
+export interface ILimitIncreaseMetadata {
+  modelName: LimitIncreaseModelNameEnum;
+  modelId: string;
 }
 
 export enum LimitIncreaseModelNameEnum {
   LocationSearch = "LocationSearch",
   SearchResultSnapshot = "SearchResultSnapshot",
-}
-
-export interface ILimitIncreaseMetadata extends IApiCheckoutMetadata {
-  modelName: LimitIncreaseModelNameEnum;
-  modelId: string;
 }
