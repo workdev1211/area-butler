@@ -18,7 +18,7 @@ import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandler
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
 import { ApiUser, ApiUserRequests } from "../../shared/types/types";
 import "./App.scss";
-import Authenticated from "./auth/authenticated";
+import Authenticated from "./auth/Authenticated";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { SearchContextProvider } from "./context/SearchContext";
@@ -107,53 +107,55 @@ function App() {
   };
 
   useEffect(() => {
-    if (isAuthenticated) {
-      const validateEmailVerified = async () => {
-        const idToken = await getIdTokenClaims();
-        const { email_verified } = idToken;
+    if (!isAuthenticated) {
+      return;
+    }
 
-        if (!email_verified) {
-          history.push("/verify");
-        }
-      };
+    const validateEmailVerified = async (): Promise<void> => {
+      const idToken = await getIdTokenClaims();
+      const { email_verified: emailVerified } = idToken;
 
-      const consumeConsentGiven = async () => {
-        try {
-          const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
-            .data;
+      if (!emailVerified) {
+        history.push("/verify");
+      }
+    };
 
-          userDispatch({
-            type: UserActionTypes.SET_USER,
-            payload: updatedUser,
-          });
-
-          localStorage.removeItem(localStorageConsentGivenKey);
-        } catch (error) {
-          console.error(error);
-        }
-      };
-
-      const fetchUser = async () => {
-        const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
-        userDispatch({ type: UserActionTypes.SET_USER, payload: user });
-
-        const latestUserRequests: ApiUserRequests = (
-          await get<ApiUserRequests>("/api/location/latest-user-requests")
-        ).data;
+    const consumeConsentGiven = async () => {
+      try {
+        const updatedUser = (await post<ApiUser>("/api/users/me/consent", {}))
+          .data;
 
         userDispatch({
-          type: UserActionTypes.SET_LATEST_USER_REQUESTS,
-          payload: latestUserRequests,
+          type: UserActionTypes.SET_USER,
+          payload: updatedUser,
         });
-      };
 
-      validateEmailVerified();
-
-      if (localStorage.getItem(localStorageConsentGivenKey) === "true") {
-        consumeConsentGiven();
-      } else {
-        fetchUser();
+        localStorage.removeItem(localStorageConsentGivenKey);
+      } catch (error) {
+        console.error(error);
       }
+    };
+
+    const fetchUser = async () => {
+      const user: ApiUser = (await get<ApiUser>("/api/users/me")).data;
+      userDispatch({ type: UserActionTypes.SET_USER, payload: user });
+
+      const latestUserRequests: ApiUserRequests = (
+        await get<ApiUserRequests>("/api/location/latest-user-requests")
+      ).data;
+
+      userDispatch({
+        type: UserActionTypes.SET_LATEST_USER_REQUESTS,
+        payload: latestUserRequests,
+      });
+    };
+
+    void validateEmailVerified();
+
+    if (localStorage.getItem(localStorageConsentGivenKey) === "true") {
+      void consumeConsentGiven();
+    } else {
+      void fetchUser();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isAuthenticated]);
@@ -173,7 +175,6 @@ function App() {
           draggable
           pauseOnHover
         />
-        <ToastContainer />
         <Suspense fallback={<LoadingMessage />}>
           <Nav />
           <Authenticated>

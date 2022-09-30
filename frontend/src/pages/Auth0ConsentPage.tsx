@@ -1,9 +1,10 @@
+import { FunctionComponent, useContext, useState } from "react";
 import { Form, Formik } from "formik";
-import React, { useContext, useState } from "react";
 import { useLocation } from "react-router-dom";
-import { toastError } from "shared/shared.functions";
 import { v4 as uuid } from "uuid";
 import * as Yup from "yup";
+
+import { toastError } from "shared/shared.functions";
 import { localStorageConsentGivenKey } from "../../../shared/constants/constants";
 import Checkbox from "../components/Checkbox";
 import { ConfigContext } from "../context/ConfigContext";
@@ -11,7 +12,7 @@ import DefaultLayout from "../layout/defaultLayout";
 import "./Auth0ConsentPage.scss";
 import { TRIAL_DAYS } from "../../../shared/constants/subscription-plan";
 
-const Auth0ConsentPage: React.FunctionComponent = () => {
+const Auth0ConsentPage: FunctionComponent = () => {
   const { auth } = useContext(ConfigContext);
 
   const queryParams = new URLSearchParams(useLocation().search);
@@ -19,7 +20,7 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
 
   const [busy, setBusy] = useState(false);
 
-  const onSubmit = async (values: any) => {
+  const onSubmit = async () => {
     try {
       localStorage.setItem(localStorageConsentGivenKey, "true");
       window.location.href = `https://${auth.domain}/continue?state=${state}`;
@@ -31,23 +32,33 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
   };
 
   const formId = `form-${uuid()}`;
+
   return (
     <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
       <div className="w-1/3 mx-auto pt-20">
         <h2>Herzlich willkommen !</h2>
-        <p className="mt-5">
-          Mit der Zustimmung der AGB und Datenschutzbestimmungen erhalten Sie
-          für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
-          <strong>kostenfreie Testphase</strong>, um den vollen
-          Umfang des AreaButlers testen zu können. 
+        <div className="mt-5 text-justify">
           <p>
-          Zu unserer Sicherheit und um Missbrauch zu vermeiden, erfordert die Testphase ein hinterlegtes Zahlungsmittel. Dieses wird erst nach der Testphase belastet.
+            Mit der Zustimmung der AGB und Datenschutzbestimmungen erhalten Sie
+            für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
+            <strong>kostenfreie Testphase</strong>, um den vollen Umfang des
+            AreaButlers testen zu können.
           </p>
-        </p>
-        <p>
-        Sollten Sie während der Testphase nicht zufrieden sein, können Sie über Ihr Profil im AreaButler vom Kauf zurücktrete und die Testphase kostenfrei beenden.
-        </p>
-        <p>Viel Spaß beim Entdecken des AreaButlers, wir freuen uns auf Ihr Feedback!</p>
+          <p>
+            Zu unserer Sicherheit und um Missbrauch zu vermeiden, erfordert die
+            Testphase ein hinterlegtes Zahlungsmittel. Dieses wird erst nach der
+            Testphase belastet.
+          </p>
+          <p>
+            Sollten Sie während der Testphase nicht zufrieden sein, können Sie
+            über Ihr Profil im AreaButler vom Kauf zurücktrete und die Testphase
+            kostenfrei beenden.
+          </p>
+          <p>
+            Viel Spaß beim Entdecken des AreaButlers, wir freuen uns auf Ihr
+            Feedback!
+          </p>
+        </div>
         <Formik
           initialValues={{
             consentGiven: false,
@@ -58,7 +69,7 @@ const Auth0ConsentPage: React.FunctionComponent = () => {
               "Ihre Zustimmung wird benötigt."
             ),
           })}
-          onSubmit={(values) => onSubmit(values)}
+          onSubmit={onSubmit}
         >
           <Form id={formId}>
             <div className="form-control mt-5">

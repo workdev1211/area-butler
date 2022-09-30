@@ -16,6 +16,7 @@ import {
 } from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
 import PaymentMethodModal from "./PaymentMethodModal";
+import { ApiCreateCheckout } from "../../../shared/types/billing";
 
 interface ISubscriptionPlan {
   stripePriceId: string;
@@ -40,12 +41,12 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
   const [sortedSubscriptionPlans, setSortedSubscriptionPlans] =
     useState<TSubscriptionPlanGroups>({
-      [ApiSubscriptionPlanTypeGroupEnum.PayPerUse]: [],
-      [ApiSubscriptionPlanTypeGroupEnum.BusinessPlus]: [],
+      [ApiSubscriptionPlanTypeGroupEnum.PAY_PER_USE]: [],
+      [ApiSubscriptionPlanTypeGroupEnum.BUSINESS_PLUS]: [],
     });
 
   const [activeSubscriptionGroup, setActiveSubscriptionGroup] = useState(
-    ApiSubscriptionPlanTypeGroupEnum.PayPerUse
+    ApiSubscriptionPlanTypeGroupEnum.PAY_PER_USE
   );
 
   const [isMounted, setIsMounted] = useState(true);
@@ -75,7 +76,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       setHadPreviousSubscriptionPlans(subscriptions.length > 0);
     };
 
-    fetchSubscriptions();
+    void fetchSubscriptions();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [hadPreviousSubscriptionPlans]);
 
@@ -85,11 +86,11 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     ): ApiSubscriptionPlanTypeGroupEnum => {
       switch (type) {
         case ApiSubscriptionPlanType.BUSINESS_PLUS_V2: {
-          return ApiSubscriptionPlanTypeGroupEnum.BusinessPlus;
+          return ApiSubscriptionPlanTypeGroupEnum.BUSINESS_PLUS;
         }
 
         default: {
-          return ApiSubscriptionPlanTypeGroupEnum.PayPerUse;
+          return ApiSubscriptionPlanTypeGroupEnum.PAY_PER_USE;
         }
       }
     };
@@ -142,8 +143,8 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
         return result;
       },
       {
-        [ApiSubscriptionPlanTypeGroupEnum.PayPerUse]: [],
-        [ApiSubscriptionPlanTypeGroupEnum.BusinessPlus]: [],
+        [ApiSubscriptionPlanTypeGroupEnum.PAY_PER_USE]: [],
+        [ApiSubscriptionPlanTypeGroupEnum.BUSINESS_PLUS]: [],
       } as TSubscriptionPlanGroups
     );
 
@@ -154,17 +155,19 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   useEffect(() => {
     const getStripeCheckoutUrl = async () => {
       const innerStripeCheckoutUrl = (
-        await post<string>("/api/billing/create-checkout-url", {
-          priceId: paymentStripePriceId,
-          trialPeriod: TRIAL_DAYS,
-        })
+        await post<string, ApiCreateCheckout>(
+          "/api/billing/create-checkout-url",
+          {
+            priceId: paymentStripePriceId,
+          }
+        )
       ).data;
 
       setStripeCheckoutUrl(innerStripeCheckoutUrl);
     };
 
     if (paymentStripePriceId) {
-      getStripeCheckoutUrl();
+      void getStripeCheckoutUrl();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentStripePriceId]);

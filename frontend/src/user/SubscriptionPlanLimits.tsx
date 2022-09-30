@@ -7,7 +7,10 @@ import RequestContingentDropDown from "./RequestContingentDropdown";
 import { deriveTotalRequestContingent } from "shared/shared.functions";
 import { useHttp } from "hooks/http";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { PaymentSystemTypeEnum } from "../../../shared/types/subscription-plan";
+import {
+  // ApiSubscriptionPlanType,
+  PaymentSystemTypeEnum,
+} from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
 
 export interface SubscriptionPlanLimitsProps {
@@ -31,14 +34,14 @@ const SubscriptionPlanLimits: FunctionComponent<
 
   const forwardToCustomerPortal = async () => {
     switch (subscription?.paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         window.location.href = (
           await post<string>("/api/billing/create-customer-portal-link", {})
         ).data;
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         window.open(
           `https://${
             stripeEnv === "dev" ? "sandbox." : ""
@@ -47,6 +50,13 @@ const SubscriptionPlanLimits: FunctionComponent<
         );
         break;
       }
+
+      // TODO implement the ability to cancel the trial subscription
+      // default: {
+      //   if (subscription?.type === ApiSubscriptionPlanType.TRIAL) {
+      //     // cancel TRIAL subscription
+      //   }
+      // }
     }
   };
 
@@ -57,13 +67,20 @@ const SubscriptionPlanLimits: FunctionComponent<
           Ihr aktuelles Abonnement und Ihre Kontingente
         </h1>
         <h3 className="font-bold">Aktuelles Abonnement: {subscriptionLabel}</h3>
-        <button
-          onClick={() => forwardToCustomerPortal()}
-          className="btn bg-primary-gradient btn-primary"
-          data-tour="manage-subscription"
-        >
-          Zahlung und Abonnement verwalten
-        </button>
+        {/*TODO implement the ability to cancel the trial subscription*/}
+        {Object.values<string>(PaymentSystemTypeEnum).includes(
+          `${subscription?.paymentSystemType}`
+        ) && (
+          <button
+            onClick={async () => {
+              await forwardToCustomerPortal();
+            }}
+            className="btn bg-primary-gradient btn-primary"
+            data-tour="manage-subscription"
+          >
+            Zahlung und Abonnement verwalten
+          </button>
+        )}
       </div>
       <div
         key="request-contingent"

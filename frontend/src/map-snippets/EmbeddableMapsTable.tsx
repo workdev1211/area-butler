@@ -101,7 +101,7 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
   }> = ({ modelId }) => (
     <FormModal modalConfig={increaseLimitModalConfig}>
       <IncreaseLimitFormHandler
-        limitType={ApiSubscriptionLimitsEnum.AddressExpiration}
+        limitType={ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION}
         modelName={LimitIncreaseModelNameEnum.SearchResultSnapshot}
         modelId={modelId}
       />

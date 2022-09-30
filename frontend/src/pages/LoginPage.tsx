@@ -1,9 +1,9 @@
+import { FunctionComponent, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
-import React, { useEffect } from "react";
 import { useHistory } from "react-router-dom";
 import DefaultLayout from "../layout/defaultLayout";
 
-export const LoginPage: React.FunctionComponent = () => {
+export const LoginPage: FunctionComponent = () => {
   const { isAuthenticated, loginWithRedirect } = useAuth0();
   const history = useHistory();
 
@@ -20,16 +20,18 @@ export const LoginPage: React.FunctionComponent = () => {
         <p className="pt-5">
           Bitte melden Sie sich an um den AreaButler nutzen zu können.
         </p>
-        <p>
-          Ein Klick auf den Button „Anmelden/Registrieren“ startet den Prozess zur Anmeldung/Registrierung beim AreaButler. 
-Dieser Prozess wird von unserem Partner Auth0 unterstützt. Dem Marktführer für Sichere Anmelde- & Registrierungsprozesse.
+        <p className="text-justify">
+          Ein Klick auf den Button „Anmelden / Registrieren“ startet den Prozess
+          zur Anmeldung / Registrierung beim AreaButler. Dieser Prozess wird von
+          unserem Partner Auth0 unterstützt. Dem Marktführer für Sichere
+          Anmelde- & Registrierungsprozesse.
         </p>
         <button
           type="button"
           className="btn btn-primary mt-5"
           onClick={loginWithRedirect}
         >
-          Anmelden/Registrieren
+          Anmelden / Registrieren
         </button>
       </div>
     </DefaultLayout>

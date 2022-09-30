@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { RouteComponentProps, withRouter } from "react-router-dom";
 
@@ -24,21 +19,43 @@ const Authenticated = withRouter<
   }, [isAuthenticated, setIsLoggedIn]);
 
   useEffect(() => {
-    const chooseSubscription = async () => {
+    const verifyUserRequirements = async () => {
       const idToken = await getIdTokenClaims();
+      const registerLocation = "/register";
+      const verifyEmailLocation = "/verify";
+      const profileLocation = "/profile";
+
+      if (
+        userState?.user &&
+        !userState?.user?.consentGiven &&
+        location.pathname !== registerLocation
+      ) {
+        history.push(registerLocation);
+        return;
+      }
+
+      if (
+        idToken &&
+        !idToken.email_verified &&
+        location.pathname !== verifyEmailLocation
+      ) {
+        history.push(verifyEmailLocation);
+        return;
+      }
 
       if (
         !pathWithoutAuth.includes(location.pathname) &&
         userState?.user?.consentGiven &&
-        idToken &&
-        idToken.email_verified &&
-        !userState?.user?.subscription
+        idToken?.email_verified &&
+        !userState?.user?.subscription &&
+        location.pathname !== profileLocation
       ) {
-        history.push("/profile");
+        history.push(profileLocation);
+        return;
       }
     };
 
-    void chooseSubscription();
+    void verifyUserRequirements();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userState, window.location.href]);

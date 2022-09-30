@@ -16,7 +16,10 @@ import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "../context/RealEstateContext";
-import { addressExpiredMessage } from "../../../shared/messages/error.message";
+import {
+  addressExpiredMessage,
+  subscriptionExpiredMessage,
+} from "../../../shared/messages/error.message";
 import { defaultMapZoom } from "../map/Map";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 
@@ -87,7 +90,10 @@ const EmbedContainer: FunctionComponent = () => {
       } catch (e: any) {
         const { statusCode, message } = e.response.data;
         setIsAddressExpired(
-          statusCode === 402 && message === addressExpiredMessage
+          statusCode === 402 &&
+            [addressExpiredMessage, subscriptionExpiredMessage].includes(
+              message
+            )
         );
       }
     };

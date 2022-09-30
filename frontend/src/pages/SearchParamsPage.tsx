@@ -114,7 +114,7 @@ const SearchParamsPage: FunctionComponent = () => {
         );
 
         if (dayjs().isAfter(existingRequest?.endsAt)) {
-          limitType = ApiSubscriptionLimitsEnum.AddressExpiration;
+          limitType = ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION;
 
           modelData = {
             name: LimitIncreaseModelNameEnum.LocationSearch,
@@ -127,7 +127,7 @@ const SearchParamsPage: FunctionComponent = () => {
           user.requestsExecuted >= totalRequestContingent;
 
         if (!existingRequest && requestLimitExceeded) {
-          limitType = ApiSubscriptionLimitsEnum.NumberOfRequests;
+          limitType = ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS;
         }
 
         isNewRequest = !existingRequest;
@@ -242,7 +242,7 @@ const SearchParamsPage: FunctionComponent = () => {
   const IncreaseLimitModal: FunctionComponent = () => (
     <FormModal modalConfig={increaseRequestLimitModalConfig}>
       <IncreaseLimitFormHandler
-        limitType={limitType || ApiSubscriptionLimitsEnum.NumberOfRequests}
+        limitType={limitType || ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS}
         modelName={modelData?.name}
         modelId={modelData?.id}
       />

@@ -1,28 +1,31 @@
-import React, { useEffect } from "react";
-import DefaultLayout from "../layout/defaultLayout";
-import "./Auth0ConsentPage.scss";
+import { FunctionComponent, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { useHistory } from "react-router-dom";
 
-const VerifyEmailPage: React.FunctionComponent = () => {
+import DefaultLayout from "../layout/defaultLayout";
+import "./Auth0ConsentPage.scss";
+
+const VerifyEmailPage: FunctionComponent = () => {
   const { getIdTokenClaims } = useAuth0();
   const history = useHistory();
 
   useEffect(() => {
-    const validateEmailVerified = async () => {
+    const validateEmailVerified = async (): Promise<void> => {
       const idToken = await getIdTokenClaims();
-      const { email_verified } = idToken;
-      if (email_verified) {
+      const { email_verified: emailVerified } = idToken;
+
+      if (emailVerified) {
         history.push("/");
       }
     };
-    validateEmailVerified();
+
+    void validateEmailVerified();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   return (
     <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
-      <div className="flex flex-col w-1/3 mx-auto pt-20">
+      <div className="flex flex-col w-1/3 mx-auto pt-20 text-justify">
         <p>
           Bitte verifizieren Sie Ihre E-Mail-Adresse, eine entsprechende E-Mail
           finden Sie in Ihrem Postfach.
@@ -33,7 +36,9 @@ const VerifyEmailPage: React.FunctionComponent = () => {
         </p>
         <button
           className="btn btn-primary mt-5"
-          onClick={() => window.location.reload()}
+          onClick={() => {
+            history.go(0);
+          }}
         >
           Nochmal versuchen
         </button>
