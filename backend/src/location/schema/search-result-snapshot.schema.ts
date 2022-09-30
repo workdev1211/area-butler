@@ -42,6 +42,9 @@ export class SearchResultSnapshot {
 
   @Prop({ default: 0 })
   visitAmount: number;
+
+  @Prop({ default: false })
+  isTrial: boolean;
 }
 
 export const SearchResultSnapshotSchema =

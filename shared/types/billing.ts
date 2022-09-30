@@ -1,7 +1,7 @@
 export interface ApiCreateCheckout {
   priceId: string;
   amount?: number;
-  trialPeriod?: number;
+  // trialPeriod?: number;
   mode?: ApiStripeCheckoutModeEnum;
   metadata?: IApiCheckoutMetadata;
 }

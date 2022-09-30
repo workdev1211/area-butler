@@ -13,13 +13,13 @@ class ApiSubscriptionLimitsDto implements IApiSubscriptionLimits {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSubscriptionLimitDto)
-  [ApiSubscriptionLimitsEnum.NumberOfRequests]?: IApiSubscriptionLimit;
+  [ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS]?: IApiSubscriptionLimit;
 
   @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSubscriptionLimitDto)
-  [ApiSubscriptionLimitsEnum.AddressExpiration]?: IApiSubscriptionLimit;
+  [ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION]?: IApiSubscriptionLimit;
 }
 
 export default ApiSubscriptionLimitsDto;

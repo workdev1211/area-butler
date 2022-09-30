@@ -9,7 +9,10 @@ import {
   SubscriptionDocument,
 } from './schema/subscription.schema';
 import { configService } from '../config/config.service';
-import { allSubscriptions } from '../../../shared/constants/subscription-plan';
+import {
+  allSubscriptions,
+  TRIAL_PRICE_ID,
+} from '../../../shared/constants/subscription-plan';
 import ApiSubscriptionPlanDto from '../dto/api-subscription-plan.dto';
 import {
   ApiSubscriptionLimitsEnum,
@@ -30,6 +33,22 @@ import {
   subscriptionRenewalTemplateId,
 } from '../shared/email.constants';
 import { UserDocument } from './schema/user.schema';
+import { EventType } from '../event/event.types';
+import { EventEmitter2 } from 'eventemitter2';
+
+interface ISubscriptionUpsertData {
+  user: UserDocument;
+  endsAt: Date;
+  type: ApiSubscriptionPlanType;
+  priceId: string;
+  subscriptionId: string;
+  paymentSystemType: PaymentSystemTypeEnum;
+}
+
+interface IActiveTrialSubscriptions {
+  active: SubscriptionDocument[];
+  trial: SubscriptionDocument[];
+}
 
 @Injectable()
 export class SubscriptionService {
@@ -39,6 +58,7 @@ export class SubscriptionService {
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
     private readonly mailSenderService: MailSenderService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   private getSubscriptionCancelUrl(
@@ -46,7 +66,7 @@ export class SubscriptionService {
   ): string {
     let subscriptionCancelUrl = `${configService.getBaseAppUrl()}/profile`;
 
-    if (paymentSystemType === PaymentSystemTypeEnum.PayPal) {
+    if (paymentSystemType === PaymentSystemTypeEnum.PAYPAL) {
       subscriptionCancelUrl = `https://${
         configService.getStripeEnv() !== 'prod' ? 'sandbox.' : ''
       }paypal.com/myaccount/autopay/`;
@@ -162,12 +182,12 @@ export class SubscriptionService {
     } = {};
 
     switch (paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         findFilter.stripeSubscriptionId = subscriptionId;
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         findFilter.paypalSubscriptionId = subscriptionId;
         break;
       }
@@ -183,22 +203,75 @@ export class SubscriptionService {
   async findActiveByUserId(
     userId: string,
   ): Promise<SubscriptionDocument | null> {
-    const userSubscriptions: SubscriptionDocument[] =
-      await this.fetchAllUserSubscriptions(userId);
-
-    const activeSubscriptions = userSubscriptions.filter(
-      (s) => s.endsAt >= new Date(),
-    );
+    const activeSubscriptions: SubscriptionDocument[] =
+      await this.subscriptionModel.find({
+        userId,
+        endsAt: { $gte: new Date() },
+      });
 
     if (activeSubscriptions.length > 1) {
       throw new HttpException('User has multiple active subscriptions', 400);
     }
 
-    if (activeSubscriptions.length < 1) {
+    if (activeSubscriptions.length === 0) {
       return null;
     }
 
     return activeSubscriptions[0];
+  }
+
+  async findActiveOrTrialByUserId(
+    userId: string,
+  ): Promise<IActiveTrialSubscriptions> {
+    const subscriptions: SubscriptionDocument[] =
+      await this.subscriptionModel.find({
+        userId,
+        $or: [
+          { endsAt: { $gte: new Date() } },
+          { type: ApiSubscriptionPlanType.TRIAL },
+        ],
+      });
+
+    return subscriptions.reduce<IActiveTrialSubscriptions>(
+      (result, subscription) => {
+        if (subscription.type === ApiSubscriptionPlanType.TRIAL) {
+          result.trial.push(subscription);
+        } else {
+          result.active.push(subscription);
+        }
+
+        return result;
+      },
+      { active: [], trial: [] },
+    );
+  }
+
+  async handleActiveOrTrialSubscriptions(
+    subscriptions: IActiveTrialSubscriptions,
+  ): Promise<void> {
+    if (subscriptions.active.length > 1 || subscriptions.trial.length > 1) {
+      throw new HttpException(
+        `User has multiple active (${subscriptions.active.length}) or trial (${subscriptions.trial.length}) subscriptions`,
+        400,
+      );
+    }
+
+    if (subscriptions.active.length === 1) {
+      throw new HttpException('User already has an active subscription', 400);
+    }
+
+    if (subscriptions.trial.length === 1) {
+      const trialSubscription = subscriptions.trial[0];
+
+      await this.subscriptionModel.deleteOne({
+        _id: trialSubscription._id,
+        type: ApiSubscriptionPlanType.TRIAL,
+      });
+
+      this.eventEmitter.emitAsync(EventType.TRIAL_DATA_REMOVE_EVENT, {
+        userId: trialSubscription.userId,
+      });
+    }
   }
 
   async findByStripeSubscriptionId(
@@ -213,23 +286,40 @@ export class SubscriptionService {
     return this.subscriptionModel.findOne({ paypalSubscriptionId });
   }
 
-  async upsertByUserId(
-    { _id: userId, fullname: userName, email: userEmail }: UserDocument,
-    type: ApiSubscriptionPlanType,
-    subscriptionId = 'unverified-new',
-    priceId: string,
+  async upsertTrialForUser(
+    userId: string,
     endsAt: Date,
-    paymentSystemType: PaymentSystemTypeEnum,
   ): Promise<SubscriptionDocument> {
+    // just in case
+    if ((await this.countAllUserSubscriptions(userId)) > 0) {
+      throw new HttpException('User already has a subscription', 400);
+    }
+
+    return new this.subscriptionModel({
+      userId,
+      type: ApiSubscriptionPlanType.TRIAL,
+      stripePriceId: TRIAL_PRICE_ID,
+      endsAt,
+    }).save();
+  }
+
+  async upsertForUser({
+    user: { id: userId, fullname: userName, email: userEmail },
+    endsAt,
+    type,
+    priceId,
+    subscriptionId,
+    paymentSystemType,
+  }: ISubscriptionUpsertData): Promise<SubscriptionDocument> {
     let subscription;
 
     switch (paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         subscription = await this.findByStripeSubscriptionId(subscriptionId);
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         subscription = await this.findByPaypalSubscriptionId(subscriptionId);
         break;
       }
@@ -245,32 +335,33 @@ export class SubscriptionService {
       this.logger.log(`Update ${type} subscription for ${userId} user`);
 
       return subscription.save();
-    } else {
-      if (await this.findActiveByUserId(userId)) {
-        throw new HttpException('user has already an active subscription', 400);
+    }
+
+    const userSubscriptions = await this.findActiveOrTrialByUserId(userId);
+    await this.handleActiveOrTrialSubscriptions(userSubscriptions);
+
+    this.logger.log(`Create ${type} subscription for ${userId} user`);
+
+    const newSubscription: Partial<SubscriptionDocument> = {
+      userId,
+      type,
+      stripePriceId: priceId,
+      endsAt,
+    };
+
+    switch (paymentSystemType) {
+      case PaymentSystemTypeEnum.STRIPE: {
+        newSubscription.stripeSubscriptionId = subscriptionId;
+        break;
       }
 
-      this.logger.log(`Create ${type} subscription for ${userId} user`);
-
-      const newSubscription: Partial<SubscriptionDocument> = {
-        userId,
-        type,
-        stripePriceId: priceId,
-        endsAt,
-      };
-
-      switch (paymentSystemType) {
-        case PaymentSystemTypeEnum.Stripe: {
-          newSubscription.stripeSubscriptionId = subscriptionId;
-          break;
-        }
-
-        case PaymentSystemTypeEnum.PayPal: {
-          newSubscription.paypalSubscriptionId = subscriptionId;
-          break;
-        }
+      case PaymentSystemTypeEnum.PAYPAL: {
+        newSubscription.paypalSubscriptionId = subscriptionId;
+        break;
       }
+    }
 
+    try {
       await this.mailSenderService.sendMail({
         to: [{ name: userName, email: userEmail }],
         templateId:
@@ -281,9 +372,13 @@ export class SubscriptionService {
           href: this.getSubscriptionCancelUrl(paymentSystemType),
         },
       });
-
-      return new this.subscriptionModel(newSubscription).save();
+    } catch (e) {
+      this.logger.error(
+        `The subscription letter to ${userEmail} has not been sent due to an error`,
+      );
     }
+
+    return new this.subscriptionModel(newSubscription).save();
   }
 
   getLimitAmount(

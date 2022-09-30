@@ -16,8 +16,12 @@ export class LocationSearch {
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;
 
+  // TODO check why do we need two "endsAt" fields - this one and inside the "locationSearch"
   @Prop({ type: Date })
   endsAt: Date;
+
+  @Prop({ default: false })
+  isTrial: boolean;
 }
 
 export const LocationSearchSchema =

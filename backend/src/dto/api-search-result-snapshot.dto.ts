@@ -1,6 +1,8 @@
 import {
   IsArray,
+  IsBoolean,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   ValidateNested,
 } from 'class-validator';
@@ -31,6 +33,7 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   localityParams: ApiOsmEntity[];
 
   @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
   location: ApiCoordinates;
@@ -44,6 +47,7 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   preferredLocations: ApiPreferredLocation[];
 
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiRealEstateListingDto)
   realEstateListing?: ApiRealEstateListing;
@@ -61,6 +65,7 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   routes: EntityRouteDto[];
 
   @IsNotEmpty()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResponseDto)
   searchResponse: ApiSearchResponse;
@@ -74,6 +79,10 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @ValidateNested({ each: true })
   @Type(() => TransportationParamDto)
   transportationParams: TransportationParam[];
+
+  @IsNotEmpty()
+  @IsBoolean()
+  isTrial: boolean;
 }
 
 export default ApiSearchResultSnapshotDto;

@@ -7,6 +7,7 @@ import * as dayjs from 'dayjs';
 import {
   cumulativeRequestSubscriptionTypes,
   fixedRequestSubscriptionTypes,
+  TRIAL_PRICE_ID,
 } from '../../../shared/constants/subscription-plan';
 import {
   retrieveTotalRequestContingent,
@@ -21,9 +22,10 @@ import {
 } from '@area-butler-types/subscription-plan';
 import { ApiTour } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
-import { EventType, UserEvent } from '../event/event.types';
+import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { ManipulateType } from 'dayjs';
 
 @Injectable()
 export class UserService {
@@ -48,11 +50,22 @@ export class UserService {
       consentGiven: null,
     }).save();
 
-    const event: UserEvent = {
+    // creates Stripe customer
+    this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
       user: newUser,
-    };
+    });
 
-    this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, event);
+    const {
+      price: { interval },
+    } = this.subscriptionService.getApiSubscriptionPlanPrice(TRIAL_PRICE_ID);
+
+    // creates Trial subscription
+    this.eventEmitter.emitAsync(EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT, {
+      user: newUser,
+      endsAt: dayjs()
+        .add(interval.value, interval.unit as ManipulateType)
+        .toDate(),
+    });
 
     return newUser;
   }
@@ -189,7 +202,7 @@ export class UserService {
       userSubscription.stripePriceId,
     );
 
-    // TODO refactor using the Strategy pattern
+    // TODO think about refactoring (maybe via the Strategy pattern)
     const numberOfRequests =
       priceLimits?.numberOfRequests?.amount?.value ||
       planLimits?.numberOfRequests?.amount?.value ||

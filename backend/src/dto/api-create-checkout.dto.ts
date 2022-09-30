@@ -32,7 +32,7 @@ export class ApiCreateCheckoutDto implements ApiCreateCheckout {
   @IsStripeCheckoutMetadata()
   metadata?: IApiCheckoutMetadata;
 
-  @IsOptional()
-  @IsNumber()
-  trialPeriod?: number;
+  // @IsOptional()
+  // @IsNumber()
+  // trialPeriod?: number;
 }

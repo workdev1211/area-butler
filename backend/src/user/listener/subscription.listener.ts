@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -7,8 +7,9 @@ import { StripeService } from '../../client/stripe/stripe.service';
 import {
   EventType,
   ILimitIncreaseEvent,
-  SubscriptionCreateEvent,
-  SubscriptionRenewEvent,
+  ISubscriptionUpsertEvent,
+  ISubscriptionRenewEvent,
+  ITrialSubscriptionUpsertEvent,
 } from '../../event/event.types';
 import { SubscriptionService } from '../subscription.service';
 import { UserService } from '../user.service';
@@ -27,6 +28,15 @@ export class SubscriptionListener {
     private paypalService: PaypalService,
   ) {}
 
+  @OnEvent(EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT, { async: true })
+  private async handleTrialSubscriptionUpsertEvent({
+    user,
+    endsAt,
+  }: ITrialSubscriptionUpsertEvent): Promise<void> {
+    await this.subscriptionService.upsertTrialForUser(user.id, endsAt);
+    await this.userService.setRequestContingents(user, endsAt);
+  }
+
   @OnEvent(EventType.SUBSCRIPTION_UPSERT_EVENT, { async: true })
   private async handleSubscriptionUpsertEvent({
     customerId,
@@ -34,16 +44,16 @@ export class SubscriptionListener {
     priceId,
     endsAt,
     paymentSystemType,
-  }: SubscriptionCreateEvent): Promise<void> {
+  }: ISubscriptionUpsertEvent): Promise<void> {
     let user;
 
     switch (paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         user = await this.userService.findByStripeCustomerId(customerId);
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         user = await this.userService.findByPaypalCustomerId(customerId);
         break;
       }
@@ -57,14 +67,14 @@ export class SubscriptionListener {
       return;
     }
 
-    await this.subscriptionService.upsertByUserId(
+    await this.subscriptionService.upsertForUser({
       user,
       type,
-      subscriptionId,
       priceId,
       endsAt,
+      subscriptionId,
       paymentSystemType,
-    );
+    });
 
     await this.userService.setRequestContingents(user, endsAt);
   }
@@ -74,13 +84,13 @@ export class SubscriptionListener {
     customerId,
     subscriptionId,
     paymentSystemType,
-  }: SubscriptionRenewEvent): Promise<void> {
+  }: ISubscriptionRenewEvent): Promise<void> {
     let user;
     let subscription;
     let newEndDate;
 
     switch (paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         user = await this.userService.findByStripeCustomerId(customerId);
 
         subscription = await this.stripeService.fetchSubscriptionData(
@@ -92,14 +102,9 @@ export class SubscriptionListener {
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         subscription = await this.paypalService.showSubscriptionDetails(
           subscriptionId,
-        );
-
-        // TODO should be removed after testing
-        this.logger.debug(
-          `PayPal subscription status: ${subscription.status}, start time: ${subscription.start_time}`,
         );
 
         user = await this.userService.findByPaypalCustomerId(
@@ -141,12 +146,12 @@ export class SubscriptionListener {
     let user;
 
     switch (paymentSystemType) {
-      case PaymentSystemTypeEnum.Stripe: {
+      case PaymentSystemTypeEnum.STRIPE: {
         user = await this.userService.findByStripeCustomerId(customerId);
         break;
       }
 
-      case PaymentSystemTypeEnum.PayPal: {
+      case PaymentSystemTypeEnum.PAYPAL: {
         user = await this.userService.findByPaypalCustomerId(customerId);
         break;
       }

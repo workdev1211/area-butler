@@ -5,11 +5,11 @@ import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
 
 const getPaymentSystemType = (subscription: SubscriptionDocument) => {
   if (subscription.stripeSubscriptionId) {
-    return PaymentSystemTypeEnum.Stripe;
+    return PaymentSystemTypeEnum.STRIPE;
   }
 
   if (subscription.paypalSubscriptionId) {
-    return PaymentSystemTypeEnum.PayPal;
+    return PaymentSystemTypeEnum.PAYPAL;
   }
 };
 

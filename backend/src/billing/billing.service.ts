@@ -4,11 +4,7 @@ import Stripe from 'stripe';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
-import {
-  paypalWithWoTrialPriceIdMapping,
-  stripeToPaypalPriceIdMapping,
-  TRIAL_DAYS,
-} from '../../../shared/constants/subscription-plan';
+import { stripeToPaypalPriceIdMapping } from '../../../shared/constants/subscription-plan';
 import { SubscriptionService } from '../user/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
@@ -19,8 +15,8 @@ import { StripeService } from '../client/stripe/stripe.service';
 import {
   EventType,
   ILimitIncreaseEvent,
-  SubscriptionCreateEvent,
-  SubscriptionRenewEvent,
+  ISubscriptionUpsertEvent,
+  ISubscriptionRenewEvent,
 } from '../event/event.types';
 import { UserDocument } from '../user/schema/user.schema';
 import {
@@ -57,13 +53,7 @@ export class BillingService {
     user: UserDocument,
     createCheckout: ApiCreateCheckoutDto,
   ): Promise<string> {
-    const existingSubscriptions =
-      await this.subscriptionService.fetchAllUserSubscriptions(user.id);
-
-    return this.stripeService.createCheckoutSessionUrl(user, {
-      ...createCheckout,
-      trialPeriod: existingSubscriptions.length ? undefined : TRIAL_DAYS,
-    });
+    return this.stripeService.createCheckoutSessionUrl(user, createCheckout);
   }
 
   async consumeWebhook(request: any): Promise<void> {
@@ -138,12 +128,13 @@ export class BillingService {
         this.emitLimitIncreaseEvent(limitIncreaseParams, {
           customerId,
           metadata,
-          paymentSystemType: PaymentSystemTypeEnum.Stripe,
+          paymentSystemType: PaymentSystemTypeEnum.STRIPE,
         });
       }
     }
   }
 
+  // Stripe Subscription Upsert Event
   private handleSubscriptionUpsertEvent(eventData: Stripe.Event.Data) {
     const payload = eventData.object as any;
     const stripeCustomerId = payload.customer;
@@ -156,7 +147,7 @@ export class BillingService {
       stripeSubscriptionId,
       stripePriceId,
       dayjs(endsAt * 1000).toDate(),
-      PaymentSystemTypeEnum.Stripe,
+      PaymentSystemTypeEnum.STRIPE,
     );
   }
 
@@ -168,7 +159,7 @@ export class BillingService {
     this.emitSubscriptionRenewEvent({
       customerId: stripeCustomerId,
       subscriptionId: stripeSubscriptionId,
-      paymentSystemType: PaymentSystemTypeEnum.Stripe,
+      paymentSystemType: PaymentSystemTypeEnum.STRIPE,
     });
   }
 
@@ -223,7 +214,7 @@ export class BillingService {
       {
         customerId: user.paypalCustomerId,
         metadata,
-        paymentSystemType: PaymentSystemTypeEnum.PayPal,
+        paymentSystemType: PaymentSystemTypeEnum.PAYPAL,
       },
     );
 
@@ -242,14 +233,8 @@ export class BillingService {
       paymentItem.type !== PaymentItemTypeEnum.SubscriptionPrice
     ) {
       throw new HttpException(
-        'PayPal subscription not found or this is not a subscription!',
+        "PayPal subscription not found or it's not a subscription!",
         400,
-      );
-    }
-
-    if (await this.subscriptionService.countAllUserSubscriptions(userId)) {
-      paypalSubscriptionPlanId = paypalWithWoTrialPriceIdMapping.get(
-        paypalSubscriptionPlanId,
       );
     }
 
@@ -326,7 +311,7 @@ export class BillingService {
       subscriptionDetails.id,
       priceId,
       endsAt.toDate(),
-      PaymentSystemTypeEnum.PayPal,
+      PaymentSystemTypeEnum.PAYPAL,
     );
 
     return `${configService.getCallbackUrl()}?subscriptionId=${
@@ -362,7 +347,7 @@ export class BillingService {
       case PaypalWebhookEventTypeEnum.PaymentSaleCompleted: {
         this.emitSubscriptionRenewEvent({
           subscriptionId: webhookEvent.resource.billing_agreement_id,
-          paymentSystemType: PaymentSystemTypeEnum.PayPal,
+          paymentSystemType: PaymentSystemTypeEnum.PAYPAL,
         });
       }
     }
@@ -391,7 +376,7 @@ export class BillingService {
     }
 
     switch (limitIncreaseParams.type) {
-      case ApiSubscriptionLimitsEnum.NumberOfRequests: {
+      case ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS: {
         this.eventEmitter.emitAsync(
           EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
           { ...limitIncreaseEvent, customerId },
@@ -399,7 +384,7 @@ export class BillingService {
         break;
       }
 
-      case ApiSubscriptionLimitsEnum.AddressExpiration: {
+      case ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION: {
         this.eventEmitter.emitAsync(
           EventType.ADDRESS_EXPIRATION_INCREASE_EVENT,
           { ...limitIncreaseEvent, metadata },
@@ -416,7 +401,7 @@ export class BillingService {
     endsAt: Date,
     paymentSystemType: PaymentSystemTypeEnum,
   ) {
-    const subscriptionUpsertEvent: SubscriptionCreateEvent = {
+    const subscriptionUpsertEvent: ISubscriptionUpsertEvent = {
       customerId,
       subscriptionId,
       priceId,
@@ -430,7 +415,7 @@ export class BillingService {
     );
   }
 
-  private emitSubscriptionRenewEvent(event: SubscriptionRenewEvent) {
+  private emitSubscriptionRenewEvent(event: ISubscriptionRenewEvent) {
     if (event.subscriptionId) {
       this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEW_EVENT, event);
     }

@@ -14,6 +14,7 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { RoutingService } from '../routing/routing.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class ApiSnapshotService {
@@ -66,6 +67,7 @@ export class ApiSnapshotService {
         routes,
         transitRoutes,
         realEstateListing,
+        isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
       },
       config,
     );

@@ -7,18 +7,30 @@ import {
 
 export enum EventType {
   USER_CREATED_EVENT = 'USER_CREATED_EVENT',
-  USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
+  // not used for the moment
+  // USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
   SUBSCRIPTION_UPSERT_EVENT = 'SUBSCRIPTION_UPSERT_EVENT',
   SUBSCRIPTION_RENEW_EVENT = 'SUBSCRIPTION_RENEW_EVENT',
+  TRIAL_SUBSCRIPTION_UPSERT_EVENT = 'TRIAL_SUBSCRIPTION_UPSERT_EVENT',
+  TRIAL_DATA_REMOVE_EVENT = 'TRIAL_DATA_REMOVE_EVENT',
   REQUEST_CONTINGENT_INCREASE_EVENT = 'REQUEST_CONTINGENT_INCREASE_EVENT',
   ADDRESS_EXPIRATION_INCREASE_EVENT = 'ADDRESS_EXPIRATION_INCREASE_EVENT',
 }
 
-export interface UserEvent {
+export interface IUserCreatedEvent {
   user: UserDocument;
 }
 
-export interface SubscriptionCreateEvent {
+export interface ITrialDataRemoveEvent {
+  userId: string;
+}
+
+export interface ITrialSubscriptionUpsertEvent {
+  user: UserDocument;
+  endsAt: Date;
+}
+
+export interface ISubscriptionUpsertEvent {
   customerId: string;
   subscriptionId?: string;
   priceId: string;
@@ -33,7 +45,7 @@ export interface ILimitIncreaseEvent {
   paymentSystemType: PaymentSystemTypeEnum;
 }
 
-export interface SubscriptionRenewEvent {
+export interface ISubscriptionRenewEvent {
   customerId?: string;
   subscriptionId: string;
   paymentSystemType: PaymentSystemTypeEnum;

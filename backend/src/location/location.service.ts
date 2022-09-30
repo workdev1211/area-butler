@@ -46,6 +46,7 @@ import {
 import { UserService } from '../user/user.service';
 import {
   ApiSubscriptionLimitsEnum,
+  ApiSubscriptionPlanType,
   IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
@@ -186,9 +187,12 @@ export class LocationService {
     };
 
     if (!existingLocation) {
+      location.isTrial =
+        user.subscription.type === ApiSubscriptionPlanType.TRIAL;
+
       const addressExpiration = this.subscriptionService.getLimitAmount(
         user.subscription.stripePriceId,
-        ApiSubscriptionLimitsEnum.AddressExpiration,
+        ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
       );
 
       if (addressExpiration) {
@@ -281,11 +285,12 @@ export class LocationService {
       mapboxAccessToken,
       snapshot,
       config,
+      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
     const addressExpiration = this.subscriptionService.getLimitAmount(
       user.subscription.stripePriceId,
-      ApiSubscriptionLimitsEnum.AddressExpiration,
+      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
     );
 
     if (addressExpiration) {
@@ -375,10 +380,22 @@ export class LocationService {
     return snapshotDoc.save();
   }
 
-  async deleteSnapshot(user: UserDocument, id: string) {
+  async deleteSnapshot(user: UserDocument, id: string): Promise<void> {
     await this.searchResultSnapshotModel.deleteOne({
       _id: id,
       userId: user.id,
+    });
+  }
+
+  async deleteTrialDataByUserId(userId: string): Promise<void> {
+    await this.locationSearchModel.deleteMany({
+      userId,
+      isTrial: true,
+    });
+
+    await this.searchResultSnapshotModel.deleteMany({
+      userId,
+      isTrial: true,
     });
   }
 
@@ -433,7 +450,7 @@ export class LocationService {
     return snapshotDoc;
   }
 
-  checkAddressExpiration(
+  private checkAddressExpiration(
     address: LocationSearchDocument | SearchResultSnapshotDocument,
   ): void {
     if (dayjs().isAfter(address?.endsAt)) {

@@ -1,3 +1,51 @@
+export enum ApiSubscriptionPlanType {
+  TRIAL = "TRIAL",
+  PAY_PER_USE_1 = "PAY_PER_USE_1",
+  PAY_PER_USE_5 = "PAY_PER_USE_5",
+  PAY_PER_USE_10 = "PAY_PER_USE_10",
+  BUSINESS_PLUS = "BUSINESS_PLUS",
+  BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
+  // TODO will be released later
+  // ENTERPRISE = "ENTERPRISE",
+}
+
+// used as a text description on the paywall (subscription plan selection page)
+export enum ApiSubscriptionPlanTypeGroupEnum {
+  PAY_PER_USE = "Pay per Use",
+  BUSINESS_PLUS = "Business+",
+}
+
+export enum ApiSubscriptionIntervalEnum {
+  FOUR_DAYS = "FOUR_DAYS",
+  MONTHLY = "MONTHLY",
+  ANNUALLY = "ANNUALLY",
+  TWELVE_WEEKS = "TWELVE_WEEKS",
+  QUARTERLY = "QUARTERLY",
+}
+
+// used as the object keys
+export enum ApiSubscriptionLimitsEnum {
+  NUMBER_OF_REQUESTS = "numberOfRequests",
+  ADDRESS_EXPIRATION = "addressExpiration",
+}
+
+export enum ApiRequestContingentType {
+  RECURRENT = "RECURRENT",
+  INCREASE = "INCREASE",
+}
+
+export enum ApiDataSource {
+  OSM = "OSM",
+  CENSUS = "CENSUS",
+  FEDERAL_ELECTION = "FEDERAL_ELECTION",
+  PARTICLE_POLLUTION = "PARTICLE_POLLUTION",
+}
+
+export enum PaymentSystemTypeEnum {
+  STRIPE = "STRIPE",
+  PAYPAL = "PAYPAL",
+}
+
 export interface ApiUserSubscription {
   type: ApiSubscriptionPlanType;
   paymentSystemType: PaymentSystemTypeEnum;
@@ -5,13 +53,6 @@ export interface ApiUserSubscription {
   endsAt: Date;
   priceId: string;
   config: ApiSubscriptionPlan;
-}
-
-export enum ApiSubscriptionIntervalEnum {
-  Monthly = "monthly",
-  Annually = "annually",
-  TwelveWeeks = "twelveWeeks",
-  Quarterly = "quarterly",
 }
 
 // TODO think about splitting into Stripe and PayPal
@@ -42,30 +83,10 @@ export interface IApiSubscriptionLimit {
   description?: string;
 }
 
-export enum ApiSubscriptionLimitsEnum {
-  NumberOfRequests = "numberOfRequests",
-  AddressExpiration = "addressExpiration",
-}
-
 // Could be changed to the type later
 export interface IApiSubscriptionLimits {
-  [ApiSubscriptionLimitsEnum.NumberOfRequests]?: IApiSubscriptionLimit;
-  [ApiSubscriptionLimitsEnum.AddressExpiration]?: IApiSubscriptionLimit;
-}
-
-export enum ApiSubscriptionPlanType {
-  PAY_PER_USE_1 = "PAY_PER_USE_1",
-  PAY_PER_USE_5 = "PAY_PER_USE_5",
-  PAY_PER_USE_10 = "PAY_PER_USE_10",
-  BUSINESS_PLUS = "BUSINESS_PLUS",
-  BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
-  // TODO will be released later
-  // ENTERPRISE = "ENTERPRISE",
-}
-
-export enum ApiSubscriptionPlanTypeGroupEnum {
-  PayPerUse = "Pay per Use",
-  BusinessPlus = "Business+",
+  [ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS]?: IApiSubscriptionLimit;
+  [ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION]?: IApiSubscriptionLimit;
 }
 
 export interface ApiSubscriptionPricing {
@@ -105,21 +126,4 @@ export interface ApiRequestContingent {
   amount: number;
   type: ApiRequestContingentType;
   date: Date;
-}
-
-export enum ApiRequestContingentType {
-  RECURRENT = "RECURRENT",
-  INCREASE = "INCREASE",
-}
-
-export enum ApiDataSource {
-  OSM = "OSM",
-  CENSUS = "CENSUS",
-  FEDERAL_ELECTION = "FEDERAL_ELECTION",
-  PARTICLE_POLLUTION = "PARTICLE_POLLUTION",
-}
-
-export enum PaymentSystemTypeEnum {
-  Stripe = "stripe",
-  PayPal = "paypal",
 }

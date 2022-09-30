@@ -37,7 +37,7 @@ export class StripeService {
     {
       priceId,
       amount = 1,
-      trialPeriod,
+      // trialPeriod,
       mode = ApiStripeCheckoutModeEnum.Subscription,
       metadata,
     }: ApiCreateCheckout,
@@ -57,9 +57,9 @@ export class StripeService {
         billing_address_collection: 'required',
         allow_promotion_codes: true,
         locale: 'de',
-        subscription_data: {
-          trial_period_days: trialPeriod,
-        },
+        // subscription_data: {
+        //   trial_period_days: trialPeriod,
+        // },
         line_items: [
           {
             price: priceId,

@@ -1,7 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 
-import { EventType, ILimitIncreaseEvent } from '../../event/event.types';
+import {
+  EventType,
+  ILimitIncreaseEvent,
+  ITrialDataRemoveEvent,
+} from '../../event/event.types';
 import { LocationService } from '../location.service';
 
 @Injectable()
@@ -18,5 +22,12 @@ export class LocationListener {
       modelId,
       amount,
     );
+  }
+
+  @OnEvent(EventType.TRIAL_DATA_REMOVE_EVENT, { async: true })
+  private async handleTrialDataRemoveEvent({
+    userId,
+  }: ITrialDataRemoveEvent): Promise<void> {
+    await this.locationService.deleteTrialDataByUserId(userId);
   }
 }

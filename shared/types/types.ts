@@ -254,6 +254,7 @@ export interface ApiSearchResultSnapshot {
   transitRoutes: EntityTransitRoute[];
   realEstateListing?: ApiRealEstateListing;
   realEstateListings: ApiRealEstateListing[];
+  isTrial: boolean;
 }
 
 export interface IApiCreateRouteSnapshotQuery {

@@ -20,8 +20,7 @@ export const useHttp = () => {
     const idToken = await getIdTokenClaims();
 
     if (idToken) {
-      const { __raw } = await getIdTokenClaims();
-      headers["Authorization"] = `Bearer ${__raw}`;
+      headers["Authorization"] = `Bearer ${idToken.__raw}`;
     }
 
     return axios.get<T>(`${baseUrl}${url}`, {
@@ -30,17 +29,16 @@ export const useHttp = () => {
     });
   };
 
-  const post = async <T>(
+  const post = async <T, U = unknown>(
     url: string,
-    body: any,
+    body: U,
     requestHeaders = {}
   ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders, ...requestHeaders };
     const idToken = await getIdTokenClaims();
 
     if (idToken) {
-      const { __raw } = await getIdTokenClaims();
-      headers["Authorization"] = `Bearer ${__raw}`;
+      headers["Authorization"] = `Bearer ${idToken.__raw}`;
     }
 
     return axios.post(`${baseUrl}${url}`, body, {
@@ -48,15 +46,17 @@ export const useHttp = () => {
     });
   };
 
-  const put = async <T>(url: string, body: any): Promise<AxiosResponse<T>> => {
+  const put = async <T, U = unknown>(
+    url: string,
+    body: U
+  ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders };
     const idToken = await getIdTokenClaims();
 
-    if (!!idToken) {
-      const { __raw } = await getIdTokenClaims();
-      const authorization = `Bearer ${__raw}`;
-      headers["Authorization"] = authorization;
+    if (idToken) {
+      headers["Authorization"] = `Bearer ${idToken.__raw}`;
     }
+
     return axios.put(`${baseUrl}${url}`, body, {
       headers,
     });
@@ -66,11 +66,10 @@ export const useHttp = () => {
     const headers: any = { ...defaultHeaders };
     const idToken = await getIdTokenClaims();
 
-    if (!!idToken) {
-      const { __raw } = await getIdTokenClaims();
-      const authorization = `Bearer ${__raw}`;
-      headers["Authorization"] = authorization;
+    if (idToken) {
+      headers["Authorization"] = `Bearer ${idToken.__raw}`;
     }
+
     return axios.delete(`${baseUrl}${url}`, {
       headers,
     });

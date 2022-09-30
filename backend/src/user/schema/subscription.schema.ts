@@ -11,17 +11,11 @@ export class Subscription {
   @Prop({
     type: String,
     required: true,
-    enum: [
-      ApiSubscriptionPlanType.PAY_PER_USE_1,
-      ApiSubscriptionPlanType.PAY_PER_USE_5,
-      ApiSubscriptionPlanType.PAY_PER_USE_10,
-      ApiSubscriptionPlanType.BUSINESS_PLUS,
-      ApiSubscriptionPlanType.BUSINESS_PLUS_V2,
-    ],
+    enum: ApiSubscriptionPlanType,
   })
   type: ApiSubscriptionPlanType;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   userId: string;
 
   @Prop({ type: Date, default: Date.now })
@@ -30,15 +24,16 @@ export class Subscription {
   @Prop({ type: Date, required: true })
   endsAt: Date;
 
+  // TODO refactor to the usage of subscription id and payment system type / change the unique index appropriately
   // the id of the user specific subscription, not the product id from the Stripe dashboard
-  @Prop()
+  @Prop({ type: String })
   stripeSubscriptionId: string;
 
-  @Prop()
+  @Prop({ type: String })
   paypalSubscriptionId: string;
 
-  // TODO remove, use "type" instead
-  @Prop({ required: true })
+  // TODO refactor to the usage of the "type" parameter instead
+  @Prop({ type: String, required: true })
   stripePriceId: string;
 
   @Prop({ type: Object })
