@@ -1,8 +1,6 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { v4 as uuid } from "uuid";
 
-import { PotentialCustomerContext } from "context/PotentialCustomerContext";
-import { RealEstateContext } from "context/RealEstateContext";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import BackButton from "layout/BackButton";
@@ -18,8 +16,6 @@ const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
   const { get } = useHttp();
   const { userState, userDispatch } = useContext(UserContext);
-  const { realEstateState } = useContext(RealEstateContext);
-  const { potentialCustomerState } = useContext(PotentialCustomerContext);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -68,11 +64,7 @@ const UserProfilePage: FunctionComponent = () => {
     }
 
     return hasSubscription ? (
-      <SubscriptionPlanLimits
-        realEstates={realEstateState.listings}
-        user={userState.user!}
-        customers={potentialCustomerState.customers}
-      />
+      <SubscriptionPlanLimits user={userState.user!} />
     ) : (
       <SubscriptionPlanSelection />
     );

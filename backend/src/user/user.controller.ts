@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpException,
   HttpStatus,
@@ -46,9 +47,11 @@ export class UserController {
     return this.transformToApiUser(user);
   }
 
-  @ApiProperty({ description: 'Get the current users subscriptions' })
+  @ApiProperty({ description: 'Get the current user subscriptions' })
   @Get('me/subscriptions')
-  async allSubscriptions(@Req() request): Promise<ApiUserSubscriptionDto[]> {
+  async fetchUserSubscriptions(
+    @Req() request,
+  ): Promise<ApiUserSubscriptionDto[]> {
     const requestUser = request?.user;
 
     const user = await this.userService.upsertUser(
@@ -57,10 +60,26 @@ export class UserController {
     );
 
     return (
-      await this.subscriptionService.fetchAllUserSubscriptions(
+      await this.subscriptionService.fetchUserSubscriptions(
         user.parentId || user.id,
       )
     ).map((s) => mapSubscriptionToApiSubscription(s));
+  }
+
+  @ApiProperty({ description: 'Cancel trial subscription' })
+  @Delete('me/cancel-trial')
+  async cancelTrialSubscription(@Req() request): Promise<ApiUserDto> {
+    const requestUser = request?.user;
+
+    const user = await this.userService.upsertUser(
+      requestUser.email,
+      requestUser.email,
+    );
+
+    // TODO think about creating a trial service
+    await this.subscriptionService.removeTrialSubscription(user.id);
+
+    return this.transformToApiUser(user);
   }
 
   @ApiProperty({ description: 'Update the current user' })

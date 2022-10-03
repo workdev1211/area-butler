@@ -32,7 +32,7 @@ import {
   newUserPayPerUseSubscriptionTemplateId,
   subscriptionRenewalTemplateId,
 } from '../shared/email.constants';
-import { UserDocument } from './schema/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 import { EventType } from '../event/event.types';
 import { EventEmitter2 } from 'eventemitter2';
 
@@ -57,6 +57,8 @@ export class SubscriptionService {
   constructor(
     @InjectModel(Subscription.name)
     private readonly subscriptionModel: Model<SubscriptionDocument>,
+    @InjectModel(User.name)
+    private readonly userModel: Model<UserDocument>,
     private readonly mailSenderService: MailSenderService,
     private readonly eventEmitter: EventEmitter2,
   ) {}
@@ -161,7 +163,7 @@ export class SubscriptionService {
     }
   }
 
-  async fetchAllUserSubscriptions(
+  async fetchUserSubscriptions(
     userId: string,
   ): Promise<SubscriptionDocument[]> {
     return this.subscriptionModel.find({ userId });
@@ -246,6 +248,31 @@ export class SubscriptionService {
     );
   }
 
+  // TODO think about trial service
+  async removeTrialSubscription(userId: string) {
+    const { deletedCount } = await this.subscriptionModel.deleteOne({
+      userId,
+      type: ApiSubscriptionPlanType.TRIAL,
+    });
+
+    // just in case
+    if (deletedCount !== 1) {
+      throw new HttpException(
+        `The amount of the removed trial subscriptions of the user ${userId} is ${deletedCount}`,
+        400,
+      );
+    }
+
+    await this.userModel.updateOne(
+      { _id: userId },
+      { requestsExecuted: 0, requestContingents: [] },
+    );
+
+    this.eventEmitter.emitAsync(EventType.TRIAL_DATA_REMOVE_EVENT, {
+      userId,
+    });
+  }
+
   async handleActiveOrTrialSubscriptions(
     subscriptions: IActiveTrialSubscriptions,
   ): Promise<void> {
@@ -262,15 +289,7 @@ export class SubscriptionService {
 
     if (subscriptions.trial.length === 1) {
       const trialSubscription = subscriptions.trial[0];
-
-      await this.subscriptionModel.deleteOne({
-        _id: trialSubscription._id,
-        type: ApiSubscriptionPlanType.TRIAL,
-      });
-
-      this.eventEmitter.emitAsync(EventType.TRIAL_DATA_REMOVE_EVENT, {
-        userId: trialSubscription.userId,
-      });
+      await this.removeTrialSubscription(trialSubscription.userId);
     }
   }
 
