@@ -29,6 +29,7 @@ import SearchResultContainer from "./SearchResultContainer";
 import { saveAs } from "file-saver";
 import { getQrCodeBase64 } from "../export/QrCode";
 import downloadIcon from "../assets/icons/download.svg";
+import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
@@ -197,11 +198,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 setIsShownEmbeddedMapModal(true);
               }}
             >
-              <img
-                className="w-6 h-6"
-                src={screenshotIcon}
-                alt="screenshot"
-              />
+              <img className="w-6 h-6" src={screenshotIcon} alt="screenshot" />
               Kartenausschnitte erstellen PNG
             </h3>
 
@@ -297,11 +294,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 copyCodeToClipBoard(createDirectLink(snapshotResponse.token));
               }}
             >
-              <img
-                className="w-6 h-6"
-                src={copyIcon}
-                alt="copy"
-              />
+              <img className="w-6 h-6" src={copyIcon} alt="copy" />
               Hyperlink zur Vollbild-Karte URL
             </h3>
             <h3
@@ -318,11 +311,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 );
               }}
             >
-              <img
-                className="w-6 h-6"
-                src={downloadIcon}
-                alt="download"
-              />
+              <img className="w-6 h-6" src={downloadIcon} alt="download" />
               QR Code
             </h3>
             <h3
@@ -331,11 +320,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 copyCodeToClipBoard(createCodeSnippet(snapshotResponse.token));
               }}
             >
-              <img
-                className="w-6 h-6"
-                src={copyIcon}
-                alt="copy"
-              />
+              <img className="w-6 h-6" src={copyIcon} alt="copy" />
               Snippet (iFrame) HTML
             </h3>
 
@@ -378,6 +363,9 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               searchResponse={searchContextState.searchResponse!}
               placesLocation={searchContextState.placesLocation}
               location={searchContextState.location!}
+              isTrial={
+                user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
+              }
             />
             <img
               src={closeIcon}

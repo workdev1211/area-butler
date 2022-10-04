@@ -82,6 +82,7 @@ export interface SearchResultContainerProps {
   embedMode?: boolean;
   editorMode?: boolean;
   onPoiAdd?: (poi: Poi) => void;
+  isTrial: boolean;
 }
 
 export const poiSearchContainerId = "poi-search-container";
@@ -98,6 +99,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   embedMode = false,
   editorMode = false,
   onPoiAdd,
+  isTrial,
 }) => {
   const initialMapBoxMapIds = {
     current: mapBoxMapId || "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
@@ -534,6 +536,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
             toggleSatelliteMapMode={toggleSatelliteMapMode}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+            isTrial={isTrial}
           />
         </div>
         {!isThemeKf && <MapMenuMobileBtn />}

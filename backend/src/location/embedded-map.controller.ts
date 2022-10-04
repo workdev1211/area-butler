@@ -8,6 +8,7 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
 import { SubscriptionService } from '../user/subscription.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
+import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 
 @ApiTags('embedded-map')
 @Controller('api/location/snapshot/iframe')
@@ -27,14 +28,22 @@ export class EmbeddedMapController {
     const snapshot = await this.locationService.fetchEmbeddedMap(token);
     const { userId } = snapshot;
     const user = await this.userService.findById(userId);
+    const userSubscription = await this.subscriptionService.findActiveByUserId(
+      userId,
+    );
 
-    if (!(await this.subscriptionService.findActiveByUserId(userId))) {
+    if (!userSubscription) {
       throw new HttpException(subscriptionExpiredMessage, 402);
     }
 
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(user);
 
-    return mapSnapshotToEmbeddableMap(snapshot, true, realEstateListings);
+    return mapSnapshotToEmbeddableMap(
+      snapshot,
+      true,
+      realEstateListings,
+      userSubscription.type === ApiSubscriptionPlanType.TRIAL,
+    );
   }
 }

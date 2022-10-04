@@ -13,6 +13,7 @@ export const mapSnapshotToEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
   embed = false,
   realEstateListings: RealEstateListingDocument[] = [],
+  isTrial = false,
 ): ApiSearchResultSnapshotResponseDto => {
   const centerOfLocation = searchResultSnapshot.snapshot.location;
 
@@ -87,6 +88,7 @@ export const mapSnapshotToEmbeddableMap = (
     createdAt: searchResultSnapshot.createdAt,
     endsAt: searchResultSnapshot.endsAt,
     updatedAt: searchResultSnapshot.updatedAt,
+    isTrial,
   };
 };
 

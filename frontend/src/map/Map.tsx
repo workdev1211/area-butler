@@ -34,7 +34,7 @@ import {
   OsmName,
 } from "../../../shared/types/types";
 import googleIcon from "../assets/icons/google.svg";
-import mylocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
+import myLocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import busIcon from "../assets/icons/icons-20-x-20-outline-ic-bus.svg";
 import trainIcon from "../assets/icons/icons-20-x-20-outline-ic-train.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -99,6 +99,7 @@ export interface MapProps {
   togglePreferredLocationsModal: (
     isShownPreferredLocationsModal: boolean
   ) => void;
+  isTrial: boolean;
 }
 
 export class IdMarker extends L.Marker {
@@ -316,6 +317,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const isShownPreferredLocationsModalEqual =
     prevProps.isShownPreferredLocationsModal ===
     nextProps.isShownPreferredLocationsModal;
+  const isTrialEqual = prevProps.isTrial === nextProps.isTrial;
 
   return (
     mapboxKeyEqual &&
@@ -331,7 +333,8 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     configEqual &&
     mapboxMapIdEqual &&
     hideIsochronesEqual &&
-    isShownPreferredLocationsModalEqual
+    isShownPreferredLocationsModalEqual &&
+    isTrialEqual
   );
 };
 
@@ -374,6 +377,7 @@ const Map = memo<MapProps>(
     toggleSatelliteMapMode,
     isShownPreferredLocationsModal,
     togglePreferredLocationsModal,
+    isTrial,
   }) => {
     // TODO remove searchContext form the Map component
     const { searchContextState, searchContextDispatch } =
@@ -530,7 +534,7 @@ const Map = memo<MapProps>(
           : "height: 100%; width: auto;";
 
         const positionIcon = L.divIcon({
-          iconUrl: config?.mapIcon ?? mylocationIcon,
+          iconUrl: config?.mapIcon ?? myLocationIcon,
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
           iconSize: config?.mapIcon
@@ -538,7 +542,7 @@ const Map = memo<MapProps>(
             : myLocationIconSize,
           className: "my-location-icon-wrapper",
           html: `<img src="${
-            config?.mapIcon ?? mylocationIcon
+            config?.mapIcon ?? myLocationIcon
           }" alt="marker-icon-address" style="${iconStyle}" />`,
         });
 

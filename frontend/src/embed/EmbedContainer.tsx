@@ -212,6 +212,7 @@ const EmbedContainer: FunctionComponent = () => {
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
       embedMode={true}
+      isTrial={!!result?.isTrial}
     />
   );
 };

@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsBoolean,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -79,10 +78,6 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @ValidateNested({ each: true })
   @Type(() => TransportationParamDto)
   transportationParams: TransportationParam[];
-
-  @IsNotEmpty()
-  @IsBoolean()
-  isTrial: boolean;
 }
 
 export default ApiSearchResultSnapshotDto;

@@ -44,7 +44,10 @@ import copyMapIcon from "../assets/icons/copy-map.svg";
 import aiIcon from "../assets/icons/ai-big.svg";
 import { subscriptionUpgradeFullyCustomizableExpose } from "./SearchResultPage";
 import ExportModal from "../export/ExportModal";
-import { ApiDataSource } from "../../../shared/types/subscription-plan";
+import {
+  ApiDataSource,
+  ApiSubscriptionPlanType,
+} from "../../../shared/types/subscription-plan";
 import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
@@ -586,6 +589,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             embedMode={true}
             editorMode={true}
             onPoiAdd={onPoiAdd}
+            isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
           />
           <EditorMapMenu
             availableMeans={deriveAvailableMeansFromResponse(

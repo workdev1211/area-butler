@@ -24,6 +24,7 @@ import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import arrowIcon from "../assets/icons/icons-16-x-16-outline-ic-back.svg";
 import { useAnalysis } from "../hooks/analysis";
+import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 
 export const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -221,6 +222,7 @@ const SearchResultPage: FunctionComponent = () => {
           mapZoomLevel={searchContextState.mapZoomLevel!}
           user={user}
           userDispatch={userDispatch}
+          isTrial={user.subscription?.type === ApiSubscriptionPlanType.TRIAL}
         />
       </DefaultLayout>
       {searchContextState.printingActive && (

@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsDate,
   IsNotEmpty,
   IsNumber,
@@ -63,6 +64,10 @@ class ApiSearchResultSnapshotResponseDto
   @IsNotEmpty()
   @IsString()
   token: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isTrial?: boolean;
 }
 
 export default ApiSearchResultSnapshotResponseDto;

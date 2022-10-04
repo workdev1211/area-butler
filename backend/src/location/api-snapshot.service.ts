@@ -67,7 +67,6 @@ export class ApiSnapshotService {
         routes,
         transitRoutes,
         realEstateListing,
-        isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
       },
       config,
     );
