@@ -16,7 +16,7 @@ import { saveAs } from "file-saver";
 
 import { SelectedMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import {  deriveColorPalette } from "shared/shared.functions";
+import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,

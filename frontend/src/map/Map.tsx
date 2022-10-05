@@ -41,6 +41,7 @@ import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.sv
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import eyeIcon from "../assets/icons/eye.svg";
+import areaButlerLogo from "../assets/img/logo.svg";
 import {
   EntityGroup,
   poiSearchContainerId,
@@ -575,6 +576,29 @@ const Map = memo<MapProps>(
       config?.showAddress,
       config?.groupItems,
     ]);
+
+    // draw trial logos
+    useEffect(() => {
+      if (!currentMap || !isTrial) {
+        return;
+      }
+
+      // @ts-ignore
+      L.GridLayer.DebugCoords = L.GridLayer.extend({
+        createTile(coords: L.Point) {
+          const tile = document.createElement("div");
+          tile.innerHTML = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.5; transform: rotate(45deg)" alt="watermark">`;
+
+          return tile;
+        },
+      });
+
+      // @ts-ignore
+      currentMap.addLayer(
+        // @ts-ignore
+        new L.GridLayer.DebugCoords({ tileSize: 256 }).setZIndex(2)
+      );
+    }, [isTrial]);
 
     // react on zoom and center change
     useEffect(() => {
@@ -1186,6 +1210,7 @@ const Map = memo<MapProps>(
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"
           >
+            {/*eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
             <a
               data-tour="toggle-bounds"
               className="leaflet-control-zoom-in cursor-pointer p-2"

@@ -28,6 +28,8 @@ import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
+import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
+import areaButlerImage from "../../assets/img/logo.svg";
 
 export interface CheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -70,9 +72,9 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
   const filteredGroups = groupedEntries.filter((group) => group.active);
 
   let page = 0;
-  const nextPageNumber = () => {
+  const nextPageNumber = (): string => {
     page += 1;
-    return page < 9 ? "0" + page : "" + page;
+    return page < 9 ? `0${page}` : `${page}`;
   };
 
   return (
@@ -80,6 +82,17 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
       className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
       ref={ref as any}
     >
+      {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
+        <img
+          className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-60"
+          src={areaButlerImage}
+          alt="area-butler-logo"
+          style={{
+            height: "30vh",
+            transform: "translate(-50%, -50%) rotate(45deg)",
+          }}
+        />
+      )}
       <PdfPage
         title="Zusammenfassung"
         logo={logo}

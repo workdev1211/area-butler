@@ -1,4 +1,4 @@
-import { ForwardedRef, forwardRef } from "react";
+import React, { ForwardedRef, forwardRef } from "react";
 
 import { EntityTable } from "export/EntityTable";
 import FederalElectionSummary from "export/FederalElectionSummary";
@@ -20,6 +20,8 @@ import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem, Legend } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
+import areaButlerImage from "../../assets/img/logo.svg";
+import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
 export interface ExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -61,9 +63,9 @@ export const Expose = forwardRef(
     const logo = user?.logo || AreaButlerLogo;
 
     let page = 0;
-    const nextPageNumber = () => {
-      page++;
-      return page < 9 ? "0" + page : "" + page;
+    const nextPageNumber = (): string => {
+      page += 1;
+      return page < 9 ? `0${page}` : `${page}`;
     };
 
     return (
@@ -71,122 +73,117 @@ export const Expose = forwardRef(
         className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
         ref={ref}
       >
-        <>
+        {/*TODO create the isTrial parameter in the subscription object (on the backend side I guess)*/}
+        {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
+          <img
+            className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"
+            src={areaButlerImage}
+            alt="area-butler-logo"
+            style={{
+              height: "30vh",
+              transform: "translate(-50%, -50%) rotate(45deg)",
+            }}
+          />
+        )}
+        <PdfPage nextPageNumber={nextPageNumber} logo={logo} title="Überblick">
+          <ExposeSummary
+            realEstateListing={props.realEstateListing}
+            groupedEntries={groupedEntries}
+            transportationParams={transportationParams}
+            activeMeans={activeMeans}
+            listingAddress={props.listingAddress}
+            primaryColor={color}
+            qrCode={props.qrCode}
+          />
+        </PdfPage>
+        {importantEntities?.items?.length && (
+          <PdfPage nextPageNumber={nextPageNumber} logo={logo} title="Umgebung">
+            {importantEntities && importantEntities.items.length > 0 && (
+              <div className="m-10">
+                <EntityTable
+                  activeMeans={activeMeans}
+                  entityGroup={importantEntities!}
+                  primaryColor={color}
+                />
+              </div>
+            )}
+          </PdfPage>
+        )}
+        {mapClippings.length > 0 && (
+          <MapClippings
+            mapClippings={mapClippings}
+            nextPageNumber={nextPageNumber}
+            logo={logo}
+            qrCode={props.qrCode}
+          />
+        )}
+        {mapClippings.length > 0 && props.legend.length > 0 && (
           <PdfPage
             nextPageNumber={nextPageNumber}
             logo={logo}
-            title="Überblick"
+            title="Kartenlegende"
           >
-            <ExposeSummary
-              realEstateListing={props.realEstateListing}
-              groupedEntries={groupedEntries}
-              transportationParams={transportationParams}
-              activeMeans={activeMeans}
-              listingAddress={props.listingAddress}
-              primaryColor={color}
-              qrCode={props.qrCode}
-            />
+            <div className="m-10">
+              <Legend legend={props.legend} />
+            </div>
           </PdfPage>
-          {importantEntities?.items?.length && (
-            <PdfPage
-              nextPageNumber={nextPageNumber}
-              logo={logo}
-              title="Umgebung"
-            >
-              {importantEntities && importantEntities.items.length > 0 && (
-                <div className="m-10">
+        )}
+        {groupedEntries
+          .filter(
+            (entityGroup) =>
+              entityGroup.active &&
+              entityGroup.items.filter((i) => i.selected).length > 0
+          )
+          .map((entityGroup: EntityGroup) => {
+            return (
+              <PdfPage
+                nextPageNumber={nextPageNumber}
+                logo={logo}
+                title={entityGroup.title}
+                key={entityGroup.title}
+              >
+                <div className="m-10" key={"tab-content-" + entityGroup.title}>
                   <EntityTable
                     activeMeans={activeMeans}
-                    entityGroup={importantEntities!}
+                    entityGroup={entityGroup}
                     primaryColor={color}
                   />
                 </div>
-              )}
-            </PdfPage>
+              </PdfPage>
+            );
+          })}
+        <PdfPage title="Einblicke" logo={logo} nextPageNumber={nextPageNumber}>
+          {censusData && censusData.length > 0 && (
+            <>
+              <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
+                Nachbarschaftsdemographie
+              </h4>
+              <CensusSummary primaryColor={color} censusData={censusData} />
+            </>
           )}
-          {mapClippings.length > 0 && (
-            <MapClippings
-              mapClippings={mapClippings}
-              nextPageNumber={nextPageNumber}
-              logo={logo}
-              qrCode={props.qrCode}
-            />
+          {federalElectionData && (
+            <>
+              <h4 className="mx-10 text-xl w-56 font-bold">
+                Bundestagswahl 2021
+              </h4>
+              <FederalElectionSummary
+                primaryColor={color}
+                federalElectionDistrict={federalElectionData}
+              />
+            </>
           )}
-          {mapClippings.length > 0 && props.legend.length > 0 && (
-            <PdfPage
-              nextPageNumber={nextPageNumber}
-              logo={logo}
-              title="Kartenlegende"
-            >
-              <div className="m-10">
-                <Legend legend={props.legend} />
-              </div>
-            </PdfPage>
+          {particlePollutionData && particlePollutionData.length > 0 && (
+            <>
+              <h4 className="mx-10 text-xl w-56 font-bold">
+                Feinstaubbelastung
+              </h4>
+              <ParticlePollutionSummary
+                primaryColor={color}
+                particlePollutionData={particlePollutionData}
+              />
+            </>
           )}
-          {groupedEntries
-            .filter(
-              (entityGroup) =>
-                entityGroup.active &&
-                entityGroup.items.filter((i) => i.selected).length > 0
-            )
-            .map((entityGroup: EntityGroup) => {
-              return (
-                <PdfPage
-                  nextPageNumber={nextPageNumber}
-                  logo={logo}
-                  title={entityGroup.title}
-                  key={entityGroup.title}
-                >
-                  <div
-                    className="m-10"
-                    key={"tab-content-" + entityGroup.title}
-                  >
-                    <EntityTable
-                      activeMeans={activeMeans}
-                      entityGroup={entityGroup}
-                      primaryColor={color}
-                    />
-                  </div>
-                </PdfPage>
-              );
-            })}
-          <PdfPage
-            title="Einblicke"
-            logo={logo}
-            nextPageNumber={nextPageNumber}
-          >
-            {censusData && censusData.length > 0 && (
-              <>
-                <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                  Nachbarschaftsdemographie
-                </h4>
-                <CensusSummary primaryColor={color} censusData={censusData} />
-              </>
-            )}
-            {federalElectionData && (
-              <>
-                <h4 className="mx-10 text-xl w-56 font-bold">
-                  Bundestagswahl 2021
-                </h4>
-                <FederalElectionSummary
-                  primaryColor={color}
-                  federalElectionDistrict={federalElectionData}
-                />
-              </>
-            )}
-            {particlePollutionData && particlePollutionData.length > 0 && (
-              <>
-                <h4 className="mx-10 text-xl w-56 font-bold">
-                  Feinstaubbelastung
-                </h4>
-                <ParticlePollutionSummary
-                  primaryColor={color}
-                  particlePollutionData={particlePollutionData}
-                />
-              </>
-            )}
-          </PdfPage>
-        </>
+        </PdfPage>
       </div>
     );
   }
