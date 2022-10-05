@@ -1,16 +1,12 @@
 import { FunctionComponent } from "react";
 import {
-  BorderStyle,
   Document,
   HeadingLevel,
   ImageRun,
   Packer,
+  PageBreak,
   Paragraph,
   Table,
-  TableCell,
-  TableRow,
-  TextRun,
-  WidthType,
 } from "docx";
 import { saveAs } from "file-saver";
 
@@ -24,24 +20,26 @@ import {
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../shared/types/types";
-import { createFooter } from "./creator/footer.creator";
 import { createHeader } from "./creator/header.creator";
+import { createFooter } from "./creator/footer.creator";
 import { createImage } from "./creator/image.creator";
+import { createQrCodeHeader } from "./creator/qr-code-header.creator";
+import { createWatermark } from "./creator/watermark.creator";
+import { createLegend } from "./creator/legend.creator";
 import {
   createTable,
   mapTableDataFromCensusData,
   mapTableDataFromEntityGrid,
   mapTableDataFromEntityGroup,
   mapTableDataFromFederalElectionData,
-  mapTableDataFromParticlePollutiondata,
+  mapTableDataFromParticlePollutionData,
 } from "./creator/table.creator";
-import AreaButlerLogo from "../../assets/img/logo.jpg";
+import areaButlerIcon from "../../assets/icons/ab.png";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { base64PrefixRegex } from "../../shared/shared.constants";
-import { getRenderedLegend } from "../RenderedLegend";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
-import { createQrCodeHeader } from "./creator/qr-code-header.creator";
+import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
 export interface DocxExposeProps {
   censusData: ApiGeojsonFeature[];
@@ -89,166 +87,127 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   }
 
   const generate = async (): Promise<void> => {
-    const gridSummary = createTable({
-      title: "Die Umgebung",
-      pageBreak: false,
-      columnWidths: [4000, 3000, 3000, 3000, 3000],
-      headerColor: colorPalette.primaryColor,
-      headerTextColor: colorPalette.textColor,
-      ...mapTableDataFromEntityGrid(
-        groupedEntries,
-        transportationParams,
-        activeMeans
-      ),
-    });
+    const watermark = await createWatermark(
+      user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
+    );
 
-    const tables = groupedEntries.map((group) =>
-      createTable({
-        title: group.title,
-        columnWidths: [5000, 2000, 1500, 1500, 1500],
+    const gridSummary = createTable(
+      {
+        title: "Die Umgebung",
+        pageBreak: false,
+        columnWidths: [4000, 3000, 3000, 3000, 3000],
         headerColor: colorPalette.primaryColor,
         headerTextColor: colorPalette.textColor,
-        ...mapTableDataFromEntityGroup(group, activeMeans),
-      })
+        ...mapTableDataFromEntityGrid(
+          groupedEntries,
+          transportationParams,
+          activeMeans
+        ),
+      },
+      watermark
+    );
+
+    const tables = groupedEntries.map((group) =>
+      createTable(
+        {
+          title: group.title,
+          columnWidths: [5000, 2000, 1500, 1500, 1500],
+          headerColor: colorPalette.primaryColor,
+          headerTextColor: colorPalette.textColor,
+          ...mapTableDataFromEntityGroup(group, activeMeans),
+        },
+        watermark
+      )
     );
 
     const censusTable =
       censusData && censusData.length > 0
-        ? [
-            createTable({
-              pageBreak: false,
-              title: "Nachbarschaftsdemographie",
-              columnWidths: [5000, 2000, 3000],
-              headerColor: colorPalette.primaryColor,
-              headerTextColor: colorPalette.textColor,
-              ...mapTableDataFromCensusData(censusData),
-            }),
-          ]
-        : [];
-
-    const federalElectionTable = federalElectionData
-      ? [
-          createTable({
+        ? createTable({
             pageBreak: false,
-            title: "Bundestagswahl 2021",
-            columnWidths: [2000, 5000, 5000],
-            headerColor: colorPalette.primaryColor,
-            headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromFederalElectionData(federalElectionData),
-          }),
-        ]
-      : [];
-
-    const particlePollutionTable = particlePollutionData
-      ? [
-          createTable({
-            pageBreak: false,
-            title: "Feinstaubbelastung",
+            title: "Nachbarschaftsdemographie",
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromParticlePollutiondata(particlePollutionData),
-          }),
-        ]
+            ...mapTableDataFromCensusData(censusData),
+          })
+        : [];
+
+    const federalElectionTable = federalElectionData
+      ? createTable({
+          pageBreak: false,
+          title: "Bundestagswahl 2021",
+          columnWidths: [2000, 5000, 5000],
+          headerColor: colorPalette.primaryColor,
+          headerTextColor: colorPalette.textColor,
+          ...mapTableDataFromFederalElectionData(federalElectionData),
+        })
       : [];
 
-    // TODO leave only reduce
-    let images = mapClippings
-      .filter((c) => c.selected)
-      .map((c) =>
-        createImage(c.mapClippingDataUrl.replace(base64PrefixRegex, ""))
-      );
+    const particlePollutionTable = particlePollutionData
+      ? createTable({
+          pageBreak: false,
+          title: "Feinstaubbelastung",
+          columnWidths: [5000, 2000, 3000],
+          headerColor: colorPalette.primaryColor,
+          headerTextColor: colorPalette.textColor,
+          ...mapTableDataFromParticlePollutionData(particlePollutionData),
+        })
+      : [];
 
-    if (images.length > 0) {
-      images = [
+    const mapSectionChildren = mapClippings.reduce<
+      (Paragraph | ImageRun | Table)[]
+    >(
+      (result, clipping, i) => {
+        if (!clipping.selected) {
+          return result;
+        }
+
+        const image = createImage(
+          clipping.mapClippingDataUrl.replace(base64PrefixRegex, "")
+        );
+
+        if (i % 2 === 1) {
+          result.push(
+            new Paragraph({ children: [new PageBreak()] }),
+            watermark,
+            image
+          );
+          return result;
+        }
+
+        result.push(image);
+        return result;
+      },
+      [
+        watermark,
         new Paragraph({
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
           text: "Kartenausschnitte",
         }),
-        ...images,
-      ];
-    }
+      ]
+    );
 
-    if (images.length > 0 && legend.length > 0) {
-      const renderedLegend = await getRenderedLegend(legend);
-      const legendColumn1: Paragraph[] = [];
-      const legendColumn2: Paragraph[] = [];
+    if (mapSectionChildren.length > 2 && legend.length > 0) {
+      const legendTable = await createLegend(legend);
 
-      renderedLegend.forEach(({ title, icon }, index) => {
-        const legendParagraph = new Paragraph({
-          spacing: {
-            before: 100,
-            after: 100,
-          },
-          children: [
-            new ImageRun({
-              data: Uint8Array.from(atob(icon), (c) => c.charCodeAt(0)),
-              transformation: {
-                width: 36,
-                height: 36,
-              },
-            }),
-            new TextRun({ text: title, font: "Arial" }),
-          ],
-        });
-
-        if (index < Math.ceil(renderedLegend.length / 2)) {
-          legendColumn1.push(legendParagraph);
-        } else {
-          legendColumn2.push(legendParagraph);
-        }
-      });
-
-      const legendTableParagraph = new Paragraph({
-        children: [
-          new Table({
-            width: {
-              size: 100,
-              type: WidthType.PERCENTAGE,
-            },
-            rows: [
-              new TableRow({
-                children: [
-                  new TableCell({
-                    borders: {
-                      top: { style: BorderStyle.NONE },
-                      right: { style: BorderStyle.NONE },
-                      bottom: { style: BorderStyle.NONE },
-                      left: { style: BorderStyle.NONE },
-                    },
-                    children: [...legendColumn1],
-                  }),
-                  new TableCell({
-                    borders: {
-                      top: { style: BorderStyle.NONE },
-                      right: { style: BorderStyle.NONE },
-                      bottom: { style: BorderStyle.NONE },
-                      left: { style: BorderStyle.NONE },
-                    },
-                    children: [...legendColumn2],
-                  }),
-                ],
-              }),
-            ],
-          }),
-        ],
-      });
-
-      images.push(
+      mapSectionChildren.push(
         new Paragraph({
           pageBreakBefore: true,
           spacing: { before: 500, after: 500 },
           heading: HeadingLevel.HEADING_1,
           text: "Kartenlegende",
         }),
-        legendTableParagraph
+        watermark,
+        legendTable
       );
     }
 
+    // docx supports jpeg, jpg, bmp, gif and png
+
     const metadata = user?.logo
       ? user?.logo.match(base64PrefixRegex)![0]
-      : "data:image/svg+xml;base64,";
+      : "data:image/png;base64,";
 
     const imageBase64Data = user?.logo
       ? user?.logo!.replace(base64PrefixRegex, "")!
@@ -256,7 +215,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
           String.fromCharCode(
             // TODO check the compiler settings
             // @ts-ignore
-            ...new Uint8Array(await (await fetch(AreaButlerLogo)).arrayBuffer())
+            ...new Uint8Array(await (await fetch(areaButlerIcon)).arrayBuffer())
           )
         );
 
@@ -272,19 +231,62 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
       ...tables.flatMap((t) => t),
     ];
 
-    const mapSectionChildren = [...images];
     const externalDataSectionChildren = [];
 
     if (
-      censusTable.length ||
-      federalElectionTable.length ||
-      particlePollutionTable.length
+      censusTable.length > 0 ||
+      federalElectionTable.length > 0 ||
+      particlePollutionTable.length > 0
     ) {
       externalDataSectionChildren.push(
-        ...censusTable.flatMap((t) => t),
-        ...federalElectionTable.flatMap((t) => t),
-        ...particlePollutionTable.flatMap((t) => t)
+        watermark,
+        ...censusTable,
+        ...federalElectionTable,
+        ...particlePollutionTable
       );
+    }
+
+    const commonHeader = createHeader(imageBase64Data, logoRatio);
+    const sections = [];
+
+    sections.push({
+      headers: {
+        ...commonHeader,
+      },
+      children: gridAndTablesSectionChildren,
+      footers: {
+        ...createFooter(),
+      },
+    });
+
+    if (mapSectionChildren.length > 2) {
+      sections.push({
+        headers: {
+          ...(qrCode.isShownQrCode
+            ? await createQrCodeHeader(
+                qrCode.snapshotToken!,
+                imageBase64Data,
+                logoRatio
+              )
+            : commonHeader),
+        },
+        children: mapSectionChildren,
+        footers: {
+          ...createFooter(),
+        },
+      });
+    }
+
+    if (externalDataSectionChildren.length > 0) {
+      sections.push({
+        headers: {
+          ...commonHeader,
+        },
+        children: externalDataSectionChildren,
+        footers: {
+          ...createFooter(),
+        },
+      });
     }
 
     const doc = new Document({
@@ -303,41 +305,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
           },
         ],
       },
-      sections: [
-        {
-          headers: {
-            ...createHeader(imageBase64Data, logoRatio),
-          },
-          children: gridAndTablesSectionChildren,
-          footers: {
-            ...createFooter(),
-          },
-        },
-        {
-          headers: {
-            ...(qrCode.isShownQrCode
-              ? await createQrCodeHeader(
-                  qrCode.snapshotToken!,
-                  imageBase64Data,
-                  logoRatio
-                )
-              : createHeader(imageBase64Data, logoRatio)),
-          },
-          children: mapSectionChildren,
-          footers: {
-            ...createFooter(),
-          },
-        },
-        {
-          headers: {
-            ...createHeader(imageBase64Data, logoRatio),
-          },
-          children: externalDataSectionChildren,
-          footers: {
-            ...createFooter(),
-          },
-        },
-      ],
+      sections,
     });
 
     Packer.toBlob(doc).then((blob) => {

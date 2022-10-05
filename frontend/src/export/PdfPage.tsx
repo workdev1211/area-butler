@@ -1,6 +1,6 @@
 import { FunctionComponent, CSSProperties, ReactNode } from "react";
 
-import AreaButlerLogo from "../assets/img/logo.jpg";
+import areaButlerLogo from "../assets/img/logo.svg";
 
 export interface PdfPageProps {
   nextPageNumber?: () => string;
@@ -13,7 +13,7 @@ export const PdfPage: FunctionComponent<PdfPageProps> = ({
   nextPageNumber = () => "01",
   title = "Umgebungsanalyse",
   children,
-  logo = AreaButlerLogo,
+  logo = areaButlerLogo,
   leftHeaderElement = <div />,
 }) => {
   const style = {

@@ -1,5 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
+import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
+import timezone from "dayjs/plugin/timezone";
 
 import { ApiUser } from "../../../shared/types/types";
 import { allSubscriptionTypes } from "../../../shared/constants/subscription-plan";
@@ -13,6 +16,9 @@ import {
 import { ConfigContext } from "../context/ConfigContext";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { UserActionTypes, UserContext } from "../context/UserContext";
+
+dayjs.extend(utc);
+dayjs.extend(timezone);
 
 export interface SubscriptionPlanLimitsProps {
   user: ApiUser;
@@ -72,24 +78,25 @@ const SubscriptionPlanLimits: FunctionComponent<
           setIsShownModal(false);
         }}
         onConfirm={cancelTrialSubscription}
-        text="Gehen Sie zur kommerziellen Nutzung?"
+        text="Testphase beenden und Plan auswählen?"
       />
 
       <div className="mt-20 flex flex-col gap-5">
         <div>
           <h1 className="font-bold text-xl">
-            Ihr aktuelles Abonnement und Ihre Kontingente
+            Dein aktueller Plan und dein Kontingent
           </h1>
           <h3 className="font-bold">
-            Aktuelles Abonnement: {subscriptionLabel}
+            Aktueller Plan: {subscriptionLabel} bis{" "}
+            {dayjs(user?.subscription?.endsAt)
+              .tz("Europe/Berlin")
+              .format("DD-MM-YYYY HH:mm")}
           </h3>
           {Object.values<string>(PaymentSystemTypeEnum).includes(
             `${subscription?.paymentSystemType}`
           ) && (
             <button
-              onClick={async () => {
-                await forwardToCustomerPortal();
-              }}
+              onClick={() => forwardToCustomerPortal()}
               className="btn bg-primary-gradient btn-primary"
               data-tour="manage-subscription"
             >
@@ -104,7 +111,7 @@ const SubscriptionPlanLimits: FunctionComponent<
               className="btn bg-primary-gradient btn-primary"
               data-tour="manage-subscription"
             >
-              Zur gewerblichen Nutzung
+              Testphase beenden und Plan auswählen
             </button>
           )}
         </div>
@@ -125,18 +132,6 @@ const SubscriptionPlanLimits: FunctionComponent<
             max={totalRequestContingent}
             className="w-96 progress progress-primary"
           />
-        </div>
-        <div
-          key="real-estate-contingent"
-          className="flex flex-wrap gap-6 items-center"
-        >
-          <div>Unlimitierte Objekte</div>
-        </div>
-        <div
-          key="customer-contingent"
-          className="flex flex-wrap gap-6 items-center"
-        >
-          <div>Unlimitierte Interessenten</div>
         </div>
       </div>
     </>

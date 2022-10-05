@@ -39,6 +39,7 @@ import MeansToggle from "../map/means-toggle/MeansToggle";
 import MapMenu from "../map/menu/MapMenu";
 import { defaultColor } from "../../../shared/constants/constants";
 import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
+import { mapBoxMapIds as storedMapBoxMapIds } from "../shared/shared.constants";
 
 export interface ResultEntity {
   name?: string;
@@ -102,8 +103,8 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   isTrial,
 }) => {
   const initialMapBoxMapIds = {
-    current: mapBoxMapId || "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
-    previous: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob",
+    current: mapBoxMapId || storedMapBoxMapIds.default,
+    previous: storedMapBoxMapIds.satellite,
   };
 
   const { searchContextState, searchContextDispatch } =

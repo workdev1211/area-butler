@@ -39,25 +39,31 @@ const Auth0ConsentPage: FunctionComponent = () => {
         <h2>Herzlich willkommen !</h2>
         <div className="mt-5 text-justify">
           <p>
-            Mit der Zustimmung der AGB und Datenschutzbestimmungen erhalten Sie
+            Mit der Zustimmung der AGB und Datenschutzbestimmungen, erhalten Sie
             für <strong>{TRIAL_DAYS} Tage</strong> eine{" "}
             <strong>kostenfreie Testphase</strong>, um den vollen Umfang des
-            AreaButlers testen zu können.
+            AreaButlers an <strong>4 Adressen</strong> in Deutschland zu testen.
           </p>
           <p>
-            Zu unserer Sicherheit und um Missbrauch zu vermeiden, erfordert die
-            Testphase ein hinterlegtes Zahlungsmittel. Dieses wird erst nach der
-            Testphase belastet.
+            Die Analysen und Export-Materialien sind in der Testphase mit
+            Wasserzeichen versehen.
           </p>
           <p>
-            Sollten Sie während der Testphase nicht zufrieden sein, können Sie
-            über Ihr Profil im AreaButler vom Kauf zurücktrete und die Testphase
-            kostenfrei beenden.
+            Am Ende der Testphase können Sie sich für einen Plan entscheiden,
+            der Ihren Anforderungen entspricht. Es findet keine automatische
+            Umwandlung oder Verlängerung statt.
           </p>
           <p>
-            Viel Spaß beim Entdecken des AreaButlers, wir freuen uns auf Ihr
-            Feedback!
+            Hinweis: Aus Datenschutzgründen werden alle Daten aus Ihrem
+            Testaccount gelöscht und nicht in Ihren „echten“ Account übertragen.
+            Über Ihr AreaButler Profil können Sie auch vor Ablauf der 4 Tage mit
+            Ihrem Plan starten.
           </p>
+          <p>
+            Viel Spaß beim Testen des AreaButlers, wir freuen uns, dass Sie
+            unseren Service nutzen!
+          </p>
+          <p>Ihr Team AreaButler</p>
         </div>
         <Formik
           initialValues={{

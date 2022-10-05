@@ -7,7 +7,7 @@ export const allSubscriptionTypes: {
   type: ApiSubscriptionPlanType;
   name: string;
 }[] = [
-  { type: ApiSubscriptionPlanType.TRIAL, name: "Trial" },
+  { type: ApiSubscriptionPlanType.TRIAL, name: "Testphase" },
   { type: ApiSubscriptionPlanType.PAY_PER_USE_1, name: "Pay per Use x1" },
   { type: ApiSubscriptionPlanType.PAY_PER_USE_5, name: "Pay per Use x5" },
   { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use x10" },

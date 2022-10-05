@@ -20,7 +20,7 @@ import AreaButlerLogo from "../../assets/img/logo.jpg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem, Legend } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
-import areaButlerImage from "../../assets/img/logo.svg";
+import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
 export interface ExposeProps {
@@ -77,11 +77,12 @@ export const Expose = forwardRef(
         {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
           <img
             className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"
-            src={areaButlerImage}
-            alt="area-butler-logo"
+            src={areaButlerLogo}
+            alt="watermark"
             style={{
               height: "30vh",
               transform: "translate(-50%, -50%) rotate(45deg)",
+              zIndex: 100,
             }}
           />
         )}

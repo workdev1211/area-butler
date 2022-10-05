@@ -7,12 +7,10 @@ import {
   payPerUse10Subscription,
   payPerUse1Subscription,
   payPerUse5Subscription,
-  TRIAL_DAYS,
 } from "../../../shared/constants/subscription-plan";
 import {
   ApiSubscriptionPlanType,
   ApiSubscriptionPlanTypeGroupEnum,
-  ApiUserSubscription,
 } from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
 import PaymentMethodModal from "./PaymentMethodModal";
@@ -33,11 +31,8 @@ type TSubscriptionPlanGroups = {
 };
 
 const SubscriptionPlanSelection: FunctionComponent = () => {
-  const { get, post } = useHttp();
+  const { post } = useHttp();
   const { stripeEnv } = useContext(ConfigContext);
-
-  const [hadPreviousSubscriptionPlans, setHadPreviousSubscriptionPlans] =
-    useState(false);
 
   const [sortedSubscriptionPlans, setSortedSubscriptionPlans] =
     useState<TSubscriptionPlanGroups>({
@@ -66,19 +61,6 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
     return () => clearTimeout(timeoutId);
   }, [isMounted, shouldRender]);
-
-  useEffect(() => {
-    const fetchSubscriptions = async () => {
-      const subscriptions = (
-        await get<ApiUserSubscription[]>("/api/users/me/subscriptions")
-      ).data;
-
-      setHadPreviousSubscriptionPlans(subscriptions.length > 0);
-    };
-
-    void fetchSubscriptions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [hadPreviousSubscriptionPlans]);
 
   useEffect(() => {
     const getSubscriptionGroup = (
@@ -193,13 +175,6 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
             </span>
             {vatStatus && <span className="text-lg ml-2"> / {vatStatus}</span>}
           </div>
-          {!hadPreviousSubscriptionPlans && (
-            <div className="flex justify-end">
-              <div className="badge badge-primary">
-                {TRIAL_DAYS} Tage kostenfrei testen!
-              </div>
-            </div>
-          )}
           <div className="flex flex-col my-10 h-64">
             <span className="font-semibold">Beinhaltet:</span>
             <ul className="list-disc ml-5 mt-2">
@@ -257,7 +232,8 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       <div>
         <h1 className="font-bold text-xl">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
-          Abonnement, bitte wählen Sie das Passende für sich aus:
+          Abonnement, bitte wählen Sie das Passende für sich aus keinen aktiven
+          Plan:
         </h1>
         <div className="p-20 flex flex-col items-center justify-center">
           <h2>Einzelabfragen oder Abo</h2>

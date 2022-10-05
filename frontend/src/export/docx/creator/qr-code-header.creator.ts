@@ -20,7 +20,7 @@ export const createQrCodeHeader = async (
   snapshotToken: string,
   imageData: string,
   imageRatio = 1
-) => {
+): Promise<{ default: Header }> => {
   const height = 100;
 
   return {

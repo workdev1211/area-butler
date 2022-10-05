@@ -42,6 +42,7 @@ import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg"
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import eyeIcon from "../assets/icons/eye.svg";
 import areaButlerLogo from "../assets/img/logo.svg";
+import areaButlerWhiteTextLogo from "../assets/img/logo-text-white.svg";
 import {
   EntityGroup,
   poiSearchContainerId,
@@ -62,6 +63,7 @@ import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import "./Map.scss";
 import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
+import { mapBoxMapIds } from "../shared/shared.constants";
 
 export interface MapProps {
   mapBoxAccessToken: string;
@@ -206,7 +208,7 @@ export class IdMarker extends L.Marker {
           );
         }
 
-        if (!!realEstateData?.characteristics?.realEstateSizeInSquareMeters) {
+        if (realEstateData?.characteristics?.realEstateSizeInSquareMeters) {
           const startingAt = realEstateData?.characteristics?.startingAt
             ? "Ab"
             : "";
@@ -409,6 +411,20 @@ const Map = memo<MapProps>(
 
     const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
+    const mapDrawDependencies = [
+      lat,
+      lng,
+      leafletMapId,
+      mapBoxAccessToken,
+      searchAddress,
+      embedMode,
+      mapboxMapId,
+      config?.mapIcon,
+      config?.showLocation,
+      config?.showAddress,
+      config?.groupItems,
+    ];
+
     useEffect(() => {
       if (config) {
         searchContextDispatch({
@@ -563,19 +579,7 @@ const Map = memo<MapProps>(
 
       currentMap = localMap;
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [
-      lat,
-      lng,
-      leafletMapId,
-      mapBoxAccessToken,
-      searchAddress,
-      embedMode,
-      mapboxMapId,
-      config?.mapIcon,
-      config?.showLocation,
-      config?.showAddress,
-      config?.groupItems,
-    ]);
+    }, mapDrawDependencies);
 
     // draw trial logos
     useEffect(() => {
@@ -583,11 +587,17 @@ const Map = memo<MapProps>(
         return;
       }
 
+      let image = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.5; transform: rotate(45deg)" alt="watermark">`;
+
+      if (mapboxMapId === mapBoxMapIds.satellite) {
+        image = `<img src="${areaButlerWhiteTextLogo}" style="width: auto; height: 7vh; opacity: 0.8; transform: rotate(45deg)" alt="watermark">`;
+      }
+
       // @ts-ignore
       L.GridLayer.DebugCoords = L.GridLayer.extend({
         createTile(coords: L.Point) {
           const tile = document.createElement("div");
-          tile.innerHTML = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.5; transform: rotate(45deg)" alt="watermark">`;
+          tile.innerHTML = image;
 
           return tile;
         },
@@ -598,7 +608,8 @@ const Map = memo<MapProps>(
         // @ts-ignore
         new L.GridLayer.DebugCoords({ tileSize: 256 }).setZIndex(2)
       );
-    }, [isTrial]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [...mapDrawDependencies, isTrial]);
 
     // react on zoom and center change
     useEffect(() => {

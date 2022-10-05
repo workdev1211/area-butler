@@ -12,20 +12,14 @@ export const createWatermark = async (isTrial: boolean): Promise<Paragraph> => {
     return new Paragraph({ children: [] });
   }
 
-  const areaButlerLogoBase64 = btoa(
-    String.fromCharCode(
-      // TODO check the compiler settings
-      // @ts-ignore
-      ...new Uint8Array(await (await fetch(areaButlerLogo)).arrayBuffer())
-    )
-  );
+  const areaButlerLogoBase64 = await (
+    await fetch(areaButlerLogo)
+  ).arrayBuffer();
 
   return new Paragraph({
     children: [
       new ImageRun({
-        data: Uint8Array.from(atob(areaButlerLogoBase64), (c) =>
-          c.charCodeAt(0)
-        ),
+        data: areaButlerLogoBase64,
         transformation: {
           width: 925 / 1.25,
           height: 251 / 1.25,
