@@ -26,6 +26,7 @@ import { useHttp } from "./hooks/http";
 import Footer from "./layout/Footer";
 import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
+import { commonPaypalOptions } from "./shared/shared.constants";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -96,14 +97,13 @@ function App() {
 
   const initialPaypalOptions = {
     "client-id": paypalClientId || "test",
-    components: "buttons",
-    currency: "EUR",
     // for Order payments
     // intent: "capture",
     // for Subscription payments
     intent: "subscription",
     // for Subscription payments
     vault: true,
+    ...commonPaypalOptions,
   };
 
   useEffect(() => {

@@ -17,3 +17,10 @@ export const mapBoxMapIds = {
   satellite: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob",
   default: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
 };
+
+export const commonPaypalOptions = {
+  components: "buttons",
+  currency: "EUR",
+  "disable-funding":
+    "card,credit,paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo",
+};

@@ -12,12 +12,12 @@ import {
   OnApproveActions,
 } from "@paypal/paypal-js/types/components/buttons";
 
-import "./PaymentMethodModal.scss";
 import { useHttp } from "hooks/http";
-import CloseCross from "../assets/icons/cross.svg";
+import closeIcon from "../assets/icons/cross.svg";
 import { toastError } from "shared/shared.functions";
 import { ILimitIncreaseMetadata } from "../../../shared/types/billing";
 import { ConfigContext } from "../context/ConfigContext";
+import { commonPaypalOptions } from "../shared/shared.constants";
 
 interface PaymentMethodModalProps {
   stripePriceId: string;
@@ -57,8 +57,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
       type: "resetOptions",
       value: {
         "client-id": paypalClientId || "test",
-        components: "buttons",
-        currency: "EUR",
+        ...commonPaypalOptions,
       },
     };
 
@@ -143,16 +142,31 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
     // @ts-ignore
   }, [wasPaypalSetup, paypalScriptSetting.loadingStatus]);
 
-  return hasPaypalLoaded ? (
-    <div className="payment-methods modal modal-open z-9999">
-      <div className="modal-box">
-        <div className="modal-header">
-          <span>Zahlungsarten</span>
-          <img src={CloseCross} alt="close" onClick={() => closeModal()} />
+  if (!hasPaypalLoaded) {
+    return null;
+  }
+
+  return (
+    <div
+      className="payment-methods modal modal-open z-9999"
+      style={{ backdropFilter: "blur(1px)" }}
+    >
+      <div className="modal-box p-0 sm:rounded-2xl">
+        <div
+          className="modal-header flex justify-between px-6 py-3 rounded-t-2xl"
+          style={{ color: "white", background: "var(--primary)" }}
+        >
+          <span className="text-lg font-medium">Zahlungsarten</span>
+          <img
+            className="cursor-pointer invert"
+            src={closeIcon}
+            alt="close"
+            onClick={() => closeModal()}
+          />
         </div>
-        <div className="modal-content">
+        <div className="modal-content flex flex-col gap-3 p-6">
           <PayPalButtons
-            className="paypal-method"
+            className="flex items-center"
             createOrder={paypalHandlers.createOrder}
             createSubscription={paypalHandlers.createSubscription}
             onApprove={paypalHandlers.onApprove}
@@ -166,8 +180,11 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
             }}
           />
           <div
-            className="other-payment-methods"
-            onClick={async () => {
+            className="text-base font-normal btn-primary rounded-md flex items-center justify-center"
+            style={{
+              height: "40px",
+            }}
+            onClick={() => {
               window.location.href = stripeCheckoutUrl;
             }}
           >
@@ -176,7 +193,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
         </div>
       </div>
     </div>
-  ) : null;
+  );
 };
 
 export default PaymentMethodModal;
