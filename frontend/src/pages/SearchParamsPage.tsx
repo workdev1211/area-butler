@@ -39,6 +39,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
   ApiDataSource,
   ApiSubscriptionLimitsEnum,
+  ApiSubscriptionPlanType,
 } from "../../../shared/types/subscription-plan";
 import {
   ApiCoordinates,
@@ -101,39 +102,44 @@ const SearchParamsPage: FunctionComponent = () => {
 
   useEffect(
     () => {
-      const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
       const coordinates = searchContextState.location;
-      let isNewRequest = true;
+
+      if (!coordinates) {
+        return;
+      }
+
+      const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
       let limitType;
       let modelData;
 
-      if (coordinates) {
-        const existingRequest = latestUserRequests.requests.find(
-          ({ coordinates: requestCoordinates }) =>
-            JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
-        );
+      const existingRequest = latestUserRequests.requests.find(
+        ({ coordinates: requestCoordinates }) =>
+          JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
+      );
 
-        if (dayjs().isAfter(existingRequest?.endsAt)) {
-          limitType = ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION;
+      if (dayjs().isAfter(existingRequest?.endsAt)) {
+        limitType = ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION;
 
-          modelData = {
-            name: LimitIncreaseModelNameEnum.LocationSearch,
-            id: existingRequest?.id,
-          };
-        }
-
-        const totalRequestContingent = deriveTotalRequestContingent(user);
-        const requestLimitExceeded =
-          user.requestsExecuted >= totalRequestContingent;
-
-        if (!existingRequest && requestLimitExceeded) {
-          limitType = ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS;
-        }
-
-        isNewRequest = !existingRequest;
+        modelData = {
+          name: LimitIncreaseModelNameEnum.LocationSearch,
+          id: existingRequest?.id,
+        };
       }
 
-      setIsNewRequest(isNewRequest);
+      const totalRequestContingent = deriveTotalRequestContingent(user);
+      const requestLimitExceeded =
+        user.requestsExecuted >= totalRequestContingent;
+
+      if (!existingRequest && requestLimitExceeded) {
+        if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
+          history.push("/profile");
+          return;
+        }
+
+        limitType = ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS;
+      }
+
+      setIsNewRequest(!existingRequest);
       setLimitType(limitType);
       setModelData(modelData);
     },
@@ -220,27 +226,45 @@ const SearchParamsPage: FunctionComponent = () => {
       ({ coordinates }) => !coordinates
     );
 
-  const increaseLimitButton: ReactNode = (
+  const increaseLimitExpressButton: ReactNode = (
+    <button
+      data-tour="start-search"
+      type="button"
+      disabled={searchButtonDisabled}
+      className="btn bg-secondary-gradient w-full sm:w-auto ml-auto"
+    >
+      <span>One-Klick</span>
+    </button>
+  );
+
+  const increaseLimitSearchButton: ReactNode = (
     <button
       type="button"
       disabled={searchButtonDisabled}
       data-tour="start-search"
-      className="btn bg-primary-gradient w-full sm:w-auto ml-auto"
+      className="btn bg-primary-gradient w-full sm:w-auto"
     >
       {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
       <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
     </button>
   );
 
-  const increaseRequestLimitModalConfig: ModalConfig = {
+  const increaseRequestLimitExpressModalConfig: ModalConfig = {
     modalTitle: "Abfragelimit erreicht",
-    buttonTitle: "Analyse starten",
     submitButtonTitle: "Neues Kontingent kaufen",
-    modalButton: increaseLimitButton,
+    modalButton: increaseLimitExpressButton,
   };
 
-  const IncreaseLimitModal: FunctionComponent = () => (
-    <FormModal modalConfig={increaseRequestLimitModalConfig}>
+  const increaseRequestLimitSearchModalConfig: ModalConfig = {
+    modalTitle: "Abfragelimit erreicht",
+    submitButtonTitle: "Neues Kontingent kaufen",
+    modalButton: increaseLimitSearchButton,
+  };
+
+  const IncreaseLimitModal: FunctionComponent<{ modalConfig: ModalConfig }> = ({
+    modalConfig,
+  }) => (
+    <FormModal modalConfig={modalConfig}>
       <IncreaseLimitFormHandler
         limitType={limitType || ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS}
         modelName={modelData?.name}
@@ -552,8 +576,14 @@ const SearchParamsPage: FunctionComponent = () => {
       actionsBottom={
         limitType
           ? [
-              <IncreaseLimitModal key="express-analysis-button" />,
-              <IncreaseLimitModal key="search-button" />,
+              <IncreaseLimitModal
+                key="express-analysis-button"
+                modalConfig={increaseRequestLimitExpressModalConfig}
+              />,
+              <IncreaseLimitModal
+                key="search-button"
+                modalConfig={increaseRequestLimitSearchModalConfig}
+              />,
             ]
           : [
               <ExpressAnalysisButton key="express-analysis-button" />,

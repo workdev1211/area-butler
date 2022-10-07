@@ -11,6 +11,7 @@ import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
+import { deriveTotalRequestContingent } from "../shared/shared.functions";
 
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
@@ -25,6 +26,10 @@ const UserProfilePage: FunctionComponent = () => {
 
   const user: ApiUser = userState.user!;
   const hasSubscription = !!user.subscription;
+  const totalRequestContingent = deriveTotalRequestContingent(user);
+  const hasReachedRequestLimit =
+    user.requestsExecuted >= totalRequestContingent;
+
   const isChild = user.isChild;
   const canCustomizeExport =
     hasSubscription && user.subscription!.config.appFeatures.canCustomizeExport;
@@ -63,10 +68,10 @@ const UserProfilePage: FunctionComponent = () => {
       return null;
     }
 
-    return hasSubscription ? (
-      <SubscriptionPlanLimits user={userState.user!} />
-    ) : (
+    return !hasSubscription || hasReachedRequestLimit ? (
       <SubscriptionPlanSelection />
+    ) : (
+      <SubscriptionPlanLimits user={userState.user!} />
     );
   };
 
