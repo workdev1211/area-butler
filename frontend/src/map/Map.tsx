@@ -133,6 +133,7 @@ export class IdMarker extends L.Marker {
 
   createOpenPopup() {
     this.unbindPopup();
+
     if (!this.getPopup()) {
       const entityTitle = this.entity.name || this.entity.label;
 
@@ -143,6 +144,7 @@ export class IdMarker extends L.Marker {
           : null;
 
       let cityFromSearch = "";
+
       if (this.searchAddress) {
         const searchAddressParts = this.searchAddress.split(",");
         cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
@@ -425,6 +427,31 @@ const Map = memo<MapProps>(
       config?.groupItems,
     ];
 
+    const escFunction = useCallback(
+      (e) => {
+        if (e.key !== "Escape") {
+          return;
+        }
+
+        if (currentMap && fullscreen) {
+          setFullscreen(false);
+
+          setTimeout(() => {
+            currentMap!.invalidateSize();
+          }, 400);
+        }
+      },
+      [fullscreen]
+    );
+
+    useEffect(() => {
+      document.addEventListener("keydown", escFunction, false);
+
+      return () => {
+        document.removeEventListener("keydown", escFunction, false);
+      };
+    }, [escFunction]);
+
     useEffect(() => {
       if (config) {
         searchContextDispatch({
@@ -439,7 +466,7 @@ const Map = memo<MapProps>(
       document.body.classList.toggle("fullscreen", fullscreen);
     }, [fullscreen]);
 
-    // main map draw
+    // draw the map itself
     useEffect(() => {
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
@@ -611,7 +638,7 @@ const Map = memo<MapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [...mapDrawDependencies, isTrial]);
 
-    // react on zoom and center change
+    // scale the marker (e.g., POIs) sizes and reattach the popup for the POI
     useEffect(() => {
       if (!currentMap || !mapZoomLevel || !amenityMarkerGroup) {
         return;
@@ -656,33 +683,35 @@ const Map = memo<MapProps>(
 
     useEffect(() => {
       if (
-        currentMap &&
-        searchContextState.mapCenter &&
-        searchContextState.gotoMapCenter?.goto
+        !currentMap ||
+        !mapCenter ||
+        !searchContextState.gotoMapCenter?.goto
       ) {
-        const setViewArgs: [
-          centerCoordinates: ApiCoordinates,
-          zoomLevel?: number
-        ] = [searchContextState.mapCenter];
-
-        if (searchContextState.gotoMapCenter.withZoom) {
-          setViewArgs.push(searchContextState.mapZoomLevel);
-        }
-
-        currentMap.setView(...setViewArgs);
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.GOTO_MAP_CENTER,
-          payload: undefined,
-        });
+        return;
       }
+
+      const setViewArguments: [
+        centerCoordinates: ApiCoordinates,
+        zoomLevel?: number
+      ] = [mapCenter];
+
+      if (searchContextState.gotoMapCenter.withZoom) {
+        setViewArguments.push(mapZoomLevel);
+      }
+
+      currentMap.setView(...setViewArguments);
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.GOTO_MAP_CENTER,
+        payload: undefined,
+      });
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchContextState.gotoMapCenter?.goto]);
 
     const meansStringified = JSON.stringify(means);
 
-    // draw means
+    // draw means of transportation
     useEffect(() => {
       const parsedMeans = JSON.parse(meansStringified);
 
@@ -1032,6 +1061,7 @@ const Map = memo<MapProps>(
           }
         });
 
+        // react on the marker group click
         amenityMarkerGroup.on("clusterclick", function (a) {
           const centerOfGroup = center(a.layer.toGeoJSON());
           const lat = centerOfGroup.geometry.coordinates[1];
@@ -1110,51 +1140,36 @@ const Map = memo<MapProps>(
       });
     };
 
-    const escFunction = useCallback(
-      (event) => {
-        if (event.keyCode === 27) {
-          if (currentMap && fullscreen) {
-            setFullscreen(false);
-            setTimeout(function () {
-              currentMap!.invalidateSize();
-            }, 400);
-          }
-        }
-      },
-      [fullscreen]
-    );
-
-    useEffect(() => {
-      document.addEventListener("keydown", escFunction, false);
-      return () => {
-        document.removeEventListener("keydown", escFunction, false);
-      };
-    }, [escFunction]);
-
     const toggleFullscreen = () => {
       setFullscreen(!fullscreen);
+
       if (currentMap) {
-        setTimeout(function () {
+        setTimeout(() => {
           currentMap!.invalidateSize();
         }, 400);
       }
     };
 
     const zoomToMeanBounds = (mean: MeansOfTransportation) => {
-      if (currentMap) {
-        const derivePolygonForMean = (mean: MeansOfTransportation) => {
-          const derivePositionForTransportationMean = (
-            profile: MeansOfTransportation
-          ) => {
-            return searchResponse.routingProfiles[
-              profile
-            ].isochrone.features[0].geometry.coordinates[0].map(
-              (item: number[]) => {
-                return [item[1], item[0]];
-              }
-            );
-          };
-          if (mean === MeansOfTransportation.WALK) {
+      if (!currentMap) {
+        return;
+      }
+
+      const derivePolygonForMean = (mean: MeansOfTransportation) => {
+        const derivePositionForTransportationMean = (
+          profile: MeansOfTransportation
+        ) => {
+          return searchResponse.routingProfiles[
+            profile
+          ].isochrone.features[0].geometry.coordinates[0].map(
+            (item: number[]) => {
+              return [item[1], item[0]];
+            }
+          );
+        };
+
+        switch (mean) {
+          case MeansOfTransportation.WALK: {
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.WALK),
               {
@@ -1164,7 +1179,8 @@ const Map = memo<MapProps>(
               }
             );
           }
-          if (mean === MeansOfTransportation.BICYCLE) {
+
+          case MeansOfTransportation.BICYCLE: {
             return L.polygon(
               derivePositionForTransportationMean(
                 MeansOfTransportation.BICYCLE
@@ -1176,7 +1192,8 @@ const Map = memo<MapProps>(
               }
             );
           }
-          if (mean === MeansOfTransportation.CAR) {
+
+          case MeansOfTransportation.CAR: {
             return L.polygon(
               derivePositionForTransportationMean(MeansOfTransportation.CAR),
               {
@@ -1186,18 +1203,15 @@ const Map = memo<MapProps>(
               }
             );
           }
-        };
+        }
+      };
 
-        const polygon = derivePolygonForMean(mean);
-        currentMap!.fitBounds(polygon!.getBounds(), {
-          padding: L.point(10, 10),
-        });
+      const polygon = derivePolygonForMean(mean);
 
-        centerZoomCoordinates(
-          currentMap?.getZoom()!,
-          searchResponse.centerOfInterest.coordinates
-        );
-      }
+      currentMap!.fitBounds(polygon.getBounds(), {
+        padding: L.point(10, 10),
+        animate: true,
+      });
     };
 
     return (
@@ -1206,7 +1220,7 @@ const Map = memo<MapProps>(
         id={leafletMapId}
         data-tour="map"
       >
-        {!!onPoiAdd && (
+        {onPoiAdd && (
           <FormModal modalConfig={addPoiModalOpenConfig}>
             <AddPoiFormHandler
               centerCoordinates={searchResponse.centerOfInterest.coordinates}
@@ -1236,7 +1250,9 @@ const Map = memo<MapProps>(
                 data-tour="show-foot-bounds"
                 className="leaflet-control-zoom-in cursor-pointer p-2"
                 role="button"
-                onClick={() => zoomToMeanBounds(MeansOfTransportation.WALK)}
+                onClick={() => {
+                  zoomToMeanBounds(MeansOfTransportation.WALK);
+                }}
               >
                 <img src={walkIcon} alt="zoom to walk" />
               </a>
@@ -1247,7 +1263,9 @@ const Map = memo<MapProps>(
                 data-tour="show-bike-bounds"
                 className="leaflet-control-zoom-in cursor-pointer p-2"
                 role="button"
-                onClick={() => zoomToMeanBounds(MeansOfTransportation.BICYCLE)}
+                onClick={() => {
+                  zoomToMeanBounds(MeansOfTransportation.BICYCLE);
+                }}
               >
                 <img src={bikeIcon} alt="zoom to bicycle" />
               </a>
@@ -1258,7 +1276,9 @@ const Map = memo<MapProps>(
                 data-tour="show-car-bounds"
                 className="leaflet-control-zoom-in cursor-pointer p-2"
                 role="button"
-                onClick={() => zoomToMeanBounds(MeansOfTransportation.CAR)}
+                onClick={() => {
+                  zoomToMeanBounds(MeansOfTransportation.CAR);
+                }}
               >
                 <img src={carIcon} alt="zoom to car" />
               </a>

@@ -105,9 +105,9 @@ export enum SearchContextActionTypes {
   SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
   SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
   SET_MAP_CENTER = "SET_MAP_CENTER",
-  GOTO_MAP_CENTER = "GOTO_MAP_CENTER",
   SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
-  CENTER_ZOOM_COORDINATES = "CENTER_ZOOM_COORDINATES",
+  SET_MAP_CENTER_ZOOM = "SET_MAP_CENTER_ZOOM",
+  GOTO_MAP_CENTER = "GOTO_MAP_CENTER",
   SET_HIGHLIGHT_ID = "SET_HIGHLIGHT_ID",
   SET_PRINTING_ACTIVE = "SET_PRINTING_ACTIVE",
   SET_PRINTING_CHEATSHEET_ACTIVE = "SET_PRINTING_CHEATSHEET_ACTIVE",
@@ -143,12 +143,12 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
-  [SearchContextActionTypes.GOTO_MAP_CENTER]: IGotoMapCenter | undefined;
   [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
-  [SearchContextActionTypes.CENTER_ZOOM_COORDINATES]: {
+  [SearchContextActionTypes.SET_MAP_CENTER_ZOOM]: {
     zoom: number;
     center: ApiCoordinates;
   };
+  [SearchContextActionTypes.GOTO_MAP_CENTER]: IGotoMapCenter | undefined;
   [SearchContextActionTypes.SET_HIGHLIGHT_ID]: string | null;
   [SearchContextActionTypes.SET_PRINTING_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE]: boolean;
@@ -260,21 +260,21 @@ export const searchContextReducer = (
     case SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA: {
       return { ...state, particlePollutionData: [...action.payload] };
     }
-    case SearchContextActionTypes.SET_MAP_ZOOM_LEVEL: {
-      return { ...state, mapZoomLevel: action.payload };
-    }
     case SearchContextActionTypes.SET_MAP_CENTER: {
       return { ...state, mapCenter: action.payload };
     }
-    case SearchContextActionTypes.GOTO_MAP_CENTER: {
-      return { ...state, gotoMapCenter: action.payload };
+    case SearchContextActionTypes.SET_MAP_ZOOM_LEVEL: {
+      return { ...state, mapZoomLevel: action.payload };
     }
-    case SearchContextActionTypes.CENTER_ZOOM_COORDINATES: {
+    case SearchContextActionTypes.SET_MAP_CENTER_ZOOM: {
       return {
         ...state,
         mapZoomLevel: action.payload.zoom,
         mapCenter: action.payload.center,
       };
+    }
+    case SearchContextActionTypes.GOTO_MAP_CENTER: {
+      return { ...state, gotoMapCenter: action.payload };
     }
     case SearchContextActionTypes.SET_HIGHLIGHT_ID: {
       return { ...state, highlightId: action.payload };

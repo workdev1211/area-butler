@@ -495,7 +495,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
                 MeansOfTransportation.CAR
               ),
             }}
-            mapCenter={location}
+            mapCenter={searchContextState.mapCenter}
             mapZoomLevel={
               mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
             }
@@ -508,7 +508,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
             hideEntity={hideEntity}
             centerZoomCoordinates={(zoom, coordinates) => {
               searchContextDispatch({
-                type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
+                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
                 payload: {
                   center: {
                     ...coordinates,

@@ -42,13 +42,18 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
 
   const highlightZoomEntity = (item: ResultEntity) => {
     searchContextDispatch({
-      type: SearchContextActionTypes.CENTER_ZOOM_COORDINATES,
+      type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
       payload: { center: item.coordinates, zoom: 18 },
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
       payload: item.id,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.GOTO_MAP_CENTER,
+      payload: { goto: true, withZoom: true },
     });
   };
 
@@ -73,35 +78,37 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
         </div>
       </div>
       {isListOpen &&
-        entityGroup.items
-          .slice(0, localityPagination)
-          .map((item, index) => (
-            <LocalityItem
-              key={`${entityGroup.title}-${index}`}
-              item={item}
-              group={entityGroup}
-              onClickTitle={(item) => highlightZoomEntity(item)}
-              onToggleRoute={(item, mean) => toggleRoute(item, mean)}
-              route={routes?.find(
-                (r) =>
-                  r.coordinates.lat === item.coordinates.lat &&
-                  r.coordinates.lng === item.coordinates.lng &&
-                  r.show
-              )}
-              onToggleTransitRoute={(item) => toggleTransitRoute(item)}
-              transitRoute={transitRoutes?.find(
-                (tr) =>
-                  tr.coordinates.lat === item.coordinates.lat &&
-                  tr.coordinates.lng === item.coordinates.lng &&
-                  tr.show
-              )}
-            />
-          ))}
+        entityGroup.items.slice(0, localityPagination).map((item, index) => (
+          <LocalityItem
+            key={`${entityGroup.title}-${index}`}
+            item={item}
+            group={entityGroup}
+            onClickTitle={(item) => {
+              highlightZoomEntity(item);
+            }}
+            onToggleRoute={(item, mean) => toggleRoute(item, mean)}
+            route={routes?.find(
+              (r) =>
+                r.coordinates.lat === item.coordinates.lat &&
+                r.coordinates.lng === item.coordinates.lng &&
+                r.show
+            )}
+            onToggleTransitRoute={(item) => toggleTransitRoute(item)}
+            transitRoute={transitRoutes?.find(
+              (tr) =>
+                tr.coordinates.lat === item.coordinates.lat &&
+                tr.coordinates.lng === item.coordinates.lng &&
+                tr.show
+            )}
+          />
+        ))}
       {isListOpen && entityGroup.items.length > localityPagination && (
         <button
           type="button"
           className="btn btn-link"
-          onClick={() => setLocalityPagination(localityPagination + 5)}
+          onClick={() => {
+            setLocalityPagination(localityPagination + 5);
+          }}
         >
           Mehr anzeigen
         </button>
