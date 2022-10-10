@@ -731,7 +731,7 @@ const Map = memo<MapProps>(
       ) => {
         return searchResponse.routingProfiles[
           profile
-        ].isochrone.features[0].geometry.coordinates[0].map(
+        ]?.isochrone.features[0].geometry.coordinates[0].map(
           (item: number[]) => {
             return [item[1], item[0]];
           }
@@ -1156,7 +1156,7 @@ const Map = memo<MapProps>(
         ) => {
           return searchResponse.routingProfiles[
             profile
-          ].isochrone.features[0].geometry.coordinates[0].map(
+          ]?.isochrone.features[0].geometry.coordinates[0].map(
             (item: number[]) => {
               return [item[1], item[0]];
             }
