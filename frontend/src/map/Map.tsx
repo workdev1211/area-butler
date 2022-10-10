@@ -70,7 +70,7 @@ export interface MapProps {
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   groupedEntities: EntityGroup[];
-  mapCenter?: ApiCoordinates;
+  mapCenter: ApiCoordinates;
   mapZoomLevel?: number;
   leafletMapId?: string;
   mapboxMapId?: string;
@@ -170,7 +170,7 @@ export class IdMarker extends L.Marker {
 
       const isRealEstateListing = this.entity.type === "property";
       const isPreferredLocation = this.entity.type === "favorite";
-      const isRealEstateListingOrPreferredAdress =
+      const isRealEstateListingOrPreferredAddress =
         isPreferredLocation || isRealEstateListing;
 
       const byFoot = this.entity.byFoot
@@ -253,9 +253,9 @@ export class IdMarker extends L.Marker {
         <span class="font-semibold mt-2">${title}</span><br />${
           street ? "<div>" + street + "</div><br />" : ""
         }<div class="flex gap-6">${
-          !isRealEstateListingOrPreferredAdress ? byFoot : ""
-        }${!isRealEstateListingOrPreferredAdress ? byBike : ""}${
-          !isRealEstateListingOrPreferredAdress ? byCar : ""
+          !isRealEstateListingOrPreferredAddress ? byFoot : ""
+        }${!isRealEstateListingOrPreferredAddress ? byBike : ""}${
+          !isRealEstateListingOrPreferredAddress ? byCar : ""
         }</div>`;
 
         if (this.hideEntityFunction) {
@@ -299,7 +299,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const responseEqual =
     JSON.stringify(prevProps.searchResponse) ===
     JSON.stringify(nextProps.searchResponse);
-  const searchAdressEqual =
+  const searchAddressEqual =
     JSON.stringify(prevProps.searchAddress) ===
     JSON.stringify(nextProps.searchAddress);
   const entityGroupsEqual =
@@ -327,7 +327,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   return (
     mapboxKeyEqual &&
     responseEqual &&
-    searchAdressEqual &&
+    searchAddressEqual &&
     entityGroupsEqual &&
     meansEqual &&
     mapCenterEqual &&
@@ -361,7 +361,7 @@ const Map = memo<MapProps>(
     groupedEntities,
     means,
     mapCenter,
-    mapZoomLevel,
+    mapZoomLevel = defaultMapZoom,
     leafletMapId = "mymap",
     highlightId,
     setHighlightId,
@@ -393,10 +393,8 @@ const Map = memo<MapProps>(
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
     const [fullscreen, setFullscreen] = useState(false);
-    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel || defaultMapZoom);
-    const [centerCoordinates, setCenterCoordinates] = useState(
-      searchResponse.centerOfInterest.coordinates
-    );
+    const [centerCoordinates, setCenterCoordinates] = useState(mapCenter);
+    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel);
 
     const [isDrawnMeans, setIsDrawnMeans] = useState(false);
     const [isDrawnRoutes, setIsDrawnRoutes] = useState(false);
@@ -411,11 +409,9 @@ const Map = memo<MapProps>(
       },
     };
 
-    const { lat, lng } = searchResponse.centerOfInterest.coordinates;
-
     const mapDrawDependencies = [
-      lat,
-      lng,
+      centerCoordinates.lat,
+      centerCoordinates.lng,
       leafletMapId,
       mapBoxAccessToken,
       searchAddress,
@@ -503,7 +499,7 @@ const Map = memo<MapProps>(
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
-      } as any);
+      } as any).setView(centerCoordinates, zoomLevel);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
@@ -560,7 +556,7 @@ const Map = memo<MapProps>(
         let detailContent = `${searchAddress}`;
 
         if (!embedMode || config?.showStreetViewLink) {
-          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${lat},${lng}&cbp=11,0,0,0,0`;
+          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${centerCoordinates.lat},${centerCoordinates.lng}&cbp=11,0,0,0,0`;
 
           const streetViewContent = `
             <br/><br/>
@@ -590,9 +586,12 @@ const Map = memo<MapProps>(
           }" alt="marker-icon-address" style="${iconStyle}" />`,
         });
 
-        const myLocationMarker = L.marker([lat, lng], {
-          icon: positionIcon,
-        }).addTo(localMap);
+        const myLocationMarker = L.marker(
+          [centerCoordinates.lat, centerCoordinates.lng],
+          {
+            icon: positionIcon,
+          }
+        ).addTo(localMap);
 
         if (config?.showAddress || !embedMode) {
           myLocationMarker.on("click", function (event) {
@@ -682,18 +681,14 @@ const Map = memo<MapProps>(
     }, [mapZoomLevel, highlightId]);
 
     useEffect(() => {
-      if (
-        !currentMap ||
-        !mapCenter ||
-        !searchContextState.gotoMapCenter?.goto
-      ) {
+      if (!currentMap || !searchContextState.gotoMapCenter?.goto) {
         return;
       }
 
       const setViewArguments: [
         centerCoordinates: ApiCoordinates,
         zoomLevel?: number
-      ] = [mapCenter];
+      ] = [centerCoordinates];
 
       if (searchContextState.gotoMapCenter.withZoom) {
         setViewArguments.push(mapZoomLevel);
@@ -1223,7 +1218,7 @@ const Map = memo<MapProps>(
         {onPoiAdd && (
           <FormModal modalConfig={addPoiModalOpenConfig}>
             <AddPoiFormHandler
-              centerCoordinates={searchResponse.centerOfInterest.coordinates}
+              centerCoordinates={centerCoordinates}
               coordinates={addPoiCoordinates}
               address={addPoiAddress}
               onPoiAdd={onPoiAdd}
@@ -1342,8 +1337,7 @@ const Map = memo<MapProps>(
 
                 setZoomLevel(currentMap?.getZoom() || defaultMapZoom);
                 setCenterCoordinates(
-                  currentMap?.getCenter() ||
-                    searchResponse.centerOfInterest.coordinates
+                  currentMap?.getCenter() || centerCoordinates
                 );
 
                 toggleSatelliteMapMode();

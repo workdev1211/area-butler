@@ -495,7 +495,10 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
                 MeansOfTransportation.CAR
               ),
             }}
-            mapCenter={searchContextState.mapCenter}
+            mapCenter={
+              searchContextState.mapCenter ||
+              searchResponse.centerOfInterest.coordinates
+            }
             mapZoomLevel={
               mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
             }
