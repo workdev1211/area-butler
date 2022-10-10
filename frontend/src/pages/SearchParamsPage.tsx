@@ -56,7 +56,9 @@ import ImportantAddresses from "../components/ImportantAddresses";
 import LocalityParams from "../components/LocalityParams";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";
-import TransportationParams from "../components/TransportationParams";
+import TransportationParams, {
+  defaultTransportationParams,
+} from "../components/TransportationParams";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -68,6 +70,7 @@ import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useAnalysis } from "../hooks/analysis";
 import ExpressAnalysisModal from "../components/ExpressAnalysisModal";
+import { osmEntityTypes } from "../../../shared/constants/constants";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -97,8 +100,42 @@ const SearchParamsPage: FunctionComponent = () => {
   const [isShownMapSnippetModal, setIsShownMapSnippetModal] = useState(false);
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
+  const [placesLocation, setPlacesLocation] = useState<any>(null);
 
   const user: ApiUser = userState.user!;
+
+  useEffect(() => {
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
+      payload: undefined,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCATION,
+      payload: undefined,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
+      payload: defaultTransportationParams,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
+      payload: [],
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+      payload: osmEntityTypes,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    setPlacesLocation(searchContextState.placesLocation);
+  }, [searchContextState.placesLocation]);
 
   useEffect(
     () => {
@@ -613,7 +650,7 @@ const SearchParamsPage: FunctionComponent = () => {
           <h2 className="search-params-first-title">Lage</h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
             <LocationAutocomplete
-              value={searchContextState.placesLocation}
+              value={placesLocation}
               setValue={() => {}}
               afterChange={onLocationAutocompleteChange}
             />

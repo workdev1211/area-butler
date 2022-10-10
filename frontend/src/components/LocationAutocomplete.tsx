@@ -1,6 +1,7 @@
+import { FunctionComponent, useContext, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
-import React, { FunctionComponent, useContext, useState } from "react";
+
 import "./LocationAutocomplete.scss";
 import { ConfigContext } from "../context/ConfigContext";
 import {
@@ -10,7 +11,7 @@ import {
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 
-export interface LocationAutocompleteProps {
+interface ILocationAutocompleteProps {
   afterChange?: ({
     value,
     coordinates,
@@ -23,13 +24,14 @@ export interface LocationAutocompleteProps {
   menuZIndex?: number;
 }
 
-const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
+const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
   afterChange = () => {},
   value = null,
   setValue = () => {},
   menuZIndex = 99,
 }) => {
   const { googleApiKey } = useContext(ConfigContext);
+
   const Menu = (props: any) => {
     return (
       <>
@@ -52,8 +54,10 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
       const coordinates = value?.value?.place_id
         ? await deriveGeocodeByPlaceId(value.value.place_id)
         : await deriveGeocodeByAddress(value.label);
+
       afterChange({ value, coordinates });
     }
+
     setValue(value);
     setInputValue("");
   };
@@ -66,20 +70,22 @@ const LocationAutocomplete: FunctionComponent<LocationAutocompleteProps> = ({
     if (action === "input-change") {
       setInputValue(v);
     }
+
     if (action === "menu-close") {
       setInputValue("");
     }
   };
 
   const deriveValue = (value?: any) => {
-    if (value) {
-      if (value.value?.place_id) {
-        return value;
-      }
-      return { label: value, value: { place_id: "123" } };
+    if (!value) {
+      return null;
     }
-    return null;
+
+    return value.value?.place_id
+      ? value
+      : { label: value, value: { place_id: "123" } };
   };
+
   const selectValue = deriveValue(value);
 
   return (

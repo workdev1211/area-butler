@@ -122,8 +122,10 @@ export enum SearchContextActionTypes {
 }
 
 type SearchContextActionsPayload = {
-  [SearchContextActionTypes.SET_PLACES_LOCATION]: Record<string, any>;
-  [SearchContextActionTypes.SET_LOCATION]: ApiCoordinates;
+  [SearchContextActionTypes.SET_PLACES_LOCATION]:
+    | Record<string, any>
+    | undefined;
+  [SearchContextActionTypes.SET_LOCATION]: ApiCoordinates | undefined;
   [SearchContextActionTypes.SET_TRANSPORTATION_PARAMS]: TransportationParam[];
   [SearchContextActionTypes.SET_PREFERRED_LOCATIONS]: ApiPreferredLocation[];
   [SearchContextActionTypes.SET_LOCALITY_PARAMS]: ApiOsmEntity[];
@@ -171,10 +173,16 @@ export const searchContextReducer = (
 ): SearchContextState => {
   switch (action.type) {
     case SearchContextActionTypes.SET_PLACES_LOCATION: {
-      return { ...state, placesLocation: { ...action.payload } };
+      return {
+        ...state,
+        placesLocation: action.payload ? { ...action.payload } : undefined,
+      };
     }
     case SearchContextActionTypes.SET_LOCATION: {
-      return { ...state, location: { ...action.payload } };
+      return {
+        ...state,
+        location: action.payload ? { ...action.payload } : undefined,
+      };
     }
     case SearchContextActionTypes.SET_TRANSPORTATION_PARAMS: {
       return { ...state, transportationParams: [...action.payload] };
