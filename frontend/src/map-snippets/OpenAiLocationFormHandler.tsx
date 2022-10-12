@@ -4,8 +4,7 @@ import copy from "copy-to-clipboard";
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import OpenAiLocationForm from "./OpenAiLocationForm";
-import { MeansOfTransportation } from "../../../shared/types/types";
-import { OpenAiTonalityEnum } from "../../../shared/types/open-ai";
+import { IApiAiDescriptionQuery } from "../../../shared/types/open-ai";
 import copyIcon from "../assets/icons/copy.svg";
 
 export interface IOpenAiLocationFormHandlerProps {
@@ -25,31 +24,37 @@ const OpenAiLocationFormHandler: FunctionComponent<
   beforeSubmit = () => {},
   postSubmit = () => {},
 }) => {
-  const { get } = useHttp();
+  const { post } = useHttp();
   const [locationDescription, setLocationDescription] = useState<string>();
 
-  const generateLocationText = async (
-    meanOfTransportation: MeansOfTransportation,
-    tonality: OpenAiTonalityEnum
-  ) => {
-    let url = "/api/location/open-ai-location-description";
-    url += `?searchResultSnapshotId=${searchResultSnapshotId}`;
-    url += `&meanOfTransportation=${meanOfTransportation}`;
-    url += `&tonality=${tonality}`;
-
-    setLocationDescription((await get<string>(url)).data);
-  };
-
-  const onSubmit = async ({
+  const generateLocationText = async ({
     meanOfTransportation,
     tonality,
-  }: {
-    meanOfTransportation: MeansOfTransportation;
-    tonality: OpenAiTonalityEnum;
-  }) => {
+    textLength,
+    customText,
+  }: Omit<IApiAiDescriptionQuery, "searchResultSnapshotId">) => {
+    setLocationDescription(
+      (
+        await post<string, IApiAiDescriptionQuery>(
+          "/api/location/ai-description",
+          {
+            searchResultSnapshotId: searchResultSnapshotId,
+            meanOfTransportation,
+            tonality,
+            textLength,
+            customText,
+          }
+        )
+      ).data
+    );
+  };
+
+  const onSubmit = async (
+    aiDescriptionQuery: Omit<IApiAiDescriptionQuery, "searchResultSnapshotId">
+  ) => {
     try {
       beforeSubmit();
-      await generateLocationText(meanOfTransportation, tonality);
+      await generateLocationText(aiDescriptionQuery);
     } catch (err) {
       console.log(err);
       toastError("Der Fehler ist aufgetreten!");

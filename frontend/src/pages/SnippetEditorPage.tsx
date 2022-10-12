@@ -53,10 +53,9 @@ import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
 import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
-import FormModal, { ModalConfig } from "../components/FormModal";
-import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { getQrCodeBase64 } from "../export/QrCode";
+import OpenAiLocationDescriptionModal from "../components/OpenAiLocationDescriptionModal";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -76,7 +75,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-  const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
+  const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
   const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
   const [resultingEntities, setResultingEntities] = useState<ResultEntity[]>(
@@ -365,30 +364,6 @@ const SnippetEditorPage: FunctionComponent = () => {
     }
   };
 
-  const openAiLocationModalConfig: ModalConfig = {
-    modalTitle: "Standortbeschreibung generieren",
-    submitButtonTitle: "Generieren",
-    modalOpen: isShownOpenAiLocationModal,
-    postSubmit: (success) => {
-      if (!success) {
-        // if a user clicks on the "Schließen" button
-        setIsShownOpenAiLocationModal(false);
-      }
-    },
-  };
-
-  const OpenAiLocationModal: FunctionComponent<{}> = () => (
-    <FormModal modalConfig={openAiLocationModalConfig}>
-      <OpenAiLocationFormHandler
-        searchResultSnapshotId={snapshotId}
-        closeModal={() => {
-          // if an error is thrown on the submit step
-          setIsShownOpenAiLocationModal(false);
-        }}
-      />
-    </FormModal>
-  );
-
   const ActionsTop: FunctionComponent = () => {
     return (
       <>
@@ -487,7 +462,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             <button
               type="button"
               onClick={() => {
-                setIsShownOpenAiLocationModal(true);
+                setIsShownAiDescriptionModal(true);
               }}
               className="btn btn-link"
             >
@@ -556,7 +531,15 @@ const SnippetEditorPage: FunctionComponent = () => {
         timelineStep={3}
       >
         <TourStarter tour="editor" />
-        {isShownOpenAiLocationModal && <OpenAiLocationModal />}
+        {hasOpenAiFeature && (
+          <OpenAiLocationDescriptionModal
+            isShownModal={isShownAiDescriptionModal}
+            closeModal={() => {
+              setIsShownAiDescriptionModal(false);
+            }}
+            searchResultSnapshotId={snapshotId}
+          />
+        )}
         <div className="hidden">
           <GooglePlacesAutocomplete
             apiOptions={googleMapsApiOptions}

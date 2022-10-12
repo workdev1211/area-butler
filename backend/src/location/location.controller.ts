@@ -24,17 +24,17 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
-import {
-  IApiMongoParams,
-  MeansOfTransportation,
-} from '@area-butler-types/types';
-import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import { IApiMongoParams } from '@area-butler-types/types';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
-import { openAiTonalities } from '../../../shared/constants/open-ai';
+import {
+  openAiTextLength,
+  openAiTonalities,
+} from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
 import { ApiSnapshotService } from './api-snapshot.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
+import ApiAiDescriptionQueryDto from './dto/api-ai-description-query.dto';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -183,12 +183,10 @@ export class LocationController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })
-  @Get('open-ai-location-description')
+  @Post('ai-description')
   async fetchOpenAiLocationDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Query('searchResultSnapshotId') searchResultSnapshotId: string,
-    @Query('meanOfTransportation') meanOfTransportation: MeansOfTransportation,
-    @Query('tonality') tonality: OpenAiTonalityEnum,
+    @Body() aiDescriptionQuery: ApiAiDescriptionQueryDto,
   ): Promise<string> {
     // TODO think about moving everything to the UserSubscriptionPipe
     await this.subscriptionService.checkSubscriptionViolation(
@@ -201,16 +199,19 @@ export class LocationController extends AuthenticatedController {
 
     const searchResultSnapshot = await this.locationService.fetchSnapshot(
       user,
-      searchResultSnapshotId,
+      aiDescriptionQuery.searchResultSnapshotId,
     );
 
-    const openAiText = this.openAiService.prepareLocationDescriptionQuery(
-      searchResultSnapshot,
-      meanOfTransportation,
-      openAiTonalities.find(({ type }) => type === tonality).label ||
-        openAiTonalities[0].label,
-    );
+    const openAiText = this.openAiService.getLocationDescriptionQueryText({
+      snapshot: searchResultSnapshot.snapshot,
+      meanOfTransportation: aiDescriptionQuery.meanOfTransportation,
+      tonality: openAiTonalities[aiDescriptionQuery.tonality],
+      customText: aiDescriptionQuery.customText,
+    });
 
-    return this.openAiService.fetchTextCompletion(openAiText);
+    return this.openAiService.fetchTextCompletion(
+      openAiText,
+      openAiTextLength[aiDescriptionQuery.textLength].value,
+    );
   }
 }

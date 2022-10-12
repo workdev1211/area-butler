@@ -1,6 +1,7 @@
 import { CSSProperties, FunctionComponent, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
+import { saveAs } from "file-saver";
 
 import "./ExpressAnalysisModal.scss";
 import { UserActionTypes, UserContext } from "context/UserContext";
@@ -23,13 +24,11 @@ import copyIcon from "../assets/icons/copy.svg";
 import screenshotIcon from "../assets/icons/screenshot.svg";
 import closeIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import aiIcon from "../assets/icons/ai.svg";
-import FormModal, { ModalConfig } from "./FormModal";
-import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
 import SearchResultContainer from "./SearchResultContainer";
-import { saveAs } from "file-saver";
 import { getQrCodeBase64 } from "../export/QrCode";
 import downloadIcon from "../assets/icons/download.svg";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
+import OpenAiLocationDescriptionModal from "./OpenAiLocationDescriptionModal";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
@@ -50,7 +49,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   const { userDispatch, userState } = useContext(UserContext);
 
   const [description, setDescription] = useState(snapshotResponse?.description);
-  const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
+  const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
   const [isShownEmbeddedMapModal, setIsShownEmbeddedMapModal] = useState(false);
 
@@ -93,31 +92,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
     }
   };
 
-  // TODO move to the common component with the same modal config from SnippetEditorPage
-  const openAiLocationModalConfig: ModalConfig = {
-    modalTitle: "Standortbeschreibung generieren",
-    submitButtonTitle: "Generieren",
-    modalOpen: isShownOpenAiLocationModal,
-    postSubmit: (success) => {
-      if (!success) {
-        // if a user clicks on the "Schließen" button
-        setIsShownOpenAiLocationModal(false);
-      }
-    },
-  };
-
-  const OpenAiLocationModal: FunctionComponent<{}> = () => (
-    <FormModal modalConfig={openAiLocationModalConfig}>
-      <OpenAiLocationFormHandler
-        searchResultSnapshotId={snapshotResponse.id}
-        closeModal={() => {
-          // if an error is thrown on the submit step
-          setIsShownOpenAiLocationModal(false);
-        }}
-      />
-    </FormModal>
-  );
-
   if (!isShownModal) {
     return null;
   }
@@ -127,12 +101,18 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   // TODO think about memoizing the second subcomponent (!isShownOpenAiLocationModal)
   return (
     <>
-      {isShownOpenAiLocationModal && hasOpenAiFeature && (
-        <OpenAiLocationModal />
+      {hasOpenAiFeature && (
+        <OpenAiLocationDescriptionModal
+          isShownModal={isShownAiDescriptionModal}
+          closeModal={() => {
+            setIsShownAiDescriptionModal(false);
+          }}
+          searchResultSnapshotId={snapshotResponse.id}
+        />
       )}
 
       {/*TODO MODAL COMPONENT*/}
-      {!isShownOpenAiLocationModal && (
+      {!isShownAiDescriptionModal && (
         <div className="modal modal-open z-9999">
           <div className="modal-box flex flex-col">
             <div className="mb-3">Ihre One-Klick Ergebnisse:</div>
@@ -261,7 +241,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 <h3
                   className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
-                    setIsShownOpenAiLocationModal(true);
+                    setIsShownAiDescriptionModal(true);
                   }}
                 >
                   <img
