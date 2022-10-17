@@ -7,6 +7,22 @@ import {
   IApiSubscriptionLimitIncreaseParams,
 } from "../../types/subscription-plan";
 import { subscriptionIntervals } from "../subscription-plan";
+import { CsvFileFormatEnum } from "../../types/types";
+
+export const appFeatures = {
+  sendCustomerQuestionnaireRequest: true,
+  dataSources: [
+    ApiDataSource.OSM,
+    ApiDataSource.CENSUS,
+    ApiDataSource.FEDERAL_ELECTION,
+    ApiDataSource.PARTICLE_POLLUTION,
+  ],
+  canCustomizeExport: true,
+  fullyCustomizableExpose: true,
+  htmlSnippet: true,
+  openAi: false,
+  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
+};
 
 // Legacy Business+ subscription
 export const businessPlusSubscription: ApiSubscriptionPlan = {
@@ -57,19 +73,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     "Analyse basierend auf allen Geo-Daten",
     "Versand von Fragebögen",
   ],
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: true,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };
 
 const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
@@ -143,17 +147,5 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
     "Individuelles Onboarding Ihres Teams",
     "24/7 individueller Service",
   ],
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: true,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };

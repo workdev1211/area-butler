@@ -84,7 +84,7 @@ const RealEstatesPage: FunctionComponent = () => {
       libraries: ["places"],
     });
 
-    googleMapsApiLoader.load();
+    void googleMapsApiLoader.load();
   }, [googleApiKey]);
 
   useEffect(() => {
@@ -239,14 +239,14 @@ const RealEstatesPage: FunctionComponent = () => {
           embeddableMaps={realEstateEmbeddableMaps}
         />
       )}
-      {isShownCsvImportModal && (
-        <CsvImportModal
-          closeModal={async () => {
-            await fetchRealEstates();
-            setIsShownCsvImportModal(false);
-          }}
-        />
-      )}
+      <CsvImportModal
+        isShownModal={isShownCsvImportModal}
+        closeModal={async () => {
+          await fetchRealEstates();
+          setIsShownCsvImportModal(false);
+        }}
+        fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
+      />
       <div
         className="w-1/2 sm:w-1/6 flex items-center gap-2"
         style={{ padding: "5px 5px 5px 5px" }}

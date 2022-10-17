@@ -1,4 +1,4 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { OnEvent } from '@nestjs/event-emitter';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -19,13 +19,11 @@ import { stripeToPaypalPriceIdMapping } from '../../../../shared/constants/subsc
 
 @Injectable()
 export class SubscriptionListener {
-  private logger: Logger = new Logger(SubscriptionListener.name);
-
   constructor(
-    private userService: UserService,
-    private subscriptionService: SubscriptionService,
-    private stripeService: StripeService,
-    private paypalService: PaypalService,
+    private readonly userService: UserService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly stripeService: StripeService,
+    private readonly paypalService: PaypalService,
   ) {}
 
   @OnEvent(EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT, { async: true })

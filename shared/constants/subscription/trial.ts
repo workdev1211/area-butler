@@ -1,11 +1,11 @@
 import {
-  ApiDataSource,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
 import { subscriptionIntervals } from "./common";
+import { appFeatures } from "./business-plus";
 
 export const TRIAL_DAYS = 4;
 export const TRIAL_PRICE_ID = "trial";
@@ -40,17 +40,5 @@ export const trialSubscription: ApiSubscriptionPlan = {
     "Individuelles Onboarding Ihres Teams",
     "24/7 individueller Service",
   ],
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: true,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };

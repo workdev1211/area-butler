@@ -31,6 +31,7 @@ import {
   ApiExampleFileTypeEnum,
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
+import { CsvFileFormatEnum } from '@area-butler-types/types';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -94,18 +95,24 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Import a csv file' })
   @ApiConsumes('multipart/form-data')
   @ApiBody({ description: 'The file to upload', type: FileUploadDto })
-  @Post('upload')
+  @Post('upload/:format')
   @UseInterceptors(FileInterceptor('file'))
   async importCsvFile(
     @InjectUser() user: UserDocument,
+    @Param('format') fileFormat: CsvFileFormatEnum,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<number[]> {
-    return this.realEstateListingService.importRealEstateListings(user, file);
+    return this.realEstateListingService.importRealEstateListings(
+      user,
+      fileFormat,
+      file,
+    );
   }
 
   @ApiOperation({ description: 'Download an example csv or xls file' })
-  @Get('examples/:type')
+  @Get('examples/:format/:type')
   downloadExampleFile(
+    @Param('format') fileFormat: CsvFileFormatEnum,
     @Param('type') fileType: ApiExampleFileTypeEnum,
     @Res({ passthrough: true }) res: Response,
   ): StreamableFile {
@@ -133,7 +140,9 @@ export class RealEstateListingController extends AuthenticatedController {
 
     const path = joinPath(
       __dirname,
-      `../../../assets/examples/csv-import/example.${fileType}`,
+      `../../../assets/examples/csv-import/${fileFormat
+        .toLowerCase()
+        .replace('_', '-')}/example.${fileType}`,
     );
 
     return new StreamableFile(createReadStream(path));

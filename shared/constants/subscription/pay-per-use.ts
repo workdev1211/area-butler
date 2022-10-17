@@ -7,6 +7,22 @@ import {
   IApiSubscriptionLimitIncreaseParams,
 } from "../../types/subscription-plan";
 import { subscriptionIntervals } from "./common";
+import { CsvFileFormatEnum } from "../../types/types";
+
+const appFeatures = {
+  sendCustomerQuestionnaireRequest: false,
+  dataSources: [
+    ApiDataSource.OSM,
+    ApiDataSource.CENSUS,
+    ApiDataSource.FEDERAL_ELECTION,
+    ApiDataSource.PARTICLE_POLLUTION,
+  ],
+  canCustomizeExport: true,
+  fullyCustomizableExpose: true,
+  htmlSnippet: true,
+  openAi: false,
+  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
+};
 
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   {
@@ -99,19 +115,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
     },
   ],
   description: payPerUsePlanDescription,
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: false,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };
 
 export const payPerUse5Subscription: ApiSubscriptionPlan = {
@@ -158,19 +162,7 @@ export const payPerUse5Subscription: ApiSubscriptionPlan = {
     },
   ],
   description: payPerUsePlanDescription,
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: false,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };
 
 export const payPerUse10Subscription: ApiSubscriptionPlan = {
@@ -217,17 +209,5 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
     },
   ],
   description: payPerUsePlanDescription,
-  appFeatures: {
-    sendCustomerQuestionnaireRequest: false,
-    dataSources: [
-      ApiDataSource.OSM,
-      ApiDataSource.CENSUS,
-      ApiDataSource.FEDERAL_ELECTION,
-      ApiDataSource.PARTICLE_POLLUTION,
-    ],
-    canCustomizeExport: true,
-    fullyCustomizableExpose: true,
-    htmlSnippet: true,
-    openAi: false,
-  },
+  appFeatures,
 };

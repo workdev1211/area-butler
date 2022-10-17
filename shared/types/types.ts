@@ -334,3 +334,8 @@ export interface IApiCapturePaypalPaymentQuery {
   orderId: string;
   metadata?: ILimitIncreaseMetadata;
 }
+
+export enum CsvFileFormatEnum {
+  AREA_BUTLER = "AREA_BUTLER",
+  ON_OFFICE = "ON_OFFICE",
+}

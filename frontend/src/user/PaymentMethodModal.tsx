@@ -147,24 +147,21 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
   }
 
   return (
-    <div
-      className="payment-methods modal modal-open z-9999"
-      style={{ backdropFilter: "blur(1px)" }}
-    >
+    <div className="modal modal-open z-9999 backdrop-blur-sm">
       <div className="modal-box p-0 sm:rounded-2xl">
         <div
-          className="modal-header flex justify-between px-6 py-3 rounded-t-2xl"
-          style={{ color: "white", background: "var(--primary)" }}
+          className="flex justify-between px-6 py-3 rounded-t-2xl text-white"
+          style={{ background: "var(--primary)" }}
         >
           <span className="text-lg font-medium">Zahlungsarten</span>
           <img
             className="cursor-pointer invert"
             src={closeIcon}
             alt="close"
-            onClick={() => closeModal()}
+            onClick={closeModal}
           />
         </div>
-        <div className="modal-content flex flex-col gap-3 p-6">
+        <div className="flex flex-col gap-3 p-6">
           <PayPalButtons
             className="flex items-center"
             createOrder={paypalHandlers.createOrder}

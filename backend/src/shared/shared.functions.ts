@@ -61,3 +61,6 @@ export const convertStringToNumber = (value: string): number => {
 
   return isFinite(parsedValue) ? parsedValue : undefined;
 };
+
+export const checkAnyStringIsEmpty = (...texts: string[]) =>
+  texts.some((text) => !text || text === '');

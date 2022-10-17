@@ -41,6 +41,9 @@ export class RealEstateListing {
 
   @Prop({ default: ApiRealEstateStatusEnum.IN_PREPARATION })
   status: ApiRealEstateStatusEnum;
+
+  @Prop({ type: String })
+  externalId: string;
 }
 
 export const RealEstateListingSchema =

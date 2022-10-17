@@ -1,19 +1,24 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
+import { saveAs } from "file-saver";
 
-import "./CsvImportModal.scss";
-import CloseCross from "../assets/icons/cross.svg";
 import { useHttp } from "../hooks/http";
 import { ApiExampleFileTypeEnum } from "../../../shared/types/real-estate";
 import { AxiosResponse } from "axios";
 import BusyModal from "../components/BusyModal";
-import { toastError } from "../shared/shared.functions";
+import { toastError, toastSuccess } from "../shared/shared.functions";
+import closeIcon from "../assets/icons/cross.svg";
+import { CsvFileFormatEnum } from "../../../shared/types/types";
 
 interface ICsvImportModalProps {
+  isShownModal: boolean;
   closeModal: () => void;
+  fileFormat?: CsvFileFormatEnum;
 }
 
 const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
+  isShownModal,
   closeModal,
+  fileFormat = CsvFileFormatEnum.AREA_BUTLER,
 }) => {
   const { get, post } = useHttp();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
@@ -21,22 +26,21 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
   const downloadFile = async (
     fileType: ApiExampleFileTypeEnum
   ): Promise<void> => {
-    const response: AxiosResponse<Blob> = await get(
-      `/api/real-estate-listings/examples/${fileType}`,
+    const {
+      data: responseData,
+      headers: responseHeaders,
+    }: AxiosResponse<Blob> = await get(
+      `/api/real-estate-listings/examples/${fileFormat}/${fileType}`,
       {},
       { responseType: "arraybuffer" }
     );
 
-    const fileName = response.headers["content-disposition"]
-      .split("filename=")[1]
-      .replace(/"/g, "");
-
-    const link = document.createElement("a");
-    link.href = window.URL.createObjectURL(new Blob([response.data]));
-    link.setAttribute("download", `${fileName}`);
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
+    saveAs(
+      new Blob([responseData]),
+      responseHeaders["content-disposition"]
+        .split("filename=")[1]
+        .replace(/"/g, "")
+    );
   };
 
   const uploadCsvFile = async (file: File) => {
@@ -46,7 +50,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
 
     try {
       const { data: errorLineNumbers } = await post<number[]>(
-        "/api/real-estate-listings/upload",
+        `/api/real-estate-listings/upload/${fileFormat}`,
         formData,
         {
           "Content-Type": "multipart/form-data",
@@ -54,23 +58,41 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
       );
 
       if (errorLineNumbers.length > 0) {
-        setIsShownBusyModal(false);
-        closeModal();
-
         toastError(
-          `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers}`,
-          5000
+          `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers
+            .sort((a, b) => a - b)
+            .join(", ")}`,
+          false
         );
+      } else {
+        toastSuccess("Datenimport war erfolgreich!");
       }
     } catch (e) {
-      setIsShownBusyModal(false);
-      closeModal();
-
       toastError(
         "Der CSV-Import ist fehlgeschlagen. Bitte überprüfen Sie die Dateistruktur."
       );
+    } finally {
+      closeModal();
+      setIsShownBusyModal(false);
     }
   };
+
+  useEffect(() => {
+    const handleEscape = async (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        closeModal();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!isShownModal) {
+    return null;
+  }
 
   return (
     <>
@@ -81,59 +103,67 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
           isAnimated={true}
         />
       )}
-      <div className="csv-import modal modal-open z-9999">
-        <div className="modal-box">
-          <div className="modal-header">
-            <span>Import aus CSV-Datei</span>
+      <div
+        className={`modal ${
+          isShownBusyModal ? "" : "modal-open"
+        } z-1000 backdrop-blur-sm`}
+      >
+        <div className="modal-box p-0 sm:rounded-2xl">
+          <div
+            className="flex justify-between px-6 py-3 rounded-t-2xl text-white"
+            style={{ background: "var(--primary)" }}
+          >
+            <span className="text-lg font-medium">Zahlungsarten</span>
             <img
-              src={CloseCross}
+              className="cursor-pointer invert"
+              src={closeIcon}
               alt="close"
-              onClick={() => {
-                closeModal();
-              }}
+              onClick={closeModal}
             />
           </div>
-          <div className="modal-content">
-            Bitte bereiten Sie die CSV-Dateistruktur gemäß den bereitgestellten
-            Beispielen vor. Alle Spalten sollten sich an den angegebenen Stellen
-            befinden. Die erste Zeile entfällt. Adresse ist ein Pflichtfeld.
-          </div>
-          <div className="modal-action">
-            <button
-              className="btn btn-sm btn-default"
-              onClick={async () => {
-                await downloadFile(ApiExampleFileTypeEnum.XLS);
-              }}
-            >
-              XLS-Beispiel
-            </button>
-            <button
-              className="btn btn-sm btn-default"
-              onClick={async () => {
-                await downloadFile(ApiExampleFileTypeEnum.CSV);
-              }}
-            >
-              CSV-Beispiel
-            </button>
-            <div>
-              <label
-                htmlFor="file"
-                style={{ cursor: "pointer" }}
-                className="btn btn-primary"
-              >
-                Importieren
-              </label>
-              <input
-                type="file"
-                id="file"
-                accept=".csv"
-                style={{ display: "none" }}
-                onChange={async (e) => {
-                  await uploadCsvFile(e.target.files![0]);
-                  e.target.files = null;
-                  e.target.value = "";
+          <div className="px-6 py-3">
+            <div className="text-justify">
+              Bitte bereiten Sie die CSV-Dateistruktur gemäß den
+              bereitgestellten Beispielen vor. Alle Spalten sollten sich an den
+              angegebenen Stellen befinden. Die erste Zeile entfällt. Adresse
+              ist ein Pflichtfeld.
+            </div>
+            <div className="modal-action">
+              <button
+                className="btn btn-sm btn-default"
+                onClick={async () => {
+                  await downloadFile(ApiExampleFileTypeEnum.XLS);
                 }}
-              />
+              >
+                XLS-Beispiel
+              </button>
+              <button
+                className="btn btn-sm btn-default"
+                onClick={async () => {
+                  await downloadFile(ApiExampleFileTypeEnum.CSV);
+                }}
+              >
+                CSV-Beispiel
+              </button>
+              <div>
+                <label
+                  className="btn btn-primary cursor-pointer"
+                  htmlFor="file"
+                >
+                  Importieren
+                </label>
+                <input
+                  className="hidden"
+                  type="file"
+                  id="file"
+                  accept=".csv"
+                  onChange={async (e) => {
+                    await uploadCsvFile(e.target.files![0]);
+                    e.target.files = null;
+                    e.target.value = "";
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>
