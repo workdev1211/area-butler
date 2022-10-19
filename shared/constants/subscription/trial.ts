@@ -1,14 +1,30 @@
 import {
+  ApiDataSource,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
 import { subscriptionIntervals } from "./common";
-import { appFeatures } from "./business-plus";
+import { CsvFileFormatEnum } from "../../types/types";
 
 export const TRIAL_DAYS = 4;
 export const TRIAL_PRICE_ID = "trial";
+
+const appFeatures = {
+  sendCustomerQuestionnaireRequest: true,
+  dataSources: [
+    ApiDataSource.OSM,
+    ApiDataSource.CENSUS,
+    ApiDataSource.FEDERAL_ELECTION,
+    ApiDataSource.PARTICLE_POLLUTION,
+  ],
+  canCustomizeExport: true,
+  fullyCustomizableExpose: true,
+  htmlSnippet: true,
+  openAi: true,
+  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
+};
 
 export const trialSubscription: ApiSubscriptionPlan = {
   name: "Trial",

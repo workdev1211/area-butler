@@ -9,7 +9,7 @@ import {
 import { subscriptionIntervals } from "../subscription-plan";
 import { CsvFileFormatEnum } from "../../types/types";
 
-export const appFeatures = {
+const appFeatures = {
   sendCustomerQuestionnaireRequest: true,
   dataSources: [
     ApiDataSource.OSM,
