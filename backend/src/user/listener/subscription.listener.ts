@@ -31,7 +31,7 @@ export class SubscriptionListener {
     user,
     endsAt,
   }: ITrialSubscriptionUpsertEvent): Promise<void> {
-    await this.subscriptionService.upsertTrialForUser(user.id, endsAt);
+    await this.subscriptionService.upsertTrialForUser(user, endsAt);
     await this.userService.setRequestContingents(user, endsAt);
   }
 

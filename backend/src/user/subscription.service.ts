@@ -28,8 +28,9 @@ import {
 } from '../shared/subscription.types';
 import { MailSenderService } from '../client/mail/mail-sender.service';
 import {
-  newUserBusinessPlusSubscriptionTemplateId,
-  newUserPayPerUseSubscriptionTemplateId,
+  newBusinessPlusSubscriptionTemplateId,
+  newPayPerUseSubscriptionTemplateId,
+  newTrialSubscriptionTemplateId,
   subscriptionRenewalTemplateId,
 } from '../shared/email.constants';
 import { User, UserDocument } from './schema/user.schema';
@@ -306,12 +307,23 @@ export class SubscriptionService {
   }
 
   async upsertTrialForUser(
-    userId: string,
+    { id: userId, fullname: userName, email: userEmail }: UserDocument,
     endsAt: Date,
   ): Promise<SubscriptionDocument> {
     // just in case
     if ((await this.countAllUserSubscriptions(userId)) > 0) {
       throw new HttpException('User already has a subscription', 400);
+    }
+
+    try {
+      await this.mailSenderService.sendMail({
+        to: [{ name: userName, email: userEmail }],
+        templateId: newTrialSubscriptionTemplateId,
+      });
+    } catch (e) {
+      this.logger.error(
+        `The subscription letter to ${userEmail} has not been sent due to an error`,
+      );
     }
 
     return new this.subscriptionModel({
@@ -385,8 +397,8 @@ export class SubscriptionService {
         to: [{ name: userName, email: userEmail }],
         templateId:
           type === ApiSubscriptionPlanType.BUSINESS_PLUS_V2
-            ? newUserBusinessPlusSubscriptionTemplateId
-            : newUserPayPerUseSubscriptionTemplateId,
+            ? newBusinessPlusSubscriptionTemplateId
+            : newPayPerUseSubscriptionTemplateId,
         params: {
           href: this.getSubscriptionCancelUrl(paymentSystemType),
         },
