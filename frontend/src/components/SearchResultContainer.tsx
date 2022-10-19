@@ -153,7 +153,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
 
   // consume search response and set active/available means
   useEffect(() => {
-    if (!!searchResponse) {
+    if (searchResponse) {
       const meansFromResponse =
         deriveAvailableMeansFromResponse(searchResponse);
 
@@ -215,7 +215,6 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
   ) => {
     if (action.action === "clear") {
       setResultingGroupedEntities(filteredGroupedEntities);
-
       return;
     }
 
@@ -253,8 +252,10 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
         r.coordinates.lat === item.coordinates.lat &&
         r.coordinates.lng === item.coordinates.lng
     );
+
     if (existing) {
       let newRoutes = [...existing.show];
+
       if (newRoutes.includes(mean)) {
         newRoutes = newRoutes.filter((r) => r !== mean);
       } else {
@@ -277,6 +278,8 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
       });
     } else {
       const routesResult = await fetchRoutes({
+        snapshotToken: searchContextState.responseToken,
+        userEmail: user?.email!,
         meansOfTransportation: [
           MeansOfTransportation.BICYCLE,
           MeansOfTransportation.CAR,
@@ -290,6 +293,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           },
         ],
       });
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
         payload: [
@@ -314,6 +318,7 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
         r.coordinates.lat === item.coordinates.lat &&
         r.coordinates.lng === item.coordinates.lng
     );
+
     if (existing) {
       const newTransitRoutes = [
         ...searchContextState.responseTransitRoutes.filter(
@@ -326,20 +331,24 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
           show: !existing.show,
         },
       ];
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
         payload: newTransitRoutes,
       });
     } else {
       const routesResult = await fetchTransitRoutes({
+        snapshotToken: searchContextState.responseToken,
+        userEmail: user?.email!,
         origin: origin,
         destinations: [
           {
-            title: item.name || "" + item.id,
+            title: item.name || `${item.id}`,
             coordinates: item.coordinates,
           },
         ],
       });
+
       if (routesResult.length) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
@@ -381,10 +390,12 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
         item,
         searchContextState.responseConfig
       );
+
       const newConfig = {
         ...searchContextState.responseConfig,
         entityVisibility: [...newEntityVisibility],
       };
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
         payload: { ...newConfig },

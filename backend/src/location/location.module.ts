@@ -60,5 +60,6 @@ import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
     MongoParamPipe,
     MongoSortParamPipe,
   ],
+  exports: [LocationService],
 })
 export class LocationModule {}

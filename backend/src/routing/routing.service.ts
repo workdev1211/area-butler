@@ -92,6 +92,7 @@ interface HereApiTransitRoute {
 
 interface HereApiTransitRoutingResponse {
   routes: HereApiTransitRoute[];
+  notices?: Array<{ title: string; code: string }>;
 }
 
 const switchCoords = (array: unknown[]): unknown[] => array.reverse();
@@ -187,18 +188,24 @@ export class RoutingService {
   async fetchTransitRoutes(
     query: ApiTransitRouteQuery,
   ): Promise<ApiTransitRouteQueryResultItem[]> {
-    return Promise.all(
-      query.destinations.map(async (destination) => {
-        return {
-          coordinates: destination.coordinates,
-          title: destination.title,
-          route: await this.fetchTransitRoute(
+    return (
+      await Promise.all(
+        query.destinations.map(async (destination) => {
+          const transitRoute = await this.fetchTransitRoute(
             query.origin,
             destination.coordinates,
-          ),
-        };
-      }),
-    );
+          );
+
+          return transitRoute
+            ? {
+                coordinates: destination.coordinates,
+                title: destination.title,
+                route: transitRoute,
+              }
+            : [];
+        }),
+      )
+    ).flat();
   }
 
   private async fetchTransitRoute(
@@ -252,6 +259,10 @@ export class RoutingService {
       this.logger.error(
         `Invalid transit route response: ${JSON.stringify(data)}`,
       );
+
+      if (data.notices.some(({ code }) => code === 'noRouteFound')) {
+        return;
+      }
     } catch (e) {
       this.logger.error('Could not fetch transit route', e);
       throw e;
@@ -261,6 +272,8 @@ export class RoutingService {
   }
 
   async fetchPreferredLocationRoutes({
+    userEmail,
+    snapshotToken,
     origin,
     preferredLocations,
   }: IApiPreferredLocationRouteQuery): Promise<IApiPreferredLocationRouteQueryResult> {
@@ -270,6 +283,8 @@ export class RoutingService {
     await Promise.all(
       preferredLocations.map(async (preferredLocation) => {
         const routesResult = await this.fetchRoutes({
+          userEmail,
+          snapshotToken,
           meansOfTransportation: [
             MeansOfTransportation.BICYCLE,
             MeansOfTransportation.CAR,
@@ -292,6 +307,8 @@ export class RoutingService {
         });
 
         const transitRoutesResult = await this.fetchTransitRoutes({
+          userEmail,
+          snapshotToken,
           origin,
           destinations: [
             {

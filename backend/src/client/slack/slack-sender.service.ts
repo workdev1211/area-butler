@@ -1,5 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+
 import { configService } from '../../config/config.service';
 
 export interface SlackNotification {
@@ -14,9 +16,9 @@ export enum SlackChannel {
 
 @Injectable()
 export class SlackSenderService {
-  slackChannels: any = {};
+  private slackChannels: any = {};
 
-  constructor(private http: HttpService) {
+  constructor(private readonly http: HttpService) {
     this.slackChannels[SlackChannel.FEEDBACK] =
       configService.getFeedbackSlackWebhook();
     this.slackChannels[SlackChannel.OPERATIONS] =
@@ -25,7 +27,7 @@ export class SlackSenderService {
       configService.getRevenuesSlackWebhook();
   }
 
-  async sendNotifcation(
+  async sendNotification(
     slackChannel: SlackChannel,
     { textBlocks }: SlackNotification,
   ) {
@@ -41,9 +43,9 @@ export class SlackSenderService {
       }),
     );
 
-    if (!!this.slackChannels[slackChannel]) {
-      await this.http
-        .post(
+    if (this.slackChannels[slackChannel]) {
+      await firstValueFrom(
+        this.http.post(
           this.slackChannels[slackChannel],
           { blocks },
           {
@@ -51,8 +53,8 @@ export class SlackSenderService {
               'Content-type': 'application/json',
             },
           },
-        )
-        .toPromise();
+        ),
+      );
     }
   }
 }

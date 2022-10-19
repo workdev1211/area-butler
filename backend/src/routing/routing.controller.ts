@@ -1,4 +1,10 @@
-import { Body, Controller, Logger, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RoutingService } from './routing.service';
@@ -9,6 +15,7 @@ import {
 } from '@area-butler-types/routing';
 import ApiRouteQueryDto from '../dto/api-route-query.dto';
 import ApiPreferredLocationRouteQueryDto from '../dto/api-preferred-location-route-query.dto';
+import { InjectUserEmailInterceptor } from '../interceptor/inject-user-email.interceptor';
 
 @ApiTags('routes')
 @Controller('api/routes')
@@ -18,6 +25,7 @@ export class RoutingController {
   constructor(private readonly routingService: RoutingService) {}
 
   @ApiOperation({ description: 'Fetch routes for entity' })
+  @UseInterceptors(InjectUserEmailInterceptor)
   @Post('fetch')
   async fetchRoutes(
     @Body() query: ApiRouteQueryDto,
@@ -35,6 +43,7 @@ export class RoutingController {
   }
 
   @ApiOperation({ description: 'Fetch transit routes for entity' })
+  @UseInterceptors(InjectUserEmailInterceptor)
   @Post('fetch-transit')
   async fetchTransitRoutes(
     @Body() query: ApiRouteQueryDto,
@@ -54,6 +63,7 @@ export class RoutingController {
   @ApiOperation({
     description: 'Fetch all routes for preferred locations',
   })
+  @UseInterceptors(InjectUserEmailInterceptor)
   @Post('fetch-preferred')
   async fetchPreferredLocationRoutes(
     @Body() query: ApiPreferredLocationRouteQueryDto,

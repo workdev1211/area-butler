@@ -8,7 +8,7 @@ const defaultHeaders = {
 };
 
 export const useHttp = () => {
-  const { getIdTokenClaims } = useAuth0();
+  const { isLoading, getIdTokenClaims } = useAuth0();
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
   const get = async <T>(
@@ -17,7 +17,7 @@ export const useHttp = () => {
     options = {}
   ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders, ...requestHeaders };
-    const idToken = await getIdTokenClaims();
+    const idToken = !isLoading && (await getIdTokenClaims());
 
     if (idToken) {
       headers["Authorization"] = `Bearer ${idToken.__raw}`;
@@ -35,7 +35,7 @@ export const useHttp = () => {
     requestHeaders = {}
   ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders, ...requestHeaders };
-    const idToken = await getIdTokenClaims();
+    const idToken = !isLoading && (await getIdTokenClaims());
 
     if (idToken) {
       headers["Authorization"] = `Bearer ${idToken.__raw}`;
@@ -51,7 +51,7 @@ export const useHttp = () => {
     body: U
   ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders };
-    const idToken = await getIdTokenClaims();
+    const idToken = !isLoading && (await getIdTokenClaims());
 
     if (idToken) {
       headers["Authorization"] = `Bearer ${idToken.__raw}`;
@@ -64,7 +64,7 @@ export const useHttp = () => {
 
   const deleteRequest = async <T>(url: string): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders };
-    const idToken = await getIdTokenClaims();
+    const idToken = !isLoading && (await getIdTokenClaims());
 
     if (idToken) {
       headers["Authorization"] = `Bearer ${idToken.__raw}`;

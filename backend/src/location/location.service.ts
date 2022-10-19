@@ -347,10 +347,8 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchSnapshot(
-      user,
-      id,
-    );
+    const snapshotDoc: SearchResultSnapshotDocument =
+      await this.fetchSnapshotById(user, id);
 
     Object.assign(snapshotDoc, { snapshot, config });
 
@@ -370,10 +368,8 @@ export class LocationService {
       'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const snapshotDoc: SearchResultSnapshotDocument = await this.fetchSnapshot(
-      user,
-      id,
-    );
+    const snapshotDoc: SearchResultSnapshotDocument =
+      await this.fetchSnapshotById(user, id);
 
     snapshotDoc.description = description;
 
@@ -424,7 +420,7 @@ export class LocationService {
       .limit(limit);
   }
 
-  async fetchSnapshot(
+  async fetchSnapshotById(
     user: UserDocument,
     id: string,
   ): Promise<SearchResultSnapshotDocument> {
@@ -443,6 +439,23 @@ export class LocationService {
 
     if (!snapshotDoc) {
       throw new HttpException('Unknown snapshot id', 404);
+    }
+
+    this.checkAddressExpiration(snapshotDoc);
+
+    return snapshotDoc;
+  }
+
+  // only used in the InjectUserEmailInterceptor
+  async fetchSnapshotByToken(
+    token: string,
+  ): Promise<SearchResultSnapshotDocument> {
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
+      token,
+    });
+
+    if (!snapshotDoc) {
+      throw new HttpException('Unknown token', 404);
     }
 
     this.checkAddressExpiration(snapshotDoc);

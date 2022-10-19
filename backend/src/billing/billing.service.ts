@@ -76,7 +76,7 @@ export class BillingService {
         }
 
         case 'customer.subscription.created': {
-          this.slackSenderService.sendNotifcation(SlackChannel.REVENUES, {
+          this.slackSenderService.sendNotification(SlackChannel.REVENUES, {
             textBlocks: ['🎉 New customer has signed a subscription 🎉! '],
           });
           this.handleSubscriptionUpsertEvent(event.data);
@@ -89,7 +89,7 @@ export class BillingService {
         }
 
         case 'invoice.paid': {
-          this.slackSenderService.sendNotifcation(SlackChannel.REVENUES, {
+          this.slackSenderService.sendNotification(SlackChannel.REVENUES, {
             textBlocks: ['💰 Invoice paid, ka-ching 💰!'],
           });
           this.handleInvoicePaid(event.data);

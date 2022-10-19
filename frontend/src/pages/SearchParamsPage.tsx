@@ -528,6 +528,7 @@ const SearchParamsPage: FunctionComponent = () => {
       const createdSnapshotResponse = await createSnapshot(
         items,
         setBusyModalItems,
+        user.email,
         searchResponse
       );
 

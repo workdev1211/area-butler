@@ -10,10 +10,11 @@ import {
   SlackChannel,
   SlackSenderService,
 } from '../client/slack/slack-sender.service';
+import { configService } from '../config/config.service';
 
 @Catch()
 export class CustomExceptionFilter extends BaseExceptionFilter {
-  constructor(private slackSender: SlackSenderService) {
+  constructor(private readonly slackSenderService: SlackSenderService) {
     super();
   }
 
@@ -35,7 +36,11 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
     ) {
       const headers = { ...req.headers };
       delete headers.authorization;
+      const environmentName = configService.getStripeEnv();
 
+      const environmentDescription = `*Environment:* ${environmentName.toUpperCase()} ${
+        environmentName === 'prod' ? ':red_circle:' : ':large_green_circle:'
+      }`;
       const errorTitle =
         'Error while performing a request - more information in log';
       const userEmail = `*User email:* ${req.user?.email}`;
@@ -55,6 +60,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
       )}`;
 
       const textBlocks = [
+        environmentDescription,
         errorTitle,
         userEmail,
         reqUrlDescription,
@@ -68,7 +74,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
       console.error(textBlocks);
       console.error(exception);
 
-      this.slackSender.sendNotifcation(SlackChannel.OPERATIONS, {
+      void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
         textBlocks,
       });
     }

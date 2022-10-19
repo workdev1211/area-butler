@@ -163,7 +163,11 @@ const SearchResultPage: FunctionComponent = () => {
               const items: IBusyModalItem[] = [];
 
               try {
-                const { id } = await createSnapshot(items, setBusyModalItems);
+                const { id } = await createSnapshot(
+                  items,
+                  setBusyModalItems,
+                  user.email
+                );
 
                 history.push(`snippet-editor/${id}`, {
                   from: currentLocation.pathname,

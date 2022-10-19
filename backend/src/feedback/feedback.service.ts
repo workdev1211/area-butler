@@ -1,11 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+
 import { Feedback, FeedbackDocument } from './schema/feedback.schema';
 import ApiInsertFeedbackDto from '../dto/api-insert-feedback.dto';
 import { FeedbackType } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
-import { SlackChannel, SlackSenderService } from '../client/slack/slack-sender.service';
+import {
+  SlackChannel,
+  SlackSenderService,
+} from '../client/slack/slack-sender.service';
 
 @Injectable()
 export class FeedbackService {
@@ -37,7 +41,7 @@ export class FeedbackService {
       `*Beschreibung:*\n ${feedbackDocument.description}`,
     ];
 
-    this.slackSender.sendNotifcation(SlackChannel.FEEDBACK, {
+    this.slackSender.sendNotification(SlackChannel.FEEDBACK, {
       textBlocks,
     });
   }

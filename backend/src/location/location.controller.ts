@@ -171,7 +171,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const map = await this.locationService.fetchSnapshot(user, id);
+    const map = await this.locationService.fetchSnapshotById(user, id);
 
     map.updatedAt = new Date();
     await map.save();
@@ -197,7 +197,7 @@ export class LocationController extends AuthenticatedController {
       'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
     );
 
-    const searchResultSnapshot = await this.locationService.fetchSnapshot(
+    const searchResultSnapshot = await this.locationService.fetchSnapshotById(
       user,
       aiDescriptionQuery.searchResultSnapshotId,
     );

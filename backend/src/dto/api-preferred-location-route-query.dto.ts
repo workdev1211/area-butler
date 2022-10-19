@@ -1,4 +1,10 @@
-import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  IsArray,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 import { IApiPreferredLocationRouteQuery } from '@area-butler-types/routing';
@@ -10,6 +16,14 @@ import ApiPreferredLocationDto from './api-preferred-location.dto';
 class ApiPreferredLocationRouteQueryDto
   implements IApiPreferredLocationRouteQuery
 {
+  @IsOptional()
+  @IsString()
+  snapshotToken?: string;
+
+  @IsOptional()
+  @IsString()
+  userEmail?: string;
+
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)

@@ -23,6 +23,7 @@ export const useAnalysis = () => {
   const createSnapshot = async (
     items: IBusyModalItem[],
     setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>,
+    userEmail?: string,
     searchResponse?: ApiSearchResponse
   ): Promise<ApiSearchResultSnapshotResponse> => {
     const routes: EntityRoute[] = [];
@@ -41,6 +42,7 @@ export const useAnalysis = () => {
         setBusyModalItems([...items]);
 
         const routesResult = await fetchRoutes({
+          userEmail,
           meansOfTransportation: [
             MeansOfTransportation.BICYCLE,
             MeansOfTransportation.CAR,
@@ -68,6 +70,7 @@ export const useAnalysis = () => {
         setBusyModalItems([...items]);
 
         const transitRoutesResult = await fetchTransitRoutes({
+          userEmail,
           origin: location,
           destinations: [
             {

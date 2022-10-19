@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   ValidateNested,
   IsOptional,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -16,6 +17,14 @@ import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiRouteDestinationDto from './api-route-destination.dto';
 
 class ApiRouteQueryDto implements ApiRouteQuery {
+  @IsOptional()
+  @IsString()
+  snapshotToken?: string;
+
+  @IsOptional()
+  @IsString()
+  userEmail?: string;
+
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })

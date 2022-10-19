@@ -14,7 +14,6 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { RoutingService } from '../routing/routing.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 
 @Injectable()
 export class ApiSnapshotService {
@@ -36,6 +35,7 @@ export class ApiSnapshotService {
   ): Promise<ApiSearchResultSnapshotResponse> {
     const { routes, transitRoutes } =
       await this.routingService.fetchPreferredLocationRoutes({
+        userEmail: user.email,
         origin: searchData.coordinates,
         preferredLocations: searchData.preferredLocations,
       });
@@ -80,7 +80,7 @@ export class ApiSnapshotService {
     const {
       config,
       snapshot: { transportationParams, localityParams, preferredLocations },
-    } = await this.locationService.fetchSnapshot(user, templateId);
+    } = await this.locationService.fetchSnapshotById(user, templateId);
 
     const place =
       typeof location === 'string'
