@@ -294,18 +294,20 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
         ],
       });
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-        payload: [
-          ...searchContextState.responseRoutes,
-          {
-            routes: routesResult[0].routes,
-            title: routesResult[0].title,
-            show: [mean],
-            coordinates: item.coordinates,
-          },
-        ],
-      });
+      if (routesResult.length) {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+          payload: [
+            ...searchContextState.responseRoutes,
+            {
+              routes: routesResult[0].routes,
+              title: routesResult[0].title,
+              show: [mean],
+              coordinates: item.coordinates,
+            },
+          ],
+        });
+      }
     }
   };
 

@@ -175,7 +175,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
               <div className="locality-item-cell">
                 <span className="locality-item-cell-label">Fußweg</span>
                 <span>
-                  {Number.isNaN(byFootDuration)
+                  {Number.isNaN(Number(byFootDuration))
                     ? byFootDuration
                     : timeToHumanReadable(byFootDuration as number)}
                 </span>
@@ -185,7 +185,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
               <div className="locality-item-cell">
                 <span className="locality-item-cell-label">Fahrrad</span>
                 <span>
-                  {Number.isNaN(byBicycleDuration)
+                  {Number.isNaN(Number(byBicycleDuration))
                     ? byBicycleDuration
                     : timeToHumanReadable(byBicycleDuration as number)}
                 </span>
@@ -195,7 +195,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
               <div className="locality-item-cell">
                 <span className="locality-item-cell-label">Auto</span>
                 <span>
-                  {Number.isNaN(byCarDuration)
+                  {Number.isNaN(Number(byCarDuration))
                     ? byCarDuration
                     : timeToHumanReadable(byCarDuration as number)}
                 </span>
@@ -207,7 +207,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
           <div className="locality-item-cell">
             <span className="locality-item-cell-label">ÖPNV</span>
             <span>
-              {Number.isNaN(transitDuration)
+              {Number.isNaN(Number(transitDuration))
                 ? transitDuration
                 : timeToHumanReadable(transitDuration as number)}
             </span>

@@ -69,6 +69,7 @@ interface HereApiRoute {
 
 interface HereApiRoutingResponse {
   routes: HereApiRoute[];
+  notices?: Array<{ title: string; code: string }>;
 }
 
 interface HereApiTransitRouteSection {
@@ -104,30 +105,34 @@ export class RoutingService {
   constructor(private readonly httpService: HttpService) {}
 
   async fetchRoutes(query: ApiRouteQuery): Promise<ApiRouteQueryResultItem[]> {
-    return Promise.all(
-      query.destinations.map(async (destination) => {
-        const routes = [];
+    return (
+      await Promise.all(
+        query.destinations.map(async (destination) => {
+          const routes = [];
 
-        // Was hitting Here API rate limits
-        for await (const transportType of query.meansOfTransportation) {
-          const route = await this.fetchRoute(
-            query.origin,
-            destination.coordinates,
-            transportType,
-          );
+          // Was hitting Here API rate limits
+          for await (const transportType of query.meansOfTransportation) {
+            const route = await this.fetchRoute(
+              query.origin,
+              destination.coordinates,
+              transportType,
+            );
 
-          if (route) {
-            routes.push(route);
+            if (route) {
+              routes.push(route);
+            }
           }
-        }
 
-        return {
-          coordinates: destination.coordinates,
-          title: destination.title,
-          routes,
-        };
-      }),
-    );
+          return routes.length > 0
+            ? {
+                coordinates: destination.coordinates,
+                title: destination.title,
+                routes,
+              }
+            : [];
+        }),
+      )
+    ).flat();
   }
 
   private async fetchRoute(
@@ -177,6 +182,10 @@ export class RoutingService {
 
       // we should already have returned
       this.logger.error(`Invalid route response: ${JSON.stringify(data)}`);
+
+      if (data.notices.some(({ code }) => code === 'noRouteFound')) {
+        return;
+      }
     } catch (e) {
       this.logger.error('Could not fetch route', e);
       throw e;
