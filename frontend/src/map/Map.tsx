@@ -770,8 +770,6 @@ const Map = memo<MapProps>(
           }
         ).addTo(meansGroup);
       }
-
-      setIsDrawnMeans(true);
     }, [
       meansStringified,
       searchResponse.routingProfiles,
@@ -921,7 +919,7 @@ const Map = memo<MapProps>(
     }, [
       routes,
       transitRoutes,
-      means,
+      meansStringified,
       groupedEntities,
       config?.mapIcon,
       mapboxMapId,

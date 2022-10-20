@@ -474,12 +474,12 @@ const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
               transportationParams={searchContextState.transportationParams}
               activeMeans={searchContextState.responseActiveMeans}
               availableMeans={availableMeans}
-              onMeansChange={(newValues: MeansOfTransportation[]) =>
+              onMeansChange={(newValues: MeansOfTransportation[]) => {
                 searchContextDispatch({
                   type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
                   payload: [...newValues],
-                })
-              }
+                });
+              }}
               hideIsochrones={!!hideIsochrones}
             />
           </div>

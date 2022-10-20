@@ -1,4 +1,5 @@
-import React from "react";
+import { FunctionComponent } from "react";
+
 import "./MeansToggle.scss";
 import {
   MeansOfTransportation,
@@ -17,7 +18,7 @@ export interface MapNavBarProps {
   hideIsochrones: boolean;
 }
 
-const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
+const MeansToggle: FunctionComponent<MapNavBarProps> = ({
   transportationParams,
   availableMeans,
   activeMeans,
@@ -28,6 +29,7 @@ const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
     const newValues = activeMeans.includes(mean)
       ? activeMeans.filter((am) => am !== mean)
       : [...activeMeans, mean];
+
     onMeansChange(newValues);
   };
 
@@ -55,7 +57,9 @@ const MeansToggle: React.FunctionComponent<MapNavBarProps> = ({
                   ? "btn btn-link active"
                   : "btn btn-link"
               }
-              onClick={() => toggleMean(mean)}
+              onClick={() => {
+                toggleMean(mean);
+              }}
               key={`mean-${mean}`}
               data-testid={`means-toggle-${mean}`}
             >
