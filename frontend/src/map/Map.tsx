@@ -586,12 +586,11 @@ const Map = memo<MapProps>(
           }" alt="marker-icon-address" style="${iconStyle}" />`,
         });
 
-        const myLocationMarker = L.marker(
-          [centerCoordinates.lat, centerCoordinates.lng],
-          {
-            icon: positionIcon,
-          }
-        ).addTo(localMap);
+        const { lat, lng } = searchResponse.centerOfInterest.coordinates;
+
+        const myLocationMarker = L.marker([lat, lng], {
+          icon: positionIcon,
+        }).addTo(localMap);
 
         if (config?.showAddress || !embedMode) {
           myLocationMarker.on("click", function (event) {
