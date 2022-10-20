@@ -156,7 +156,7 @@ export class LocationService {
             deriveMeterEquivalent(routingProfile),
             preferredAmenities,
           )
-        : await this.overpassService.fetchEntites(
+        : await this.overpassService.fetchEntities(
             coordinates,
             deriveMeterEquivalent(routingProfile),
             preferredAmenities,

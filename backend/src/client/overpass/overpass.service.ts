@@ -1,17 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { osmEntityTypes } from '../../../../shared/constants/constants';
 import * as harversine from 'haversine';
 import { point, Properties } from '@turf/helpers';
 import circle from '@turf/circle';
 import booleanPointInPolygon from '@turf/boolean-point-in-polygon';
+import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+
+import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
-import { HttpService } from '@nestjs/axios';
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import { OsmName } from '@area-butler-types/types';
 import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
 import ApiAddressDto from '../../dto/api-address.dto';
 import ApiOsmEntityDto from '../../dto/api-osm-entity.dto';
+
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
 
@@ -20,9 +23,9 @@ export class OverpassService {
   private baseUrl = configService.getOverpassUrl();
   private logger: Logger = new Logger(OverpassService.name);
 
-  constructor(private http: HttpService) {}
+  constructor(private readonly http: HttpService) {}
 
-  async fetchEntites(
+  async fetchEntities(
     coordinates: ApiCoordinatesDto,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
@@ -34,9 +37,9 @@ export class OverpassService {
     );
 
     try {
-      const response = await this.http
-        .get(this.baseUrl, { params: { data: requestParams } })
-        .toPromise();
+      const response = await firstValueFrom(
+        this.http.get(this.baseUrl, { params: { data: requestParams } }),
+      );
 
       return this.mapResponse(response, coordinates);
     } catch (e) {
@@ -96,12 +99,22 @@ export class OverpassService {
         city: elementTags['addr:city'],
       };
 
+      let name = elementTags.name;
+
+      // Adds the highway number to its name
+      if (
+        entityType.name === OsmName.motorway_link &&
+        elementTags['destination:ref']
+      ) {
+        name = `${entityType.label} ${elementTags['destination:ref']}`;
+      }
+
       return {
         entity: {
           id: element.id,
           label: entityType.label,
           type: entityType.name,
-          name: elementTags.name,
+          name,
         },
         coordinates,
         distanceInMeters,
@@ -110,13 +123,16 @@ export class OverpassService {
     });
 
     const CIRCLE_OPTIONS: Properties = { units: 'meters' };
-    const findDuplicatesAround = (elements, elementToInspect) => {
+
+    const findDuplicates = (elements, elementToInspect) => {
       const searchAroundDistance =
         osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
           ?.uniqueRadius || 20;
-      const similiarityTreshold =
+
+      const similarityThreshold =
         osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
           ?.uniqueTreshold || 0.8;
+
       const polygon = circle(
         point([
           elementToInspect.coordinates.lat,
@@ -125,7 +141,10 @@ export class OverpassService {
         searchAroundDistance,
         CIRCLE_OPTIONS,
       );
+
       const container = [];
+
+      // TODO change to reduce
       elements
         .filter(
           (e) =>
@@ -140,26 +159,31 @@ export class OverpassService {
             const f = new Fuse([elementToInspect.entity.name || ''], {
               includeScore: true,
             });
+
             const result = f.search(element.entity.name || '');
             const comparison =
               result.length && result[0].score ? 1 - result[0].score : 1;
-            if (comparison >= similiarityTreshold) {
+
+            if (comparison >= similarityThreshold) {
               container.push(element);
             }
           }
         });
+
       return container;
     };
 
     const finalElements = [];
     const duplicates = [];
+
     for (const rawElement of rawElements) {
       if (!duplicates.includes(rawElement.entity.id)) {
-        const dups = findDuplicatesAround(rawElements, rawElement);
-        duplicates.push(...dups.map((d) => d.entity.id));
+        const foundDuplicates = findDuplicates(rawElements, rawElement);
+        duplicates.push(...foundDuplicates.map((d) => d.entity.id));
         finalElements.push(rawElement);
       }
     }
+
     return finalElements;
   }
 
@@ -170,47 +194,53 @@ export class OverpassService {
   ) {
     const queryParts: string[] = [];
     queryParts.push('[out:json];( ');
+
     for (const preferredAmenity of preferredAmenities) {
       const entityType = osmEntityTypes.find(
         (e) => e.name === preferredAmenity,
       );
+
       queryParts.push(
         `node["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
+
       queryParts.push(
         `way["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
+
       queryParts.push(
         `relation["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
     }
+
     queryParts.push('); out center; ');
 
     return queryParts.join('');
   }
 
   async fetchForEntityType(
-    entitType: ApiOsmEntityDto,
+    entityType: ApiOsmEntityDto,
   ): Promise<OverpassData[]> {
-    const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entitType.type}"="${entitType.name}"];way["${entitType.type}"="${entitType.name}"];relation["${entitType.type}"="${entitType.name}"];);out center;`;
+    const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
     const hasCoordinates = (e) => e.center || (e.lat && e.lon);
+
     try {
-      this.logger.debug(`fetching ${entitType.name}`);
-      const response = await this.http
-        .get(this.baseUrl, { params: { data: query } })
-        .toPromise();
-      this.logger.debug(`${entitType.name} fetched.`);
+      this.logger.debug(`fetching ${entityType.name}`);
+
+      const response = await firstValueFrom(
+        this.http.get(this.baseUrl, { params: { data: query } }),
+      );
+
+      this.logger.debug(`${entityType.name} fetched.`);
 
       return response?.data?.elements.filter(hasCoordinates).map((e) => ({
         ...e,
         geometry: {
           type: 'Point',
-          coordinates: !!e.center
-            ? [e.center.lon, e.center.lat]
-            : [e.lon, e.lat],
+          coordinates: e.center ? [e.center.lon, e.center.lat] : [e.lon, e.lat],
         },
         overpassId: e.id,
-        entityType: entitType.name,
+        entityType: entityType.name,
       }));
     } catch (e) {
       console.error('Error while fetching data from overpass', e);
