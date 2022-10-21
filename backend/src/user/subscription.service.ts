@@ -458,6 +458,7 @@ export class SubscriptionService {
     const subscriptions = await this.subscriptionModel.aggregate([
       {
         $match: {
+          type: { $not: { $eq: ApiSubscriptionPlanType.TRIAL } },
           endsAt: {
             $gte: currentDate.add(2, 'days').toDate(),
             $lt: currentDate.add(3, 'days').toDate(),
