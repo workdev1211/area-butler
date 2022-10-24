@@ -1,7 +1,14 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 import { saveAs } from "file-saver";
+import * as L from "leaflet";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
@@ -69,6 +76,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
+  const mapRef = useRef<L.Map | null>(null);
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -475,15 +483,18 @@ const SnippetEditorPage: FunctionComponent = () => {
             type="button"
             onClick={async () => {
               try {
+                const mapZoomLevel = mapRef.current?.getZoom();
+                const config = { ...searchContextState.responseConfig };
+
+                if (mapZoomLevel) {
+                  config.zoomLevel = mapZoomLevel;
+                }
+
                 await put<ApiUpdateSearchResultSnapshot>(
                   `/api/location/snapshot/${snapshotId}`,
-                  {
-                    config: searchContextState.responseConfig,
-                    snapshot: {
-                      ...snapshot,
-                    },
-                  }
+                  { config, snapshot }
                 );
+
                 setIsShownModal(true);
                 toastSuccess("Erfolgreich in Zwischenablage kopiert!");
               } catch (e) {
@@ -573,6 +584,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             editorMode={true}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
+            ref={mapRef}
           />
           <EditorMapMenu
             availableMeans={deriveAvailableMeansFromResponse(
@@ -581,6 +593,23 @@ const SnippetEditorPage: FunctionComponent = () => {
             groupedEntries={editorGroups}
             config={searchContextState.responseConfig!}
             onConfigChange={(config) => {
+              if (
+                searchContextState.responseConfig?.mapBoxMapId !==
+                config.mapBoxMapId
+              ) {
+                const mapCenter =
+                  mapRef.current?.getCenter() || searchContextState.mapCenter;
+                const mapZoomLevel =
+                  mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
+
+                if (mapCenter && mapZoomLevel) {
+                  searchContextDispatch({
+                    type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+                    payload: { mapCenter, mapZoomLevel },
+                  });
+                }
+              }
+
               searchContextDispatch({
                 type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
                 payload: { ...config },

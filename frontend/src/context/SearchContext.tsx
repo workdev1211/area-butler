@@ -65,9 +65,10 @@ export interface SearchContextState {
   gotoMapCenter?: IGotoMapCenter;
 }
 
-interface IGotoMapCenter {
+export interface IGotoMapCenter {
   goto: boolean;
   withZoom?: boolean;
+  animate?: boolean;
 }
 
 export const initialState: SearchContextState = {
@@ -147,8 +148,8 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
   [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
   [SearchContextActionTypes.SET_MAP_CENTER_ZOOM]: {
-    zoom: number;
-    center: ApiCoordinates;
+    mapCenter: ApiCoordinates;
+    mapZoomLevel: number;
   };
   [SearchContextActionTypes.GOTO_MAP_CENTER]: IGotoMapCenter | undefined;
   [SearchContextActionTypes.SET_HIGHLIGHT_ID]: string | null;
@@ -277,8 +278,8 @@ export const searchContextReducer = (
     case SearchContextActionTypes.SET_MAP_CENTER_ZOOM: {
       return {
         ...state,
-        mapZoomLevel: action.payload.zoom,
-        mapCenter: action.payload.center,
+        mapCenter: action.payload.mapCenter,
+        mapZoomLevel: action.payload.mapZoomLevel,
       };
     }
     case SearchContextActionTypes.GOTO_MAP_CENTER: {

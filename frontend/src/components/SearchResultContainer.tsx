@@ -1,4 +1,12 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import {
+  forwardRef,
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import Select, {
   ActionMeta,
   ControlProps,
@@ -6,8 +14,10 @@ import Select, {
   GroupBase,
   SingleValue,
 } from "react-select";
+import * as L from "leaflet";
 
 import {
+  IGotoMapCenter,
   Poi,
   SearchContext,
   SearchContextActionTypes,
@@ -41,6 +51,11 @@ import { defaultColor } from "../../../shared/constants/constants";
 import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
 import { mapBoxMapIds as storedMapBoxMapIds } from "../shared/shared.constants";
 
+export interface ICurrentMapRef {
+  getZoom: () => number | undefined;
+  getCenter: () => ApiCoordinates | undefined;
+}
+
 export interface ResultEntity {
   name?: string;
   type: string;
@@ -71,6 +86,8 @@ interface IPoiSearchOption {
   value: number | string;
 }
 
+export const poiSearchContainerId = "poi-search-container";
+
 export interface SearchResultContainerProps {
   mapBoxToken: string;
   mapBoxMapId?: string;
@@ -86,547 +103,568 @@ export interface SearchResultContainerProps {
   isTrial: boolean;
 }
 
-export const poiSearchContainerId = "poi-search-container";
+const SearchResultContainer = forwardRef<
+  ICurrentMapRef,
+  SearchResultContainerProps
+>(
+  (
+    {
+      mapBoxToken,
+      mapBoxMapId,
+      searchResponse,
+      placesLocation,
+      location,
+      mapZoomLevel,
+      user,
+      userDispatch = () => null,
+      embedMode = false,
+      editorMode = false,
+      onPoiAdd,
+      isTrial,
+    },
+    parentMapRef
+  ) => {
+    const mapRef = useRef<L.Map | null>(null);
+    useImperativeHandle(parentMapRef, () => ({
+      getZoom: () => mapRef.current?.getZoom(),
+      getCenter: () => mapRef.current?.getCenter(),
+    }));
 
-const SearchResultContainer: FunctionComponent<SearchResultContainerProps> = ({
-  mapBoxToken,
-  mapBoxMapId,
-  searchResponse,
-  placesLocation,
-  location,
-  mapZoomLevel,
-  user,
-  userDispatch = () => null,
-  embedMode = false,
-  editorMode = false,
-  onPoiAdd,
-  isTrial,
-}) => {
-  const initialMapBoxMapIds = {
-    current: mapBoxMapId || storedMapBoxMapIds.default,
-    previous: storedMapBoxMapIds.satellite,
-  };
+    const initialMapBoxMapIds = {
+      current: mapBoxMapId || storedMapBoxMapIds.default,
+      previous: storedMapBoxMapIds.satellite,
+    };
 
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
+    const { searchContextState, searchContextDispatch } =
+      useContext(SearchContext);
 
-  const { fetchRoutes, fetchTransitRoutes } = useRouting();
+    const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [availableMeans, setAvailableMeans] = useState<any>([]);
-  const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
-    EntityGroup[]
-  >([]);
-  const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
-    EntityGroup[]
-  >([]);
-  const [poiSearchOptions, setPoiSearchOptions] = useState<IPoiSearchOption[]>(
-    []
-  );
-  const [hideIsochrones, setHideIsochrones] = useState(
-    searchContextState.responseConfig?.hideIsochrones
-  );
-  const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
-  const [preferredLocationsGroup, setPreferredLocationsGroup] =
-    useState<EntityGroup>();
-  const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
-    useState(false);
-
-  useEffect(() => {
-    setMapBoxMapIds(initialMapBoxMapIds);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [mapBoxMapId]);
-
-  useEffect(() => {
-    setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
-  }, [searchContextState.responseConfig?.hideIsochrones, setHideIsochrones]);
-
-  // Customize primary color
-  useEffect(() => {
-    const primaryColor =
-      searchContextState.responseConfig?.primaryColor || defaultColor;
-
-    const r = document.getElementById("search-result-container");
-    r?.style.setProperty("--primary", primaryColor);
-    r?.style.setProperty("--custom-primary", primaryColor);
-  }, [searchContextState.responseConfig?.primaryColor]);
-
-  // consume search response and set active/available means
-  useEffect(() => {
-    if (searchResponse) {
-      const meansFromResponse =
-        deriveAvailableMeansFromResponse(searchResponse);
-
-      setAvailableMeans(meansFromResponse);
-
-      const activeMeans =
-        searchContextState.responseConfig &&
-        searchContextState.responseConfig.defaultActiveMeans
-          ? [...searchContextState.responseConfig.defaultActiveMeans]
-          : meansFromResponse;
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-        payload: [...activeMeans],
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
-
-  // react to active means change (changes in POIs)
-  useEffect(() => {
-    setPreferredLocationsGroup(undefined);
-
-    const groupsFilteredByActiveMeans = deriveEntityGroupsByActiveMeans(
-      searchContextState.responseGroupedEntities,
-      searchContextState.responseActiveMeans
-    );
-
-    const poiSearchOptions = groupsFilteredByActiveMeans.reduce<
+    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [availableMeans, setAvailableMeans] = useState<any>([]);
+    const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
+      EntityGroup[]
+    >([]);
+    const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
+      EntityGroup[]
+    >([]);
+    const [poiSearchOptions, setPoiSearchOptions] = useState<
       IPoiSearchOption[]
-    >((result, group) => {
-      result.push({ label: `${group.title} Kategorie`, value: group.title });
+    >([]);
+    const [hideIsochrones, setHideIsochrones] = useState(
+      searchContextState.responseConfig?.hideIsochrones
+    );
+    const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
+    const [preferredLocationsGroup, setPreferredLocationsGroup] =
+      useState<EntityGroup>();
+    const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
+      useState(false);
 
-      if (group.items[0]?.label === preferredLocationsTitle) {
-        setPreferredLocationsGroup(group);
+    useEffect(() => {
+      setMapBoxMapIds(initialMapBoxMapIds);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mapBoxMapId]);
+
+    useEffect(() => {
+      setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
+    }, [searchContextState.responseConfig?.hideIsochrones, setHideIsochrones]);
+
+    // Customize primary color
+    useEffect(() => {
+      const primaryColor =
+        searchContextState.responseConfig?.primaryColor || defaultColor;
+
+      const r = document.getElementById("search-result-container");
+      r?.style.setProperty("--primary", primaryColor);
+      r?.style.setProperty("--custom-primary", primaryColor);
+    }, [searchContextState.responseConfig?.primaryColor]);
+
+    // consume search response and set active/available means
+    useEffect(() => {
+      if (searchResponse) {
+        const meansFromResponse =
+          deriveAvailableMeansFromResponse(searchResponse);
+
+        setAvailableMeans(meansFromResponse);
+
+        const activeMeans =
+          searchContextState.responseConfig &&
+          searchContextState.responseConfig.defaultActiveMeans
+            ? [...searchContextState.responseConfig.defaultActiveMeans]
+            : meansFromResponse;
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+          payload: [...activeMeans],
+        });
+      }
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
+
+    // react to active means change (changes in POIs)
+    useEffect(() => {
+      setPreferredLocationsGroup(undefined);
+
+      const groupsFilteredByActiveMeans = deriveEntityGroupsByActiveMeans(
+        searchContextState.responseGroupedEntities,
+        searchContextState.responseActiveMeans
+      );
+
+      const poiSearchOptions = groupsFilteredByActiveMeans.reduce<
+        IPoiSearchOption[]
+      >((result, group) => {
+        result.push({ label: `${group.title} Kategorie`, value: group.title });
+
+        if (group.items[0]?.label === preferredLocationsTitle) {
+          setPreferredLocationsGroup(group);
+        }
+
+        group.items.forEach(({ id, label, name }) => {
+          result.push({ label: name || label, value: id });
+        });
+
+        return result;
+      }, []);
+
+      setFilteredGroupedEntities(groupsFilteredByActiveMeans);
+      setResultingGroupedEntities(groupsFilteredByActiveMeans);
+      setPoiSearchOptions(poiSearchOptions);
+    }, [
+      searchContextState.responseGroupedEntities,
+      searchContextState.responseActiveMeans,
+      setFilteredGroupedEntities,
+      setResultingGroupedEntities,
+      setPoiSearchOptions,
+      setPreferredLocationsGroup,
+    ]);
+
+    const onPoiSearchSelect = (
+      option: SingleValue<IPoiSearchOption>,
+      action: ActionMeta<IPoiSearchOption>
+    ) => {
+      if (action.action === "clear") {
+        setResultingGroupedEntities(filteredGroupedEntities);
+        return;
       }
 
-      group.items.forEach(({ id, label, name }) => {
-        result.push({ label: name || label, value: id });
-      });
+      const processedGroupedEntities = filteredGroupedEntities.reduce<
+        EntityGroup[]
+      >((result, entityGroup) => {
+        const resultingEntityGroup = { ...entityGroup, active: true };
 
-      return result;
-    }, []);
-
-    setFilteredGroupedEntities(groupsFilteredByActiveMeans);
-    setResultingGroupedEntities(groupsFilteredByActiveMeans);
-    setPoiSearchOptions(poiSearchOptions);
-  }, [
-    searchContextState.responseGroupedEntities,
-    searchContextState.responseActiveMeans,
-    setFilteredGroupedEntities,
-    setResultingGroupedEntities,
-    setPoiSearchOptions,
-    setPreferredLocationsGroup,
-  ]);
-
-  const onPoiSearchSelect = (
-    option: SingleValue<IPoiSearchOption>,
-    action: ActionMeta<IPoiSearchOption>
-  ) => {
-    if (action.action === "clear") {
-      setResultingGroupedEntities(filteredGroupedEntities);
-      return;
-    }
-
-    const processedGroupedEntities = filteredGroupedEntities.reduce<
-      EntityGroup[]
-    >((result, entityGroup) => {
-      const resultingEntityGroup = { ...entityGroup, active: true };
-
-      if (option?.value === resultingEntityGroup.title) {
-        result.push(resultingEntityGroup);
-      } else {
-        const foundItem = entityGroup.items.find(
-          (item) => item.id === option?.value
-        );
-
-        if (foundItem) {
-          Object.assign(resultingEntityGroup, { items: [foundItem] });
+        if (option?.value === resultingEntityGroup.title) {
           result.push(resultingEntityGroup);
+        } else {
+          const foundItem = entityGroup.items.find(
+            (item) => item.id === option?.value
+          );
+
+          if (foundItem) {
+            Object.assign(resultingEntityGroup, { items: [foundItem] });
+            result.push(resultingEntityGroup);
+          }
+        }
+
+        return result;
+      }, []);
+
+      setResultingGroupedEntities(processedGroupedEntities);
+    };
+
+    const toggleRoutesToEntity = async (
+      origin: ApiCoordinates,
+      item: ResultEntity,
+      mean: MeansOfTransportation
+    ) => {
+      const existing = searchContextState.responseRoutes.find(
+        (r) =>
+          r.coordinates.lat === item.coordinates.lat &&
+          r.coordinates.lng === item.coordinates.lng
+      );
+
+      if (existing) {
+        let newRoutes = [...existing.show];
+
+        if (newRoutes.includes(mean)) {
+          newRoutes = newRoutes.filter((r) => r !== mean);
+        } else {
+          newRoutes.push(mean);
+        }
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+          payload: [
+            ...searchContextState.responseRoutes.filter(
+              (r) =>
+                r.coordinates.lat !== item.coordinates.lat &&
+                r.coordinates.lng !== item.coordinates.lng
+            ),
+            {
+              ...existing,
+              show: newRoutes,
+            },
+          ],
+        });
+      } else {
+        const routesResult = await fetchRoutes({
+          snapshotToken: searchContextState.responseToken,
+          userEmail: user?.email!,
+          meansOfTransportation: [
+            MeansOfTransportation.BICYCLE,
+            MeansOfTransportation.CAR,
+            MeansOfTransportation.WALK,
+          ],
+          origin: origin,
+          destinations: [
+            {
+              title: item.name || "" + item.id,
+              coordinates: item.coordinates,
+            },
+          ],
+        });
+
+        if (routesResult.length) {
+          searchContextDispatch({
+            type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+            payload: [
+              ...searchContextState.responseRoutes,
+              {
+                routes: routesResult[0].routes,
+                title: routesResult[0].title,
+                show: [mean],
+                coordinates: item.coordinates,
+              },
+            ],
+          });
         }
       }
+    };
 
-      return result;
-    }, []);
+    const toggleTransitRoutesToEntity = async (
+      origin: ApiCoordinates,
+      item: ResultEntity
+    ) => {
+      const existing = searchContextState.responseTransitRoutes.find(
+        (r) =>
+          r.coordinates.lat === item.coordinates.lat &&
+          r.coordinates.lng === item.coordinates.lng
+      );
 
-    setResultingGroupedEntities(processedGroupedEntities);
-  };
-
-  const toggleRoutesToEntity = async (
-    origin: ApiCoordinates,
-    item: ResultEntity,
-    mean: MeansOfTransportation
-  ) => {
-    const existing = searchContextState.responseRoutes.find(
-      (r) =>
-        r.coordinates.lat === item.coordinates.lat &&
-        r.coordinates.lng === item.coordinates.lng
-    );
-
-    if (existing) {
-      let newRoutes = [...existing.show];
-
-      if (newRoutes.includes(mean)) {
-        newRoutes = newRoutes.filter((r) => r !== mean);
-      } else {
-        newRoutes.push(mean);
-      }
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-        payload: [
-          ...searchContextState.responseRoutes.filter(
+      if (existing) {
+        const newTransitRoutes = [
+          ...searchContextState.responseTransitRoutes.filter(
             (r) =>
               r.coordinates.lat !== item.coordinates.lat &&
               r.coordinates.lng !== item.coordinates.lng
           ),
           {
             ...existing,
-            show: newRoutes,
+            show: !existing.show,
           },
-        ],
-      });
-    } else {
-      const routesResult = await fetchRoutes({
-        snapshotToken: searchContextState.responseToken,
-        userEmail: user?.email!,
-        meansOfTransportation: [
-          MeansOfTransportation.BICYCLE,
-          MeansOfTransportation.CAR,
-          MeansOfTransportation.WALK,
-        ],
-        origin: origin,
-        destinations: [
-          {
-            title: item.name || "" + item.id,
-            coordinates: item.coordinates,
-          },
-        ],
-      });
+        ];
 
-      if (routesResult.length) {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-          payload: [
-            ...searchContextState.responseRoutes,
-            {
-              routes: routesResult[0].routes,
-              title: routesResult[0].title,
-              show: [mean],
-              coordinates: item.coordinates,
-            },
-          ],
-        });
-      }
-    }
-  };
-
-  const toggleTransitRoutesToEntity = async (
-    origin: ApiCoordinates,
-    item: ResultEntity
-  ) => {
-    const existing = searchContextState.responseTransitRoutes.find(
-      (r) =>
-        r.coordinates.lat === item.coordinates.lat &&
-        r.coordinates.lng === item.coordinates.lng
-    );
-
-    if (existing) {
-      const newTransitRoutes = [
-        ...searchContextState.responseTransitRoutes.filter(
-          (r) =>
-            r.coordinates.lat !== item.coordinates.lat &&
-            r.coordinates.lng !== item.coordinates.lng
-        ),
-        {
-          ...existing,
-          show: !existing.show,
-        },
-      ];
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-        payload: newTransitRoutes,
-      });
-    } else {
-      const routesResult = await fetchTransitRoutes({
-        snapshotToken: searchContextState.responseToken,
-        userEmail: user?.email!,
-        origin: origin,
-        destinations: [
-          {
-            title: item.name || `${item.id}`,
-            coordinates: item.coordinates,
-          },
-        ],
-      });
-
-      if (routesResult.length) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-          payload: [
-            ...searchContextState.responseTransitRoutes,
+          payload: newTransitRoutes,
+        });
+      } else {
+        const routesResult = await fetchTransitRoutes({
+          snapshotToken: searchContextState.responseToken,
+          userEmail: user?.email!,
+          origin: origin,
+          destinations: [
             {
-              route: routesResult[0].route,
-              title: routesResult[0].title,
-              show: true,
+              title: item.name || `${item.id}`,
               coordinates: item.coordinates,
             },
           ],
         });
+
+        if (routesResult.length) {
+          searchContextDispatch({
+            type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
+            payload: [
+              ...searchContextState.responseTransitRoutes,
+              {
+                route: routesResult[0].route,
+                title: routesResult[0].title,
+                show: true,
+                coordinates: item.coordinates,
+              },
+            ],
+          });
+        }
       }
-    }
-  };
+    };
 
-  // components
-  const MapMenuMobileBtn: FunctionComponent = () => {
-    return (
-      <button
-        type="button"
-        className="mobile-menu-btn"
-        onMouseDown={() => setMobileMenuOpen(!mobileMenuOpen)}
-      >
-        {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-        {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
-      </button>
-    );
-  };
-
-  if (!searchResponse) {
-    return <div>Laden...</div>;
-  }
-
-  const hideEntity = (item: ResultEntity) => {
-    if (searchContextState.responseConfig) {
-      const newEntityVisibility = toggleEntityVisibility(
-        item,
-        searchContextState.responseConfig
+    // components
+    const MapMenuMobileBtn: FunctionComponent = () => {
+      return (
+        <button
+          type="button"
+          className="mobile-menu-btn"
+          onMouseDown={() => setMobileMenuOpen(!mobileMenuOpen)}
+        >
+          {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
+          {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
+        </button>
       );
+    };
 
-      const newConfig = {
-        ...searchContextState.responseConfig,
-        entityVisibility: [...newEntityVisibility],
-      };
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...newConfig },
-      });
+    if (!searchResponse) {
+      return <div>Laden...</div>;
     }
-  };
 
-  const toggleSatelliteMapMode = () => {
-    setMapBoxMapIds({
-      current: mapBoxMapIds.previous,
-      previous: mapBoxMapIds.current,
-    });
-  };
+    const hideEntity = (item: ResultEntity) => {
+      if (searchContextState.responseConfig) {
+        const newEntityVisibility = toggleEntityVisibility(
+          item,
+          searchContextState.responseConfig
+        );
 
-  const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
-  const mapWithLegendId = "map-with-legend";
+        const newConfig = {
+          ...searchContextState.responseConfig,
+          entityVisibility: [...newEntityVisibility],
+        };
 
-  const poiSearchStyles = {
-    control: (
-      provided: CSSObjectWithLabel,
-      state: ControlProps<IPoiSearchOption, false, GroupBase<IPoiSearchOption>>
-    ) => ({
-      ...provided,
-      "&:hover": state.isFocused
-        ? {
-            borderColor: "var(--primary)",
-          }
-        : provided["&:hover"],
-      boxShadow: undefined,
-      borderRadius: "16px!important",
-      minHeight: "32px",
-      height: "32px",
-      borderWidth: "2px",
-      borderColor: state.isFocused ? "var(--primary)" : provided.borderColor,
-    }),
-    input: (provided: CSSObjectWithLabel) => ({
-      ...provided,
-      paddingBottom: undefined,
-      paddingTop: undefined,
-    }),
-    clearIndicator: (provided: CSSObjectWithLabel) => ({
-      ...provided,
-      padding: "0px 8px 0px 0px",
-    }),
-  };
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: { ...newConfig },
+        });
+      }
+    };
 
-  const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+    const toggleSatelliteMapMode = () => {
+      setMapBoxMapIds({
+        current: mapBoxMapIds.previous,
+        previous: mapBoxMapIds.current,
+      });
+    };
 
-  return (
-    <>
-      <div className={containerClasses} id="search-result-container">
-        <div className="relative flex-1" id={mapWithLegendId}>
-          <div className="map-nav-bar-container">
-            {!isThemeKf && (
-              <div id={poiSearchContainerId} className="w-1/3 opacity-90">
-                <Select
-                  styles={poiSearchStyles}
-                  options={poiSearchOptions}
-                  placeholder="Suchen..."
-                  components={{
-                    DropdownIndicator: () => null,
-                    IndicatorSeparator: () => null,
-                  }}
-                  openMenuOnClick={false}
-                  openMenuOnFocus={false}
-                  isClearable={true}
-                  onChange={(option, action) =>
-                    onPoiSearchSelect(option, action)
-                  }
-                />
-              </div>
-            )}
-            <MeansToggle
-              transportationParams={searchContextState.transportationParams}
-              activeMeans={searchContextState.responseActiveMeans}
-              availableMeans={availableMeans}
-              onMeansChange={(newValues: MeansOfTransportation[]) => {
+    const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
+    const mapWithLegendId = "map-with-legend";
+
+    const poiSearchStyles = {
+      control: (
+        provided: CSSObjectWithLabel,
+        state: ControlProps<
+          IPoiSearchOption,
+          false,
+          GroupBase<IPoiSearchOption>
+        >
+      ) => ({
+        ...provided,
+        "&:hover": state.isFocused
+          ? {
+              borderColor: "var(--primary)",
+            }
+          : provided["&:hover"],
+        boxShadow: undefined,
+        borderRadius: "16px!important",
+        minHeight: "32px",
+        height: "32px",
+        borderWidth: "2px",
+        borderColor: state.isFocused ? "var(--primary)" : provided.borderColor,
+      }),
+      input: (provided: CSSObjectWithLabel) => ({
+        ...provided,
+        paddingBottom: undefined,
+        paddingTop: undefined,
+      }),
+      clearIndicator: (provided: CSSObjectWithLabel) => ({
+        ...provided,
+        padding: "0px 8px 0px 0px",
+      }),
+    };
+
+    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+
+    return (
+      <>
+        <div className={containerClasses} id="search-result-container">
+          <div className="relative flex-1" id={mapWithLegendId}>
+            <div className="map-nav-bar-container">
+              {!isThemeKf && (
+                <div id={poiSearchContainerId} className="w-1/3 opacity-90">
+                  <Select
+                    styles={poiSearchStyles}
+                    options={poiSearchOptions}
+                    placeholder="Suchen..."
+                    components={{
+                      DropdownIndicator: () => null,
+                      IndicatorSeparator: () => null,
+                    }}
+                    openMenuOnClick={false}
+                    openMenuOnFocus={false}
+                    isClearable={true}
+                    onChange={(option, action) =>
+                      onPoiSearchSelect(option, action)
+                    }
+                  />
+                </div>
+              )}
+              <MeansToggle
+                transportationParams={searchContextState.transportationParams}
+                activeMeans={searchContextState.responseActiveMeans}
+                availableMeans={availableMeans}
+                onMeansChange={(newValues: MeansOfTransportation[]) => {
+                  searchContextDispatch({
+                    type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+                    payload: [...newValues],
+                  });
+                }}
+                hideIsochrones={!!hideIsochrones}
+              />
+            </div>
+            <Map
+              mapBoxAccessToken={mapBoxToken}
+              mapboxMapId={mapBoxMapIds.current}
+              searchResponse={searchResponse}
+              searchAddress={placesLocation?.label}
+              groupedEntities={resultingGroupedEntities ?? []}
+              highlightId={searchContextState.highlightId}
+              snippetToken={searchContextState.responseToken}
+              setHighlightId={(id) =>
                 searchContextDispatch({
-                  type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-                  payload: [...newValues],
+                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
+                  payload: id,
+                })
+              }
+              means={{
+                byFoot: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.WALK
+                ),
+                byBike: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.BICYCLE
+                ),
+                byCar: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.CAR
+                ),
+              }}
+              mapCenter={
+                searchContextState.mapCenter ||
+                searchResponse.centerOfInterest.coordinates
+              }
+              mapZoomLevel={
+                mapZoomLevel ||
+                searchContextState.mapZoomLevel ||
+                defaultMapZoom
+              }
+              routes={searchContextState.responseRoutes}
+              transitRoutes={searchContextState.responseTransitRoutes}
+              embedMode={embedMode}
+              editorMode={editorMode}
+              config={searchContextState.responseConfig}
+              onPoiAdd={onPoiAdd}
+              hideEntity={hideEntity}
+              setMapCenterZoom={(mapCenter, mapZoomLevel) => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+                  payload: {
+                    mapCenter: {
+                      ...mapCenter,
+                    },
+                    mapZoomLevel,
+                  },
+                });
+              }}
+              addMapClipping={(zoomLevel, mapClippingDataUrl) => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.ADD_MAP_CLIPPING,
+                  payload: {
+                    zoomLevel,
+                    mapClippingDataUrl,
+                  },
                 });
               }}
               hideIsochrones={!!hideIsochrones}
+              setHideIsochrones={setHideIsochrones}
+              mapWithLegendId={mapWithLegendId}
+              toggleSatelliteMapMode={toggleSatelliteMapMode}
+              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+              gotoMapCenter={searchContextState.gotoMapCenter}
+              setGotoMapCenter={(data: IGotoMapCenter | undefined) => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.GOTO_MAP_CENTER,
+                  payload: data,
+                });
+              }}
+              isTrial={isTrial}
+              ref={mapRef}
             />
           </div>
-          <Map
-            mapBoxAccessToken={mapBoxToken}
-            mapboxMapId={mapBoxMapIds.current}
-            searchResponse={searchResponse}
-            searchAddress={placesLocation?.label}
-            groupedEntities={resultingGroupedEntities ?? []}
-            highlightId={searchContextState.highlightId}
-            snippetToken={searchContextState.responseToken}
-            setHighlightId={(id) =>
+          {!isThemeKf && <MapMenuMobileBtn />}
+          <MapMenu
+            mobileMenuOpen={mobileMenuOpen}
+            censusData={searchContextState.censusData}
+            federalElectionData={searchContextState.federalElectionData}
+            particlePollutionData={searchContextState.particlePollutionData}
+            clippings={searchContextState.mapClippings}
+            groupedEntries={resultingGroupedEntities ?? []}
+            toggleAllLocalities={() => {
+              const oldGroupedEntities =
+                searchContextState.responseGroupedEntities ?? [];
+
               searchContextDispatch({
-                type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                payload: id,
-              })
-            }
-            means={{
-              byFoot: searchContextState.responseActiveMeans.includes(
-                MeansOfTransportation.WALK
-              ),
-              byBike: searchContextState.responseActiveMeans.includes(
-                MeansOfTransportation.BICYCLE
-              ),
-              byCar: searchContextState.responseActiveMeans.includes(
-                MeansOfTransportation.CAR
-              ),
+                type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+                payload: oldGroupedEntities.map((g) => ({
+                  ...g,
+                  active: !oldGroupedEntities.some((g) => g.active),
+                })),
+              });
             }}
-            mapCenter={
-              searchContextState.mapCenter ||
-              searchResponse.centerOfInterest.coordinates
-            }
-            mapZoomLevel={
-              mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
+            toggleRoute={(item, mean) =>
+              toggleRoutesToEntity(location, item, mean)
             }
             routes={searchContextState.responseRoutes}
+            toggleTransitRoute={(item) =>
+              toggleTransitRoutesToEntity(location, item)
+            }
             transitRoutes={searchContextState.responseTransitRoutes}
-            embedMode={embedMode}
-            editorMode={editorMode}
-            config={searchContextState.responseConfig}
-            onPoiAdd={onPoiAdd}
-            hideEntity={hideEntity}
-            centerZoomCoordinates={(zoom, coordinates) => {
+            searchAddress={placesLocation?.label}
+            resetPosition={() => {
               searchContextDispatch({
-                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-                payload: {
-                  center: {
-                    ...coordinates,
-                  },
-                  zoom,
-                },
+                type: SearchContextActionTypes.SET_MAP_CENTER,
+                payload: searchResponse?.centerOfInterest?.coordinates!,
               });
 
               searchContextDispatch({
                 type: SearchContextActionTypes.GOTO_MAP_CENTER,
-                payload: { goto: true, withZoom: true },
+                payload: { goto: true },
               });
             }}
-            addMapClipping={(zoomLevel, mapClippingDataUrl) => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-                payload: {
-                  zoomLevel,
-                  mapClippingDataUrl,
-                },
+            user={user}
+            openUpgradeSubscriptionModal={(message) => {
+              userDispatch({
+                type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                payload: { open: true, message },
               });
             }}
-            hideIsochrones={!!hideIsochrones}
-            setHideIsochrones={setHideIsochrones}
-            mapWithLegendId={mapWithLegendId}
-            toggleSatelliteMapMode={toggleSatelliteMapMode}
+            showInsights={!embedMode}
+            config={searchContextState.responseConfig}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-            isTrial={isTrial}
           />
+          {isThemeKf &&
+            preferredLocationsGroup &&
+            isShownPreferredLocationsModal && (
+              <PreferredLocationsModal
+                entityGroup={preferredLocationsGroup}
+                routes={searchContextState.responseRoutes}
+                toggleRoute={(item, mean) =>
+                  toggleRoutesToEntity(location, item, mean)
+                }
+                transitRoutes={searchContextState.responseTransitRoutes}
+                toggleTransitRoute={(item) =>
+                  toggleTransitRoutesToEntity(location, item)
+                }
+                closeModal={setIsShownPreferredLocationsModal}
+              />
+            )}
         </div>
-        {!isThemeKf && <MapMenuMobileBtn />}
-        <MapMenu
-          mobileMenuOpen={mobileMenuOpen}
-          censusData={searchContextState.censusData}
-          federalElectionData={searchContextState.federalElectionData}
-          particlePollutionData={searchContextState.particlePollutionData}
-          clippings={searchContextState.mapClippings}
-          groupedEntries={resultingGroupedEntities ?? []}
-          toggleAllLocalities={() => {
-            const oldGroupedEntities =
-              searchContextState.responseGroupedEntities ?? [];
-
-            searchContextDispatch({
-              type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-              payload: oldGroupedEntities.map((g) => ({
-                ...g,
-                active: !oldGroupedEntities.some((g) => g.active),
-              })),
-            });
-          }}
-          toggleRoute={(item, mean) =>
-            toggleRoutesToEntity(location, item, mean)
-          }
-          routes={searchContextState.responseRoutes}
-          toggleTransitRoute={(item) =>
-            toggleTransitRoutesToEntity(location, item)
-          }
-          transitRoutes={searchContextState.responseTransitRoutes}
-          searchAddress={placesLocation?.label}
-          resetPosition={() => {
-            searchContextDispatch({
-              type: SearchContextActionTypes.SET_MAP_CENTER,
-              payload: searchResponse?.centerOfInterest?.coordinates!,
-            });
-
-            searchContextDispatch({
-              type: SearchContextActionTypes.GOTO_MAP_CENTER,
-              payload: { goto: true },
-            });
-          }}
-          user={user}
-          openUpgradeSubscriptionModal={(message) => {
-            userDispatch({
-              type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-              payload: { open: true, message },
-            });
-          }}
-          showInsights={!embedMode}
-          config={searchContextState.responseConfig}
-          isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-          togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-        />
-        {isThemeKf &&
-          preferredLocationsGroup &&
-          isShownPreferredLocationsModal && (
-            <PreferredLocationsModal
-              entityGroup={preferredLocationsGroup}
-              routes={searchContextState.responseRoutes}
-              toggleRoute={(item, mean) =>
-                toggleRoutesToEntity(location, item, mean)
-              }
-              transitRoutes={searchContextState.responseTransitRoutes}
-              toggleTransitRoute={(item) =>
-                toggleTransitRoutesToEntity(location, item)
-              }
-              closeModal={setIsShownPreferredLocationsModal}
-            />
-          )}
-      </div>
-    </>
-  );
-};
+      </>
+    );
+  }
+);
 
 export default SearchResultContainer;

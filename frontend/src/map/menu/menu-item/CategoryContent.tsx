@@ -43,7 +43,7 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
   const highlightZoomEntity = (item: ResultEntity) => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-      payload: { center: item.coordinates, zoom: 18 },
+      payload: { mapCenter: item.coordinates, mapZoomLevel: 18 },
     });
 
     searchContextDispatch({

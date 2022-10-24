@@ -1,4 +1,13 @@
-import { memo, useCallback, useEffect, useState, useContext } from "react";
+import {
+  ForwardedRef,
+  forwardRef,
+  memo,
+  useCallback,
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+} from "react";
 import center from "@turf/center";
 import { toJpeg } from "html-to-image";
 
@@ -12,12 +21,9 @@ import leafletShadow from "leaflet/dist/images/marker-shadow.png";
 import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
+import "./Map.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
-import {
-  Poi,
-  SearchContext,
-  SearchContextActionTypes,
-} from "context/SearchContext";
+import { IGotoMapCenter, Poi } from "context/SearchContext";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 import { groupBy } from "../../../shared/functions/shared.functions";
 import {
@@ -45,6 +51,7 @@ import areaButlerLogo from "../assets/img/logo.svg";
 import areaButlerWhiteTextLogo from "../assets/img/logo-text-white.svg";
 import {
   EntityGroup,
+  ICurrentMapRef,
   poiSearchContainerId,
   ResultEntity,
 } from "../components/SearchResultContainer";
@@ -60,52 +67,11 @@ import {
   toastSuccess,
 } from "../shared/shared.functions";
 import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
-import "./Map.scss";
 import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { mapBoxMapIds } from "../shared/shared.constants";
 
-export interface MapProps {
-  mapBoxAccessToken: string;
-  searchResponse: ApiSearchResponse;
-  searchAddress: string;
-  groupedEntities: EntityGroup[];
-  mapCenter: ApiCoordinates;
-  mapZoomLevel?: number;
-  leafletMapId?: string;
-  mapboxMapId?: string;
-  means: {
-    byFoot: boolean;
-    byBike: boolean;
-    byCar: boolean;
-  };
-  highlightId?: string | null | undefined;
-  setHighlightId: (id: string | null) => void;
-  addMapClipping: (zoom: number, dataUrl: string) => void;
-  routes: EntityRoute[];
-  transitRoutes: EntityTransitRoute[];
-  snippetToken?: string;
-  embedMode?: boolean;
-  editorMode?: boolean;
-  config?: ApiSearchResultSnapshotConfig;
-  onPoiAdd?: (poi: Poi) => void;
-  hideEntity?: (entity: ResultEntity) => void;
-  centerZoomCoordinates: (
-    zoomLevel: number,
-    coordinates: ApiCoordinates
-  ) => void;
-  hideIsochrones: boolean;
-  setHideIsochrones: (value: boolean) => void;
-  mapWithLegendId: string;
-  toggleSatelliteMapMode: () => void;
-  isShownPreferredLocationsModal: boolean;
-  togglePreferredLocationsModal: (
-    isShownPreferredLocationsModal: boolean
-  ) => void;
-  isTrial: boolean;
-}
-
-export class IdMarker extends L.Marker {
+class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
   hideEntityFunction?: (entity: ResultEntity) => void;
@@ -293,6 +259,60 @@ let meansGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
 let amenityMarkerGroup = L.markerClusterGroup();
 
+const WALK_COLOR = "#c91444";
+const BICYCLE_COLOR = "#8f72eb";
+const CAR_COLOR = "#1f2937";
+
+const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
+  [MeansOfTransportation.CAR]: CAR_COLOR,
+  [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
+  [MeansOfTransportation.WALK]: WALK_COLOR,
+};
+
+interface MapProps {
+  mapBoxAccessToken: string;
+  searchResponse: ApiSearchResponse;
+  searchAddress: string;
+  groupedEntities: EntityGroup[];
+  mapCenter: ApiCoordinates;
+  mapZoomLevel?: number;
+  leafletMapId?: string;
+  mapboxMapId?: string;
+  means: {
+    byFoot: boolean;
+    byBike: boolean;
+    byCar: boolean;
+  };
+  highlightId?: string | null | undefined;
+  setHighlightId: (id: string | null) => void;
+  addMapClipping: (zoom: number, dataUrl: string) => void;
+  routes: EntityRoute[];
+  transitRoutes: EntityTransitRoute[];
+  snippetToken?: string;
+  embedMode?: boolean;
+  editorMode?: boolean;
+  config?: ApiSearchResultSnapshotConfig;
+  setConfig?: (config: ApiSearchResultSnapshotConfig) => void;
+  onPoiAdd?: (poi: Poi) => void;
+  hideEntity?: (entity: ResultEntity) => void;
+  setMapCenterZoom: (mapCenter: ApiCoordinates, mapZoomLevel: number) => void;
+  hideIsochrones: boolean;
+  setHideIsochrones: (value: boolean) => void;
+  mapWithLegendId: string;
+  toggleSatelliteMapMode: () => void;
+  isShownPreferredLocationsModal: boolean;
+  togglePreferredLocationsModal: (
+    isShownPreferredLocationsModal: boolean
+  ) => void;
+  gotoMapCenter: IGotoMapCenter | undefined;
+  setGotoMapCenter: (data: IGotoMapCenter | undefined) => void;
+  isTrial: boolean;
+}
+
+interface MapMemoProps extends MapProps {
+  ref: ForwardedRef<ICurrentMapRef>;
+}
+
 const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const mapboxKeyEqual =
     prevProps.mapBoxAccessToken === nextProps.mapBoxAccessToken;
@@ -307,8 +327,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     JSON.stringify(nextProps.groupedEntities);
   const meansEqual =
     JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
-  const mapCenterEqual =
-    JSON.stringify(prevProps.mapCenter) === JSON.stringify(nextProps.mapCenter);
   const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
   const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
   const routesEqual = prevProps.routes === nextProps.routes;
@@ -319,9 +337,9 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
   const hideIsochronesEqual =
     prevProps.hideIsochrones === nextProps.hideIsochrones;
-  const isShownPreferredLocationsModalEqual =
-    prevProps.isShownPreferredLocationsModal ===
-    nextProps.isShownPreferredLocationsModal;
+  const gotoMapCenterEqual =
+    JSON.stringify(prevProps.gotoMapCenter) ===
+    JSON.stringify(nextProps.gotoMapCenter);
   const isTrialEqual = prevProps.isTrial === nextProps.isTrial;
 
   return (
@@ -330,7 +348,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     searchAddressEqual &&
     entityGroupsEqual &&
     meansEqual &&
-    mapCenterEqual &&
     mapZoomLevelEqual &&
     highlightIdEqual &&
     routesEqual &&
@@ -338,67 +355,68 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     configEqual &&
     mapboxMapIdEqual &&
     hideIsochronesEqual &&
-    isShownPreferredLocationsModalEqual &&
+    gotoMapCenterEqual &&
     isTrialEqual
   );
 };
 
-const WALK_COLOR = "#c91444";
-const BICYCLE_COLOR = "#8f72eb";
-const CAR_COLOR = "#1f2937";
+const Map = forwardRef<ICurrentMapRef, MapProps>(
+  (
+    {
+      mapBoxAccessToken,
+      searchResponse,
+      searchAddress,
+      groupedEntities,
+      means,
+      mapCenter,
+      mapZoomLevel = defaultMapZoom,
+      leafletMapId = "mymap",
+      highlightId,
+      setHighlightId,
+      routes,
+      transitRoutes,
+      embedMode = false,
+      editorMode = false,
+      config,
+      mapboxMapId,
+      onPoiAdd,
+      hideEntity,
+      setMapCenterZoom,
+      addMapClipping,
+      snippetToken,
+      hideIsochrones,
+      setHideIsochrones,
+      mapWithLegendId,
+      toggleSatelliteMapMode,
+      isShownPreferredLocationsModal,
+      togglePreferredLocationsModal,
+      gotoMapCenter,
+      setGotoMapCenter,
+      isTrial,
+    },
+    parentMapRef
+  ) => {
+    // TODO Further refactoring is required with the usage of react-leaflet library
+    // TODO Check all stringified and not stringified dependencies of useEffect hooks
 
-const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
-  [MeansOfTransportation.CAR]: CAR_COLOR,
-  [MeansOfTransportation.BICYCLE]: BICYCLE_COLOR,
-  [MeansOfTransportation.WALK]: WALK_COLOR,
-};
+    const mapRef = useRef<L.Map | null>(null);
+    useImperativeHandle(parentMapRef, () => ({
+      getZoom: () => mapRef.current?.getZoom(),
+      getCenter: () => {
+        const mapCenter = mapRef.current?.getCenter();
 
-const Map = memo<MapProps>(
-  ({
-    mapBoxAccessToken,
-    searchResponse,
-    searchAddress,
-    groupedEntities,
-    means,
-    mapCenter,
-    mapZoomLevel = defaultMapZoom,
-    leafletMapId = "mymap",
-    highlightId,
-    setHighlightId,
-    routes,
-    transitRoutes,
-    embedMode = false,
-    editorMode = false,
-    config,
-    mapboxMapId,
-    onPoiAdd,
-    hideEntity,
-    centerZoomCoordinates,
-    addMapClipping,
-    snippetToken,
-    hideIsochrones,
-    setHideIsochrones,
-    mapWithLegendId,
-    toggleSatelliteMapMode,
-    isShownPreferredLocationsModal,
-    togglePreferredLocationsModal,
-    isTrial,
-  }) => {
-    // TODO remove searchContext form the Map component
-    const { searchContextState, searchContextDispatch } =
-      useContext(SearchContext);
+        return mapCenter
+          ? { lat: mapCenter.lat, lng: mapCenter.lng }
+          : undefined;
+      },
+    }));
+
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<
       ApiCoordinates | undefined
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
     const [fullscreen, setFullscreen] = useState(false);
-    const [centerCoordinates, setCenterCoordinates] = useState(mapCenter);
-    const [zoomLevel, setZoomLevel] = useState(mapZoomLevel);
-
-    const [isDrawnMeans, setIsDrawnMeans] = useState(false);
-    const [isDrawnRoutes, setIsDrawnRoutes] = useState(false);
-    const [isDrawnPois, setIsDrawnPois] = useState(false);
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -408,20 +426,6 @@ const Map = memo<MapProps>(
         setAddPoiModalOpen(false);
       },
     };
-
-    const mapDrawDependencies = [
-      centerCoordinates.lat,
-      centerCoordinates.lng,
-      leafletMapId,
-      mapBoxAccessToken,
-      searchAddress,
-      embedMode,
-      mapboxMapId,
-      config?.mapIcon,
-      config?.showLocation,
-      config?.showAddress,
-      config?.groupItems,
-    ];
 
     const escFunction = useCallback(
       (e) => {
@@ -449,20 +453,12 @@ const Map = memo<MapProps>(
     }, [escFunction]);
 
     useEffect(() => {
-      if (config) {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: { ...config, zoomLevel: zoomLevel },
-        });
-      }
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [zoomLevel]);
-
-    useEffect(() => {
       document.body.classList.toggle("fullscreen", fullscreen);
     }, [fullscreen]);
 
-    // draw the map itself
+    const initialMapCenter = searchResponse.centerOfInterest.coordinates;
+
+    // draw map
     useEffect(() => {
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
@@ -499,7 +495,7 @@ const Map = memo<MapProps>(
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
-      } as any).setView(centerCoordinates, zoomLevel);
+      } as any).setView(mapCenter, mapZoomLevel);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
@@ -508,8 +504,6 @@ const Map = memo<MapProps>(
         if (!config) {
           return;
         }
-
-        setZoomLevel(localMap.getZoom());
 
         if (!config.groupItems) {
           const container = document.querySelector(".leaflet-container");
@@ -556,7 +550,7 @@ const Map = memo<MapProps>(
         let detailContent = `${searchAddress}`;
 
         if (!embedMode || config?.showStreetViewLink) {
-          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${centerCoordinates.lat},${centerCoordinates.lng}&cbp=11,0,0,0,0`;
+          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
 
           const streetViewContent = `
             <br/><br/>
@@ -603,8 +597,21 @@ const Map = memo<MapProps>(
       }
 
       currentMap = localMap;
+      mapRef.current = currentMap;
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, mapDrawDependencies);
+    }, [
+      initialMapCenter,
+      leafletMapId,
+      mapBoxAccessToken,
+      searchAddress,
+      embedMode,
+      mapboxMapId,
+      config?.mapIcon,
+      config?.showLocation,
+      config?.showAddress,
+      config?.groupItems,
+    ]);
 
     // draw trial logos
     useEffect(() => {
@@ -634,9 +641,21 @@ const Map = memo<MapProps>(
         new L.GridLayer.DebugCoords({ tileSize: 256 }).setZIndex(2)
       );
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [...mapDrawDependencies, isTrial]);
+    }, [
+      initialMapCenter,
+      leafletMapId,
+      mapBoxAccessToken,
+      searchAddress,
+      embedMode,
+      mapboxMapId,
+      config?.mapIcon,
+      config?.showLocation,
+      config?.showAddress,
+      config?.groupItems,
+      isTrial,
+    ]);
 
-    // scale the marker (e.g., POIs) sizes and reattach the popup for the POI
+    // scale marker (e.g., POIs) sizes and reattach the popup for the POI
     useEffect(() => {
       if (!currentMap || !mapZoomLevel || !amenityMarkerGroup) {
         return;
@@ -676,32 +695,9 @@ const Map = memo<MapProps>(
           setHighlightId(null);
         }, 1200);
       }
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mapZoomLevel, highlightId]);
-
-    useEffect(() => {
-      if (!currentMap || !searchContextState.gotoMapCenter?.goto) {
-        return;
-      }
-
-      const setViewArguments: [
-        centerCoordinates: ApiCoordinates,
-        zoomLevel?: number
-      ] = [centerCoordinates];
-
-      if (searchContextState.gotoMapCenter.withZoom) {
-        setViewArguments.push(mapZoomLevel);
-      }
-
-      currentMap.setView(...setViewArguments);
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.GOTO_MAP_CENTER,
-        payload: undefined,
-      });
-
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchContextState.gotoMapCenter?.goto]);
 
     const meansStringified = JSON.stringify(means);
 
@@ -718,7 +714,6 @@ const Map = memo<MapProps>(
       }
 
       if (hideIsochrones) {
-        setIsDrawnMeans(true);
         return;
       }
 
@@ -913,8 +908,6 @@ const Map = memo<MapProps>(
             });
           }
         });
-
-      setIsDrawnRoutes(true);
     }, [
       routes,
       transitRoutes,
@@ -930,7 +923,7 @@ const Map = memo<MapProps>(
 
     const groupedEntitiesStringified = JSON.stringify(groupedEntities);
 
-    // draw amenities (POIs)
+    // draw POIs (amenities)
     useEffect(() => {
       const parsedEntities: ResultEntity[] | null =
         JSON.parse(entitiesStringified);
@@ -1058,11 +1051,11 @@ const Map = memo<MapProps>(
           const centerOfGroup = center(a.layer.toGeoJSON());
           const lat = centerOfGroup.geometry.coordinates[1];
           const lng = centerOfGroup.geometry.coordinates[0];
-          centerZoomCoordinates(17, { lat, lng });
+          setMapCenterZoom({ lat, lng }, 17);
+          setGotoMapCenter({ goto: true, withZoom: true });
         });
 
         currentMap!.addLayer(amenityMarkerGroup);
-        setIsDrawnPois(true);
       };
 
       if (currentMap) {
@@ -1078,17 +1071,25 @@ const Map = memo<MapProps>(
       mapboxMapId,
     ]);
 
-    // returns the view to the previous place when changing from satellite view to the normal one and vice versa
     useEffect(() => {
-      if (currentMap && isDrawnMeans && isDrawnRoutes && isDrawnPois) {
-        currentMap.setView(centerCoordinates, zoomLevel, { animate: false });
-        setIsDrawnMeans(false);
-        setIsDrawnRoutes(false);
-        setIsDrawnPois(false);
+      if (!currentMap || !gotoMapCenter) {
+        return;
       }
 
+      const setViewArguments: [
+        centerCoordinates: ApiCoordinates,
+        zoomLevel?: number
+      ] = [mapCenter];
+
+      if (gotoMapCenter?.withZoom) {
+        setViewArguments.push(mapZoomLevel);
+      }
+
+      currentMap.setView(...setViewArguments);
+      setGotoMapCenter(undefined);
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [isDrawnMeans, isDrawnRoutes, isDrawnPois]);
+    }, [gotoMapCenter]);
 
     const takePicture = () => {
       const poiSearchContainer = document.getElementById(poiSearchContainerId);
@@ -1215,7 +1216,7 @@ const Map = memo<MapProps>(
         {onPoiAdd && (
           <FormModal modalConfig={addPoiModalOpenConfig}>
             <AddPoiFormHandler
-              centerCoordinates={centerCoordinates}
+              centerCoordinates={mapCenter}
               coordinates={addPoiCoordinates}
               address={addPoiAddress}
               onPoiAdd={onPoiAdd}
@@ -1332,11 +1333,12 @@ const Map = memo<MapProps>(
               onClick={(event) => {
                 event.preventDefault();
 
-                setZoomLevel(currentMap?.getZoom() || defaultMapZoom);
-                setCenterCoordinates(
-                  currentMap?.getCenter() || centerCoordinates
+                setMapCenterZoom(
+                  currentMap?.getCenter() || mapCenter,
+                  currentMap?.getZoom() || defaultMapZoom
                 );
 
+                setGotoMapCenter({ goto: true, withZoom: true });
                 toggleSatelliteMapMode();
               }}
             >
@@ -1360,8 +1362,7 @@ const Map = memo<MapProps>(
         </div>
       </div>
     );
-  },
-  areMapPropsEqual
+  }
 );
 
-export default Map;
+export default memo<MapMemoProps>(Map, areMapPropsEqual);
