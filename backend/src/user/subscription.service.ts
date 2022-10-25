@@ -26,12 +26,16 @@ import {
   ISubscriptionPlanPrice,
   PaymentItemTypeEnum,
 } from '../shared/subscription.types';
-import { MailSenderService } from '../client/mail/mail-sender.service';
+import {
+  IMailProps,
+  MailSenderService,
+} from '../client/mail/mail-sender.service';
 import {
   newBusinessPlusSubscriptionTemplateId,
   newPayPerUseSubscriptionTemplateId,
   newTrialSubscriptionTemplateId,
-  subscriptionRenewalTemplateId,
+  subscriptionExpirationTemplateId,
+  trialSubscriptionExpirationTemplateId,
 } from '../shared/email.constants';
 import { User, UserDocument } from './schema/user.schema';
 import { EventType } from '../event/event.types';
@@ -448,7 +452,7 @@ export class SubscriptionService {
   }
 
   @Cron('0 45 9 * * *')
-  async sendSubscriptionExpirationEmail() {
+  async sendSubscriptionExpirationEmail(): Promise<void> {
     const dateTimePattern = new RegExp(/(.+)T(.+)Z/);
     const specificIsoDate = dayjs()
       .toISOString()
@@ -458,14 +462,25 @@ export class SubscriptionService {
     const subscriptions = await this.subscriptionModel.aggregate([
       {
         $match: {
-          type: { $not: { $eq: ApiSubscriptionPlanType.TRIAL } },
-          endsAt: {
-            $gte: currentDate.add(2, 'days').toDate(),
-            $lt: currentDate.add(3, 'days').toDate(),
-          },
+          $or: [
+            {
+              type: { $not: { $eq: ApiSubscriptionPlanType.TRIAL } },
+              endsAt: {
+                $gte: currentDate.add(2, 'days').toDate(),
+                $lt: currentDate.add(3, 'days').toDate(),
+              },
+            },
+            {
+              type: { $eq: ApiSubscriptionPlanType.TRIAL },
+              endsAt: {
+                $gte: currentDate.add(1, 'days').toDate(),
+                $lt: currentDate.add(2, 'days').toDate(),
+              },
+            },
+          ],
         },
       },
-      { $project: { userId: 1 } },
+      { $project: { type: 1, userId: 1 } },
       { $set: { userId: { $toObjectId: '$userId' } } },
       {
         $lookup: {
@@ -476,34 +491,43 @@ export class SubscriptionService {
           pipeline: [{ $project: { fullname: 1, email: 1 } }],
         },
       },
-      { $project: { user: { $arrayElemAt: ['$user', 0] } } },
+      { $project: { type: 1, user: { $arrayElemAt: ['$user', 0] } } },
     ]);
 
-    const emails = [];
-    const sendTo = subscriptions.map(({ user: { fullname: name, email } }) => {
-      emails.push(email);
-
-      return { name, email };
-    });
-
-    let loggerMessage = 'There are no users with expiring subscriptions.';
-
-    if (sendTo.length > 0) {
-      await Promise.all(
-        sendTo.map((to) =>
-          this.mailSenderService.sendMail({
-            to: [to],
-            templateId: subscriptionRenewalTemplateId,
-            params: {
-              href: this.getSubscriptionCancelUrl(),
-            },
-          }),
-        ),
-      );
-
-      loggerMessage = `The emails have been sent to ${emails.join(', ')}.`;
+    if (!subscriptions.length) {
+      this.logger.log('There are no users with expiring subscriptions.');
+      return;
     }
 
-    this.logger.log(loggerMessage);
+    const emails = [];
+    const sendTo = subscriptions.map(
+      ({ user: { fullname: name, email }, type }) => {
+        emails.push(email);
+
+        return { name, email, type };
+      },
+    );
+
+    await Promise.all(
+      sendTo.map(({ name, email, type }) => {
+        const mailProps: IMailProps = {
+          to: [{ name, email }],
+          templateId:
+            type === ApiSubscriptionPlanType.TRIAL
+              ? trialSubscriptionExpirationTemplateId
+              : subscriptionExpirationTemplateId,
+        };
+
+        if (type !== ApiSubscriptionPlanType.TRIAL) {
+          mailProps.params = {
+            href: this.getSubscriptionCancelUrl(),
+          };
+        }
+
+        return this.mailSenderService.sendMail(mailProps);
+      }),
+    );
+
+    this.logger.log(`The emails have been sent to ${emails.join(', ')}.`);
   }
 }
