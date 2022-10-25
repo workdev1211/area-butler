@@ -163,116 +163,118 @@ const SnippetEditorPage: FunctionComponent = () => {
       setCodeSnippet(createCodeSnippet(snapshotResponse.token));
       setSnapshot(snapshotResponse.snapshot);
 
-      if (snapshotResponse.snapshot && snapshotConfig) {
-        const { searchResponse, realEstateListings, preferredLocations } =
-          snapshotResponse.snapshot;
-
-        const filteredRealEstateListings = snapshotConfig.realEstateStatus
-          ? realEstateListings.filter(
-              ({ status }) =>
-                snapshotConfig.realEstateStatus ===
-                  ApiRealEstateStatusEnum.ALLE ||
-                status === snapshotConfig.realEstateStatus
-            )
-          : realEstateListings;
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-          payload: deriveInitialEntityGroups(
-            searchResponse,
-            enhancedConfig,
-            filteredRealEstateListings,
-            preferredLocations
-          ),
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-          payload: snapshotResponse.token,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_LOCATION,
-          payload: snapshotResponse.snapshot.location,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_PLACES_LOCATION,
-          payload: snapshotResponse.snapshot.placesLocation,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-          payload: snapshotResponse.snapshot.transportationParams,
-        });
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING,
-        });
-
-        if (snapshotResponse.snapshot.realEstateListing) {
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-            payload: snapshotResponse.snapshot.realEstateListing,
-          });
-        }
-
-        if (
-          user?.subscription?.config.appFeatures.dataSources.includes(
-            ApiDataSource.CENSUS
-          )
-        ) {
-          const zensusData = await fetchNearData(
-            snapshotResponse.snapshot.location
-          );
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_ZENSUS_DATA,
-            payload: zensusData!,
-          });
-        }
-
-        if (
-          user?.subscription?.config.appFeatures.dataSources.includes(
-            ApiDataSource.FEDERAL_ELECTION
-          )
-        ) {
-          const federalElectionData = await fetchElectionData(
-            snapshotResponse.snapshot.location!
-          );
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
-            payload: federalElectionData!,
-          });
-        }
-
-        if (
-          user?.subscription?.config.appFeatures.dataSources.includes(
-            ApiDataSource.PARTICLE_POLLUTION
-          )
-        ) {
-          const particlePollutionData = await fetchParticlePollutionData(
-            snapshotResponse.snapshot.location!
-          );
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
-            payload: particlePollutionData,
-          });
-        }
-
-        // use dedicated entity groups for editor (do not exclude any group by config)
-        setEditorGroups(
-          deriveInitialEntityGroups(
-            searchResponse,
-            enhancedConfig,
-            filteredRealEstateListings,
-            preferredLocations,
-            true
-          )
-        );
+      if (!snapshotResponse.snapshot || !snapshotConfig) {
+        return;
       }
+
+      const { searchResponse, realEstateListings, preferredLocations } =
+        snapshotResponse.snapshot;
+
+      const filteredRealEstateListings = snapshotConfig.realEstateStatus
+        ? realEstateListings.filter(
+            ({ status }) =>
+              snapshotConfig.realEstateStatus ===
+                ApiRealEstateStatusEnum.ALLE ||
+              status === snapshotConfig.realEstateStatus
+          )
+        : realEstateListings;
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: deriveInitialEntityGroups(
+          searchResponse,
+          enhancedConfig,
+          filteredRealEstateListings,
+          preferredLocations
+        ),
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
+        payload: snapshotResponse.token,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_LOCATION,
+        payload: snapshotResponse.snapshot.location,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_PLACES_LOCATION,
+        payload: snapshotResponse.snapshot.placesLocation,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
+        payload: snapshotResponse.snapshot.transportationParams,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING,
+      });
+
+      if (snapshotResponse.snapshot.realEstateListing) {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+          payload: snapshotResponse.snapshot.realEstateListing,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.CENSUS
+        )
+      ) {
+        const zensusData = await fetchNearData(
+          snapshotResponse.snapshot.location
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_ZENSUS_DATA,
+          payload: zensusData!,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.FEDERAL_ELECTION
+        )
+      ) {
+        const federalElectionData = await fetchElectionData(
+          snapshotResponse.snapshot.location!
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
+          payload: federalElectionData!,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.PARTICLE_POLLUTION
+        )
+      ) {
+        const particlePollutionData = await fetchParticlePollutionData(
+          snapshotResponse.snapshot.location!
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+          payload: particlePollutionData,
+        });
+      }
+
+      // use dedicated entity groups for editor (do not exclude any group by config)
+      setEditorGroups(
+        deriveInitialEntityGroups(
+          searchResponse,
+          enhancedConfig,
+          filteredRealEstateListings,
+          preferredLocations,
+          true
+        )
+      );
     };
 
     void fetchSnapshot();
@@ -281,28 +283,30 @@ const SnippetEditorPage: FunctionComponent = () => {
 
   // react to changes
   useEffect(() => {
-    if (snapshot) {
-      const configRealEstateStatus =
-        searchContextState.responseConfig?.realEstateStatus;
-
-      const filteredRealEstateListings = configRealEstateStatus
-        ? snapshot.realEstateListings.filter(
-            ({ status }) =>
-              configRealEstateStatus === ApiRealEstateStatusEnum.ALLE ||
-              status === configRealEstateStatus
-          )
-        : snapshot.realEstateListings;
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-        payload: deriveInitialEntityGroups(
-          snapshot?.searchResponse!,
-          searchContextState.responseConfig,
-          filteredRealEstateListings,
-          snapshot.preferredLocations
-        ),
-      });
+    if (!snapshot) {
+      return;
     }
+
+    const configRealEstateStatus =
+      searchContextState.responseConfig?.realEstateStatus;
+
+    const filteredRealEstateListings = configRealEstateStatus
+      ? snapshot.realEstateListings.filter(
+          ({ status }) =>
+            configRealEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            status === configRealEstateStatus
+        )
+      : snapshot.realEstateListings;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: deriveInitialEntityGroups(
+        snapshot?.searchResponse!,
+        searchContextState.responseConfig,
+        filteredRealEstateListings,
+        snapshot.preferredLocations
+      ),
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchContextState.responseConfig?.defaultActiveGroups,
@@ -312,64 +316,68 @@ const SnippetEditorPage: FunctionComponent = () => {
 
   useEffect(() => {
     if (
-      searchContextState.responseGroupedEntities &&
-      searchContextState.responseActiveMeans
+      !searchContextState.responseGroupedEntities ||
+      !searchContextState.responseActiveMeans
     ) {
-      const derivedGroupedEntities = deriveEntityGroupsByActiveMeans(
-        searchContextState.responseGroupedEntities,
-        searchContextState.responseActiveMeans
-      );
-
-      setGroupedEntities(derivedGroupedEntities);
-      setResultingEntities(derivedGroupedEntities.map((g) => g.items).flat());
+      return;
     }
+
+    const derivedGroupedEntities = deriveEntityGroupsByActiveMeans(
+      searchContextState.responseGroupedEntities,
+      searchContextState.responseActiveMeans
+    );
+
+    setGroupedEntities(derivedGroupedEntities);
+    setResultingEntities(derivedGroupedEntities.map((g) => g.items).flat());
   }, [
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans,
   ]);
 
   const onPoiAdd = (poi: Poi) => {
-    if (snapshot) {
-      const copiedSearchResponse = JSON.parse(
-        JSON.stringify(snapshot!.searchResponse)
-      ) as ApiSearchResponse;
-
-      copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-      copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-      copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-
-      const newEntity = buildEntityData(
-        copiedSearchResponse,
-        searchContextState.responseConfig
-      )?.find((e) => e.id === poi.entity.id)!;
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-        payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-          ge.title !== poi.entity.label
-            ? ge
-            : {
-                ...ge,
-                items: [...ge.items, newEntity],
-              }
-        ),
-      });
-
-      // update dedicated entity groups for editor
-      setEditorGroups(
-        editorGroups.map((ge) =>
-          ge.title !== poi.entity.label
-            ? ge
-            : { ...ge, items: [...ge.items, newEntity] }
-        )
-      );
+    if (!snapshot) {
+      return;
     }
+
+    const copiedSearchResponse = JSON.parse(
+      JSON.stringify(snapshot!.searchResponse)
+    ) as ApiSearchResponse;
+
+    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+
+    const newEntity = buildEntityData(
+      copiedSearchResponse,
+      searchContextState.responseConfig
+    )?.find((e) => e.id === poi.entity.id)!;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
+        ge.title !== poi.entity.label
+          ? ge
+          : {
+              ...ge,
+              items: [...ge.items, newEntity],
+            }
+      ),
+    });
+
+    // update dedicated entity groups for editor
+    setEditorGroups(
+      editorGroups.map((ge) =>
+        ge.title !== poi.entity.label
+          ? ge
+          : { ...ge, items: [...ge.items, newEntity] }
+      )
+    );
   };
 
   const ActionsTop: FunctionComponent = () => {

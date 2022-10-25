@@ -5,7 +5,7 @@ import { MeansOfTransportation } from "../../../shared/types/types";
 import {
   deriveColorPalette,
   distanceToHumanReadable,
-  timeToHumanReadable
+  timeToHumanReadable,
 } from "shared/shared.functions";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 
@@ -22,7 +22,7 @@ const deriveMinutesFromMeters = (
 ) => {
   return (
     distanceInMeters /
-    (calculateMinutesToMeters.find(mtm => mtm.mean === mean)?.multiplicator ||
+    (calculateMinutesToMeters.find((mtm) => mtm.mean === mean)?.multiplicator ||
       1)
   );
 };
@@ -32,19 +32,20 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
   limit = 10,
   activeMeans,
   showRoutingColumns = true,
-  primaryColor = "#aa0c54"
+  primaryColor = "#aa0c54",
 }) => {
   const items = [...entityGroup.items].slice(0, limit);
-  const hasNames = items.some(item => item.name && item.name.length);
-  const byFoot = items.some(item => item.byFoot);
-  const byBike = items.some(item => item.byBike);
-  const byCar = items.some(item => item.byCar);
+  const hasNames =
+    items.some((item) => item.name && item.name.length) || entityGroup.title;
+  const byFoot = items.some((item) => item.byFoot);
+  const byBike = items.some((item) => item.byBike);
+  const byCar = items.some((item) => item.byCar);
 
   const colorPalette = deriveColorPalette(primaryColor);
 
   const tableHeaderStyle = {
     background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
-    color: colorPalette.textColor
+    color: colorPalette.textColor,
   };
 
   return (
