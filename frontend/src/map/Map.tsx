@@ -292,7 +292,6 @@ interface MapProps {
   embedMode?: boolean;
   editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
-  setConfig?: (config: ApiSearchResultSnapshotConfig) => void;
   onPoiAdd?: (poi: Poi) => void;
   hideEntity?: (entity: ResultEntity) => void;
   setMapCenterZoom: (mapCenter: ApiCoordinates, mapZoomLevel: number) => void;
