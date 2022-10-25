@@ -102,14 +102,14 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
         <div className="m-10 flex flex-col gap-2">
           {!props.realEstateListing && (
             <>
-              <h3 className="text-2xl w-56 font-bold">Ihr Umfeld</h3>
-              <div className="font-bold">{props.listingAddress}</div>
+              <div className="text-2xl font-bold">{props.listingAddress}</div>
+              <div className="text-xl font-bold mt-1">Lage Überblick</div>
             </>
           )}
 
           {props.realEstateListing && (
             <>
-              <h3 className="text-2xl w-56 font-bold">Objektdetails</h3>
+              <h3 className="text-2xl w-56 font-bold">Lage Überblick</h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
               {props.realEstateListing?.costStructure && (
                 <div>

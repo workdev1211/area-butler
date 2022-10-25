@@ -56,13 +56,8 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
           {/* Column 1 */}
           <div className="flex flex-col gap-5">
             <div>
-              <h1 className="headline">Hallo !</h1>
-              <p className="text-justify mt-5">
-                Wir freuen uns sehr, Ihnen Ihre persönliche Umgebungs-analyse
-                präsentieren zu dürfen. Auf Basis Ihrer Bedürfnisse konnten wir
-                ein passendes Objekt in unserem Bestand auswählen, das perfekt
-                auf Ihre Kriterien abgestimmt ist.
-              </p>
+              <div className="text-2xl font-bold">{listingAddress}</div>
+              <div className="text-xl font-bold mt-1">Umfeldanalyse</div>
             </div>
             <div>
               <h3 className="text-xl w-96 font-bold">
@@ -99,13 +94,6 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
 
           {/* Column 2 */}
           <div className="flex flex-col gap-2">
-            {!realEstateListing && (
-              <>
-                <h3 className="text-xl w-96 font-bold">Ihr Umfeld</h3>
-                <div className="font-bold">{listingAddress}</div>
-              </>
-            )}
-
             {realEstateListing && (
               <>
                 <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
@@ -143,7 +131,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
             {qrCode.isShownQrCode && (
               <QrCode
                 snapshotToken={qrCode.snapshotToken}
-                containerClasses="mt-3"
+                containerClasses={realEstateListing ? "mt-3" : ""}
                 imageClasses="h-28"
               />
             )}
