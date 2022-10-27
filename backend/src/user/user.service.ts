@@ -50,7 +50,7 @@ export class UserService {
       consentGiven: null,
     }).save();
 
-    // creates Stripe customer
+    // creates a new Stripe customer and default potential customer records
     this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
       user: newUser,
     });

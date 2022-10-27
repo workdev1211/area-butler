@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+
 import {
   PotentialCustomer,
   PotentialCustomerSchema,
@@ -14,6 +15,7 @@ import { QuestionnaireController } from './questionnaire.controller';
 import { AuthModule } from '../auth/auth.module';
 import { ClientModule } from '../client/client.module';
 import { UserModule } from '../user/user.module';
+import { PotentialCustomerListener } from './listener/potential-customer.listener';
 
 @Module({
   imports: [
@@ -26,6 +28,6 @@ import { UserModule } from '../user/user.module';
     ]),
   ],
   controllers: [PotentialCustomerController, QuestionnaireController],
-  providers: [PotentialCustomerService],
+  providers: [PotentialCustomerService, PotentialCustomerListener],
 })
 export class PotentialCustomerModule {}

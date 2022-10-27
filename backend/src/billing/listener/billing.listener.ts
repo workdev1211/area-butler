@@ -8,12 +8,14 @@ import { UserService } from '../../user/user.service';
 @Injectable()
 export class BillingListener {
   constructor(
-    private stripeService: StripeService,
-    private userService: UserService,
+    private readonly stripeService: StripeService,
+    private readonly userService: UserService,
   ) {}
 
   @OnEvent(EventType.USER_CREATED_EVENT, { async: true })
-  private async handleUserCreatedEvent({ user }: IUserCreatedEvent) {
+  private async handleUserCreatedEvent({
+    user,
+  }: IUserCreatedEvent): Promise<void> {
     const stripeCustomerId = await this.stripeService.createCustomer(user);
     await this.userService.setStripeCustomerId(user.id, stripeCustomerId);
   }

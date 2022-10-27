@@ -26,6 +26,7 @@ import {
   questionnaireInvitationTemplateId,
   questionnaireSubmissionTemplateId,
 } from '../shared/email.constants';
+import { defaultPotentialCustomers } from '../shared/potential-customers.constants';
 
 @Injectable()
 export class PotentialCustomerService {
@@ -70,6 +71,14 @@ export class PotentialCustomerService {
     };
 
     return new this.potentialCustomerModel(document).save();
+  }
+
+  async insertDefaultPotentialCustomers(userId: string): Promise<unknown> {
+    return this.potentialCustomerModel.bulkWrite(
+      defaultPotentialCustomers.map((customer) => ({
+        insertOne: { document: { ...customer, userId } },
+      })),
+    );
   }
 
   async updatePotentialCustomer(
