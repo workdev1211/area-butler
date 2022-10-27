@@ -184,12 +184,10 @@ export class LocationService {
     const location: Partial<LocationSearchDocument> = {
       userId: user.id,
       locationSearch: search,
+      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
     if (!existingLocation) {
-      location.isTrial =
-        user.subscription.type === ApiSubscriptionPlanType.TRIAL;
-
       const addressExpiration = this.subscriptionService.getLimitAmount(
         user.subscription.stripePriceId,
         ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
