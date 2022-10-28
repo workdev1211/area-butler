@@ -8,19 +8,18 @@ import {
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
-import {
-  openAiTextLength,
-  openAiTranslationDictionary,
-} from '../../../../shared/constants/open-ai';
-import { OpenAiTextLengthEnum } from '@area-butler-types/open-ai';
+import { openAiTranslationDictionary } from '../../../../shared/constants/open-ai';
 
+// Was left just in case in order to be able to calculate the number of tokens
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-const { encode } = require('gpt-3-encoder');
+// const { encode } = require('gpt-3-encoder');
+// const usedTokens = encode(queryString).length;
 
 interface ILocationDescriptionQueryData {
   snapshot: ApiSearchResultSnapshot;
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
+  textLength: number;
   customText?: string;
 }
 
@@ -36,6 +35,7 @@ export class OpenAiService {
     snapshot,
     meanOfTransportation,
     tonality,
+    textLength,
     customText,
   }: ILocationDescriptionQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
@@ -52,39 +52,30 @@ export class OpenAiService {
       }, {});
 
     const initialOpenAiText =
-      `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für Immobilien-Anzeige unter Anderem aus den folgenden Daten.${
-        customText ? ` ${customText}` : ''
-      }\n` +
-      'Füge Umgebungsinformationen hinzu:\n' +
-      `Adresse: ${snapshot.placesLocation.label}\n`;
+      `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für eine Immobilien-Anzeige an der Adresse ${snapshot.placesLocation.label}.\n` +
+      `Der Text sollte etwa ${textLength} Wörter lang sein.\n` +
+      'Füge Umgebungsinformationen hinzu:\n';
 
-    // TODO wait for the change from Philipp
-    // snapshotDoc.snapshot.preferredLocations.forEach(
-    //   ({ address: preferredLocation }) => {
-    //     initialOpenAiText += `Verwende dabei einige der folgenden, wichtigen Plätze: ${preferredLocation}\n`;
-    //   },
-    // );
+    const poiCountEntries = Object.entries(poiCount);
 
-    return Object.entries(poiCount).reduce((result, [type, count]) => {
-      result += `Anzahl ${openAiTranslationDictionary[type].plural}: ${count}\n`;
+    let openAiQueryText = poiCountEntries.reduce((result, [type, count], i) => {
+      result += `Anzahl ${
+        count === 1
+          ? openAiTranslationDictionary[type].singular
+          : openAiTranslationDictionary[type].plural
+      }: ${count}${poiCountEntries.length - 1 === i ? '' : '\n'}`;
 
       return result;
     }, initialOpenAiText);
-  }
 
-  async fetchTextCompletion(
-    query: string,
-    maxTokens = openAiTextLength[OpenAiTextLengthEnum.MEDIUM].value,
-  ): Promise<string> {
-    const usedTokens = encode(query).length;
-    const resultingMaxTokens = maxTokens - usedTokens;
-
-    if (resultingMaxTokens < 100) {
-      // TODO refactor the throwing Error algorithm
-      // The frontend should be getting the right error message
-      return;
+    if (customText) {
+      openAiQueryText += `\n${customText}`;
     }
 
+    return openAiQueryText;
+  }
+
+  async fetchTextCompletion(query: string): Promise<string> {
     const {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createCompletion(
@@ -92,7 +83,7 @@ export class OpenAiService {
         model: 'text-davinci-001',
         prompt: query,
         temperature: 1,
-        max_tokens: resultingMaxTokens,
+        max_tokens: 1200,
         top_p: 1,
         n: 1,
         frequency_penalty: 0,

@@ -38,8 +38,8 @@ export const openAiTranslationDictionary: Record<
 };
 
 export const openAiTonalities: Record<OpenAiTonalityEnum, string> = {
-  [OpenAiTonalityEnum.FORMAL_SERIOUS]: "formal und seriös",
-  [OpenAiTonalityEnum.EASYGOING_YOUTHFUL]: "locker und jugendlich",
+  [OpenAiTonalityEnum.FORMAL_SERIOUS]: "formale und seriöse",
+  [OpenAiTonalityEnum.EASYGOING_YOUTHFUL]: "lockere und jugendliche",
 };
 
 export const openAiTextLength: Record<
@@ -48,15 +48,15 @@ export const openAiTextLength: Record<
 > = {
   [OpenAiTextLengthEnum.SHORT]: {
     label: "Kurz",
-    value: 896,
+    value: 50,
   },
   [OpenAiTextLengthEnum.MEDIUM]: {
     label: "Mittel",
-    value: 1280,
+    value: 150,
   },
   [OpenAiTextLengthEnum.LONG]: {
     label: "Lang",
-    value: 2048,
+    value: 200,
   },
 };
 

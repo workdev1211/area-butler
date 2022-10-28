@@ -206,12 +206,10 @@ export class LocationController extends AuthenticatedController {
       snapshot: searchResultSnapshot.snapshot,
       meanOfTransportation: aiDescriptionQuery.meanOfTransportation,
       tonality: openAiTonalities[aiDescriptionQuery.tonality],
+      textLength: openAiTextLength[aiDescriptionQuery.textLength].value,
       customText: aiDescriptionQuery.customText,
     });
 
-    return this.openAiService.fetchTextCompletion(
-      openAiText,
-      openAiTextLength[aiDescriptionQuery.textLength].value,
-    );
+    return this.openAiService.fetchTextCompletion(openAiText);
   }
 }

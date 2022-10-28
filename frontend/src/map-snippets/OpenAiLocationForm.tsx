@@ -112,7 +112,7 @@ const OpenAiLocationForm: FunctionComponent<IOpenAiLocationFormProps> = ({
               }}
             >
               <div
-                className="tooltip tooltip-left text-justify font-medium"
+                className="tooltip tooltip-left tooltip-accent text-justify font-medium"
                 data-tip="In dieses Feld können Sie einen zusätzlichen Wunsch an die KI eingeben. Dieser Wunsch wird bei der Erstellung des Textes möglichst berücksichtigt."
               >
                 i

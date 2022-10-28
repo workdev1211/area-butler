@@ -11,13 +11,14 @@ interface IOpenAiLocationDescriptionModalProps {
 
 const OpenAiLocationDescriptionModal: FunctionComponent<
   IOpenAiLocationDescriptionModalProps
-> = ({
-  isShownModal,
-  closeModal,
-  searchResultSnapshotId,
-}) => {
+> = ({ isShownModal, closeModal, searchResultSnapshotId }) => {
   const openAiLocationModalConfig: ModalConfig = {
-    modalTitle: "Standortbeschreibung generieren",
+    modalTitle: (
+      <>
+        <span>Standortbeschreibung generieren</span>
+        <span className="badge badge-primary">BETA</span>
+      </>
+    ),
     submitButtonTitle: "Generieren",
     modalOpen: isShownModal,
     postSubmit: (success) => {

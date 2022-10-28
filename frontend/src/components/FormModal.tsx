@@ -14,7 +14,7 @@ export interface ModalConfig {
   buttonTitle?: string;
   buttonStyle?: string;
   submitButtonTitle?: string;
-  modalTitle: string;
+  modalTitle: string | ReactNode;
   modalButton?: ReactNode;
   modalOpen?: boolean;
   postSubmit?: (success: boolean) => void;
@@ -79,7 +79,9 @@ export const FormModal: FunctionComponent<{
       {modalOpen && (
         <div id="my-modal" className="modal modal-open z-2000">
           <div className="modal-box max-h-screen overflow-y-auto">
-            <h1 className="text-xl mb-5">{modalConfig.modalTitle}</h1>
+            <h1 className="text-xl mb-5 flex items-center gap-2">
+              {modalConfig.modalTitle}
+            </h1>
             {cloneElement(
               props.children as ReactElement<
                 any,
