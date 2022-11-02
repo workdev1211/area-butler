@@ -21,7 +21,7 @@ deploy-dev:
     - hetzner
   environment:
     name: dev
-    url: 'https://area-butler.dev.area-butler.de/'
+    url: 'https://areabutler.dev.areabutler.de/'
     on_stop: undeploy-dev
   script:
     - cat $DEV_ENV > .env
@@ -55,7 +55,7 @@ deploy-prod:
     - hetzner
   environment:
     name: production
-    url: 'https://app.area-butler.de/'
+    url: 'https://app.areabutler.de/'
   when: manual
   script:
     - cat $PROD_ENV > .env
