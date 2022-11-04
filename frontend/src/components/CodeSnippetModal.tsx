@@ -15,7 +15,6 @@ import { getQrCodeBase64 } from "../export/QrCode";
 export interface CodeSnippetModalProps {
   codeSnippet: string;
   directLink: string;
-  isShownModal: boolean;
   closeModal: () => void;
   editDescription?: boolean;
   snapshot?: ApiSearchResultSnapshotResponse;
@@ -25,7 +24,6 @@ export interface CodeSnippetModalProps {
 const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   codeSnippet,
   directLink,
-  isShownModal = false,
   closeModal,
   editDescription = false,
   snapshot,
@@ -79,11 +77,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
 
     return () => document.removeEventListener("keydown", handleEscape);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  if (!isShownModal) {
-    return null;
-  }
+  }, [description]);
 
   return (
     <div className="modal modal-open z-9999">

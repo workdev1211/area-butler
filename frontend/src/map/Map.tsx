@@ -1061,12 +1061,15 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         drawAmenityMarkers();
       }
 
+      // config?.showLocation and config?.showAddress are required for the "Objekt anzeigen" and "Adresse anzeigen" checkboxes
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       entitiesStringified,
       groupedEntitiesStringified,
       config?.mapIcon,
       config?.groupItems,
+      config?.showLocation,
+      config?.showAddress,
       mapboxMapId,
     ]);
 

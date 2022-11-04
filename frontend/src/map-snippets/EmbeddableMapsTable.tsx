@@ -111,16 +111,17 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
   return (
     // TODO data tour
     <div className="overflow-x-auto" data-tour="real-estates-table">
-      <CodeSnippetModal
-        codeSnippet={codeSnippet}
-        directLink={directLink}
-        editDescription={true}
-        snapshot={snapshot}
-        isShownModal={isShownModal}
-        closeModal={() => {
-          setIsShownModal(false);
-        }}
-      />
+      {isShownModal && (
+        <CodeSnippetModal
+          codeSnippet={codeSnippet}
+          directLink={directLink}
+          editDescription={true}
+          snapshot={snapshot}
+          closeModal={() => {
+            setIsShownModal(false);
+          }}
+        />
+      )}
       <table className="table w-full">
         <thead>
           <tr>

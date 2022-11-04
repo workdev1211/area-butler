@@ -572,15 +572,16 @@ const SnippetEditorPage: FunctionComponent = () => {
             apiKey={googleApiKey}
           />
         </div>
-        <CodeSnippetModal
-          directLink={directLink}
-          codeSnippet={codeSnippet}
-          label={snapshot.placesLocation.label}
-          isShownModal={isShownModal}
-          closeModal={() => {
-            setIsShownModal(false);
-          }}
-        />
+        {isShownModal && (
+          <CodeSnippetModal
+            directLink={directLink}
+            codeSnippet={codeSnippet}
+            label={snapshot.placesLocation.label}
+            closeModal={() => {
+              setIsShownModal(false);
+            }}
+          />
+        )}
         <div className="editor-container">
           <SearchResultContainer
             mapBoxToken={mapBoxAccessToken}
@@ -603,7 +604,11 @@ const SnippetEditorPage: FunctionComponent = () => {
             onConfigChange={(config) => {
               if (
                 searchContextState.responseConfig?.mapBoxMapId !==
-                config.mapBoxMapId
+                  config.mapBoxMapId ||
+                searchContextState.responseConfig?.showLocation !==
+                  config.showLocation ||
+                searchContextState.responseConfig?.showAddress !==
+                  config.showAddress
               ) {
                 const mapCenter =
                   mapRef.current?.getCenter() || searchContextState.mapCenter;
