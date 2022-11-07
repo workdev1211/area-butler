@@ -431,64 +431,10 @@ const SearchParamsPage: FunctionComponent = () => {
     return searchResponse;
   };
 
-  const performLocationSearch = async () => {
-    try {
-      setIsShownBusyModal(true);
-      setBusyModalItemCount(
-        +(hasElectionData || 0) +
-          +(hasPollutionData || 0) +
-          +(hasCensusData || 0) +
-          1
-      );
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_SEARCH_BUSY,
-        payload: true,
-      });
-
-      const items: IBusyModalItem[] = [];
-      await fetchLocationSearchData(items);
-
-      history.push("/search-result");
-    } catch (error) {
-      toastError(
-        "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
-      );
-
-      console.error(error);
-    } finally {
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_SEARCH_BUSY,
-        payload: false,
-      });
-
-      setIsShownBusyModal(false);
-      setBusyModalItems([]);
-    }
-  };
-
-  const SearchButton: FunctionComponent<{ classes?: string }> = ({
-    classes = "btn bg-primary-gradient w-full sm:w-auto",
-  }) => {
-    return (
-      <button
-        data-tour="start-search"
-        type="button"
-        disabled={searchButtonDisabled}
-        onClick={performLocationSearch}
-        className={
-          searchContextState.searchBusy ? `${classes} loading` : classes
-        }
-      >
-        <span className="-mt-1">
-          {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
-        </span>
-        <img className="ml-1 -mt-1" src={nextIcon} alt="icon-next" />
-      </button>
-    );
-  };
-
-  const performExpressAnalysis = async (): Promise<void> => {
+  const handleAnalysis = async (
+    onFinish: (snapshotResponse: ApiSearchResultSnapshotResponse) => void,
+    onFinally?: () => void
+  ): Promise<void> => {
     try {
       setIsShownBusyModal(true);
 
@@ -569,8 +515,7 @@ const SearchParamsPage: FunctionComponent = () => {
         });
       }
 
-      setSnapshotResponse(createdSnapshotResponse);
-      setIsShownMapSnippetModal(true);
+      onFinish(createdSnapshotResponse);
     } catch (error) {
       toastError(
         "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
@@ -583,9 +528,58 @@ const SearchParamsPage: FunctionComponent = () => {
 
       console.error(error);
     } finally {
+      if (onFinally) {
+        onFinally();
+      }
+
       setIsShownBusyModal(false);
       setBusyModalItems([]);
     }
+  };
+
+  const performAnalysis = async () => {
+    const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
+      history.push(`snippet-editor/${snapshotResponse.id}`);
+    };
+
+    const onFinally = () => {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SEARCH_BUSY,
+        payload: false,
+      });
+    };
+
+    await handleAnalysis(onFinish, onFinally);
+  };
+
+  const SearchButton: FunctionComponent<{ classes?: string }> = ({
+    classes = "btn bg-primary-gradient w-full sm:w-auto",
+  }) => {
+    return (
+      <button
+        data-tour="start-search"
+        type="button"
+        disabled={searchButtonDisabled}
+        onClick={performAnalysis}
+        className={
+          searchContextState.searchBusy ? `${classes} loading` : classes
+        }
+      >
+        <span className="-mt-1">
+          {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
+        </span>
+        <img className="ml-1 -mt-1" src={nextIcon} alt="icon-next" />
+      </button>
+    );
+  };
+
+  const performExpressAnalysis = async () => {
+    const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
+      setSnapshotResponse(snapshotResponse);
+      setIsShownMapSnippetModal(true);
+    };
+
+    await handleAnalysis(onFinish);
   };
 
   const ExpressAnalysisButton: FunctionComponent<{ classes?: string }> = ({
@@ -628,7 +622,6 @@ const SearchParamsPage: FunctionComponent = () => {
               <SearchButton key="search-button" />,
             ]
       }
-      timelineStep={1}
     >
       <TourStarter tour="search" />
       {isShownBusyModal && (
@@ -639,13 +632,14 @@ const SearchParamsPage: FunctionComponent = () => {
           isRandomMessages={true}
         />
       )}
-      <ExpressAnalysisModal
-        snapshotResponse={snapshotResponse!}
-        isShownModal={isShownMapSnippetModal}
-        closeModal={() => {
-          setIsShownMapSnippetModal(false);
-        }}
-      />
+      {isShownMapSnippetModal && (
+        <ExpressAnalysisModal
+          snapshotResponse={snapshotResponse!}
+          closeModal={() => {
+            setIsShownMapSnippetModal(false);
+          }}
+        />
+      )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
           <h2 className="search-params-first-title">Lage</h2>

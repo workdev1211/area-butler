@@ -547,7 +547,6 @@ const SnippetEditorPage: FunctionComponent = () => {
         actionsBottom={[
           <BackButton key="back-button" beforeGoBack={beforeGoBack} />,
         ]}
-        timelineStep={3}
       >
         <TourStarter tour="editor" />
         {hasOpenAiFeature && (
@@ -586,15 +585,15 @@ const SnippetEditorPage: FunctionComponent = () => {
           <SearchResultContainer
             mapBoxToken={mapBoxAccessToken}
             mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
-            searchResponse={snapshot?.searchResponse!}
+            searchResponse={snapshot.searchResponse}
             placesLocation={snapshot.placesLocation}
-            location={snapshot?.location}
-            embedMode={true}
+            location={snapshot.location}
             editorMode={true}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
             userPoiIcons={user?.poiIcons}
             ref={mapRef}
+            user={user}
           />
           <EditorMapMenu
             availableMeans={deriveAvailableMeansFromResponse(

@@ -32,13 +32,11 @@ import OpenAiLocationDescriptionModal from "./OpenAiLocationDescriptionModal";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
-  isShownModal: boolean;
   closeModal: () => void;
 }
 
 const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   snapshotResponse,
-  isShownModal,
   closeModal,
 }) => {
   const { put } = useHttp();
@@ -67,7 +65,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
 
   const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
-  const performCloseModal = async () => {
+  const handleCloseModal = async () => {
     closeModal();
 
     searchContextDispatch({
@@ -91,10 +89,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
       }
     }
   };
-
-  if (!isShownModal) {
-    return null;
-  }
 
   // TODO split into ExpressAnalysis and the modal components
 
@@ -308,7 +302,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               <button
                 className="btn btn-sm btn-default"
                 onClick={async () => {
-                  await performCloseModal();
+                  await handleCloseModal();
                 }}
               >
                 Schließen
@@ -316,7 +310,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               <button
                 className="btn btn-sm btn-primary"
                 onClick={async () => {
-                  await performCloseModal();
+                  await handleCloseModal();
                   history.push(`snippet-editor/${snapshotResponse.id}`);
                 }}
               >
@@ -346,6 +340,8 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               isTrial={
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
               }
+              editorMode={true}
+              user={user}
               userPoiIcons={user?.poiIcons}
             />
             <img

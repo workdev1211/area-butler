@@ -1,26 +1,28 @@
-import { useState } from "react";
+import { FunctionComponent, useState } from "react";
+
 import "./MapMenuCollapsable.scss";
 
 export interface MapMenuCollapsableProps {
   title: string;
   subscriptionCheck?: () => boolean;
-  openUpgradeSubcriptionModal?: () => void;
+  openUpgradeSubscriptionModal?: () => void;
 }
 
-const MapMenuCollapsable: React.FunctionComponent<MapMenuCollapsableProps> = ({
+const MapMenuCollapsable: FunctionComponent<MapMenuCollapsableProps> = ({
   title,
   subscriptionCheck = () => true,
-  openUpgradeSubcriptionModal = () => true,
-  children
+  openUpgradeSubscriptionModal = () => true,
+  children,
 }) => {
   const [open, setOpen] = useState(false);
 
   const toggleOpen = () => {
-    if (!!subscriptionCheck && !subscriptionCheck()) {
-      openUpgradeSubcriptionModal();
-    } else {
-      setOpen(!open);
+    if (subscriptionCheck && !subscriptionCheck()) {
+      openUpgradeSubscriptionModal();
+      return;
     }
+
+    setOpen(!open);
   };
 
   return (
@@ -31,7 +33,7 @@ const MapMenuCollapsable: React.FunctionComponent<MapMenuCollapsableProps> = ({
           (open ? " collapse-open" : " collapse-closed")
         }
       >
-        <div className="collapse-title" onClick={() => toggleOpen()}>
+        <div className="collapse-title" onClick={toggleOpen}>
           {title}
         </div>
         <div className="collapse-content">{children}</div>

@@ -191,13 +191,16 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
           <div
             className="collapse-title"
             ref={(node) => {
-              if (!!node) {
-                if (node.parentElement?.classList.contains("collapse-open")) {
-                  node.style.setProperty("background", background, "important");
-                } else {
-                  node.style.setProperty("background", "#FFFFFF", "important");
-                }
+              if (!node) {
+                return;
               }
+
+              if (node.parentElement?.classList.contains("collapse-open")) {
+                node.style.setProperty("background", background, "important");
+                return;
+              }
+
+              node.style.setProperty("background", "#FFFFFF", "important");
             }}
           >
             Kartenausschnitte
@@ -219,18 +222,23 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
         >
           <input
             type="checkbox"
-            onChange={(event) => setViewOptionsOpen(event.target.checked)}
+            onChange={(event) => {
+              setViewOptionsOpen(event.target.checked);
+            }}
           />
           <div
             className="collapse-title"
             ref={(node) => {
-              if (!!node) {
-                if (node.parentElement?.classList.contains("collapse-open")) {
-                  node.style.setProperty("background", background, "important");
-                } else {
-                  node.style.setProperty("background", "#FFFFFF", "important");
-                }
+              if (!node) {
+                return;
               }
+
+              if (node.parentElement?.classList.contains("collapse-open")) {
+                node.style.setProperty("background", background, "important");
+                return;
+              }
+
+              node.style.setProperty("background", "#FFFFFF", "important");
             }}
           >
             Einblicke
@@ -241,7 +249,7 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                 <MapMenuCollapsable
                   title="Zensus Atlas"
                   subscriptionCheck={() => hasCensusData}
-                  openUpgradeSubcriptionModal={() => {
+                  openUpgradeSubscriptionModal={() => {
                     openUpgradeSubscriptionModal &&
                       openUpgradeSubscriptionModal(
                         censusNotInSubscriptionPlanMessage
@@ -255,7 +263,7 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                 <MapMenuCollapsable
                   title="Bundestagswahl 2021"
                   subscriptionCheck={() => hasElectionData}
-                  openUpgradeSubcriptionModal={() => {
+                  openUpgradeSubscriptionModal={() => {
                     openUpgradeSubscriptionModal &&
                       openUpgradeSubscriptionModal(
                         federalElectionNotInSubscriptionPlanMessage
@@ -274,7 +282,7 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
                 <MapMenuCollapsable
                   title="Feinstaubbelastung"
                   subscriptionCheck={() => hasPollutionData}
-                  openUpgradeSubcriptionModal={() => {
+                  openUpgradeSubscriptionModal={() => {
                     openUpgradeSubscriptionModal &&
                       openUpgradeSubscriptionModal(hasPollutionData);
                   }}
@@ -301,13 +309,16 @@ const MapMenu: FunctionComponent<MapMenuProps> = ({
         <div
           className="collapse-title flex justify-between"
           ref={(node) => {
-            if (!!node) {
-              if (node.parentElement?.classList.contains("collapse-open")) {
-                node.style.setProperty("background", background, "important");
-              } else {
-                node.style.setProperty("background", "#FFFFFF", "important");
-              }
+            if (!node) {
+              return;
             }
+
+            if (node.parentElement?.classList.contains("collapse-open")) {
+              node.style.setProperty("background", background, "important");
+              return;
+            }
+
+            node.style.setProperty("background", "#FFFFFF", "important");
           }}
         >
           Lokalitäten

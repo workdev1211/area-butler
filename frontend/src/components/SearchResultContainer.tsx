@@ -98,6 +98,8 @@ export interface SearchResultContainerProps {
   mapZoomLevel?: number;
   user?: ApiUser;
   userDispatch?: (action: UserActions) => void;
+  // TODO remove after some testing
+  // has been needed for the second step of the analysis "search results"
   embedMode?: boolean;
   editorMode?: boolean;
   onPoiAdd?: (poi: Poi) => void;
@@ -119,7 +121,7 @@ const SearchResultContainer = forwardRef<
       mapZoomLevel,
       user,
       userDispatch = () => null,
-      embedMode = false,
+      embedMode = true,
       editorMode = false,
       onPoiAdd,
       isTrial,
@@ -641,7 +643,7 @@ const SearchResultContainer = forwardRef<
                 payload: { open: true, message },
               });
             }}
-            showInsights={!embedMode}
+            showInsights={editorMode}
             config={searchContextState.responseConfig}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}

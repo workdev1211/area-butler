@@ -27,6 +27,7 @@ const ConfirmationModal: FunctionComponent<ConfirmationModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // TODO refactor to the declarative call from the parent
   if (!isShownModal) {
     return null;
   }

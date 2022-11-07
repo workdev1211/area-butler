@@ -221,7 +221,6 @@ const EmbedContainer: FunctionComponent = () => {
       searchResponse={searchContextState.searchResponse}
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
-      embedMode={true}
       isTrial={!!result?.isTrial}
       userPoiIcons={userPoiIcons}
     />
