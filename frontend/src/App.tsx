@@ -72,8 +72,8 @@ const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
 
 const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
-  buttonStyle:
-    "fixed -bottom-82 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white",
+  buttonClass:
+    "fixed -bottom-82 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white feedback-button",
   modalTitle: "Hilfe & Feedback",
 };
 

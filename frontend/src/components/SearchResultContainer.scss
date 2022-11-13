@@ -4,6 +4,14 @@
   @apply flex relative w-full;
 }
 
+.show-map-menu-btn {
+  top: 20px;
+  right: 10px;
+  z-index: 9999;
+  background-color: var(--primary) !important;
+  @apply btn absolute;
+}
+
 .map-nav-bar-container {
   z-index: 999;
   top: 24px;
@@ -26,19 +34,8 @@
   }
 }
 
-.mobile-menu-btn {
-  top: 20px;
-  right: 10px;
-  z-index: 9999;
-  background-color: var(--primary) !important;
-  @apply btn absolute;
-}
-
 @media (min-width: 1024px) {
   .search-result-container {
-    grid-template-columns: 5fr 2fr;
-    @apply grid;
-
     &.theme-KF {
       @apply block;
     }
@@ -46,9 +43,5 @@
     & > div:first-child {
       @apply w-full h-full;
     }
-  }
-
-  .mobile-menu-btn {
-    display: none;
   }
 }

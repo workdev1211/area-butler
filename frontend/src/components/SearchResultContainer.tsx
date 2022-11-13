@@ -26,6 +26,7 @@ import {
   ApiAddress,
   ApiCoordinates,
   ApiSearchResponse,
+  ApiSearchResultSnapshotConfig,
   ApiUser,
   IApiUserPoiIcon,
   MeansOfTransportation,
@@ -89,7 +90,26 @@ interface IPoiSearchOption {
 
 export const poiSearchContainerId = "poi-search-container";
 
-export interface SearchResultContainerProps {
+export interface IEditorTabProps {
+  availableMeans: MeansOfTransportation[];
+  groupedEntries: EntityGroup[];
+  config: ApiSearchResultSnapshotConfig;
+  onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
+  saveConfig: () => Promise<void>;
+  snapshotId: string;
+  additionalMapBoxStyles?: { key: string; label: string }[];
+}
+
+export interface IExportTabProps {
+  codeSnippet: string;
+  config: ApiSearchResultSnapshotConfig;
+  directLink: string;
+  placeLabel: string;
+  snapshotId: string;
+  hasOpenAiFeature?: boolean;
+}
+
+interface ISearchResultContainerProps {
   mapBoxToken: string;
   mapBoxMapId?: string;
   searchResponse: ApiSearchResponse;
@@ -105,11 +125,13 @@ export interface SearchResultContainerProps {
   onPoiAdd?: (poi: Poi) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcon[];
+  editorTabProps?: IEditorTabProps;
+  exportTabProps?: IExportTabProps;
 }
 
 const SearchResultContainer = forwardRef<
   ICurrentMapRef,
-  SearchResultContainerProps
+  ISearchResultContainerProps
 >(
   (
     {
@@ -126,6 +148,8 @@ const SearchResultContainer = forwardRef<
       onPoiAdd,
       isTrial,
       userPoiIcons = user?.poiIcons,
+      editorTabProps,
+      exportTabProps,
     },
     parentMapRef
   ) => {
@@ -145,10 +169,10 @@ const SearchResultContainer = forwardRef<
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+    const [isMapMenuOpen, setIsMapMenuOpen] = useState(true);
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
-    >([]);
+      >([]);
     const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
       EntityGroup[]
     >([]);
@@ -188,22 +212,26 @@ const SearchResultContainer = forwardRef<
 
     // consume search response and set active/available means
     useEffect(() => {
-      if (searchResponse) {
-        const meansFromResponse =
-          deriveAvailableMeansFromResponse(searchResponse);
-
-        setAvailableMeans(meansFromResponse);
-
-        const activeMeans =
-          searchContextState.responseConfig &&
-          searchContextState.responseConfig.defaultActiveMeans
-            ? [...searchContextState.responseConfig.defaultActiveMeans]
-            : meansFromResponse;
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-          payload: [...activeMeans],
-        });
+      if (!searchResponse) {
+        return;
       }
+
+      const meansFromResponse =
+        deriveAvailableMeansFromResponse(searchResponse);
+
+      setAvailableMeans(meansFromResponse);
+
+      const activeMeans =
+        searchContextState.responseConfig &&
+        searchContextState.responseConfig.defaultActiveMeans
+          ? [...searchContextState.responseConfig.defaultActiveMeans]
+          : meansFromResponse;
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+        payload: [...activeMeans],
+      });
+
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchResponse, searchContextState.responseConfig?.defaultActiveMeans]);
 
@@ -260,15 +288,16 @@ const SearchResultContainer = forwardRef<
 
         if (option?.value === resultingEntityGroup.title) {
           result.push(resultingEntityGroup);
-        } else {
-          const foundItem = entityGroup.items.find(
-            (item) => item.id === option?.value
-          );
+          return result;
+        }
 
-          if (foundItem) {
-            Object.assign(resultingEntityGroup, { items: [foundItem] });
-            result.push(resultingEntityGroup);
-          }
+        const foundItem = entityGroup.items.find(
+          (item) => item.id === option?.value
+        );
+
+        if (foundItem) {
+          Object.assign(resultingEntityGroup, { items: [foundItem] });
+          result.push(resultingEntityGroup);
         }
 
         return result;
@@ -281,7 +310,7 @@ const SearchResultContainer = forwardRef<
       origin: ApiCoordinates,
       item: ResultEntity,
       mean: MeansOfTransportation
-    ) => {
+    ): Promise<void> => {
       const existing = searchContextState.responseRoutes.find(
         (r) =>
           r.coordinates.lat === item.coordinates.lat &&
@@ -311,45 +340,47 @@ const SearchResultContainer = forwardRef<
             },
           ],
         });
-      } else {
-        const routesResult = await fetchRoutes({
-          snapshotToken: searchContextState.responseToken,
-          userEmail: user?.email!,
-          meansOfTransportation: [
-            MeansOfTransportation.BICYCLE,
-            MeansOfTransportation.CAR,
-            MeansOfTransportation.WALK,
-          ],
-          origin: origin,
-          destinations: [
+
+        return;
+      }
+
+      const routesResult = await fetchRoutes({
+        snapshotToken: searchContextState.responseToken,
+        userEmail: user?.email!,
+        meansOfTransportation: [
+          MeansOfTransportation.BICYCLE,
+          MeansOfTransportation.CAR,
+          MeansOfTransportation.WALK,
+        ],
+        origin: origin,
+        destinations: [
+          {
+            title: item.name || "" + item.id,
+            coordinates: item.coordinates,
+          },
+        ],
+      });
+
+      if (routesResult.length) {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+          payload: [
+            ...searchContextState.responseRoutes,
             {
-              title: item.name || "" + item.id,
+              routes: routesResult[0].routes,
+              title: routesResult[0].title,
+              show: [mean],
               coordinates: item.coordinates,
             },
           ],
         });
-
-        if (routesResult.length) {
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-            payload: [
-              ...searchContextState.responseRoutes,
-              {
-                routes: routesResult[0].routes,
-                title: routesResult[0].title,
-                show: [mean],
-                coordinates: item.coordinates,
-              },
-            ],
-          });
-        }
       }
     };
 
     const toggleTransitRoutesToEntity = async (
       origin: ApiCoordinates,
       item: ResultEntity
-    ) => {
+    ): Promise<void> => {
       const existing = searchContextState.responseTransitRoutes.find(
         (r) =>
           r.coordinates.lat === item.coordinates.lat &&
@@ -373,46 +404,51 @@ const SearchResultContainer = forwardRef<
           type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
           payload: newTransitRoutes,
         });
-      } else {
-        const routesResult = await fetchTransitRoutes({
-          snapshotToken: searchContextState.responseToken,
-          userEmail: user?.email!,
-          origin: origin,
-          destinations: [
+
+        return;
+      }
+
+      const routesResult = await fetchTransitRoutes({
+        snapshotToken: searchContextState.responseToken,
+        userEmail: user?.email!,
+        origin: origin,
+        destinations: [
+          {
+            title: item.name || `${item.id}`,
+            coordinates: item.coordinates,
+          },
+        ],
+      });
+
+      if (routesResult.length) {
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
+          payload: [
+            ...searchContextState.responseTransitRoutes,
             {
-              title: item.name || `${item.id}`,
+              route: routesResult[0].route,
+              title: routesResult[0].title,
+              show: true,
               coordinates: item.coordinates,
             },
           ],
         });
-
-        if (routesResult.length) {
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-            payload: [
-              ...searchContextState.responseTransitRoutes,
-              {
-                route: routesResult[0].route,
-                title: routesResult[0].title,
-                show: true,
-                coordinates: item.coordinates,
-              },
-            ],
-          });
-        }
       }
     };
 
-    // components
-    const MapMenuMobileBtn: FunctionComponent = () => {
+    const ShowMapMenuButton: FunctionComponent = () => {
       return (
         <button
           type="button"
-          className="mobile-menu-btn"
-          onMouseDown={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="show-map-menu-btn"
+          onMouseDown={() => {
+            setIsMapMenuOpen(!isMapMenuOpen);
+          }}
         >
-          {!mobileMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-          {mobileMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
+          {!isMapMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
+          {isMapMenuOpen && (
+            <img src={closeMenuIcon} alt="icon-menu-close" />
+          )}
         </button>
       );
     };
@@ -421,23 +457,25 @@ const SearchResultContainer = forwardRef<
       return <div>Laden...</div>;
     }
 
-    const hideEntity = (item: ResultEntity) => {
-      if (searchContextState.responseConfig) {
-        const newEntityVisibility = toggleEntityVisibility(
-          item,
-          searchContextState.responseConfig
-        );
-
-        const newConfig = {
-          ...searchContextState.responseConfig,
-          entityVisibility: [...newEntityVisibility],
-        };
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: { ...newConfig },
-        });
+    const hideEntity = (item: ResultEntity): void => {
+      if (!searchContextState.responseConfig) {
+        return;
       }
+
+      const newEntityVisibility = toggleEntityVisibility(
+        item,
+        searchContextState.responseConfig
+      );
+
+      const newConfig = {
+        ...searchContextState.responseConfig,
+        entityVisibility: [...newEntityVisibility],
+      };
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+        payload: { ...newConfig },
+      });
     };
 
     const toggleSatelliteMapMode = () => {
@@ -595,9 +633,9 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          {!isThemeKf && <MapMenuMobileBtn />}
+          {!isThemeKf && <ShowMapMenuButton />}
           <MapMenu
-            mobileMenuOpen={mobileMenuOpen}
+            isMapMenuOpen={isMapMenuOpen}
             censusData={searchContextState.censusData}
             federalElectionData={searchContextState.federalElectionData}
             particlePollutionData={searchContextState.particlePollutionData}
@@ -647,6 +685,9 @@ const SearchResultContainer = forwardRef<
             config={searchContextState.responseConfig}
             isShownPreferredLocationsModal={isShownPreferredLocationsModal}
             togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+            editorMode={editorMode}
+            editorTabProps={editorTabProps}
+            exportTabProps={exportTabProps}
           />
           {isThemeKf &&
             preferredLocationsGroup &&

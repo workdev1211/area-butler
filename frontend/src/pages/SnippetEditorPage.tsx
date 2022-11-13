@@ -6,13 +6,14 @@ import {
   useState,
 } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useHistory, useLocation, useParams } from "react-router-dom";
-import { saveAs } from "file-saver";
+import { useHistory, useParams } from "react-router-dom";
 import * as L from "leaflet";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
+  IEditorTabProps,
+  IExportTabProps,
   ResultEntity,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
@@ -21,11 +22,9 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
-import { UserActionTypes, UserContext } from "context/UserContext";
+import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import BackButton from "layout/BackButton";
 import DefaultLayout from "layout/defaultLayout";
-import EditorMapMenu from "map/menu-editor/EditorMapMenu";
 import {
   buildEntityData,
   createCodeSnippet,
@@ -46,10 +45,6 @@ import {
   ApiUpdateSearchResultSnapshot,
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
-import pdfIcon from "../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
-import copyMapIcon from "../assets/icons/copy-map.svg";
-import aiIcon from "../assets/icons/ai-big.svg";
-import { subscriptionUpgradeFullyCustomizableExpose } from "./SearchResultPage";
 import ExportModal from "../export/ExportModal";
 import {
   ApiDataSource,
@@ -61,7 +56,6 @@ import { useParticlePollutionData } from "../hooks/particlepollutiondata";
 import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
-import { getQrCodeBase64 } from "../export/QrCode";
 import OpenAiLocationDescriptionModal from "../components/OpenAiLocationDescriptionModal";
 
 export interface SnippetEditorRouterProps {
@@ -70,7 +64,6 @@ export interface SnippetEditorRouterProps {
 
 const SnippetEditorPage: FunctionComponent = () => {
   const history = useHistory();
-  const currentLocation = useLocation<{ from: string }>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { fetchNearData } = useCensusData();
@@ -91,14 +84,12 @@ const SnippetEditorPage: FunctionComponent = () => {
   );
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userState } = useContext(UserContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
 
   const user = userState.user;
 
-  const hasFullyCustomizableExpose =
-    user?.subscription?.config.appFeatures.fullyCustomizableExpose;
   const hasOpenAiFeature = user?.subscription?.config.appFeatures.openAi;
   const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
 
@@ -380,174 +371,91 @@ const SnippetEditorPage: FunctionComponent = () => {
     );
   };
 
-  const ActionsTop: FunctionComponent = () => {
-    return (
-      <>
-        <li>
-          <button
-            type="button"
-            onClick={() => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                payload: true,
-              });
-            }}
-            className="btn btn-link"
-          >
-            <img src={pdfIcon} alt="pdf" /> Export Analyse PDF
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            onClick={() => {
-              hasFullyCustomizableExpose
-                ? searchContextDispatch({
-                    type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                    payload: true,
-                  })
-                : userDispatch({
-                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                    payload: {
-                      open: true,
-                      message: subscriptionUpgradeFullyCustomizableExpose,
-                    },
-                  });
-            }}
-            className="btn btn-link"
-          >
-            <img src={pdfIcon} alt="docx" /> Export Analyse DOCX
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            onClick={() => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                payload: true,
-              });
-            }}
-            className="btn btn-link"
-          >
-            <img src={pdfIcon} alt="pdf" /> Export Überblick PDF
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            onClick={async () => {
-              saveAs(
-                await getQrCodeBase64(directLink),
-                `${snapshot!.placesLocation.label.replace(
-                  /[\s|,]+/g,
-                  "-"
-                )}-QR-Code.png`
-              );
-            }}
-            className="btn btn-link"
-          >
-            <img src={pdfIcon} alt="qr-code" /> Export QR Code
-          </button>
-        </li>
-        <li>
-          <button
-            type="button"
-            onClick={() => {
-              hasFullyCustomizableExpose
-                ? searchContextDispatch({
-                    type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
-                    payload: true,
-                  })
-                : userDispatch({
-                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                    payload: {
-                      open: true,
-                      message: subscriptionUpgradeFullyCustomizableExpose,
-                    },
-                  });
-            }}
-            className="btn btn-link"
-          >
-            <img src={pdfIcon} alt="pdf" /> Export Kartenlegende ZIP
-          </button>
-        </li>
-        <li style={{ borderBottom: "1px white solid" }} />
-        {hasOpenAiFeature && (
-          <li>
-            <button
-              type="button"
-              onClick={() => {
-                setIsShownAiDescriptionModal(true);
-              }}
-              className="btn btn-link"
-            >
-              <img src={aiIcon} alt="ai" /> Lagetext generieren
-            </button>
-          </li>
-        )}
-        <li>
-          <button
-            type="button"
-            onClick={async () => {
-              try {
-                const mapZoomLevel = mapRef.current?.getZoom();
-                const config = { ...searchContextState.responseConfig };
-
-                if (mapZoomLevel) {
-                  config.zoomLevel = mapZoomLevel;
-                }
-
-                await put<ApiUpdateSearchResultSnapshot>(
-                  `/api/location/snapshot/${snapshotId}`,
-                  { config, snapshot }
-                );
-
-                setIsShownModal(true);
-                toastSuccess("Erfolgreich in Zwischenablage kopiert!");
-              } catch (e) {
-                toastError("Fehler beim Veröffentlichen der Karte");
-              }
-            }}
-            className="btn btn-link"
-          >
-            <img
-              src={copyMapIcon}
-              alt="copy-map"
-              style={{ filter: "invert(1)" }}
-            />
-            Karte veröffentlichen
-          </button>
-        </li>
-      </>
-    );
-  };
-
   if (!snapshot) {
     return <div>Lade Daten...</div>;
   }
 
-  const beforeGoBack = () => {
-    const from = currentLocation.state?.from;
+  // TODO think about using useEffect or memoizing the props
+  const editorTabProps: IEditorTabProps = {
+    availableMeans: deriveAvailableMeansFromResponse(snapshot.searchResponse),
+    groupedEntries: editorGroups,
+    config: searchContextState.responseConfig!,
+    onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
+      if (
+        searchContextState.responseConfig?.mapBoxMapId !== config.mapBoxMapId ||
+        searchContextState.responseConfig?.showLocation !==
+          config.showLocation ||
+        searchContextState.responseConfig?.showAddress !== config.showAddress
+      ) {
+        const mapCenter =
+          mapRef.current?.getCenter() || searchContextState.mapCenter;
+        const mapZoomLevel =
+          mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
 
-    if (from === "/search-result") {
+        if (mapCenter && mapZoomLevel) {
+          searchContextDispatch({
+            type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+            payload: { mapCenter, mapZoomLevel },
+          });
+        }
+      }
+
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: {} as ApiSearchResultSnapshotConfig,
+        payload: { ...config },
       });
-    }
+    },
+    saveConfig: async () => {
+      try {
+        const mapZoomLevel = mapRef.current?.getZoom();
+
+        const defaultActiveGroups =
+          searchContextState.responseGroupedEntities?.reduce<string[]>(
+            (result, { title, active }) => {
+              if (active) {
+                result.push(title);
+              }
+
+              return result;
+            },
+            []
+          );
+
+        const config = {
+          ...searchContextState.responseConfig,
+          defaultActiveGroups,
+        };
+
+        if (mapZoomLevel) {
+          config.zoomLevel = mapZoomLevel;
+        }
+
+        await put<ApiUpdateSearchResultSnapshot>(
+          `/api/location/snapshot/${snapshotId}`,
+          { config, snapshot }
+        );
+
+        toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+      } catch (e) {
+        toastError("Fehler beim Veröffentlichen der Karte");
+      }
+    },
+    snapshotId,
+    additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
+  };
+
+  const exportTabProps: IExportTabProps = {
+    codeSnippet,
+    config: searchContextState.responseConfig!,
+    directLink,
+    snapshotId,
+    placeLabel: snapshot.placesLocation.label,
+    hasOpenAiFeature: user?.subscription?.config.appFeatures.openAi,
   };
 
   return (
     <>
-      <DefaultLayout
-        title="Karten Editor"
-        withHorizontalPadding={false}
-        actionsTop={<ActionsTop />}
-        actionsBottom={[
-          <BackButton key="back-button" beforeGoBack={beforeGoBack} />,
-        ]}
-      >
+      <DefaultLayout withHorizontalPadding={false}>
         <TourStarter tour="editor" />
         {hasOpenAiFeature && (
           <OpenAiLocationDescriptionModal
@@ -594,48 +502,12 @@ const SnippetEditorPage: FunctionComponent = () => {
             userPoiIcons={user?.poiIcons}
             ref={mapRef}
             user={user}
-          />
-          <EditorMapMenu
-            availableMeans={deriveAvailableMeansFromResponse(
-              snapshot.searchResponse
-            )}
-            groupedEntries={editorGroups}
-            config={searchContextState.responseConfig!}
-            onConfigChange={(config) => {
-              if (
-                searchContextState.responseConfig?.mapBoxMapId !==
-                  config.mapBoxMapId ||
-                searchContextState.responseConfig?.showLocation !==
-                  config.showLocation ||
-                searchContextState.responseConfig?.showAddress !==
-                  config.showAddress
-              ) {
-                const mapCenter =
-                  mapRef.current?.getCenter() || searchContextState.mapCenter;
-                const mapZoomLevel =
-                  mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-                if (mapCenter && mapZoomLevel) {
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-                    payload: { mapCenter, mapZoomLevel },
-                  });
-                }
-              }
-
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-                payload: { ...config },
-              });
-            }}
-            snapshotId={snapshotId}
-            additionalMapBoxStyles={
-              userState?.user?.additionalMapBoxStyles || []
-            }
+            editorTabProps={editorTabProps}
+            exportTabProps={exportTabProps}
           />
         </div>
       </DefaultLayout>
-      {/*TODO refactor to the single ExportModal call with parameters*/}
+      {/* TODO refactor to the single ExportModal call with parameters */}
       {searchContextState.printingActive && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}

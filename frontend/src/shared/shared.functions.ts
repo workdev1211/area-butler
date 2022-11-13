@@ -627,3 +627,19 @@ export const deriveInitialEntityGroups = (
 
 export const sanitizeFilename = (filename: string): string =>
   filename.replace(/[/\\?%*:|"<>]/g, "-");
+
+export const setBackgroundColor = (
+  node: HTMLDivElement | null,
+  color: string
+): void => {
+  if (!node) {
+    return;
+  }
+
+  if (node.parentElement?.classList.contains("collapse-open")) {
+    node.style.setProperty("background", color, "important");
+    return;
+  }
+
+  node.style.setProperty("background", "#FFFFFF", "important");
+};

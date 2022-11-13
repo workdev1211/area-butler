@@ -12,7 +12,7 @@ import { v4 as uuid } from "uuid";
 
 export interface ModalConfig {
   buttonTitle?: string;
-  buttonStyle?: string;
+  buttonClass?: string;
   submitButtonTitle?: string;
   modalTitle: string | ReactNode;
   modalButton?: ReactNode;
@@ -71,7 +71,7 @@ export const FormModal: FunctionComponent<{
             setModalOpen(!modalOpen);
             e.stopPropagation();
           }}
-          className={modalConfig.buttonStyle || "btn btn-primary"}
+          className={modalConfig.buttonClass || "btn btn-primary"}
         >
           {modalConfig.buttonTitle}
         </button>

@@ -1,9 +1,9 @@
 .editor-container {
-  max-height: calc(100vh - 2 * var(--nav-height) - 2px) !important;
+  max-height: calc(100vh - var(--nav-height) - 2px) !important;
   @apply flex relative w-full;
 
   .search-result-container {
-    height: calc(100vh - 2 * var(--nav-height) - 2px);
-    max-height: calc(100vh - 2 * var(--nav-height) - 2px);
+    height: calc(100vh - var(--nav-height) - 2px);
+    max-height: calc(100vh - var(--nav-height) - 2px);
   }
 }

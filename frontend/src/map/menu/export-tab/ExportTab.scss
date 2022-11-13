@@ -1,0 +1,78 @@
+.export-tab {
+  --export-tab-pr: 80px;
+  color: var(--base-anthracite);
+  z-index: 1000;
+  transition: width 0.2s;
+  @apply h-full flex flex-col relative bg-white;
+
+  .collapse-title {
+    color: var(--base-anthracite);
+    padding: 18px var(--export-tab-pr) 20px 24px;
+    @apply text-lg font-medium cursor-pointer;
+  }
+
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  .view-option {
+    overflow: initial;
+
+    .collapse-title {
+      height: 56px;
+      line-height: 18px;
+
+      &:after {
+        top: 22px;
+        right: 50px;
+      }
+    }
+
+    &.collapse-open > .collapse-title {
+      color: white;
+    }
+
+    & > .collapse-content {
+      background: white !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      max-height: 100% !important;
+      overflow-y: hidden;
+    }
+
+    .collapse-content > ul > li {
+      height: 56px;
+      padding: 4px 80px 4px 24px;
+      border-bottom: 1px solid var(--base-bright-silver);
+      @apply w-full flex justify-between items-center;
+
+      & > span {
+        color: var(--base-anthracite);
+        @apply font-medium text-lg;
+      }
+
+      & > h3 {
+        padding: 0;
+      }
+    }
+  }
+
+  .collapse-closed {
+    & > .collapse-content {
+      max-height: 0 !important;
+      height: 0;
+    }
+
+    .collapse-title:after {
+      transform: rotate(405deg) !important;
+    }
+  }
+
+  .collapse-open > .collapse-content {
+    min-height: 40px;
+  }
+
+  .collapse-content ul {
+    @apply w-full flex flex-col;
+  }
+}

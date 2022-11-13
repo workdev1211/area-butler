@@ -25,39 +25,41 @@ const DefaultLayout: FunctionComponent<DefaultLayoutProps> = ({
 }) => {
   return (
     <div className="default-layout">
-      <div className="default-layout-header">
-        {title && !timelineStep && <h1>{title}</h1>}
-        {timelineStep && <Timeline activeStep={timelineStep} />}
-        {actionsTop && (
-          <div
-            className="dropdown z-2000"
-            data-tour={isOverriddenActionsTop ? "" : "actions-top"}
-          >
-            {isOverriddenActionsTop ? (
-              <>{actionsTop}</>
-            ) : (
-              <>
-                <div tabIndex={0} className="dropdown-btn">
-                  <div className="dropdown-btn-content">
-                    Aktionen <span className="divider" />
-                    <img
-                      src={caretDown}
-                      alt="icon-dropdown"
-                      className="caret-down"
-                    />
+      {(title || timelineStep || actionsTop) && (
+        <div className="default-layout-header">
+          {title && !timelineStep && <h1>{title}</h1>}
+          {timelineStep && <Timeline activeStep={timelineStep} />}
+          {actionsTop && (
+            <div
+              className="dropdown z-2000"
+              data-tour={isOverriddenActionsTop ? "" : "actions-top"}
+            >
+              {isOverriddenActionsTop ? (
+                <>{actionsTop}</>
+              ) : (
+                <>
+                  <div tabIndex={0} className="dropdown-btn">
+                    <div className="dropdown-btn-content">
+                      Aktionen <span className="divider" />
+                      <img
+                        src={caretDown}
+                        alt="icon-dropdown"
+                        className="caret-down"
+                      />
+                    </div>
                   </div>
-                </div>
-                <ul
-                  tabIndex={0}
-                  className="sm:right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-80"
-                >
-                  {actionsTop}
-                </ul>
-              </>
-            )}
-          </div>
-        )}
-      </div>
+                  <ul
+                    tabIndex={0}
+                    className="sm:right-1 p-2 shadow menu dropdown-content bg-base-100 rounded-box w-80"
+                  >
+                    {actionsTop}
+                  </ul>
+                </>
+              )}
+            </div>
+          )}
+        </div>
+      )}
       <div
         className={
           withHorizontalPadding

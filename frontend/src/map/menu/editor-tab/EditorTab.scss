@@ -1,0 +1,107 @@
+.editor-tab {
+  --editor-tab-pr: 80px;
+  color: var(--base-anthracite);
+  z-index: 1000;
+  transition: width 0.2s;
+  @apply h-full flex flex-col relative bg-white;
+
+  .collapse-title {
+    color: var(--base-anthracite);
+    padding: 18px var(--editor-tab-pr) 20px 24px;
+    @apply text-lg font-medium cursor-pointer;
+  }
+
+  input[type="checkbox"] {
+    cursor: pointer;
+  }
+
+  .view-option {
+    overflow: initial;
+
+    .collapse-title {
+      height: 56px;
+      line-height: 18px;
+
+      &:after {
+        top: 22px;
+        right: 50px;
+      }
+    }
+
+    &.collapse-open > .collapse-title {
+      color: white;
+    }
+
+    & > .collapse-content {
+      background: white !important;
+      padding: 0 !important;
+      margin: 0 !important;
+      max-height: 100% !important;
+      overflow-y: hidden;
+    }
+
+    .collapse-content > ul > li {
+      padding: 4px 80px 4px 24px;
+      border-bottom: 1px solid var(--base-bright-silver);
+      @apply w-full flex justify-start items-center;
+
+      & > span {
+        color: var(--base-anthracite);
+        @apply font-medium text-lg;
+      }
+
+      & > h3 {
+        height: 48px;
+        padding: 0;
+      }
+    }
+  }
+
+  .collapse-closed {
+    & > .collapse-content {
+      max-height: 0 !important;
+      height: 0;
+    }
+
+    .collapse-title:after {
+      transform: rotate(405deg) !important;
+    }
+  }
+
+  .collapse-open > .collapse-content {
+    min-height: 40px;
+  }
+
+  .collapse-content ul {
+    @apply w-full flex flex-col;
+  }
+
+  .entity-groups li,
+  .preselected-groups li {
+    padding-right: 10px !important;
+  }
+
+  .entity-groups li {
+    height: 56px;
+  }
+
+  .group-items li {
+    @apply flex flex-col py-2;
+
+    .item-title {
+      @apply flex flex-row justify-items-center items-center;
+
+      span {
+        max-width: 300px;
+        overflow-x: hidden;
+        text-overflow: ellipsis;
+        @apply pl-2 text-base;
+      }
+    }
+  }
+
+  .preselected-groups li {
+    display: flex;
+    justify-content: flex-start !important;
+  }
+}
