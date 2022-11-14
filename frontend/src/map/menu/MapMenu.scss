@@ -269,12 +269,12 @@
 
 @media (min-width: 1024px) {
   .map-menu.map-menu-open {
-    min-width: var(--map-menu-width);
+    width: var(--map-menu-width);
   }
 }
 
 @media (max-width: 1024px) {
   .map-menu.map-menu-open {
-    min-width: var(--mobile-map-menu-width);
+    width: var(--mobile-map-menu-width);
   }
 }
