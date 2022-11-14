@@ -492,9 +492,9 @@ const SnippetEditorPage: FunctionComponent = () => {
                   { config, snapshot }
                 );
 
-                toastSuccess("Kartendaten wurden gespeichert!");
+                toastSuccess("Einstellungen gespeichert!");
               } catch (e) {
-                toastError("Fehler beim Veröffentlichen der Karte");
+                toastError("Fehler beim Speichern der Einstellungen!");
               }
             }}
             editorMode={true}
