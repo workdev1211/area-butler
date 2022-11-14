@@ -39,7 +39,7 @@ import {
   toggleEntityVisibility,
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
-import closeMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
+import closeMenuIcon from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import Map, { defaultMapZoom } from "../map/Map";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
@@ -448,8 +448,24 @@ const SearchResultContainer = forwardRef<
             setIsMapMenuOpen(!isMapMenuOpen);
           }}
         >
-          {!isMapMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-          {isMapMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
+          {!isMapMenuOpen && (
+            <img
+              src={openMenuIcon}
+              alt="icon-menu"
+              style={{ width: "40px", height: "40px" }}
+            />
+          )}
+          {isMapMenuOpen && (
+            <img
+              src={closeMenuIcon}
+              alt="icon-menu-close"
+              style={{
+                transform: "rotate(270deg)",
+                width: "20px",
+                height: "20px",
+              }}
+            />
+          )}
         </button>
       );
     };
@@ -528,9 +544,13 @@ const SearchResultContainer = forwardRef<
       <>
         <div className={containerClasses} id="search-result-container">
           <div className="relative flex-1" id={mapWithLegendId}>
-            <div className="map-nav-bar-container">
+            <div
+              className={`map-nav-bar-container ${
+                isMapMenuOpen ? "map-op" : ""
+              }`}
+            >
               {!isThemeKf && (
-                <div id={poiSearchContainerId} className="w-1/3 opacity-90">
+                <div id={poiSearchContainerId} className="opacity-90">
                   <Select
                     styles={poiSearchStyles}
                     options={poiSearchOptions}

@@ -1,17 +1,21 @@
 .map-menu {
   overflow-y: auto;
+  top: 0;
+  right: 0;
+  bottom: 0;
   width: 0;
   transition: width 0.2s;
+  z-index: 1000;
   --menu-item-pt: 18px;
   --menu-item-pr: 60px;
   --menu-item-pb: 20px;
   --menu-item-pl: 24px;
   --menu-item-h: 56px;
   --menu-footer-h: 88px;
+  @apply absolute;
 
   .tab-bar {
     color: var(--primary);
-    background: var(--primary-gradient);
     padding: calc(var(--menu-item-pl) / 2) var(--menu-item-pl)
       calc(var(--menu-item-pl) / 2) var(--menu-item-pl);
     @apply text-lg font-medium;
@@ -256,6 +260,7 @@
     height: var(--menu-footer-h);
     padding: 4px var(--menu-item-pl) 2px var(--menu-item-pl);
     border-top: 2px solid var(--primary);
+    background: white;
     @apply flex flex-col gap-1;
   }
 }

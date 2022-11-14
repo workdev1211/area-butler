@@ -124,7 +124,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   return (
     <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>
       {editorMode && editorTabProps && (
-        <div className="tab-bar">
+        <div className="tab-bar bg-primary-gradient">
           <div className="tab-container">
             <div
               className={`tab-item${
@@ -217,7 +217,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               <BackButton key="back-button" />
             </div>
             <div
-              className="bg-primary-gradient flex items-center justify-center p-3 h-full rounded-lg cursor-pointer"
+              className="flex bg-primary-gradient items-center justify-center p-3 h-full rounded-lg cursor-pointer"
               onClick={saveConfig}
             >
               <img

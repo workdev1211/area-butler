@@ -628,6 +628,7 @@ export const deriveInitialEntityGroups = (
 export const sanitizeFilename = (filename: string): string =>
   filename.replace(/[/\\?%*:|"<>]/g, "-");
 
+// TODO move to shared map-menu functions
 export const setBackgroundColor = (
   node: HTMLDivElement | null,
   color: string
