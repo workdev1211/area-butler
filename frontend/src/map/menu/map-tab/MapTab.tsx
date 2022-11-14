@@ -28,8 +28,6 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./../data/FederalElectionTable";
 import ParticlePollutionTable from "./../data/ParticlePollutionTable";
 import { osmEntityTypes } from "../../../../../shared/constants/constants";
-import { MapClipping } from "context/SearchContext";
-import MapClippingsCollapsable from "./../clippings/MapClippingsCollapsable";
 import { CensusData } from "hooks/censusdata";
 import {
   EntityRoute,
@@ -72,12 +70,10 @@ const federalElectionNotInSubscriptionPlanMessage = (
 interface IMapTabProps {
   groupedEntries: EntityGroup[];
   toggleAllLocalities: () => void;
-  clippings: MapClipping[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
   toggleTransitRoute: (item: ResultEntity) => void;
   transitRoutes: EntityTransitRoute[];
-  searchAddress: string;
   user?: ApiUser;
   config?: ApiSearchResultSnapshotConfig;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
@@ -91,12 +87,10 @@ interface IMapTabProps {
 const MapTab: FunctionComponent<IMapTabProps> = ({
   groupedEntries,
   toggleAllLocalities,
-  clippings = [],
   toggleRoute,
   routes,
   toggleTransitRoute,
   transitRoutes,
-  searchAddress,
   user,
   config,
   openUpgradeSubscriptionModal,
@@ -107,7 +101,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   userPoiIcons,
 }) => {
   const [isViewOptionsOpen, setIsViewOptionsOpen] = useState(true);
-  const [isMapClippingsOpen, setIsMapClippingsOpen] = useState(false);
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(true);
 
   const hasCensusData =
@@ -129,33 +122,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
 
   return (
     <div className="map-tab z-9000">
-      {clippings.length > 0 && (
-        <div
-          className={
-            "collapse collapse-arrow-1 view-option" +
-            (isMapClippingsOpen ? " collapse-open" : " collapse-closed")
-          }
-        >
-          <div
-            className="collapse-title"
-            ref={(node) => {
-              setBackgroundColor(node, backgroundColor);
-            }}
-            onClick={() => {
-              setIsMapClippingsOpen(!isMapClippingsOpen);
-            }}
-          >
-            Kartenausschnitte
-          </div>
-          <div className="collapse-content">
-            <MapClippingsCollapsable
-              searchAddress={searchAddress}
-              clippings={clippings}
-            />
-          </div>
-        </div>
-      )}
-
       {showInsights && (
         <div
           className={

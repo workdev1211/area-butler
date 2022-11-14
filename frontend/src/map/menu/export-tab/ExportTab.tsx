@@ -18,11 +18,12 @@ import aiIcon from "../../../assets/icons/ai-big.svg";
 import OpenAiLocationDescriptionModal from "../../../components/OpenAiLocationDescriptionModal";
 import copyIcon from "../../../assets/icons/copy.svg";
 import downloadIcon from "../../../assets/icons/download.svg";
-import screenshotIcon from "../../../assets/icons/screenshot.svg";
+import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
 
 const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
 const ExportTab: FunctionComponent<IExportTabProps> = ({
+  clippings,
   codeSnippet,
   config,
   directLink,
@@ -34,6 +35,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
+  const [isMapClippingsOpen, setIsMapClippingsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(true);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isTextAiOpen, setIsTextAiOpen] = useState(false);
@@ -58,6 +60,33 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           }}
           searchResultSnapshotId={snapshotId}
         />
+      )}
+
+      {clippings.length > 0 && (
+        <div
+          className={
+            "collapse collapse-arrow-1 view-option" +
+            (isMapClippingsOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              setBackgroundColor(node, backgroundColor);
+            }}
+            onClick={() => {
+              setIsMapClippingsOpen(!isMapClippingsOpen);
+            }}
+          >
+            Kartenausschnitte
+          </div>
+          <div className="collapse-content">
+            <MapClippingsCollapsable
+              searchAddress={placeLabel}
+              clippings={clippings}
+            />
+          </div>
+        </div>
       )}
 
       <div
@@ -113,21 +142,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               >
                 <img className="w-6 h-6" src={copyIcon} alt="copy" />
                 Snippet (iFrame) HTML
-              </h3>
-            </li>
-            <li>
-              <h3
-                className="flex max-w-fit items-center cursor-pointer gap-2"
-                onClick={() => {
-                  toastSuccess("Kartenausschnitte erstellen PNG");
-                }}
-              >
-                <img
-                  className="w-6 h-6"
-                  src={screenshotIcon}
-                  alt="screenshot"
-                />
-                Kartenausschnitte erstellen PNG
               </h3>
             </li>
           </ul>

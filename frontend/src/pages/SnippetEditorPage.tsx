@@ -435,7 +435,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           { config, snapshot }
         );
 
-        toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+        toastSuccess("Kartendaten wurden gespeichert!");
       } catch (e) {
         toastError("Fehler beim Veröffentlichen der Karte");
       }
@@ -445,6 +445,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   };
 
   const exportTabProps: IExportTabProps = {
+    clippings: searchContextState.mapClippings,
     codeSnippet,
     config: searchContextState.responseConfig!,
     directLink,

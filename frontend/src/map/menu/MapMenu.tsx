@@ -24,7 +24,9 @@ import {
   EntityRoute,
   EntityTransitRoute,
 } from "../../../../shared/types/routing";
-import testIcon from "../../assets/icons/information.svg";
+import editorIcon from "../../assets/icons/editor.svg";
+import mapIcon from "../../assets/icons/map.svg";
+import downloadIcon from "../../assets/icons/download.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
@@ -132,7 +134,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
                 setActiveTab(TabsEnum.Map);
               }}
             >
-              <img src={testIcon} alt="test" />
+              <img src={mapIcon} alt="map-icon" />
               <div>Karte</div>
             </div>
             <div
@@ -143,7 +145,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
                 setActiveTab(TabsEnum.Editor);
               }}
             >
-              <img src={testIcon} alt="test" />
+              <img src={editorIcon} alt="editor-icon" />
               <div>Editor</div>
             </div>
             <div
@@ -154,7 +156,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
                 setActiveTab(TabsEnum.Export);
               }}
             >
-              <img src={testIcon} alt="test" />
+              <img src={downloadIcon} alt="export-icon" />
               <div>Exporte</div>
             </div>
           </div>
@@ -185,12 +187,10 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
           <MapTab
             groupedEntries={groupedEntries}
             toggleAllLocalities={toggleAllLocalities}
-            clippings={clippings}
             toggleRoute={toggleRoute}
             routes={routes}
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
-            searchAddress={searchAddress}
             user={user}
             config={config}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}

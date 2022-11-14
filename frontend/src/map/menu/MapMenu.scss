@@ -28,11 +28,16 @@
       padding: 0.25rem 0 0.25rem 0;
       border-radius: 0.75rem;
       background: lightgrey;
-      color: white;
+      color: black;
       @apply flex flex-1 flex-col items-center cursor-pointer;
 
       &.tab-item-active {
+        color: white;
         background: var(--primary-gradient);
+
+        img {
+          filter: invert(100%);
+        }
       }
     }
 
