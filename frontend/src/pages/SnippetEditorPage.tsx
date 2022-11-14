@@ -405,41 +405,6 @@ const SnippetEditorPage: FunctionComponent = () => {
         payload: { ...config },
       });
     },
-    saveConfig: async () => {
-      try {
-        const mapZoomLevel = mapRef.current?.getZoom();
-
-        const defaultActiveGroups =
-          searchContextState.responseGroupedEntities?.reduce<string[]>(
-            (result, { title, active }) => {
-              if (active) {
-                result.push(title);
-              }
-
-              return result;
-            },
-            []
-          );
-
-        const config = {
-          ...searchContextState.responseConfig,
-          defaultActiveGroups,
-        };
-
-        if (mapZoomLevel) {
-          config.zoomLevel = mapZoomLevel;
-        }
-
-        await put<ApiUpdateSearchResultSnapshot>(
-          `/api/location/snapshot/${snapshotId}`,
-          { config, snapshot }
-        );
-
-        toastSuccess("Kartendaten wurden gespeichert!");
-      } catch (e) {
-        toastError("Fehler beim Veröffentlichen der Karte");
-      }
-    },
     snapshotId,
     additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
   };
@@ -497,6 +462,41 @@ const SnippetEditorPage: FunctionComponent = () => {
             searchResponse={snapshot.searchResponse}
             placesLocation={snapshot.placesLocation}
             location={snapshot.location}
+            saveConfig={async () => {
+              try {
+                const mapZoomLevel = mapRef.current?.getZoom();
+
+                const defaultActiveGroups =
+                  searchContextState.responseGroupedEntities?.reduce<string[]>(
+                    (result, { title, active }) => {
+                      if (active) {
+                        result.push(title);
+                      }
+
+                      return result;
+                    },
+                    []
+                  );
+
+                const config = {
+                  ...searchContextState.responseConfig,
+                  defaultActiveGroups,
+                };
+
+                if (mapZoomLevel) {
+                  config.zoomLevel = mapZoomLevel;
+                }
+
+                await put<ApiUpdateSearchResultSnapshot>(
+                  `/api/location/snapshot/${snapshotId}`,
+                  { config, snapshot }
+                );
+
+                toastSuccess("Kartendaten wurden gespeichert!");
+              } catch (e) {
+                toastError("Fehler beim Veröffentlichen der Karte");
+              }
+            }}
             editorMode={true}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}

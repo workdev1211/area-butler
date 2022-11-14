@@ -17,7 +17,6 @@ import {
 } from "../../../../shared/types/types";
 import { realEstateListingsTitle } from "../../shared/shared.functions";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { MapClipping } from "context/SearchContext";
 import { CensusData } from "hooks/censusdata";
 import MapMenuKarlaFricke from "./karla-fricke/MapMenuKarlaFricke";
 import {
@@ -27,6 +26,7 @@ import {
 import editorIcon from "../../assets/icons/editor.svg";
 import mapIcon from "../../assets/icons/map.svg";
 import downloadIcon from "../../assets/icons/download.svg";
+import saveIcon from "../../assets/icons/save.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
@@ -42,7 +42,6 @@ enum TabsEnum {
 interface IMapMenuProps {
   groupedEntries: EntityGroup[];
   toggleAllLocalities: () => void;
-  clippings: MapClipping[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   routes: EntityRoute[];
   toggleTransitRoute: (item: ResultEntity) => void;
@@ -53,6 +52,7 @@ interface IMapMenuProps {
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
   editorMode: boolean;
+  saveConfig?: () => Promise<void>;
   user?: ApiUser;
   config?: ApiSearchResultSnapshotConfig;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
@@ -68,7 +68,6 @@ interface IMapMenuProps {
 const MapMenu: FunctionComponent<IMapMenuProps> = ({
   groupedEntries,
   toggleAllLocalities,
-  clippings = [],
   toggleRoute,
   routes,
   toggleTransitRoute,
@@ -79,6 +78,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
   editorMode,
+  saveConfig,
   user,
   config,
   openUpgradeSubscriptionModal,
@@ -212,7 +212,21 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 
       {editorMode && (
         <div className="map-menu-footer">
-          <BackButton key="back-button" />
+          <div className="flex items-center justify-start gap-10">
+            <div className="my-0">
+              <BackButton key="back-button" />
+            </div>
+            <div
+              className="bg-primary-gradient flex items-center justify-center p-3 h-full rounded-lg cursor-pointer"
+              onClick={saveConfig}
+            >
+              <img
+                className="invert w-[2rem] h-[2rem]"
+                src={saveIcon}
+                alt="save-icon"
+              />
+            </div>
+          </div>
           <MapMenuFooter />
         </div>
       )}

@@ -96,7 +96,6 @@ export interface IEditorTabProps {
   groupedEntries: EntityGroup[];
   config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
-  saveConfig: () => Promise<void>;
   snapshotId: string;
   additionalMapBoxStyles?: { key: string; label: string }[];
 }
@@ -117,6 +116,7 @@ interface ISearchResultContainerProps {
   searchResponse: ApiSearchResponse;
   placesLocation: any;
   location: ApiCoordinates;
+  saveConfig?: () => Promise<void>;
   mapZoomLevel?: number;
   user?: ApiUser;
   userDispatch?: (action: UserActions) => void;
@@ -142,6 +142,7 @@ const SearchResultContainer = forwardRef<
       searchResponse,
       placesLocation,
       location,
+      saveConfig,
       mapZoomLevel,
       user,
       userDispatch = () => null,
@@ -639,7 +640,6 @@ const SearchResultContainer = forwardRef<
             censusData={searchContextState.censusData}
             federalElectionData={searchContextState.federalElectionData}
             particlePollutionData={searchContextState.particlePollutionData}
-            clippings={searchContextState.mapClippings}
             groupedEntries={resultingGroupedEntities ?? []}
             toggleAllLocalities={() => {
               const oldGroupedEntities =
@@ -673,6 +673,7 @@ const SearchResultContainer = forwardRef<
                 payload: { goto: true },
               });
             }}
+            saveConfig={saveConfig}
             user={user}
             userPoiIcons={userPoiIcons}
             openUpgradeSubscriptionModal={(message) => {

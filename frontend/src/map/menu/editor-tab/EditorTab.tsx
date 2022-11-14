@@ -26,7 +26,6 @@ import {
 import { useHttp } from "../../../hooks/http";
 import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
 import { allRealEstateStatuses } from "../../../../../shared/constants/real-estate";
-import copyMapIcon from "../../../assets/icons/copy-map.svg";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -41,7 +40,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   groupedEntries = [],
   config,
   onConfigChange,
-  saveConfig,
   snapshotId,
   additionalMapBoxStyles = [],
 }) => {
@@ -609,15 +607,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   </button>
                 )}
               </div>
-            </li>
-            <li>
-              <h3
-                className="flex max-w-fit items-center cursor-pointer gap-2"
-                onClick={saveConfig}
-              >
-                <img className="w-6 h-6" src={copyMapIcon} alt="copy" />
-                Karte veröffentlichen
-              </h3>
             </li>
           </ul>
         </div>
