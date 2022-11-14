@@ -9,7 +9,7 @@ export interface BackButtonProps {
 }
 
 const BackButton: FunctionComponent<BackButtonProps> = ({
-  beforeGoBack = () => undefined,
+  beforeGoBack = () => {},
   to,
 }) => {
   const history = useHistory();

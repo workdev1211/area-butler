@@ -44,8 +44,6 @@ const VerifyEmailPage = lazy(() => import("./pages/VerifyEmailPage"));
 
 const SearchParamsPage = lazy(() => import("./pages/SearchParamsPage"));
 
-const SearchResultPage = lazy(() => import("./pages/SearchResultPage"));
-
 const PotentialCustomersPage = lazy(
   () => import("./pages/PotentialCustomersPage")
 );
@@ -215,11 +213,6 @@ function App() {
                     </Route>
                     <Route path="/terms">
                       <TermsPage />
-                    </Route>
-                    <Route path="/search-result">
-                      <Authenticated>
-                        <SearchResultPage />
-                      </Authenticated>
                     </Route>
                     <Route path="/snippet-editor/:snapshotId">
                       <Authenticated>

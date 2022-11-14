@@ -446,9 +446,7 @@ const SearchResultContainer = forwardRef<
           }}
         >
           {!isMapMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-          {isMapMenuOpen && (
-            <img src={closeMenuIcon} alt="icon-menu-close" />
-          )}
+          {isMapMenuOpen && <img src={closeMenuIcon} alt="icon-menu-close" />}
         </button>
       );
     };

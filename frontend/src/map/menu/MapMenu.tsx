@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import "./MapMenu.scss";
 import {
@@ -17,11 +17,7 @@ import {
 } from "../../../../shared/types/types";
 import { realEstateListingsTitle } from "../../shared/shared.functions";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import {
-  MapClipping,
-  SearchContext,
-  SearchContextActionTypes,
-} from "context/SearchContext";
+import { MapClipping } from "context/SearchContext";
 import { CensusData } from "hooks/censusdata";
 import MapMenuKarlaFricke from "./karla-fricke/MapMenuKarlaFricke";
 import {
@@ -32,9 +28,8 @@ import testIcon from "../../assets/icons/information.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
+import MapMenuFooter from "./footer/MapMenuFooter";
 import BackButton from "../../layout/BackButton";
-import { useLocation } from "react-router-dom";
-import MapMenuFooter from "../../layout/MapMenuFooter";
 
 enum TabsEnum {
   Map = "Map",
@@ -93,21 +88,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   exportTabProps,
   userPoiIcons,
 }) => {
-  const currentLocation = useLocation<{ from: string }>();
-  const { searchContextDispatch } = useContext(SearchContext);
-
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
-
-  const beforeGoBack = () => {
-    const from = currentLocation.state?.from;
-
-    if (from === "/search-result") {
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: {} as ApiSearchResultSnapshotConfig,
-      });
-    }
-  };
 
   if (config?.theme) {
     switch (config?.theme) {
@@ -129,6 +110,14 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       default:
     }
   }
+
+  const isAddressShown = !!config?.showAddress || !config;
+
+  const mapMenuContentHeight = editorMode
+    ? `calc(100% - calc(var(--menu-item-h) * ${
+        isAddressShown ? 3 : 2
+      }) - var(--menu-footer-h))`
+    : `calc(100% - calc(var(--menu-item-h) * ${isAddressShown ? 1 : 0})`;
 
   return (
     <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>
@@ -172,7 +161,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      {(!!config?.showAddress || !config) && (
+      {isAddressShown && (
         <div className="map-menu-header">
           <button
             type="button"
@@ -186,7 +175,12 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      <div className="map-menu-content">
+      <div
+        className="map-menu-content"
+        style={{
+          height: mapMenuContentHeight,
+        }}
+      >
         {activeTab === TabsEnum.Map && (
           <MapTab
             groupedEntries={groupedEntries}
@@ -216,14 +210,12 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         )}
       </div>
 
-      <div className="map-menu-footer">
-        <div className="footer-back">
-          <BackButton key="back-button" beforeGoBack={beforeGoBack} />
-        </div>
-        <div className="footer-item">
+      {editorMode && (
+        <div className="map-menu-footer">
+          <BackButton key="back-button" />
           <MapMenuFooter />
         </div>
-      </div>
+      )}
     </div>
   );
 };
