@@ -461,21 +461,13 @@ const SearchResultContainer = forwardRef<
             setIsMapMenuOpen(!isMapMenuOpen);
           }}
         >
-          {!isMapMenuOpen && (
-            <img
-              src={openMenuIcon}
-              alt="icon-menu"
-              style={{ width: "40px", height: "40px" }}
-            />
-          )}
+          {!isMapMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
           {isMapMenuOpen && (
             <img
               src={closeMenuIcon}
               alt="icon-menu-close"
               style={{
                 transform: "rotate(270deg)",
-                width: "20px",
-                height: "20px",
               }}
             />
           )}
@@ -560,7 +552,7 @@ const SearchResultContainer = forwardRef<
           <div className="relative flex-1" id={mapWithLegendId}>
             <div
               className={`map-nav-bar-container ${
-                isMapMenuOpen ? "map-op" : ""
+                isMapMenuOpen ? "map-menu-open" : ""
               }`}
             >
               {/* TODO move later to the MapTab of the MapMenu component */}

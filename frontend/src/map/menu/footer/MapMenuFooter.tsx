@@ -5,7 +5,7 @@ import { kudibaCompany } from "../../../../../shared/constants/constants";
 
 const MapMenuFooter: FunctionComponent = () => {
   return (
-    <div id="footer" className="text-sm text-gray-400 w-full w-full md:w-auto">
+    <div id="footer" className="text-sm text-gray-400 w-full md:w-auto">
       <div className="flex flex-col">
         <div className="text-center">
           Copyright &copy; {new Date().getFullYear()} {kudibaCompany.name}. Alle

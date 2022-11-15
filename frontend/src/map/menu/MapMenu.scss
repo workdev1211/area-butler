@@ -262,14 +262,36 @@
     border-top: 2px solid var(--primary);
     background: white;
     @apply flex flex-col gap-1;
+
+    .button-container {
+      @apply flex items-center justify-between gap-10;
+
+      .back-button {
+        @apply my-0;
+      }
+
+      .save-button {
+        width: var(--btn-height) !important;
+        height: var(--btn-height) !important;
+        background: var(--primary-gradient);
+        @apply btn p-0;
+
+        img {
+          width: 2rem;
+          height: 2rem;
+          @apply invert;
+        }
+      }
+    }
   }
 }
 
 .feedback-button {
   position: fixed;
-  right: 24px;
-  bottom: 46px;
+  bottom: 43px;
+  right: 210px;
   margin: 0;
+  z-index: 1001;
 }
 
 @media (min-width: 1024px) {

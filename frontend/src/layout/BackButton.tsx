@@ -19,7 +19,7 @@ const BackButton: FunctionComponent<IBackButtonProps> = ({
   return (
     <button
       type="button"
-      className="btn w-full sm:w-auto mr-auto font-bold"
+      className="back-button btn w-full sm:w-auto mr-auto font-bold"
       style={{ background: backgroundColor, color: "white" }}
       onClick={() => {
         beforeGoBack();

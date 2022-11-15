@@ -212,20 +212,11 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 
       {editorMode && (
         <div className="map-menu-footer">
-          <div className="flex items-center justify-start gap-10">
-            <div className="my-0">
-              <BackButton key="back-button" />
-            </div>
-            <div
-              className="flex bg-primary-gradient items-center justify-center p-3 h-full rounded-lg cursor-pointer"
-              onClick={saveConfig}
-            >
-              <img
-                className="invert w-[2rem] h-[2rem]"
-                src={saveIcon}
-                alt="save-icon"
-              />
-            </div>
+          <div className="button-container">
+            <BackButton key="back-button" />
+            <button type="button" className="save-button" onClick={saveConfig}>
+              <img src={saveIcon} alt="save-icon" />
+            </button>
           </div>
           <MapMenuFooter />
         </div>

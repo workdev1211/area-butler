@@ -1,7 +1,5 @@
 .search-result-container {
-  height: 80vh;
-  max-height: 80vh;
-  @apply flex relative w-full;
+  @apply flex relative w-full h-full;
 }
 
 .show-map-menu-btn {
@@ -18,27 +16,14 @@
 .map-nav-bar-container {
   z-index: 999;
   top: 24px;
-  margin-left: 10px;
-  margin-right: 10px;
   left: 0;
   right: 0;
-  width: 100%;
-  transition: width 0.2s;
   @apply absolute flex;
-
-  &.map-op {
-    width: calc(100% - var(--map-menu-width));
-  }
 }
 
-@media (max-width: 768px) {
-  .map-nav-bar-container {
-    width: 100%;
-    @apply flex-col gap-4;
-
-    &.map-op {
-      width: 100%;
-    }
+@media (min-width: 768px) {
+  .map-nav-bar-container.map-menu-open {
+    width: calc(100% - var(--map-menu-width));
   }
 }
 
