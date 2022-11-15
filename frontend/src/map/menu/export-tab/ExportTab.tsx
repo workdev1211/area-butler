@@ -137,6 +137,20 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <h3
                 className="flex max-w-fit items-center cursor-pointer gap-2"
                 onClick={() => {
+                  searchContextDispatch({
+                    type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
+                    payload: true,
+                  });
+                }}
+              >
+                <img className="w-6 h-6 invert" src={pdfIcon} alt="download" />
+                Export Kartenlegende ZIP
+              </h3>
+            </li>
+            <li>
+              <h3
+                className="flex max-w-fit items-center cursor-pointer gap-2"
+                onClick={() => {
                   copyCodeToClipBoard(codeSnippet);
                 }}
               >
