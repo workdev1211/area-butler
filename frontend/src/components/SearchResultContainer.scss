@@ -31,10 +31,6 @@
   }
 }
 
-#poi-search-container {
-  width: 50%;
-}
-
 @media (max-width: 768px) {
   .map-nav-bar-container {
     width: 100%;
@@ -43,14 +39,6 @@
     &.map-op {
       width: 100%;
     }
-  }
-
-  #poi-search-container {
-    order: 2;
-  }
-
-  .map-nav-bar {
-    order: 1;
   }
 }
 
