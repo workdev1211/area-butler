@@ -646,7 +646,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 Vorausgewählte Kategorien
               </div>
               <div className="collapse-title-text-2">
-                POI-Kategorien zu Beginn
+                POIs die zu Beginn angezeigt werden
               </div>
             </div>
           </div>
@@ -695,9 +695,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
           <div className="collapse-title-container">
             <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
             <div className="collapse-title-text">
-              <div className="collapse-title-text-1">POI Sichtbarkeit</div>
+              <div className="collapse-title-text-1">POI-Detail-Filter</div>
               <div className="collapse-title-text-2">
-                Im Detail Dinge ausblenden
+                Einzelne POIs ausblenden
               </div>
             </div>
           </div>

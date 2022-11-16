@@ -55,6 +55,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   // TODO think about moving the export modals from snippet editor to the current component
+  // TODO add checks for the expose printing, etc, etc from the Snippet Editor component
   return (
     <div className="export-tab z-9000">
       {hasOpenAiFeature && (
@@ -87,7 +88,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">Kartenausschnitte</div>
               <div className="collapse-title-text-2">
-                Nutzen Sie das Kamera Symbol unten Links auf der Karte
+                Für Exposés, Print Medien, Bilder Galerien
               </div>
             </div>
           </div>
@@ -106,8 +107,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
               }}
             >
-              Bitte verwenden Sie den Screenshot-Button in der linken unteren
-              Ecke.
+              Bitte verwenden Sie den Screenshot-Button in der unteren linken
+              Ecke der Karte.
             </div>
           )}
         </div>
@@ -214,7 +215,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             <div className="collapse-title-text">
               <div className="collapse-title-text-1">Reporte</div>
               <div className="collapse-title-text-2">
-                Alle Fragen zur Lage beantwortet
+                Für Zahlen, Daten & Fakten zur Lage
               </div>
             </div>
           </div>
@@ -303,7 +304,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <div className="collapse-title-text">
                 <div className="collapse-title-text-1">KI-Lagetexte</div>
                 <div className="collapse-title-text-2">
-                  Inspiration zum Texte schreiben
+                  Für originelle Texte aus der magischen Feder
                 </div>
               </div>
             </div>

@@ -16,10 +16,11 @@
   @apply absolute;
 
   .tab-bar {
+    height: 112px;
     color: var(--primary);
     padding: calc(var(--menu-item-pl) / 2) 0 calc(var(--menu-item-pl) / 2)
       var(--menu-item-pl);
-    @apply text-lg font-medium;
+    @apply text-base font-medium;
 
     .tab-container {
       padding: 0.5rem calc(2.5rem + 24px) 0.5rem 2.5rem;
@@ -30,11 +31,11 @@
     }
 
     .tab-item {
-      padding: 0.25rem 0 0.25rem 0;
+      height: 67px;
       border-radius: 0.75rem;
       background: lightgrey;
       color: black;
-      @apply flex flex-1 flex-col items-center cursor-pointer;
+      @apply flex flex-1 flex-col items-center cursor-pointer justify-center gap-1;
 
       &.tab-item-active {
         color: white;
@@ -82,7 +83,6 @@
 
         img {
           width: var(--menu-image-w-h);
-          max-height: var(--menu-image-w-h);
           @apply invert-0;
         }
 
@@ -123,6 +123,12 @@
         .collapse-title-container {
           img {
             @apply invert;
+          }
+
+          .collapse-title-text {
+            .collapse-title-text-2 {
+              @apply text-gray-300;
+            }
           }
         }
       }

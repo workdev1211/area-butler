@@ -11,6 +11,7 @@
     h3 {
       color: var(--base-anthracite);
       padding: 0;
+      @apply text-base;
     }
   }
 }

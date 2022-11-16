@@ -121,13 +121,13 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     }
   }
 
-  const isAddressShown = !!config?.showAddress || !config;
+  const isShownAddress = !!config?.showAddress || !config;
 
   const mapMenuContentHeight = editorMode
     ? `calc(100% - calc(var(--menu-item-h) * ${
-        isAddressShown ? 3 : 2
+        isShownAddress ? 3 : 2
       }) - var(--menu-footer-h))`
-    : `calc(100% - calc(var(--menu-item-h) * ${isAddressShown ? 1 : 0})`;
+    : `calc(100% - calc(var(--menu-item-h) * ${isShownAddress ? 1 : 0})`;
 
   return (
     <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>
@@ -171,16 +171,16 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      {isAddressShown && (
+      {isShownAddress && (
         <div className="map-menu-header">
           <button
             type="button"
-            className="btn btn-link"
+            className="btn btn-link flex gap-3"
             onClick={resetPosition}
             data-tour="reset-position"
           >
-            <img className="mr-1" src={positionIcon} alt="icon-position" />
-            {searchAddress}
+            <img className="w-[20px] h-[20px]" src={positionIcon} alt="position-icon" />
+            <div className="text-lg">{searchAddress}</div>
           </button>
         </div>
       )}
