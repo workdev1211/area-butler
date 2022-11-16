@@ -70,8 +70,7 @@ const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
 
 const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
-  buttonClass:
-    "fixed -bottom-82 right-2 mb-96 z-900 btn-sm rounded-full font-bold border bg-white text-primary border-primary hover:bg-primary hover:text-white feedback-button",
+  buttonClass: "feedback-button",
   modalTitle: "Hilfe & Feedback",
 };
 
@@ -89,6 +88,7 @@ function App() {
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { get, post } = useHttp();
   const history = useHistory();
+  const path = useLocation().pathname.replace(/^\/(.*)\/.*$/, "$1");
 
   const { paypalClientId } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
@@ -177,9 +177,11 @@ function App() {
           <Nav />
           <Authenticated>
             <UpgradeSubscriptionHandlerContainer />
-            <FormModal modalConfig={feedbackModalConfig}>
-              <FeedbackFormHandler />
-            </FormModal>
+            {path !== "snippet-editor" && (
+              <FormModal modalConfig={feedbackModalConfig}>
+                <FeedbackFormHandler />
+              </FormModal>
+            )}
           </Authenticated>
           <PayPalScriptProvider options={initialPaypalOptions}>
             <PotentialCustomerContextProvider>

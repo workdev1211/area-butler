@@ -1,14 +1,15 @@
+import { FunctionComponent, useContext } from "react";
+
 import { FormModalData } from "components/FormModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import { useContext } from "react";
 import { ApiInsertFeedback } from "../../../shared/types/types";
 import FeedbackForm from "./FeedbackForm";
 
-const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
+const FeedbackFormHandler: FunctionComponent<FormModalData> = ({
   formId,
   beforeSubmit = () => {},
-  postSubmit = () => {}
+  postSubmit = () => {},
 }) => {
   const { post } = useHttp();
 
@@ -36,7 +37,7 @@ const FeedbackFormHandler: React.FunctionComponent<FormModalData> = ({
   return (
     <div>
       <h1 className="text-lg my-5">Dürfen wir unterstützen?</h1>
-      <button className="btn btn-primary" onClick={() => onStartTour()}>
+      <button className="btn btn-primary" onClick={onStartTour}>
         Tour starten
       </button>
       <h1 className="text-lg mt-10 mb-5">Liegt etwas auf dem Herzen?</h1>

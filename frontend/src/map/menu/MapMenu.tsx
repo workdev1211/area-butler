@@ -32,6 +32,14 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./footer/MapMenuFooter";
 import BackButton from "../../layout/BackButton";
+import FormModal, { ModalConfig } from "../../components/FormModal";
+import FeedbackFormHandler from "../../feedback/FeedbackFormHandler";
+
+const feedbackModalConfig: ModalConfig = {
+  buttonTitle: "?",
+  buttonClass: "feedback-button",
+  modalTitle: "Hilfe & Feedback",
+};
 
 enum TabsEnum {
   Map = "Map",
@@ -214,6 +222,9 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         <div className="map-menu-footer">
           <div className="button-container">
             <BackButton key="back-button" />
+            <FormModal modalConfig={feedbackModalConfig}>
+              <FeedbackFormHandler />
+            </FormModal>
             <button type="button" className="save-button" onClick={saveConfig}>
               <img src={saveIcon} alt="save-icon" />
             </button>

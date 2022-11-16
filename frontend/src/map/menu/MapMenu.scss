@@ -295,7 +295,13 @@
       @apply flex items-center justify-between gap-10;
 
       .back-button {
-        @apply my-0;
+        @apply m-0;
+      }
+
+      .feedback-button {
+        all: unset;
+        border: 1px solid;
+        @apply btn-sm border-primary rounded-full font-bold bg-white text-primary hover:bg-primary hover:text-white;
       }
 
       .save-button {
@@ -312,14 +318,6 @@
       }
     }
   }
-}
-
-.feedback-button {
-  position: fixed;
-  bottom: 43px;
-  right: 210px;
-  margin: 0;
-  z-index: 1001;
 }
 
 @media (min-width: 1024px) {
