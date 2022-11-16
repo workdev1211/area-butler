@@ -12,13 +12,17 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
-import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import { getQrCodeBase64 } from "../../../export/QrCode";
-import aiIcon from "../../../assets/icons/ai-big.svg";
 import OpenAiLocationDescriptionModal from "../../../components/OpenAiLocationDescriptionModal";
+import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
+import aiIcon from "../../../assets/icons/ai-big.svg";
+import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import copyIcon from "../../../assets/icons/copy.svg";
 import downloadIcon from "../../../assets/icons/download.svg";
-import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
+import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschnitte.svg";
+import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
+import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
+import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.svg";
 
 const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
@@ -35,10 +39,10 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
-  const [isMapClippingsOpen, setIsMapClippingsOpen] = useState(false);
+  const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(true);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
-  const [isTextAiOpen, setIsTextAiOpen] = useState(false);
+  const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
@@ -50,6 +54,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
+  // TODO think about moving the export modals from snippet editor to the current component
   return (
     <div className="export-tab z-9000">
       {hasOpenAiFeature && (
@@ -62,32 +67,51 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         />
       )}
 
-      {clippings.length > 0 && (
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isMapScreenshotsOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
         <div
-          className={
-            "collapse collapse-arrow-1 view-option" +
-            (isMapClippingsOpen ? " collapse-open" : " collapse-closed")
-          }
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsMapScreenshotsOpen(!isMapScreenshotsOpen);
+          }}
         >
-          <div
-            className="collapse-title"
-            ref={(node) => {
-              setBackgroundColor(node, backgroundColor);
-            }}
-            onClick={() => {
-              setIsMapClippingsOpen(!isMapClippingsOpen);
-            }}
-          >
-            Kartenausschnitte
+          <div className="collapse-title-container">
+            <img src={mapScreenshotsIcon} alt="map-screenshots-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Kartenausschnitte</div>
+              <div className="collapse-title-text-2">
+                Nutzen Sie das Kamera Symbol unten Links auf der Karte
+              </div>
+            </div>
           </div>
-          <div className="collapse-content">
+        </div>
+        <div className="collapse-content">
+          {clippings.length > 0 ? (
             <MapClippingsCollapsable
               searchAddress={placeLabel}
               clippings={clippings}
             />
-          </div>
+          ) : (
+            <div
+              className="text-justify"
+              style={{
+                padding:
+                  "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+              }}
+            >
+              Bitte verwenden Sie den Screenshot-Button in der linken unteren
+              Ecke.
+            </div>
+          )}
         </div>
-      )}
+      </div>
 
       <div
         className={
@@ -104,7 +128,15 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             setIsDigitalMediaOpen(!isDigitalMediaOpen);
           }}
         >
-          Digitale Medien
+          <div className="collapse-title-container">
+            <img src={digitalMediaIcon} alt="digital-media-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Digitale Medien</div>
+              <div className="collapse-title-text-2">
+                Für Webseite, Exposés, E-Mail
+              </div>
+            </div>
+          </div>
         </div>
         <div className="collapse-content">
           <ul>
@@ -177,7 +209,15 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             setIsReportsOpen(!isReportsOpen);
           }}
         >
-          Reporte
+          <div className="collapse-title-container">
+            <img src={reportsIcon} alt="reports-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Reporte</div>
+              <div className="collapse-title-text-2">
+                Alle Fragen zur Lage beantwortet
+              </div>
+            </div>
+          </div>
         </div>
         <div className="collapse-content">
           <ul>
@@ -246,7 +286,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         <div
           className={
             "collapse collapse-arrow view-option" +
-            (isTextAiOpen ? " collapse-open" : " collapse-closed")
+            (isAiDescriptionOpen ? " collapse-open" : " collapse-closed")
           }
         >
           <div
@@ -255,10 +295,18 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               setBackgroundColor(node, backgroundColor);
             }}
             onClick={() => {
-              setIsTextAiOpen(!isTextAiOpen);
+              setIsAiDescriptionOpen(!isAiDescriptionOpen);
             }}
           >
-            KI-Lagetexte
+            <div className="collapse-title-container">
+              <img src={aiDescriptionIcon} alt="ai-description-icon" />
+              <div className="collapse-title-text">
+                <div className="collapse-title-text-1">KI-Lagetexte</div>
+                <div className="collapse-title-text-2">
+                  Inspiration zum Texte schreiben
+                </div>
+              </div>
+            </div>
           </div>
           <div className="collapse-content">
             <ul>

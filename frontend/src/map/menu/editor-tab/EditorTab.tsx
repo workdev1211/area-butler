@@ -26,6 +26,9 @@ import {
 import { useHttp } from "../../../hooks/http";
 import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
 import { allRealEstateStatuses } from "../../../../../shared/constants/real-estate";
+import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
+import preselectedCategoriesIcon from "../../../assets/icons/map-menu/05-vorausgewählte-kategorien.svg";
+import poiVisibilityIcon from "../../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -46,11 +49,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const { get } = useHttp();
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(true);
+  const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
+    useState(true);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(true);
-  const [
-    isPreselectedGroupVisibilityOpen,
-    setIsPreselectedGroupVisibilityOpen,
-  ] = useState(true);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
   const [color, setColor] = useState(config?.primaryColor);
   const [mapIcon, setMapIcon] = useState(config?.mapIcon);
@@ -300,7 +301,15 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             setIsConfigOptionsOpen(!isConfigOptionsOpen);
           }}
         >
-          Konfiguration
+          <div className="collapse-title-container">
+            <img src={configOptionsIcon} alt="config-options-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Konfiguration</div>
+              <div className="collapse-title-text-2">
+                Design, Farbe, Verhalten
+              </div>
+            </div>
+          </div>
         </div>
         <div className="collapse-content">
           <ul>
@@ -615,9 +624,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
       <div
         className={
           "collapse collapse-arrow view-option" +
-          (isPreselectedGroupVisibilityOpen
-            ? " collapse-open"
-            : " collapse-closed")
+          (isPreselectedCategoriesOpen ? " collapse-open" : " collapse-closed")
         }
       >
         <div
@@ -626,12 +633,23 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             setBackgroundColor(node, backgroundColor);
           }}
           onClick={() => {
-            setIsPreselectedGroupVisibilityOpen(
-              !isPreselectedGroupVisibilityOpen
-            );
+            setIsPreselectedCategoriesOpen(!isPreselectedCategoriesOpen);
           }}
         >
-          Vorausgewählte Kategorie
+          <div className="collapse-title-container">
+            <img
+              src={preselectedCategoriesIcon}
+              alt="preselected-categories-icon"
+            />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">
+                Vorausgewählte Kategorien
+              </div>
+              <div className="collapse-title-text-2">
+                POI-Kategorien zu Beginn
+              </div>
+            </div>
+          </div>
         </div>
         <div className="collapse-content preselected-groups">
           <ul>
@@ -674,7 +692,15 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             setIsPoiVisibilityOpen(!isPoiVisibilityOpen);
           }}
         >
-          POI Sichtbarkeit
+          <div className="collapse-title-container">
+            <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">POI Sichtbarkeit</div>
+              <div className="collapse-title-text-2">
+                Im Detail Dinge ausblenden
+              </div>
+            </div>
+          </div>
         </div>
         <div className="collapse-content entity-groups">
           <ul>

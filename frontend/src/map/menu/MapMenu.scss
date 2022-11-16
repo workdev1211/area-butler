@@ -12,18 +12,19 @@
   --menu-item-pl: 24px;
   --menu-item-h: 56px;
   --menu-footer-h: 88px;
+  --menu-image-w-h: 36px;
   @apply absolute;
 
   .tab-bar {
     color: var(--primary);
-    padding: calc(var(--menu-item-pl) / 2) var(--menu-item-pl)
-      calc(var(--menu-item-pl) / 2) var(--menu-item-pl);
+    padding: calc(var(--menu-item-pl) / 2) 0 calc(var(--menu-item-pl) / 2)
+      var(--menu-item-pl);
     @apply text-lg font-medium;
 
     .tab-container {
-      padding: 0.5rem 2.5rem 0.5rem 2.5rem;
+      padding: 0.5rem calc(2.5rem + 24px) 0.5rem 2.5rem;
       border: 0.25rem solid transparent;
-      border-radius: 1rem;
+      border-radius: 1rem 0 0 1rem;
       background: white;
       @apply flex gap-10;
     }
@@ -46,8 +47,8 @@
     }
 
     img {
-      width: 36px;
-      height: 36px;
+      width: var(--menu-image-w-h);
+      height: var(--menu-image-w-h);
     }
   }
 
@@ -72,10 +73,31 @@
 
     .collapse-title {
       color: var(--base-anthracite);
-      padding: var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb)
-        var(--menu-item-pl);
+      padding: 0 var(--menu-item-pr) 0 var(--menu-item-pl);
       background: white !important;
-      @apply text-lg font-medium cursor-pointer;
+      @apply flex text-lg font-medium cursor-pointer items-center;
+
+      .collapse-title-container {
+        @apply flex gap-3 items-center;
+
+        img {
+          width: var(--menu-image-w-h);
+          max-height: var(--menu-image-w-h);
+          @apply invert-0;
+        }
+
+        .collapse-title-text {
+          @apply flex flex-col;
+
+          .collapse-title-text-1 {
+            @apply font-bold;
+          }
+
+          .collapse-title-text-2 {
+            @apply text-base text-justify text-gray-500 italic;
+          }
+        }
+      }
     }
 
     input[type="checkbox"] {
@@ -97,6 +119,12 @@
 
       &.collapse-open > .collapse-title {
         color: white;
+
+        .collapse-title-container {
+          img {
+            @apply invert;
+          }
+        }
       }
 
       & > .collapse-content {
@@ -169,8 +197,8 @@
         }
 
         div.img-container {
-          width: 36px;
-          height: 36px;
+          width: var(--menu-image-w-h);
+          height: var(--menu-image-w-h);
           @apply flex justify-center items-center mr-3 mask mask-circle;
 
           img.item {

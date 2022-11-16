@@ -5,12 +5,16 @@
 .show-map-menu-btn {
   width: 46px !important;
   height: 46px !important;
-  top: 33px;
-  right: 10px;
+  top: calc((112px - 46px) / 2);
+  right: 8px;
   z-index: 9999;
-  border: 2px solid white !important;
   background-color: var(--primary) !important;
   @apply btn absolute;
+
+  img {
+    width: 2rem;
+    height: auto;
+  }
 }
 
 .map-nav-bar-container {

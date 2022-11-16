@@ -35,6 +35,11 @@ import {
 } from "../../../../../shared/types/routing";
 import MapMenuListItem from "./../menu-item/MapMenuListItem";
 import { IPoiIcon } from "../../../shared/shared.types";
+import localitiesIcon from "../../../assets/icons/map-menu/01-lokalitäten.svg";
+import socialDemographicsIcon from "../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
+import environmentalInfoIcon from "../../../assets/icons/map-menu/03-umweltinformationen.svg";
+import locationIndicesIcon from "../../../assets/icons/map-menu/11-lageindizes.svg";
+import economicMetricsIcon from "../../../assets/icons/map-menu/12-wirtschaftliche-kennzahlen.svg";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -100,8 +105,12 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   particlePollutionData,
   userPoiIcons,
 }) => {
-  const [isViewOptionsOpen, setIsViewOptionsOpen] = useState(true);
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(true);
+  const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
+    useState(true);
+  const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(true);
+  const [isLocationIndicesOpen, setIsLocationIndicesOpen] = useState(true);
+  const [isEconomicMetricsOpen, setIsEconomicMetricsOpen] = useState(true);
 
   const hasCensusData =
     user?.subscription?.config.appFeatures.dataSources.includes(
@@ -122,78 +131,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
 
   return (
     <div className="map-tab z-9000">
-      {showInsights && (
-        <div
-          className={
-            "collapse collapse-arrow view-option" +
-            (isViewOptionsOpen ? " collapse-open" : " collapse-closed")
-          }
-        >
-          <div
-            className="collapse-title"
-            ref={(node) => {
-              setBackgroundColor(node, backgroundColor);
-            }}
-            onClick={() => {
-              setIsViewOptionsOpen(!isViewOptionsOpen);
-            }}
-          >
-            Einblicke
-          </div>
-          <div className="collapse-content">
-            <ul>
-              <li className="locality-option-li" key="list-item-zensus">
-                <MapMenuCollapsable
-                  title="Zensus Atlas"
-                  subscriptionCheck={() => hasCensusData}
-                  openUpgradeSubscriptionModal={() => {
-                    openUpgradeSubscriptionModal &&
-                      openUpgradeSubscriptionModal(
-                        censusNotInSubscriptionPlanMessage
-                      );
-                  }}
-                >
-                  <CensusTable censusData={censusData!} />
-                </MapMenuCollapsable>
-              </li>
-              <li className="locality-option-li" key="list-item-btw">
-                <MapMenuCollapsable
-                  title="Bundestagswahl 2021"
-                  subscriptionCheck={() => hasElectionData}
-                  openUpgradeSubscriptionModal={() => {
-                    openUpgradeSubscriptionModal &&
-                      openUpgradeSubscriptionModal(
-                        federalElectionNotInSubscriptionPlanMessage
-                      );
-                  }}
-                >
-                  <FederalElectionTable
-                    federalElectionData={federalElectionData!}
-                  />
-                </MapMenuCollapsable>
-              </li>
-              <li
-                className="locality-option-li"
-                key="list-item-zensus-feinstaub"
-              >
-                <MapMenuCollapsable
-                  title="Feinstaubbelastung"
-                  subscriptionCheck={() => hasPollutionData}
-                  openUpgradeSubscriptionModal={() => {
-                    openUpgradeSubscriptionModal &&
-                      openUpgradeSubscriptionModal(hasPollutionData);
-                  }}
-                >
-                  <ParticlePollutionTable
-                    particlePollutionData={particlePollutionData!}
-                  />
-                </MapMenuCollapsable>
-              </li>
-            </ul>
-          </div>
-        </div>
-      )}
-
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -201,7 +138,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         }
       >
         <div
-          className="collapse-title flex justify-between collapse-primary-white"
+          className="collapse-title justify-between collapse-primary-white"
           ref={(node) => {
             setBackgroundColor(node, backgroundColor);
           }}
@@ -209,7 +146,13 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
             setIsLocalitiesOpen(!isLocalitiesOpen);
           }}
         >
-          Lokalitäten
+          <div className="collapse-title-container">
+            <img src={localitiesIcon} alt="localities-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Lokalitäten</div>
+              <div className="collapse-title-text-2">Was ist in der Nähe?</div>
+            </div>
+          </div>
           <label className="cursor-pointer label justify-start pl-0">
             <input
               type="checkbox"
@@ -222,7 +165,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
             />
           </label>
         </div>
-
         <div className="collapse-content">
           <ul>
             {/* Estates and important objects */}
@@ -334,6 +276,173 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
               })}
           </ul>
         </div>
+      </div>
+
+      {showInsights && (
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (isSocialDemographicsOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              setBackgroundColor(node, backgroundColor);
+            }}
+            onClick={() => {
+              setIsSocialDemographicsOpen(!isSocialDemographicsOpen);
+            }}
+          >
+            <div className="collapse-title-container">
+              <img
+                src={socialDemographicsIcon}
+                alt="social-demographics-icon"
+              />
+              <div className="collapse-title-text">
+                <div className="collapse-title-text-1">
+                  Soziales und Demographie
+                </div>
+                <div className="collapse-title-text-2">Wer lebt hier?</div>
+              </div>
+            </div>
+          </div>
+          <div className="collapse-content">
+            <ul>
+              <li className="locality-option-li" key="list-item-zensus">
+                <MapMenuCollapsable
+                  title="Zensus Atlas"
+                  subscriptionCheck={() => hasCensusData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        censusNotInSubscriptionPlanMessage
+                      );
+                  }}
+                >
+                  <CensusTable censusData={censusData!} />
+                </MapMenuCollapsable>
+              </li>
+              <li className="locality-option-li" key="list-item-btw">
+                <MapMenuCollapsable
+                  title="Bundestagswahl 2021"
+                  subscriptionCheck={() => hasElectionData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(
+                        federalElectionNotInSubscriptionPlanMessage
+                      );
+                  }}
+                >
+                  <FederalElectionTable
+                    federalElectionData={federalElectionData!}
+                  />
+                </MapMenuCollapsable>
+              </li>
+              <li
+                className="locality-option-li"
+                key="list-item-zensus-feinstaub"
+              >
+                <MapMenuCollapsable
+                  title="Feinstaubbelastung"
+                  subscriptionCheck={() => hasPollutionData}
+                  openUpgradeSubscriptionModal={() => {
+                    openUpgradeSubscriptionModal &&
+                      openUpgradeSubscriptionModal(hasPollutionData);
+                  }}
+                >
+                  <ParticlePollutionTable
+                    particlePollutionData={particlePollutionData!}
+                  />
+                </MapMenuCollapsable>
+              </li>
+            </ul>
+          </div>
+        </div>
+      )}
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isEnvironmentalInfoOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsEnvironmentalInfoOpen(!isEnvironmentalInfoOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img src={environmentalInfoIcon} alt="environmental-info-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Umweltinformationen</div>
+              <div className="collapse-title-text-2">Wie lebt es sich?</div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content" />
+      </div>
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isLocationIndicesOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsLocationIndicesOpen(!isLocationIndicesOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img src={locationIndicesIcon} alt="location-indices-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Lageindizes</div>
+              <div className="collapse-title-text-2">
+                Die Nachbarschaft im Vergleich?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content" />
+      </div>
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isEconomicMetricsOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsEconomicMetricsOpen(!isEconomicMetricsOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img src={economicMetricsIcon} alt="economic-metrics-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">
+                Wirtschaftliche Kennzahlen
+              </div>
+              <div className="collapse-title-text-2">
+                Wie stehen die Strukturdaten?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content" />
       </div>
     </div>
   );
