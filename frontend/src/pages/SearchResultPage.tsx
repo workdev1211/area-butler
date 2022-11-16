@@ -166,6 +166,7 @@ const SearchResultPage: FunctionComponent = () => {
                 const { id } = await createSnapshot(
                   items,
                   setBusyModalItems,
+                  searchContextState.searchResponse!,
                   user.email
                 );
 

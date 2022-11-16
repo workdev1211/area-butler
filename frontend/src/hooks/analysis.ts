@@ -23,8 +23,8 @@ export const useAnalysis = () => {
   const createSnapshot = async (
     items: IBusyModalItem[],
     setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>,
+    searchResponse: ApiSearchResponse,
     userEmail?: string,
-    searchResponse?: ApiSearchResponse
   ): Promise<ApiSearchResultSnapshotResponse> => {
     const routes: EntityRoute[] = [];
     const transitRoutes: EntityTransitRoute[] = [];
@@ -104,7 +104,7 @@ export const useAnalysis = () => {
         location,
         transportationParams: searchContextState.transportationParams,
         localityParams: searchContextState.localityParams,
-        searchResponse: searchContextState.searchResponse || searchResponse,
+        searchResponse: searchResponse,
         realEstateListings: realEstateState.listings,
         preferredLocations,
         routes,
