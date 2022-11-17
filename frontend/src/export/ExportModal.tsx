@@ -36,6 +36,13 @@ import { saveAs } from "file-saver";
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 
+export enum ExportTypeEnum {
+  ARCHIVE = "ARCHIVE",
+  CHEATSHEET = "CHEATSHEET",
+  EXPOSE = "EXPOSE",
+  EXPOSE_DOCX = "EXPOSE_DOCX",
+}
+
 export interface IQrCodeState {
   isShownQrCode: boolean;
   snapshotToken?: string;
@@ -47,7 +54,7 @@ export interface ExportModalProps {
   censusData?: ApiGeojsonFeature[];
   activeMeans: MeansOfTransportation[];
   snapshotToken?: string;
-  exportType?: "CHEATSHEET" | "EXPOSE" | "EXPOSE_DOCX" | "ARCHIVE";
+  exportType: ExportTypeEnum;
 }
 
 const ExportModal: FunctionComponent<ExportModalProps> = ({
@@ -56,7 +63,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   censusData = [],
   activeMeans,
   snapshotToken,
-  exportType = "EXPOSE",
+  exportType,
 }) => {
   const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
     .filter((group: EntityGroup) => group.title !== "Meine Objekte")

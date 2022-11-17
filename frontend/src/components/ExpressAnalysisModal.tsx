@@ -9,12 +9,12 @@ import { useHttp } from "hooks/http";
 import {
   createCodeSnippet,
   createDirectLink,
+  deriveEntityGroupsByActiveMeans,
   toastError,
   toastSuccess,
-  deriveEntityGroupsByActiveMeans,
 } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
-import ExportModal from "../export/ExportModal";
+import ExportModal, { ExportTypeEnum } from "../export/ExportModal";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -127,6 +127,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 )}
                 snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
+                exportType={ExportTypeEnum.EXPOSE}
               />
             )}
             {searchContextState.printingDocxActive && (
@@ -144,7 +145,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 )}
                 snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
-                exportType="EXPOSE_DOCX"
+                exportType={ExportTypeEnum.EXPOSE_DOCX}
               />
             )}
             {searchContextState.printingCheatsheetActive && (
@@ -162,7 +163,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 )}
                 snapshotToken={snapshotResponse.token}
                 censusData={searchContextState.censusData!}
-                exportType="CHEATSHEET"
+                exportType={ExportTypeEnum.CHEATSHEET}
               />
             )}
 

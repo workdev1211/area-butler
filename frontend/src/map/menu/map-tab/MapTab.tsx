@@ -278,6 +278,34 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         </div>
       </div>
 
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isLocationIndicesOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsLocationIndicesOpen(!isLocationIndicesOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img src={locationIndicesIcon} alt="location-indices-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">Lageindizes</div>
+              <div className="collapse-title-text-2">
+                Die Nachbarschaft im Vergleich?
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content" />
+      </div>
+
       {showInsights && (
         <div
           className={
@@ -339,23 +367,6 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                   />
                 </MapMenuCollapsable>
               </li>
-              <li
-                className="locality-option-li"
-                key="list-item-zensus-feinstaub"
-              >
-                <MapMenuCollapsable
-                  title="Feinstaubbelastung"
-                  subscriptionCheck={() => hasPollutionData}
-                  openUpgradeSubscriptionModal={() => {
-                    openUpgradeSubscriptionModal &&
-                      openUpgradeSubscriptionModal(hasPollutionData);
-                  }}
-                >
-                  <ParticlePollutionTable
-                    particlePollutionData={particlePollutionData!}
-                  />
-                </MapMenuCollapsable>
-              </li>
             </ul>
           </div>
         </div>
@@ -384,35 +395,24 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
             </div>
           </div>
         </div>
-        <div className="collapse-content" />
-      </div>
-
-      <div
-        className={
-          "collapse collapse-arrow view-option" +
-          (isLocationIndicesOpen ? " collapse-open" : " collapse-closed")
-        }
-      >
-        <div
-          className="collapse-title"
-          ref={(node) => {
-            setBackgroundColor(node, backgroundColor);
-          }}
-          onClick={() => {
-            setIsLocationIndicesOpen(!isLocationIndicesOpen);
-          }}
-        >
-          <div className="collapse-title-container">
-            <img src={locationIndicesIcon} alt="location-indices-icon" />
-            <div className="collapse-title-text">
-              <div className="collapse-title-text-1">Lageindizes</div>
-              <div className="collapse-title-text-2">
-                Die Nachbarschaft im Vergleich?
-              </div>
-            </div>
-          </div>
+        <div className="collapse-content">
+          <ul>
+            <li className="locality-option-li" key="list-item-zensus-feinstaub">
+              <MapMenuCollapsable
+                title="Feinstaubbelastung"
+                subscriptionCheck={() => hasPollutionData}
+                openUpgradeSubscriptionModal={() => {
+                  openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(hasPollutionData);
+                }}
+              >
+                <ParticlePollutionTable
+                  particlePollutionData={particlePollutionData!}
+                />
+              </MapMenuCollapsable>
+            </li>
+          </ul>
         </div>
-        <div className="collapse-content" />
       </div>
 
       <div

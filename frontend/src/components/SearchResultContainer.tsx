@@ -19,7 +19,6 @@ import * as L from "leaflet";
 
 import {
   IGotoMapCenter,
-  MapClipping,
   Poi,
   SearchContext,
   SearchContextActionTypes,
@@ -103,13 +102,10 @@ export interface IEditorTabProps {
 }
 
 export interface IExportTabProps {
-  clippings: MapClipping[];
   codeSnippet: string;
-  config: ApiSearchResultSnapshotConfig;
   directLink: string;
   placeLabel: string;
   snapshotId: string;
-  hasOpenAiFeature?: boolean;
 }
 
 interface ISearchResultContainerProps {

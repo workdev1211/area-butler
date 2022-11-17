@@ -14,7 +14,6 @@ import SearchResultContainer, {
   EntityGroup,
   IEditorTabProps,
   IExportTabProps,
-  ResultEntity,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import {
@@ -30,7 +29,6 @@ import {
   createCodeSnippet,
   createDirectLink,
   deriveAvailableMeansFromResponse,
-  deriveEntityGroupsByActiveMeans,
   deriveInitialEntityGroups,
   toastError,
   toastSuccess,
@@ -45,7 +43,6 @@ import {
   ApiUpdateSearchResultSnapshot,
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
-import ExportModal from "../export/ExportModal";
 import {
   ApiDataSource,
   ApiSubscriptionPlanType,
@@ -78,10 +75,6 @@ const SnippetEditorPage: FunctionComponent = () => {
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
-  const [groupedEntities, setGroupedEntities] = useState<EntityGroup[]>([]);
-  const [resultingEntities, setResultingEntities] = useState<ResultEntity[]>(
-    []
-  );
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
   const { userState } = useContext(UserContext);
@@ -305,26 +298,6 @@ const SnippetEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.realEstateStatus,
   ]);
 
-  useEffect(() => {
-    if (
-      !searchContextState.responseGroupedEntities ||
-      !searchContextState.responseActiveMeans
-    ) {
-      return;
-    }
-
-    const derivedGroupedEntities = deriveEntityGroupsByActiveMeans(
-      searchContextState.responseGroupedEntities,
-      searchContextState.responseActiveMeans
-    );
-
-    setGroupedEntities(derivedGroupedEntities);
-    setResultingEntities(derivedGroupedEntities.map((g) => g.items).flat());
-  }, [
-    searchContextState.responseGroupedEntities,
-    searchContextState.responseActiveMeans,
-  ]);
-
   const onPoiAdd = (poi: Poi) => {
     if (!snapshot) {
       return;
@@ -410,13 +383,10 @@ const SnippetEditorPage: FunctionComponent = () => {
   };
 
   const exportTabProps: IExportTabProps = {
-    clippings: searchContextState.mapClippings,
     codeSnippet,
-    config: searchContextState.responseConfig!,
     directLink,
-    snapshotId,
     placeLabel: snapshot.placesLocation.label,
-    hasOpenAiFeature: user?.subscription?.config.appFeatures.openAi,
+    snapshotId,
   };
 
   return (
@@ -508,44 +478,6 @@ const SnippetEditorPage: FunctionComponent = () => {
           />
         </div>
       </DefaultLayout>
-      {/* TODO refactor to the single ExportModal call with parameters */}
-      {searchContextState.printingActive && (
-        <ExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
-          groupedEntries={groupedEntities}
-          censusData={searchContextState.censusData!}
-          snapshotToken={searchContextState.responseToken}
-        />
-      )}
-      {searchContextState.printingDocxActive && (
-        <ExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
-          groupedEntries={groupedEntities}
-          censusData={searchContextState.censusData!}
-          snapshotToken={searchContextState.responseToken}
-          exportType="EXPOSE_DOCX"
-        />
-      )}
-      {searchContextState.printingCheatsheetActive && (
-        <ExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
-          groupedEntries={groupedEntities}
-          censusData={searchContextState.censusData!}
-          snapshotToken={searchContextState.responseToken}
-          exportType="CHEATSHEET"
-        />
-      )}
-      {searchContextState.printingZipActive && (
-        <ExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
-          groupedEntries={groupedEntities}
-          exportType="ARCHIVE"
-        />
-      )}
     </>
   );
 };
