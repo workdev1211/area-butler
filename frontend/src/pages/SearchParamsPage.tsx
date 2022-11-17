@@ -69,7 +69,8 @@ import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useAnalysis } from "../hooks/analysis";
-import ExpressAnalysisModal from "../components/ExpressAnalysisModal";
+// TODO remove in future
+// import ExpressAnalysisModal from "../components/ExpressAnalysisModal";
 import { osmEntityTypes } from "../../../shared/constants/constants";
 
 // TODO try to fix the following error
@@ -97,9 +98,11 @@ const SearchParamsPage: FunctionComponent = () => {
     name: LimitIncreaseModelNameEnum;
     id: string | undefined;
   }>();
-  const [isShownMapSnippetModal, setIsShownMapSnippetModal] = useState(false);
-  const [snapshotResponse, setSnapshotResponse] =
-    useState<ApiSearchResultSnapshotResponse>();
+  // TODO remove in future
+  // const [isShownMapSnippetModal, setIsShownMapSnippetModal] = useState(false);
+  // TODO remove in future
+  // const [snapshotResponse, setSnapshotResponse] =
+  //   useState<ApiSearchResultSnapshotResponse>();
   const [placesLocation, setPlacesLocation] = useState<any>(null);
 
   const user: ApiUser = userState.user!;
@@ -263,16 +266,17 @@ const SearchParamsPage: FunctionComponent = () => {
       ({ coordinates }) => !coordinates
     );
 
-  const increaseLimitExpressButton: ReactNode = (
-    <button
-      data-tour="start-search"
-      type="button"
-      disabled={searchButtonDisabled}
-      className="btn bg-secondary-gradient w-full sm:w-auto ml-auto"
-    >
-      <span>One-Klick</span>
-    </button>
-  );
+  // TODO remove in future
+  // const increaseLimitExpressButton: ReactNode = (
+  //   <button
+  //     data-tour="start-search"
+  //     type="button"
+  //     disabled={searchButtonDisabled}
+  //     className="btn bg-secondary-gradient w-full sm:w-auto ml-auto"
+  //   >
+  //     <span>One-Klick</span>
+  //   </button>
+  // );
 
   const increaseLimitSearchButton: ReactNode = (
     <button
@@ -286,11 +290,12 @@ const SearchParamsPage: FunctionComponent = () => {
     </button>
   );
 
-  const increaseRequestLimitExpressModalConfig: ModalConfig = {
-    modalTitle: "Abfragelimit erreicht",
-    submitButtonTitle: "Neues Kontingent kaufen",
-    modalButton: increaseLimitExpressButton,
-  };
+  // TODO remove in future
+  // const increaseRequestLimitExpressModalConfig: ModalConfig = {
+  //   modalTitle: "Abfragelimit erreicht",
+  //   submitButtonTitle: "Neues Kontingent kaufen",
+  //   modalButton: increaseLimitExpressButton,
+  // };
 
   const increaseRequestLimitSearchModalConfig: ModalConfig = {
     modalTitle: "Abfragelimit erreicht",
@@ -573,32 +578,34 @@ const SearchParamsPage: FunctionComponent = () => {
     );
   };
 
-  const performExpressAnalysis = async () => {
-    const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
-      setSnapshotResponse(snapshotResponse);
-      setIsShownMapSnippetModal(true);
-    };
+  // TODO remove in future
+  // const performExpressAnalysis = async () => {
+  //   const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
+  //     setSnapshotResponse(snapshotResponse);
+  //     setIsShownMapSnippetModal(true);
+  //   };
+  //
+  //   await handleAnalysis(onFinish);
+  // };
 
-    await handleAnalysis(onFinish);
-  };
-
-  const ExpressAnalysisButton: FunctionComponent<{ classes?: string }> = ({
-    classes = "btn bg-secondary-gradient w-full sm:w-auto ml-auto",
-  }) => {
-    return (
-      <button
-        data-tour="start-search"
-        type="button"
-        disabled={searchButtonDisabled}
-        onClick={performExpressAnalysis}
-        className={
-          searchContextState.searchBusy ? `${classes} loading` : classes
-        }
-      >
-        <span>One-Klick</span>
-      </button>
-    );
-  };
+  // TODO remove in future
+  // const ExpressAnalysisButton: FunctionComponent<{ classes?: string }> = ({
+  //   classes = "btn bg-secondary-gradient w-full sm:w-auto ml-auto",
+  // }) => {
+  //   return (
+  //     <button
+  //       data-tour="start-search"
+  //       type="button"
+  //       disabled={searchButtonDisabled}
+  //       onClick={performExpressAnalysis}
+  //       className={
+  //         searchContextState.searchBusy ? `${classes} loading` : classes
+  //       }
+  //     >
+  //       <span>One-Klick</span>
+  //     </button>
+  //   );
+  // };
 
   return (
     <DefaultLayout
@@ -608,17 +615,19 @@ const SearchParamsPage: FunctionComponent = () => {
       actionsBottom={
         limitType
           ? [
-              <IncreaseLimitModal
-                key="express-analysis-button"
-                modalConfig={increaseRequestLimitExpressModalConfig}
-              />,
+              // TODO remove in future
+              // <IncreaseLimitModal
+              //   key="express-analysis-button"
+              //   modalConfig={increaseRequestLimitExpressModalConfig}
+              // />,
               <IncreaseLimitModal
                 key="search-button"
                 modalConfig={increaseRequestLimitSearchModalConfig}
               />,
             ]
           : [
-              <ExpressAnalysisButton key="express-analysis-button" />,
+              // TODO remove in future
+              // <ExpressAnalysisButton key="express-analysis-button" />,
               <SearchButton key="search-button" />,
             ]
       }
@@ -632,14 +641,15 @@ const SearchParamsPage: FunctionComponent = () => {
           isRandomMessages={true}
         />
       )}
-      {isShownMapSnippetModal && (
-        <ExpressAnalysisModal
-          snapshotResponse={snapshotResponse!}
-          closeModal={() => {
-            setIsShownMapSnippetModal(false);
-          }}
-        />
-      )}
+      {/* TODO remove in future */}
+      {/*{isShownMapSnippetModal && (*/}
+      {/*  <ExpressAnalysisModal*/}
+      {/*    snapshotResponse={snapshotResponse!}*/}
+      {/*    closeModal={() => {*/}
+      {/*      setIsShownMapSnippetModal(false);*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*)}*/}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
           <h2 className="search-params-first-title">Lage</h2>
