@@ -3,6 +3,11 @@
   top: 18px;
   right: 10px;
   z-index: 999;
+  transition: right 0.2s;
+
+  &.map-menu-open {
+    right: calc(var(--mobile-map-menu-width) + 20px);
+  }
 
   .menu-desktop {
     display: none;
@@ -61,7 +66,7 @@
       align-items: center;
       gap: 12px;
       background: white;
-      margin-top: 0px;
+      margin-top: 0;
       padding: 10px 20px 10px 10px;
       font-size: 14px;
       font-weight: 500;
@@ -104,6 +109,10 @@
     right: 10%;
     bottom: 20px;
     overflow-y: hidden;
+
+    &.map-menu-open {
+      right: calc(var(--map-menu-width) + 20px);
+    }
 
     &:hover {
       overflow-y: auto;

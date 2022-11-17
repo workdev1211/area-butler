@@ -15,10 +15,8 @@ import {
   IApiUserPoiIcon,
   MeansOfTransportation,
 } from "../../../../shared/types/types";
-import { realEstateListingsTitle } from "../../shared/shared.functions";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { CensusData } from "hooks/censusdata";
-import MapMenuKarlaFricke from "./karla-fricke/MapMenuKarlaFricke";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -100,26 +98,26 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
 
-  if (config?.theme) {
-    switch (config?.theme) {
-      case "KF":
-        return (
-          <MapMenuKarlaFricke
-            groupedEntries={groupedEntries
-              .filter(
-                (ge) => ge.items.length && ge.title !== realEstateListingsTitle
-              )
-              .sort((a, b) => (a.title > b.title ? 1 : -1))}
-            mobileMenuOpen={false}
-            isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-            togglePreferredLocationsModal={togglePreferredLocationsModal}
-            userPoiIcons={userPoiIcons}
-          />
-        );
-
-      default:
-    }
-  }
+  // TODO remove in future
+  // if (config?.theme) {
+  //   switch (config?.theme) {
+  //     case "KF":
+  //       return (
+  //         <MapMenuKarlaFricke
+  //           groupedEntries={groupedEntries
+  //             .filter(
+  //               (ge) => ge.items.length && ge.title !== realEstateListingsTitle
+  //             )
+  //             .sort((a, b) => (a.title > b.title ? 1 : -1))}
+  //           mobileMenuOpen={false}
+  //           isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+  //           togglePreferredLocationsModal={togglePreferredLocationsModal}
+  //         />
+  //       );
+  //
+  //     default:
+  //   }
+  // }
 
   const isShownAddress = !!config?.showAddress || !config;
 
@@ -179,7 +177,11 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             onClick={resetPosition}
             data-tour="reset-position"
           >
-            <img className="w-[20px] h-[20px]" src={positionIcon} alt="position-icon" />
+            <img
+              className="w-[20px] h-[20px]"
+              src={positionIcon}
+              alt="position-icon"
+            />
             <div className="text-lg">{searchAddress}</div>
           </button>
         </div>

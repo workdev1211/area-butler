@@ -359,7 +359,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     type="radio"
                     name="theme"
                     checked={config?.theme === "KF"}
-                    onChange={() => changeTheme("KF")}
+                    onChange={() => {
+                      changeTheme("KF");
+                    }}
                     className="radio radio-sm radio-primary mr-2"
                   />
                   <span className="label-text">Minimal</span>

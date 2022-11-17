@@ -15,27 +15,27 @@ import {
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
 
-export interface MapMenuKarlaFrickeProps {
+interface IMapMenuKarlaFrickeProps {
+  isMapMenuOpen: boolean;
   groupedEntries: EntityGroup[];
-  mobileMenuOpen: boolean;
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
   userPoiIcons?: IApiUserPoiIcon[];
 }
 
-const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
-  mobileMenuOpen,
+const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
+  isMapMenuOpen,
   groupedEntries,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
   userPoiIcons,
 }) => {
-  interface ListItemProps {
+  interface IListItemProps {
     group: EntityGroup;
     dropdown?: boolean;
   }
 
-  const ListItem: FunctionComponent<ListItemProps> = ({
+  const ListItem: FunctionComponent<IListItemProps> = ({
     group,
     dropdown = false,
   }) => {
@@ -75,8 +75,8 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
   };
 
   const listItemPropsAreEqual = (
-    prevItem: ListItemProps,
-    nextItem: ListItemProps
+    prevItem: IListItemProps,
+    nextItem: IListItemProps
   ) => {
     return prevItem.group.active === nextItem.group.active;
   };
@@ -87,17 +87,17 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
     <ListItemMemo key={group.title} group={group} />
   ));
 
-  interface MenuProps {
+  interface IMenuProps {
     groupedEntries: EntityGroup[];
   }
 
-  const DesktopMenu: FunctionComponent<MenuProps> = ({ groupedEntries }) => {
+  const DesktopMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
     return <ul className="menu-desktop">{resultingList}</ul>;
   };
 
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
-  const MobileMenu: FunctionComponent<MenuProps> = ({ groupedEntries }) => {
+  const MobileMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
     const activeEntry = groupedEntries.find((ge) => ge.active);
 
     return (
@@ -129,7 +129,7 @@ const MapMenuKarlaFricke: FunctionComponent<MapMenuKarlaFrickeProps> = ({
     );
   };
 
-  const menuClasses = `map-menu-KF ${mobileMenuOpen ? "mobile-open" : ""}`;
+  const menuClasses = `map-menu-KF ${isMapMenuOpen ? "map-menu-open" : ""}`;
 
   return (
     <div className={menuClasses}>

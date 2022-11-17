@@ -36,6 +36,7 @@ import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
   preferredLocationsTitle,
+  realEstateListingsTitle,
   toggleEntityVisibility,
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
@@ -53,6 +54,7 @@ import MapMenu from "../map/menu/MapMenu";
 import { defaultColor } from "../../../shared/constants/constants";
 import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
 import { mapBoxMapIds as storedMapBoxMapIds } from "../shared/shared.constants";
+import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -657,7 +659,20 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          {!isThemeKf && <ShowMapMenuButton />}
+          <ShowMapMenuButton />
+          {isThemeKf && (
+            <MapMenuKarlaFricke
+              groupedEntries={(resultingGroupedEntities ?? [])
+                .filter(
+                  (ge) =>
+                    ge.items.length && ge.title !== realEstateListingsTitle
+                )
+                .sort((a, b) => (a.title > b.title ? 1 : -1))}
+              isMapMenuOpen={isMapMenuOpen}
+              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+            />
+          )}
           <MapMenu
             isMapMenuOpen={isMapMenuOpen}
             censusData={searchContextState.censusData}
