@@ -156,6 +156,8 @@ const SearchResultContainer = forwardRef<
     },
     parentMapRef
   ) => {
+    const containerRef = useRef<HTMLDivElement>(null);
+
     const mapRef = useRef<L.Map | null>(null);
     useImperativeHandle(parentMapRef, () => ({
       getZoom: () => mapRef.current?.getZoom(),
@@ -195,6 +197,15 @@ const SearchResultContainer = forwardRef<
       useState<EntityGroup>();
     const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
       useState(false);
+
+    useEffect(() => {
+      if (
+        containerRef.current?.offsetWidth &&
+        containerRef.current?.offsetWidth < 769
+      ) {
+        setIsMapMenuOpen(false);
+      }
+    }, [containerRef]);
 
     useEffect(() => {
       setMapBoxMapIds(initialMapBoxMapIds);
@@ -546,7 +557,11 @@ const SearchResultContainer = forwardRef<
 
     return (
       <>
-        <div className={containerClasses} id="search-result-container">
+        <div
+          id="search-result-container"
+          className={containerClasses}
+          ref={containerRef}
+        >
           <div className="relative flex-1" id={mapWithLegendId}>
             <div
               className={`map-nav-bar-container ${
