@@ -1,7 +1,7 @@
 .map-menu-KF {
   position: absolute;
   top: 18px;
-  right: 10px;
+  right: 20px;
   z-index: 999;
   transition: right 0.2s;
 
@@ -106,7 +106,7 @@
 
 @media (min-width: 1024px) {
   .map-menu-KF {
-    right: 10%;
+    right: 20px;
     bottom: 20px;
     overflow-y: hidden;
 

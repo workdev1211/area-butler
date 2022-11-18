@@ -164,17 +164,21 @@ const SearchResultContainer = forwardRef<
       getCenter: () => mapRef.current?.getCenter(),
     }));
 
-    const initialMapBoxMapIds = {
-      current: mapBoxMapId || storedMapBoxMapIds.default,
-      previous: storedMapBoxMapIds.satellite,
-    };
-
     const { searchContextState, searchContextDispatch } =
       useContext(SearchContext);
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
-    const [isMapMenuOpen, setIsMapMenuOpen] = useState(true);
+    const initialMapBoxMapIds = {
+      current: mapBoxMapId || storedMapBoxMapIds.default,
+      previous: storedMapBoxMapIds.satellite,
+    };
+
+    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+
+    const [isMapMenuOpen, setIsMapMenuOpen] = useState(
+      editorMode || (!isThemeKf && !editorMode)
+    );
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
       >([]);
@@ -553,8 +557,6 @@ const SearchResultContainer = forwardRef<
     //   }),
     // };
 
-    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
-
     return (
       <>
         <div
@@ -674,7 +676,7 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          <ShowMapMenuButton />
+          {!(isThemeKf && !editorMode) && <ShowMapMenuButton />}
           {isThemeKf && (
             <MapMenuKarlaFricke
               groupedEntries={(resultingGroupedEntities ?? [])
@@ -688,61 +690,63 @@ const SearchResultContainer = forwardRef<
               togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
             />
           )}
-          <MapMenu
-            isMapMenuOpen={isMapMenuOpen}
-            censusData={searchContextState.censusData}
-            federalElectionData={searchContextState.federalElectionData}
-            particlePollutionData={searchContextState.particlePollutionData}
-            groupedEntries={resultingGroupedEntities ?? []}
-            toggleAllLocalities={() => {
-              const oldGroupedEntities =
-                searchContextState.responseGroupedEntities ?? [];
+          {(!isThemeKf || (isThemeKf && editorMode)) && (
+            <MapMenu
+              isMapMenuOpen={isMapMenuOpen}
+              censusData={searchContextState.censusData}
+              federalElectionData={searchContextState.federalElectionData}
+              particlePollutionData={searchContextState.particlePollutionData}
+              groupedEntries={resultingGroupedEntities ?? []}
+              toggleAllLocalities={() => {
+                const oldGroupedEntities =
+                  searchContextState.responseGroupedEntities ?? [];
 
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-                payload: oldGroupedEntities.map((g) => ({
-                  ...g,
-                  active: !oldGroupedEntities.some((g) => g.active),
-                })),
-              });
-            }}
-            toggleRoute={(item, mean) =>
-              toggleRoutesToEntity(location, item, mean)
-            }
-            routes={searchContextState.responseRoutes}
-            toggleTransitRoute={(item) =>
-              toggleTransitRoutesToEntity(location, item)
-            }
-            transitRoutes={searchContextState.responseTransitRoutes}
-            searchAddress={placesLocation?.label}
-            resetPosition={() => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_MAP_CENTER,
-                payload: searchResponse?.centerOfInterest?.coordinates!,
-              });
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+                  payload: oldGroupedEntities.map((g) => ({
+                    ...g,
+                    active: !oldGroupedEntities.some((g) => g.active),
+                  })),
+                });
+              }}
+              toggleRoute={(item, mean) =>
+                toggleRoutesToEntity(location, item, mean)
+              }
+              routes={searchContextState.responseRoutes}
+              toggleTransitRoute={(item) =>
+                toggleTransitRoutesToEntity(location, item)
+              }
+              transitRoutes={searchContextState.responseTransitRoutes}
+              searchAddress={placesLocation?.label}
+              resetPosition={() => {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_MAP_CENTER,
+                  payload: searchResponse?.centerOfInterest?.coordinates!,
+                });
 
-              searchContextDispatch({
-                type: SearchContextActionTypes.GOTO_MAP_CENTER,
-                payload: { goto: true },
-              });
-            }}
-            saveConfig={saveConfig}
-            user={user}
-            userPoiIcons={userPoiIcons}
-            openUpgradeSubscriptionModal={(message) => {
-              userDispatch({
-                type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                payload: { open: true, message },
-              });
-            }}
-            showInsights={editorMode}
-            config={searchContextState.responseConfig}
-            isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-            togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-            editorMode={editorMode}
-            editorTabProps={editorTabProps}
-            exportTabProps={exportTabProps}
-          />
+                searchContextDispatch({
+                  type: SearchContextActionTypes.GOTO_MAP_CENTER,
+                  payload: { goto: true },
+                });
+              }}
+              saveConfig={saveConfig}
+              user={user}
+              userPoiIcons={userPoiIcons}
+              openUpgradeSubscriptionModal={(message) => {
+                userDispatch({
+                  type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                  payload: { open: true, message },
+                });
+              }}
+              showInsights={editorMode}
+              config={searchContextState.responseConfig}
+              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+              editorMode={editorMode}
+              editorTabProps={editorTabProps}
+              exportTabProps={exportTabProps}
+            />
+          )}
           {isThemeKf &&
             preferredLocationsGroup &&
             isShownPreferredLocationsModal && (
