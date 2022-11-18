@@ -1,9 +1,6 @@
 import { FunctionComponent } from "react";
-import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 
-export interface CensusTableProps {
-  censusData: ApiGeojsonFeature[];
-}
+import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 
 export const averageCensus = {
   Durchschnittsalter: 44.6,
@@ -17,8 +14,12 @@ export const averageCensus = {
   "Anteil der Bevölkerung unter 18 Jahre": 16.3,
 } as any;
 
-const CensusTable: FunctionComponent<CensusTableProps> = ({ censusData }) => {
-  if (!censusData) {
+interface ICensusTableProps {
+  censusData: ApiGeojsonFeature[];
+}
+
+const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
+  if (!censusData?.length) {
     return null;
   }
 

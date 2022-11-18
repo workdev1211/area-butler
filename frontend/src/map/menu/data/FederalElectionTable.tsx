@@ -1,18 +1,18 @@
+import { FunctionComponent } from "react";
+
 import {
   FederalElectionDistrict,
   FederalElectionResult,
 } from "hooks/federalelectiondata";
-import { FunctionComponent } from "react";
 
-export interface FederalElectionTableProps {
+interface IFederalElectionTableProps {
   federalElectionData: FederalElectionDistrict;
 }
 
-const FederalElectionTable: FunctionComponent<FederalElectionTableProps> = ({
+const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
   federalElectionData,
 }) => {
-
-  if (!federalElectionData) {
+  if (!federalElectionData || !Object.keys(federalElectionData).length) {
     return null;
   }
 
@@ -21,7 +21,11 @@ const FederalElectionTable: FunctionComponent<FederalElectionTableProps> = ({
       <thead>
         <tr>
           <th>Partei</th>
-          <th><span>Zweitstimme (Prozent)</span><br/><span>(Letzte Wahl)</span></th>
+          <th>
+            <span>Zweitstimme (Prozent)</span>
+            <br />
+            <span>(Letzte Wahl)</span>
+          </th>
         </tr>
       </thead>
       <tbody>

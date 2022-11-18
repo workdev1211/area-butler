@@ -1,9 +1,6 @@
 import { FunctionComponent } from "react";
-import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 
-export interface ParticlePollutionTableProps {
-  particlePollutionData: ApiGeojsonFeature[];
-}
+import { ApiGeojsonFeature } from "../../../../../shared/types/types";
 
 export interface PollutionData {
   mean: number;
@@ -12,13 +9,17 @@ export interface PollutionData {
 
 export const averageParticlePollution: PollutionData = {
   mean: 10.78,
-  daysAboveThreshold: 0.14
+  daysAboveThreshold: 0.14,
 };
 
-const ParticlePollutionTable: FunctionComponent<ParticlePollutionTableProps> = ({
-  particlePollutionData
-}) => {
-  if (!particlePollutionData || particlePollutionData.length === 0) {
+interface IParticlePollutionTableProps {
+  particlePollutionData: ApiGeojsonFeature[];
+}
+
+const ParticlePollutionTable: FunctionComponent<
+  IParticlePollutionTableProps
+> = ({ particlePollutionData }) => {
+  if (!particlePollutionData?.length) {
     return null;
   }
 
@@ -26,7 +27,8 @@ const ParticlePollutionTable: FunctionComponent<ParticlePollutionTableProps> = (
 
   const pollutionData: PollutionData = {
     mean: properties.MEAN || 0,
-    daysAboveThreshold: properties["Tage mit Tagesmittelwerten > 50 �g/m�"] || 0
+    daysAboveThreshold:
+      properties["Tage mit Tagesmittelwerten > 50 �g/m�"] || 0,
   };
 
   return (
