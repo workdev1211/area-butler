@@ -19,20 +19,21 @@ import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
 import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 
-export interface EmbeddableMapsTableProps {
+interface IEmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
 
-const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
+const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
+  const history = useHistory();
+  const { deleteRequest } = useHttp();
+  const { userDispatch } = useContext(UserContext);
+
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
-  const { deleteRequest } = useHttp();
-  const { userDispatch } = useContext(UserContext);
-  const history = useHistory();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
     const success = copy(codeSnippet);
@@ -42,14 +43,16 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
     }
   };
 
-  const openCodeSnippetModal = (snapshot: ApiSearchResultSnapshotResponse) => {
+  const openCodeSnippetModal = (
+    snapshot: ApiSearchResultSnapshotResponse
+  ): void => {
     setCodeSnippet(createCodeSnippet(snapshot.token));
     setDirectLink(createDirectLink(snapshot.token));
     setSnapshot(snapshot);
     setIsShownModal(true);
   };
 
-  const deleteSnippet = async (id: string) => {
+  const deleteSnippet = async (id: string): Promise<void> => {
     try {
       const confirmDeleteRequest = window.confirm(
         "Wollen Sie wirklich das Kartensnippet löschen?"
@@ -71,17 +74,19 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
 
   const OpenMapEditorButton: FunctionComponent<{
     embeddableMap: ApiSearchResultSnapshotResponse;
-  }> = ({ embeddableMap }) => (
-    <button
-      className="ml-5 rounded btn-xs btn-primary"
-      onClick={(e) => {
-        history.push(`snippet-editor/${embeddableMap.id}`);
-        e.stopPropagation();
-      }}
-    >
-      Editor öffnen
-    </button>
-  );
+  }> = ({ embeddableMap }) => {
+    return (
+      <button
+        className="ml-5 rounded btn-xs btn-primary"
+        onClick={(e) => {
+          e.stopPropagation();
+          history.push(`snippet-editor/${embeddableMap.id}`);
+        }}
+      >
+        Editor öffnen
+      </button>
+    );
+  };
 
   const increaseLimitButton: ReactNode = (
     <button type="button" className="ml-5 rounded btn-xs btn-primary">
@@ -138,7 +143,9 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
             <tr
               key={`embeddable-map-${embeddableMap.token}`}
               className="cursor-pointer"
-              onClick={() => openCodeSnippetModal(embeddableMap)}
+              onClick={() => {
+                openCodeSnippetModal(embeddableMap);
+              }}
             >
               <th>{embeddableMap?.snapshot?.placesLocation?.label}</th>
               <td>{embeddableMap.description}</td>
@@ -167,8 +174,8 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
                 <button
                   className="ml-5 rounded btn-xs btn-primary"
                   onClick={(e) => {
-                    copyCodeToClipBoard(createDirectLink(embeddableMap.token));
                     e.stopPropagation();
+                    copyCodeToClipBoard(createDirectLink(embeddableMap.token));
                   }}
                 >
                   Link Kopieren
@@ -176,8 +183,8 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
                 <button
                   className="ml-5 rounded btn-xs btn-primary"
                   onClick={(e) => {
-                    copyCodeToClipBoard(createCodeSnippet(embeddableMap.token));
                     e.stopPropagation();
+                    copyCodeToClipBoard(createCodeSnippet(embeddableMap.token));
                   }}
                 >
                   Snippet Kopieren
@@ -185,8 +192,8 @@ const EmbeddableMapsTable: FunctionComponent<EmbeddableMapsTableProps> = ({
                 <button
                   className="ml-5 rounded btn-xs btn-primary"
                   onClick={(e) => {
-                    deleteSnippet(embeddableMap.id);
                     e.stopPropagation();
+                    void deleteSnippet(embeddableMap.id);
                   }}
                 >
                   Löschen

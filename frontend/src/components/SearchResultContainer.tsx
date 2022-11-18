@@ -141,7 +141,9 @@ const SearchResultContainer = forwardRef<
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-    const [availableMeans, setAvailableMeans] = useState<any>([]);
+    const [availableMeans, setAvailableMeans] = useState<
+      MeansOfTransportation[]
+    >([]);
     const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
       EntityGroup[]
     >([]);
@@ -530,15 +532,9 @@ const SearchResultContainer = forwardRef<
                 })
               }
               means={{
-                byFoot: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.WALK
-                ),
-                byBike: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.BICYCLE
-                ),
-                byCar: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.CAR
-                ),
+                byFoot: availableMeans.includes(MeansOfTransportation.WALK),
+                byBike: availableMeans.includes(MeansOfTransportation.BICYCLE),
+                byCar: availableMeans.includes(MeansOfTransportation.CAR),
               }}
               mapCenter={
                 searchContextState.mapCenter ||

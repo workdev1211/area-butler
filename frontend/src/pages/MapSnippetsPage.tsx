@@ -20,30 +20,28 @@ const MapSnippetsPage: FunctionComponent = () => {
   const embeddableMaps = userState.embeddableMaps || [];
 
   useEffect(() => {
-    if (user) {
-      const fetchEmbeddableMaps = async () => {
-        const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-          await get<ApiSearchResultSnapshotResponse[]>(
-            "/api/location/snapshots"
-          )
-        ).data;
-
-        userDispatch({
-          type: UserActionTypes.SET_EMBEDDABLE_MAPS,
-          payload: embeddableMaps,
-        });
-      };
-
-      if (hasHtmlSnippet) {
-        void fetchEmbeddableMaps();
-      }
+    if (!user || !hasHtmlSnippet) {
+      return;
     }
+
+    const fetchEmbeddableMaps = async () => {
+      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
+        await get<ApiSearchResultSnapshotResponse[]>("/api/location/snapshots")
+      ).data;
+
+      userDispatch({
+        type: UserActionTypes.SET_EMBEDDABLE_MAPS,
+        payload: embeddableMaps,
+      });
+    };
+
+    void fetchEmbeddableMaps();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return (
     <DefaultLayout title="Meine Karten" withHorizontalPadding={false}>
-      {/*TODO implement a tour*/}
+      {/* TODO implement a tour */}
       {/*<TourStarter tour="realEstates" />*/}
       {hasSubscription && hasHtmlSnippet && embeddableMaps.length > 0 && (
         <EmbeddableMapsTable embeddableMaps={embeddableMaps} />
