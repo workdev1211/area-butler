@@ -23,10 +23,7 @@ import { IQrCodeState } from "../ExportModal";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
-export interface ExposeProps {
-  censusData: ApiGeojsonFeature[];
-  federalElectionData: FederalElectionDistrict;
-  particlePollutionData: ApiGeojsonFeature[];
+interface IExposeProps {
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
   activeMeans: MeansOfTransportation[];
@@ -38,10 +35,13 @@ export interface ExposeProps {
   color?: string;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
+  censusData?: ApiGeojsonFeature[];
+  federalElectionData?: FederalElectionDistrict;
+  particlePollutionData?: ApiGeojsonFeature[];
 }
 
 export const Expose = forwardRef(
-  (props: ExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
+  (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
     // TODO change to reduce only
     const groupedEntries = props.groupedEntries
       .filter((group) => group.title !== "Wichtige Adressen")
@@ -162,7 +162,7 @@ export const Expose = forwardRef(
               <CensusSummary primaryColor={color} censusData={censusData} />
             </>
           )}
-          {federalElectionData && (
+          {federalElectionData && federalElectionData?.results?.length > 0 && (
             <>
               <h4 className="mx-10 text-xl w-56 font-bold">
                 Bundestagswahl 2021
