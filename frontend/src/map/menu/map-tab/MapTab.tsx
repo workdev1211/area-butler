@@ -103,7 +103,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
-  userPoiIcons,
+  userPoiIcons = user?.poiIcons,
 }) => {
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(true);
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =

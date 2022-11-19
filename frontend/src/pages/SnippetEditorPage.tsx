@@ -470,7 +470,6 @@ const SnippetEditorPage: FunctionComponent = () => {
             editorMode={true}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
-            userPoiIcons={user?.poiIcons}
             ref={mapRef}
             user={user}
             editorTabProps={editorTabProps}

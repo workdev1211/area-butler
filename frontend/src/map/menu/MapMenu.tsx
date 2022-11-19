@@ -55,8 +55,9 @@ interface IMapMenuProps {
   searchAddress: string;
   isMapMenuOpen: boolean;
   resetPosition: () => void;
-  isShownPreferredLocationsModal: boolean;
-  togglePreferredLocationsModal: (isShown: boolean) => void;
+  // TODO remove in future
+  // isShownPreferredLocationsModal: boolean;
+  // togglePreferredLocationsModal: (isShown: boolean) => void;
   editorMode: boolean;
   saveConfig?: () => Promise<void>;
   user?: ApiUser;
@@ -81,8 +82,9 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   searchAddress,
   isMapMenuOpen,
   resetPosition,
-  isShownPreferredLocationsModal,
-  togglePreferredLocationsModal,
+  // TODO remove in future
+  // isShownPreferredLocationsModal,
+  // togglePreferredLocationsModal,
   editorMode,
   saveConfig,
   user,
@@ -94,7 +96,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   particlePollutionData,
   editorTabProps,
   exportTabProps,
-  userPoiIcons,
+  userPoiIcons = user?.poiIcons,
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
 
@@ -169,12 +171,16 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      {isShownAddress && (
+      {((isShownAddress && editorMode) || !editorMode) && (
         <div className="map-menu-header">
           <button
             type="button"
             className="btn btn-link flex gap-3"
-            onClick={resetPosition}
+            onClick={() => {
+              if (isShownAddress) {
+                resetPosition();
+              }
+            }}
             data-tour="reset-position"
           >
             <img
@@ -182,7 +188,15 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               src={positionIcon}
               alt="position-icon"
             />
-            <div className="text-lg">{searchAddress}</div>
+            <div
+              className={`map-menu-header-text ${
+                !isShownAddress ? "bg-primary-gradient" : ""
+              }`}
+            >
+              {isShownAddress
+                ? searchAddress
+                : "Genaue Adresse nicht veröffentlicht"}
+            </div>
           </button>
         </div>
       )}
@@ -202,6 +216,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
             user={user}
+            userPoiIcons={userPoiIcons}
             config={config}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             showInsights={showInsights}

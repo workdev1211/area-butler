@@ -181,7 +181,7 @@ const SearchResultContainer = forwardRef<
     );
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
-      >([]);
+    >([]);
     // TODO move later to the MapTab of the MapMenu component
     // const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
     //   EntityGroup[]
@@ -469,7 +469,7 @@ const SearchResultContainer = forwardRef<
       return (
         <button
           type="button"
-          className="show-map-menu-btn"
+          className={`show-map-menu-btn ${!editorMode ? "embed-mode" : ""}`}
           onMouseDown={() => {
             setIsMapMenuOpen(!isMapMenuOpen);
           }}
@@ -740,8 +740,9 @@ const SearchResultContainer = forwardRef<
               }}
               showInsights={editorMode}
               config={searchContextState.responseConfig}
-              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+              // TODO remove in future
+              // isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+              // togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
               editorMode={editorMode}
               editorTabProps={editorTabProps}
               exportTabProps={exportTabProps}

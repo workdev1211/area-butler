@@ -58,10 +58,15 @@
   }
 
   .map-menu-header {
+    height: var(--menu-item-h);
     background: var(--base-anthracite);
-    padding: 7px var(--menu-item-pr) 7px var(--menu-item-pl) !important;
+    padding: 0 var(--menu-item-pr) 0 var(--menu-item-pl) !important;
     border-bottom: none;
-    @apply flex flex-col;
+    @apply flex flex-col justify-center;
+
+    .map-menu-header-text {
+      @apply text-lg;
+    }
 
     .btn-link {
       padding: 0 !important;
