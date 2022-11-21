@@ -620,6 +620,7 @@ const SearchParamsPage: FunctionComponent = () => {
               //   key="express-analysis-button"
               //   modalConfig={increaseRequestLimitExpressModalConfig}
               // />,
+              <div />,
               <IncreaseLimitModal
                 key="search-button"
                 modalConfig={increaseRequestLimitSearchModalConfig}
@@ -628,6 +629,7 @@ const SearchParamsPage: FunctionComponent = () => {
           : [
               // TODO remove in future
               // <ExpressAnalysisButton key="express-analysis-button" />,
+              <div />,
               <SearchButton key="search-button" />,
             ]
       }
