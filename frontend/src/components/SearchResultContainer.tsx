@@ -618,9 +618,15 @@ const SearchResultContainer = forwardRef<
                 })
               }
               means={{
-                byFoot: availableMeans.includes(MeansOfTransportation.WALK),
-                byBike: availableMeans.includes(MeansOfTransportation.BICYCLE),
-                byCar: availableMeans.includes(MeansOfTransportation.CAR),
+                byFoot: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.WALK
+                ),
+                byBike: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.BICYCLE
+                ),
+                byCar: searchContextState.responseActiveMeans.includes(
+                  MeansOfTransportation.CAR
+                ),
               }}
               mapCenter={
                 searchContextState.mapCenter ||

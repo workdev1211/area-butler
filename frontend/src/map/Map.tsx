@@ -740,36 +740,45 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       };
 
       if (parsedMeans.byFoot) {
-        L.polygon(
-          derivePositionForTransportationMean(MeansOfTransportation.WALK),
-          {
+        const position = derivePositionForTransportationMean(
+          MeansOfTransportation.WALK
+        );
+
+        if (position) {
+          L.polygon(position, {
             color: WALK_COLOR,
             opacity: 0.7,
             fillOpacity: 0.0,
-          }
-        ).addTo(meansGroup);
+          }).addTo(meansGroup);
+        }
       }
 
       if (parsedMeans.byBike) {
-        L.polygon(
-          derivePositionForTransportationMean(MeansOfTransportation.BICYCLE),
-          {
+        const position = derivePositionForTransportationMean(
+          MeansOfTransportation.BICYCLE
+        );
+
+        if (position) {
+          L.polygon(position, {
             color: BICYCLE_COLOR,
             opacity: 0.7,
             fillOpacity: 0.0,
-          }
-        ).addTo(meansGroup);
+          }).addTo(meansGroup);
+        }
       }
 
       if (parsedMeans.byCar) {
-        L.polygon(
-          derivePositionForTransportationMean(MeansOfTransportation.CAR),
-          {
+        const position = derivePositionForTransportationMean(
+          MeansOfTransportation.CAR
+        );
+
+        if (position) {
+          L.polygon(position, {
             color: CAR_COLOR,
             opacity: 0.7,
             fillOpacity: 0.0,
-          }
-        ).addTo(meansGroup);
+          }).addTo(meansGroup);
+        }
       }
     }, [
       meansStringified,
