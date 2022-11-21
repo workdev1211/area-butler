@@ -10,7 +10,8 @@
 
     h3 {
       color: var(--base-anthracite);
-      padding: 0;
+      padding: 0 calc(var(--menu-image-w-h) + 0.75rem) 0
+        calc(var(--menu-image-w-h) + 0.75rem);
       @apply text-base;
     }
   }

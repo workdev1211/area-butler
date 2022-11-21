@@ -1,46 +1,50 @@
 .map-menu-collapsable {
-    margin: 0;
-    @apply w-full;
-    & > .collapse-closed .collapse-content {
-        max-height: 0;
-        height: 0;
-        display: none;
-    }
+  margin: 0;
+  @apply w-full;
 
-    .collapse-closed {
-        .collapse-title {
-            &:after {
-                top: 15px;
-                transform: rotate(405deg) !important;
-            }
-        }
-    }
+  & > .collapse-closed .collapse-content {
+    max-height: 0;
+    height: 0;
+    display: none;
+  }
 
-    .collapse-open {
-        .collapse-title {
-            &:after {
-                top: 15px;
-            }
-        }
-        .collapse-content {
-            max-height: 9000px;
-            background-color: white;
-        }
-    }
-
+  .collapse-closed {
     .collapse-title {
-        font-size: 16px;
-        border: 0 !important;
-        height: 40px !important;
-        min-height: 100% !important;
-        @apply flex justify-between items-center;
-
-        & > div {
-            @apply flex items-center;
-        }
-
-        div.img-container img {
-            filter: brightness(0) invert(1);
-        }
+      &:after {
+        top: 15px !important;
+        transform: rotate(405deg) !important;
+      }
     }
+  }
+
+  .collapse-open {
+    .collapse-title {
+      &:after {
+        top: 15px !important;
+      }
+    }
+
+    .collapse-content {
+      max-height: 9000px;
+      background-color: white;
+    }
+  }
+
+  .collapse-title {
+    font-size: 16px;
+    border: 0 !important;
+    height: 40px !important;
+    min-height: 100% !important;
+    padding: 0 var(--menu-item-pr) 0
+      calc(var(--menu-item-pl) + var(--menu-image-w-h) + 0.75rem) !important;
+    @apply flex items-center gap-2;
+
+    & > div {
+      @apply flex items-center;
+    }
+
+    div.img-container img {
+      filter: brightness(0) invert(1);
+    }
+  }
 }

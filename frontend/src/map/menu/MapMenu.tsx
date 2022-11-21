@@ -127,7 +127,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     ? `calc(100% - calc(var(--menu-item-h) * ${
         isShownAddress ? 3 : 2
       }) - var(--menu-footer-h))`
-    : `calc(100% - calc(var(--menu-item-h) * ${isShownAddress ? 1 : 0})`;
+    : "calc(100% - var(--menu-item-h)";
 
   return (
     <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>
@@ -188,11 +188,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               src={positionIcon}
               alt="position-icon"
             />
-            <div
-              className={`map-menu-header-text ${
-                !isShownAddress ? "bg-primary-gradient" : ""
-              }`}
-            >
+            <div className="map-menu-header-text">
               {isShownAddress
                 ? searchAddress
                 : "Genaue Adresse nicht veröffentlicht"}
@@ -223,6 +219,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             censusData={censusData}
             federalElectionData={federalElectionData}
             particlePollutionData={particlePollutionData}
+            editorMode={editorMode}
           />
         )}
 

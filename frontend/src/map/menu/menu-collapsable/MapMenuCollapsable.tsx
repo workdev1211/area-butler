@@ -6,12 +6,14 @@ export interface MapMenuCollapsableProps {
   title: string;
   subscriptionCheck?: () => boolean;
   openUpgradeSubscriptionModal?: () => void;
+  icon?: string;
 }
 
 const MapMenuCollapsable: FunctionComponent<MapMenuCollapsableProps> = ({
   title,
   subscriptionCheck = () => true,
   openUpgradeSubscriptionModal = () => true,
+  icon,
   children,
 }) => {
   const [open, setOpen] = useState(false);
@@ -34,6 +36,14 @@ const MapMenuCollapsable: FunctionComponent<MapMenuCollapsableProps> = ({
         }
       >
         <div className="collapse-title" onClick={toggleOpen}>
+          {icon && (
+            <img
+              className="w-6 h-6"
+              src={icon}
+              alt="copy"
+              style={{ filter: "grayscale(100%) brightness(0)" }}
+            />
+          )}
           {title}
         </div>
         <div className="collapse-content">{children}</div>

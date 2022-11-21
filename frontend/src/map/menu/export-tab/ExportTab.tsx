@@ -52,7 +52,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
     useState(false);
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
-  const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(true);
+  const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
 
@@ -151,7 +151,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <div className="collapse-title-text">
                 <div className="collapse-title-text-1">Kartenausschnitte</div>
                 <div className="collapse-title-text-2">
-                  Für Exposés, Print Medien, Bilder Galerien
+                  Für Exposés, Print Medien, Bildergalerien
                 </div>
               </div>
             </div>
@@ -206,6 +206,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             <ul>
               <li>
                 <h3
+                  // TODO move to the ExportTab.scss file
                   className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
                     copyCodeToClipBoard(directLink);

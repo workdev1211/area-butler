@@ -22,9 +22,9 @@ const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
         <tr>
           <th>Partei</th>
           <th>
-            <span>Zweitstimme (Prozent)</span>
+            <span>2021</span>
             <br />
-            <span>(Letzte Wahl)</span>
+            <span>(2017)</span>
           </th>
         </tr>
       </thead>
