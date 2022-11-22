@@ -1,9 +1,4 @@
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import {
   MapClipping,
@@ -23,7 +18,7 @@ import EntitySelection from "./EntitySelection";
 import ExposeDownload from "./expose/ExposeDownloadButton";
 import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
-  SelectedMapClipping,
+  ISelectableMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { osmEntityTypes } from "../../../shared/constants/constants";
@@ -41,6 +36,7 @@ export enum ExportTypeEnum {
   CHEATSHEET = "CHEATSHEET",
   EXPOSE = "EXPOSE",
   EXPOSE_DOCX = "EXPOSE_DOCX",
+  ONE_PAGE = "ONE_PAGE",
 }
 
 export interface IQrCodeState {
@@ -48,7 +44,7 @@ export interface IQrCodeState {
   snapshotToken?: string;
 }
 
-export interface ExportModalProps {
+interface IExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
   censusData?: ApiGeojsonFeature[];
@@ -57,7 +53,7 @@ export interface ExportModalProps {
   exportType: ExportTypeEnum;
 }
 
-const ExportModal: FunctionComponent<ExportModalProps> = ({
+const ExportModal: FunctionComponent<IExportModalProps> = ({
   entities,
   groupedEntries,
   censusData = [],
@@ -86,9 +82,9 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
     !!subscriptionPlan?.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     );
-  const selectableClippings = (searchContextState.mapClippings || []).map(
-    (c: MapClipping) => ({ selected: true, ...c })
-  );
+  const initialSelectableMapClippings = (
+    searchContextState.mapClippings || []
+  ).map((c: MapClipping) => ({ ...c, selected: true }));
 
   const getFilteredLegend = (groupedEntities: EntityGroup[]) =>
     groupedEntities
@@ -133,8 +129,9 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   const [legend, setLegend] = useState<ILegendItem[]>(
     getFilteredLegend(groupCopy)
   );
-  const [selectedMapClippings, setSelectedMapClippings] =
-    useState<SelectedMapClipping[]>(selectableClippings);
+  const [selectableMapClippings, setSelectableMapClippings] = useState<
+    ISelectableMapClipping[]
+  >(initialSelectableMapClippings);
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>({
     snapshotToken,
     isShownQrCode: true,
@@ -154,7 +151,10 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   }, [filteredEntities]);
 
   useEffect(() => {
-    if (exportType !== "ARCHIVE" || !searchContextState.printingZipActive) {
+    if (
+      exportType !== ExportTypeEnum.ARCHIVE ||
+      !searchContextState.printingZipActive
+    ) {
       return;
     }
 
@@ -177,7 +177,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
   }, [exportType, searchContextState.printingZipActive]);
 
   const buttonTitle =
-    exportType !== "CHEATSHEET"
+    exportType !== ExportTypeEnum.CHEATSHEET
       ? "Umgebungsanalyse exportieren"
       : "Spickzettel exportieren";
 
@@ -195,26 +195,6 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
             <h1 className="text-xl text-bold">{buttonTitle}</h1>
 
             <div className="overflow-y-scroll flex flex-col h-96">
-              <div className="mt-5">
-                <label
-                  className="cursor-pointer label justify-start gap-3"
-                  key="show-qr-code"
-                >
-                  <input
-                    type="checkbox"
-                    checked={qrCodeState.isShownQrCode}
-                    className="checkbox checkbox-primary"
-                    onChange={() => {
-                      setQrCodeState(
-                        qrCodeState.isShownQrCode
-                          ? { isShownQrCode: false }
-                          : { snapshotToken, isShownQrCode: true }
-                      );
-                    }}
-                  />
-                  <span className="label-text">QR code</span>
-                </label>
-              </div>
               {(hasCensusElectionInSubscription ||
                 hasFederalElectionInSubscription ||
                 hasParticlePollutionElectionInSubscription) && (
@@ -234,14 +214,41 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   }
                 />
               )}
-              <MapClippingSelection
-                selectedMapClippings={selectedMapClippings}
-                setSelectedMapClippings={setSelectedMapClippings}
-              />
+
+              <div>
+                <h1 className="my-5 font-bold">Bilder</h1>
+
+                <div className="mb-5">
+                  <label
+                    className="cursor-pointer label justify-start gap-3 py-0"
+                    key="show-qr-code"
+                  >
+                    <input
+                      type="checkbox"
+                      checked={qrCodeState.isShownQrCode}
+                      className="checkbox checkbox-primary"
+                      onChange={() => {
+                        setQrCodeState(
+                          qrCodeState.isShownQrCode
+                            ? { isShownQrCode: false }
+                            : { snapshotToken, isShownQrCode: true }
+                        );
+                      }}
+                    />
+                    <span className="label-text">QR code</span>
+                  </label>
+                </div>
+
+                <MapClippingSelection
+                  selectableMapClippings={selectableMapClippings}
+                  setSelectableMapClippings={setSelectableMapClippings}
+                />
+              </div>
+
               <EntitySelection
                 groupedEntries={filteredEntities}
                 setGroupedEntries={setFilteredEntities}
-                limit={exportType !== "CHEATSHEET" ? 10 : 3}
+                limit={exportType !== ExportTypeEnum.CHEATSHEET ? 10 : 3}
               />
             </div>
 
@@ -249,7 +256,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
               <button type="button" onClick={onClose} className="btn btn-sm">
                 Schließen
               </button>
-              {exportType === "EXPOSE" && (
+              {exportType === ExportTypeEnum.EXPOSE && (
                 <ExposeDownload
                   entities={entities}
                   groupedEntries={filteredEntities!}
@@ -259,7 +266,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
-                  mapClippings={selectedMapClippings}
+                  mapClippings={selectableMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData
@@ -278,7 +285,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                 />
               )}
 
-              {exportType === "CHEATSHEET" && (
+              {exportType === ExportTypeEnum.CHEATSHEET && (
                 <CheatsheetDownload
                   entities={entities}
                   groupedEntries={filteredEntities!}
@@ -288,7 +295,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
-                  mapClippings={selectedMapClippings}
+                  mapClippings={selectableMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData
@@ -307,7 +314,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                 />
               )}
 
-              {exportType === "EXPOSE_DOCX" && (
+              {exportType === ExportTypeEnum.EXPOSE_DOCX && (
                 <DocxExpose
                   activeMeans={activeMeans}
                   groupedEntries={filteredEntities!}
@@ -315,7 +322,7 @@ const ExportModal: FunctionComponent<ExportModalProps> = ({
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing!}
-                  mapClippings={selectedMapClippings}
+                  mapClippings={selectableMapClippings}
                   federalElectionData={
                     showFederalElection
                       ? searchContextState.federalElectionData

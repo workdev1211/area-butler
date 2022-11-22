@@ -1,12 +1,12 @@
 import { FunctionComponent } from "react";
 
-import { SelectedMapClipping } from "./MapClippingSelection";
+import { ISelectableMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
 import { IQrCodeState } from "./ExportModal";
 
 export interface MapClippingsProps {
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   logo?: string;
   nextPageNumber?: () => string;
   qrCode: IQrCodeState;
@@ -24,14 +24,14 @@ export const MapClippings: FunctionComponent<MapClippingsProps> = ({
   };
 
   // TODO change to reduce only
-  const mapClippingPairs: SelectedMapClipping[][] = mapClippings
+  const mapClippingPairs: ISelectableMapClipping[][] = mapClippings
     .filter((c) => c.selected)
     .reduce(
       (
-        result: SelectedMapClipping[][],
+        result: ISelectableMapClipping[][],
         value,
         index,
-        array: SelectedMapClipping[]
+        array: ISelectableMapClipping[]
       ) => {
         if (index % 2 === 0) result.push(array.slice(index, index + 2));
         return result;

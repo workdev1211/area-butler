@@ -1,7 +1,7 @@
 import { FunctionComponent, useRef, useState } from "react";
 import ReactToPrint from "react-to-print";
 
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
@@ -23,7 +23,7 @@ export interface ExposeDownloadProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   censusData: ApiGeojsonFeature[];
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;

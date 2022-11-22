@@ -2,7 +2,7 @@ import { forwardRef } from "react";
 
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ISelectableMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import {
@@ -41,7 +41,7 @@ export interface CheatsheetProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
@@ -56,7 +56,7 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
   );
 
   // TODO change to a single reduce
-  const groupedEntries = props.groupedEntries
+  const filteredGroups = props.groupedEntries
     .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
     .filter((group) => group.active && group.items.length > 0);
 
@@ -67,8 +67,6 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
   const color = props.color || user?.color || "#aa0c54";
   const logo = user?.logo || areaButlerLogo;
   const particlePollutionData = props.particlePollutionData;
-
-  const filteredGroups = groupedEntries.filter((group) => group.active);
 
   let page = 0;
   const nextPageNumber = (): string => {

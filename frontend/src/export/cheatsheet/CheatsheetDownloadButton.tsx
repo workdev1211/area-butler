@@ -10,7 +10,7 @@ import {
 } from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
@@ -23,7 +23,7 @@ export interface CheatsheetDownloadProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   censusData: ApiGeojsonFeature[];
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;

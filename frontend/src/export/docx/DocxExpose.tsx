@@ -10,7 +10,7 @@ import {
 } from "docx";
 import { saveAs } from "file-saver";
 
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -50,7 +50,7 @@ export interface DocxExposeProps {
   activeMeans: MeansOfTransportation[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];

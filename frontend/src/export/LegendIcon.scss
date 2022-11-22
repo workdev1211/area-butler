@@ -1,0 +1,16 @@
+// Any appropriate changes here should be reflected in the "RenderedLegend.tsx" file
+.img-container {
+  width: 36px;
+  height: 36px;
+  @apply flex items-center justify-center;
+
+  &.default {
+    border-radius: 50%;
+
+    img {
+      width: 20px;
+      height: 20px;
+      filter: brightness(0) invert(1);
+    }
+  }
+}

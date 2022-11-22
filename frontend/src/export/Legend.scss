@@ -4,19 +4,5 @@
 
   .legend-item {
     @apply flex items-center w-3/6 my-1;
-
-    .img-container {
-      width: 36px;
-      height: 36px;
-      @apply flex items-center justify-center mr-2;
-
-      &.default {
-        border-radius: 50%;
-
-        img {
-          filter: brightness(0) invert(1);
-        }
-      }
-    }
   }
 }

@@ -2,7 +2,7 @@ import React, { ForwardedRef, forwardRef } from "react";
 
 import { EntityTable } from "export/EntityTable";
 import FederalElectionSummary from "export/FederalElectionSummary";
-import { SelectedMapClipping } from "export/MapClippingSelection";
+import { ISelectableMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -30,7 +30,7 @@ interface IExposeProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
-  mapClippings: SelectedMapClipping[];
+  mapClippings: ISelectableMapClipping[];
   user: ApiUser | null;
   color?: string;
   legend: ILegendItem[];
