@@ -32,6 +32,7 @@ import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
 import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.svg";
 import { UserActionTypes, UserContext } from "../../../context/UserContext";
 import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
+import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -53,7 +54,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
     useState(false);
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
-  const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isReportsOpen, setIsReportsOpen] = useState(true);
   const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
 
   useEffect(() => {
@@ -61,7 +62,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
       !searchContextState.printingActive &&
       !searchContextState.printingDocxActive &&
       !searchContextState.printingCheatsheetActive &&
-      !searchContextState.printingZipActive
+      !searchContextState.printingZipActive &&
+      !searchContextState.printingOnePageActive
     ) {
       setExportType(undefined);
       return;
@@ -85,12 +87,17 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
       currentExportType = ExportTypeEnum.ARCHIVE;
     }
 
+    if (searchContextState.printingOnePageActive) {
+      currentExportType = ExportTypeEnum.ONE_PAGE;
+    }
+
     setExportType(currentExportType!);
   }, [
     searchContextState.printingActive,
     searchContextState.printingDocxActive,
     searchContextState.printingCheatsheetActive,
     searchContextState.printingZipActive,
+    searchContextState.printingOnePageActive,
   ]);
 
   const clippings = searchContextState.mapClippings;
@@ -371,6 +378,33 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   Überblick PDF
                 </h3>
               </li>
+              <li>
+                <h3
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  onClick={() => {
+                    hasFullyCustomizableExpose
+                      ? searchContextDispatch({
+                          type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
+                          payload: true,
+                        })
+                      : userDispatch({
+                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                          payload: {
+                            open: true,
+                            message: subscriptionUpgradeFullyCustomizableExpose,
+                          },
+                        });
+                  }}
+                >
+                  <img
+                    className="w-6 h-6"
+                    style={invertFilter}
+                    src={pdfIcon}
+                    alt="pdf"
+                  />
+                  Lage Exposé PDF
+                </h3>
+              </li>
             </ul>
           </div>
         </div>
@@ -425,7 +459,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         )}
       </div>
 
-      {exportType && (
+      {exportType && exportType !== ExportTypeEnum.ONE_PAGE && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
           entities={resultingEntities}
@@ -433,6 +467,15 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           censusData={searchContextState.censusData!}
           snapshotToken={searchContextState.responseToken}
           exportType={exportType}
+        />
+      )}
+
+      {exportType === ExportTypeEnum.ONE_PAGE && (
+        <OnePageExportModal
+          activeMeans={searchContextState.responseActiveMeans}
+          entities={resultingEntities}
+          groupedEntries={groupedEntities}
+          snapshotToken={searchContextState.responseToken}
         />
       )}
     </>
