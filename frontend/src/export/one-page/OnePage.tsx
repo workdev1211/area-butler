@@ -120,160 +120,169 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
       <PdfOnePage>
         {/* Logo and address */}
         {/* TODO move to a separate component? */}
-        <div className="flex items-center gap-5">
-          <img className="w-auto h-14" src={logo} alt="Logo" />
-          <div>
-            {!props.realEstateListing && (
-              <div className="text-2xl font-bold">{props.listingAddress}</div>
-            )}
-
-            {props.realEstateListing && (
-              <>
-                <div className="font-bold">
-                  {props.realEstateListing.address}
-                </div>
-                {props.realEstateListing?.costStructure && (
-                  <div>
-                    <strong>Kosten:</strong>{" "}
-                    {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
-                    (
-                    {
-                      allRealEstateCostTypes.find(
-                        (t) =>
-                          t.type === props.realEstateListing.costStructure?.type
-                      )?.label
-                    }
-                    )
-                  </div>
-                )}
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Description */}
-        <div className="flex flex-col gap-3">
-          <div className="text-2xl font-bold">Lagebeschreibung</div>
-          <div className="text-justify">{props.addressDescription}</div>
-        </div>
-
-        {/* POIs */}
-        {/* TODO move to a separate component */}
-        <div className="flex flex-col gap-3">
-          <div className="text-2xl font-bold">Überblick</div>
-          <div className="flex gap-5 flex-wrap">
-            {filteredGroups.map((group) => {
-              return (
-                <div
-                  className="flex flex-col gap-1 flex-wrap"
-                  key={`one-page-group-${group.title}`}
-                  style={{ flex: "0 0 21vw" }}
-                >
-                  <div className="flex items-center">
-                    {group.icon && <OnePageLegendIcon icon={group.icon} />}
-                    <div className="text-base font-bold">{group.title}</div>
-                  </div>
-                  <div
-                    className="flex flex-col gap-1"
-                    style={{ marginLeft: "12px" }}
-                  >
-                    {group.items.map((item, i) => {
-                      return (
-                        <div
-                          className="text-xs"
-                          key={`one-page-group-item-${i}-${
-                            item.name || group.title
-                          }`}
-                        >
-                          {`${i + 1}. ${
-                            item.name || group.title
-                          } (${distanceToHumanReadable(
-                            item.distanceInMeters
-                          )})`}
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-
-        {/* Map and QR code */}
-        {/* TODO move to a separate component */}
-        {selectedMapClippings.length > 0 && (
-          <div>
-            <div className="text-2xl font-bold">Interaktive Karte</div>
-            <div
-              className="relative mt-5"
-              style={{ width: "auto", height: "400px" }}
-            >
-              {/* Main image */}
-              <img
-                style={{
-                  objectFit: "cover",
-                  height: "100%",
-                  width: "100%",
-                }}
-                src={selectedMapClippings[0].mapClippingDataUrl}
-                alt="map-clipping-1"
-              />
-              {/* Inner image */}
-              {selectedMapClippings[1] && (
-                <img
-                  className="absolute"
-                  style={{
-                    objectFit: "cover",
-                    width: "45%",
-                    height: "auto",
-                    bottom: "3px",
-                    left: "3px",
-                    boxShadow: "0 0 5px var(--base-anthracite)",
-                  }}
-                  src={selectedMapClippings[1].mapClippingDataUrl}
-                  alt="map-clipping-2"
-                />
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-3">
+            <img className="self-start h-14" src={logo} alt="Logo" />
+            <div>
+              {!props.realEstateListing && (
+                <div className="text-2xl font-bold">{props.listingAddress}</div>
               )}
-              {/* QR code and the text */}
-              {qrCodeImage && (
+
+              {props.realEstateListing && (
                 <>
-                  <div
-                    className="flex items-center gap-1 absolute p-0.5 rounded-md"
-                    style={{
-                      bottom: "1.5%",
-                      right: "16%",
-                      background: color,
-                      boxShadow: "0 0 5px var(--base-anthracite)",
-                    }}
-                  >
-                    <div className="text-white text-xs">
-                      Scannen und neue Wohnlage entdecken
-                    </div>
-                    <img
-                      src={downArrowIcon}
-                      alt="right-arrow"
-                      style={{ transform: "rotate(-90deg)" }}
-                    />
+                  <div className="font-bold">
+                    {props.realEstateListing.address}
                   </div>
-                  <img
-                    className="absolute"
-                    style={{
-                      objectFit: "cover",
-                      width: "15%",
-                      height: "auto",
-                      bottom: "3px",
-                      right: "3px",
-                      boxShadow: "0 0 5px var(--base-anthracite)",
-                    }}
-                    src={qrCodeImage}
-                    alt="qr-code"
-                  />
+                  {props.realEstateListing?.costStructure && (
+                    <div>
+                      <strong>Kosten:</strong>{" "}
+                      {getRealEstateCost(
+                        props.realEstateListing?.costStructure
+                      )}{" "}
+                      (
+                      {
+                        allRealEstateCostTypes.find(
+                          (t) =>
+                            t.type ===
+                            props.realEstateListing.costStructure?.type
+                        )?.label
+                      }
+                      )
+                    </div>
+                  )}
                 </>
               )}
             </div>
           </div>
-        )}
+
+          {/* Description */}
+          {props.addressDescription && (
+            <div className="flex flex-col gap-3">
+              <div className="text-2xl font-bold">Lagebeschreibung</div>
+              <div className="text-justify">{props.addressDescription}</div>
+            </div>
+          )}
+
+          {/* POIs */}
+          {/* TODO move to a separate component */}
+          <div className="flex flex-col gap-3">
+            <div className="text-2xl font-bold">Überblick</div>
+            <div className="flex gap-5 flex-wrap">
+              {filteredGroups.map((group) => {
+                return (
+                  <div
+                    className="flex flex-col gap-1 flex-wrap"
+                    key={`one-page-group-${group.title}`}
+                    style={{ flex: "0 0 21vw" }}
+                  >
+                    <div className="flex items-center gap-2">
+                      {group.icon && <OnePageLegendIcon icon={group.icon} />}
+                      <div className="text-base font-bold">{group.title}</div>
+                    </div>
+                    <div
+                      className="flex flex-col gap-1"
+                      style={{ marginLeft: "12px" }}
+                    >
+                      {group.items.map((item, i) => {
+                        return (
+                          <div
+                            className="text-xs"
+                            key={`one-page-group-item-${i}-${
+                              item.name || group.title
+                            }`}
+                          >
+                            {`${i + 1}. ${
+                              item.name || group.title
+                            } (${distanceToHumanReadable(
+                              item.distanceInMeters
+                            )})`}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Map and QR code */}
+          {/* TODO move to a separate component */}
+          {selectedMapClippings.length > 0 && (
+            <div className="flex flex-col">
+              <div className="text-2xl font-bold">Interaktive Karte</div>
+              <div
+                className="relative mt-5"
+                style={{ width: "auto", height: "400px" }}
+              >
+                {/* Main image */}
+                <img
+                  style={{
+                    objectFit: "cover",
+                    height: "100%",
+                    width: "100%",
+                  }}
+                  src={selectedMapClippings[0].mapClippingDataUrl}
+                  alt="map-clipping-1"
+                />
+                {/* Inner image */}
+                {selectedMapClippings[1] && (
+                  <img
+                    className="absolute"
+                    style={{
+                      objectFit: "cover",
+                      width: "35%",
+                      height: "auto",
+                      bottom: "3px",
+                      left: "3px",
+                      boxShadow: "0 0 5px var(--base-anthracite)",
+                    }}
+                    src={selectedMapClippings[1].mapClippingDataUrl}
+                    alt="map-clipping-2"
+                  />
+                )}
+                {/* QR code and the text */}
+                {qrCodeImage && (
+                  <>
+                    <div
+                      className="flex items-center gap-1 absolute p-0.5 rounded-md"
+                      style={{
+                        bottom: "1.5%",
+                        right: "16%",
+                        background: color,
+                        boxShadow: "0 0 5px var(--base-anthracite)",
+                      }}
+                    >
+                      <div className="flex w-fit items-center">
+                        <div className="text-white text-xs px-0.5">
+                          Scannen und neue Wohnlage entdecken
+                        </div>
+                        <img
+                          src={downArrowIcon}
+                          alt="right-arrow"
+                          style={{ transform: "rotate(-90deg)" }}
+                        />
+                      </div>
+                    </div>
+                    <img
+                      className="absolute"
+                      style={{
+                        objectFit: "cover",
+                        width: "15%",
+                        height: "auto",
+                        bottom: "3px",
+                        right: "3px",
+                        boxShadow: "0 0 5px var(--base-anthracite)",
+                      }}
+                      src={qrCodeImage}
+                      alt="qr-code"
+                    />
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
       </PdfOnePage>
     </div>
   );

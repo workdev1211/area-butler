@@ -21,15 +21,12 @@ import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import {
-  deriveIconForOsmName,
-  sanitizeFilename,
-} from "../shared/shared.functions";
+import { sanitizeFilename } from "../shared/shared.functions";
 import JsZip from "jszip";
 import { saveAs } from "file-saver";
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
+import { getFilteredLegend } from "./shared/shared.functions";
 
 export enum ExportTypeEnum {
   ARCHIVE = "ARCHIVE",
@@ -85,25 +82,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
   ).map((c: MapClipping) => ({ ...c, selected: true }));
-
-  const getFilteredLegend = (groupedEntities: EntityGroup[]) =>
-    groupedEntities
-      .reduce<ILegendItem[]>((result, { title, active }) => {
-        const foundOsmEntityType =
-          active && osmEntityTypes.find(({ label }) => title === label);
-
-        if (foundOsmEntityType) {
-          result.push({
-            title,
-            icon: deriveIconForOsmName(foundOsmEntityType.name, user?.poiIcons),
-          });
-        }
-
-        return result;
-      }, [])
-      .sort((a, b) =>
-        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-      );
 
   const onClose = () => {
     searchContextDispatch({

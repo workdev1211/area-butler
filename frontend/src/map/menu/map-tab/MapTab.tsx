@@ -317,8 +317,12 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                   "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
               }}
             >
-              Dieser Bereich wird in naher Zukunft für Sie mit wertvollem Inhalt
-              gefüllt.
+              Hier finden Sie ab Dez 2022 die AreaButler Lageindizes. Sie
+              fassen, in 8 Kategorien wie Nahversorgung, ÖPNV etc Die Anzahl der
+              relevanten POIs zusammen, Gewichten sie über ihre Distanz (je
+              dichter desto besser) und standardisieren sie in einer Zahl von
+              0-100%. So können Sie z.B. auf einen Blick zwei entfernte Objekte
+              anhand ihrer Indexwerte vergleichen.
             </div>
           </div>
         </div>
@@ -481,8 +485,10 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                     "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
                 }}
               >
-                Dieser Bereich wird in naher Zukunft für Sie mit wertvollem
-                Inhalt gefüllt.
+                Hier finden Sie ab Dez 2022 Daten zu den Themen Arbeitskräfte,
+                Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro
+                Kopf, Gewerbesteuereinnahmen, Logistikcluster-Daten,
+                Logistik-Attraktivität.
               </div>
             </div>
           </div>

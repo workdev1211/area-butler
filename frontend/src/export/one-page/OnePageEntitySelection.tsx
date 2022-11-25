@@ -1,11 +1,13 @@
 import { FunctionComponent, useEffect } from "react";
 
 import { EntityGroup } from "../../components/SearchResultContainer";
-import { toastError } from "../../shared/shared.functions";
+import { setBackgroundColor, toastError } from "../../shared/shared.functions";
 
 interface IOnePageEntitySelectionProps {
   groupedEntries: EntityGroup[];
   setGroupedEntries: (groups: EntityGroup[]) => void;
+  closeCollapsable: () => void;
+  color: string;
   entityGroupLimit?: number;
   itemNumberLimit?: number;
 }
@@ -15,6 +17,8 @@ const OnePageEntitySelection: FunctionComponent<
 > = ({
   groupedEntries,
   setGroupedEntries,
+  closeCollapsable,
+  color,
   entityGroupLimit = 8,
   itemNumberLimit = 3,
 }) => {
@@ -62,36 +66,39 @@ const OnePageEntitySelection: FunctionComponent<
   };
 
   return (
-    <div>
-      <h1 className="my-5 font-bold">
-        Überblick: Kategorien wählen (
-        {groupedEntries.filter((group) => group.active).length} /{" "}
-        {entityGroupLimit
-          ? `${entityGroupLimit} (${groupedEntries.length})`
-          : groupedEntries.length}
-        )
-      </h1>
-      <div className="flex flex-col gap-3">
+    <>
+      <div
+        className="collapse-title"
+        ref={(node) => {
+          setBackgroundColor(node, color);
+        }}
+        onClick={closeCollapsable}
+      >
+        2. Überblick ({groupedEntries.filter((group) => group.active).length}/
+        {entityGroupLimit || groupedEntries.length})
+      </div>
+      <div className="collapse-content">
         {groupedEntries.map((group, i) => (
           <div
-            className="flex items-center gap-6 font-medium p-4 border"
+            className="flex items-center gap-6 p-4 font-medium border cursor-pointer"
+            onClick={() => {
+              onGroupSelectionChange(group);
+            }}
             key={`entity-group-${group.title}`}
           >
             <input
               className="checkbox checkbox-primary"
               type="checkbox"
               checked={group.active}
-              onChange={() => {
-                onGroupSelectionChange(group);
-              }}
+              readOnly={true}
             />
-            <div className="w-full select-none cursor-pointer">
+            <div className="select-none">
               {group.title} ({group.items.length})
             </div>
           </div>
         ))}
       </div>
-    </div>
+    </>
   );
 };
 

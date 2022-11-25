@@ -406,7 +406,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     src={pdfIcon}
                     alt="pdf"
                   />
-                  Lage Exposé PDF
+                  Lage Exposé generieren
                 </h3>
               </li>
             </ul>
@@ -495,7 +495,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
               }}
             >
-              Hier könnten Ihre Links aufgeführt werden.
+              Hier könnten Sie Ihre Links speichern und mit KollegInnen teilen.
+              Sprechen Sie uns für diese Funktion gerne an.
             </div>
           </div>
         </div>
@@ -533,7 +534,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
               }}
             >
-              Hier könnten Sie Ihre Dateien ablegen.
+              Hier könnten Sie Ihre Dateien speichern und mit KollegInnen
+              teilen. Sprechen Sie uns für diese Funktion gerne an.
             </div>
           </div>
         </div>
@@ -552,10 +554,9 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
       {exportType === ExportTypeEnum.ONE_PAGE && (
         <OnePageExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
           groupedEntries={groupedEntities}
           snapshotToken={searchContextState.responseToken}
+          primaryColor={config?.primaryColor}
         />
       )}
     </>

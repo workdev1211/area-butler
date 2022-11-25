@@ -127,7 +127,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     ? `calc(100% - calc(var(--menu-item-h) * ${
         isShownAddress ? 3 : 2
       }) - var(--menu-footer-h))`
-    : "calc(100% - var(--menu-item-h)";
+    : "calc(100% - var(--menu-item-h))";
 
   return (
     <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>

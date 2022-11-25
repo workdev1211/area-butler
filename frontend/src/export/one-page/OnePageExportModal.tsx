@@ -1,29 +1,21 @@
-import React, {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 
+import "./OnePageExportModal.scss";
 import {
   MapClipping,
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { ApiUser, MeansOfTransportation } from "../../../../shared/types/types";
-import MapClippingSelection, {
-  ISelectableMapClipping,
-} from "../MapClippingSelection";
-import {
-  EntityGroup,
-  ResultEntity,
-} from "../../components/SearchResultContainer";
-import { osmEntityTypes } from "../../../../shared/constants/constants";
-import { deriveIconForOsmName } from "../../shared/shared.functions";
+import { ApiUser } from "../../../../shared/types/types";
+import { ISelectableMapClipping } from "../MapClippingSelection";
+import { EntityGroup } from "../../components/SearchResultContainer";
+import { setBackgroundColor } from "../../shared/shared.functions";
 import { ILegendItem } from "../Legend";
 import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
+import { getFilteredLegend } from "../shared/shared.functions";
+import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 
 const SCREENSHOT_LIMIT = 2;
 const CHARACTER_LIMIT = 580;
@@ -33,27 +25,34 @@ export interface IQrCodeState {
   snapshotToken?: string;
 }
 
+interface IExportFlowState {
+  addressDescription: boolean;
+  poiSelection: boolean;
+  qrCodeMapClippings: boolean;
+}
+
 interface IOnePageExportModalProps {
-  entities: ResultEntity[];
   groupedEntries: any;
-  activeMeans: MeansOfTransportation[];
-  snapshotToken?: string;
+  snapshotToken: string;
+  primaryColor?: string;
 }
 
 const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
-  entities,
   groupedEntries,
   snapshotToken,
+  primaryColor = "var(--primary-gradient)",
 }) => {
-  const groupCopy: EntityGroup[] = JSON.parse(
-    JSON.stringify(groupedEntries)
-  ).reduce((result: EntityGroup[], group: EntityGroup) => {
-    if (group.title !== "Meine Objekte" && group.items.length > 0) {
-      result.push(group);
-    }
+  const groupCopy: EntityGroup[] = groupedEntries
+    .reduce((result: EntityGroup[], group: EntityGroup) => {
+      if (group.title !== "Meine Objekte" && group.items.length > 0) {
+        result.push(group);
+      }
 
-    return result;
-  }, []);
+      return result;
+    }, [])
+    .sort((a: EntityGroup, b: EntityGroup) =>
+      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+    );
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -65,24 +64,10 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     searchContextState.mapClippings || []
   ).map((c: MapClipping, i) => ({ ...c, selected: i < SCREENSHOT_LIMIT }));
 
-  const getFilteredLegend = (groupedEntities: EntityGroup[]) => {
-    return groupedEntities
-      .reduce<ILegendItem[]>((result, { title, active }) => {
-        const foundOsmEntityType =
-          active && osmEntityTypes.find(({ label }) => title === label);
-
-        if (foundOsmEntityType) {
-          result.push({
-            title,
-            icon: deriveIconForOsmName(foundOsmEntityType.name, user?.poiIcons),
-          });
-        }
-
-        return result;
-      }, [])
-      .sort((a, b) =>
-        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-      );
+  const initialExportFlowState: IExportFlowState = {
+    addressDescription: false,
+    poiSelection: false,
+    qrCodeMapClippings: false,
   };
 
   const [filteredEntities, setFilteredEntities] =
@@ -98,6 +83,12 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     isShownQrCode: true,
   });
   const [addressDescription, setAddressDescription] = useState<string>("");
+  const [isOpen, setIsOpen] = useState<IExportFlowState>({
+    ...initialExportFlowState,
+  });
+  const [exportFlow, setExportFlow] = useState<IExportFlowState>({
+    ...initialExportFlowState,
+  });
 
   useEffect(() => {
     setLegend(getFilteredLegend(filteredEntities));
@@ -111,91 +102,146 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     });
   };
 
-  const buttonTitle = "Lage Exposé exportieren";
+  const buttonTitle = "Lage Exposé generieren";
 
   return (
     <>
       {searchContextState.printingOnePageActive && (
         <div id="one-page-expose-modal" className="modal modal-open z-2000">
           <div className="modal-box">
-            <h1 className="text-xl text-bold flex items-center gap-2">
-              <span>{buttonTitle}</span>
-              <span className="badge badge-primary">BETA</span>
-            </h1>
+            <div className="flex flex-col gap-3 pb-[5px]">
+              <h1 className="text-xl text-bold flex items-center gap-2 pl-[24px]">
+                <span>{buttonTitle}</span>
+                <span className="badge badge-primary">BETA</span>
+              </h1>
 
-            <div className="flex flex-col h-[35rem] overflow-y-scroll">
-              <div>
-                <label className="label my-5">
-                  {/*<div className="indicator">*/}
-                  {/*  <div*/}
-                  {/*    className="indicator-item badge w-5 h-5 text-white"*/}
-                  {/*    style={{*/}
-                  {/*      border: "1px solid var(--primary)",*/}
-                  {/*      borderRadius: "50%",*/}
-                  {/*      backgroundColor: "var(--primary)",*/}
-                  {/*    }}*/}
-                  {/*  >*/}
-                  {/*    <div*/}
-                  {/*      className="tooltip tooltip-left tooltip-accent text-justify font-medium select-none"*/}
-                  {/*      data-tip="In dieses Feld können Sie einen zusätzlichen Wunsch an die KI eingeben. Dieser Wunsch wird bei der Erstellung des Textes möglichst berücksichtigt."*/}
-                  {/*    >*/}
-                  {/*      i*/}
-                  {/*    </div>*/}
-                  {/*  </div>*/}
-                  {/*  <span className="text-base font-bold mr-3">*/}
-                  {/*    Lagebeschreibung*/}
-                  {/*  </span>*/}
-                  {/*</div>*/}
+              <div className="bg-primary-gradient flex items-center">
+                <span className="text-sm font-bold pl-[24px]">
+                  Bitte führen Sie alle Schritte aus.
+                </span>
+              </div>
+            </div>
 
-                  <span className="label-text text-base font-bold">
-                    Lagebeschreibung ({addressDescription.length} / {CHARACTER_LIMIT})
-                  </span>
-                </label>
-                <textarea
-                  className="textarea w-full h-24 textarea-bordered"
-                  value={addressDescription}
-                  onChange={({ target: { value } }) => {
-                    setAddressDescription(value);
+            <div className="flex flex-col h-[35rem] overflow-y-auto">
+              <div
+                className={`collapse collapse-arrow view-option ${
+                  isOpen.addressDescription
+                    ? "collapse-open"
+                    : "collapse-closed"
+                }`}
+              >
+                <div
+                  className="collapse-title"
+                  ref={(node) => {
+                    setBackgroundColor(node, primaryColor);
                   }}
-                  maxLength={CHARACTER_LIMIT}
+                  onClick={() => {
+                    setIsOpen({
+                      ...isOpen,
+                      addressDescription: !isOpen.addressDescription,
+                    });
+                    setExportFlow({ ...exportFlow, addressDescription: true });
+                  }}
+                >
+                  1. Lagebeschreibung ({addressDescription.length}/
+                  {CHARACTER_LIMIT})
+                </div>
+                <div className="collapse-content textarea-content">
+                  <textarea
+                    className="textarea textarea-bordered w-full"
+                    value={addressDescription}
+                    onChange={({ target: { value } }) => {
+                      setAddressDescription(value);
+                    }}
+                    maxLength={CHARACTER_LIMIT}
+                    rows={5}
+                  />
+
+                  <div className="divider m-0" />
+
+                  <div className="text-justify text-sm font-bold py-[3px]">
+                    Inspiration gesucht? Nutzen Sie unseren KI-Lagetextgenerator
+                    in der rechten Seitenleiste. KI-Text in Zwischenablage
+                    speichern, hier einfügen und bearbeiten.
+                  </div>
+                </div>
+              </div>
+
+              <div
+                className={`collapse collapse-arrow view-option ${
+                  isOpen.poiSelection ? "collapse-open" : "collapse-closed"
+                }`}
+              >
+                <OnePageEntitySelection
+                  groupedEntries={filteredEntities}
+                  setGroupedEntries={setFilteredEntities}
+                  closeCollapsable={() => {
+                    setIsOpen({
+                      ...isOpen,
+                      poiSelection: !isOpen.poiSelection,
+                    });
+                    setExportFlow({ ...exportFlow, poiSelection: true });
+                  }}
+                  color={primaryColor}
                 />
               </div>
 
-              <OnePageEntitySelection
-                groupedEntries={filteredEntities}
-                setGroupedEntries={setFilteredEntities}
-              />
-
-              <div>
-                <h1 className="my-5 font-bold">Kartenausschnitte & QR-Code</h1>
-
-                {/* TODO move to the separate component (see also ExportModal component) */}
-                <div className="mb-5">
-                  <label
-                    className="cursor-pointer label justify-start gap-3 py-0"
-                    key="show-qr-code"
-                  >
-                    <input
-                      type="checkbox"
-                      checked={qrCodeState.isShownQrCode}
-                      className="checkbox checkbox-primary"
-                      onChange={() => {
-                        setQrCodeState(
-                          qrCodeState.isShownQrCode
-                            ? { isShownQrCode: false }
-                            : { snapshotToken, isShownQrCode: true }
-                        );
-                      }}
-                    />
-                    <span className="label-text">QR-Code</span>
-                  </label>
+              <div
+                className={`collapse collapse-arrow view-option ${
+                  isOpen.qrCodeMapClippings
+                    ? "collapse-open"
+                    : "collapse-closed"
+                }`}
+              >
+                <div
+                  className="collapse-title"
+                  ref={(node) => {
+                    setBackgroundColor(node, primaryColor);
+                  }}
+                  onClick={() => {
+                    setIsOpen({
+                      ...isOpen,
+                      qrCodeMapClippings: !isOpen.qrCodeMapClippings,
+                    });
+                    setExportFlow({ ...exportFlow, qrCodeMapClippings: true });
+                  }}
+                >
+                  3. Kartenausschnitte & QR-Code
                 </div>
+                <div className="collapse-content">
+                  <div className="flex flex-col gap-5 pt-5">
+                    <label
+                      className="cursor-pointer label justify-start gap-3 p-0"
+                      key="show-qr-code"
+                    >
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectableMapClippings.length > 0 &&
+                          qrCodeState.isShownQrCode
+                        }
+                        className="checkbox checkbox-primary"
+                        onChange={() => {
+                          setQrCodeState(
+                            qrCodeState.isShownQrCode
+                              ? { isShownQrCode: false }
+                              : { snapshotToken, isShownQrCode: true }
+                          );
+                        }}
+                        disabled={selectableMapClippings.length === 0}
+                      />
+                      <span className="label-text">QR-Code</span>
+                    </label>
 
-                <MapClippingSelection
-                  selectableMapClippings={selectableMapClippings}
-                  setSelectableMapClippings={setSelectableMapClippings}
-                  limit={SCREENSHOT_LIMIT}
-                />
+                    <div className="divider m-0" />
+
+                    <OnePageMapClippingSelection
+                      selectableMapClippings={selectableMapClippings}
+                      setSelectableMapClippings={setSelectableMapClippings}
+                      limit={SCREENSHOT_LIMIT}
+                    />
+                  </div>
+                </div>
               </div>
             </div>
 
@@ -209,7 +255,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 groupedEntries={filteredEntities!}
                 listingAddress={searchContextState.placesLocation.label}
                 realEstateListing={searchContextState.realEstateListing!}
-                downloadButtonDisabled={false}
+                downloadButtonDisabled={
+                  !Object.keys(exportFlow).every(
+                    (key) => exportFlow[key as keyof IExportFlowState]
+                  )
+                }
                 onAfterPrint={onClose}
                 user={user}
                 color={searchContextState.responseConfig?.primaryColor}

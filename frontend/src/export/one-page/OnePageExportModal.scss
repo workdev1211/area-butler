@@ -1,0 +1,37 @@
+#one-page-expose-modal {
+  & > .modal-box {
+    @apply pl-0;
+
+    & > div > .collapse {
+      &.collapse-open {
+        .collapse-title {
+          &:after {
+            top: 25px !important;
+          }
+        }
+
+        .collapse-content {
+          &.textarea-content {
+            margin: 7px 0 0 7px !important;
+          }
+        }
+      }
+
+      &.collapse-closed {
+        .collapse-title {
+          &:after {
+            top: 22px !important;
+          }
+        }
+      }
+
+      .collapse-title {
+        @apply select-none;
+      }
+
+      .collapse-content {
+        margin-left: 24px !important;
+      }
+    }
+  }
+}
