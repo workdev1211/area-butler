@@ -131,7 +131,7 @@ export class OverpassService {
 
       const similarityThreshold =
         osmEntityTypes.find((e) => e.label === elementToInspect.entity.label)
-          ?.uniqueTreshold || 0.8;
+          ?.uniqueThreshold || 0.8;
 
       const polygon = circle(
         point([

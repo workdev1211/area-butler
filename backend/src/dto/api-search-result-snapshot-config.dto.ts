@@ -16,7 +16,7 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import ApiSnippetEntityVisiblityDto from './api-snippet-entity-visiblity.dto';
+import ApiSnippetEntityVisibilityDto from './api-snippet-entity-visiblity.dto';
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
 
 class ApiSearchResultSnapshotConfigDto
@@ -34,8 +34,8 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiSnippetEntityVisiblityDto)
-  entityVisibility?: ApiSnippetEntityVisiblityDto[];
+  @Type(() => ApiSnippetEntityVisibilityDto)
+  entityVisibility?: ApiSnippetEntityVisibilityDto[];
 
   @IsOptional()
   @IsBoolean()

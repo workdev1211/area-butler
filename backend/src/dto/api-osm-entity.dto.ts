@@ -2,12 +2,11 @@ import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
   OsmName,
-  OsmType
+  OsmType,
 } from '@area-butler-types/types';
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 class ApiOsmEntityDto implements ApiOsmEntity {
-
   @IsNotEmpty()
   @IsEnum(ApiOsmEntityCategory)
   category: ApiOsmEntityCategory;
@@ -29,10 +28,10 @@ class ApiOsmEntityDto implements ApiOsmEntity {
   @IsOptional()
   @IsNumber()
   uniqueRadius?: number;
-  
+
   @IsOptional()
   @IsNumber()
-  uniqueTreshold?: number;
+  uniqueThreshold?: number;
 }
 
 export default ApiOsmEntityDto;

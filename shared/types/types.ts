@@ -149,7 +149,7 @@ export interface ApiOsmEntity {
   label: string;
   category: ApiOsmEntityCategory;
   uniqueRadius?: number;
-  uniqueTreshold?: number;
+  uniqueThreshold?: number;
 }
 
 export interface ApiAddress {
@@ -272,7 +272,7 @@ export interface IApiCreateSnapshotFromTemplateQuery {
 
 export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
 
-export interface ApiSnippetEntitVisiblity {
+export interface ApiSnippetEntityVisibility {
   id: string;
   excluded?: boolean;
 }
@@ -285,7 +285,7 @@ export interface ApiSearchResultSnapshotConfig {
   defaultActiveMeans?: MeansOfTransportation[];
   defaultActiveGroups?: string[];
   groupItems: boolean;
-  entityVisibility?: ApiSnippetEntitVisiblity[];
+  entityVisibility?: ApiSnippetEntityVisibility[];
   primaryColor?: string;
   mapIcon?: string;
   fixedRealEstates?: boolean;

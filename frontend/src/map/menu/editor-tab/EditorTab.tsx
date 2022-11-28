@@ -10,7 +10,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
   ApiSearchResultSnapshotResponse,
-  ApiSnippetEntitVisiblity,
+  ApiSnippetEntityVisibility,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import { LocalityItemContent } from "../menu-item/locality-item/LocalityItem";
@@ -163,7 +163,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({ ...config, fixedRealEstates: !config?.fixedRealEstates });
   };
 
-  const changeEntityVisibility = (visibility: ApiSnippetEntitVisiblity[]) => {
+  const changeEntityVisibility = (visibility: ApiSnippetEntityVisibility[]) => {
     onConfigChange({ ...config, entityVisibility: [...visibility] });
   };
 
