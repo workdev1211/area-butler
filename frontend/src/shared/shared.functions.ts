@@ -31,7 +31,8 @@ import schoolIcon from "../assets/icons/pois/school.svg";
 import universityIcon from "../assets/icons/pois/university.svg";
 import doctorsIcon from "../assets/icons/pois/doctors.svg";
 import clinicIcon from "../assets/icons/pois/hospital.svg";
-import postOfficeIcon from "../assets/icons/pois/post_office.svg";
+// TODO remove in future
+// import postOfficeIcon from "../assets/icons/pois/post_office.svg";
 import motorwayLinkIcon from "../assets/icons/pois/motorway_link.svg";
 import sportIcon from "../assets/icons/pois/sport.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
@@ -259,6 +260,7 @@ export const deriveIconForOsmName = (
         color: "#267F9D",
       };
     case OsmName.kiosk:
+    case OsmName.post_office:
       return {
         icon: chemistIcon,
         color: "#267F9D",
@@ -274,6 +276,7 @@ export const deriveIconForOsmName = (
         color: "#C71362",
       };
     case OsmName.bar:
+    case OsmName.pub:
       return {
         icon: barIcon,
         color: "#E3BB3F",
@@ -328,11 +331,12 @@ export const deriveIconForOsmName = (
         icon: clinicIcon,
         color: "#42AEA7",
       };
-    case OsmName.post_office:
-      return {
-        icon: postOfficeIcon,
-        color: "#66A3B7",
-      };
+    // TODO remove in future
+    // case OsmName.post_office:
+    //   return {
+    //     icon: postOfficeIcon,
+    //     color: "#66A3B7",
+    //   };
     case OsmName.motorway_link:
       return {
         icon: motorwayLinkIcon,
@@ -346,6 +350,11 @@ export const deriveIconForOsmName = (
         icon: sportIcon,
         color: "#9F532E",
       };
+    case OsmName.tower:
+    case OsmName.pole:
+    case OsmName["multi-storey"]:
+    case OsmName.underground:
+    case OsmName.surface:
     default:
       return {
         icon: parkIcon,

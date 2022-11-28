@@ -71,7 +71,7 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
             .map((entity) => (
               <label
                 className="cursor-pointer label justify-start mt-2 pl-0"
-                key={`locality-${entity.label}`}
+                key={`locality-${entity.name}-${entity.label}`}
               >
                 <input
                   type="checkbox"

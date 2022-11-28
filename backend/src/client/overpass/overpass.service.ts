@@ -201,15 +201,21 @@ export class OverpassService {
       );
 
       queryParts.push(
-        `node["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
+        `node["${entityType.type}"="${entityType.name}"]${
+          entityType.access ? `["access"${entityType.access}]` : ''
+        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
 
       queryParts.push(
-        `way["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
+        `way["${entityType.type}"="${entityType.name}"]${
+          entityType.access ? `["access"${entityType.access}]` : ''
+        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
 
       queryParts.push(
-        `relation["${entityType.type}"="${entityType.name}"](around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
+        `relation["${entityType.type}"="${entityType.name}"]${
+          entityType.access ? `["access"${entityType.access}]` : ''
+        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
       );
     }
 

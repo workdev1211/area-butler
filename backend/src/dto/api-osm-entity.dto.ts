@@ -1,10 +1,17 @@
 import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+
+import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
   OsmName,
   OsmType,
 } from '@area-butler-types/types';
-import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 class ApiOsmEntityDto implements ApiOsmEntity {
   @IsNotEmpty()
@@ -12,6 +19,7 @@ class ApiOsmEntityDto implements ApiOsmEntity {
   category: ApiOsmEntityCategory;
 
   @IsOptional()
+  @IsString()
   id?: string;
 
   @IsNotEmpty()

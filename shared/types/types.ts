@@ -150,6 +150,7 @@ export interface ApiOsmEntity {
   category: ApiOsmEntityCategory;
   uniqueRadius?: number;
   uniqueThreshold?: number;
+  access?: string;
 }
 
 export interface ApiAddress {
@@ -208,6 +209,10 @@ export enum OsmType {
   shop = "shop",
   public_transport = "public_transport",
   highway = "highway",
+  tourism = "tourism",
+  parking = "parking",
+  "generator:method" = "generator:method",
+  power = "power",
 }
 
 export enum OsmName {
@@ -237,6 +242,18 @@ export enum OsmName {
   swimming_pool = "swimming_pool",
   theatre = "theatre",
   university = "university",
+  hotel = "hotel",
+  pharmacy = "pharmacy",
+  attraction = "attraction",
+  "multi-storey" = "multi-storey",
+  underground = "underground",
+  surface = "surface",
+  museum = "museum",
+  charging_station = "charging_station",
+  wind_turbine = "wind_turbine",
+  tower = "tower",
+  pole = "pole",
+  pub = "pub",
 }
 
 export interface ApiUpdateSearchResultSnapshot {
