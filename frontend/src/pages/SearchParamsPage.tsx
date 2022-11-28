@@ -343,10 +343,20 @@ const SearchParamsPage: FunctionComponent = () => {
       payload: undefined,
     });
 
+    const preferredLocations = searchContextState.preferredLocations || [];
+
+    if (preferredLocations.length > 0) {
+      preferredLocations.forEach((location, i) => {
+        if (!location.title) {
+          location.title = `Wichtige Adresse ${i}`;
+        }
+      });
+    }
+
     const search: ApiSearch = {
+      preferredLocations,
       searchTitle: searchContextState?.placesLocation?.label || "Mein Standort",
       coordinates: searchContextState.location!,
-      preferredLocations: searchContextState.preferredLocations || [],
       meansOfTransportation: searchContextState.transportationParams,
       preferredAmenities: searchContextState.localityParams.map(
         (l: ApiOsmEntity) => l.name
@@ -620,7 +630,7 @@ const SearchParamsPage: FunctionComponent = () => {
               //   key="express-analysis-button"
               //   modalConfig={increaseRequestLimitExpressModalConfig}
               // />,
-              <div />,
+              <div key={"dummy"} />,
               <IncreaseLimitModal
                 key="search-button"
                 modalConfig={increaseRequestLimitSearchModalConfig}
@@ -629,7 +639,7 @@ const SearchParamsPage: FunctionComponent = () => {
           : [
               // TODO remove in future
               // <ExpressAnalysisButton key="express-analysis-button" />,
-              <div />,
+              <div key={"dummy"} />,
               <SearchButton key="search-button" />,
             ]
       }
