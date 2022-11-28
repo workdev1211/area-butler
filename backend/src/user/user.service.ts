@@ -354,19 +354,19 @@ export class UserService {
     if (settings.logo) {
       Object.assign(user, { logo: settings.logo });
     } else if (settings.logo === null) {
-      Object.assign(user, { logo: null });
+      Object.assign(user, { logo: undefined });
     }
 
     if (settings.mapIcon) {
       Object.assign(user, { mapIcon: settings.mapIcon });
     } else if (settings.logo === null) {
-      Object.assign(user, { mapIcon: null });
+      Object.assign(user, { mapIcon: undefined });
     }
 
     if (settings.color) {
       Object.assign(user, { color: settings.color });
     } else if (settings.color === null) {
-      Object.assign(user, { color: null });
+      Object.assign(user, { color: undefined });
     }
 
     return user.save();
