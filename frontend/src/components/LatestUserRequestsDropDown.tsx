@@ -4,9 +4,9 @@ import { RealEstateContext } from "context/RealEstateContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import useOnClickOutside from "hooks/onclickoutside";
-import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { ApiOsmEntity, ApiSearch } from "../../../shared/types/types";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 const LatestUserRequestsDropDown: FunctionComponent = () => {
   const { userState } = useContext(UserContext);
@@ -47,7 +47,7 @@ const LatestUserRequestsDropDown: FunctionComponent = () => {
         JSON.stringify(l.coordinates) === JSON.stringify(request.coordinates)
     );
 
-    if (!!existingListing) {
+    if (existingListing) {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
         payload: existingListing,
@@ -65,7 +65,9 @@ const LatestUserRequestsDropDown: FunctionComponent = () => {
     });
 
     const localityParams = request.preferredAmenities
-      .map((name) => osmEntityTypes.find((entity) => entity.name === name))
+      .map((name) =>
+        getCombinedOsmEntityTypes().find((entity) => entity.name === name)
+      )
       .filter(Boolean) as ApiOsmEntity[];
 
     searchContextDispatch({

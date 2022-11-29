@@ -20,11 +20,11 @@ import FormModal from "../components/FormModal";
 import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { osmEntityTypes } from "../../../shared/constants/constants";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiUser } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -77,7 +77,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
     routingProfiles,
     preferredLocations,
   }: ApiPotentialCustomer) => {
-    const localityParams = osmEntityTypes.filter((entity) =>
+    const localityParams = getCombinedOsmEntityTypes().filter((entity) =>
       preferredAmenities?.includes(entity.name)
     );
 

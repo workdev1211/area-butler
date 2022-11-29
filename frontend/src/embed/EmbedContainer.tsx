@@ -23,6 +23,7 @@ import {
 } from "../../../shared/messages/error.message";
 import { defaultMapZoom } from "../map/Map";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -148,7 +149,7 @@ const EmbedContainer: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: localityParams,
+      payload: getCombinedOsmEntityTypes(localityParams),
     });
 
     searchContextDispatch({

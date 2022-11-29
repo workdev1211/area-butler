@@ -12,6 +12,7 @@ import {
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
+import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 export const useAnalysis = () => {
   const { searchContextState } = useContext(SearchContext);
@@ -24,7 +25,7 @@ export const useAnalysis = () => {
     items: IBusyModalItem[],
     setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>,
     searchResponse: ApiSearchResponse,
-    userEmail?: string,
+    userEmail?: string
   ): Promise<ApiSearchResultSnapshotResponse> => {
     const routes: EntityRoute[] = [];
     const transitRoutes: EntityTransitRoute[] = [];
@@ -103,7 +104,9 @@ export const useAnalysis = () => {
         placesLocation: searchContextState.placesLocation,
         location,
         transportationParams: searchContextState.transportationParams,
-        localityParams: searchContextState.localityParams,
+        localityParams: getUncombinedOsmEntityTypes(
+          searchContextState.localityParams
+        ),
         searchResponse: searchResponse,
         realEstateListings: realEstateState.listings,
         preferredLocations,

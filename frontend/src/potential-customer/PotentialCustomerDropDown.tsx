@@ -3,8 +3,8 @@ import { FunctionComponent, useContext, useRef, useState } from "react";
 import { PotentialCustomerContext } from "context/PotentialCustomerContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { osmEntityTypes } from "../../../shared/constants/constants";
 import useOnClickOutside from "hooks/onclickoutside";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 export interface PotentialCustomerDropDownProps {
   buttonStyles?: string;
@@ -23,7 +23,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
     routingProfiles,
     preferredLocations,
   }: ApiPotentialCustomer) => {
-    const localityParams = osmEntityTypes.filter((entity) =>
+    const localityParams = getCombinedOsmEntityTypes().filter((entity) =>
       preferredAmenities?.includes(entity.name)
     );
 

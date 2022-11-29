@@ -1,3 +1,6 @@
+import { osmEntityTypes } from "../constants/constants";
+import { ApiOsmEntity } from "../types/types";
+
 export const groupBy = (xs: any, f: any): Record<string, any> =>
   xs.reduce(
     (r: any, v: any, i: any, a: any, k = f(v)) => (
@@ -21,3 +24,37 @@ export const getBidirectionalMapping = <R, T>(
 
 export const camelize = (str: string): string =>
   str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+
+export const getCombinedOsmEntityTypes = (
+  osmEntities = osmEntityTypes
+): ApiOsmEntity[] => {
+  return osmEntities.reduce<ApiOsmEntity[]>((result, entity) => {
+    const hasEntity = result.some(({ label }) => label === entity.label);
+
+    if (!hasEntity) {
+      result.push(entity);
+    }
+
+    return result;
+  }, []);
+};
+
+export const getUncombinedOsmEntityTypes = (
+  osmEntities: ApiOsmEntity[]
+): ApiOsmEntity[] => {
+  return osmEntities.reduce<ApiOsmEntity[]>((result, entity) => {
+    const hasEntity = result.some(({ label }) => label === entity.label);
+
+    const filteredEntities = osmEntityTypes.filter(
+      ({ label }) => label === entity.label
+    );
+
+    if (hasEntity) {
+      return result;
+    }
+
+    result.push(...filteredEntities);
+
+    return result;
+  }, []);
+};

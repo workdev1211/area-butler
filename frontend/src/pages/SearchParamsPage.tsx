@@ -71,7 +71,10 @@ import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useAnalysis } from "../hooks/analysis";
 // TODO remove in future
 // import ExpressAnalysisModal from "../components/ExpressAnalysisModal";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import {
+  getCombinedOsmEntityTypes,
+  getUncombinedOsmEntityTypes,
+} from "../../../shared/functions/shared.functions";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -130,7 +133,7 @@ const SearchParamsPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: osmEntityTypes,
+      payload: getCombinedOsmEntityTypes(),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -358,9 +361,9 @@ const SearchParamsPage: FunctionComponent = () => {
       searchTitle: searchContextState?.placesLocation?.label || "Mein Standort",
       coordinates: searchContextState.location!,
       meansOfTransportation: searchContextState.transportationParams,
-      preferredAmenities: searchContextState.localityParams.map(
-        (l: ApiOsmEntity) => l.name
-      ),
+      preferredAmenities: getUncombinedOsmEntityTypes(
+        searchContextState.localityParams
+      ).map((l: ApiOsmEntity) => l.name),
     };
 
     const { data: searchResponse } = await post<ApiSearchResponse>(
@@ -552,7 +555,7 @@ const SearchParamsPage: FunctionComponent = () => {
     }
   };
 
-  const performAnalysis = async () => {
+  const performAnalysis = async (): Promise<void> => {
     const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
       history.push(`snippet-editor/${snapshotResponse.id}`);
     };
