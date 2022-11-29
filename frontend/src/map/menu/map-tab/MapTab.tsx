@@ -27,7 +27,6 @@ import CensusTable from "./../data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./../data/FederalElectionTable";
 import ParticlePollutionTable from "./../data/ParticlePollutionTable";
-import { osmEntityTypes } from "../../../../../shared/constants/constants";
 import { CensusData } from "hooks/censusdata";
 import {
   EntityRoute,
@@ -43,6 +42,7 @@ import economicMetricsIcon from "../../../assets/icons/map-menu/12-wirtschaftlic
 import censusDataIcon from "../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../assets/icons/federal-election.svg";
 import particlePollutionIcon from "../../../assets/icons/particle-pollution.svg";
+import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -225,7 +225,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                     {groupedEntries.some(
                       (ge) =>
                         ge.items.length &&
-                        osmEntityTypes.some(
+                        getCombinedOsmEntityTypes().some(
                           (oet) =>
                             oet.label === ge.title && oet.category === category
                         )
@@ -238,7 +238,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                       .filter(
                         (ge) =>
                           ge.items.length &&
-                          osmEntityTypes.some(
+                          getCombinedOsmEntityTypes().some(
                             (oet) =>
                               oet.label === ge.title &&
                               oet.category === category

@@ -6,10 +6,10 @@ import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import Input from "../components/Input";
 import TransportationParams from "../components/TransportationParams";
 import LocalityParams from "../components/LocalityParams";
-import { osmEntityTypes } from "../../../shared/constants/constants";
 import ImportantAddresses from "../components/ImportantAddresses";
 import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
 import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 export interface PotentialCustomerFormProps {
   formId: string;
@@ -98,7 +98,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
               {questionnaire ? "Meine bevorzugten" : "Bevorzugte"} Lokalitäten
             </strong>
             <LocalityParams
-              values={osmEntityTypes.filter((oet) =>
+              values={getCombinedOsmEntityTypes().filter((oet) =>
                 (customer.preferredAmenities ?? []).includes(oet.name)
               )}
               onChange={(newValues) => {

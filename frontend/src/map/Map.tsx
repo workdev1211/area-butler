@@ -24,8 +24,10 @@ import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 import "./Map.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
 import { IGotoMapCenter, Poi } from "context/SearchContext";
-import { osmEntityTypes } from "../../../shared/constants/constants";
-import { groupBy } from "../../../shared/functions/shared.functions";
+import {
+  getCombinedOsmEntityTypes,
+  groupBy,
+} from "../../../shared/functions/shared.functions";
 import {
   ApiRoute,
   ApiTransitRoute,
@@ -119,7 +121,8 @@ export class IdMarker extends L.Marker {
       }
 
       const searchString = [
-        osmEntityTypes.find((t) => t.name === this.entity.type)?.label,
+        getCombinedOsmEntityTypes().find((t) => t.name === this.entity.type)
+          ?.label,
         entityTitle,
         this.entity?.address?.street !== "undefined"
           ? this.entity.address?.street

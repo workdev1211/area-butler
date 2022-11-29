@@ -1,6 +1,5 @@
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import React, { Dispatch } from "react";
-import { osmEntityTypes } from "../../../shared/constants/constants";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
   ApiCoordinates,
@@ -18,6 +17,7 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { CensusData } from "../hooks/censusdata";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 export interface MapClipping {
   zoomLevel: number;
@@ -74,7 +74,7 @@ export interface IGotoMapCenter {
 
 export const initialState: SearchContextState = {
   transportationParams: [...defaultTransportationParams],
-  localityParams: [...osmEntityTypes],
+  localityParams: [...getCombinedOsmEntityTypes()],
   searchBusy: false,
   printingActive: false,
   printingCheatsheetActive: false,

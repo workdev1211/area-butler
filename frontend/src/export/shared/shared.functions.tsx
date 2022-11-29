@@ -1,8 +1,8 @@
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
-import { osmEntityTypes } from "../../../../shared/constants/constants";
 import { deriveIconForOsmName } from "../../shared/shared.functions";
 import { IApiUserPoiIcon } from "../../../../shared/types/types";
+import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 
 export const getFilteredLegend = (
   groupedEntities: EntityGroup[],
@@ -11,7 +11,8 @@ export const getFilteredLegend = (
   return groupedEntities
     .reduce<ILegendItem[]>((result, { title, active }) => {
       const foundOsmEntityType =
-        active && osmEntityTypes.find(({ label }) => title === label);
+        active &&
+        getCombinedOsmEntityTypes().find(({ label }) => title === label);
 
       if (foundOsmEntityType) {
         result.push({

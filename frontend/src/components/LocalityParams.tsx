@@ -4,7 +4,7 @@ import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
 } from "../../../shared/types/types";
-import { osmEntityTypes } from "../../../shared/constants/constants";
+import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 
 export interface LocalityParamsProps {
   values: ApiOsmEntity[];
@@ -32,7 +32,9 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
       ? values.filter((value) => value.category !== category)
       : [
           ...values,
-          ...osmEntityTypes.filter((type) => type.category === category),
+          ...getCombinedOsmEntityTypes().filter(
+            (type) => type.category === category
+          ),
         ];
 
     onChange(updatedEntities);
@@ -66,7 +68,7 @@ const LocalityParams: FunctionComponent<LocalityParamsProps> = ({
               </h3>
             </label>
           </div>
-          {osmEntityTypes
+          {getCombinedOsmEntityTypes()
             .filter((entityType) => entityType.category === category)
             .map((entity) => (
               <label
