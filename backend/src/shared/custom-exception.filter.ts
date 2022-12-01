@@ -3,6 +3,7 @@ import {
   ArgumentsHost,
   HttpException,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { BaseExceptionFilter } from '@nestjs/core';
 
@@ -14,6 +15,8 @@ import { configService } from '../config/config.service';
 
 @Catch()
 export class CustomExceptionFilter extends BaseExceptionFilter {
+  private readonly logger: Logger = new Logger(CustomExceptionFilter.name);
+
   constructor(private readonly slackSenderService: SlackSenderService) {
     super();
   }
@@ -28,7 +31,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
         ? exception.getStatus()
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
-    console.error('Error while performing a request');
+    this.logger.error('Error while performing a request');
 
     if (
       status === HttpStatus.INTERNAL_SERVER_ERROR ||
@@ -71,8 +74,8 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
         reqBodyDescription,
       ];
 
-      console.error(textBlocks);
-      console.error(exception);
+      this.logger.error(textBlocks);
+      this.logger.error(exception);
 
       void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
         textBlocks,
