@@ -31,10 +31,17 @@ import schoolIcon from "../assets/icons/pois/school.svg";
 import universityIcon from "../assets/icons/pois/university.svg";
 import doctorsIcon from "../assets/icons/pois/doctors.svg";
 import clinicIcon from "../assets/icons/pois/hospital.svg";
-// TODO remove in future
-// import postOfficeIcon from "../assets/icons/pois/post_office.svg";
 import motorwayLinkIcon from "../assets/icons/pois/motorway_link.svg";
 import sportIcon from "../assets/icons/pois/sport.svg";
+import kioskIcon from "../assets/icons/pois/kiosk.svg";
+import hotelIcon from "../assets/icons/pois/hotel.svg";
+import towerIcon from "../assets/icons/pois/tower.svg";
+import parkingIcon from "../assets/icons/pois/parking.svg";
+import attractionIcon from "../assets/icons/pois/attraction.svg";
+import chargingStationIcon from "../assets/icons/pois/charging_station.svg";
+import museumIcon from "../assets/icons/pois/museum.svg";
+import pharmacyIcon from "../assets/icons/pois/pharmacy.svg";
+import windTurbineIcon from "../assets/icons/pois/wind_turbine.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {
@@ -262,7 +269,7 @@ export const deriveIconForOsmName = (
     case OsmName.kiosk:
     case OsmName.post_office:
       return {
-        icon: chemistIcon,
+        icon: kioskIcon,
         color: "#267F9D",
       };
     case OsmName.station:
@@ -331,12 +338,6 @@ export const deriveIconForOsmName = (
         icon: clinicIcon,
         color: "#42AEA7",
       };
-    // TODO remove in future
-    // case OsmName.post_office:
-    //   return {
-    //     icon: postOfficeIcon,
-    //     color: "#66A3B7",
-    //   };
     case OsmName.motorway_link:
       return {
         icon: motorwayLinkIcon,
@@ -350,11 +351,49 @@ export const deriveIconForOsmName = (
         icon: sportIcon,
         color: "#9F532E",
       };
+    case OsmName.hotel:
+      return {
+        icon: hotelIcon,
+        color: "#42AEA7",
+      };
     case OsmName.tower:
     case OsmName.pole:
+      return {
+        icon: towerIcon,
+        color: "#42AEA7",
+      };
     case OsmName["multi-storey"]:
     case OsmName.underground:
     case OsmName.surface:
+      return {
+        icon: parkingIcon,
+        color: "#42AEA7",
+      };
+    case OsmName.attraction:
+      return {
+        icon: attractionIcon,
+        color: "#42AEA7",
+      };
+    case OsmName.charging_station:
+      return {
+        icon: chargingStationIcon,
+        color: "#42AEA7",
+      };
+    case OsmName.museum:
+      return {
+        icon: museumIcon,
+        color: "#42AEA7",
+      };
+    case OsmName.pharmacy:
+      return {
+        icon: pharmacyIcon,
+        color: "#42AEA7",
+      };
+    case OsmName.wind_turbine:
+      return {
+        icon: windTurbineIcon,
+        color: "#42AEA7",
+      };
     default:
       return {
         icon: parkIcon,

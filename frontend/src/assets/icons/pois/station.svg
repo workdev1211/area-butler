@@ -1,10 +1,11 @@
-<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-    <g stroke="#CB513B" transform="translate(2 .5)" fill="none" fill-rule="evenodd">
-        <path stroke-linecap="round" d="m.5 19 4-4M15.5 19l-4-4M0 17.5h16"/>
-        <path d="M.5 2v11a2 2 0 0 0 2 2h11a2 2 0 0 0 2-2V2a2 2 0 0 0-2-2h-11a2 2 0 0 0-2 2z"/>
-        <circle cx="3.5" cy="12" r="1"/>
-        <circle cx="12.5" cy="12" r="1"/>
-        <path stroke-linecap="round" d="M4.5 1.5h1M7.5 1.5h4"/>
-        <path d="M1 9h14"/>
-    </g>
+<svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+<rect x="2.5" y="0.5" width="15" height="13" rx="1.5" stroke="#267F9D"/>
+<path d="M4.5 19L6 16H14.5L16.5 19" stroke="#267F9D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 13.5L5 16H15.5L16.5 13.5" stroke="#267F9D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M4 18H17" stroke="#267F9D" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M3 8H17M10 3V7.5" stroke="#267F9D" stroke-linecap="round" stroke-linejoin="round"/>
+<circle cx="5.5" cy="10.5" r="1" stroke="#267F9D"/>
+<circle cx="14.5" cy="10.5" r="1" stroke="#267F9D"/>
+<line x1="9.5" y1="10.5" x2="10.5" y2="10.5" stroke="#267F9D" stroke-linecap="round"/>
+<line x1="3" y1="2.5" x2="18" y2="2.5" stroke="#267F9D"/>
 </svg>

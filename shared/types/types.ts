@@ -140,6 +140,8 @@ export enum ApiOsmEntityCategory {
   "SUPPLIES" = "Nahversorgung",
   "HEALTH" = "Gesundheit",
   "EDUCATION" = "Bildung",
+  "INFRASTRUCTURE" = "Infrastruktur",
+  "TOURISM" = "Tourismus",
 }
 
 export interface ApiOsmEntity {
