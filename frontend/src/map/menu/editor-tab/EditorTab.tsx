@@ -326,10 +326,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         <div className="collapse-content">
           <ul>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <h4 className="w-18 font-bold">Vorlagen</h4>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-16 font-bold">Vorlagen</h4>
                 <select
-                  className="select select-bordered select-sm w-full flex"
+                  className="select select-bordered select-sm flex-1"
                   value={selectedSnippetConfigId}
                   disabled={recentSnippetConfigs.length === 1}
                   onChange={(e) => {
@@ -352,8 +352,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <h4 className="w-18 font-bold">Menu</h4>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-16 font-bold">Menu</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -381,10 +381,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <h4 className="w-18 font-bold">Karte</h4>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-16 font-bold">Karte</h4>
                 <select
-                  className="select select-bordered select-sm flex w-full"
+                  className="select select-bordered select-sm flex-1"
                   value={
                     config?.mapBoxMapId ||
                     "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
@@ -406,10 +406,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1">
-                <h4 className="w-18 font-bold">Typfilter</h4>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-16 font-bold">Typfilter</h4>
                 <select
-                  className="select select-bordered select-sm w-full flex"
+                  className="select select-bordered select-sm flex-1"
                   value={config?.realEstateStatus}
                   onChange={(event) => {
                     changeRealEstateStatusFilter(event.target.value);

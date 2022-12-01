@@ -115,7 +115,10 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 <span className="badge badge-primary">BETA</span>
               </h1>
 
-              <div className="bg-primary-gradient flex items-center">
+              <div
+                className="flex items-center bg-primary-gradient"
+                style={{ width: "calc(100% + 21px)" }}
+              >
                 <span className="text-sm font-bold pl-[24px]">
                   Bitte führen Sie alle Schritte aus.
                 </span>
