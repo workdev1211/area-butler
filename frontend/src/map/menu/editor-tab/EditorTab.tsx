@@ -271,6 +271,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
       ...visibilityWithoutGroup,
       ...group.items.map((i) => ({
         id: i.id,
+        osmName: i.osmName,
         excluded: !wasGroupHidden,
       })),
     ];
@@ -278,7 +279,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     changeEntityVisibility(newGroup);
   };
 
-  const toggleSingleEntityVisibility = (entity: ResultEntity) => {
+  const toggleSingleEntityVisibility = (entity: ResultEntity): void => {
     changeEntityVisibility(toggleEntityVisibility(entity, config));
   };
 

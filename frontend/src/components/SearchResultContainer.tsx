@@ -31,6 +31,7 @@ import {
   ApiUser,
   IApiUserPoiIcon,
   MeansOfTransportation,
+  OsmName,
 } from "../../../shared/types/types";
 import {
   deriveAvailableMeansFromResponse,
@@ -63,7 +64,7 @@ export interface ICurrentMapRef {
 
 export interface ResultEntity {
   name?: string;
-  type: string;
+  osmName: OsmName;
   label: string;
   id: string;
   coordinates: ApiCoordinates;

@@ -11,7 +11,6 @@ import {
   ApiUser,
   IApiUserPoiIcon,
   MeansOfTransportation,
-  OsmName,
 } from "../../../../../shared/types/types";
 import {
   deriveIconForOsmName,
@@ -192,10 +191,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                     : getRealEstateListingsIcon(userPoiIcons)
                   : isPreferredLocation
                   ? getPreferredLocationsIcon(userPoiIcons)
-                  : deriveIconForOsmName(
-                      ge.items[0].type as OsmName,
-                      userPoiIcons
-                    );
+                  : deriveIconForOsmName(ge.items[0].osmName, userPoiIcons);
 
                 return (
                   <MapMenuListItem
@@ -257,7 +253,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                           : isPreferredLocation
                           ? getPreferredLocationsIcon(userPoiIcons)
                           : deriveIconForOsmName(
-                              ge.items[0].type as OsmName,
+                              ge.items[0].osmName,
                               userPoiIcons
                             );
 

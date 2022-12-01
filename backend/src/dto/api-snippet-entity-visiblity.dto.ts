@@ -1,13 +1,25 @@
-import { ApiSnippetEntityVisibility } from '@area-butler-types/types';
-import { IsBoolean, IsNotEmpty, IsOptional } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
+
+import { ApiSnippetEntityVisibility, OsmName } from '@area-butler-types/types';
 
 class ApiSnippetEntityVisibilityDto implements ApiSnippetEntityVisibility {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsOptional()
+  @IsEnum(OsmName)
+  osmName?: OsmName;
+
   @IsOptional()
   @IsBoolean()
   excluded?: boolean;
-
-  @IsNotEmpty()
-  id: string;
 }
 
 export default ApiSnippetEntityVisibilityDto;

@@ -23,7 +23,12 @@ class ApiOsmEntityDto implements ApiOsmEntity {
   id?: string;
 
   @IsNotEmpty()
+  @IsString()
   label: string;
+
+  @IsOptional()
+  @IsString()
+  title?: string;
 
   @IsNotEmpty()
   @IsEnum(OsmName)

@@ -146,7 +146,9 @@ export interface ApiOsmEntity {
   id?: string;
   type: OsmType;
   name: OsmName;
+  // TODO change to the enum
   label: string;
+  title?: string;
   category: ApiOsmEntityCategory;
   uniqueRadius?: number;
   uniqueThreshold?: number;
@@ -291,6 +293,7 @@ export type ApiSearchResultSnapshotConfigTheme = "DEFAULT" | "KF";
 
 export interface ApiSnippetEntityVisibility {
   id: string;
+  osmName?: OsmName;
   excluded?: boolean;
 }
 

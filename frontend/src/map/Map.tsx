@@ -121,7 +121,7 @@ export class IdMarker extends L.Marker {
       }
 
       const searchString = [
-        getCombinedOsmEntityTypes().find((t) => t.name === this.entity.type)
+        getCombinedOsmEntityTypes().find((t) => t.name === this.entity.osmName)
           ?.label,
         entityTitle,
         this.entity?.address?.street !== "undefined"
@@ -133,14 +133,14 @@ export class IdMarker extends L.Marker {
       ].join(" ");
 
       const title =
-        this.entity.type !== "property"
+        this.entity.osmName !== OsmName.property
           ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
               searchString
             )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
           : `${entityTitle}`;
 
-      const isRealEstateListing = this.entity.type === "property";
-      const isPreferredLocation = this.entity.type === "favorite";
+      const isRealEstateListing = this.entity.osmName === OsmName.property;
+      const isPreferredLocation = this.entity.osmName === OsmName.favorite;
       const isRealEstateListingOrPreferredAddress =
         isPreferredLocation || isRealEstateListing;
 
@@ -171,7 +171,7 @@ export class IdMarker extends L.Marker {
           )}</span></span>`
         : "";
 
-      if (this.entity.type === "property") {
+      if (this.entity.osmName === OsmName.property) {
         const realEstateData = this.entity.realEstateData;
         const realEstateInformationParts = [];
 
@@ -1010,8 +1010,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
               (eg) => eg.title === entity.label && eg.active
             )
           ) {
-            const isRealEstateListing = entity.type === "property";
-            const isPreferredLocation = entity.type === "favorite";
+            const isRealEstateListing = entity.osmName === OsmName.property;
+            const isPreferredLocation = entity.osmName === OsmName.favorite;
 
             const markerIcon: IPoiIcon = isRealEstateListing
               ? config?.mapIcon
@@ -1023,7 +1023,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 : getRealEstateListingsIcon(userPoiIcons)
               : isPreferredLocation
               ? getPreferredLocationsIcon(userPoiIcons)
-              : deriveIconForOsmName(entity.type as OsmName, userPoiIcons);
+              : deriveIconForOsmName(entity.osmName, userPoiIcons);
 
             const iconStyle = config?.mapIcon
               ? `height: 32px; width: auto !important;`
@@ -1040,11 +1040,11 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
                   ? "locality-marker-wrapper-custom"
                   : ""
-              } icon-${entity.type}`,
+              } icon-${entity.osmName}`,
               html:
                 (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
-                  ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.type} locality-icon-custom" style="${iconStyle}" />`
-                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.type} locality-icon" /></div>`,
+                  ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.osmName} locality-icon-custom" style="${iconStyle}" />`
+                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName} locality-icon" /></div>`,
             });
 
             const hideEntityFunction = editorMode ? hideEntity : undefined;

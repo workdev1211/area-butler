@@ -389,13 +389,9 @@ export const buildEntityData = (
     return null;
   }
 
-  const allLocations = Object.values(locationSearchResult.routingProfiles)
-    .map((a) =>
-      a.locationsOfInterest.sort(
-        (a, b) => a.distanceInMeters - b.distanceInMeters
-      )
-    )
-    .flat();
+  const allLocations = Object.values(
+    locationSearchResult.routingProfiles
+  ).flatMap(({ locationsOfInterest }) => [...locationsOfInterest]);
 
   let allLocationIds = Array.from(
     new Set(allLocations.map((location) => location.entity.id))
@@ -403,6 +399,7 @@ export const buildEntityData = (
 
   if (config && config.entityVisibility && !ignoreVisibility) {
     const { entityVisibility = [] } = config;
+
     allLocationIds = allLocationIds.filter(
       (id) => !entityVisibility.some((ev) => ev.id === id && ev.excluded)
     );
@@ -413,9 +410,9 @@ export const buildEntityData = (
 
     return {
       id: locationId!,
-      name: location.entity.name,
+      name: location.entity.title,
       label: location.entity.label,
-      type: location.entity.type,
+      osmName: location.entity.name,
       distanceInMeters: location.distanceInMeters,
       coordinates: location.coordinates,
       address: location.address,
@@ -446,7 +443,7 @@ export const buildEntityDataFromPreferredLocations = (
       id: v4(),
       name: `${preferredLocation.title} (${preferredLocation.address})`,
       label: preferredLocationsTitle,
-      type: OsmName.favorite,
+      osmName: OsmName.favorite,
       distanceInMeters: distanceInMeters(
         centerCoordinates,
         preferredLocation.coordinates!
@@ -468,6 +465,7 @@ export const buildEntityDataFromRealEstateListings = (
   const deriveName = (realEstateListing: ApiRealEstateListing) => {
     const showLocation = config?.showLocation ?? false;
 
+    // TODO check this
     if (!showLocation) {
       return `${realEstateListing.name}`;
     } else {
@@ -481,7 +479,7 @@ export const buildEntityDataFromRealEstateListings = (
       id: realEstateListing.id ?? v4(),
       name: deriveName(realEstateListing),
       label: realEstateListingsTitle,
-      type: OsmName.property,
+      osmName: OsmName.property,
       distanceInMeters: distanceInMeters(
         centerCoordinates,
         realEstateListing.coordinates!

@@ -9,7 +9,7 @@ import {
   getRealEstateListingsIcon,
   realEstateListingsTitle,
 } from "../../../shared/shared.functions";
-import { IApiUserPoiIcon, OsmName } from "../../../../../shared/types/types";
+import { IApiUserPoiIcon } from "../../../../../shared/types/types";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -51,7 +51,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
       ? getRealEstateListingsIcon(userPoiIcons)
       : isPreferredLocation
       ? getPreferredLocationsIcon(userPoiIcons)
-      : deriveIconForOsmName(group.items[0].type as OsmName, userPoiIcons);
+      : deriveIconForOsmName(group.items[0].osmName, userPoiIcons);
 
     return (
       <li

@@ -10,7 +10,7 @@ import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
-import { OsmName } from '@area-butler-types/types';
+import { ApiOsmEntity, OsmName } from '@area-butler-types/types';
 import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
 import ApiAddressDto from '../../dto/api-address.dto';
 import ApiOsmEntityDto from '../../dto/api-osm-entity.dto';
@@ -20,8 +20,8 @@ const Fuse = require('fuse.js/dist/fuse.common');
 
 @Injectable()
 export class OverpassService {
-  private baseUrl = configService.getOverpassUrl();
-  private logger: Logger = new Logger(OverpassService.name);
+  private readonly baseUrl = configService.getOverpassUrl();
+  private readonly logger: Logger = new Logger(OverpassService.name);
 
   constructor(private readonly http: HttpService) {}
 
@@ -38,7 +38,10 @@ export class OverpassService {
 
     try {
       const response = await firstValueFrom(
-        this.http.get(this.baseUrl, { params: { data: requestParams } }),
+        this.http.post(
+          this.baseUrl,
+          new URLSearchParams({ data: requestParams }).toString(),
+        ),
       );
 
       return this.mapResponse(response, coordinates);
@@ -60,67 +63,74 @@ export class OverpassService {
       return [];
     }
 
-    const rawElements = elements.map((element) => {
-      const elementTags: Record<string, any> = element.tags;
+    const rawElements: ApiOsmLocationDto[] = elements.reduce(
+      (result, element) => {
+        const elementTags: Record<string, any> = element.tags;
 
-      const entityType = osmEntityTypes.find(
-        (entityType) => elementTags[entityType.type] === entityType.name,
-      );
+        const entityTypes = osmEntityTypes.filter(
+          (entityType) => elementTags[entityType.type] === entityType.name,
+        );
 
-      const coordinates = !!element.center
-        ? {
-            lat: element.center.lat,
-            lng: element.center.lon,
-          }
-        : {
-            lat: element.lat,
-            lng: element.lon,
-          };
+        const coordinates = !!element.center
+          ? {
+              lat: element.center.lat,
+              lng: element.center.lon,
+            }
+          : {
+              lat: element.lat,
+              lng: element.lon,
+            };
 
-      const distanceInMeters = harversine(
-        {
-          latitude: centerCoordinates.lat,
-          longitude: centerCoordinates.lng,
-        },
-        {
-          latitude: coordinates.lat,
-          longitude: coordinates.lng,
-        },
-        { unit: 'meter' },
-      );
+        const distanceInMeters = harversine(
+          {
+            latitude: centerCoordinates.lat,
+            longitude: centerCoordinates.lng,
+          },
+          {
+            latitude: coordinates.lat,
+            longitude: coordinates.lng,
+          },
+          { unit: 'meter' },
+        );
 
-      const address: ApiAddressDto = {
-        street: `${elementTags['addr:street']}${
-          !!elementTags['addr:housenumber']
-            ? ' ' + elementTags['addr:housenumber']
-            : ''
-        }`,
-        postalCode: elementTags['addr:postcode'],
-        city: elementTags['addr:city'],
-      };
+        const address: ApiAddressDto = {
+          street: `${elementTags['addr:street']}${
+            !!elementTags['addr:housenumber']
+              ? ' ' + elementTags['addr:housenumber']
+              : ''
+          }`,
+          postalCode: elementTags['addr:postcode'],
+          city: elementTags['addr:city'],
+        };
 
-      let name = elementTags.name;
+        const processedElements: ApiOsmLocationDto[] = entityTypes.map(
+          (entity) => {
+            return {
+              entity: {
+                id: `${element.id}-${entity.name}`,
+                label: entity.label,
+                // Adds the highway number to its title
+                title:
+                  entity.name === OsmName.motorway_link &&
+                  elementTags['destination:ref']
+                    ? `${entity.label} ${elementTags['destination:ref']}`
+                    : elementTags.name,
+                type: entity.type,
+                name: entity.name,
+              } as ApiOsmEntity,
+              coordinates,
+              distanceInMeters,
+              address,
+            };
+          },
+        );
 
-      // Adds the highway number to its name
-      if (
-        entityType.name === OsmName.motorway_link &&
-        elementTags['destination:ref']
-      ) {
-        name = `${entityType.label} ${elementTags['destination:ref']}`;
-      }
+        result.push(...processedElements);
 
-      return {
-        entity: {
-          id: element.id,
-          label: entityType.label,
-          type: entityType.name,
-          name,
-        },
-        coordinates,
-        distanceInMeters,
-        address,
-      };
-    });
+        return result;
+      },
+      [],
+    );
 
     const CIRCLE_OPTIONS: Properties = { units: 'meters' };
 
@@ -142,35 +152,42 @@ export class OverpassService {
         CIRCLE_OPTIONS,
       );
 
-      const container = [];
+      return elements.reduce((result, element) => {
+        if (
+          !(
+            element.entity.id !== elementToInspect.entity.id &&
+            element.entity.type === elementToInspect.entity.type &&
+            element.entity.name === elementToInspect.entity.name
+          )
+        ) {
+          return result;
+        }
 
-      // TODO change to reduce
-      elements
-        .filter(
-          (e) =>
-            e.entity.id !== elementToInspect.entity.id &&
-            e.entity.type === elementToInspect.entity.type,
-        )
-        .forEach((element) => {
-          const { lat, lng } = element.coordinates;
-          const elementPoint = point([lat, lng]);
+        const { lat, lng } = element.coordinates;
+        const elementPoint = point([lat, lng]);
+        const isElementInPolygon = booleanPointInPolygon(elementPoint, polygon);
 
-          if (booleanPointInPolygon(elementPoint, polygon)) {
-            const f = new Fuse([elementToInspect.entity.name || ''], {
-              includeScore: true,
-            });
+        if (!isElementInPolygon) {
+          return result;
+        }
 
-            const result = f.search(element.entity.name || '');
-            const comparison =
-              result.length && result[0].score ? 1 - result[0].score : 1;
-
-            if (comparison >= similarityThreshold) {
-              container.push(element);
-            }
-          }
+        const f = new Fuse([elementToInspect.entity.name || ''], {
+          includeScore: true,
         });
 
-      return container;
+        const found = f.search(element.entity.name || '');
+        const comparison =
+          found.length && found[0].score ? 1 - found[0].score : 1;
+
+        if (
+          comparison > similarityThreshold ||
+          comparison === similarityThreshold
+        ) {
+          result.push(element);
+        }
+
+        return result;
+      }, []);
     };
 
     const finalElements = [];
@@ -184,7 +201,9 @@ export class OverpassService {
       }
     }
 
-    return finalElements;
+    return finalElements.sort(
+      (a, b) => a.distanceInMeters - b.distanceInMeters,
+    );
   }
 
   private async deriveRequestParams(
@@ -193,7 +212,7 @@ export class OverpassService {
     preferredAmenities: OsmName[],
   ) {
     const queryParts: string[] = [];
-    queryParts.push('[out:json];( ');
+    queryParts.push('[out:json];(');
 
     for (const preferredAmenity of preferredAmenities) {
       const entityType = osmEntityTypes.find(
@@ -219,7 +238,7 @@ export class OverpassService {
       );
     }
 
-    queryParts.push('); out center; ');
+    queryParts.push(');out center;');
 
     return queryParts.join('');
   }

@@ -49,7 +49,7 @@ const LocalityItem: FunctionComponent<LocalityItemProps> = ({
       >
         {item.name ?? group.title}
       </h4>
-      {item.type === OsmName.favorite ? (
+      {item.osmName === OsmName.favorite ? (
         <PreferredLocationItemContent
           item={item}
           onToggleRoute={(item, mean) => onToggleRoute(item, mean)}
