@@ -201,9 +201,7 @@ export class OverpassService {
       }
     }
 
-    return finalElements.sort(
-      (a, b) => a.distanceInMeters - b.distanceInMeters,
-    );
+    return finalElements;
   }
 
   private async deriveRequestParams(

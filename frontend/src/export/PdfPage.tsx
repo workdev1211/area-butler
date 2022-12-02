@@ -11,7 +11,7 @@ export interface PdfPageProps {
 
 export const PdfPage: FunctionComponent<PdfPageProps> = ({
   nextPageNumber = () => "01",
-  title = "Umgebungsanalyse",
+  title,
   children,
   logo = areaButlerLogo,
   leftHeaderElement = <div />,
@@ -25,7 +25,7 @@ export const PdfPage: FunctionComponent<PdfPageProps> = ({
 
   return (
     <div className="flex flex-col justify-between" style={style}>
-      <div className="flex justify-between items-center py-6 px-8 border-b-2">
+      <div className="flex justify-between items-center py-5 px-10 border-b-2">
         {leftHeaderElement}
         <img className="h-14 w-auto" src={logo} alt="Logo" />
       </div>
@@ -34,7 +34,7 @@ export const PdfPage: FunctionComponent<PdfPageProps> = ({
         <div className="py-5 px-10 border-r-2">
           <img className="h-12 w-auto" src={logo} alt="Logo" />
         </div>
-        <div className="flex-1 py-5 px-10 text-2xl">{title}</div>
+        {title && <div className="flex-1 py-5 px-10 text-2xl">{title}</div>}
         <div className="py-5 px-10 text-2xl border-l-2">
           Seite - {pageNumber}
         </div>

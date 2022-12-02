@@ -30,7 +30,7 @@ import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
-export interface CheatsheetProps {
+interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
   censusData: ApiGeojsonFeature[];
@@ -48,17 +48,38 @@ export interface CheatsheetProps {
   qrCode: IQrCodeState;
 }
 
-export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
+const chunkSize = 25;
+
+export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
   const qrCodeElement = props.qrCode.isShownQrCode ? (
     <QrCode snapshotToken={props.qrCode.snapshotToken} />
   ) : (
     <div />
   );
 
-  // TODO change to a single reduce
-  const filteredGroups = props.groupedEntries
-    .filter((group: EntityGroup) => group.title !== "Wichtige Adressen")
-    .filter((group) => group.active && group.items.length > 0);
+  const filteredGroups = props.groupedEntries.filter(
+    (group: EntityGroup) =>
+      group.title !== "Wichtige Adressen" &&
+      group.active &&
+      group.items.length > 0
+  );
+
+  const chunkedGroupes = filteredGroups.reduce<Array<EntityGroup[]>>(
+    (result, item, i) => {
+      const chunkIndex = Math.floor(
+        i / (i < chunkSize ? chunkSize - 1 : chunkSize)
+      );
+
+      if (!result[chunkIndex]) {
+        result[chunkIndex] = [];
+      }
+
+      result[chunkIndex].push(item);
+
+      return result;
+    },
+    []
+  );
 
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
@@ -141,23 +162,46 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
         </div>
 
         <div className="mx-5 flex gap-2 flex-wrap">
-          {filteredGroups.length === 0 ? (
+          {chunkedGroupes.length === 0 ? (
             <div>Keine Orte ausgewählt</div>
           ) : (
-            filteredGroups.map((group) => {
-              return (
-                <div className="text-xs" key={"tab-content-" + group.title}>
-                  <EntityList
-                    entityGroup={group}
-                    limit={3}
-                    primaryColor={color}
-                  />
-                </div>
-              );
-            })
+            chunkedGroupes[0].map((group) => (
+              <div className="text-xs" key={`tab-content-${group.title}`}>
+                <EntityList
+                  entityGroup={group}
+                  limit={3}
+                  primaryColor={color}
+                />
+              </div>
+            ))
           )}
         </div>
       </PdfPage>
+
+      {chunkedGroupes.length > 1 &&
+        chunkedGroupes.slice(1).map((chunk, i) => (
+          <PdfPage
+            title="Zusammenfassung"
+            logo={logo}
+            nextPageNumber={nextPageNumber}
+            leftHeaderElement={qrCodeElement}
+            key={`entity-group-chunk-${i}`}
+          >
+            <div className="mx-5 flex gap-2 flex-wrap pt-3">
+              {chunk.map((group) => {
+                return (
+                  <div className="text-xs" key={`tab-content-${group.title}`}>
+                    <EntityList
+                      entityGroup={group}
+                      limit={3}
+                      primaryColor={color}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </PdfPage>
+        ))}
 
       {mapClippings.length > 0 && (
         <MapClippings
@@ -181,43 +225,47 @@ export const Cheatsheet = forwardRef((props: CheatsheetProps, ref) => {
         </PdfPage>
       )}
 
-      <PdfPage
-        title="Einblicke"
-        logo={logo}
-        nextPageNumber={nextPageNumber}
-        leftHeaderElement={qrCodeElement}
-      >
-        {censusData && censusData.length > 0 && (
-          <>
-            <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-              Nachbarschaftsdemographie
-            </h4>
-            <CensusSummary primaryColor={color} censusData={censusData} />
-          </>
-        )}
+      {(censusData || federalElectionData || particlePollutionData) && (
+        <PdfPage
+          title="Einblicke"
+          logo={logo}
+          nextPageNumber={nextPageNumber}
+          leftHeaderElement={qrCodeElement}
+        >
+          {censusData && censusData.length > 0 && (
+            <>
+              <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
+                Nachbarschaftsdemographie
+              </h4>
+              <CensusSummary primaryColor={color} censusData={censusData} />
+            </>
+          )}
 
-        {federalElectionData && (
-          <>
-            <h4 className="mx-10 text-xl w-56 font-bold">
-              Bundestagswahl 2021
-            </h4>
-            <FederalElectionSummary
-              primaryColor={color}
-              federalElectionDistrict={federalElectionData}
-            />
-          </>
-        )}
+          {federalElectionData && (
+            <>
+              <h4 className="mx-10 text-xl w-56 font-bold">
+                Bundestagswahl 2021
+              </h4>
+              <FederalElectionSummary
+                primaryColor={color}
+                federalElectionDistrict={federalElectionData}
+              />
+            </>
+          )}
 
-        {particlePollutionData && particlePollutionData.length > 0 && (
-          <>
-            <h4 className="mx-10 text-xl w-56 font-bold">Feinstaubbelastung</h4>
-            <ParticlePollutionSummary
-              primaryColor={color}
-              particlePollutionData={particlePollutionData}
-            />
-          </>
-        )}
-      </PdfPage>
+          {particlePollutionData && particlePollutionData.length > 0 && (
+            <>
+              <h4 className="mx-10 text-xl w-56 font-bold">
+                Feinstaubbelastung
+              </h4>
+              <ParticlePollutionSummary
+                primaryColor={color}
+                particlePollutionData={particlePollutionData}
+              />
+            </>
+          )}
+        </PdfPage>
+      )}
     </div>
   );
 });

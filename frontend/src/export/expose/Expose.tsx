@@ -40,12 +40,33 @@ interface IExposeProps {
   particlePollutionData?: ApiGeojsonFeature[];
 }
 
+const chunkSize = 24;
+
 export const Expose = forwardRef(
   (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
-    // TODO change to reduce only
-    const groupedEntries = props.groupedEntries
-      .filter((group) => group.title !== "Wichtige Adressen")
-      .filter((group) => group.active && group.items.length > 0);
+    const filteredGroups = props.groupedEntries.filter(
+      (group) =>
+        group.title !== "Wichtige Adressen" &&
+        group.active &&
+        group.items.length > 0
+    );
+
+    const chunkedGroupes = filteredGroups.reduce<Array<EntityGroup[]>>(
+      (result, item, i) => {
+        const chunkIndex = Math.floor(
+          i / (i < chunkSize ? chunkSize - 1 : chunkSize)
+        );
+
+        if (!result[chunkIndex]) {
+          result[chunkIndex] = [];
+        }
+
+        result[chunkIndex].push(item);
+
+        return result;
+      },
+      []
+    );
 
     const importantEntities = props.groupedEntries.find(
       (group) => group.active && group.title === "Wichtige Adressen"
@@ -86,19 +107,35 @@ export const Expose = forwardRef(
             }}
           />
         )}
-        <PdfPage nextPageNumber={nextPageNumber} logo={logo} title="Überblick">
-          <ExposeSummary
-            realEstateListing={props.realEstateListing}
-            groupedEntries={groupedEntries}
-            transportationParams={transportationParams}
-            activeMeans={activeMeans}
-            listingAddress={props.listingAddress}
-            primaryColor={color}
-            qrCode={props.qrCode}
-          />
-        </PdfPage>
+        {chunkedGroupes.map((chunk, i) => (
+          <PdfPage
+            nextPageNumber={nextPageNumber}
+            logo={logo}
+            leftHeaderElement={
+              <div className="text-2xl font-bold">Überblick</div>
+            }
+            key={`entity-group-chunk-${i}`}
+          >
+            <ExposeSummary
+              realEstateListing={props.realEstateListing}
+              groupedEntries={chunk}
+              transportationParams={transportationParams}
+              activeMeans={activeMeans}
+              listingAddress={props.listingAddress}
+              primaryColor={color}
+              qrCode={props.qrCode}
+              isFirstPage={i === 0}
+            />
+          </PdfPage>
+        ))}
         {importantEntities?.items?.length && (
-          <PdfPage nextPageNumber={nextPageNumber} logo={logo} title="Umgebung">
+          <PdfPage
+            nextPageNumber={nextPageNumber}
+            logo={logo}
+            leftHeaderElement={
+              <div className="text-2xl font-bold">Umgebung</div>
+            }
+          >
             {importantEntities && importantEntities.items.length > 0 && (
               <div className="m-10">
                 <EntityTable
@@ -122,69 +159,77 @@ export const Expose = forwardRef(
           <PdfPage
             nextPageNumber={nextPageNumber}
             logo={logo}
-            title="Kartenlegende"
+            leftHeaderElement={
+              <div className="text-2xl font-bold">Kartenlegende</div>
+            }
           >
             <div className="m-10">
               <Legend legend={props.legend} />
             </div>
           </PdfPage>
         )}
-        {groupedEntries
-          .filter(
-            (entityGroup) =>
-              entityGroup.active &&
-              entityGroup.items.filter((i) => i.selected).length > 0
-          )
-          .map((entityGroup: EntityGroup) => {
+        {filteredGroups
+          .filter((group) => group.items.filter((i) => i.selected).length > 0)
+          .map((group) => {
             return (
               <PdfPage
                 nextPageNumber={nextPageNumber}
                 logo={logo}
-                title={entityGroup.title}
-                key={entityGroup.title}
+                leftHeaderElement={
+                  <div className="text-2xl font-bold">{group.title}</div>
+                }
+                key={group.title}
               >
-                <div className="m-10" key={"tab-content-" + entityGroup.title}>
+                <div className="m-10" key={`tab-content-${group.title}`}>
                   <EntityTable
                     activeMeans={activeMeans}
-                    entityGroup={entityGroup}
+                    entityGroup={group}
                     primaryColor={color}
                   />
                 </div>
               </PdfPage>
             );
           })}
-        <PdfPage title="Einblicke" logo={logo} nextPageNumber={nextPageNumber}>
-          {censusData && censusData.length > 0 && (
-            <>
-              <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
-                Nachbarschaftsdemographie
-              </h4>
-              <CensusSummary primaryColor={color} censusData={censusData} />
-            </>
-          )}
-          {federalElectionData && federalElectionData?.results?.length > 0 && (
-            <>
-              <h4 className="mx-10 text-xl w-56 font-bold">
-                Bundestagswahl 2021
-              </h4>
-              <FederalElectionSummary
-                primaryColor={color}
-                federalElectionDistrict={federalElectionData}
-              />
-            </>
-          )}
-          {particlePollutionData && particlePollutionData.length > 0 && (
-            <>
-              <h4 className="mx-10 text-xl w-56 font-bold">
-                Feinstaubbelastung
-              </h4>
-              <ParticlePollutionSummary
-                primaryColor={color}
-                particlePollutionData={particlePollutionData}
-              />
-            </>
-          )}
-        </PdfPage>
+        {(censusData || federalElectionData || particlePollutionData) && (
+          <PdfPage
+            nextPageNumber={nextPageNumber}
+            logo={logo}
+            leftHeaderElement={
+              <div className="text-2xl font-bold">Einblicke</div>
+            }
+          >
+            {censusData && censusData.length > 0 && (
+              <>
+                <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
+                  Nachbarschaftsdemographie
+                </h4>
+                <CensusSummary primaryColor={color} censusData={censusData} />
+              </>
+            )}
+            {federalElectionData && federalElectionData?.results?.length > 0 && (
+              <>
+                <h4 className="mx-10 text-xl w-56 font-bold">
+                  Bundestagswahl 2021
+                </h4>
+                <FederalElectionSummary
+                  primaryColor={color}
+                  federalElectionDistrict={federalElectionData}
+                />
+              </>
+            )}
+            {particlePollutionData && particlePollutionData.length > 0 && (
+              <>
+                <h4 className="mx-10 text-xl w-56 font-bold">
+                  Feinstaubbelastung
+                </h4>
+                <ParticlePollutionSummary
+                  primaryColor={color}
+                  particlePollutionData={particlePollutionData}
+                />
+              </>
+            )}
+          </PdfPage>
+        )}
       </div>
     );
   }

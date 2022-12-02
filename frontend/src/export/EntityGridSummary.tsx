@@ -1,20 +1,21 @@
-import React from "react";
+import { FunctionComponent } from "react";
+
 import "./EntityTable.scss";
 import {
   meansOfTransportations,
-  unitsOfTransportation
+  unitsOfTransportation,
 } from "../../../shared/constants/constants";
 import {
   MeansOfTransportation,
-  TransportationParam
+  TransportationParam,
 } from "../../../shared/types/types";
 import {
   deriveColorPalette,
-  distanceToHumanReadable
+  distanceToHumanReadable,
 } from "shared/shared.functions";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 
-export interface EntityGridSummaryProps {
+interface IEntityGridSummaryProps {
   groupedEntries: EntityGroup[];
   transportationParams: TransportationParam[];
   activeMeans: MeansOfTransportation[];
@@ -24,27 +25,27 @@ export interface EntityGridSummaryProps {
 export const routingProfileOrder = [
   MeansOfTransportation.WALK,
   MeansOfTransportation.BICYCLE,
-  MeansOfTransportation.CAR
+  MeansOfTransportation.CAR,
 ];
 
-export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> = ({
+export const EntityGridSummary: FunctionComponent<IEntityGridSummaryProps> = ({
   groupedEntries,
   transportationParams,
   primaryColor = "#aa0c54",
-  activeMeans
+  activeMeans,
 }) => {
   const byFootAvailable = transportationParams.some(
-    param =>
+    (param) =>
       param.type === MeansOfTransportation.WALK &&
       activeMeans.includes(param.type)
   );
   const byBikeAvailable = transportationParams.some(
-    param =>
+    (param) =>
       param.type === MeansOfTransportation.BICYCLE &&
       activeMeans.includes(param.type)
   );
   const byCarAvailable = transportationParams.some(
-    param =>
+    (param) =>
       param.type === MeansOfTransportation.CAR &&
       activeMeans.includes(param.type)
   );
@@ -54,7 +55,7 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
   const tableHeaderStyle = {
     background: `linear-gradient(to right, ${colorPalette.primaryColorDark}, ${colorPalette.primaryColor} 20%)`,
     color: colorPalette.textColor,
-    fontSize: "16px"
+    fontSize: "16px",
   };
 
   return (
@@ -65,7 +66,7 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
             <th />
             <th>Nächster Ort</th>
             {transportationParams
-              .filter(t => activeMeans.includes(t.type))
+              .filter((t) => activeMeans.includes(t.type))
               .sort(
                 (t1, t2) =>
                   routingProfileOrder.indexOf(t1.type) -
@@ -76,13 +77,13 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
                   <span>
                     {
                       meansOfTransportations.find(
-                        means => means.type === routingProfile.type
+                        (means) => means.type === routingProfile.type
                       )?.label
                     }{" "}
                     ({routingProfile.amount}{" "}
                     {
                       unitsOfTransportation.find(
-                        unit => unit.type === routingProfile.unit
+                        (unit) => unit.type === routingProfile.unit
                       )?.label
                     }
                     )
@@ -92,35 +93,33 @@ export const EntityGridSummary: React.FunctionComponent<EntityGridSummaryProps> 
           </tr>
         </thead>
         <tbody>
-          {groupedEntries
-            .filter(group => group.active)
-            .map(group => (
-              <tr key={`entity-grid-item-${group.title}`}>
+          {groupedEntries.map((group) => (
+            <tr key={`entity-grid-item-${group.title}`}>
+              <td>
+                <h5 className="font-bold">{group.title}</h5>
+              </td>
+              <td>
+                {distanceToHumanReadable(
+                  Math.min(...group.items.map((d) => d.distanceInMeters))
+                )}
+              </td>
+              {byFootAvailable && (
                 <td>
-                  <h5 className="font-bold">{group.title}</h5>
+                  {group.items.filter((d: ResultEntity) => d.byFoot).length}
                 </td>
+              )}
+              {byBikeAvailable && (
                 <td>
-                  {distanceToHumanReadable(
-                    Math.min(...group.items.map(d => d.distanceInMeters))
-                  )}
+                  {group.items.filter((d: ResultEntity) => d.byBike).length}
                 </td>
-                {byFootAvailable && (
-                  <td>
-                    {group.items.filter((d: ResultEntity) => d.byFoot).length}
-                  </td>
-                )}
-                {byBikeAvailable && (
-                  <td>
-                    {group.items.filter((d: ResultEntity) => d.byBike).length}
-                  </td>
-                )}
-                {byCarAvailable && (
-                  <td>
-                    {group.items.filter((d: ResultEntity) => d.byCar).length}
-                  </td>
-                )}
-              </tr>
-            ))}
+              )}
+              {byCarAvailable && (
+                <td>
+                  {group.items.filter((d: ResultEntity) => d.byCar).length}
+                </td>
+              )}
+            </tr>
+          ))}
         </tbody>
       </table>
     </div>

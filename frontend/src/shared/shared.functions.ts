@@ -37,6 +37,7 @@ import kioskIcon from "../assets/icons/pois/kiosk.svg";
 import hotelIcon from "../assets/icons/pois/hotel.svg";
 import towerIcon from "../assets/icons/pois/tower.svg";
 import parkingIcon from "../assets/icons/pois/parking.svg";
+import parkingGarageIcon from "../assets/icons/pois/parking-garage.svg";
 import attractionIcon from "../assets/icons/pois/attraction.svg";
 import chargingStationIcon from "../assets/icons/pois/charging_station.svg";
 import museumIcon from "../assets/icons/pois/museum.svg";
@@ -47,11 +48,11 @@ import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.s
 import {
   calculateMinutesToMeters,
   meansOfTransportations,
+  osmEntityTypes,
 } from "../../../shared/constants/constants";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { groupBy } from "../../../shared/functions/shared.functions";
 import { IPoiIcon } from "./shared.types";
 
 const tinyColor = require("tinycolor2");
@@ -364,6 +365,10 @@ export const deriveIconForOsmName = (
       };
     case OsmName["multi-storey"]:
     case OsmName.underground:
+      return {
+        icon: parkingGarageIcon,
+        color: "#42AEA7",
+      };
     case OsmName.surface:
       return {
         icon: parkingIcon,
@@ -655,20 +660,29 @@ export const deriveInitialEntityGroups = (
     });
   }
 
+  // TODO is triggered two times on map load, try to reduce to a 1 time only
   const allEntities = buildEntityData(searchResponse, config, ignoreVisibility);
-  const newGroupedEntries: any[] = Object.entries(
-    groupBy(allEntities, (item: ResultEntity) => item.label)
+
+  const initialGroupedEntities: EntityGroup[] = osmEntityTypes.map(
+    ({ label }) => ({ title: label, active: true, items: [] })
   );
 
-  newGroupedEntries
-    .map(([title, items], index) => ({
-      title,
-      active: deriveActiveState(title, index),
-      items,
-    }))
-    .forEach((e) => groupedEntities.push(e));
+  const groupedEntitiesWithItems = (
+    Array.isArray(allEntities) ? allEntities : []
+  ).reduce((result, entity) => {
+    result.find(({ title }) => title === entity.label)!.items.push(entity);
 
-  return groupedEntities;
+    return result;
+  }, initialGroupedEntities);
+
+  return groupedEntitiesWithItems.reduce<EntityGroup[]>((result, entity, i) => {
+    if (entity.items.length > 0) {
+      entity.active = deriveActiveState(entity.title, i);
+      result.push(entity);
+    }
+
+    return result;
+  }, groupedEntities);
 };
 
 export const sanitizeFilename = (filename: string): string =>

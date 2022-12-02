@@ -132,27 +132,29 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
           })
         : [];
 
-    const federalElectionTable = federalElectionData
-      ? createTable({
-          pageBreak: false,
-          title: "Bundestagswahl 2021",
-          columnWidths: [2000, 5000, 5000],
-          headerColor: colorPalette.primaryColor,
-          headerTextColor: colorPalette.textColor,
-          ...mapTableDataFromFederalElectionData(federalElectionData),
-        })
-      : [];
+    const federalElectionTable =
+      federalElectionData && Object.keys(federalElectionData).length > 0
+        ? createTable({
+            pageBreak: false,
+            title: "Bundestagswahl 2021",
+            columnWidths: [2000, 5000, 5000],
+            headerColor: colorPalette.primaryColor,
+            headerTextColor: colorPalette.textColor,
+            ...mapTableDataFromFederalElectionData(federalElectionData),
+          })
+        : [];
 
-    const particlePollutionTable = particlePollutionData
-      ? createTable({
-          pageBreak: false,
-          title: "Feinstaubbelastung",
-          columnWidths: [5000, 2000, 3000],
-          headerColor: colorPalette.primaryColor,
-          headerTextColor: colorPalette.textColor,
-          ...mapTableDataFromParticlePollutionData(particlePollutionData),
-        })
-      : [];
+    const particlePollutionTable =
+      particlePollutionData && particlePollutionData.length > 0
+        ? createTable({
+            pageBreak: false,
+            title: "Feinstaubbelastung",
+            columnWidths: [5000, 2000, 3000],
+            headerColor: colorPalette.primaryColor,
+            headerTextColor: colorPalette.textColor,
+            ...mapTableDataFromParticlePollutionData(particlePollutionData),
+          })
+        : [];
 
     const mapSectionChildren = mapClippings.reduce<
       (Paragraph | ImageRun | Table)[]

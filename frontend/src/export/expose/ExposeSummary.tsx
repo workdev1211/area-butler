@@ -29,6 +29,7 @@ export interface ExposeSummaryProps {
   realEstateListing: ApiRealEstateListing;
   primaryColor: string;
   qrCode: IQrCodeState;
+  isFirstPage: boolean;
 }
 
 const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
@@ -39,6 +40,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
   activeMeans,
   primaryColor,
   qrCode,
+  isFirstPage,
 }) => {
   const colorPalette = deriveColorPalette(primaryColor);
 
@@ -49,97 +51,102 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
 
   return (
     <>
-      <div className={`px-10 pt-10 ${qrCode.isShownQrCode ? "pb-5" : "pb-10"}`}>
+      {isFirstPage && (
         <div
-          className={`flex gap-6 ${!qrCode.isShownQrCode && "items-center"}`}
+          className={`px-10 pt-10 ${qrCode.isShownQrCode ? "pb-5" : "pb-10"}`}
         >
-          {/* Column 1 */}
-          <div className="flex flex-col gap-5">
-            <div>
-              <div className="text-2xl font-bold">{listingAddress}</div>
-              <div className="text-xl font-bold mt-1">Umfeldanalyse</div>
-            </div>
-            <div>
-              <h3 className="text-xl w-96 font-bold">
-                Ihre Mobilitätskriterien
-              </h3>
-              <div className="flex gap-2">
-                {transportationParams.map(
-                  (routingProfile: TransportationParam) => (
-                    <div
-                      className="mobility-type"
-                      style={mobilityTypeStyle}
-                      key={routingProfile.type}
-                    >
-                      <span>
-                        {
-                          meansOfTransportations.find(
-                            (means) => means.type === routingProfile.type
-                          )?.label
-                        }{" "}
-                        ({routingProfile.amount}{" "}
-                        {
-                          unitsOfTransportation.find(
-                            (unit) => unit.type === routingProfile.unit
-                          )?.label
-                        }
-                        )
-                      </span>
-                    </div>
-                  )
-                )}
+          <div
+            className={`flex gap-6 ${!qrCode.isShownQrCode && "items-center"}`}
+          >
+            {/* Column 1 */}
+            <div className="flex flex-col gap-5">
+              <div>
+                <div className="text-2xl font-bold">{listingAddress}</div>
+                <div className="text-xl font-bold mt-1">Umfeldanalyse</div>
+              </div>
+              <div>
+                <h3 className="text-xl w-96 font-bold">
+                  Ihre Mobilitätskriterien
+                </h3>
+                <div className="flex gap-2">
+                  {transportationParams.map(
+                    (routingProfile: TransportationParam) => (
+                      <div
+                        className="mobility-type"
+                        style={mobilityTypeStyle}
+                        key={routingProfile.type}
+                      >
+                        <span>
+                          {
+                            meansOfTransportations.find(
+                              (means) => means.type === routingProfile.type
+                            )?.label
+                          }{" "}
+                          ({routingProfile.amount}{" "}
+                          {
+                            unitsOfTransportation.find(
+                              (unit) => unit.type === routingProfile.unit
+                            )?.label
+                          }
+                          )
+                        </span>
+                      </div>
+                    )
+                  )}
+                </div>
               </div>
             </div>
-          </div>
 
-          {/* Column 2 */}
-          <div className="flex flex-col gap-2">
-            {realEstateListing && (
-              <>
-                <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
-                <div className="font-bold">{realEstateListing.address}</div>
+            {/* Column 2 */}
+            <div className="flex flex-col gap-2">
+              {realEstateListing && (
+                <>
+                  <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
+                  <div className="font-bold">{realEstateListing.address}</div>
 
-                {realEstateListing?.costStructure && (
-                  <div className="text-justify">
-                    <strong>Kosten:</strong>{" "}
-                    {getRealEstateCost(realEstateListing?.costStructure)} (
-                    {
-                      allRealEstateCostTypes.find(
-                        (t) => t.type === realEstateListing.costStructure?.type
-                      )?.label
-                    }
-                    )
-                  </div>
-                )}
-
-                {realEstateListing.characteristics?.furnishing && (
-                  <div className="text-justify">
-                    <strong>Ausstattung:</strong>{" "}
-                    {allFurnishing
-                      .filter((f) =>
-                        realEstateListing.characteristics?.furnishing.includes(
-                          f.type
-                        )
+                  {realEstateListing?.costStructure && (
+                    <div className="text-justify">
+                      <strong>Kosten:</strong>{" "}
+                      {getRealEstateCost(realEstateListing?.costStructure)} (
+                      {
+                        allRealEstateCostTypes.find(
+                          (t) =>
+                            t.type === realEstateListing.costStructure?.type
+                        )?.label
+                      }
                       )
-                      .map((f) => f.label)
-                      .join(", ")}
-                  </div>
-                )}
-              </>
-            )}
+                    </div>
+                  )}
 
-            {qrCode.isShownQrCode && (
-              <QrCode
-                snapshotToken={qrCode.snapshotToken}
-                containerClasses={realEstateListing ? "mt-3" : ""}
-                imageClasses="h-28"
-              />
-            )}
+                  {realEstateListing.characteristics?.furnishing && (
+                    <div className="text-justify">
+                      <strong>Ausstattung:</strong>{" "}
+                      {allFurnishing
+                        .filter((f) =>
+                          realEstateListing.characteristics?.furnishing.includes(
+                            f.type
+                          )
+                        )
+                        .map((f) => f.label)
+                        .join(", ")}
+                    </div>
+                  )}
+                </>
+              )}
+
+              {qrCode.isShownQrCode && (
+                <QrCode
+                  snapshotToken={qrCode.snapshotToken}
+                  containerClasses={realEstateListing ? "mt-3" : ""}
+                  imageClasses="h-28"
+                />
+              )}
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div>
+      <div className={!isFirstPage ? "pt-5" : ""}>
         <h3 className="text-xl w-96 font-bold mx-10">Die Umgebung</h3>
         <EntityGridSummary
           groupedEntries={groupedEntries}

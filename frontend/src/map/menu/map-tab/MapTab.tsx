@@ -213,68 +213,64 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
               })}
 
             {/* POIs */}
-            {Object.entries(ApiOsmEntityCategory)
-              .sort()
-              .map(([_, category]) => {
-                return (
-                  <div key={`container-${category}`}>
-                    {groupedEntries.some(
+            {Object.entries(ApiOsmEntityCategory).map(([_, category]) => {
+              return (
+                <div key={`container-${category}`}>
+                  {groupedEntries.some(
+                    (ge) =>
+                      ge.items.length &&
+                      getCombinedOsmEntityTypes().some(
+                        (oet) =>
+                          oet.label === ge.title && oet.category === category
+                      )
+                  ) && (
+                    <li className="locality-option-heading" key={category}>
+                      <h4>{category}</h4>
+                    </li>
+                  )}
+                  {groupedEntries
+                    .filter(
                       (ge) =>
                         ge.items.length &&
                         getCombinedOsmEntityTypes().some(
                           (oet) =>
                             oet.label === ge.title && oet.category === category
                         )
-                    ) && (
-                      <li className="locality-option-heading" key={category}>
-                        <h4>{category}</h4>
-                      </li>
-                    )}
-                    {groupedEntries
-                      .filter(
-                        (ge) =>
-                          ge.items.length &&
-                          getCombinedOsmEntityTypes().some(
-                            (oet) =>
-                              oet.label === ge.title &&
-                              oet.category === category
-                          )
-                      )
-                      .sort()
-                      .map((ge, geIndex) => {
-                        const isRealEstateListing =
-                          ge.items[0].label === realEstateListingsTitle;
+                    )
+                    .map((ge, geIndex) => {
+                      const isRealEstateListing =
+                        ge.items[0].label === realEstateListingsTitle;
 
-                        const isPreferredLocation =
-                          ge.items[0].label === preferredLocationsTitle;
+                      const isPreferredLocation =
+                        ge.items[0].label === preferredLocationsTitle;
 
-                        const groupIconInfo: IPoiIcon = isRealEstateListing
-                          ? getRealEstateListingsIcon(userPoiIcons)
-                          : isPreferredLocation
-                          ? getPreferredLocationsIcon(userPoiIcons)
-                          : deriveIconForOsmName(
-                              ge.items[0].osmName,
-                              userPoiIcons
-                            );
+                      const groupIconInfo: IPoiIcon = isRealEstateListing
+                        ? getRealEstateListingsIcon(userPoiIcons)
+                        : isPreferredLocation
+                        ? getPreferredLocationsIcon(userPoiIcons)
+                        : deriveIconForOsmName(
+                            ge.items[0].osmName,
+                            userPoiIcons
+                          );
 
-                        return (
-                          <MapMenuListItem
-                            entityGroup={ge}
-                            groupIcon={groupIconInfo}
-                            isCustomIcon={groupIconInfo.isCustom}
-                            entityGroupIndex={geIndex}
-                            config={config}
-                            routes={routes}
-                            toggleRoute={toggleRoute}
-                            transitRoutes={transitRoutes}
-                            toggleTransitRoute={toggleTransitRoute}
-                            key={`${ge.title}-${geIndex}-map-menu-list-item`}
-                          />
-                        );
-                      })}
-                  </div>
-                );
-              })}
+                      return (
+                        <MapMenuListItem
+                          entityGroup={ge}
+                          groupIcon={groupIconInfo}
+                          isCustomIcon={groupIconInfo.isCustom}
+                          entityGroupIndex={geIndex}
+                          config={config}
+                          routes={routes}
+                          toggleRoute={toggleRoute}
+                          transitRoutes={transitRoutes}
+                          toggleTransitRoute={toggleTransitRoute}
+                          key={`${ge.title}-${geIndex}-map-menu-list-item`}
+                        />
+                      );
+                    })}
+                </div>
+              );
+            })}
           </ul>
         </div>
       </div>

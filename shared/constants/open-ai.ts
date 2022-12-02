@@ -41,7 +41,7 @@ export const openAiTranslationDictionary: Record<
   surface: { singular: "Parkplatz", plural: "Parkplätze" },
   museum: { singular: "Museum", plural: "Museen" },
   charging_station: { singular: "E-Ladepunkt", plural: "E-Ladepunkte" },
-  wind_turbine: { singular: "Windkraftanlage", plural: "Windkraftanlagen" },
+  wind_turbine: { singular: "Windrad", plural: "Windräder" },
   tower: { singular: "Strommast", plural: "Strommasten" },
   pole: { singular: "Strommast", plural: "Strommasten" },
   pub: { singular: "Bar", plural: "Bars" },
