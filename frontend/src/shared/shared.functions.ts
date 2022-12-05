@@ -456,7 +456,11 @@ export const buildEntityData = (
       id: locationId!,
       name: location.entity.title,
       label: location.entity.label,
-      osmName: location.entity.name,
+      osmName: Object.values(OsmName).includes(
+        location.entity.type as unknown as OsmName
+      )
+        ? (location.entity.type as unknown as OsmName)
+        : location.entity.name,
       distanceInMeters: location.distanceInMeters,
       coordinates: location.coordinates,
       address: location.address,
