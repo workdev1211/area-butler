@@ -1,11 +1,12 @@
+import { FunctionComponent, useState } from "react";
+import { Form, Formik } from "formik";
+import * as Yup from "yup";
+
 import Input from "components/Input";
 import LocationAutocomplete from "components/LocationAutocomplete";
 import Select from "components/Select";
-import { Form, Formik } from "formik";
-import React, { useState } from "react";
-import * as Yup from "yup";
-import { osmEntityTypes } from "../../../../shared/constants/constants";
 import { ApiCoordinates, OsmName } from "../../../../shared/types/types";
+import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 
 export interface AddPoiFormProps {
   formId: string;
@@ -14,11 +15,11 @@ export interface AddPoiFormProps {
   address?: string;
 }
 
-const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
+const AddPoiForm: FunctionComponent<AddPoiFormProps> = ({
   formId,
   coordinates,
   address,
-  onSubmit
+  onSubmit,
 }) => {
   const [localCoordinates, setLocalCoordinates] = useState(coordinates);
   const [localAddress, setLocalAddress] = useState(address);
@@ -31,16 +32,16 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
   return (
     <Formik
       initialValues={{
-        name: "",
+        title: "",
         address: address,
-        type: OsmName.doctors
+        name: OsmName.doctors,
       }}
       validationSchema={Yup.object({
+        title: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),
-        type: Yup.string().required("Bitte geben Sie einen Objekttyp an")
       })}
       enableReinitialize={true}
-      onSubmit={values => {
+      onSubmit={(values) => {
         onSubmit({ coordinates: localCoordinates, ...values });
       }}
     >
@@ -48,7 +49,7 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
         <div className="form-control">
           <Input
             label="Objektname"
-            name="name"
+            name="title"
             type="text"
             placeholder="Objektname eingeben"
             className="input input-bordered w-full"
@@ -64,12 +65,12 @@ const AddPoiForm: React.FunctionComponent<AddPoiFormProps> = ({
           <div className="form-control flex-1">
             <Select
               label="Objekttyp"
-              name="type"
+              name="name"
               placeholder="Objekttype angeben"
             >
-              {osmEntityTypes
+              {getCombinedOsmEntityTypes()
                 .sort((e1, e2) => e1.label.localeCompare(e2.label))
-                .map(entityType => (
+                .map((entityType) => (
                   <option value={entityType.name} key={entityType.name}>
                     {entityType.label}
                   </option>

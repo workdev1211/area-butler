@@ -23,7 +23,7 @@ import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 import "./Map.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
-import { IGotoMapCenter, Poi } from "context/SearchContext";
+import { IGotoMapCenter } from "context/SearchContext";
 import {
   getCombinedOsmEntityTypes,
   groupBy,
@@ -36,6 +36,7 @@ import {
 } from "../../../shared/types/routing";
 import {
   ApiCoordinates,
+  ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   IApiUserPoiIcon,
@@ -300,7 +301,7 @@ interface MapProps {
   embedMode?: boolean;
   editorMode?: boolean;
   config?: ApiSearchResultSnapshotConfig;
-  onPoiAdd?: (poi: Poi) => void;
+  onPoiAdd?: (poi: ApiOsmLocation) => void;
   hideEntity?: (entity: ResultEntity) => void;
   setMapCenterZoom: (mapCenter: ApiCoordinates, mapZoomLevel: number) => void;
   hideIsochrones: boolean;

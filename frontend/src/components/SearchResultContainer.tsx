@@ -19,13 +19,13 @@ import * as L from "leaflet";
 
 import {
   IGotoMapCenter,
-  Poi,
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
 import {
   ApiAddress,
   ApiCoordinates,
+  ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   ApiUser,
@@ -128,7 +128,7 @@ interface ISearchResultContainerProps {
   // has been needed for the second step of the analysis "search results"
   embedMode?: boolean;
   editorMode?: boolean;
-  onPoiAdd?: (poi: Poi) => void;
+  onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcon[];
   editorTabProps?: IEditorTabProps;

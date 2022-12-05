@@ -1,31 +1,31 @@
+import { FunctionComponent } from "react";
+import { v4 as uuid } from "uuid";
+
 import { FormModalData } from "components/FormModal";
-import { Poi } from "context/SearchContext";
-import React from "react";
 import {
   distanceInMeters,
   toastError,
-  toastSuccess
+  toastSuccess,
 } from "shared/shared.functions";
-import { v4 as uuid } from "uuid";
-import { osmEntityTypes } from "../../../../shared/constants/constants";
-import { ApiCoordinates } from "../../../../shared/types/types";
+import { ApiCoordinates, ApiOsmLocation } from "../../../../shared/types/types";
 import AddPoiForm from "./AddPoiForm";
+import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 
 export interface AddPoiFormHandlerProps extends FormModalData {
   centerCoordinates: ApiCoordinates;
   coordinates?: ApiCoordinates;
   address?: string;
-  onPoiAdd: (poi: Poi) => void;
+  onPoiAdd: (poi: ApiOsmLocation) => void;
 }
 
-const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
+const AddPoiFormHandler: FunctionComponent<AddPoiFormHandlerProps> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
   centerCoordinates,
   coordinates,
   address,
-  onPoiAdd
+  onPoiAdd,
 }) => {
   const onSubmit = async (values: any) => {
     try {
@@ -34,19 +34,23 @@ const AddPoiFormHandler: React.FunctionComponent<AddPoiFormHandlerProps> = ({
       const coordinates = values.coordinates;
       const distanceInMeter = distanceInMeters(centerCoordinates, coordinates);
 
-      const entityType = osmEntityTypes.find(e => e.name === values.type)!;
-      const poi = {
+      const entityType = getCombinedOsmEntityTypes().find(
+        (e) => e.name === values.name
+      )!;
+      const poi: ApiOsmLocation = {
         address: { street: values.address.label },
         coordinates: values.coordinates,
         distanceInMeters: distanceInMeter,
         entity: {
           id: uuid(),
+          title: values.title,
           name: values.name,
+          type: entityType.type,
           label: entityType.label,
-          type: entityType.name,
-          category: entityType.category
-        }
+          category: entityType.category,
+        },
       };
+
       onPoiAdd(poi);
       postSubmit(true);
       toastSuccess("Objekt erfolgreich hinzugefügt!");

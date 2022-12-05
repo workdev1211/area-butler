@@ -16,11 +16,7 @@ import SearchResultContainer, {
   IExportTabProps,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
-import {
-  Poi,
-  SearchContext,
-  SearchContextActionTypes,
-} from "context/SearchContext";
+import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import DefaultLayout from "layout/defaultLayout";
@@ -298,7 +294,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.realEstateStatus,
   ]);
 
-  const onPoiAdd = (poi: Poi) => {
+  const onPoiAdd = (poi: ApiOsmLocation) => {
     if (!snapshot) {
       return;
     }

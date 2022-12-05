@@ -24,18 +24,6 @@ export interface MapClipping {
   mapClippingDataUrl: string;
 }
 
-export interface Poi {
-  address: { street: string };
-  coordinates: ApiCoordinates;
-  distanceInMeters: number;
-  entity: {
-    id: string;
-    name: string;
-    label: string;
-    type: OsmName;
-  };
-}
-
 export interface SearchContextState {
   placesLocation?: any;
   location?: ApiCoordinates;
@@ -166,7 +154,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
   [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]: ApiRealEstateListing;
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
-  [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: Poi;
+  [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
 };
 
 export type SearchContextActions =
@@ -346,7 +334,7 @@ export const searchContextReducer = (
       return { ...state, realEstateListing: undefined };
     }
     case SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE: {
-      const poi: Poi = action.payload;
+      const poi: ApiOsmLocation = action.payload;
 
       const searchResponse = JSON.parse(
         JSON.stringify(state.searchResponse)
