@@ -11,7 +11,7 @@ const Steps: Step[] = [
   {
     content: (
       <>
-        <h2 className="mb-5 font-bold">Willkommen beim Areabutler!</h2>
+        <h2 className="mb-5 font-bold">Willkommen beim AreaButler!</h2>
         <div>
           Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort
           mit beliebigen Kriterien durchführen.
