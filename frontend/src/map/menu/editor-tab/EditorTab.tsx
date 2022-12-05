@@ -29,6 +29,10 @@ import { allRealEstateStatuses } from "../../../../../shared/constants/real-esta
 import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
 import preselectedCategoriesIcon from "../../../assets/icons/map-menu/05-vorausgewählte-kategorien.svg";
 import poiVisibilityIcon from "../../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
+import {
+  defaultMapboxStyles,
+  TMapboxStyleLabels,
+} from "../../../shared/shared.constants";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -122,11 +126,18 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const mapStyles: { key: string; label: string }[] = [
-    { key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m", label: "Classic" },
-    { key: "kudiba-tech/ckzbqgya2000414li19g3p9u1", label: "Highlight" },
-    { key: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob", label: "Satellite" },
+  const mapStyles: Array<{
+    key: string;
+    label: TMapboxStyleLabels;
+    isDisabled?: boolean;
+  }> = [
+    ...defaultMapboxStyles,
     ...additionalMapBoxStyles,
+    {
+      key: "",
+      label: ">> Karte in Ihrem Branding? Sprechen Sie uns an. <<",
+      isDisabled: true,
+    },
   ];
 
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme) => {
@@ -383,7 +394,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   }}
                 >
                   {mapStyles.map((style) => (
-                    <option value={style.key} key={style.key}>
+                    <option
+                      value={style.key}
+                      key={style.key}
+                      disabled={!!style.isDisabled}
+                    >
                       {style.label}
                     </option>
                   ))}

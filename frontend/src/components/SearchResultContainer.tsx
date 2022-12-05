@@ -54,7 +54,10 @@ import MeansToggle from "../map/means-toggle/MeansToggle";
 import MapMenu from "../map/menu/MapMenu";
 import { defaultColor } from "../../../shared/constants/constants";
 import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
-import { mapBoxMapIds as storedMapBoxMapIds } from "../shared/shared.constants";
+import {
+  defaultMapboxStyles,
+  MapboxStyleLabelsEnum,
+} from "../shared/shared.constants";
 import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
 
 export interface ICurrentMapRef {
@@ -171,8 +174,14 @@ const SearchResultContainer = forwardRef<
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
     const initialMapBoxMapIds = {
-      current: mapBoxMapId || storedMapBoxMapIds.default,
-      previous: storedMapBoxMapIds.satellite,
+      current:
+        mapBoxMapId ||
+        defaultMapboxStyles.find(
+          ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
+        )?.key,
+      previous: defaultMapboxStyles.find(
+        ({ label }) => label === MapboxStyleLabelsEnum.SATELLITE
+      )?.key,
     };
 
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";

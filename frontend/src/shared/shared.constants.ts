@@ -13,10 +13,31 @@ export const svgPrimaryColorFilter: CSSProperties = {
     "brightness(0) saturate(100%) invert(19%) sepia(73%) saturate(4552%) hue-rotate(334deg) brightness(79%) contrast(98%)",
 };
 
-export const mapBoxMapIds = {
-  satellite: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob",
-  default: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
-};
+export enum MapboxStyleLabelsEnum {
+  CLASSIC = "Classic",
+  BASIC = "Basic",
+  SATELLITE = "Satellite",
+}
+
+export type TMapboxStyleLabels = MapboxStyleLabelsEnum | string;
+
+export const defaultMapboxStyles: Array<{
+  key: string;
+  label: MapboxStyleLabelsEnum;
+}> = [
+  {
+    key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    label: MapboxStyleLabelsEnum.CLASSIC,
+  },
+  {
+    key: "kudiba-tech/clb9vfjx0000a15p2o942ryiy",
+    label: MapboxStyleLabelsEnum.BASIC,
+  },
+  {
+    key: "kudiba-tech/cl11xlpo8002y14nq8zm5j2ob",
+    label: MapboxStyleLabelsEnum.SATELLITE,
+  },
+];
 
 export const commonPaypalOptions = {
   components: "buttons",

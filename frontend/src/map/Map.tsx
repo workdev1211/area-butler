@@ -72,8 +72,11 @@ import {
 import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
 import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
-import { mapBoxMapIds } from "../shared/shared.constants";
 import { IPoiIcon } from "../shared/shared.types";
+import {
+  defaultMapboxStyles,
+  MapboxStyleLabelsEnum,
+} from "../shared/shared.constants";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -631,7 +634,12 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
       let image = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.5; transform: rotate(45deg)" alt="watermark">`;
 
-      if (mapboxMapId === mapBoxMapIds.satellite) {
+      if (
+        mapboxMapId ===
+        defaultMapboxStyles.find(
+          ({ label }) => label === MapboxStyleLabelsEnum.SATELLITE
+        )?.key
+      ) {
         image = `<img src="${areaButlerWhiteTextLogo}" style="width: auto; height: 7vh; opacity: 0.8; transform: rotate(45deg)" alt="watermark">`;
       }
 
