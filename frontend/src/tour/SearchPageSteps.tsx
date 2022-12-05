@@ -13,7 +13,8 @@ const Steps: Step[] = [
       <>
         <h2 className="mb-5 font-bold">Willkommen beim Areabutler!</h2>
         <div>
-          Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort mit beliebigen Kriterien durchführen.
+          Auf dieser Seite lässt sich die Umgebungsanalyse für einen Standort
+          mit beliebigen Kriterien durchführen.
         </div>
       </>
     ),
@@ -22,14 +23,13 @@ const Steps: Step[] = [
     target: "body",
   },
   {
-    content:
-      "Zeigt Ihnen die letzten gemachten Abfragen an",
+    content: "Zeigt Ihnen die letzten gesuchten Adressen an",
     locale: defaultLocale,
     target: 'div[data-tour="last-requests"]',
   },
   {
     content:
-      "Hier können Sie Ihre angelegten Objekte auswählen, um die Adresse automatisch auszufüllen",
+      'Hier können Sie Ihre, unter "Meine Immobilien" gespeicherten Objekte auswählen, um die Adresse automatisch auszufüllen',
     locale: defaultLocale,
     target: 'div[data-tour="my-real-estates"]',
   },
@@ -37,9 +37,10 @@ const Steps: Step[] = [
     content: (
       <>
         <p className="text-base">
-          Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche Isochronen in Ihrer 
-          Karte angezeigt werden. Die Angabe erfolgt über Meter oder Zeitangabe. Sie können drei Arten der 
-          Fortbewegung auswählen (Zu Fuß, Fahrrad und/oder Auto)
+          Hier können Sie den Umkreis der Suche bestimmen und einstellen, welche
+          Isochronen in Ihrer Karte angezeigt werden. Die Angabe erfolgt über
+          Meter oder Zeitangabe. Sie können drei Arten der Fortbewegung
+          auswählen (Zu Fuß, Fahrrad und/oder Auto)
         </p>
       </>
     ),
@@ -48,13 +49,13 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
+      "Zeit sparen durch Ihre Zielgruppen: eine Vorbelegung des Bewegungsprofils und der Lokalitäten ist, wie bei Ihren Objekten, auch für Ihre Zielgruppen möglich.",
     locale: defaultLocale,
     target: 'div[data-tour="my-customers"]',
   },
   {
     content:
-      "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden im Ergebnis hervorgehoben. Ebenfalls steht eine Routenberechnung zu den wichtigen Adressen zur Verfügung.",
+      "Hier können Sie bis zu vier wichtige Adressen hinterlegen. Diese werden in der Karte hervorgehoben. Ebenfalls steht eine Routenberechnung zu diesen wichtigen Adressen zur Verfügung.",
     locale: defaultLocale,
     target: 'button[data-tour="add-important-address"]',
   },
@@ -67,7 +68,7 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Fertig. Es kann losgehen und sie können die Analyse starten oder aktualisieren.",
+      "Fertig. Es kann losgehen und Sie können die Analyse starten oder aktualisieren.",
     locale: defaultLocale,
     placement: "top",
     target: 'button[data-tour="start-search"]',
