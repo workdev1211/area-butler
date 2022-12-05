@@ -30,7 +30,8 @@ const OpenAiLocationFormHandler: FunctionComponent<
   const generateLocationText = async ({
     meanOfTransportation,
     tonality,
-    textLength,
+    // TODO remove in future
+    // textLength,
     customText,
   }: Omit<IApiAiDescriptionQuery, "searchResultSnapshotId">) => {
     setLocationDescription(
@@ -41,7 +42,8 @@ const OpenAiLocationFormHandler: FunctionComponent<
             searchResultSnapshotId: searchResultSnapshotId,
             meanOfTransportation,
             tonality,
-            textLength,
+            // TODO remove in future
+            // textLength,
             customText,
           }
         )

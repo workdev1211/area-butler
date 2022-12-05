@@ -27,7 +27,8 @@ import { SubscriptionService } from '../user/subscription.service';
 import { IApiMongoParams } from '@area-butler-types/types';
 import { OpenAiService } from '../client/open-ai/open-ai.service';
 import {
-  openAiTextLength,
+  // TODO remove in future
+  // openAiTextLength,
   openAiTonalities,
 } from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
@@ -206,7 +207,8 @@ export class LocationController extends AuthenticatedController {
       snapshot: searchResultSnapshot.snapshot,
       meanOfTransportation: aiDescriptionQuery.meanOfTransportation,
       tonality: openAiTonalities[aiDescriptionQuery.tonality],
-      textLength: openAiTextLength[aiDescriptionQuery.textLength].value,
+      // TODO remove in future
+      // textLength: openAiTextLength[aiDescriptionQuery.textLength].value,
       customText: aiDescriptionQuery.customText,
     });
 

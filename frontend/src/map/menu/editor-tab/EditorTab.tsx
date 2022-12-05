@@ -135,7 +135,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     ...additionalMapBoxStyles,
     {
       key: "",
-      label: ">> Karte in Ihrem Branding? Sprechen Sie uns an. <<",
+      label: "> Karte in Ihrem Branding? Sprechen Sie uns an. <",
       isDisabled: true,
     },
   ];

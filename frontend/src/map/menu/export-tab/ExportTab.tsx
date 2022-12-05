@@ -556,6 +556,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         <OnePageExportModal
           groupedEntries={groupedEntities}
           snapshotToken={searchContextState.responseToken}
+          snapshotId={snapshotId}
           primaryColor={config?.primaryColor}
         />
       )}

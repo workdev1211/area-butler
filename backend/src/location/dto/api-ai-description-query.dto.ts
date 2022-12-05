@@ -3,7 +3,8 @@ import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { MeansOfTransportation } from '@area-butler-types/types';
 import {
   IApiAiDescriptionQuery,
-  OpenAiTextLengthEnum,
+  // TODO remove in future
+  // OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 
@@ -20,9 +21,10 @@ class ApiAiDescriptionQueryDto implements IApiAiDescriptionQuery {
   @IsEnum(OpenAiTonalityEnum)
   tonality: OpenAiTonalityEnum;
 
-  @IsNotEmpty()
-  @IsEnum(OpenAiTextLengthEnum)
-  textLength: OpenAiTextLengthEnum;
+  // TODO remove in future
+  // @IsNotEmpty()
+  // @IsEnum(OpenAiTextLengthEnum)
+  // textLength: OpenAiTextLengthEnum;
 
   @IsOptional()
   @IsString()

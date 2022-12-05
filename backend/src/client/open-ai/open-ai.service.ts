@@ -19,7 +19,8 @@ interface ILocationDescriptionQueryData {
   snapshot: ApiSearchResultSnapshot;
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
-  textLength: number;
+  // TODO remove in future
+  // textLength: number;
   customText?: string;
 }
 
@@ -35,38 +36,49 @@ export class OpenAiService {
     snapshot,
     meanOfTransportation,
     tonality,
-    textLength,
+    // TODO remove in future
+    // textLength,
     customText,
   }: ILocationDescriptionQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
       snapshot.searchResponse.routingProfiles[
         meanOfTransportation
-      ].locationsOfInterest.reduce((result, { entity: { type } }) => {
-        if (!result[type]) {
-          result[type] = 0;
+      ].locationsOfInterest.reduce((result, { entity: { name, type } }) => {
+        const osmName = Object.values(OsmName).includes(
+          type as unknown as OsmName,
+        )
+          ? (type as unknown as OsmName)
+          : name;
+
+        if (!result[osmName]) {
+          result[osmName] = 0;
         }
 
-        result[type] += 1;
+        result[osmName] += 1;
 
         return result;
       }, {});
 
     const initialOpenAiText =
       `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für eine Immobilien-Anzeige an der Adresse ${snapshot.placesLocation.label}.\n` +
-      `Der Text sollte etwa ${textLength} Wörter lang sein.\n` +
+      // TODO remove in future
+      // `Der Text sollte etwa ${textLength} Wörter lang sein.\n` +
       'Füge Umgebungsinformationen hinzu:\n';
 
     const poiCountEntries = Object.entries(poiCount);
 
-    let openAiQueryText = poiCountEntries.reduce((result, [type, count], i) => {
-      result += `Anzahl ${
-        count === 1
-          ? openAiTranslationDictionary[type].singular
-          : openAiTranslationDictionary[type].plural
-      }: ${count}${poiCountEntries.length - 1 === i ? '' : '\n'}`;
+    let openAiQueryText = poiCountEntries.reduce(
+      (result, [name, count]: [OsmName, number], i) => {
+        result += `Anzahl ${
+          count === 1
+            ? openAiTranslationDictionary[name].singular
+            : openAiTranslationDictionary[name].plural
+        }: ${count}${poiCountEntries.length - 1 === i ? '' : '\n'}`;
 
-      return result;
-    }, initialOpenAiText);
+        return result;
+      },
+      initialOpenAiText,
+    );
 
     if (customText) {
       openAiQueryText += `\n${customText}`;
@@ -91,6 +103,6 @@ export class OpenAiService {
       },
     );
 
-    return choices[0].text;
+    return choices[0].text.replace(/^(\n)*(.*)/g, '$2');
   }
 }
