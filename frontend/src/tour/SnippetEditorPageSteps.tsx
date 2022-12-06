@@ -10,29 +10,65 @@ const defaultLocale: Locale = {
 const Steps: Step[] = [
   {
     content:
-      "In Ihrem Karteneditor können Sie die Karte an Ihre Wünsche, Farben, Stile anzupassen und z.B. auf Ihrer Webseite zu veröffentlichen.",
+      "Auf dieser Seite lassen sich die Ergebnisse der Umgebungsanalyse betrachten. Zudem können Sie die Karte an Ihre Bedürfnisse anpassen und viele Dinge exportieren.",
     locale: defaultLocale,
     placement: "center",
     target: "body",
   },
   {
     content:
-      "Dies ist der Vorschaubereich und zeigt Ihre Karte in Ihrer aktuellen Konfiguration. Genau, wie Ihre Kunden die Karte sehen werden, sobald diese veröffentlicht ist.",
+      "Dieser Bereich zeigt die karte genau so, wie Ihre Kunden die Karte sehen werden, sobald diese exportiert ist.",
     locale: defaultLocale,
-    placement: "right",
+    placement: "center",
     target: 'div[data-tour="map"]',
-  },  {
-    content:
-      "Hier lässt sich die Karte an Ihre Anforderungen anpassen.",
-    locale: defaultLocale,
-    placement: "left",
-    target: 'div[data-tour="editor-map-menu"]',
   },
   {
     content:
-      'Hier können Sie die Karte veröffentlichen. Für sie wird ein iFrame/Snippet HTML code erstellt den Sie auf ihre Webseite kopieren können. Zudem erhalten Sie einen direkten, Vollbild-Link, den Sie verschicken oder in einem Button wie z.B. "Hier die Lage entdecken" auf Ihren Präsenzen hinterlegen können.',
+      "Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Z.B. in Rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
     locale: defaultLocale,
-    target: 'div[data-tour="actions-top"]',
+    placement: "bottom",
+    target: 'div[data-tour="map-navbar"]',
+  },
+  {
+    content:
+      "Ein Klick zoomt und zentriert die Karte auf die Erreichbarkeitslinie/Isochrone des gewählten Fortbewegungsmittels.",
+    locale: defaultLocale,
+    placement: "right",
+    target: 'div[data-tour="zoom-to-bounds"]',
+  },
+  {
+    content:
+      "Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Erreichbarkeit betrachten",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="map-menu"]',
+  },
+  {
+    content:
+      "Über einen Klick auf die Adresse können Sie jederzeit bequem zurück zum Start auf der Karte navigieren",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'button[data-tour="reset-position"]',
+  },
+  {
+    content: "In der Seitenleiste Sind alle Informationen für Sie gebündelt.",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="map-menu"]',
+  },
+  {
+    content:
+      "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt.",
+    locale: defaultLocale,
+    placement: "right",
+    target: '[data-tour="take-map-picture"]',
+  },
+  {
+    content:
+      '<iframe width="560" height="315" src="https://www.youtube.com/embed/teRhSH2w0f4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="map-menu"]',
   },
 ];
 
