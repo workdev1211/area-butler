@@ -480,6 +480,7 @@ const SearchResultContainer = forwardRef<
         <button
           type="button"
           className={`show-map-menu-btn ${!editorMode ? "embed-mode" : ""}`}
+          data-tour="ShowMapMenuButton"
           onMouseDown={() => {
             setIsMapMenuOpen(!isMapMenuOpen);
           }}

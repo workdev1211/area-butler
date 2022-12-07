@@ -241,7 +241,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               <FeedbackFormHandler />
             </FormModal>
             <button type="button" className="save-button" onClick={saveConfig}>
-              <img src={saveIcon} alt="save-icon" />
+              <img src={saveIcon} alt="save-icon" /> data-tour="save-button"
             </button>
           </div>
           <MapMenuFooter />
