@@ -24,7 +24,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Filter: Hier können Sie filtern, welches Erreichbarkeitsgebiet Sie
+        Hier können Sie filtern, welches Erreichbarkeitsgebiet Sie
         betrachten wollen z.B. in rot: was kann man, in der angegebenen Zeit, zu Fuß erreichen.
       </div>
     ),
@@ -35,7 +35,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Hier können Sie die Erreichbarkeitslinien aus- und einblenden.
+        Keine Lust auf zackige Linien im Kartenausschnitt? Hier können Sie die Erreichbarkeitslinien aus- und einblenden aber trotzdem die POIs in der Karte behalten.
       </div>
     ),
     locale: defaultLocale,
@@ -45,7 +45,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Auto-Zoom: Zentriert die Karte auf das jeweilige Erreichbarkeitsgebiet.
+        Auto-Zoom: Zoomt und zentriert die Karte auf das jeweilige Erreichbarkeitsgebiet.
       </div>
     ),
     locale: defaultLocale,
@@ -65,7 +65,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Erstellen Sie hier den aktuellen Kartenausschnitt als Bild. Sie können Ihn unter Exporte herunterladen. Diese Bilder werden auch in Ihre Export-Dokumente integriert. Tipp: Verändern Sie das Seitenverhältnis Ihres Browserfensters für den perfekten Ausschnitt für Ihren Anwendungsfall
+        Erstellen Sie hier den aktuellen Kartenausschnitt als Bild. Sie können die Bilder unter Exporte herunterladen. Sie werden auch in Ihre Export-Dokumente integriert. Tipp: Verändern Sie die Größe Ihres Browserfensters für das perfekte Seitenverhältnis, für Ihren Anwendungsfall.
       </div>
     ),
     locale: defaultLocale,
@@ -114,7 +114,7 @@ const Steps: Step[] = [
         />
         ),
         locale: defaultLocale,
-        placement: "left",
+        placement: "bottom",
         target: 'div[data-tour="icon-karte"]',
         styles: {
           ...defaultStyles,
@@ -133,7 +133,7 @@ const Steps: Step[] = [
         />
         ),
         locale: defaultLocale,
-        placement: "left",
+        placement: "bottom",
         target: 'div[data-tour="icon-editor"]',
         styles: {
           ...defaultStyles,
@@ -152,7 +152,7 @@ const Steps: Step[] = [
         />
         ),
         locale: defaultLocale,
-        placement: "left",
+        placement: "bottom",
         target: 'div[data-tour="icon-exporte"]',
         styles: {
           ...defaultStyles,
@@ -162,8 +162,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Durchblick: Hier können Sie die Seitenleiste ein- oder ausblenden z.B.
-        um Kartenausschnitte aufzunehmen.
+        Hier können Sie die Seitenleiste ein- oder ausblenden z.B. um Kartenausschnitte aufzunehmen.
       </div>
     ),
     locale: defaultLocale,
@@ -173,8 +172,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Karte zentrieren: Über einen Klick auf die Adresse gelangen Sie wieder zur zentrierten
-        Ausgangsposition.
+        Über einen Klick auf die Adresse gelangen Sie wieder zur zentrierten Ausgangsposition.
       </div>
     ),
     locale: defaultLocale,
@@ -184,10 +182,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Lokalitäten, Indizes, Daten: Die einzelnen Menüpunkte lassen sich aus-
-        und einklappen, die Erreichbarkeit betrachten und einzelne POIs
-        anklicken. Hier finden Sie auch alle weiteren Daten & Fakten, indem Sie
-        die Hauptkategorie minimieren.
+        Lokalitäten, Indizes, Daten: Die einzelnen Kategorien lassen sich aus- und einklappen und einzelne POIs anklicken und in der Karte hervorheben. Hier finden Sie auch  weitere Daten & Fakten.
       </div>
     ),
     locale: defaultLocale,
@@ -201,7 +196,7 @@ const Steps: Step[] = [
       </div>
     ),
     locale: defaultLocale,
-    placement: "left",
+    placement: "top",
     target: 'button[data-tour="save-button"]',
   },
 ];
