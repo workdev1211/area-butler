@@ -54,8 +54,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(true);
   const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
-    useState(true);
-  const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(true);
+    useState(false);
+  const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
   const [color, setColor] = useState(config?.primaryColor);
   const [mapIcon, setMapIcon] = useState(config?.mapIcon);

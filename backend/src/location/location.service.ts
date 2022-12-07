@@ -269,7 +269,7 @@ export class LocationService {
     config: ApiSearchResultSnapshotConfig = {
       showLocation: true,
       showAddress: true,
-      groupItems: true,
+      groupItems: false,
       showStreetViewLink: true,
     },
   ): Promise<ApiSearchResultSnapshotResponse> {
