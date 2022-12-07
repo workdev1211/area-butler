@@ -1,6 +1,7 @@
+import { FunctionComponent, useContext, useState } from "react";
+
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import { useContext, useState } from "react";
 import { toastError } from "shared/shared.functions";
 import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
 
@@ -11,19 +12,19 @@ const tourDescriptions: Record<ApiTour, string> = {
     "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
   realEstates: "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
   profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
-  editor: "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?"
+  editor: "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?",
 };
 
-export interface StartTourModalProps {
+interface IStartTourModalProps {
   tour: ApiTour;
   showTour: ApiShowTour;
   onShowTour: () => void;
 }
 
-const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
+const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   tour,
   showTour,
-  onShowTour = () => {}
+  onShowTour = () => {},
 }) => {
   const [showModal, setShowModal] = useState(showTour[tour]);
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
@@ -35,16 +36,19 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
     const postDoNotShowTour = async (tour: ApiTour) => {
       try {
         let user = {};
+
         if (!showNoMoreTips) {
           user = (await post<ApiUser>(`/api/users/me/hide-tour/${tour}`, {}))
             .data;
         } else {
           user = (await post<ApiUser>(`/api/users/me/hide-tour`, {})).data;
         }
+
         userDispatch({
           type: UserActionTypes.SET_USER,
-          payload: user as ApiUser
+          payload: user as ApiUser,
         });
+
         setShowModal(false);
       } catch (err) {
         console.log(err);
@@ -52,7 +56,7 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
       }
     };
 
-    postDoNotShowTour(tour);
+    void postDoNotShowTour(tour);
   };
 
   return (
@@ -60,7 +64,7 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
       {showModal && (
         <div id="my-modal" className="modal modal-open z-2000">
           <div className="modal-box max-h-screen overflow-y-auto">
-            <h1 className="text-xl mb-5">Dürfen wir helfen?</h1>
+            <h1 className="text-xl mb-5">Dürfen wir helfen?111</h1>
             {tourDescriptions[tour]}
 
             <label className="cursor-pointer flex items-center mt-5">
@@ -68,7 +72,9 @@ const StartTourModal: React.FunctionComponent<StartTourModalProps> = ({
                 type="checkbox"
                 checked={showNoMoreTips}
                 className="checkbox checkbox-primary checkbox-sm"
-                onChange={event => setShowNoMoreTips(event.target.checked)}
+                onChange={(event) => {
+                  setShowNoMoreTips(event.target.checked);
+                }}
               />
               <span className="text-sm font-bold ml-5">
                 Ich möchte keine weiteren Tipps angezeigt bekommen

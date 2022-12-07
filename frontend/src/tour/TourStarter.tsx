@@ -1,6 +1,7 @@
-import { UserActionTypes, UserContext } from "context/UserContext";
-import React, { useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
+
+import { UserActionTypes, UserContext } from "context/UserContext";
 import { ApiTour, ApiUser } from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
@@ -10,21 +11,21 @@ import ProfileSteps from "./ProfilePageSteps";
 import SnippetEditorSteps from "./SnippetEditorPageSteps";
 import StartTourModal from "./StartTourModal";
 
-export interface TourStarterProps {
+interface ITourStarterProps {
   tour: ApiTour;
 }
 
 export const defaultStyles: Styles = {
   options: {
     zIndex: 10000,
-    primaryColor: "#c91444"
+    primaryColor: "#c91444",
   },
   spotlight: {
-    backgroundColor: "white"
+    backgroundColor: "white",
   },
   overlay: {
-    mixBlendMode: "darken"
-  }
+    mixBlendMode: "darken",
+  },
 };
 
 const tourSteps: Record<ApiTour, Step[]> = {
@@ -33,10 +34,10 @@ const tourSteps: Record<ApiTour, Step[]> = {
   realEstates: RealEstatesSteps,
   customers: CustomersSteps,
   profile: ProfileSteps,
-  editor: SnippetEditorSteps
+  editor: SnippetEditorSteps,
 };
 
-const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
+const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
   const [runTour, setRunTour] = useState(false);
   const { userState, userDispatch } = useContext(UserContext);
   const user: ApiUser = userState.user!;
@@ -48,7 +49,7 @@ const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
       setRunTour(true);
       userDispatch({
         type: UserActionTypes.SET_START_TOUR,
-        payload: false
+        payload: false,
       });
     }
   }, [userDispatch, userState.startTour]);
@@ -78,7 +79,7 @@ const TourStarter: React.FunctionComponent<TourStarterProps> = ({ tour }) => {
         showSkipButton={true}
         steps={tourSteps[tour]}
         styles={{
-          ...defaultStyles
+          ...defaultStyles,
         }}
       />
     </div>
