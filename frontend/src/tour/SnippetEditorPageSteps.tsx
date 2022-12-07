@@ -14,7 +14,7 @@ const Steps: Step[] = [
     content: (
       <div className="text-justify">
         Umgebung analysieren, Karte anpassen, Dokumente exportieren. Es gibt
-        viel zu entdecken. Los gehts mit der Tour...
+        viel zu entdecken. Hier gibts Tipps&Tricks und kurzen Erklärvideos ...
       </div>
     ),
     locale: defaultLocale,
@@ -78,28 +78,92 @@ const Steps: Step[] = [
     target: 'div[data-tour="take-map-picture"]',
   },
   {
-    content: (
-      <div className="text-justify">
-        Seitenleiste: In dieser sind alle Informationen & Aktionen für Sie
-        erreichbar.
-      </div>
-    ),
-    locale: defaultLocale,
-    placement: "left",
-    target: 'div[data-tour="side-menu"]',
-  },
+        content: (
+          <iframe 
+          width="560" 
+          height="315" 
+          src="https://www.youtube.com/embed/Rr_UkT-sjO4?start=16" 
+          title="Neue Seitenleiste" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen={true}
+        />
+        ),
+        locale: defaultLocale,
+        placement: "left",
+        target: 'div[data-tour="side-menu"]',
+        styles: {
+          ...defaultStyles,
+          options: { zIndex: 10000, primaryColor: "#c91444", width: "min-content" },
+        },
+      },
   {
     content: (
       <div className="text-justify">
-        Tabs: greifen Sie direkt auf das zu, was Sie benötigen. Mit dem Button
-        ganz rechts können Sie die Seitenleiste ein- oder ausblende z.B. um
-        Kartenausschnitte aufzunehmen.
+        Tabs: greifen Sie direkt auf das zu, was Sie benötigen. Hier zu jedem Tab ein kurzes Erklärvideo.
       </div>
     ),
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="tab-icons"]',
   },
+
+{
+        content: (
+          <iframe 
+          width="560" 
+          height="315" 
+          src="https://www.youtube.com/embed/teRhSH2w0f4?start=7" 
+          title="Karte" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen={true}
+        />
+        ),
+        locale: defaultLocale,
+        placement: "left",
+        target: 'div[data-tour="icon-karte"]',
+        styles: {
+          ...defaultStyles,
+          options: { zIndex: 10000, primaryColor: "#c91444", width: "min-content" },
+        },
+      },
+{
+        content: (
+          <iframe 
+          width="560" 
+          height="315" 
+          src="https://www.youtube.com/embed/YxWCTLl_NrA?start=7" 
+          title="Editor" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen={true}
+        />
+        ),
+        locale: defaultLocale,
+        placement: "left",
+        target: 'div[data-tour="icon-editor"]',
+        styles: {
+          ...defaultStyles,
+          options: { zIndex: 10000, primaryColor: "#c91444", width: "min-content" },
+        },
+      },
+{
+        content: (
+          <iframe 
+          width="560" 
+          height="315" 
+          src="https://www.youtube.com/embed/_qpY8uBWsD8?start=7" 
+          title="Exporte" 
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowFullScreen={true}
+        />
+        ),
+        locale: defaultLocale,
+        placement: "left",
+        target: 'div[data-tour="icon-exporte"]',
+        styles: {
+          ...defaultStyles,
+          options: { zIndex: 10000, primaryColor: "#c91444", width: "min-content" },
+        },
+      },
   {
     content: (
       <div className="text-justify">
@@ -114,7 +178,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Karte zentrieren: Über einen Klick auf die Adresse wieder zur
+        Karte zentrieren: Über einen Klick auf die Adresse gelangen Sie wieder zur zentrierten
         Ausgangsposition.
       </div>
     ),
@@ -144,25 +208,6 @@ const Steps: Step[] = [
     locale: defaultLocale,
     placement: "left",
     target: 'button[data-tour="save-button"]',
-  },
-  {
-    content: (
-      <iframe
-        width="560"
-        height="315"
-        src="https://www.youtube.com/embed/teRhSH2w0f4"
-        title="YouTube video player"
-        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-        allowFullScreen={true}
-      />
-    ),
-    locale: defaultLocale,
-    placement: "center",
-    target: "body",
-    styles: {
-      ...defaultStyles,
-      options: { zIndex: 10000, primaryColor: "#c91444", width: "min-content" },
-    },
   },
 ];
 
