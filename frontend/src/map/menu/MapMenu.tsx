@@ -130,10 +130,10 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     : "calc(100% - var(--menu-item-h))";
 
   return (
-    <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}>
+    <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`} data-tour="side-menu">
       {editorMode && editorTabProps && (
         <div className="tab-bar bg-primary-gradient">
-          <div className="tab-container">
+          <div className="tab-container" data-tour="tab-icons">
             <div
               className={`tab-item${
                 activeTab === TabsEnum.Map ? " tab-item-active" : ""
@@ -202,6 +202,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         style={{
           height: mapMenuContentHeight,
         }}
+        data-tour="map-menu-contents"
       >
         {activeTab === TabsEnum.Map && (
           <MapTab

@@ -17,13 +17,6 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Dieser Bereich zeigt die karte genau so, wie Ihre Kunden die Karte sehen werden, sobald diese exportiert ist.",
-    locale: defaultLocale,
-    placement: "center",
-    target: 'div[data-tour="map"]',
-  },
-  {
-    content:
       "Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Z.B. in Rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
     locale: defaultLocale,
     placement: "bottom",
@@ -37,38 +30,51 @@ const Steps: Step[] = [
     target: 'div[data-tour="zoom-to-bounds"]',
   },
   {
-    content:
-      "Hier sehen Sie eine Auflistung aller Orte, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen und die Erreichbarkeit betrachten",
+    content: "Hier können Sie den Vorschau-Modus aktivieren. Dieser zeigt die Karte genau so, wie Ihre KundInnen sie sehen werden.",
     locale: defaultLocale,
-    placement: "left",
-    target: 'div[data-tour="map-menu"]',
+    placement: "right",
+    target: 'a[data-tour="go-fullscreen"]'
   },
   {
     content:
-      "Über einen Klick auf die Adresse können Sie jederzeit bequem zurück zum Start auf der Karte navigieren",
+      "Hier können Sie den aktuellen Kartenausschnitt als Bild speichern und unter Exporte herunterladen. Die hier aufgenommenen Kartenausschnitte werden auch in Ihre Dokumente integriert.",
+    locale: defaultLocale,
+    placement: "right",
+    target: '[data-tour="take-map-picture"]',
+  },
+  
+  {
+    content: "In der Seitenleiste Sind alle Informationen für Sie gebündelt.",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="side-menu"]',
+  },
+  {
+    content: "Über die drei Tabs greifen Sie direkt auf das zu, was Sie benötigen.",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="tab-icons"]',
+  },
+  {
+    content:
+      "Über einen Klick auf die Adresse zentriert die Karte wieder auf die Ausgangsposition.",
     locale: defaultLocale,
     placement: "left",
     target: 'button[data-tour="reset-position"]',
   },
   {
-    content: "In der Seitenleiste Sind alle Informationen für Sie gebündelt.",
+    content:
+      "Hier sehen Sie alle POIs, die in der Nähe sind. Die einzelnen Menüpunkte lassen sich aufklappen, die Erreichbarkeit betrachten und einzelne POIs anklicken. Hier finden Sie auch alle weiteren Daten & Fakten, indem Sie die Hauptkategorie minimieren.",
     locale: defaultLocale,
     placement: "left",
-    target: 'div[data-tour="map-menu"]',
-  },
-  {
-    content:
-      "Hier können Sie die aktuelle Ansicht der Karte als Bild speichern und rechts im Menü herunterladen. Die hier aufgenommenen Snapshots sind dann auch in Ihren Exporten hinterlegt.",
-    locale: defaultLocale,
-    placement: "right",
-    target: '[data-tour="take-map-picture"]',
-  },
+    target: 'div[data-tour="map-menu-contents"]',
+  },  
   {
     content:
       '<iframe width="560" height="315" src="https://www.youtube.com/embed/teRhSH2w0f4" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>',
     locale: defaultLocale,
-    placement: "left",
-    target: 'div[data-tour="map-menu"]',
+    placement: "center",
+    target: "body"]',
   },
 ];
 
