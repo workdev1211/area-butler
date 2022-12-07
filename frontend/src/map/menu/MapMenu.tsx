@@ -141,8 +141,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Map);
               }}
-            >
-            data-tour="icon-karte"
+            data-tour="icon-karte">
               <img src={mapIcon} alt="map-icon" />
               <div>Karte</div>
               
@@ -154,8 +153,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Editor);
               }}
-            >
-            data-tour="icon-editor"
+            data-tour="icon-editor">
               <img src={editorIcon} alt="editor-icon" />
               <div>Editor</div>
             </div>
@@ -166,8 +164,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Export);
               }}
-            >
-            data-tour="icon-exporte"
+            data-tour="icon-exporte">
               <img src={downloadIcon} alt="export-icon" />
               <div>Exporte</div>
             </div>
