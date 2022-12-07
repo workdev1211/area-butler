@@ -1,7 +1,12 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
+import { ReactSortable } from "react-sortablejs";
 
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { setBackgroundColor, toastError } from "../../shared/shared.functions";
+
+interface ISortableEntityGroup extends EntityGroup {
+  id: string;
+}
 
 interface IOnePageEntitySelectionProps {
   groupedEntries: EntityGroup[];
@@ -22,32 +27,67 @@ const OnePageEntitySelection: FunctionComponent<
   entityGroupLimit = 8,
   itemNumberLimit = 3,
 }) => {
+  const [entityGroups, setEntityGroups] = useState<ISortableEntityGroup[]>([]);
+  const [importantAddressGroup, setImportantAddressGroup] =
+    useState<EntityGroup>();
+
   useEffect(() => {
-    const processedEntityGroups = [...groupedEntries]
+    const processedEntityGroups: ISortableEntityGroup[] = [...groupedEntries]
       .sort((a, b) =>
         a.title.toLowerCase().localeCompare(b.title.toLowerCase())
       )
-      .map((group, i) => {
-        group.active = i < entityGroupLimit;
+      .reduce<ISortableEntityGroup[]>((result, group, i) => {
+        if (group.title === "Wichtige Adressen") {
+          setImportantAddressGroup(group);
+          return result;
+        }
 
-        group.items = group.items.map((item, i) => {
-          item.distanceInMeters = Math.round(item.distanceInMeters);
-          item.selected = i < itemNumberLimit;
+        const processedEntityGroup = {
+          ...group,
+          active: i < entityGroupLimit,
+          id: group.title,
+        };
 
-          return item;
-        });
+        processedEntityGroup.items = processedEntityGroup.items.map(
+          (item, i) => {
+            item.distanceInMeters = Math.round(item.distanceInMeters);
+            item.selected = i < itemNumberLimit;
 
-        group.items.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+            return item;
+          }
+        );
 
-        return group;
-      });
+        processedEntityGroup.items.sort(
+          (a, b) => a.distanceInMeters - b.distanceInMeters
+        );
 
-    setGroupedEntries([...processedEntityGroups]);
+        result.push(processedEntityGroup);
+
+        return result;
+      }, []);
+
+    setEntityGroups([...processedEntityGroups]);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  const onGroupSelectionChange = (group: EntityGroup): void => {
-    const activeGroupNumber = groupedEntries.reduce(
+  useEffect(() => {
+    const resultingGroupedEntries = entityGroups.map((group) => {
+      const processedEntityGroup: EntityGroup & { id?: string } = { ...group };
+      delete processedEntityGroup.id;
+
+      return processedEntityGroup;
+    });
+
+    if (importantAddressGroup) {
+      resultingGroupedEntries.push(importantAddressGroup);
+    }
+
+    setGroupedEntries(resultingGroupedEntries);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [entityGroups]);
+
+  const onGroupSelectionChange = (group: ISortableEntityGroup): void => {
+    const activeGroupNumber = entityGroups.reduce(
       (result, group) => (group.active ? result + 1 : result),
       0
     );
@@ -62,7 +102,7 @@ const OnePageEntitySelection: FunctionComponent<
     }
 
     group.active = !group.active;
-    setGroupedEntries([...groupedEntries]);
+    setEntityGroups([...entityGroups]);
   };
 
   return (
@@ -74,29 +114,32 @@ const OnePageEntitySelection: FunctionComponent<
         }}
         onClick={closeCollapsable}
       >
-        2. Überblick ({groupedEntries.filter((group) => group.active).length}/
-        {entityGroupLimit || groupedEntries.length})
+        2. Überblick ({entityGroups.filter((group) => group.active).length}/
+        {entityGroupLimit || entityGroups.length})
       </div>
       <div className="collapse-content">
-        {groupedEntries.map((group, i) => (
-          <div
-            className="flex items-center gap-6 p-4 font-medium border cursor-pointer"
-            onClick={() => {
-              onGroupSelectionChange(group);
-            }}
-            key={`entity-group-${group.title}`}
-          >
-            <input
-              className="checkbox checkbox-primary"
-              type="checkbox"
-              checked={group.active}
-              readOnly={true}
-            />
-            <div className="select-none">
-              {group.title} ({group.items.length})
+        <ReactSortable list={entityGroups} setList={setEntityGroups}>
+          {entityGroups.map((group) => (
+            <div
+              className="flex items-center gap-6 p-4 font-medium border cursor-pointer"
+              key={`entity-group-${group.title}`}
+            >
+              <input
+                className="checkbox checkbox-primary"
+                type="checkbox"
+                // defaultChecked doesn't work as expected
+                checked={group.active}
+                onChange={() => {}}
+                onClick={() => {
+                  onGroupSelectionChange(group);
+                }}
+              />
+              <div className="select-none">
+                {group.title} ({group.items.length})
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </ReactSortable>
       </div>
     </>
   );
