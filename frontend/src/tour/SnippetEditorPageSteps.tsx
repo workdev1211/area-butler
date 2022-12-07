@@ -13,8 +13,8 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Umgebung analysieren, Karte anpassen, Dokumente exportieren. Es gibt
-        viel zu entdecken. Hier gibts Tipps&Tricks und kurzen Erklärvideos ...
+        Umgebung analysieren, Karte anpassen, Dokumente & Links exportieren. Es gibt
+        viel zu entdecken und dafür gibts hier Tipps, Tricks und kurze Erklärvideos ...
       </div>
     ),
     locale: defaultLocale,
@@ -69,7 +69,7 @@ const Steps: Step[] = [
       </div>
     ),
     locale: defaultLocale,
-    placement: "right",
+    placement: "top",
     target: 'a[data-tour="take-map-picture"]',
   },
   {
