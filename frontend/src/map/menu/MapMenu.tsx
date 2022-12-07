@@ -243,8 +243,9 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             <button 
             type="button" 
             className="save-button" 
-            onClick={saveConfig}>
+            onClick={saveConfig}
             data-tour="save-button"
+            >
               <img src={saveIcon} alt="save-icon" /> 
             </button>
             
