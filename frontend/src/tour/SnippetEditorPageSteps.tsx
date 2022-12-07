@@ -24,9 +24,8 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Filter: Hier können Sie ein- und ausblenden welche Mobilitätsart Sie
-        betrachten wollen. Z.B. in rot: was kann ich zu Fuß erreichen in der
-        angegebenen Zeit
+        Filter: Hier können Sie filtern, welches Erreichbarkeitsgebiet Sie
+        betrachten wollen z.B. in rot: was kann man, in der angegebenen Zeit, zu Fuß erreichen.
       </div>
     ),
     locale: defaultLocale,
@@ -36,18 +35,17 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Hier können Sie die Erreichbarkeitslinie / Isochrone aus- und einblenden
+        Hier können Sie die Erreichbarkeitslinien aus- und einblenden.
       </div>
     ),
     locale: defaultLocale,
-    placement: "bottom",
-    target: 'div[data-tour="toggle-bounds"]',
+    placement: "right",
+    target: 'a[data-tour="toggle-bounds"]',
   },
   {
     content: (
       <div className="text-justify">
-        Auto-Zoom: Zentriert die Karte auf die jeweilige
-        Erreichbarkeitslinie / Isochrone.
+        Auto-Zoom: Zentriert die Karte auf das jeweilige Erreichbarkeitsgebiet.
       </div>
     ),
     locale: defaultLocale,
@@ -57,25 +55,24 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Vorschau: Zeigt die Karte in einem neuen Tab genau so, wie Ihre
-        KundInnen sie sehen werden.
+        Vorschau: Zeigt die Karte in einem neuen Tab genau so, wie Ihre KundInnen sie sehen werden.
       </div>
     ),
     locale: defaultLocale,
     placement: "right",
-    target: 'div[data-tour="go-fullscreen"]',
+    target: 'a[data-tour="go-fullscreen"]',
   },
   {
     content: (
       <div className="text-justify">
         Kartenausschnitte: Erstellen Sie hier den aktuellen Kartenausschnitt als
         Bild. Sie können Ihn unter Exporte herunterladen. Diese Bilder werden
-        auch in die Export-Dokumente integriert.
+        auch in Ihre Export-Dokumente integriert.
       </div>
     ),
     locale: defaultLocale,
     placement: "right",
-    target: 'div[data-tour="take-map-picture"]',
+    target: 'a[data-tour="take-map-picture"]',
   },
   {
         content: (
