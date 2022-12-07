@@ -240,10 +240,14 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             <FormModal modalConfig={feedbackModalConfig}>
               <FeedbackFormHandler />
             </FormModal>
-            <button type="button" className="save-button" onClick={saveConfig}>
+            <button 
+            type="button" 
+            className="save-button" 
+            onClick={saveConfig}>
+            data-tour="save-button"
               <img src={saveIcon} alt="save-icon" /> 
             </button>
-            data-tour="save-button"
+            
           </div>
           <MapMenuFooter />
         </div>

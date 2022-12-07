@@ -17,7 +17,7 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Filter über die Mobilitätsarten. Hier können Sie ein- und ausblenden was Sie betrachten wollen. Z.B. in rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
+      "Filter: Hier können Sie ein- und ausblenden welche Mobilitätsart Sie betrachten wollen. Z.B. in rot: was kann ich zu Fuß erreichen in der angegebenen Zeit",
     locale: defaultLocale,
     placement: "bottom",
     target: 'div[data-tour="map-navbar"]',
@@ -31,20 +31,20 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Auto-Zoom, zentriert die Karte auf die jeweilige Erreichbarkeitslinie/Isochrone.",
+      "Auto-Zoom: Zentriert die Karte auf die jeweilige Erreichbarkeitslinie/Isochrone.",
     locale: defaultLocale,
     placement: "right",
     target: 'div[data-tour="zoom-to-bounds"]',
   },
   {
-    content: "Vorschau-Modus aktivieren. Dieser zeigt die Karte genau so, wie Ihre KundInnen sie sehen werden, in einem neuen Tab.",
+    content: "Vorschau: Zeigt die Karte in einem neuen Tab genau so, wie Ihre KundInnen sie sehen werden.",
     locale: defaultLocale,
     placement: "right",
     target: 'div[data-tour="go-fullscreen"]'
   },
   {
     content:
-      "Kartenausschnitte erstellen: Hier können Sie den aktuellen Kartenausschnitt als Bild speichern und unter Exporte herunterladen. Diese Bilder werden auch in die Export-Dokumente integriert.",
+      "Kartenausschnitte: Erstellen Sie hier den aktuellen Kartenausschnitt als Bild. Sie können Ihn unter Exporte herunterladen. Diese Bilder werden auch in die Export-Dokumente integriert.",
     locale: defaultLocale,
     placement: "right",
     target: 'div[data-tour="take-map-picture"]',
@@ -62,7 +62,7 @@ const Steps: Step[] = [
     target: 'div[data-tour="tab-icons"]',
   },
   {
-    content: "Mehr Durchblick: Hier können Sie die Seitenleiste ein- oder ausblende um z.B. Kartenausschnitte aufzunehmen.",
+    content: "Durchblick: Hier können Sie die Seitenleiste ein- oder ausblenden z.B. um Kartenausschnitte aufzunehmen.",
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="ShowMapMenuButton"]',
@@ -76,14 +76,14 @@ const Steps: Step[] = [
   },
   {
     content:
-      "Lokalitäten, Indizes, Daten: Die einzelnen Menüpunkte lassen sich aufklappen, die Erreichbarkeit betrachten und einzelne POIs anklicken. Hier finden Sie auch alle weiteren Daten & Fakten, indem Sie die Hauptkategorie minimieren.",
+      "Lokalitäten, Indizes, Daten: Die einzelnen Menüpunkte lassen sich aus- und einklappen, die Erreichbarkeit betrachten und einzelne POIs anklicken. Hier finden Sie auch alle weiteren Daten & Fakten, indem Sie die Hauptkategorie minimieren.",
     locale: defaultLocale,
     placement: "left",
     target: 'div[data-tour="map-menu-contents"]',
   },  
   {
     content:
-      "Änderungen an Ihrer Karte speichern & veröffentlichen.",
+      "Speichern: Änderungen an Ihrer Karte speichern & veröffentlichen.",
     locale: defaultLocale,
     placement: "left",
     target: 'button[data-tour="save-button"]',
