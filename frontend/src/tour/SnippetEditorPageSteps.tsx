@@ -55,7 +55,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Vorschau: Zeigt die Karte in einem neuen Tab genau so, wie Ihre KundInnen sie sehen werden.
+        Vorschau: Zeigt die Karte in einem neuen Vorschau-Tab genau so, wie Ihre KundInnen diese sehen werden.
       </div>
     ),
     locale: defaultLocale,
@@ -65,9 +65,7 @@ const Steps: Step[] = [
   {
     content: (
       <div className="text-justify">
-        Kartenausschnitte: Erstellen Sie hier den aktuellen Kartenausschnitt als
-        Bild. Sie können Ihn unter Exporte herunterladen. Diese Bilder werden
-        auch in Ihre Export-Dokumente integriert.
+        Erstellen Sie hier den aktuellen Kartenausschnitt als Bild. Sie können Ihn unter Exporte herunterladen. Diese Bilder werden auch in Ihre Export-Dokumente integriert. Tipp: Verändern Sie das Seitenverhältnis Ihres Browserfensters für den perfekten Ausschnitt für Ihren Anwendungsfall
       </div>
     ),
     locale: defaultLocale,
@@ -170,7 +168,7 @@ const Steps: Step[] = [
     ),
     locale: defaultLocale,
     placement: "left",
-    target: 'div[data-tour="ShowMapMenuButton"]',
+    target: 'button[data-tour="ShowMapMenuButton"]',
   },
   {
     content: (
