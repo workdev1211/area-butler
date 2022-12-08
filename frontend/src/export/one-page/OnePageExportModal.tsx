@@ -19,6 +19,7 @@ import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 import OpenAiLocationForm from "../../map-snippets/OpenAiLocationForm";
 import { IApiAiDescriptionQuery } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
+import OnePagePngDownload from "./OnePagePngDownloadButton";
 
 const SCREENSHOT_LIMIT = 2;
 const CHARACTER_LIMIT = 580;
@@ -97,6 +98,8 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     ...initialExportFlowState,
   });
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
+  const [isPng, setIsPng] = useState(false);
+  const [isTransparentBackground, setIsTransparentBackground] = useState(false);
 
   useEffect(() => {
     setLegend(getFilteredLegend(filteredEntities));
@@ -138,10 +141,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     setIsOpenAiBusy(false);
     setAddressDescription(openAiAddressDescription);
   };
-
-  if (!searchContextState.printingOnePageActive) {
-    return null;
-  }
 
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
@@ -224,14 +223,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 }}
                 rows={5}
               />
-
-              <div className="divider m-0" />
-
-              <div className="text-justify text-sm font-bold py-[3px]">
-                Inspiration gesucht? Nutzen Sie unseren KI-Lagetextgenerator in
-                der rechten Seitenleiste. KI-Text in Zwischenablage speichern,
-                hier einfügen und bearbeiten.
-              </div>
             </div>
           </div>
 
@@ -275,14 +266,64 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 });
               }}
             >
-              3. Kartenausschnitte & QR-Code
+              3. Medien & Format
             </div>
             <div className="collapse-content">
               <div className="flex flex-col gap-5 pt-5">
-                <label
-                  className="cursor-pointer label justify-start gap-3 p-0"
-                  key="show-qr-code"
-                >
+                <div className="flex gap-3">
+                  <label className="cursor-pointer label justify-start gap-3 p-0">
+                    {/*<input*/}
+                    {/*  type="checkbox"*/}
+                    {/*  checked={isPng}*/}
+                    {/*  className="checkbox checkbox-primary"*/}
+                    {/*  onChange={() => {*/}
+                    {/*    setIsPng(!isPng);*/}
+                    {/*  }}*/}
+                    {/*/>*/}
+                    <input
+                      type="radio"
+                      name="export-format"
+                      className="radio radio-primary"
+                      checked={!isPng}
+                      onChange={() => {}}
+                      onClick={() => {
+                        setIsPng(false);
+                      }}
+                    />
+                    <span className="label-text">PDF</span>
+                    <input
+                      type="radio"
+                      name="export-format"
+                      className="radio radio-primary"
+                      checked={isPng}
+                      onChange={() => {}}
+                      onClick={() => {
+                        setIsPng(true);
+                      }}
+                    />
+                    <span className="label-text">PNG</span>
+                  </label>
+
+                  {isPng && (
+                    <label className="cursor-pointer label justify-start gap-3 p-0">
+                      <input
+                        type="checkbox"
+                        checked={isTransparentBackground}
+                        className="checkbox checkbox-primary"
+                        onChange={() => {
+                          setIsTransparentBackground(!isTransparentBackground);
+                        }}
+                      />
+                      <span className="label-text">
+                        Transparenter Hintergrund
+                      </span>
+                    </label>
+                  )}
+                </div>
+
+                <div className="divider m-0" />
+
+                <label className="cursor-pointer label justify-start gap-3 p-0">
                   <input
                     type="checkbox"
                     checked={
@@ -319,23 +360,45 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             Schließen
           </button>
 
-          <OnePageDownload
-            addressDescription={addressDescription}
-            groupedEntries={filteredEntities!}
-            listingAddress={searchContextState.placesLocation.label}
-            realEstateListing={searchContextState.realEstateListing!}
-            downloadButtonDisabled={
-              !Object.keys(exportFlow).every(
-                (key) => exportFlow[key as keyof IExportFlowState]
-              ) || addressDescription.length > CHARACTER_LIMIT
-            }
-            onAfterPrint={onClose}
-            user={user}
-            color={searchContextState.responseConfig?.primaryColor}
-            legend={legend}
-            mapClippings={selectableMapClippings}
-            qrCode={qrCodeState}
-          />
+          {!isPng && (
+            <OnePageDownload
+              addressDescription={addressDescription}
+              groupedEntries={filteredEntities!}
+              listingAddress={searchContextState.placesLocation.label}
+              realEstateListing={searchContextState.realEstateListing!}
+              downloadButtonDisabled={
+                !Object.keys(exportFlow).every(
+                  (key) => exportFlow[key as keyof IExportFlowState]
+                ) || addressDescription.length > CHARACTER_LIMIT
+              }
+              onAfterPrint={onClose}
+              user={user}
+              color={searchContextState.responseConfig?.primaryColor}
+              legend={legend}
+              mapClippings={selectableMapClippings}
+              qrCode={qrCodeState}
+            />
+          )}
+
+          {isPng && (
+            <OnePagePngDownload
+              addressDescription={addressDescription}
+              groupedEntries={filteredEntities!}
+              listingAddress={searchContextState.placesLocation.label}
+              realEstateListing={searchContextState.realEstateListing!}
+              downloadButtonDisabled={
+                !Object.keys(exportFlow).every(
+                  (key) => exportFlow[key as keyof IExportFlowState]
+                ) || addressDescription.length > CHARACTER_LIMIT
+              }
+              user={user}
+              color={searchContextState.responseConfig?.primaryColor}
+              legend={legend}
+              mapClippings={selectableMapClippings}
+              qrCode={qrCodeState}
+              isTransparentBackground={isTransparentBackground}
+            />
+          )}
         </div>
       </div>
     </div>

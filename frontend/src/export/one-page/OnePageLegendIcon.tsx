@@ -1,6 +1,5 @@
 import { FunctionComponent } from "react";
 
-import "./OnePageLegendIcon.scss";
 import { IPoiIcon } from "../../shared/shared.types";
 
 interface ILegendIconProps {
@@ -12,13 +11,24 @@ export const OnePageLegendIcon: FunctionComponent<ILegendIconProps> = ({
 }) => {
   return (
     <div
-      className={`img-container ${isCustom ? "" : "default"}`}
-      style={{ background: color, width: "26px", height: "26px" }}
+      style={{
+        background: color,
+        width: "26px",
+        height: "26px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        borderRadius: isCustom ? 0 : "50%",
+      }}
     >
       <img
         src={icon}
         alt="group-icon"
-        style={{ width: "18px", height: "18px" }}
+        style={{
+          width: "18px",
+          height: "18px",
+          filter: isCustom ? "" : "brightness(0) invert(1)",
+        }}
       />
     </div>
   );

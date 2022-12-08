@@ -114,7 +114,7 @@ const OnePageEntitySelection: FunctionComponent<
         }}
         onClick={closeCollapsable}
       >
-        2. Überblick ({entityGroups.filter((group) => group.active).length}/
+        2. POI-Tabelle ({entityGroups.filter((group) => group.active).length}/
         {entityGroupLimit || entityGroups.length})
       </div>
       <div className="collapse-content">

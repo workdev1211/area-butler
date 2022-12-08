@@ -1,5 +1,6 @@
+import { FunctionComponent, Dispatch, useReducer, createContext } from "react";
+
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import React, { Dispatch } from "react";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
   ApiCoordinates,
@@ -9,7 +10,6 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
-  OsmName,
   TransportationParam,
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
@@ -356,7 +356,7 @@ export const searchContextReducer = (
   }
 };
 
-export const SearchContext = React.createContext<{
+export const SearchContext = createContext<{
   searchContextState: SearchContextState;
   searchContextDispatch: Dispatch<SearchContextActions>;
 }>({
@@ -364,13 +364,8 @@ export const SearchContext = React.createContext<{
   searchContextDispatch: () => undefined,
 });
 
-export const SearchContextProvider: React.FunctionComponent = ({
-  children,
-}) => {
-  const [state, dispatch] = React.useReducer(
-    searchContextReducer,
-    initialState
-  );
+export const SearchContextProvider: FunctionComponent = ({ children }) => {
+  const [state, dispatch] = useReducer(searchContextReducer, initialState);
 
   return (
     <SearchContext.Provider
