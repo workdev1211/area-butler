@@ -3,11 +3,15 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Promise } from 'mongoose';
 
 import { ZensusAtlas, ZensusAtlasDocument } from './schema/zensus-atlas.schema';
-import { ApiGeojsonFeature } from '@area-butler-types/types';
+import { ApiGeojsonFeature, TApiDataProvision } from '@area-butler-types/types';
 import ApiGeometryDto from '../dto/api-geometry.dto';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
 import { UserDocument } from '../user/schema/user.schema';
 import { SubscriptionService } from '../user/subscription.service';
+import {
+  ZipLevelData,
+  ZipLevelDataDocument,
+} from '../data-provision/schemas/zip-level-data.schema';
 
 @Injectable()
 export class ZensusAtlasService {
@@ -15,9 +19,11 @@ export class ZensusAtlasService {
 
   constructor(
     @InjectModel(ZensusAtlas.name)
-    private zensusAtlasModel: Model<ZensusAtlasDocument>,
+    private readonly zensusAtlasModel: Model<ZensusAtlasDocument>,
+    @InjectModel(ZipLevelData.name)
+    private readonly zipLevelDataModel: Model<ZipLevelDataDocument>,
     @InjectConnection() private connection: Connection,
-    private subscriptionService: SubscriptionService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async create(zensusAtlasFeature: ApiGeojsonFeature): Promise<ZensusAtlas> {
@@ -65,7 +71,10 @@ export class ZensusAtlasService {
     return this.zensusAtlasModel.findById(id);
   }
 
-  async findIntersecting(user: UserDocument, query: ApiGeometryDto) {
+  async findIntersecting(
+    user: UserDocument,
+    query: ApiGeometryDto,
+  ): Promise<TApiDataProvision> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
       (subscriptionPlan) =>
@@ -78,15 +87,58 @@ export class ZensusAtlasService {
       'Der Zensus Atlas ist im aktuellem Abonnement nicht verfügbar',
     );
 
-    return this.zensusAtlasModel.find({
-      geometry: {
-        $geoIntersects: {
-          $geometry: {
-            type: query.type,
-            coordinates: query.coordinates,
+    const addressData = (
+      await this.zensusAtlasModel.find({
+        geometry: {
+          $geoIntersects: {
+            $geometry: {
+              type: query.type,
+              coordinates: query.coordinates,
+            },
           },
         },
-      },
+      })
+    ).map((d: any) => {
+      if (d?.properties?.Frauen_A) {
+        delete d?.properties?.Frauen_A;
+      }
+
+      return d;
     });
+
+    const zipLevelData = (
+      await this.zipLevelDataModel.find({
+        geometry: {
+          $geoIntersects: {
+            $geometry: {
+              type: query.type,
+              coordinates: query.coordinates,
+            },
+          },
+        },
+      })
+    ).map((d: any) => {
+      const zensusProperties = Object.keys(d.properties).reduce(
+        (result, propertyName) => {
+          if (
+            propertyName === 'plz' ||
+            (propertyName.includes('[census]') &&
+              propertyName !== '[census] Frauen_A')
+          ) {
+            result[propertyName.replace(/^\[census] (.*)/g, '$1')] =
+              d.properties[propertyName];
+          }
+
+          return result;
+        },
+        {},
+      );
+
+      d.properties = { ...zensusProperties };
+
+      return d;
+    });
+
+    return { addressData, zipLevelData };
   }
 }

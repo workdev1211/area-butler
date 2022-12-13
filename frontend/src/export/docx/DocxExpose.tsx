@@ -40,9 +40,10 @@ import { base64PrefixRegex } from "../../shared/shared.constants";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
+import { TCensusData } from "../../hooks/censusdata";
 
 export interface DocxExposeProps {
-  censusData: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   groupedEntries: EntityGroup[];
@@ -121,14 +122,14 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
     );
 
     const censusTable =
-      censusData && censusData.length > 0
+      censusData && censusData.addressData.length > 0
         ? createTable({
             pageBreak: false,
             title: "Nachbarschaftsdemographie",
             columnWidths: [5000, 2000, 3000],
             headerColor: colorPalette.primaryColor,
             headerTextColor: colorPalette.textColor,
-            ...mapTableDataFromCensusData(censusData),
+            ...mapTableDataFromCensusData(censusData.addressData),
           })
         : [];
 

@@ -368,3 +368,10 @@ export interface IApiUserPoiIcon {
   name: OsmName;
   file: string;
 }
+
+export enum ApiDataProvisionEnum {
+  ADDRESS_DATA = "addressData",
+  ZIP_LEVEL_DATA = "zipLevelData",
+}
+
+export type TApiDataProvision = Record<ApiDataProvisionEnum, ApiGeojsonFeature[]>;

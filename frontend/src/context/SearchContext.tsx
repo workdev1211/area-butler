@@ -14,7 +14,7 @@ import {
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { CensusData } from "../hooks/censusdata";
+import { TCensusData } from "../hooks/censusdata";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
@@ -32,7 +32,7 @@ export interface SearchContextState {
   localityParams: ApiOsmEntity[];
   searchBusy: boolean;
   searchResponse?: ApiSearchResponse;
-  censusData?: CensusData[];
+  censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   mapCenter?: ApiCoordinates;
@@ -133,7 +133,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
   [SearchContextActionTypes.SET_RESPONSE_TOKEN]: string;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];
-  [SearchContextActionTypes.SET_ZENSUS_DATA]: CensusData[];
+  [SearchContextActionTypes.SET_ZENSUS_DATA]: TCensusData;
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
@@ -253,7 +253,7 @@ export const searchContextReducer = (
       };
     }
     case SearchContextActionTypes.SET_ZENSUS_DATA: {
-      return { ...state, censusData: [...action.payload] };
+      return { ...state, censusData: { ...action.payload } };
     }
     case SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA: {
       return { ...state, federalElectionData: { ...action.payload } };

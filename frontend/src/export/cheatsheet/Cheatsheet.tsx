@@ -29,11 +29,12 @@ import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
+import { TCensusData } from "../../hooks/censusdata";
 
 interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;
   entities: ResultEntity[];
-  censusData: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   particlePollutionData: ApiGeojsonFeature[];
   federalElectionData: FederalElectionDistrict;
   groupedEntries: EntityGroup[];
@@ -232,7 +233,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           nextPageNumber={nextPageNumber}
           leftHeaderElement={qrCodeElement}
         >
-          {censusData && censusData.length > 0 && (
+          {censusData && censusData.addressData.length > 0 && (
             <>
               <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
                 Nachbarschaftsdemographie

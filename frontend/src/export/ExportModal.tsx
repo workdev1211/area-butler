@@ -1,4 +1,6 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { saveAs } from "file-saver";
+import JsZip from "jszip";
 
 import {
   MapClipping,
@@ -7,11 +9,7 @@ import {
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
 import { ApiDataSource } from "../../../shared/types/subscription-plan";
-import {
-  ApiGeojsonFeature,
-  ApiUser,
-  MeansOfTransportation,
-} from "../../../shared/types/types";
+import { ApiUser, MeansOfTransportation } from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";
@@ -22,11 +20,10 @@ import MapClippingSelection, {
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { sanitizeFilename } from "../shared/shared.functions";
-import JsZip from "jszip";
-import { saveAs } from "file-saver";
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
+import { TCensusData } from "../hooks/censusdata";
 
 export enum ExportTypeEnum {
   ARCHIVE = "ARCHIVE",
@@ -44,7 +41,7 @@ export interface IQrCodeState {
 interface IExportModalProps {
   entities: ResultEntity[];
   groupedEntries: any;
-  censusData?: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   activeMeans: MeansOfTransportation[];
   snapshotToken?: string;
   exportType: ExportTypeEnum;
@@ -53,7 +50,7 @@ interface IExportModalProps {
 const ExportModal: FunctionComponent<IExportModalProps> = ({
   entities,
   groupedEntries,
-  censusData = [],
+  censusData,
   activeMeans,
   snapshotToken,
   exportType,
@@ -238,7 +235,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                 <ExposeDownload
                   entities={entities}
                   groupedEntries={filteredEntities!}
-                  censusData={showCensus ? censusData : []}
+                  censusData={showCensus ? censusData : undefined}
                   transportationParams={searchContextState.transportationParams}
                   activeMeans={activeMeans}
                   listingAddress={searchContextState.placesLocation.label}
@@ -267,7 +264,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                 <CheatsheetDownload
                   entities={entities}
                   groupedEntries={filteredEntities!}
-                  censusData={showCensus ? censusData : []}
+                  censusData={showCensus ? censusData : undefined}
                   searchResponse={searchContextState.searchResponse!}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
@@ -296,7 +293,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                 <DocxExpose
                   activeMeans={activeMeans}
                   groupedEntries={filteredEntities!}
-                  censusData={showCensus ? censusData : []}
+                  censusData={showCensus ? censusData : undefined}
                   transportationParams={searchContextState.transportationParams}
                   listingAddress={searchContextState.placesLocation.label}
                   realEstateListing={searchContextState.realEstateListing!}

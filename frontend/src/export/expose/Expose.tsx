@@ -22,6 +22,7 @@ import { ILegendItem, Legend } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
+import { TCensusData } from "../../hooks/censusdata";
 
 interface IExposeProps {
   groupedEntries: EntityGroup[];
@@ -35,7 +36,7 @@ interface IExposeProps {
   color?: string;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
-  censusData?: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
 }
@@ -198,7 +199,7 @@ export const Expose = forwardRef(
               <div className="text-2xl font-bold">Einblicke</div>
             }
           >
-            {censusData && censusData.length > 0 && (
+            {censusData && censusData.addressData.length > 0 && (
               <>
                 <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
                   Nachbarschaftsdemographie

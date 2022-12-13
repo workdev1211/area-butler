@@ -19,6 +19,7 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { TApiDataProvision } from '@area-butler-types/types';
 
 interface ZensusDataGeojson {
   type: string;
@@ -83,15 +84,7 @@ export class ZensusAtlasController extends AuthenticatedController {
   async query(
     @Body() query: ApiGeometryDto,
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-  ) {
-    return (await this.zensusAtlasService.findIntersecting(user, query)).map(
-      (d: any) => {
-        if (!!d?.properties?.Frauen_A) {
-          delete d?.properties?.Frauen_A;
-        }
-
-        return d;
-      },
-    );
+  ): Promise<TApiDataProvision> {
+    return this.zensusAtlasService.findIntersecting(user, query);
   }
 }

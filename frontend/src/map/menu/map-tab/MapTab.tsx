@@ -26,7 +26,7 @@ import CensusTable from "./../data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./../data/FederalElectionTable";
 import ParticlePollutionTable from "./../data/ParticlePollutionTable";
-import { CensusData } from "hooks/censusdata";
+import { TCensusData } from "hooks/censusdata";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -85,7 +85,7 @@ interface IMapTabProps {
   config?: ApiSearchResultSnapshotConfig;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
-  censusData?: CensusData[];
+  censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   userPoiIcons?: IApiUserPoiIcon[];
@@ -363,7 +363,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                       );
                   }}
                 >
-                  <CensusTable censusData={censusData!} />
+                  <CensusTable censusData={censusData} />
                 </MapMenuCollapsable>
               </li>
               <li className="locality-option-li" key="list-item-btw">

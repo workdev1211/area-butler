@@ -16,7 +16,7 @@ import {
   MeansOfTransportation,
 } from "../../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { CensusData } from "hooks/censusdata";
+import { TCensusData } from "hooks/censusdata";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -64,7 +64,7 @@ interface IMapMenuProps {
   config?: ApiSearchResultSnapshotConfig;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
-  censusData?: CensusData[];
+  censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   editorTabProps?: IEditorTabProps;

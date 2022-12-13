@@ -1,12 +1,26 @@
+import { Feature, Polygon, Properties } from "@turf/helpers";
+import circle from "@turf/circle";
+
 import { useHttp } from "./http";
 import {
   ApiCoordinates,
-  ApiGeojsonFeature,
+  ApiDataProvisionEnum,
   ApiGeojsonType,
-  ApiGeometry
+  ApiGeometry,
+  TApiDataProvision,
 } from "../../../shared/types/types";
-import circle from "@turf/circle";
-import { Feature, Polygon, Properties } from "@turf/helpers";
+
+export interface ICensusData {
+  geometry: ApiGeometry;
+  type: ApiGeojsonType;
+  properties: Array<{
+    unit: string;
+    label: string;
+    value: any;
+  }>;
+}
+
+export type TCensusData = Record<ApiDataProvisionEnum, ICensusData[]>;
 
 const DISTANCE = 1000;
 const CIRCLE_OPTIONS: Properties = { units: "kilometers" };
@@ -14,64 +28,78 @@ const CIRCLE_OPTIONS: Properties = { units: "kilometers" };
 const calculateRelevantArea = (coords: ApiCoordinates): Feature<Polygon> => {
   const radius = DISTANCE / 1000;
   const center = [coords.lng, coords.lat];
+
   return circle(center, radius, CIRCLE_OPTIONS);
 };
 
-const cleanProperties = (result: ApiGeojsonFeature[]) => {
+const cleanProperties = (completeData: TApiDataProvision): TCensusData => {
   const CENSUS_PROPERTIES: {
     [key: string]: { label: string; unit: string };
   } = {
     Einwohner: { label: "Einwohner", unit: "" },
     Frauen_A: { label: "Frauenanteil", unit: "%" },
-    Alter_D: { label: "Durchschnittsalter", unit: "Jahre" },
-    unter18_A: { label: "Anteil der Bevölkerung unter 18 Jahre", unit: "%" },
-    ab65_A: { label: "Anteil der Bevölkerung ab 65 Jahre", unit: "%" },
-    Auslaender_A: { label: "Anteil der Ausländer", unit: "%" },
+    Alter_D: { label: "Ø Alter", unit: "Jahre" },
+    unter18_A: { label: "Anteil, Bev. unter 18", unit: "%" },
+    ab65_A: { label: "Anteil, Bev. ab 65", unit: "%" },
+    Auslaender_A: { label: "Anteil, Ausländer", unit: "%" },
     HHGroesse_D: {
-      label: "Durchschnittliche Haushaltsgröße",
-      unit: "Personen"
+      label: "Ø Pers. pro HH",
+      unit: "Personen",
     },
-    Leerstandsquote: { label: "Anteil der leerstehenden Wohnungen", unit: "%" },
+    Leerstandsquote: { label: "Anteil, Leerstand", unit: "%" },
     Wohnfl_Bew_D: {
-      label: "Durchschnittliche Wohnfläche je Bewohner",
-      unit: "m²"
+      label: "Ø m² pro Kopf",
+      unit: "m²",
     },
     Wohnfl_Whg_D: {
-      label: "Durchschnittliche Wohnfläche je Wohnung",
-      unit: "m²"
-    }
+      label: "Ø m² pro Whng.",
+      unit: "m²",
+    },
   };
 
-  return result.map(r => {
-    return {
-      ...r,
-      properties: Object.keys(r.properties)
-        .filter(p => CENSUS_PROPERTIES.hasOwnProperty(p))
-        .map(propertyKey => {
-          return {
+  return Object.keys(completeData).reduce<TCensusData>(
+    (resultingCompleteData, layerName) => {
+      const layerData = completeData[layerName as ApiDataProvisionEnum].reduce<
+        ICensusData[]
+      >((resultingLayerData, layerParameter) => {
+        const processedProperties = Object.keys(
+          layerParameter.properties
+        ).reduce<any[]>((resultingProperties, propertyKey) => {
+          if (!CENSUS_PROPERTIES.hasOwnProperty(propertyKey)) {
+            return resultingProperties;
+          }
+
+          const resultingProperty = {
             label: CENSUS_PROPERTIES[propertyKey].label,
             unit:
-              (r.properties as any)[propertyKey] >= 0
+              (layerParameter.properties as any)[propertyKey] >= 0
                 ? CENSUS_PROPERTIES[propertyKey].unit
                 : "",
             value:
-              (r.properties as any)[propertyKey] >= 0
-                ? (r.properties as any)[propertyKey]
-                : "unbekannt"
+              (layerParameter.properties as any)[propertyKey] >= 0
+                ? (layerParameter.properties as any)[propertyKey]
+                : "unbekannt",
           };
-        })
-    };
-  });
-};
 
-export type CensusData = {
-  geometry: ApiGeometry;
-  type: ApiGeojsonType;
-  properties: {
-    unit: string;
-    label: string;
-    value: any;
-  }[];
+          resultingProperties.push(resultingProperty);
+
+          return resultingProperties;
+        }, []);
+
+        resultingLayerData.push({
+          ...layerParameter,
+          properties: processedProperties,
+        });
+
+        return resultingLayerData;
+      }, []);
+
+      resultingCompleteData[layerName as ApiDataProvisionEnum] = layerData;
+
+      return resultingCompleteData;
+    },
+    {} as TCensusData
+  );
 };
 
 export const useCensusData = () => {
@@ -79,12 +107,14 @@ export const useCensusData = () => {
 
   const fetchNearData = async (
     coords: ApiCoordinates
-  ): Promise<CensusData[]> => {
+  ): Promise<TCensusData> => {
     const relevantArea = calculateRelevantArea(coords);
     const geo: ApiGeometry = relevantArea.geometry;
     const result = (await post("/api/zensus-atlas/query", geo))
-      .data as ApiGeojsonFeature[];
+      .data as TApiDataProvision;
+
     return cleanProperties(result);
   };
+
   return { fetchNearData };
 };

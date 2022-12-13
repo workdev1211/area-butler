@@ -205,13 +205,13 @@ const SnippetEditorPage: FunctionComponent = () => {
           ApiDataSource.CENSUS
         )
       ) {
-        const zensusData = await fetchNearData(
+        const censusData = await fetchNearData(
           snapshotResponse.snapshot.location
         );
 
         searchContextDispatch({
           type: SearchContextActionTypes.SET_ZENSUS_DATA,
-          payload: zensusData!,
+          payload: censusData,
         });
       }
 

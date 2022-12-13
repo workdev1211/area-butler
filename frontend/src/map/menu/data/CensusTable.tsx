@@ -1,63 +1,131 @@
 import { FunctionComponent } from "react";
 
-import { ApiGeojsonFeature } from "../../../../../shared/types/types";
+import { TCensusData } from "../../../hooks/censusdata";
+import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
 
 export const averageCensus = {
-  Durchschnittsalter: 44.6,
-  "Anteil der Ausländer": 11.2,
-  Einwohner: 4041,
-  "Durchschnittliche Haushaltsgröße": 2.02,
-  "Anteil der leerstehenden Wohnungen": 2.8,
-  "Durchschnittliche Wohnfläche je Bewohner": 45.3,
-  "Durchschnittliche Wohnfläche je Wohnung": 91.7,
-  "Anteil der Bevölkerung ab 65 Jahre": 21.1,
-  "Anteil der Bevölkerung unter 18 Jahre": 16.3,
+  "Ø Alter": 44.6,
+  "Anteil, Ausländer": 11.2,
+  Einwohner: 4041.0,
+  "Ø Pers. pro HH": 2.0,
+  "Anteil, Leerstand": 2.8,
+  "Ø m² pro Kopf": 45.3,
+  "Ø m² pro Whng.": 91.7,
+  "Anteil, Bev. ab 65": 21.1,
+  "Anteil, Bev. unter 18": 16.3,
 } as any;
 
 interface ICensusTableProps {
-  censusData: ApiGeojsonFeature[];
+  censusData?: TCensusData;
 }
 
 const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
-  if (!censusData?.length) {
+  if (!censusData) {
     return null;
   }
 
-  const censusCenter =
-    censusData.find((c) =>
-      (c.properties as any).some((p: any) => p.value !== "unbekannt")
-    ) || (censusData[0] as any);
+  const processedCensusData = Object.values<ApiDataProvisionEnum>(
+    ApiDataProvisionEnum
+  ).reduce<
+    Record<
+      string,
+      {
+        label: string;
+        value: Record<ApiDataProvisionEnum, string>;
+        unit: string;
+      }
+    >
+  >((result, provisionKey) => {
+    if (!censusData[provisionKey]) {
+      return result;
+    }
+
+    const censusCenter =
+      censusData[provisionKey].find((c) =>
+        (c.properties as any).some((p: any) => p.value !== "unbekannt")
+      ) || (censusData.addressData[0] as any);
+
+    censusCenter.properties.forEach(
+      ({
+        label,
+        value,
+        unit,
+      }: {
+        label: string;
+        value: string;
+        unit: string;
+      }) => {
+        if (result[label]) {
+          result[label].value[provisionKey] = value;
+        } else {
+          result[label] = {
+            label,
+            value: { [provisionKey]: value } as Record<
+              ApiDataProvisionEnum,
+              string
+            >,
+            unit,
+          };
+        }
+      }
+    );
+
+    return result;
+  }, {});
 
   return (
     <table className="table w-full text-sm lg:text-base">
       <thead>
         <tr>
           <th>Beschreibung (pro km2)</th>
-          <th>
-            <span>Wert</span>
-            <br />
-            <span>(Ø DE)</span>
-          </th>
+          <td />
+          <td />
         </tr>
       </thead>
       <tbody>
-        {censusCenter.properties.map(
-          (p: { label: string; value: string; unit: string }) => (
-            <tr key={p.label}>
-              <th>{p.label}</th>
-              <td>
-                <span>
-                  {p.value} {p.unit}
-                </span>
-                <br />
-                <span>
-                  ({averageCensus[p.label]}
-                  {!p.unit ? "" : " " + p.unit})
-                </span>
-              </td>
-            </tr>
-          )
-        )}
+        {Object.values(processedCensusData).map((censusValue) => (
+          <tr key={censusValue.label}>
+            <th>{censusValue.label}</th>
+            <td>
+              <span className="font-bold italic">Adresse</span>
+              <br />
+              <span className="font-bold italic">PLZ</span>
+              <br />
+              <span className="italic">DE</span>
+            </td>
+            <td>
+              <span>
+                {!Number.isNaN(
+                  Number(censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA])
+                )
+                  ? (
+                      Math.round(
+                        Number(
+                          censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA]
+                        ) * 10
+                      ) / 10
+                    ).toFixed(1)
+                  : "-"}
+              </span>
+              <br />
+              <span>
+                {!Number.isNaN(
+                  Number(censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA])
+                )
+                  ? (
+                      Math.round(
+                        Number(
+                          censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA]
+                        ) * 10
+                      ) / 10
+                    ).toFixed(1)
+                  : "-"}
+              </span>
+              <br />
+              <span>{averageCensus[censusValue.label]}</span>
+            </td>
+          </tr>
+        ))}
       </tbody>
     </table>
   );

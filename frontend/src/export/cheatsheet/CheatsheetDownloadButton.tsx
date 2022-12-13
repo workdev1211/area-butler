@@ -14,6 +14,7 @@ import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
+import { TCensusData } from "../../hooks/censusdata";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];
@@ -24,7 +25,7 @@ export interface CheatsheetDownloadProps {
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
   mapClippings: ISelectableMapClipping[];
-  censusData: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;
   onAfterPrint: () => void;

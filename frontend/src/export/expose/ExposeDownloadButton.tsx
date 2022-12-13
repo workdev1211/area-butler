@@ -14,6 +14,7 @@ import Expose from "./Expose";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
+import { TCensusData } from "../../hooks/censusdata";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];
@@ -24,7 +25,7 @@ export interface ExposeDownloadProps {
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
   mapClippings: ISelectableMapClipping[];
-  censusData: ApiGeojsonFeature[];
+  censusData?: TCensusData;
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;
   user: ApiUser | null;
@@ -43,7 +44,7 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
   entities = [],
   downloadButtonDisabled,
   mapClippings = [],
-  censusData = [],
+  censusData,
   federalElectionData,
   particlePollutionData,
   user,
