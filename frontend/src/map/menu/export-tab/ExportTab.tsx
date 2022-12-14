@@ -30,9 +30,10 @@ import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschni
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
 import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.svg";
-// TODO waits for the customer
-// import webLinkIcon from "../../../assets/icons/link.svg";
-// import fileIcon from "../../../assets/icons/file.svg";
+// TODO start - waits for the customer
+import webLinkIcon from "../../../assets/icons/link.svg";
+import fileIcon from "../../../assets/icons/file.svg";
+// TODO end
 import { UserActionTypes, UserContext } from "../../../context/UserContext";
 import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
@@ -60,8 +61,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
   // TODO waits for the customer
-  // const [isCustomerLinksOpen, setIsCustomerLinksOpen] = useState(false);
-  // const [isCustomerDataOpen, setIsCustomerDataOpen] = useState(false);
+  const [isCustomerLinksOpen, setIsCustomerLinksOpen] = useState(false);
+  const [isCustomerDataOpen, setIsCustomerDataOpen] = useState(false);
 
   useEffect(() => {
     if (
@@ -467,84 +468,84 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         )}
 
         {/* TODO waits for the customer */}
-        {/*<div*/}
-        {/*  className={*/}
-        {/*    "collapse collapse-arrow view-option" +*/}
-        {/*    (isCustomerLinksOpen ? " collapse-open" : " collapse-closed")*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  <div*/}
-        {/*    className="collapse-title"*/}
-        {/*    ref={(node) => {*/}
-        {/*      setBackgroundColor(node, backgroundColor);*/}
-        {/*    }}*/}
-        {/*    onClick={() => {*/}
-        {/*      setIsCustomerLinksOpen(!isCustomerLinksOpen);*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    <div className="collapse-title-container">*/}
-        {/*      <img src={webLinkIcon} alt="customer-links-icon" />*/}
-        {/*      <div className="collapse-title-text">*/}
-        {/*        <div className="collapse-title-text-1">Eigene Links</div>*/}
-        {/*        <div className="collapse-title-text-2">*/}
-        {/*          Hyperlinks zu externen Quellen oder Diensten*/}
-        {/*        </div>*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*  <div className="collapse-content">*/}
-        {/*    <div*/}
-        {/*      className="text-justify"*/}
-        {/*      style={{*/}
-        {/*        padding:*/}
-        {/*          "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",*/}
-        {/*      }}*/}
-        {/*    >*/}
-        {/*      Hier könnten Sie Ihre Links speichern und mit KollegInnen teilen.*/}
-        {/*      Sprechen Sie uns für diese Funktion gerne an.*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (isCustomerLinksOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              setBackgroundColor(node, backgroundColor);
+            }}
+            onClick={() => {
+              setIsCustomerLinksOpen(!isCustomerLinksOpen);
+            }}
+          >
+            <div className="collapse-title-container">
+              <img src={webLinkIcon} alt="customer-links-icon" />
+              <div className="collapse-title-text">
+                <div className="collapse-title-text-1">Eigene Links</div>
+                <div className="collapse-title-text-2">
+                  Hyperlinks zu externen Quellen oder Diensten
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="collapse-content">
+            <div
+              className="text-justify"
+              style={{
+                padding:
+                  "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+              }}
+            >
+              Hier könnten Sie Ihre Links speichern und mit KollegInnen teilen.
+              Sprechen Sie uns für diese Funktion gerne an.
+            </div>
+          </div>
+        </div>
 
         {/* TODO waits for the customer */}
-        {/*<div*/}
-        {/*  className={*/}
-        {/*    "collapse collapse-arrow view-option" +*/}
-        {/*    (isCustomerDataOpen ? " collapse-open" : " collapse-closed")*/}
-        {/*  }*/}
-        {/*>*/}
-        {/*  <div*/}
-        {/*    className="collapse-title"*/}
-        {/*    ref={(node) => {*/}
-        {/*      setBackgroundColor(node, backgroundColor);*/}
-        {/*    }}*/}
-        {/*    onClick={() => {*/}
-        {/*      setIsCustomerDataOpen(!isCustomerDataOpen);*/}
-        {/*    }}*/}
-        {/*  >*/}
-        {/*    <div className="collapse-title-container">*/}
-        {/*      <img src={fileIcon} alt="customer-data-icon" />*/}
-        {/*      <div className="collapse-title-text">*/}
-        {/*        <div className="collapse-title-text-1">Eigene Dateien</div>*/}
-        {/*        <div className="collapse-title-text-2">*/}
-        {/*          Dokumente zum Objekt speichern*/}
-        {/*        </div>*/}
-        {/*      </div>*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*  <div className="collapse-content">*/}
-        {/*    <div*/}
-        {/*      className="text-justify"*/}
-        {/*      style={{*/}
-        {/*        padding:*/}
-        {/*          "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",*/}
-        {/*      }}*/}
-        {/*    >*/}
-        {/*      Hier könnten Sie Ihre Dateien speichern und mit KollegInnen*/}
-        {/*      teilen. Sprechen Sie uns für diese Funktion gerne an.*/}
-        {/*    </div>*/}
-        {/*  </div>*/}
-        {/*</div>*/}
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (isCustomerDataOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              setBackgroundColor(node, backgroundColor);
+            }}
+            onClick={() => {
+              setIsCustomerDataOpen(!isCustomerDataOpen);
+            }}
+          >
+            <div className="collapse-title-container">
+              <img src={fileIcon} alt="customer-data-icon" />
+              <div className="collapse-title-text">
+                <div className="collapse-title-text-1">Eigene Dateien</div>
+                <div className="collapse-title-text-2">
+                  Dokumente zum Objekt speichern
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className="collapse-content">
+            <div
+              className="text-justify"
+              style={{
+                padding:
+                  "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+              }}
+            >
+              Hier könnten Sie Ihre Dateien speichern und mit KollegInnen
+              teilen. Sprechen Sie uns für diese Funktion gerne an.
+            </div>
+          </div>
+        </div>
       </div>
 
       {exportType && exportType !== ExportTypeEnum.ONE_PAGE && (
@@ -564,6 +565,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           snapshotToken={searchContextState.responseToken}
           snapshotId={snapshotId}
           primaryColor={config?.primaryColor}
+          hasOpenAiFeature={hasOpenAiFeature}
         />
       )}
     </>

@@ -39,6 +39,7 @@ interface IOnePageExportModalProps {
   groupedEntries: any;
   snapshotToken: string;
   snapshotId: string;
+  hasOpenAiFeature?: boolean;
   primaryColor?: string;
 }
 
@@ -46,6 +47,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   groupedEntries,
   snapshotToken,
   snapshotId,
+  hasOpenAiFeature = false,
   primaryColor,
 }) => {
   const { post } = useHttp();
@@ -187,28 +189,32 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               )
             </div>
             <div className="collapse-content textarea-content">
-              <div className="flex flex-col gap-2 w-[97%]">
-                <OpenAiLocationForm
-                  formId={"open-ai-address-description-form"}
-                  onSubmit={fetchOpenAiAddressDescription}
-                />
-                <button
-                  className={`btn bg-primary-gradient max-w-fit self-end ${
-                    isOpenAiBusy ? "loading" : ""
-                  }`}
-                  form={"open-ai-address-description-form"}
-                  key="submit"
-                  type="submit"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                  }}
-                  disabled={isOpenAiBusy}
-                >
-                  KI-Text generieren
-                </button>
-              </div>
+              {hasOpenAiFeature && (
+                <>
+                  <div className="flex flex-col gap-2 w-[97%]">
+                    <OpenAiLocationForm
+                      formId={"open-ai-address-description-form"}
+                      onSubmit={fetchOpenAiAddressDescription}
+                    />
+                    <button
+                      className={`btn bg-primary-gradient max-w-fit self-end ${
+                        isOpenAiBusy ? "loading" : ""
+                      }`}
+                      form={"open-ai-address-description-form"}
+                      key="submit"
+                      type="submit"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
+                      disabled={isOpenAiBusy}
+                    >
+                      KI-Text generieren
+                    </button>
+                  </div>
 
-              <div className="divider m-0" />
+                  <div className="divider m-0" />
+                </>
+              )}
 
               <textarea
                 className="textarea textarea-bordered w-full"
