@@ -6,7 +6,7 @@ import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
 export const averageCensus = {
   "Ø Alter": 44.6,
   "Anteil, Ausländer": 11.2,
-  Einwohner: 4041.0,
+  Einwohner: 233.0,
   "Ø Pers. pro HH": 2.0,
   "Anteil, Leerstand": 2.8,
   "Ø m² pro Kopf": 45.3,
@@ -75,13 +75,6 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
 
   return (
     <table className="table w-full text-sm lg:text-base">
-      <thead>
-        <tr>
-          <th>Beschreibung (pro km2)</th>
-          <td />
-          <td />
-        </tr>
-      </thead>
       <tbody>
         {Object.values(processedCensusData).map((censusValue) => (
           <tr key={censusValue.label}>
@@ -94,7 +87,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
               <span className="italic">DE</span>
             </td>
             <td>
-              <span>
+              <span className="font-bold italic">
                 {!Number.isNaN(
                   Number(censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA])
                 )
@@ -108,7 +101,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
                   : "-"}
               </span>
               <br />
-              <span>
+              <span className="font-bold italic">
                 {!Number.isNaN(
                   Number(censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA])
                 )
@@ -122,7 +115,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
                   : "-"}
               </span>
               <br />
-              <span>{averageCensus[censusValue.label]}</span>
+              <span className="italic">{averageCensus[censusValue.label].toFixed(1)}</span>
             </td>
           </tr>
         ))}
