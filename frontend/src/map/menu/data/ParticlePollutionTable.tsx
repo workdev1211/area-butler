@@ -44,7 +44,10 @@ const ParticlePollutionTable: FunctionComponent<
         </tr>
       </thead>
       <tbody>
-        <tr key="pollution-table-data-mean">
+        <tr
+          style={{ borderBottom: "0.125rem solid darkgray" }}
+          key="pollution-table-data-mean"
+        >
           <th>Durchschnittliche Belastung</th>
           <td>
             {pollutionData.mean} g/m3 <br />({averageParticlePollution.mean}{" "}

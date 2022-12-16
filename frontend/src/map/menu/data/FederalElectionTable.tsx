@@ -30,7 +30,7 @@ const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
       </thead>
       <tbody>
         {federalElectionData?.results?.map((p: FederalElectionResult) => (
-          <tr key={p.party}>
+          <tr style={{ borderBottom: "0.125rem solid darkgray" }} key={p.party}>
             <td>{p.party}</td>
             <td>
               <span>{p.percentage} %</span>

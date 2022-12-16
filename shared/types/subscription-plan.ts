@@ -41,6 +41,7 @@ export enum ApiDataSource {
   CENSUS = "CENSUS",
   FEDERAL_ELECTION = "FEDERAL_ELECTION",
   PARTICLE_POLLUTION = "PARTICLE_POLLUTION",
+  LOCATION_INDICES = "LOCATION_INDICES",
 }
 
 export enum PaymentSystemTypeEnum {

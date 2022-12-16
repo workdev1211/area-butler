@@ -1,5 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { HttpModule } from '@nestjs/axios';
+
 import { ClientModule } from '../client/client.module';
 import { DataProvisionController } from './data-provision.controller';
 import { FederalElectionController } from './federal-election/federal-election.controller';
@@ -19,25 +21,33 @@ import {
   ParticlePollution,
   ParticlePollutionSchema,
 } from './schemas/particle-pollution.schema';
-import { HttpModule } from '@nestjs/axios';
 import { UserModule } from '../user/user.module';
+import { LocationIndexService } from './location-index/location-index.service';
+import {
+  LocationIndex,
+  LocationIndexSchema,
+} from './schemas/location-index.schema';
+import { LocationIndexController } from './location-index/location-index.controller';
 
 @Module({
   providers: [
     OverpassDataService,
     FederalElectionService,
     ParticlePollutionService,
+    LocationIndexService,
   ],
   controllers: [
     FederalElectionController,
     DataProvisionController,
     ParticlePollutionController,
+    LocationIndexController,
   ],
   imports: [
     MongooseModule.forFeature([
       { name: OverpassData.name, schema: OverpassDataSchema },
       { name: FederalElection.name, schema: FederalElectionSchema },
       { name: ParticlePollution.name, schema: ParticlePollutionSchema },
+      { name: LocationIndex.name, schema: LocationIndexSchema },
     ]),
     HttpModule,
     ClientModule,

@@ -713,6 +713,7 @@ const SearchResultContainer = forwardRef<
               censusData={searchContextState.censusData}
               federalElectionData={searchContextState.federalElectionData}
               particlePollutionData={searchContextState.particlePollutionData}
+              locationIndexData={searchContextState.locationIndexData}
               groupedEntries={resultingGroupedEntities ?? []}
               toggleAllLocalities={() => {
                 const oldGroupedEntities =

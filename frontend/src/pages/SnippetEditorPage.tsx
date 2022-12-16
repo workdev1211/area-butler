@@ -50,6 +50,7 @@ import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import OpenAiLocationDescriptionModal from "../components/OpenAiLocationDescriptionModal";
+import { useLocationIndexData } from "../hooks/locationindexdata";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -62,6 +63,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
+  const { fetchLocationIndexData } = useLocationIndexData();
   const mapRef = useRef<L.Map | null>(null);
 
   const [isShownModal, setIsShownModal] = useState(false);
@@ -92,6 +94,11 @@ const SnippetEditorPage: FunctionComponent = () => {
     }
 
     const fetchSnapshot = async () => {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
+        payload: undefined,
+      });
+
       const snapshotResponse = (
         await get<ApiSearchResultSnapshotResponse>(
           `/api/location/snapshot/${snapshotId}`
@@ -242,6 +249,21 @@ const SnippetEditorPage: FunctionComponent = () => {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
           payload: particlePollutionData,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.LOCATION_INDICES
+        )
+      ) {
+        const locationIndexData = await fetchLocationIndexData(
+          snapshotResponse.snapshot.location!
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
+          payload: locationIndexData,
         });
       }
 

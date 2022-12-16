@@ -77,7 +77,10 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
     <table className="table w-full text-sm lg:text-base">
       <tbody>
         {Object.values(processedCensusData).map((censusValue) => (
-          <tr key={censusValue.label}>
+          <tr
+            style={{ borderBottom: "0.125rem solid darkgray" }}
+            key={censusValue.label}
+          >
             <th>{censusValue.label}</th>
             <td>
               <span className="font-bold italic">Adresse</span>
@@ -115,7 +118,9 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
                   : "-"}
               </span>
               <br />
-              <span className="italic">{averageCensus[censusValue.label].toFixed(1)}</span>
+              <span className="italic">
+                {averageCensus[censusValue.label].toFixed(1)}
+              </span>
             </td>
           </tr>
         ))}

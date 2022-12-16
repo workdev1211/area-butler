@@ -42,6 +42,8 @@ import censusDataIcon from "../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../assets/icons/federal-election.svg";
 import particlePollutionIcon from "../../../assets/icons/particle-pollution.svg";
 import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
+import { TLocationIndexData } from "../../../hooks/locationindexdata";
+import LocationIndexTable from "../data/LocationIndexTable";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -88,6 +90,7 @@ interface IMapTabProps {
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
+  locationIndexData?: TLocationIndexData;
   userPoiIcons?: IApiUserPoiIcon[];
   editorMode?: boolean;
 }
@@ -106,10 +109,11 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
+  locationIndexData,
   userPoiIcons = user?.poiIcons,
   editorMode = false,
 }) => {
-  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(true);
+  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(false);
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
@@ -294,7 +298,16 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
             <div className="collapse-title-container">
               <img src={locationIndicesIcon} alt="location-indices-icon" />
               <div className="collapse-title-text">
-                <div className="collapse-title-text-1">Lageindizes</div>
+                <div className="collapse-title-text-1 flex gap-2">
+                  <span>Lageindizes</span>{" "}
+                  <span
+                    className={`badge ${
+                      isLocationIndicesOpen ? "badge-accent" : "badge-primary"
+                    }`}
+                  >
+                    NEU
+                  </span>
+                </div>
                 <div className="collapse-title-text-2">
                   Die Nachbarschaft im Vergleich?
                 </div>
@@ -302,20 +315,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
             </div>
           </div>
           <div className="collapse-content">
-            <div
-              className="text-justify"
-              style={{
-                padding:
-                  "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
-              }}
-            >
-              Hier finden Sie ab Dez 2022 die AreaButler Lageindizes. Sie
-              fassen, in 8 Kategorien wie Nahversorgung, ÖPNV etc Die Anzahl der
-              relevanten POIs zusammen, Gewichten sie über ihre Distanz (je
-              dichter desto besser) und standardisieren sie in einer Zahl von
-              0-100%. So können Sie z.B. auf einen Blick zwei entfernte Objekte
-              anhand ihrer Indexwerte vergleichen.
-            </div>
+            <LocationIndexTable locationIndexData={locationIndexData} />
           </div>
         </div>
       )}

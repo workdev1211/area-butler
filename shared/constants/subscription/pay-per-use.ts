@@ -16,6 +16,7 @@ const appFeatures = {
     ApiDataSource.CENSUS,
     ApiDataSource.FEDERAL_ELECTION,
     ApiDataSource.PARTICLE_POLLUTION,
+    ApiDataSource.LOCATION_INDICES,
   ],
   canCustomizeExport: true,
   fullyCustomizableExpose: true,

@@ -18,6 +18,7 @@ import { TCensusData } from "../hooks/censusdata";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { TLocationIndexData } from "../hooks/locationindexdata";
 
 export interface MapClipping {
   zoomLevel: number;
@@ -35,6 +36,7 @@ export interface SearchContextState {
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
+  locationIndexData?: TLocationIndexData;
   mapCenter?: ApiCoordinates;
   mapZoomLevel?: number;
   highlightId?: string | null;
@@ -95,6 +97,7 @@ export enum SearchContextActionTypes {
   SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
   SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
   SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
+  SET_LOCATION_INDEX_DATA = "SET_LOCATION_INDEX_DATA",
   SET_MAP_CENTER = "SET_MAP_CENTER",
   SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
   SET_MAP_CENTER_ZOOM = "SET_MAP_CENTER_ZOOM",
@@ -136,6 +139,9 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_ZENSUS_DATA]: TCensusData;
   [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
   [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
+  [SearchContextActionTypes.SET_LOCATION_INDEX_DATA]:
+    | TLocationIndexData
+    | undefined;
   [SearchContextActionTypes.SET_MAP_CENTER]: ApiCoordinates;
   [SearchContextActionTypes.SET_MAP_ZOOM_LEVEL]: number;
   [SearchContextActionTypes.SET_MAP_CENTER_ZOOM]: {
@@ -260,6 +266,12 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA: {
       return { ...state, particlePollutionData: [...action.payload] };
+    }
+    case SearchContextActionTypes.SET_LOCATION_INDEX_DATA: {
+      return {
+        ...state,
+        locationIndexData: action.payload ? { ...action.payload } : undefined,
+      };
     }
     case SearchContextActionTypes.SET_MAP_CENTER: {
       return { ...state, mapCenter: action.payload };

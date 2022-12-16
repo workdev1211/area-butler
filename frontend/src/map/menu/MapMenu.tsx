@@ -32,6 +32,7 @@ import MapMenuFooter from "./footer/MapMenuFooter";
 import BackButton from "../../layout/BackButton";
 import FormModal, { ModalConfig } from "../../components/FormModal";
 import FeedbackFormHandler from "../../feedback/FeedbackFormHandler";
+import { TLocationIndexData } from "../../hooks/locationindexdata";
 
 const feedbackModalConfig: ModalConfig = {
   buttonTitle: "?",
@@ -67,6 +68,7 @@ interface IMapMenuProps {
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
+  locationIndexData?: TLocationIndexData;
   editorTabProps?: IEditorTabProps;
   exportTabProps?: IExportTabProps;
   userPoiIcons?: IApiUserPoiIcon[];
@@ -94,6 +96,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
+  locationIndexData,
   editorTabProps,
   exportTabProps,
   userPoiIcons = user?.poiIcons,
@@ -130,7 +133,10 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     : "calc(100% - var(--menu-item-h))";
 
   return (
-    <div className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`} data-tour="side-menu">
+    <div
+      className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}
+      data-tour="side-menu"
+    >
       {editorMode && editorTabProps && (
         <div className="tab-bar bg-primary-gradient">
           <div className="tab-container" data-tour="tab-icons">
@@ -141,10 +147,10 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Map);
               }}
-            data-tour="icon-karte">
+              data-tour="icon-karte"
+            >
               <img src={mapIcon} alt="map-icon" />
               <div>Karte</div>
-              
             </div>
             <div
               className={`tab-item${
@@ -153,7 +159,8 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Editor);
               }}
-            data-tour="icon-editor">
+              data-tour="icon-editor"
+            >
               <img src={editorIcon} alt="editor-icon" />
               <div>Editor</div>
             </div>
@@ -164,7 +171,8 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               onClick={() => {
                 setActiveTab(TabsEnum.Export);
               }}
-            data-tour="icon-exporte">
+              data-tour="icon-exporte"
+            >
               <img src={downloadIcon} alt="export-icon" />
               <div>Exporte</div>
             </div>
@@ -221,6 +229,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             censusData={censusData}
             federalElectionData={federalElectionData}
             particlePollutionData={particlePollutionData}
+            locationIndexData={locationIndexData}
             editorMode={editorMode}
           />
         )}
@@ -241,15 +250,14 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             <FormModal modalConfig={feedbackModalConfig}>
               <FeedbackFormHandler />
             </FormModal>
-            <button 
-            type="button" 
-            className="save-button" 
-            onClick={saveConfig}
-            data-tour="save-button"
+            <button
+              type="button"
+              className="save-button"
+              onClick={saveConfig}
+              data-tour="save-button"
             >
-              <img src={saveIcon} alt="save-icon" /> 
+              <img src={saveIcon} alt="save-icon" />
             </button>
-            
           </div>
           <MapMenuFooter />
         </div>
