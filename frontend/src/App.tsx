@@ -10,7 +10,7 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
-import FormModal, { ModalConfig } from "components/FormModal";
+import FormModal from "components/FormModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 import "react-toastify/dist/ReactToastify.css";
@@ -26,7 +26,10 @@ import { useHttp } from "./hooks/http";
 import Footer from "./layout/Footer";
 import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
-import { commonPaypalOptions } from "./shared/shared.constants";
+import {
+  commonPaypalOptions,
+  feedbackModalConfig,
+} from "./shared/shared.constants";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -67,12 +70,6 @@ const CallbackPage = lazy(() => import("./pages/CallbackPage"));
 const SnippetEditorPage = lazy(() => import("./pages/SnippetEditorPage"));
 
 const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
-
-const feedbackModalConfig: ModalConfig = {
-  buttonTitle: "?",
-  buttonClass: "feedback-button",
-  modalTitle: "Hilfe & Feedback",
-};
 
 const ScrollToTop: FunctionComponent = () => {
   const { pathname } = useLocation();

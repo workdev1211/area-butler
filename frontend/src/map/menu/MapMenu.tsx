@@ -30,15 +30,10 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./footer/MapMenuFooter";
 import BackButton from "../../layout/BackButton";
-import FormModal, { ModalConfig } from "../../components/FormModal";
+import FormModal from "../../components/FormModal";
 import FeedbackFormHandler from "../../feedback/FeedbackFormHandler";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
-
-const feedbackModalConfig: ModalConfig = {
-  buttonTitle: "?",
-  buttonClass: "feedback-button",
-  modalTitle: "Hilfe & Feedback",
-};
+import { feedbackModalConfig } from "../../shared/shared.constants";
 
 enum TabsEnum {
   Map = "Map",

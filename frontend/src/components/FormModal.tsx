@@ -18,6 +18,7 @@ export interface ModalConfig {
   modalButton?: ReactNode;
   modalOpen?: boolean;
   postSubmit?: (success: boolean) => void;
+  onClose?: () => void;
 }
 
 export interface FormModalData {
@@ -97,9 +98,10 @@ export const FormModal: FunctionComponent<{
               <button
                 type="button"
                 onClick={(e) => {
+                  e.stopPropagation();
                   setModalOpen(false);
                   modalConfig.postSubmit && modalConfig.postSubmit(false);
-                  e.stopPropagation();
+                  modalConfig.onClose && modalConfig.onClose();
                 }}
                 className="btn btn-sm"
               >

@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+import { ModalConfig } from "../components/FormModal";
 
 export const googleMapsApiOptions = {
   id: "__googleMapsScriptId",
@@ -44,4 +45,16 @@ export const commonPaypalOptions = {
   currency: "EUR",
   "disable-funding":
     "card,credit,paylater,bancontact,blik,eps,giropay,ideal,mercadopago,mybank,p24,sepa,sofort,venmo",
+};
+
+export const CHATBOT_SCRIPT_ID = "chatbot-script";
+
+export const feedbackModalConfig: ModalConfig = {
+  buttonTitle: "?",
+  buttonClass: "feedback-button",
+  modalTitle: "Hilfe & Feedback",
+  onClose: () => {
+    document.querySelector(`#${CHATBOT_SCRIPT_ID}`)?.remove();
+    document.querySelector("#sib-conversations")?.remove();
+  },
 };
