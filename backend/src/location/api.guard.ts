@@ -2,7 +2,6 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 
 import { UserService } from '../user/user.service';
 import { clientIdToUserId } from '../shared/api.constants';
-import { configService } from '../config/config.service';
 
 @Injectable()
 export class ApiGuard implements CanActivate {
@@ -19,9 +18,7 @@ export class ApiGuard implements CanActivate {
     let user;
 
     try {
-      user = await this.userService.findById(
-        clientIdToUserId[clientId][configService.getStripeEnv()],
-      );
+      user = await this.userService.findById(clientIdToUserId[clientId]);
     } catch (e) {}
 
     if (!user) {

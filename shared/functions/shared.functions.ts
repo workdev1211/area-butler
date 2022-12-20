@@ -58,3 +58,12 @@ export const getUncombinedOsmEntityTypes = (
     return result;
   }, []);
 };
+
+export const createChunks = <T = unknown>(
+  initialArray: Array<T>,
+  size: number
+): Array<T>[] =>
+  Array.from(
+    new Array(Math.ceil(initialArray.length / size)),
+    (arrayValue, i) => initialArray.slice(i * size, i * size + size)
+  );

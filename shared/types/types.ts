@@ -374,4 +374,43 @@ export enum ApiDataProvisionEnum {
   ZIP_LEVEL_DATA = "zipLevelData",
 }
 
-export type TApiDataProvision = Record<ApiDataProvisionEnum, ApiGeojsonFeature[]>;
+export type TApiDataProvision = Record<
+  ApiDataProvisionEnum,
+  ApiGeojsonFeature[]
+>;
+
+// TODO describe it later
+export interface IApiUserUsageStatistics {
+  addressesInRange: any;
+}
+
+export interface IApiAddressInRange {
+  full_address: string;
+  street_name: string;
+  street_number: string;
+  postal_code: string;
+  locality: string;
+  country: string;
+  location: ApiCoordinates;
+  distance_in_meters: number;
+}
+
+export interface IApiAddressesInRangeResponse {
+  address_count: number;
+  addresses: IApiAddressInRange[];
+}
+
+export enum ApiAddressesInRangeApiNameEnum {
+  HERE = "here",
+  GOOGLE = "google",
+}
+
+export enum IApiAddressesInRangeRequestStatusEnum {
+  SUCCESS = "success",
+  ERROR = "error",
+}
+
+export interface IApiAddressesInRangeRequestStatus {
+  status: IApiAddressesInRangeRequestStatusEnum;
+  message?: string;
+}

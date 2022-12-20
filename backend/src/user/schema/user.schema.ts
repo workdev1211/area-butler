@@ -2,7 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
-import { ApiShowTour, IApiUserPoiIcon } from '@area-butler-types/types';
+import {
+  ApiShowTour,
+  IApiUserPoiIcon,
+  IApiUserUsageStatistics,
+} from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 
@@ -32,6 +36,9 @@ export class User {
 
   @Prop({ type: Array, default: [] })
   requestContingents: ApiRequestContingent[];
+
+  @Prop({ type: Object })
+  usageStatistics: IApiUserUsageStatistics;
 
   @Prop()
   stripeCustomerId: string;

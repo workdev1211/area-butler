@@ -4,9 +4,14 @@ import { firstValueFrom } from 'rxjs';
 
 import { configService } from '../../config/config.service';
 import { ApiCoordinates } from '@area-butler-types/types';
+import { ApiGoogleLanguageEnum } from '../../../../shared/constants/google';
 
 export interface IGoogleGeocodeResult {
-  address_components: unknown[];
+  address_components: Array<{
+    long_name: string;
+    short_name: string;
+    types: string[];
+  }>;
   formatted_address: string;
   geometry: {
     location: ApiCoordinates;
@@ -27,10 +32,11 @@ export class GoogleGeocodeService {
 
   async fetchPlaceByAddress(
     address: string,
+    language = ApiGoogleLanguageEnum.DE,
   ): Promise<IGoogleGeocodeResult | undefined> {
     const url = `${this.baseUrl}/json?key=${
       this.googleServerApiKey
-    }&address=${encodeURIComponent(address)}`;
+    }&address=${encodeURIComponent(address)}&language=${language}`;
 
     const {
       data: { results },
@@ -47,11 +53,11 @@ export class GoogleGeocodeService {
     return results[0];
   }
 
-  async fetchPlaceByCoordinates({
-    lat,
-    lng,
-  }: ApiCoordinates): Promise<IGoogleGeocodeResult | undefined> {
-    const url = `${this.baseUrl}/json?key=${this.googleServerApiKey}&latlng=${lat},${lng}`;
+  async fetchPlaceByCoordinates(
+    { lat, lng }: ApiCoordinates,
+    language = ApiGoogleLanguageEnum.DE,
+  ): Promise<IGoogleGeocodeResult | undefined> {
+    const url = `${this.baseUrl}/json?key=${this.googleServerApiKey}&latlng=${lat},${lng}&language=${language}`;
 
     const {
       data: { results },

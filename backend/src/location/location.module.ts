@@ -30,6 +30,8 @@ import { ApiSnapshotService } from './api-snapshot.service';
 import { ApiGuard } from './api.guard';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
+import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
+import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
 
 @Module({
   imports: [
@@ -49,6 +51,7 @@ import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
     EmbeddedMapController,
     ApiSnapshotController,
     TilesController,
+    ApiAddressesInRangeController,
   ],
   providers: [
     LocationService,
@@ -59,6 +62,7 @@ import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
     ApiGuard,
     MongoParamPipe,
     MongoSortParamPipe,
+    ApiAddressesInRangeService,
   ],
   exports: [LocationService],
 })

@@ -23,7 +23,11 @@ import {
   ApiRequestContingent,
   ApiRequestContingentType,
 } from '@area-butler-types/subscription-plan';
-import { ApiTour, IApiUserPoiIcon } from '@area-butler-types/types';
+import {
+  ApiTour,
+  IApiAddressesInRangeRequestStatus,
+  IApiUserPoiIcon,
+} from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
@@ -382,6 +386,47 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async onAddressesInRangeFetch(
+    user: UserDocument,
+    requestStatus: IApiAddressesInRangeRequestStatus,
+  ): Promise<void> {
+    const currentDate = new Date();
+
+    if (user.parentId) {
+      await this.userModel.updateOne(
+        { _id: user.parentId },
+        {
+          $inc: {
+            [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+              currentDate.getUTCMonth() + 1
+            }.total`]: 1,
+          },
+        },
+        { upsert: true },
+      );
+    }
+
+    await this.userModel.updateOne(
+      { _id: user.id },
+      {
+        $inc: {
+          [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+            currentDate.getUTCMonth() + 1
+          }.total`]: 1,
+        },
+        $push: {
+          [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+            currentDate.getUTCMonth() + 1
+          }.requests`]: {
+            timestamp: currentDate.toISOString(),
+            ...requestStatus,
+          },
+        },
+      },
+      { upsert: true, omitUndefined: true },
+    );
   }
 
   private async fetchUserPoiIcons(

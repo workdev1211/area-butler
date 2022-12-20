@@ -1,10 +1,12 @@
 import { parse } from 'csv-parse';
 
 import ApiCoordinatesDto from '../dto/api-coordinates.dto';
+import { ApiCoordinates } from '@area-butler-types/types';
 
 export const randomInt = (min = -10, max = 10) => {
   min = Math.ceil(min);
   max = Math.floor(max);
+
   return Math.floor(Math.random() * (max - min + 1)) + min;
 };
 
@@ -14,6 +16,7 @@ export const randomizeCoordinates = ({
 }: ApiCoordinatesDto): ApiCoordinatesDto => {
   const d1 = randomInt() / 10000;
   const d2 = randomInt() / 10000;
+
   return {
     lat: lat + d1,
     lng: lng + d2,
@@ -48,14 +51,6 @@ export const parseCsv = async (
   return records;
 };
 
-export const createChunks = (
-  initialArray: unknown[],
-  size = 1000,
-): Array<unknown[]> =>
-  Array.from(new Array(Math.ceil(initialArray.length / size)), (_, i) =>
-    initialArray.slice(i * size, i * size + size),
-  );
-
 export const convertStringToNumber = (value: string): number => {
   const parsedValue = parseFloat(value);
 
@@ -84,4 +79,26 @@ export const getImageTypeFromFileType = (fileType: string): string => {
       return 'image/gif';
     }
   }
+};
+
+export const degreesToRadians = (degrees: number): number =>
+  degrees * (Math.PI / 180.0);
+
+// from, to - coordinates in decimal degrees (e.g. 2.89078, 12.79797)
+export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
+  // Earth radius in meters
+  const earthRadius = 6371000;
+
+  const phi1 = degreesToRadians(from.lat);
+  const phi2 = degreesToRadians(to.lat);
+
+  const deltaPhi = degreesToRadians(to.lat - from.lat);
+  const deltaLambda = degreesToRadians(to.lng - from.lng);
+
+  const a =
+    Math.sin(deltaPhi / 2.0) ** 2 +
+    Math.cos(phi1) * Math.cos(phi2) * Math.sin(deltaLambda / 2.0) ** 2;
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+
+  return Math.round(earthRadius * c);
 };

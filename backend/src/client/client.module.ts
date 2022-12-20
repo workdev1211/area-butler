@@ -10,6 +10,7 @@ import { MapboxService } from './mapbox/mapbox.service';
 import { PaypalService } from './paypal/paypal.service';
 import { GoogleGeocodeService } from './google/google-geocode.service';
 import { OpenAiService } from './open-ai/open-ai.service';
+import { HereGeocodeService } from './here/here-geocode.service';
 
 @Module({
   providers: [
@@ -22,6 +23,7 @@ import { OpenAiService } from './open-ai/open-ai.service';
     PaypalService,
     GoogleGeocodeService,
     OpenAiService,
+    HereGeocodeService,
   ],
   imports: [HttpModule],
   exports: [
@@ -34,6 +36,7 @@ import { OpenAiService } from './open-ai/open-ai.service';
     PaypalService,
     GoogleGeocodeService,
     OpenAiService,
+    HereGeocodeService,
   ],
 })
 export class ClientModule {}
