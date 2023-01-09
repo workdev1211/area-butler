@@ -113,7 +113,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   userPoiIcons = user?.poiIcons,
   editorMode = false,
 }) => {
-  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(false);
+  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!editorMode);
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
@@ -180,7 +180,9 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
               .filter(
                 (ge) =>
                   ge.items.length &&
-                  ["Wichtige Adressen", "Meine Objekte"].includes(ge.title)
+                  [preferredLocationsTitle, realEstateListingsTitle].includes(
+                    ge.title
+                  )
               )
               .map((ge, geIndex) => {
                 const isRealEstateListing =

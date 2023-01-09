@@ -25,6 +25,7 @@ import { ApiUser } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { preferredLocationsTitle } from "../shared/shared.functions";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -169,7 +170,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
             <tr>
               <th>Name</th>
               <th>E-Mail</th>
-              <th>Wichtige Adressen</th>
+              <th>{preferredLocationsTitle}</th>
               <th>Wohnvorstellung</th>
               <th />
             </tr>

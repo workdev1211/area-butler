@@ -56,25 +56,29 @@ const RealEstatePage: FunctionComponent = () => {
       const response = await get<ApiRealEstateListing[]>(
         "/api/real-estate-listings"
       );
+
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: response.data,
       });
     };
 
-    fetchRealEstates();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    void fetchRealEstates();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (!isNewRealEstate) {
-      setRealEstate(
-        realEstateState.listings.find(
-          (e: ApiRealEstateListing) => e.id === realEstateId
-        ) ?? initialRealEstate
-      );
-    } else {
+    if (isNewRealEstate) {
       setRealEstate(initialRealEstate);
+      return;
     }
+
+    setRealEstate(
+      realEstateState.listings.find(
+        (e: ApiRealEstateListing) => e.id === realEstateId
+      ) ?? initialRealEstate
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [realEstateState.listings, isNewRealEstate, realEstateId, setRealEstate]);
 

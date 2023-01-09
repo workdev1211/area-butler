@@ -10,6 +10,7 @@ import ImportantAddresses from "../components/ImportantAddresses";
 import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
 import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { preferredLocationsTitle } from "../shared/shared.functions";
 
 export interface PotentialCustomerFormProps {
   formId: string;
@@ -110,7 +111,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
             />
           </div>
           <div className="my-6 flex flex-col gap-4">
-            <strong>Wichtige Adressen</strong>
+            <strong>{preferredLocationsTitle}</strong>
             <ImportantAddresses
               inputValues={customer.preferredLocations}
               onChange={(newValues) => {

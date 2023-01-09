@@ -31,6 +31,7 @@ import {
   deriveInitialEntityGroups,
   deriveTotalRequestContingent,
   toastError,
+  preferredLocationsTitle,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import IncreaseLimitFormHandler from "user/IncreaseLimitFormHandler";
@@ -698,7 +699,7 @@ const SearchParamsPage: FunctionComponent = () => {
             />
             <PotentialCustomerDropDown />
           </div>
-          <h2>Wichtige Adressen</h2>
+          <h2>{preferredLocationsTitle}</h2>
           <div className="sub-content">
             <ImportantAddresses
               inputValues={searchContextState.preferredLocations}

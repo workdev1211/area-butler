@@ -19,7 +19,10 @@ import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
-import { sanitizeFilename } from "../shared/shared.functions";
+import {
+  realEstateListingsTitle,
+  sanitizeFilename,
+} from "../shared/shared.functions";
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
@@ -55,10 +58,13 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   snapshotToken,
   exportType,
 }) => {
-  const groupCopy: EntityGroup[] = JSON.parse(JSON.stringify(groupedEntries))
-    .filter((group: EntityGroup) => group.title !== "Meine Objekte")
-    .filter((group: EntityGroup) => group.items.length > 0);
-
+  const groupCopy: EntityGroup[] = JSON.parse(
+    JSON.stringify(groupedEntries)
+  ).filter(
+    ({ title, items }: EntityGroup) =>
+      title !== realEstateListingsTitle && items.length > 0
+  );
+  
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);

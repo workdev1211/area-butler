@@ -30,6 +30,7 @@ import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { TCensusData } from "../../hooks/censusdata";
+import { preferredLocationsTitle } from "../../shared/shared.functions";
 
 interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -60,7 +61,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
   const filteredGroups = props.groupedEntries.filter(
     (group: EntityGroup) =>
-      group.title !== "Wichtige Adressen" &&
+      group.title !== preferredLocationsTitle &&
       group.active &&
       group.items.length > 0
   );

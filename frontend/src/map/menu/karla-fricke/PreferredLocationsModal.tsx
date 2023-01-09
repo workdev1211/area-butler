@@ -12,6 +12,7 @@ import {
 } from "../../../../../shared/types/routing";
 import CloseCross from "../../../assets/icons/cross.svg";
 import CategoryContent from "../menu-item/CategoryContent";
+import { preferredLocationsTitle } from "../../../shared/shared.functions";
 
 export interface PreferredLocationsModalProps {
   entityGroup: EntityGroup;
@@ -35,7 +36,7 @@ const PreferredLocationsModal: FunctionComponent<
   return (
     <div className="preferred-locations">
       <div className="collapse-title">
-        <span>Wichtige Adressen</span>
+        <span>{preferredLocationsTitle}</span>
         <img src={CloseCross} alt="close" onClick={() => closeModal(false)} />
       </div>
       <CategoryContent

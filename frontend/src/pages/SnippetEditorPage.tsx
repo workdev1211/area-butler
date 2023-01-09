@@ -7,11 +7,11 @@ import {
 } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useParams } from "react-router-dom";
-import * as L from "leaflet";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
+  ICurrentMapRef,
   IEditorTabProps,
   IExportTabProps,
 } from "components/SearchResultContainer";
@@ -64,7 +64,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const { fetchLocationIndexData } = useLocationIndexData();
-  const mapRef = useRef<L.Map | null>(null);
+  const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -83,6 +83,20 @@ const SnippetEditorPage: FunctionComponent = () => {
 
   const hasOpenAiFeature = user?.subscription?.config.appFeatures.openAi;
   const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
+
+  useEffect(() => {
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+      payload: [],
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
+      payload: undefined,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!hasHtmlSnippet) {
@@ -266,6 +280,11 @@ const SnippetEditorPage: FunctionComponent = () => {
           payload: locationIndexData,
         });
       }
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+        payload: snapshotResponse.snapshot.localityParams,
+      });
 
       // use dedicated entity groups for editor (do not exclude any group by config)
       setEditorGroups(

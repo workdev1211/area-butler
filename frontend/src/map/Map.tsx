@@ -423,6 +423,16 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           ? { lat: mapCenter.lat, lng: mapCenter.lng }
           : undefined;
       },
+      handleScrollWheelZoom: {
+        isScrollWheelZoomEnabled: () =>
+          mapRef.current?.scrollWheelZoom.enabled(),
+        enableScrollWheelZoom: () => {
+          mapRef.current?.scrollWheelZoom.enable();
+        },
+        disableScrollWheelZoom: () => {
+          mapRef.current?.scrollWheelZoom.disable();
+        },
+      },
     }));
 
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
@@ -478,7 +488,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
 
       const attributionEmbedded =
-        'Powered by &copy; <a href="https://area-butler.de" target="_blank">AreaButler</a>, ' +
+        'Powered by &copy; <a href="https://areabutler.de" target="_blank">AreaButler</a>, ' +
         attribution;
 
       const url = embedMode
@@ -509,6 +519,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
+        scrollWheelZoom: editorMode,
       } as any).setView(mapCenter, mapZoomLevel);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });

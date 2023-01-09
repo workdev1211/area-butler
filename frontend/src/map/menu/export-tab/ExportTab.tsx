@@ -37,6 +37,8 @@ import fileIcon from "../../../assets/icons/file.svg";
 import { UserActionTypes, UserContext } from "../../../context/UserContext";
 import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
+import { localStorageSearchContext } from "../../../../../shared/constants/constants";
+import { useHistory } from "react-router-dom";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -49,6 +51,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   placeLabel,
   snapshotId,
 }) => {
+  const history = useHistory();
+
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState, userDispatch } = useContext(UserContext);
@@ -59,6 +63,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
+  const [isTempExportOpen, setIsTempExportOpen] = useState(false);
   const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
   // TODO waits for the customer
   const [isCustomerLinksOpen, setIsCustomerLinksOpen] = useState(false);
@@ -412,6 +417,87 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     alt="pdf"
                   />
                   Lage Exposé generieren
+                </h3>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div
+          className={
+            "collapse collapse-arrow view-option" +
+            (isTempExportOpen ? " collapse-open" : " collapse-closed")
+          }
+        >
+          <div
+            className="collapse-title"
+            ref={(node) => {
+              setBackgroundColor(node, backgroundColor);
+            }}
+            onClick={() => {
+              setIsTempExportOpen(!isTempExportOpen);
+            }}
+          >
+            <div className="collapse-title-container">
+              <img src={reportsIcon} alt="reports-icon" />
+              <div className="collapse-title-text">
+                <div className="collapse-title-text-1">Temp Export</div>
+                <div className="collapse-title-text-2">Temp Export</div>
+              </div>
+            </div>
+          </div>
+          <div className="collapse-content">
+            <ul>
+              <li>
+                <h3
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  onClick={() => {
+                    if (!searchContextState.localityParams.length) {
+                      toastSuccess("Wird geladen...");
+                      return;
+                    }
+
+                    window.localStorage.setItem(
+                      localStorageSearchContext,
+                      JSON.stringify(searchContextState)
+                    );
+
+                    history.push("/potential-customers/from-result");
+                  }}
+                >
+                  <img
+                    className="w-6 h-6"
+                    style={invertFilter}
+                    src={pdfIcon}
+                    alt="pdf"
+                  />
+                  Zielgruppe speichern
+                </h3>
+              </li>
+              <li>
+                <h3
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  onClick={() => {
+                    if (!searchContextState.placesLocation.label) {
+                      toastSuccess("Wird geladen...");
+                      return;
+                    }
+
+                    window.localStorage.setItem(
+                      localStorageSearchContext,
+                      JSON.stringify(searchContextState)
+                    );
+
+                    history.push("/real-estates/from-result");
+                  }}
+                >
+                  <img
+                    className="w-6 h-6"
+                    style={invertFilter}
+                    src={pdfIcon}
+                    alt="pdf"
+                  />
+                  Objekt anlegen2
                 </h3>
               </li>
             </ul>

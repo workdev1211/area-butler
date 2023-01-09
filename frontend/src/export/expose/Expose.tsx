@@ -23,6 +23,7 @@ import { IQrCodeState } from "../ExportModal";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { TCensusData } from "../../hooks/censusdata";
+import { preferredLocationsTitle } from "../../shared/shared.functions";
 
 interface IExposeProps {
   groupedEntries: EntityGroup[];
@@ -47,7 +48,7 @@ export const Expose = forwardRef(
   (props: IExposeProps, ref: ForwardedRef<HTMLDivElement>) => {
     const filteredGroups = props.groupedEntries.filter(
       (group) =>
-        group.title !== "Wichtige Adressen" &&
+        group.title !== preferredLocationsTitle &&
         group.active &&
         group.items.length > 0
     );
@@ -70,7 +71,7 @@ export const Expose = forwardRef(
     );
 
     const importantEntities = props.groupedEntries.find(
-      (group) => group.active && group.title === "Wichtige Adressen"
+      (group) => group.active && group.title === preferredLocationsTitle
     );
 
     const transportationParams = props.transportationParams;

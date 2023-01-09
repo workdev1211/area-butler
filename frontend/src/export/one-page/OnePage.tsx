@@ -15,6 +15,7 @@ import { IPoiIcon } from "../../shared/shared.types";
 import {
   createDirectLink,
   distanceToHumanReadable,
+  preferredLocationsTitle,
 } from "../../shared/shared.functions";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
@@ -78,7 +79,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
     (EntityGroup & { icon?: IPoiIcon })[]
   >((result, group) => {
     if (
-      group.title !== "Wichtige Adressen" &&
+      group.title !== preferredLocationsTitle &&
       group.active &&
       group.items.length > 0
     ) {

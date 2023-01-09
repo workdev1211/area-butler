@@ -15,7 +15,6 @@ import {
 //   GroupBase,
 //   SingleValue,
 // } from "react-select";
-import * as L from "leaflet";
 
 import {
   IGotoMapCenter,
@@ -63,6 +62,11 @@ import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
   getCenter: () => ApiCoordinates | undefined;
+  handleScrollWheelZoom: {
+    isScrollWheelZoomEnabled: () => boolean | undefined;
+    enableScrollWheelZoom: () => void;
+    disableScrollWheelZoom: () => void;
+  };
 }
 
 export interface ResultEntity {
@@ -150,7 +154,7 @@ const SearchResultContainer = forwardRef<
       mapZoomLevel,
       user,
       userDispatch = () => null,
-      embedMode = true,
+      embedMode = false,
       editorMode = false,
       onPoiAdd,
       isTrial,
@@ -162,10 +166,20 @@ const SearchResultContainer = forwardRef<
   ) => {
     const containerRef = useRef<HTMLDivElement>(null);
 
-    const mapRef = useRef<L.Map | null>(null);
+    const mapRef = useRef<ICurrentMapRef | null>(null);
     useImperativeHandle(parentMapRef, () => ({
       getZoom: () => mapRef.current?.getZoom(),
       getCenter: () => mapRef.current?.getCenter(),
+      handleScrollWheelZoom: {
+        isScrollWheelZoomEnabled: () =>
+          mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled(),
+        enableScrollWheelZoom: () => {
+          mapRef.current?.handleScrollWheelZoom.enableScrollWheelZoom();
+        },
+        disableScrollWheelZoom: () => {
+          mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
+        },
+      },
     }));
 
     const { searchContextState, searchContextDispatch } =
@@ -531,6 +545,60 @@ const SearchResultContainer = forwardRef<
       });
     };
 
+    const toggleAllLocalities = () => {
+      const oldGroupedEntities =
+        searchContextState.responseGroupedEntities ?? [];
+
+      if (!oldGroupedEntities.length) {
+        return;
+      }
+
+      let responseGroupedEntities: EntityGroup[];
+      const isToggled = oldGroupedEntities.some(({ active }) => active);
+
+      switch (searchContextState.responseConfig?.theme) {
+        case "KF": {
+          if (isToggled) {
+            responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
+              ...entityGroup,
+              active: false,
+            }));
+            break;
+          }
+
+          const hasMainKfCategories = oldGroupedEntities.some(({ title }) =>
+            [preferredLocationsTitle, realEstateListingsTitle].includes(title)
+          );
+
+          if (!hasMainKfCategories) {
+            responseGroupedEntities = [...oldGroupedEntities];
+            responseGroupedEntities[0].active = true;
+            break;
+          }
+
+          responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
+            ...entityGroup,
+            active: [preferredLocationsTitle, realEstateListingsTitle].includes(
+              entityGroup.title
+            ),
+          }));
+          break;
+        }
+
+        default: {
+          responseGroupedEntities = oldGroupedEntities.map((entityGroup) => ({
+            ...entityGroup,
+            active: !isToggled,
+          }));
+        }
+      }
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+        payload: responseGroupedEntities,
+      });
+    };
+
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
     const mapWithLegendId = "map-with-legend";
 
@@ -715,18 +783,7 @@ const SearchResultContainer = forwardRef<
               particlePollutionData={searchContextState.particlePollutionData}
               locationIndexData={searchContextState.locationIndexData}
               groupedEntries={resultingGroupedEntities ?? []}
-              toggleAllLocalities={() => {
-                const oldGroupedEntities =
-                  searchContextState.responseGroupedEntities ?? [];
-
-                searchContextDispatch({
-                  type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-                  payload: oldGroupedEntities.map((g) => ({
-                    ...g,
-                    active: !oldGroupedEntities.some((g) => g.active),
-                  })),
-                });
-              }}
+              toggleAllLocalities={toggleAllLocalities}
               toggleRoute={(item, mean) =>
                 toggleRoutesToEntity(location, item, mean)
               }

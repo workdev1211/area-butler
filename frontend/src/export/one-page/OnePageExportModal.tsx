@@ -10,7 +10,10 @@ import { UserContext } from "context/UserContext";
 import { ApiUser } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../components/SearchResultContainer";
-import { setBackgroundColor } from "../../shared/shared.functions";
+import {
+  realEstateListingsTitle,
+  setBackgroundColor,
+} from "../../shared/shared.functions";
 import { ILegendItem } from "../Legend";
 import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
@@ -54,7 +57,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
   const groupCopy: EntityGroup[] = groupedEntries
     .reduce((result: EntityGroup[], group: EntityGroup) => {
-      if (group.title !== "Meine Objekte" && group.items.length > 0) {
+      if (group.title !== realEstateListingsTitle && group.items.length > 0) {
         result.push(group);
       }
 

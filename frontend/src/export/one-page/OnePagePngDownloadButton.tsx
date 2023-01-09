@@ -10,7 +10,10 @@ import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import OnePagePng from "./OnePagePng";
 import { getQrCodeBase64 } from "../QrCode";
-import { createDirectLink } from "../../shared/shared.functions";
+import {
+  createDirectLink,
+  preferredLocationsTitle,
+} from "../../shared/shared.functions";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { IPoiIcon } from "../../shared/shared.types";
 
@@ -86,7 +89,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     (EntityGroup & { icon?: IPoiIcon })[]
   >((result, group) => {
     if (
-      group.title !== "Wichtige Adressen" &&
+      group.title !== preferredLocationsTitle &&
       group.active &&
       group.items.length > 0
     ) {

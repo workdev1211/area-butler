@@ -1,6 +1,5 @@
 .search-result-container {
-    height: 100vh !important;
-    height: calc(var(--vh, 1vh) * 100) !important;
-    max-height: 100vh !important;
-    @apply flex relative w-full;
+  height: calc(var(--vh, 1vh) * 100) !important;
+  max-height: 100vh !important;
+  @apply flex relative w-full;
 }

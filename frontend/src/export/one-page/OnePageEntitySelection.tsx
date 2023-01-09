@@ -2,7 +2,11 @@ import { FunctionComponent, useEffect, useState } from "react";
 import { ReactSortable } from "react-sortablejs";
 
 import { EntityGroup } from "../../components/SearchResultContainer";
-import { setBackgroundColor, toastError } from "../../shared/shared.functions";
+import {
+  preferredLocationsTitle,
+  setBackgroundColor,
+  toastError,
+} from "../../shared/shared.functions";
 
 interface ISortableEntityGroup extends EntityGroup {
   id: string;
@@ -37,7 +41,7 @@ const OnePageEntitySelection: FunctionComponent<
         a.title.toLowerCase().localeCompare(b.title.toLowerCase())
       )
       .reduce<ISortableEntityGroup[]>((result, group, i) => {
-        if (group.title === "Wichtige Adressen") {
+        if (group.title === preferredLocationsTitle) {
           setImportantAddressGroup(group);
           return result;
         }

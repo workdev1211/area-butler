@@ -1,4 +1,11 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  MouseEvent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
 
 import "./EmbedContainer.scss";
@@ -11,7 +18,9 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
-import SearchResultContainer from "../components/SearchResultContainer";
+import SearchResultContainer, {
+  ICurrentMapRef,
+} from "../components/SearchResultContainer";
 import { deriveInitialEntityGroups } from "../shared/shared.functions";
 import {
   RealEstateActionTypes,
@@ -37,6 +46,8 @@ const calculateViewHeight = () => {
 calculateViewHeight();
 
 const EmbedContainer: FunctionComponent = () => {
+  const mapRef = useRef<ICurrentMapRef | null>(null);
+
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
@@ -62,6 +73,22 @@ const EmbedContainer: FunctionComponent = () => {
 
     return undefined;
   };
+
+  useEffect(() => {
+    const handleEscape = async (e: KeyboardEvent) => {
+      if (
+        e.key === "Escape" &&
+        mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
+      ) {
+        mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // fetch saved response
   useEffect(() => {
@@ -209,6 +236,26 @@ const EmbedContainer: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, searchConfig, searchContextDispatch]);
 
+  const handleClick = () => {
+    if (
+      mapRef.current &&
+      !mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
+    ) {
+      mapRef.current?.handleScrollWheelZoom.enableScrollWheelZoom();
+    }
+  };
+
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+    e.preventDefault();
+
+    if (
+      mapRef.current &&
+      mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
+    ) {
+      mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
+    }
+  };
+
   if (!searchContextState.searchResponse) {
     return isAddressExpired ? (
       <div>{`Ihre Adresse ist abgelaufen. Bitte besuchen Sie die ${process.env.REACT_APP_BASE_URL} und verlängern Sie sie.`}</div>
@@ -218,15 +265,19 @@ const EmbedContainer: FunctionComponent = () => {
   }
 
   return (
-    <SearchResultContainer
-      mapBoxToken={mapBoxToken}
-      mapBoxMapId={searchConfig?.mapBoxMapId}
-      searchResponse={searchContextState.searchResponse}
-      placesLocation={searchContextState.placesLocation}
-      location={searchContextState.mapCenter ?? searchContextState.location!}
-      isTrial={!!result?.isTrial}
-      userPoiIcons={userPoiIcons}
-    />
+    <div onClick={handleClick} onContextMenu={handleContextMenu}>
+      <SearchResultContainer
+        mapBoxToken={mapBoxToken}
+        mapBoxMapId={searchConfig?.mapBoxMapId}
+        searchResponse={searchContextState.searchResponse}
+        placesLocation={searchContextState.placesLocation}
+        location={searchContextState.mapCenter ?? searchContextState.location!}
+        isTrial={!!result?.isTrial}
+        userPoiIcons={userPoiIcons}
+        embedMode={true}
+        ref={mapRef}
+      />
+    </div>
   );
 };
 
