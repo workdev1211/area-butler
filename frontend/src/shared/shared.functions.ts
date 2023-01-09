@@ -271,12 +271,12 @@ export const deriveIconForOsmName = (
     case OsmName.post_office:
       return {
         icon: kioskIcon,
-        color: "#267F9D",
+        color: "#8F72EB",
       };
     case OsmName.station:
       return {
         icon: stationIcon,
-        color: "#CB513B",
+        color: "#267F9D",
       };
     case OsmName.bus_stop:
       return {
@@ -355,49 +355,49 @@ export const deriveIconForOsmName = (
     case OsmName.hotel:
       return {
         icon: hotelIcon,
-        color: "#42AEA7",
+        color: "#E4BC40",
       };
     case OsmName.tower:
     case OsmName.pole:
       return {
         icon: towerIcon,
-        color: "#42AEA7",
+        color: "#165B4E",
       };
     case OsmName["multi-storey"]:
     case OsmName.underground:
       return {
         icon: parkingGarageIcon,
-        color: "#42AEA7",
+        color: "#6563FF",
       };
     case OsmName.surface:
       return {
         icon: parkingIcon,
-        color: "#42AEA7",
+        color: "#6563FF",
       };
     case OsmName.attraction:
       return {
         icon: attractionIcon,
-        color: "#42AEA7",
+        color: "#640D24",
       };
     case OsmName.charging_station:
       return {
         icon: chargingStationIcon,
-        color: "#42AEA7",
+        color: "#579BE4",
       };
     case OsmName.museum:
       return {
         icon: museumIcon,
-        color: "#42AEA7",
+        color: "#C91444",
       };
     case OsmName.pharmacy:
       return {
         icon: pharmacyIcon,
-        color: "#42AEA7",
+        color: "#9F532E",
       };
     case OsmName.wind_turbine:
       return {
         icon: windTurbineIcon,
-        color: "#42AEA7",
+        color: "#1A5A6B",
       };
     default:
       return {
