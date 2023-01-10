@@ -479,7 +479,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                     "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
                 }}
               >
-                Hier finden Sie ab Dez 2022 Daten zu den Themen Arbeitskräfte,
+                Hier finden Sie ab Feb 2023 Daten zu den Themen Arbeitskräfte,
                 Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro
                 Kopf, Gewerbesteuereinnahmen, Logistikcluster-Daten,
                 Logistik-Attraktivität.

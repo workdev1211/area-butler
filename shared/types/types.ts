@@ -374,6 +374,12 @@ export enum ApiDataProvisionEnum {
   ZIP_LEVEL_DATA = "zipLevelData",
 }
 
+export enum DataProvisionEnum {
+  ADDRESS_DATA = "addressData",
+  ZIP_LEVEL_DATA = "zipLevelData",
+  AVERAGE_DATA = "averageData",
+}
+
 export type TApiDataProvision = Record<
   ApiDataProvisionEnum,
   ApiGeojsonFeature[]

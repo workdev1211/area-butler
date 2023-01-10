@@ -1,7 +1,10 @@
 import { FunctionComponent } from "react";
 
 import { TCensusData } from "../../../hooks/censusdata";
-import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
+import {
+  ApiDataProvisionEnum,
+  DataProvisionEnum,
+} from "../../../../../shared/types/types";
 
 export const averageCensus = {
   "Ø Alter": 44.6,
@@ -24,6 +27,11 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
     return null;
   }
 
+  const processCensusValue = (value: unknown): string =>
+    !Number.isNaN(Number(value))
+      ? (Math.round(Number(value) * 10) / 10).toFixed(1)
+      : "-";
+
   const processedCensusData = Object.values<ApiDataProvisionEnum>(
     ApiDataProvisionEnum
   ).reduce<
@@ -31,7 +39,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
       string,
       {
         label: string;
-        value: Record<ApiDataProvisionEnum, string>;
+        value: Record<DataProvisionEnum, string>;
         unit: string;
       }
     >
@@ -55,15 +63,17 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
         value: string;
         unit: string;
       }) => {
+        const processedValue = processCensusValue(value);
+
         if (result[label]) {
-          result[label].value[provisionKey] = value;
+          result[label].value[provisionKey] = processedValue;
         } else {
           result[label] = {
             label,
-            value: { [provisionKey]: value } as Record<
-              ApiDataProvisionEnum,
-              string
-            >,
+            value: {
+              [provisionKey]: processedValue,
+              averageData: processCensusValue(averageCensus[label]),
+            } as Record<DataProvisionEnum, string>,
             unit,
           };
         }
@@ -91,35 +101,15 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
             </td>
             <td>
               <span className="font-bold italic">
-                {!Number.isNaN(
-                  Number(censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA])
-                )
-                  ? (
-                      Math.round(
-                        Number(
-                          censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA]
-                        ) * 10
-                      ) / 10
-                    ).toFixed(1)
-                  : "-"}
+                {censusValue.value[DataProvisionEnum.ADDRESS_DATA] || "-"}
               </span>
               <br />
               <span className="font-bold italic">
-                {!Number.isNaN(
-                  Number(censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA])
-                )
-                  ? (
-                      Math.round(
-                        Number(
-                          censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA]
-                        ) * 10
-                      ) / 10
-                    ).toFixed(1)
-                  : "-"}
+                {censusValue.value[DataProvisionEnum.ZIP_LEVEL_DATA] || "-"}
               </span>
               <br />
               <span className="italic">
-                {averageCensus[censusValue.label].toFixed(1)}
+                {censusValue.value[DataProvisionEnum.AVERAGE_DATA] || "-"}
               </span>
             </td>
           </tr>

@@ -1,10 +1,7 @@
 import { render } from "@testing-library/react";
+
 import CensusTable from "./CensusTable";
-import {
-  ApiDataProvisionEnum,
-  ApiGeojsonFeature,
-} from "../../../../../shared/types/types";
-import { TCensusData } from "../../../hooks/censusdata";
+import { ApiDataProvisionEnum } from "../../../../../shared/types/types";
 
 const testData: any = {
   [ApiDataProvisionEnum.ADDRESS_DATA]: [
