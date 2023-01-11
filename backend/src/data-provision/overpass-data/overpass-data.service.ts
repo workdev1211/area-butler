@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Promise } from 'mongoose';
 import { Cron } from '@nestjs/schedule';
+
 import {
   OverpassData,
   OverpassDataDocument,
@@ -15,11 +16,12 @@ import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
 @Injectable()
 export class OverpassDataService {
   private readonly logger = new Logger(OverpassDataService.name);
+
   constructor(
     @InjectModel(OverpassData.name)
-    private overpassDataModel: Model<OverpassDataDocument>,
-    private overpassService: OverpassService,
-    @InjectConnection() private connection: Connection,
+    private readonly overpassDataModel: Model<OverpassDataDocument>,
+    private readonly overpassService: OverpassService,
+    @InjectConnection() private readonly connection: Connection,
   ) {}
 
   @Cron('0 0 2 * * *')
@@ -28,6 +30,7 @@ export class OverpassDataService {
     this.logger.log(`Loading overpass data into database`);
     const collection = this.connection.db.collection(tempCollectionName);
     this.logger.log(`creating new ${tempCollectionName} collection`);
+
     const chunksize = 1000;
     const createChunks = (a, size) =>
       Array.from(new Array(Math.ceil(a.length / size)), (_, i) =>
@@ -40,6 +43,7 @@ export class OverpassDataService {
     } catch (e) {}
 
     this.logger.debug('fetchOverpassData called');
+
     for (const et of osmEntityTypes) {
       try {
         const feats = await this.overpassService.fetchForEntityType(et);
@@ -56,6 +60,7 @@ export class OverpassDataService {
         console.error(e);
       }
     }
+
     this.logger.log(`Overpass data loaded`);
     this.logger.log(`Building overpass data index`);
     await collection.createIndex({
@@ -86,7 +91,9 @@ export class OverpassDataService {
       },
       entityType: { $in: Object.values(preferredAmenities) },
     };
+
     const response = await this.overpassDataModel.find(dbQuery).lean().exec();
-    return this.overpassService.mapResponse(response, coordinates);
+
+    return this.overpassService.mapResponse(response, coordinates, preferredAmenities);
   }
 }

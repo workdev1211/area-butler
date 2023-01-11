@@ -44,7 +44,7 @@ export class OverpassService {
         ),
       );
 
-      return this.mapResponse(response, coordinates);
+      return this.mapResponse(response, coordinates, preferredAmenities);
     } catch (e) {
       console.error('Error while fetching data from overpass', e);
       throw e;
@@ -54,6 +54,7 @@ export class OverpassService {
   async mapResponse(
     response,
     centerCoordinates: ApiCoordinatesDto,
+    preferredAmenities: OsmName[],
   ): Promise<ApiOsmLocationDto[]> {
     const elements = Array.isArray(response)
       ? response
@@ -96,16 +97,21 @@ export class OverpassService {
         const address: ApiAddressDto = {
           street: `${elementTags['addr:street']}${
             !!elementTags['addr:housenumber']
-              ? ' ' + elementTags['addr:housenumber']
+              ? ` ${elementTags['addr:housenumber']}`
               : ''
           }`,
           postalCode: elementTags['addr:postcode'],
           city: elementTags['addr:city'],
         };
 
-        const processedElements: ApiOsmLocationDto[] = entityTypes.map(
-          (entity) => {
-            return {
+        const processedElements = entityTypes.reduce<ApiOsmLocationDto[]>(
+          (result, entity) => {
+            // sometimes Overpass returns POI objects which were not specified in the request query
+            if (!preferredAmenities.includes(entity.name)) {
+              return result;
+            }
+
+            result.push({
               entity: {
                 id: `${element.id}-${entity.name}`,
                 label: entity.label,
@@ -121,8 +127,11 @@ export class OverpassService {
               coordinates,
               distanceInMeters,
               address,
-            };
+            });
+
+            return result;
           },
+          [],
         );
 
         result.push(...processedElements);
@@ -193,13 +202,13 @@ export class OverpassService {
     const finalElements = [];
     const duplicates = [];
 
-    for (const rawElement of rawElements) {
+    rawElements.forEach((rawElement) => {
       if (!duplicates.includes(rawElement.entity.id)) {
         const foundDuplicates = findDuplicates(rawElements, rawElement);
         duplicates.push(...foundDuplicates.map((d) => d.entity.id));
         finalElements.push(rawElement);
       }
-    }
+    });
 
     return finalElements;
   }
