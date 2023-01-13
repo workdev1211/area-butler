@@ -64,7 +64,7 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
       {showModal && (
         <div id="my-modal" className="modal modal-open z-2000">
           <div className="modal-box max-h-screen overflow-y-auto">
-            <h1 className="text-xl mb-5">Dürfen wir helfen?111</h1>
+            <h1 className="text-xl mb-5">Dürfen wir helfen?/h1>
             {tourDescriptions[tour]}
 
             <label className="cursor-pointer flex items-center mt-5">
