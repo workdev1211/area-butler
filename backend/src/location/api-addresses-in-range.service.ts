@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 
 import {
   ApiAddressesInRangeApiNameEnum,
@@ -21,6 +21,8 @@ import { createChunks } from '../../../shared/functions/shared.functions';
 
 @Injectable()
 export class ApiAddressesInRangeService {
+  private readonly logger = new Logger(ApiAddressesInRangeService.name);
+
   constructor(
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly hereGeocodeService: HereGeocodeService,
@@ -39,12 +41,24 @@ export class ApiAddressesInRangeService {
         ? await this.googleGeocodeService.fetchPlaceByAddress(address)
         : await this.googleGeocodeService.fetchPlaceByCoordinates(address);
 
-    const isInAllowedCountry = place.address_components.some(
+    const isInAllowedCountry = place?.address_components.some(
       ({ short_name: shortName, types }) =>
         types.includes('country') && allowedCountries.includes(shortName),
     );
 
-    if (!place || !place.geometry.location || !isInAllowedCountry) {
+    if (
+      !place ||
+      !place.geometry.location ||
+      !Array.isArray(place.address_components) ||
+      !isInAllowedCountry
+    ) {
+      this.logger.debug(
+        `!place = ${!place}, !location = ${!place.geometry
+          .location}, !addressComponents = ${!Array.isArray(
+          place.address_components,
+        )}, !isInAllowedCountry = ${!isInAllowedCountry}`,
+      );
+
       throw new HttpException('The location was not found!', 400);
     }
 
@@ -141,7 +155,7 @@ export class ApiAddressesInRangeService {
 
     if (!locations.length) {
       throw new HttpException(
-        'There were no locations found in that area!',
+        "The current address / radius combination doesn't allow to find any locations!",
         400,
       );
     }
@@ -164,8 +178,13 @@ export class ApiAddressesInRangeService {
             language,
           );
 
-        if (!currentPlace) {
-          return undefined;
+        if (
+          !currentPlace ||
+          !currentPlace.formatted_address ||
+          !currentPlace.geometry.location ||
+          !Array.isArray(currentPlace.address_components)
+        ) {
+          return;
         }
 
         return {
@@ -203,39 +222,65 @@ export class ApiAddressesInRangeService {
     const coordinateGrid = this.generateCoordinateGrid(location, radius, 50);
     const addresses: IApiAddressInRange[] = [];
 
-    const chunks = createChunks(coordinateGrid, 15);
-
-    for await (const chunk of chunks) {
-      await Promise.all(
-        chunk.map(async (coordinates) => {
-          const places = await this.hereGeocodeService.fetchAddressesInRange(
-            coordinates,
-            radius,
-            language,
-          );
-
-          if (!places.length) {
-            return;
-          }
-
-          places.forEach((currentPlace) => {
-            addresses.push({
-              full_address: currentPlace.title,
-              street_name: currentPlace.address.street,
-              street_number: currentPlace.address.houseNumber,
-              postal_code: currentPlace.address.postalCode,
-              locality: currentPlace.address.city,
-              country: currentPlace.address.countryName,
-              location: currentPlace.position,
-              distance_in_meters: distanceInMeters(
-                location,
-                currentPlace.position,
-              ),
-            });
-          });
-        }),
+    for await (const coordinates of coordinateGrid) {
+      const places = await this.hereGeocodeService.fetchAddressesInRange(
+        coordinates,
+        radius,
+        language,
       );
+
+      if (!places.length) {
+        return;
+      }
+
+      places.forEach((currentPlace) => {
+        addresses.push({
+          full_address: currentPlace.title,
+          street_name: currentPlace.address.street,
+          street_number: currentPlace.address.houseNumber,
+          postal_code: currentPlace.address.postalCode,
+          locality: currentPlace.address.city,
+          country: currentPlace.address.countryName,
+          location: currentPlace.position,
+          distance_in_meters: distanceInMeters(location, currentPlace.position),
+        });
+      });
     }
+
+    // Commented because we have been facing the HERE API rate limits
+    // const chunks = createChunks(coordinateGrid, 15);
+    //
+    // for await (const chunk of chunks) {
+    //   await Promise.all(
+    //     chunk.map(async (coordinates) => {
+    //       const places = await this.hereGeocodeService.fetchAddressesInRange(
+    //         coordinates,
+    //         radius,
+    //         language,
+    //       );
+    //
+    //       if (!places.length) {
+    //         return;
+    //       }
+    //
+    //       places.forEach((currentPlace) => {
+    //         addresses.push({
+    //           full_address: currentPlace.title,
+    //           street_name: currentPlace.address.street,
+    //           street_number: currentPlace.address.houseNumber,
+    //           postal_code: currentPlace.address.postalCode,
+    //           locality: currentPlace.address.city,
+    //           country: currentPlace.address.countryName,
+    //           location: currentPlace.position,
+    //           distance_in_meters: distanceInMeters(
+    //             location,
+    //             currentPlace.position,
+    //           ),
+    //         });
+    //       });
+    //     }),
+    //   );
+    // }
 
     return addresses;
   }

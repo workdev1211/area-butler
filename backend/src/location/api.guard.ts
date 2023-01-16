@@ -26,6 +26,7 @@ export class ApiGuard implements CanActivate {
     }
 
     request.principal = user;
+    request.user = { email: user.email };
 
     return true;
   }

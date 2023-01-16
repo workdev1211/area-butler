@@ -13,7 +13,7 @@ import { subscriptionExpiredMessage } from '../../../shared/messages/error.messa
 import { SubscriptionService } from '../user/subscription.service';
 
 @Injectable()
-export class InjectUserEmailInterceptor implements NestInterceptor {
+export class InjectUserEmailRoutingInterceptor implements NestInterceptor {
   constructor(
     private readonly locationService: LocationService,
     private readonly userService: UserService,

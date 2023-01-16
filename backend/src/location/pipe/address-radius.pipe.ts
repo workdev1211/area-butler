@@ -7,11 +7,11 @@ export class AddressRadiusPipe implements PipeTransform {
       return;
     }
 
-    const parsedRadius = +radius;
+    const parsedRadius = Number.parseInt(radius, 10);
 
     if (!parsedRadius || parsedRadius > 400) {
       throw new HttpException(
-        'Radius should be correctly specified and not be higher than 400 meters!',
+        'The radius must be an integer between 1 and 400 meters!',
         400,
       );
     }

@@ -3,6 +3,7 @@ import {
   Get,
   HttpException,
   Query,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -41,6 +42,7 @@ export class ApiAddressesInRangeController {
   @Get()
   async getAddressesInRange(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Req() request: any,
     @Query('address') address?: string,
     @Query('lat', AddressCoordinatePipe) lat?: number,
     @Query('lng', AddressCoordinatePipe) lng?: number,
@@ -55,11 +57,15 @@ export class ApiAddressesInRangeController {
       );
     }
 
+    const parsedUrl = request.url.match(/^\/.*\?(.*)$/);
+
     const requestStatus: IApiAddressesInRangeRequestStatus = {
       status: IApiAddressesInRangeRequestStatusEnum.SUCCESS,
+      queryParams: Array.isArray(parsedUrl) ? parsedUrl[1] : request.url,
     };
 
     try {
+      // "await" is required in order to catch an error
       return await this.addressesInRangeService.getAddressesInRange(
         address || { lat, lng },
         radius,
@@ -69,6 +75,14 @@ export class ApiAddressesInRangeController {
     } catch (e) {
       requestStatus.status = IApiAddressesInRangeRequestStatusEnum.ERROR;
       requestStatus.message = e.message;
+
+      if (e.response?.status === 429 && !(e instanceof HttpException)) {
+        throw new HttpException(
+          'Too many requests at a time! Please, try again later.',
+          429,
+        );
+      }
+
       throw e;
     } finally {
       await this.userService.onAddressesInRangeFetch(user, requestStatus);

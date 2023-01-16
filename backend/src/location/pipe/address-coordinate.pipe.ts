@@ -7,11 +7,11 @@ export class AddressCoordinatePipe implements PipeTransform {
       return;
     }
 
-    const parsedCoordinate = +coordinate;
+    const parsedCoordinate = Number.parseFloat(coordinate);
 
     if (!parsedCoordinate) {
       throw new HttpException(
-        'The provided coordinates should be a number!',
+        'Specified coordinates must be floating point numbers!',
         400,
       );
     }

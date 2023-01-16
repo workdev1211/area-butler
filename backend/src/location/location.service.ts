@@ -444,7 +444,7 @@ export class LocationService {
     return snapshotDoc;
   }
 
-  // only used in the InjectUserEmailInterceptor
+  // only used in the InjectUserEmailRoutingInterceptor
   async fetchSnapshotByToken(
     token: string,
   ): Promise<SearchResultSnapshotDocument> {

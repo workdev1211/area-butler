@@ -418,5 +418,6 @@ export enum IApiAddressesInRangeRequestStatusEnum {
 
 export interface IApiAddressesInRangeRequestStatus {
   status: IApiAddressesInRangeRequestStatusEnum;
+  queryParams: string;
   message?: string;
 }
