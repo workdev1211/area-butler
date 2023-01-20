@@ -1,0 +1,44 @@
+<html lang='de'>
+  <head>
+    <meta charset='UTF-8' />
+    <title>Activation iFrame</title>
+    <link rel='icon' href='data:;base64,iVBORw0KGgo=' />
+    <link
+      rel='stylesheet'
+      type='text/css'
+      href='https://smart.onoffice.de/smart/gui/smart/resources/font/Open_SansFamily.css'
+    />
+    <link
+      rel='stylesheet'
+      type='text/css'
+      href='https://smart.onoffice.de/smart/gui/smart/resources/css/layout/smart/themes/marketplace/marketplaceUnlockIFrame.css'
+    />
+  </head>
+  <body style='margin: 0;'>
+    <label class='api-key-label'>API-Key</label>
+    <div id='secretDiv' class='api-key-input-outer'>
+      <input
+        id='secret'
+        class='api-key-input'
+        name='secret'
+        type='text'
+        placeholder='API-key hier reinkopieren'
+        style='height: 100%;'
+      />
+    </div>
+    <input
+      id='unlockButton'
+      class='unlock-now-button'
+      type='button'
+      value='Jetzt Freischalten'
+      title='Bitte zuerst der Datenschutzerklärung zustimmen'
+      alt='Bitte zuerst der Datenschutzerklärung zustimmen'
+      onclick='unlockProvider({{providerData}})'
+    />
+    <label id='successMessage' class='active-label'>Aktiv</label>
+    <div id='spinner' class='unlock-load-spinner'></div>
+  </body>
+  {{#each scripts}}
+    <script src='{{script}}'></script>
+  {{/each}}
+</html>

@@ -3,7 +3,10 @@ import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ScheduleModule } from '@nestjs/schedule';
+import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
+
 import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
 import { ConfigController } from './config/config.controller';
@@ -16,11 +19,10 @@ import { CustomExceptionFilter } from './shared/custom-exception.filter';
 import { UserModule } from './user/user.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { BillingModule } from './billing/billing.module';
-import { ScheduleModule } from '@nestjs/schedule';
 import { DataProvisionModule } from './data-provision/data-provision.module';
 import { HealthModule } from './health/health.module';
-import { HttpModule } from '@nestjs/axios';
 import { configService } from './config/config.service';
+import { OnOfficeModule } from './on-office/on-office.module';
 
 @Module({
   imports: [
@@ -52,6 +54,7 @@ import { configService } from './config/config.service';
     RoutingModule,
     BillingModule,
     HealthModule,
+    OnOfficeModule,
   ],
   providers: [
     {

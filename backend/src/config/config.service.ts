@@ -1,10 +1,16 @@
 import { ApiConfigDto } from '../dto/api-config.dto';
 import RollbarConfigDto from '../dto/rollbar-config.dto';
 
+// eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
 
+const paymentEnvironments = ['dev', 'prod'] as const;
+const environments = ['local', ...paymentEnvironments] as const;
+type TStripeEnvironment = typeof paymentEnvironments[number];
+type TEnvironment = typeof environments[number];
+
 class ConfigService {
-  constructor(private env: { [k: string]: string | undefined }) {}
+  constructor(private readonly env: { [k: string]: string | undefined }) {}
 
   private getValue(key: string, throwOnMissing = true): string {
     const value = this.env[key];
@@ -16,105 +22,100 @@ class ConfigService {
     return value;
   }
 
-  public ensureValues(keys: string[]) {
-    keys.forEach((k) => this.getValue(k, true));
+  ensureValues(keys: string[]): this {
+    keys.forEach((k) => this.getValue(k));
     return this;
   }
 
-  public getPort() {
-    return this.getValue('PORT', true);
+  getPort(): string {
+    return this.getValue('PORT', false);
   }
 
-  public isProduction() {
-    const mode = this.getValue('MODE', false);
-    return mode != 'DEV';
-  }
-
-  public getMapBoxAccessToken(): string {
+  getMapBoxAccessToken(): string {
     return this.getValue('MAPBOX_ACCESS_TOKEN');
   }
 
-  public getMapBoxCreateToken(): string {
+  getMapBoxCreateToken(): string {
     return this.getValue('MAPBOX_CREATE_TOKEN');
   }
 
-  public getAuth0ApiConfig(): { domain: string; audience: string } {
+  getAuth0ApiConfig(): { domain: string; audience: string } {
     return {
       domain: this.getValue('AUTH0_API_DOMAIN'),
       audience: this.getValue('AUTH0_API_AUDIENCE'),
     };
   }
 
-  public getAuth0SpaConfig(): { domain: string; audience: string } {
+  getAuth0SpaConfig(): { domain: string; audience: string } {
     return {
       domain: this.getValue('AUTH0_SPA_DOMAIN'),
       audience: this.getValue('AUTH0_SPA_AUDIENCE'),
     };
   }
 
-  public getMongoConnectionUri(): string {
+  getMongoConnectionUri(): string {
     return this.getValue('MONGO_CONNECTION_URI');
   }
 
-  public getGoogleApiKey(): string {
+  getGoogleApiKey(): string {
     return this.getValue('GOOGLE_API_KEY');
   }
 
-  public getGoogleServerApiKey(): string {
+  getGoogleServerApiKey(): string {
     return this.getValue('GOOGLE_SERVER_API_KEY');
   }
 
-  public getOpenAiApiKey(): string {
+  getOpenAiApiKey(): string {
     return this.getValue('OPENAI_API_KEY');
   }
 
-  public getFeedbackSlackWebhook(): string {
+  getFeedbackSlackWebhook(): string {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK', false);
   }
 
-  public getOperationsSlackWebhook(): string {
+  getOperationsSlackWebhook(): string {
     return this.getValue('OPERATIONS_SLACK_WEBHOOK', false);
   }
 
-  public getRevenuesSlackWebhook(): string {
+  getRevenuesSlackWebhook(): string {
     return this.getValue('REVENUES_SLACK_WEBHOOK', false);
   }
 
-  public getMailProviderApiKey(): string {
+  getMailProviderApiKey(): string {
     return this.getValue('MAIL_PROVIDER_API_KEY');
   }
 
-  public getBaseAppUrl(): string {
+  getBaseAppUrl(): string {
     return this.getValue('BASE_APP_URL');
   }
 
-  public getCallbackUrl(): string {
+  getCallbackUrl(): string {
     return `${this.getBaseAppUrl()}/callback`;
   }
 
-  public getHereRouterApiUrl(): string {
+  getHereRouterApiUrl(): string {
     return this.getValue('HERE_ROUTER_API_URL');
   }
 
-  public getHereApiKey(): string {
+  getHereApiKey(): string {
     return this.getValue('HERE_API_KEY');
   }
 
   // TODO rename to the "paymentEnv"
-  public getStripeEnv(): 'dev' | 'prod' {
-    const env = this.getValue('STRIPE_ENV');
-    return env === 'prod' ? 'prod' : 'dev';
+  getStripeEnv(): TStripeEnvironment {
+    const env = this.getValue('STRIPE_ENV') as TStripeEnvironment;
+    return paymentEnvironments.includes(env) ? env : 'dev';
   }
 
-  public getStripeKey(): string {
+  getStripeKey(): string {
     return this.getValue('STRIPE_KEY');
   }
 
-  public getStripeWebhookSecret(): string {
+  getStripeWebhookSecret(): string {
     return this.getValue('STRIPE_WEBHOOK_SECRET');
   }
 
-  public getStripeTaxId(): string {
+  getStripeTaxId(): string {
     return this.getValue('STRIPE_TAX_ID');
   }
 
@@ -130,19 +131,19 @@ class ConfigService {
     return this.getValue('PAYPAL_WEBHOOK_ID');
   }
 
-  public getJwtRolesClaim(): string {
+  getJwtRolesClaim(): string {
     return this.getValue('JWT_ROLES_CLAIM');
   }
 
-  public getOverpassUrl(): string {
+  getOverpassUrl(): string {
     return this.getValue('OVERPASS_URL');
   }
 
-  public useOverpassDb() {
+  useOverpassDb(): boolean {
     return JSON.parse(this.getValue('USE_OVERPASS_DB'));
   }
 
-  public getHereTransitRouterApiUrl() {
+  getHereTransitRouterApiUrl() {
     return this.getValue('HERE_TRANSIT_ROUTER_API_URL');
   }
 
@@ -173,6 +174,40 @@ class ConfigService {
       rollbarConfig,
       paypalClientId,
     };
+  }
+
+  getEnv(): TEnvironment {
+    const env = this.getValue('ENV', false) as TEnvironment;
+    return environments.includes(env) ? env : this.getStripeEnv();
+  }
+
+  getBaseApiUrl(): string {
+    const baseApiUrl = this.getValue('BASE_API_URL', false);
+
+    if (baseApiUrl) {
+      return baseApiUrl;
+    }
+
+    const env = this.getEnv();
+
+    switch (env) {
+      case 'prod': {
+        return 'https://app.areabutler.de';
+      }
+
+      case 'local': {
+        const port = this.getPort();
+        return `http://localhost${port ? `:${port}` : ''}`;
+      }
+
+      case 'dev':
+      default:
+        return 'https://areabutler.dev.areabutler.de';
+    }
+  }
+
+  getOnOfficeProviderSecret(): string {
+    return this.getValue('ON_OFFICE_PROVIDER_SECRET');
   }
 }
 

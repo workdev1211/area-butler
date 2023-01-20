@@ -59,6 +59,7 @@ services:
       - PAYPAL_CLIENT_ID
       - PAYPAL_CLIENT_SECRET
       - PAYPAL_WEBHOOK_ID
+      - ON_OFFICE_PROVIDER_SECRET
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
