@@ -40,6 +40,7 @@ interface IExposeProps {
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
+  style: string;
 }
 
 const chunkSize = 24;
@@ -93,9 +94,11 @@ export const Expose = forwardRef(
 
     return (
       <div
+        id="expose-pdf"
         className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
         ref={ref}
       >
+        <style>{props.style}</style>
         {/*TODO create the isTrial parameter in the subscription object (on the backend side I guess)*/}
         {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
           <img

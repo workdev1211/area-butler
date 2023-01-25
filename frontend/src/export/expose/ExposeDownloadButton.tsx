@@ -68,6 +68,20 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
     }_AreaButler`;
   }
 
+  let fontFamily = "archia";
+  let exposeStyle: string;
+
+  if (user?.exportFonts?.length) {
+    const exportFont = user.exportFonts[0];
+    fontFamily = exportFont.fontFamily;
+
+    exposeStyle = `#expose-pdf { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(
+      " ,"
+    )}`;
+  } else {
+    exposeStyle = `#expose-pdf { font-family: ${fontFamily}; }`;
+  }
+
   return (
     <div>
       <ReactToPrint
@@ -106,6 +120,7 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
         color={color}
         legend={legend}
         qrCode={qrCode}
+        style={exposeStyle}
       />
     </div>
   );

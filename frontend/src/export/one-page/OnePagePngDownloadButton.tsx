@@ -113,6 +113,20 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     }_AreaButler`;
   }
 
+  let fontFamily = "archia";
+  let onePagePngStyle: string;
+
+  if (user?.exportFonts?.length) {
+    const exportFont = user.exportFonts[0];
+    fontFamily = exportFont.fontFamily;
+
+    onePagePngStyle = `#one-page-png { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(
+      " ,"
+    )}`;
+  } else {
+    onePagePngStyle = `#one-page-png { font-family: ${fontFamily}; }`;
+  }
+
   return (
     <div>
       <button
@@ -131,6 +145,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
               mapClippings={selectedMapClippings}
               qrCodeImage={qrCodeImage}
               isTransparentBackground={isTransparentBackground}
+              style={onePagePngStyle}
             />
           );
 

@@ -69,6 +69,21 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
     }_AreaButler`;
   }
 
+  // TODO move to a shared function component inside the export dir
+  let fontFamily = "archia";
+  let cheatSheetStyle: string;
+
+  if (user?.exportFonts?.length) {
+    const exportFont = user.exportFonts[0];
+    fontFamily = exportFont.fontFamily;
+
+    cheatSheetStyle = `#cheatsheet-pdf { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(
+      " ,"
+    )}`;
+  } else {
+    cheatSheetStyle = `#cheatsheet-pdf { font-family: ${fontFamily}; }`;
+  }
+
   return (
     <div>
       <ReactToPrint
@@ -108,6 +123,7 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
         color={color}
         legend={legend}
         qrCode={qrCode}
+        style={cheatSheetStyle}
       />
     </div>
   );

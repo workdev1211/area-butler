@@ -27,6 +27,11 @@ export interface MapBoxStyle {
   label: string;
 }
 
+export interface IApiUserExportFont {
+  fontFamily: string;
+  fontFaces: string[];
+}
+
 export interface ApiUser {
   fullname: string;
   email: string;
@@ -42,6 +47,7 @@ export interface ApiUser {
   isChild: boolean;
   parentSettings?: IApiUserParentSettings;
   poiIcons?: IApiUserPoiIcon[];
+  exportFonts?: IApiUserExportFont[];
 }
 
 export interface IApiUserParentSettings {
@@ -367,6 +373,10 @@ export enum CsvFileFormatEnum {
 export interface IApiUserPoiIcon {
   name: OsmName;
   file: string;
+}
+
+export interface IApiUserAssets {
+  poiIcons: IApiUserPoiIcon[];
 }
 
 export enum ApiDataProvisionEnum {

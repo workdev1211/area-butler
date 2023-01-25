@@ -280,53 +280,56 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             <div className="collapse-content">
               <div className="flex flex-col gap-5 pt-5">
                 <div className="flex gap-3">
-                  <label className="cursor-pointer label justify-start gap-3 p-0">
-                    {/*<input*/}
-                    {/*  type="checkbox"*/}
-                    {/*  checked={isPng}*/}
-                    {/*  className="checkbox checkbox-primary"*/}
-                    {/*  onChange={() => {*/}
-                    {/*    setIsPng(!isPng);*/}
-                    {/*  }}*/}
-                    {/*/>*/}
-                    <input
-                      type="radio"
-                      name="export-format"
-                      className="radio radio-primary"
-                      checked={!isPng}
-                      onChange={() => {}}
+                  <div className="flex cursor-pointer gap-2 p-0">
+                    <div
+                      className="flex items-center gap-2"
                       onClick={() => {
                         setIsPng(false);
                       }}
-                    />
-                    <span className="label-text">PDF</span>
-                    <input
-                      type="radio"
-                      name="export-format"
-                      className="radio radio-primary"
-                      checked={isPng}
-                      onChange={() => {}}
+                    >
+                      <input
+                        type="radio"
+                        name="export-format"
+                        className="radio radio-primary"
+                        checked={!isPng}
+                        onChange={() => {}}
+                      />
+                      <span className="label-text">PDF</span>
+                    </div>
+                    <div
+                      className="flex items-center gap-2"
                       onClick={() => {
                         setIsPng(true);
                       }}
-                    />
-                    <span className="label-text">PNG</span>
-                  </label>
+                    >
+                      <input
+                        type="radio"
+                        name="export-format"
+                        className="radio radio-primary"
+                        checked={isPng}
+                        onChange={() => {}}
+                      />
+                      <span className="label-text">PNG</span>
+                    </div>
+                  </div>
 
                   {isPng && (
-                    <label className="cursor-pointer label justify-start gap-3 p-0">
+                    <div
+                      className="flex cursor-pointer items-center gap-2 p-0"
+                      onClick={() => {
+                        setIsTransparentBackground(!isTransparentBackground);
+                      }}
+                    >
                       <input
                         type="checkbox"
                         checked={isTransparentBackground}
                         className="checkbox checkbox-primary"
-                        onChange={() => {
-                          setIsTransparentBackground(!isTransparentBackground);
-                        }}
+                        readOnly
                       />
                       <span className="label-text">
                         Transparenter Hintergrund
                       </span>
-                    </label>
+                    </div>
                   )}
                 </div>
 

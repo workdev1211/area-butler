@@ -6,6 +6,7 @@ import * as dayjs from 'dayjs';
 import { readdir, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
 import { ManipulateType } from 'dayjs';
+import { Dirent } from 'node:fs';
 
 import {
   cumulativeRequestSubscriptionTypes,
@@ -26,6 +27,7 @@ import {
 import {
   ApiTour,
   IApiAddressesInRangeRequestStatus,
+  IApiUserAssets,
   IApiUserPoiIcon,
 } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
@@ -37,21 +39,21 @@ import { getImageTypeFromFileType } from '../shared/shared.functions';
 @Injectable()
 export class UserService {
   constructor(
-    @InjectModel(User.name) private userModel: Model<UserDocument>,
-    private subscriptionService: SubscriptionService,
-    private eventEmitter: EventEmitter2,
-    private mapboxService: MapboxService,
-    private userSubscriptionPipe: UserSubscriptionPipe,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly eventEmitter: EventEmitter2,
+    private readonly mapboxService: MapboxService,
+    private readonly userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
   async upsertUser(email: string, fullname: string): Promise<UserDocument> {
     const existingUser = await this.userModel.findOne({ email });
 
     if (existingUser) {
-      const userPoiIcons = await this.fetchUserPoiIcons(existingUser.email);
+      const { poiIcons } = await this.fetchUserAssets(existingUser.email);
 
-      if (userPoiIcons.length > 0) {
-        existingUser.poiIcons = userPoiIcons;
+      if (poiIcons?.length > 0) {
+        existingUser.poiIcons = poiIcons;
       }
 
       return existingUser;
@@ -167,10 +169,10 @@ export class UserService {
   async fetchByIdWithAssets(id: string): Promise<UserDocument> {
     const user = await this.userModel.findById({ _id: id });
 
-    const userPoiIcons = await this.fetchUserPoiIcons(user.email);
+    const { poiIcons } = await this.fetchUserAssets(user.email);
 
-    if (userPoiIcons.length > 0) {
-      user.poiIcons = userPoiIcons;
+    if (poiIcons?.length > 0) {
+      user.poiIcons = poiIcons;
     }
 
     return user;
@@ -429,37 +431,45 @@ export class UserService {
     );
   }
 
-  private async fetchUserPoiIcons(
-    userEmail: string,
-  ): Promise<IApiUserPoiIcon[]> {
-    const dirPath = joinPath(
-      process.cwd(),
-      `../shared/assets/${userEmail}/icons/pois`,
-    );
+  // TODO change to the path check and providing the urls for assets instead of retrieving them
+  private async fetchUserAssets(userEmail: string): Promise<IApiUserAssets> {
+    const dirPath = joinPath(process.cwd(), `../shared/assets/${userEmail}`);
+    const iconPath = joinPath(dirPath, '/icons/pois');
+    const poiIcons = await this.fetchUserAsset(iconPath, this.fetchUserPoiIcon);
 
-    let dirContent;
+    return { poiIcons };
+  }
 
-    try {
-      dirContent = await readdir(dirPath, {
-        withFileTypes: true,
-      });
-    } catch {
-      dirContent = [];
+  private async fetchUserAsset<T>(
+    dirPath: string,
+    handleFetch: (filename: string, dirPath: string) => Promise<T>,
+  ): Promise<Array<T>> {
+    const dirContent: Dirent[] = await readdir(dirPath, {
+      withFileTypes: true,
+    }).catch(() => undefined);
+
+    if (!dirContent?.length) {
+      return;
     }
 
     return Promise.all(
-      dirContent.map(async ({ name: filename }) => {
-        const name = filename.split('.');
-        const type = name.pop();
-        const file = await readFile(joinPath(dirPath, filename), {
-          encoding: 'base64',
-        });
-
-        return {
-          name: name.join('.'),
-          file: `data:${getImageTypeFromFileType(type)};base64,${file}`,
-        } as IApiUserPoiIcon;
-      }),
+      dirContent.map(({ name: filename }) => handleFetch(filename, dirPath)),
     );
+  }
+
+  private async fetchUserPoiIcon(
+    filename: string,
+    dirPath: string,
+  ): Promise<IApiUserPoiIcon> {
+    const name = filename.split('.');
+    const type = name.pop();
+    const file = await readFile(joinPath(dirPath, filename), {
+      encoding: 'base64',
+    });
+
+    return {
+      name: name.join('.'),
+      file: `data:${getImageTypeFromFileType(type)};base64,${file}`,
+    } as IApiUserPoiIcon;
   }
 }

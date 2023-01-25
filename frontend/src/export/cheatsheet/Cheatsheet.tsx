@@ -48,6 +48,7 @@ interface ICheatsheetProps {
   color?: string;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
+  style: string;
 }
 
 const chunkSize = 25;
@@ -99,9 +100,11 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
   return (
     <div
+      id="cheatsheet-pdf"
       className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
       ref={ref as any}
     >
+      <style>{props.style}</style>
       {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
         <img
           className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"

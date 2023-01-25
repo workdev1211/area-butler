@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
   ApiShowTour,
+  IApiUserExportFont,
   IApiUserPoiIcon,
   IApiUserUsageStatistics,
 } from '@area-butler-types/types';
@@ -57,6 +58,9 @@ export class User {
 
   @Prop()
   color: string;
+
+  @Prop({ type: Array })
+  exportFonts: IApiUserExportFont[];
 
   @Prop()
   mapboxAccessToken: string;

@@ -11,7 +11,11 @@ import {
 } from 'class-validator';
 import { Type, Transform, Expose, Exclude } from 'class-transformer';
 
-import { ApiUser, IApiUserPoiIcon } from '@area-butler-types/types';
+import {
+  ApiUser,
+  IApiUserExportFont,
+  IApiUserPoiIcon,
+} from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
 import ApiUserSubscriptionDto from './api-user-subscription.dto';
@@ -20,6 +24,7 @@ import { mapSubscriptionToApiSubscription } from '../user/mapper/subscription.ma
 import { retrieveTotalRequestContingent } from '../user/schema/user.schema';
 import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
 import ApiUserPoiIconDto from './api-user-poi-icon.dto';
+import ApiUserExportFontDto from './api-user-export-font.dto';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
@@ -77,7 +82,8 @@ class ApiUserDto implements ApiUser {
   @IsNotEmpty()
   @IsNumber()
   @Transform(
-    ({ obj }) => obj.parentUser?.requestsExecuted || obj.requestsExecuted,
+    ({ obj: { parentUser, requestsExecuted } }) =>
+      parentUser?.requestsExecuted || requestsExecuted,
     { toClassOnly: true },
   )
   requestsExecuted: number;
@@ -95,10 +101,8 @@ class ApiUserDto implements ApiUser {
   @ValidateNested()
   @Type(() => ApiUserSubscriptionDto)
   @Transform(
-    ({ obj }) =>
-      obj.subscription
-        ? mapSubscriptionToApiSubscription(obj.subscription)
-        : null,
+    ({ obj: { subscription } }) =>
+      subscription ? mapSubscriptionToApiSubscription(subscription) : null,
     { toClassOnly: true },
   )
   subscription?: ApiUserSubscriptionDto;
@@ -122,6 +126,7 @@ class ApiUserDto implements ApiUser {
             color: parentUser.color,
             logo: parentUser.logo,
             mapIcon: parentUser.mapIcon,
+            exportFonts: parentUser.exportFonts,
           }
         : undefined,
     { toClassOnly: true },
@@ -134,6 +139,13 @@ class ApiUserDto implements ApiUser {
   @ValidateNested({ each: true })
   @Type(() => ApiUserPoiIconDto)
   poiIcons?: IApiUserPoiIcon[];
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  @Type(() => ApiUserExportFontDto)
+  exportFonts?: IApiUserExportFont[];
 }
 
 export default ApiUserDto;
