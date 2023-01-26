@@ -9,7 +9,11 @@ import { locationIndexNames } from "../../../shared/constants/location-index";
 
 export type TLocationIndexData = Record<
   LocationIndicesEnum,
-  { name: string; value: number; color: "#32cd32" | "#ffa500" | "#ff4040" }
+  {
+    name: string;
+    value: number;
+    colorStyle: { backgroundColor: "#007960"; opacity: number };
+  }
 >;
 
 export const useLocationIndexData = () => {
@@ -28,7 +32,7 @@ export const useLocationIndexData = () => {
     }
 
     return Object.keys(data[0].properties).reduce<TLocationIndexData>(
-      (result, propertyName, i) => {
+      (result, propertyName) => {
         const locationIndexName =
           LocationIndicesEnum[
             propertyName as ApiLocationIndexFeaturePropertiesEnum
@@ -43,12 +47,15 @@ export const useLocationIndexData = () => {
         result[locationIndexName] = {
           name: locationIndexNames[locationIndexName],
           value: locationIndexValue,
-          color:
-            locationIndexValue < 20
-              ? "#ff4040"
-              : locationIndexValue < 60
-              ? "#ffa500"
-              : "#32cd32",
+          colorStyle: {
+            backgroundColor: "#007960",
+            opacity:
+              locationIndexValue < 20
+                ? 0.5
+                : locationIndexValue < 60
+                ? 0.75
+                : 1,
+          },
         };
 
         return result;
