@@ -2,9 +2,9 @@ import { FunctionComponent, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import Input from "components/Input";
+import Input from "components/inputs/formik/Input";
 import LocationAutocomplete from "components/LocationAutocomplete";
-import Select from "components/Select";
+import Select from "components/inputs/formik/Select";
 import { ApiCoordinates, OsmName } from "../../../../shared/types/types";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 

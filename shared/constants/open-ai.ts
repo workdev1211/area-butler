@@ -1,9 +1,4 @@
-import {
-  OpenAiCustomTextEnum,
-  // TODO remove in future
-  // OpenAiTextLengthEnum,
-  OpenAiTonalityEnum,
-} from "../types/open-ai";
+import { OpenAiCustomTextEnum, OpenAiTonalityEnum } from "../types/open-ai";
 import { OsmName } from "../types/types";
 
 export const openAiTranslationDictionary: Record<
@@ -54,25 +49,6 @@ export const openAiTonalities: Record<OpenAiTonalityEnum, string> = {
   [OpenAiTonalityEnum.FORMAL_SERIOUS]: "formale und seriöse",
   [OpenAiTonalityEnum.EASYGOING_YOUTHFUL]: "lockere und jugendliche",
 };
-
-// TODO remove in future
-// export const openAiTextLength: Record<
-//   OpenAiTextLengthEnum,
-//   { label: string; value: number }
-// > = {
-//   [OpenAiTextLengthEnum.SHORT]: {
-//     label: "Kurz",
-//     value: 50,
-//   },
-//   [OpenAiTextLengthEnum.MEDIUM]: {
-//     label: "Mittel",
-//     value: 150,
-//   },
-//   [OpenAiTextLengthEnum.LONG]: {
-//     label: "Lang",
-//     value: 200,
-//   },
-// };
 
 export const openAiCustomText: { type: OpenAiCustomTextEnum; label: string }[] =
   [

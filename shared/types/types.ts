@@ -431,3 +431,5 @@ export interface IApiAddressesInRangeRequestStatus {
   queryParams: string;
   message?: string;
 }
+
+export type TPlaceholderSelectOptionKey = "PLACEHOLDER";

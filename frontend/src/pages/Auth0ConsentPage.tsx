@@ -6,7 +6,7 @@ import * as Yup from "yup";
 
 import { toastError } from "shared/shared.functions";
 import { localStorageConsentGivenKey } from "../../../shared/constants/constants";
-import Checkbox from "../components/Checkbox";
+import Checkbox from "../components/inputs/formik/Checkbox";
 import { ConfigContext } from "../context/ConfigContext";
 import DefaultLayout from "../layout/defaultLayout";
 import "./Auth0ConsentPage.scss";

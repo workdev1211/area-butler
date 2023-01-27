@@ -1,17 +1,16 @@
-
-import Select from "components/Select";
-import Textarea from "components/Textarea";
+import { FunctionComponent } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import React from "react";
 
+import Select from "components/inputs/formik/Select";
+import Textarea from "components/inputs/formik/Textarea";
 
-export interface FeedbackFormData {
+interface IFeedbackFormData {
   formId: string;
   onSubmit: (values: any) => any;
 }
 
-export const FeedbackForm: React.FunctionComponent<FeedbackFormData> = ({
+export const FeedbackForm: FunctionComponent<IFeedbackFormData> = ({
   formId,
   onSubmit,
 }) => {

@@ -56,7 +56,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const { userState, userDispatch } = useContext(UserContext);
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
-  const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
+  const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
     useState(false);
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
@@ -137,11 +137,11 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   return (
     <>
       <div className="export-tab z-9000">
-        {hasOpenAiFeature && (
+        {hasOpenAiFeature && isShownOpenAiLocationModal && (
           <OpenAiLocationDescriptionModal
-            isShownModal={isShownAiDescriptionModal}
+            isShownModal={isShownOpenAiLocationModal}
             closeModal={() => {
-              setIsShownAiDescriptionModal(false);
+              setIsShownOpenAiLocationModal(false);
             }}
             searchResultSnapshotId={snapshotId}
           />
@@ -452,7 +452,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   <h3
                     className="flex max-w-fit items-center cursor-pointer gap-2"
                     onClick={() => {
-                      setIsShownAiDescriptionModal(true);
+                      setIsShownOpenAiLocationModal(true);
                     }}
                   >
                     <img
@@ -554,11 +554,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     window.open("/potential-customers/from-result");
                   }}
                 >
-                  <img
-                    className="w-6 h-6"
-                    src={editIcon}
-                    alt="pdf"
-                  />
+                  <img className="w-6 h-6" src={editIcon} alt="pdf" />
                   Zielgruppe speichern
                 </h3>
               </li>
@@ -579,11 +575,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     window.open("/real-estates/from-result");
                   }}
                 >
-                  <img
-                    className="w-6 h-6"
-                    src={editIcon}
-                    alt="pdf"
-                  />
+                  <img className="w-6 h-6" src={editIcon} alt="pdf" />
                   Objekt anlegen
                 </h3>
               </li>

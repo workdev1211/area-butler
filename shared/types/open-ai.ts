@@ -5,13 +5,6 @@ export enum OpenAiTonalityEnum {
   EASYGOING_YOUTHFUL = "EASYGOING_YOUTHFUL",
 }
 
-// TODO remove in future
-// export enum OpenAiTextLengthEnum {
-//   SHORT = "SHORT",
-//   MEDIUM = "MEDIUM",
-//   LONG = "LONG",
-// }
-
 export enum OpenAiCustomTextEnum {
   POPULATION = "POPULATION",
   SEO = "SEO",
@@ -24,11 +17,9 @@ export enum OpenAiCustomTextEnum {
   NONE = "NONE",
 }
 
-export interface IApiAiDescriptionQuery {
+export interface IApiOpenAiLocationDescriptionQuery {
   searchResultSnapshotId: string;
   meanOfTransportation: MeansOfTransportation;
   tonality: OpenAiTonalityEnum;
-  // TODO remove in future
-  // textLength: OpenAiTextLengthEnum;
   customText?: string;
 }

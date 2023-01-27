@@ -2,22 +2,18 @@ import React, { FunctionComponent, useContext } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import Select from "../components/Select";
+import Select from "../components/inputs/formik/Select";
 import { SearchContext } from "../context/SearchContext";
 import {
   openAiCustomText,
-  // TODO remove in future
-  // openAiTextLength,
   openAiTonalities,
 } from "../../../shared/constants/open-ai";
 import { meansOfTransportations } from "../../../shared/constants/constants";
 import {
   OpenAiCustomTextEnum,
-  // TODO remove in future
-  // OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from "../../../shared/types/open-ai";
-import CustomTextareaSelect from "../components/CustomTextareaSelect";
+import CustomTextareaSelect from "../components/inputs/formik/CustomTextareaSelect";
 
 export interface IOpenAiLocationFormProps {
   formId: string;
@@ -31,8 +27,6 @@ const OpenAiLocationForm: FunctionComponent<IOpenAiLocationFormProps> = ({
   const validationSchema = Yup.object({
     meanOfTransportation: Yup.string(),
     tonality: Yup.string(),
-    // TODO remove in future
-    // textLength: Yup.string(),
     customText: Yup.string(),
   });
 
@@ -53,8 +47,6 @@ const OpenAiLocationForm: FunctionComponent<IOpenAiLocationFormProps> = ({
       initialValues={{
         meanOfTransportation: meansOfTransportation[0].value,
         tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
-        // TODO remove in future
-        // textLength: OpenAiTextLengthEnum.MEDIUM,
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
@@ -91,21 +83,6 @@ const OpenAiLocationForm: FunctionComponent<IOpenAiLocationFormProps> = ({
             ))}
           </Select>
         </div>
-        {/*TODO remove in future*/}
-        {/*<div className="form-control">*/}
-        {/*  <Select*/}
-        {/*    className="input input-bordered w-full"*/}
-        {/*    label="Textlänge"*/}
-        {/*    placeholder="Textlänge"*/}
-        {/*    name="textLength"*/}
-        {/*  >*/}
-        {/*    {Object.values(OpenAiTextLengthEnum).map((key) => (*/}
-        {/*      <option value={key} key={key}>*/}
-        {/*        {openAiTextLength[key].label}*/}
-        {/*      </option>*/}
-        {/*    ))}*/}
-        {/*  </Select>*/}
-        {/*</div>*/}
         <div className="form-control mt-3">
           <div className="indicator">
             <div

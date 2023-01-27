@@ -19,9 +19,9 @@ import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
 } from "../../../shared/types/real-estate";
-import Input from "../components/Input";
-import Select from "../components/Select";
-import Checkbox from "../components/Checkbox";
+import Input from "../components/inputs/formik/Input";
+import Select from "../components/inputs/formik/Select";
+import Checkbox from "../components/inputs/formik/Checkbox";
 
 import LocationAutocomplete from "../components/LocationAutocomplete";
 

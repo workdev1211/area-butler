@@ -20,7 +20,7 @@ import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
 import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 import OpenAiLocationForm from "../../map-snippets/OpenAiLocationForm";
-import { IApiAiDescriptionQuery } from "../../../../shared/types/open-ai";
+import { IApiOpenAiLocationDescriptionQuery } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 
@@ -95,7 +95,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     snapshotToken,
     isShownQrCode: true,
   });
-  const [addressDescription, setAddressDescription] = useState<string>("");
+  const [locationDescription, setLocationDescription] = useState<string>("");
   const [isOpen, setIsOpen] = useState<IExportFlowState>({
     ...initialExportFlowState,
   });
@@ -121,16 +121,14 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const buttonTitle = "Lage Exposé generieren";
   const color = primaryColor || "var(--primary-gradient)";
 
-  const fetchOpenAiAddressDescription = async ({
+  const fetchOpenAiLocationDescription = async ({
     meanOfTransportation,
     tonality,
-    // TODO remove in future
-    // textLength,
     customText,
-  }: Omit<IApiAiDescriptionQuery, "searchResultSnapshotId">) => {
+  }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
     setIsOpenAiBusy(true);
-    const openAiAddressDescription = (
-      await post<string, IApiAiDescriptionQuery>(
+    const openAiLocationDescription = (
+      await post<string, IApiOpenAiLocationDescriptionQuery>(
         "/api/location/ai-description",
         {
           searchResultSnapshotId: snapshotId,
@@ -144,7 +142,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     ).data;
 
     setIsOpenAiBusy(false);
-    setAddressDescription(openAiAddressDescription);
+    setLocationDescription(openAiLocationDescription);
   };
 
   return (
@@ -188,22 +186,22 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 });
               }}
             >
-              1. Lagebeschreibung ({addressDescription.length}/{CHARACTER_LIMIT}
-              )
+              1. Lagebeschreibung ({locationDescription.length}/
+              {CHARACTER_LIMIT})
             </div>
             <div className="collapse-content textarea-content">
               {hasOpenAiFeature && (
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiLocationForm
-                      formId={"open-ai-address-description-form"}
-                      onSubmit={fetchOpenAiAddressDescription}
+                      formId={"open-ai-location-description-form"}
+                      onSubmit={fetchOpenAiLocationDescription}
                     />
                     <button
                       className={`btn bg-primary-gradient max-w-fit self-end ${
                         isOpenAiBusy ? "loading" : ""
                       }`}
-                      form={"open-ai-address-description-form"}
+                      form={"open-ai-location-description-form"}
                       key="submit"
                       type="submit"
                       onClick={(e) => {
@@ -221,13 +219,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
               <textarea
                 className="textarea textarea-bordered w-full"
-                value={addressDescription}
+                value={locationDescription}
                 onChange={({ target: { value } }) => {
                   if (
                     value.length < CHARACTER_LIMIT + 1 ||
-                    value.length < addressDescription.length
+                    value.length < locationDescription.length
                   ) {
-                    setAddressDescription(value);
+                    setLocationDescription(value);
                   }
                 }}
                 rows={5}
@@ -374,14 +372,14 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
           {!isPng && (
             <OnePageDownload
-              addressDescription={addressDescription}
+              addressDescription={locationDescription}
               groupedEntries={filteredEntities!}
               listingAddress={searchContextState.placesLocation.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
-                ) || addressDescription.length > CHARACTER_LIMIT
+                ) || locationDescription.length > CHARACTER_LIMIT
               }
               onAfterPrint={onClose}
               user={user}
@@ -394,14 +392,14 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
           {isPng && (
             <OnePagePngDownload
-              addressDescription={addressDescription}
+              addressDescription={locationDescription}
               groupedEntries={filteredEntities!}
               listingAddress={searchContextState.placesLocation.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
-                ) || addressDescription.length > CHARACTER_LIMIT
+                ) || locationDescription.length > CHARACTER_LIMIT
               }
               user={user}
               color={searchContextState.responseConfig?.primaryColor}

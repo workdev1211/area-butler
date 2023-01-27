@@ -1,15 +1,17 @@
-import {Form, Formik} from "formik";
-import {ApiUpsertUser, ApiUser} from "../../../shared/types/types";
+import { FunctionComponent } from "react";
+import { Form, Formik } from "formik";
 import * as Yup from "yup";
-import Input from "components/Input";
 
-export interface ProfileFormProps {
+import Input from "components/inputs/formik/Input";
+import { ApiUpsertUser, ApiUser } from "../../../shared/types/types";
+
+interface IProfileFormProps {
   formId: string;
   inputUser: Partial<ApiUser>;
   onSubmit: (newValues: Partial<ApiUpsertUser>) => void;
 }
 
-export const ProfileForm: React.FunctionComponent<ProfileFormProps> = ({
+export const ProfileForm: FunctionComponent<IProfileFormProps> = ({
   formId,
   inputUser,
   onSubmit,

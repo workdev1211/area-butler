@@ -3,7 +3,7 @@ import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import Input from "../components/Input";
+import Input from "../components/inputs/formik/Input";
 import TransportationParams from "../components/TransportationParams";
 import LocalityParams from "../components/LocalityParams";
 import ImportantAddresses from "../components/ImportantAddresses";

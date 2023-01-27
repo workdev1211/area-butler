@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-import Input from "./Input";
+import Input from "./inputs/formik/Input";
 import typeIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";

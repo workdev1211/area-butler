@@ -19,8 +19,6 @@ interface ILocationDescriptionQueryData {
   snapshot: ApiSearchResultSnapshot;
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
-  // TODO remove in future
-  // textLength: number;
   customText?: string;
 }
 
@@ -36,8 +34,6 @@ export class OpenAiService {
     snapshot,
     meanOfTransportation,
     tonality,
-    // TODO remove in future
-    // textLength,
     customText,
   }: ILocationDescriptionQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
@@ -61,8 +57,6 @@ export class OpenAiService {
 
     const initialOpenAiText =
       `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für eine Immobilien-Anzeige an der Adresse ${snapshot.placesLocation.label}.\n` +
-      // TODO remove in future
-      // `Der Text sollte etwa ${textLength} Wörter lang sein.\n` +
       'Füge Umgebungsinformationen hinzu:\n';
 
     const poiCountEntries = Object.entries(poiCount);

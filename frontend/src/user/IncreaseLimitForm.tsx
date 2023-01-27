@@ -2,7 +2,7 @@ import { FunctionComponent, useState, BaseSyntheticEvent } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
-import Select from "../components/Select";
+import Select from "../components/inputs/formik/Select";
 import {
   ILimitIncreaseParams,
   ILimitIncreasePriceId,

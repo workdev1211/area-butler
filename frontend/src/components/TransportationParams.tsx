@@ -10,7 +10,7 @@ import "./TransportationParams.scss";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
-import Input from "./Input";
+import Input from "./inputs/formik/Input";
 import distanceIcon from "../assets/icons/icons-16-x-16-outline-ic-distance.svg";
 
 export const transportationParamIcons = [

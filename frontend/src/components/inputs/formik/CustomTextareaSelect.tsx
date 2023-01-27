@@ -1,20 +1,28 @@
-import { useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { useField } from "formik";
 
-const CustomTextareaSelect = ({
+interface ICustomTextAreaSelectProps {
+  label: string;
+  name: string;
+  customTextValue: string;
+  emptyTextValue: string;
+  textLengthLimit?: number;
+  placeholder?: string;
+}
+
+const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
   label,
+  name,
   customTextValue,
   emptyTextValue,
-  ...props
-}: any) => {
-  const [, meta, helpers] = useField(props.name);
+  textLengthLimit,
+  placeholder,
+  children,
+}) => {
+  const [, meta, helpers] = useField(name);
   const [isCustomText, setIsCustomText] = useState(false);
   const { value } = meta;
   const { setValue } = helpers;
-
-  const allPropsWoChildren = { ...props };
-  delete allPropsWoChildren.children;
-  const children = [...props.children];
 
   return (
     <div
@@ -47,17 +55,23 @@ const CustomTextareaSelect = ({
 
       {isCustomText && (
         <>
-          <label htmlFor={props.name} className="label">
+          <label htmlFor={name} className="label">
             <span className="label-text">{label}</span>
           </label>
 
           <textarea
-            {...allPropsWoChildren}
-            className="textarea h-24 textarea-bordered w-full pb-0"
+            className="textarea h-36 textarea-bordered w-full pb-0"
             onChange={({ target: { value: textValue } }) => {
-              setValue(textValue);
+              if (
+                !textLengthLimit ||
+                textValue.length < textLengthLimit + 1 ||
+                textValue.length < value.length
+              ) {
+                setValue(textValue);
+              }
             }}
             value={value}
+            placeholder={placeholder}
           />
         </>
       )}

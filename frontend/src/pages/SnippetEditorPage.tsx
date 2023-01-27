@@ -49,7 +49,6 @@ import { useParticlePollutionData } from "../hooks/particlepollutiondata";
 import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
-import OpenAiLocationDescriptionModal from "../components/OpenAiLocationDescriptionModal";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 
 export interface SnippetEditorRouterProps {
@@ -71,8 +70,6 @@ const SnippetEditorPage: FunctionComponent = () => {
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-  const [isShownAiDescriptionModal, setIsShownAiDescriptionModal] =
-    useState(false);
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
   const { userState } = useContext(UserContext);
@@ -80,8 +77,6 @@ const SnippetEditorPage: FunctionComponent = () => {
     useContext(SearchContext);
 
   const user = userState.user;
-
-  const hasOpenAiFeature = user?.subscription?.config.appFeatures.openAi;
   const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
 
   useEffect(() => {
@@ -430,15 +425,6 @@ const SnippetEditorPage: FunctionComponent = () => {
     <>
       <DefaultLayout withHorizontalPadding={false}>
         <TourStarter tour="editor" />
-        {hasOpenAiFeature && (
-          <OpenAiLocationDescriptionModal
-            isShownModal={isShownAiDescriptionModal}
-            closeModal={() => {
-              setIsShownAiDescriptionModal(false);
-            }}
-            searchResultSnapshotId={snapshotId}
-          />
-        )}
         <div className="hidden">
           <GooglePlacesAutocomplete
             apiOptions={googleMapsApiOptions}
