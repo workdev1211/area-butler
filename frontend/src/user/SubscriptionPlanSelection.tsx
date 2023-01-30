@@ -6,7 +6,6 @@ import {
   businessPlusV2Subscription,
   payPerUse10Subscription,
   payPerUse1Subscription,
-  payPerUse5Subscription,
 } from "../../../shared/constants/subscription-plan";
 import {
   ApiSubscriptionPlanType,
@@ -15,19 +14,41 @@ import {
 import { ConfigContext } from "../context/ConfigContext";
 import PaymentMethodModal from "./PaymentMethodModal";
 import { ApiCreateCheckout } from "../../../shared/types/billing";
-
-interface ISubscriptionPlan {
-  stripePriceId: string;
-  name: string;
-  price: string;
-  vatStatus?: string;
-  description: string[];
-  footnote?: string;
-  purchaseButtonLabel?: string;
-}
+import {
+  BusinessPlusMonthlyDescription,
+  BusinessPlusYearlyDescription,
+  PayPerUse1Description,
+  PayPerUse10Description,
+} from "./SubscriptionDescriptions";
 
 type TSubscriptionPlanGroups = {
   [key in ApiSubscriptionPlanTypeGroupEnum]: ISubscriptionPlan[];
+};
+
+interface ISubscriptionPlan {
+  stripePriceId: string;
+  description: JSX.Element;
+  purchaseButtonLabel?: string;
+}
+
+export const getPlanPriceDescription = (priceId: string): JSX.Element => {
+  if (
+    Object.values(businessPlusV2Subscription.prices[0].id).includes(priceId)
+  ) {
+    return <BusinessPlusMonthlyDescription />;
+  }
+
+  if (
+    Object.values(businessPlusV2Subscription.prices[1].id).includes(priceId)
+  ) {
+    return <BusinessPlusYearlyDescription />;
+  }
+
+  if (Object.values(payPerUse1Subscription.prices[0].id).includes(priceId)) {
+    return <PayPerUse1Description />;
+  }
+
+  return <PayPerUse10Description />;
 };
 
 const SubscriptionPlanSelection: FunctionComponent = () => {
@@ -79,48 +100,23 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
 
     const resultingSubscriptionPlans = [
       payPerUse1Subscription,
-      payPerUse5Subscription,
       payPerUse10Subscription,
       businessPlusV2Subscription,
     ].reduce<TSubscriptionPlanGroups>(
-      (
-        result,
-        {
-          name: planName,
-          prices,
-          description: planDescription = [],
-          type,
-          footnote: planFootnote,
-          purchaseButtonLabel: planButtonLabel,
-        }
-      ) => {
-        prices.forEach(
-          ({
-            id,
-            name: priceName,
-            price,
-            vatStatus,
-            description: priceDescription = [],
-            footnote: priceFootnote,
-            purchaseButtonLabel: priceButtonLabel,
-          }) => {
-            if (!id[stripeEnv]) {
-              return;
-            }
+      (result, { prices, type, purchaseButtonLabel: planButtonLabel }) => {
+        prices.forEach(({ id, purchaseButtonLabel: priceButtonLabel }) => {
+          const priceId = id[stripeEnv];
 
-            const description = [...priceDescription, ...planDescription];
-
-            result[getSubscriptionGroup(type)].push({
-              stripePriceId: id[stripeEnv]!,
-              name: priceName || planName,
-              price,
-              vatStatus,
-              description,
-              footnote: priceFootnote || planFootnote,
-              purchaseButtonLabel: priceButtonLabel || planButtonLabel,
-            });
+          if (!priceId) {
+            return;
           }
-        );
+
+          result[getSubscriptionGroup(type)].push({
+            stripePriceId: priceId,
+            description: getPlanPriceDescription(priceId),
+            purchaseButtonLabel: priceButtonLabel || planButtonLabel,
+          });
+        });
 
         return result;
       },
@@ -135,6 +131,10 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
+    if (!paymentStripePriceId) {
+      return;
+    }
+
     const getStripeCheckoutUrl = async () => {
       const innerStripeCheckoutUrl = (
         await post<string, ApiCreateCheckout>(
@@ -148,56 +148,31 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       setStripeCheckoutUrl(innerStripeCheckoutUrl);
     };
 
-    if (paymentStripePriceId) {
-      void getStripeCheckoutUrl();
-    }
+    void getStripeCheckoutUrl();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paymentStripePriceId]);
 
   const SubscriptionPlanCard: FunctionComponent<ISubscriptionPlan> = ({
     stripePriceId,
-    name,
-    price,
-    vatStatus,
     description,
-    footnote,
     purchaseButtonLabel,
   }) => {
     return (
       <div className="card shadow-lg w-auto flex flex-col justify-center items-center bg-gray-50">
-        <div className="card-title w-full">
-          <h2 className="p-0 m-0 text-center w-full">{name}</h2>
-        </div>
-        <div className="card-body py-10">
-          <div className="flex justify-center items-baseline">
-            <span className="text-4xl font-semibold w-auto">
-              {price} €<sup>*</sup>
-            </span>
-            {vatStatus && <span className="text-lg ml-2"> / {vatStatus}</span>}
+        <div className="card-body">
+          {description}
+          <div className="card-actions justify-center">
+            <button
+              onClick={() => {
+                setPaymentStripePriceId(stripePriceId);
+                setIsShownPaymentModal(true);
+              }}
+              className="btn bg-primary-gradient w-56 self-center mt-5"
+            >
+              {purchaseButtonLabel || "Abonnieren"}
+            </button>
           </div>
-          <div className="flex flex-col my-10 h-64">
-            <span className="font-semibold">Beinhaltet:</span>
-            <ul className="list-disc ml-5 mt-2">
-              {description.map((p, i) => (
-                <li key={`${i}-${p}`}>{p}</li>
-              ))}
-            </ul>
-          </div>
-          {footnote && (
-            <p
-              className="text-sm text-justify"
-              dangerouslySetInnerHTML={{ __html: footnote }}
-            />
-          )}
-          <button
-            onClick={() => {
-              setPaymentStripePriceId(stripePriceId);
-              setIsShownPaymentModal(true);
-            }}
-            className="btn bg-primary-gradient w-56 self-center mt-5"
-          >
-            {purchaseButtonLabel || "Abonnieren"}
-          </button>
         </div>
       </div>
     );
@@ -213,7 +188,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     cardContainerClassNames +=
       numberOfSubscriptionPlans === 1
         ? " xl:w-1/2 xl:grid-cols-1"
-        : ` gap-40 xl:grid-cols-2`;
+        : ` gap-10 sm:gap-40 xl:grid-cols-2`;
   } else {
     cardContainerClassNames += ` gap-20 xl:grid-cols-3`;
   }
@@ -232,18 +207,16 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
       <div>
         <h1 className="font-bold text-xl">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
-          Abonnement, bitte wählen Sie das Passende für sich aus keinen aktiven
-          Plan:
+          Abonnement, bitte wählen Sie das Passende für sich aus:
         </h1>
-        <div className="p-20 flex flex-col items-center justify-center">
-          <h2>Einzelabfragen oder Abo</h2>
+        <div className="p-5 sm:p-20 flex flex-col items-center justify-center">
           <div className="btn-group mt-5">
             {Object.entries(sortedSubscriptionPlans).map(
               ([subscriptionGroupName, subscriptionPlans]) => {
                 if (subscriptionPlans.length) {
                   return (
                     <button
-                      className={`btn btn-lg ${
+                      className={`btn btn-wide flex-1 ${
                         activeSubscriptionGroup === subscriptionGroupName
                           ? "btn-active"
                           : ""
@@ -255,6 +228,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
                         );
                       }}
                       key={subscriptionGroupName}
+                      style={{ padding: 0 }}
                     >
                       {subscriptionGroupName}
                     </button>
@@ -269,26 +243,11 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
             {sortedSubscriptionPlans[activeSubscriptionGroup].length && (
               <div className={cardContainerClassNames}>
                 {sortedSubscriptionPlans[activeSubscriptionGroup].map(
-                  (
-                    {
-                      stripePriceId,
-                      name,
-                      price,
-                      vatStatus,
-                      description,
-                      footnote,
-                      purchaseButtonLabel,
-                    },
-                    i
-                  ) => (
+                  ({ stripePriceId, description, purchaseButtonLabel }, i) => (
                     <SubscriptionPlanCard
                       key={stripePriceId}
                       stripePriceId={stripePriceId}
-                      name={name}
-                      price={price}
-                      vatStatus={vatStatus}
                       description={description}
-                      footnote={footnote}
                       purchaseButtonLabel={purchaseButtonLabel}
                     />
                   )

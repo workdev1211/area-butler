@@ -162,6 +162,18 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           />
         </div>
         <div className="flex flex-col gap-3 p-6">
+          <div
+            className="text-xl font-bold btn-primary rounded-md flex items-center justify-center shadow-lg cursor-pointer"
+            style={{
+              height: "40px",
+              backgroundColor: "rgb(132 204 22)",
+            }}
+            onClick={() => {
+              window.location.href = stripeCheckoutUrl;
+            }}
+          >
+            Kreditkarte
+          </div>
           <PayPalButtons
             className="flex items-center"
             createOrder={paypalHandlers.createOrder}
@@ -176,17 +188,6 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
               toastError("Ein Fehler ist aufgetreten.");
             }}
           />
-          <div
-            className="text-base font-normal btn-primary rounded-md flex items-center justify-center"
-            style={{
-              height: "40px",
-            }}
-            onClick={() => {
-              window.location.href = stripeCheckoutUrl;
-            }}
-          >
-            Andere Methoden
-          </div>
         </div>
       </div>
     </div>

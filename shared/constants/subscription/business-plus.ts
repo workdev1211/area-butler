@@ -4,7 +4,6 @@ import {
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
-  IApiSubscriptionLimitIncreaseParams,
 } from "../../types/subscription-plan";
 import { subscriptionIntervals } from "../subscription-plan";
 import { CsvFileFormatEnum } from "../../types/types";
@@ -21,7 +20,7 @@ const appFeatures = {
   canCustomizeExport: true,
   fullyCustomizableExpose: true,
   htmlSnippet: true,
-  openAi: false,
+  openAi: true,
   csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
 };
 
@@ -77,21 +76,6 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
   appFeatures,
 };
 
-const businessPlusRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] =
-  [
-    {
-      id: {
-        dev: "price_1LCHqFLcbb2Q3qBpmxFBI6TE",
-        prod: "price_1LG0EVLcbb2Q3qBpKUn7uEFu",
-      },
-      amount: { value: 50 },
-      name: "Abfrage Kontingent",
-      price: "125",
-      description:
-        "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
-    },
-  ];
-
 // Actual Business+ subscription
 export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   name: "Business+",
@@ -99,44 +83,62 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   prices: [
     {
       id: {
-        dev: "price_1LG01pLcbb2Q3qBp75uFSyCx",
-        prod: "price_1LFznwLcbb2Q3qBp3acGp9ni",
+        dev: "price_1MW1bPLcbb2Q3qBpwZJVXw5b",
+        prod: "price_1MWhxHLcbb2Q3qBpO9twWYv1",
       },
       name: "Business+ Monats-Abo",
-      price: "590",
-      vatStatus: "Monat zzgl. MwSt",
-      footnote:
-        "<strong>*</strong> 702,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Vertragsschluss gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Monat über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um einen weiteren Monat, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt. Die initiale Mindestvertragslaufzeit beträgt 3 Monate, danach monatlich kündbar.",
+      price: "390",
       interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.MONTHLY],
       limits: {
         [ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS]: {
-          amount: { value: 100 },
-          increaseParams: businessPlusRequestLimitIncrease,
+          amount: { value: 50 },
+          increaseParams: [
+            {
+              id: {
+                dev: "price_1MW613Lcbb2Q3qBpAegCVnJx",
+                prod: "price_1MWhpULcbb2Q3qBphacweHAe",
+              },
+              amount: { value: 50 },
+              name: "Abfrage Kontingent",
+              price: "390",
+              description:
+                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+            },
+          ],
         },
       },
       description: [
-        "100 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+        "50 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
       ],
     },
     {
       id: {
-        dev: "price_1LG1QDLcbb2Q3qBpuSArUSwU",
-        prod: "price_1LFznwLcbb2Q3qBpgxksSRhO",
+        dev: "price_1MW1cXLcbb2Q3qBpaPXpWmNF",
+        prod: "price_1MWhxHLcbb2Q3qBpjR0VyIcY",
       },
       name: "Business+ Jahres-Abo",
-      price: "6.490",
-      vatStatus: "Jahr zzgl. MwSt",
-      footnote:
-        "<strong>*</strong> 7723,1€ total inkl. MwSt. Wird der Vertrag nicht innerhalb von 2 Tagen nach Kauf gekündigt, geht er in ein reguläres kostenpflichtiges Abonnement mit dem gewählten Abonnement-Zeitraum von einem Jahr über. Nach Ende des aktuellen Abonnement-Zeitraums verlängert sich die Laufzeit des Vertrags automatisch um ein weiteres Jahr, wenn der Nutzer den Vertrag nicht bis zum Ende des aktuellen Abonnement-Zeitraums durch Erklärung in Textform gegenüber KuDiBa kündigt.",
+      price: "3.900",
       interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.ANNUALLY],
       limits: {
         [ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS]: {
-          amount: { value: 250 },
-          increaseParams: businessPlusRequestLimitIncrease,
+          amount: { value: 50 },
+          increaseParams: [
+            {
+              id: {
+                dev: "price_1MW61ULcbb2Q3qBpp9qVvExV",
+                prod: "price_1MWht9Lcbb2Q3qBpbddmWNqG",
+              },
+              amount: { value: 50 },
+              name: "Abfrage Kontingent",
+              price: "325",
+              description:
+                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+            },
+          ],
         },
       },
       description: [
-        "250 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
+        "50 Adressen in Deutschland analysieren, aufbereiten & präsentieren",
       ],
     },
   ],
@@ -149,4 +151,16 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
     "24/7 individueller Service",
   ],
   appFeatures,
+};
+
+export const businessPlusV2SubscriptionLegacy = {
+  ...businessPlusV2Subscription,
+};
+businessPlusV2SubscriptionLegacy.prices[0].id = {
+  dev: "price_1LG01pLcbb2Q3qBp75uFSyCx",
+  prod: "price_1LFznwLcbb2Q3qBp3acGp9ni",
+};
+businessPlusV2SubscriptionLegacy.prices[1].id = {
+  dev: "price_1LG1QDLcbb2Q3qBpuSArUSwU",
+  prod: "price_1LFznwLcbb2Q3qBpgxksSRhO",
 };

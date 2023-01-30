@@ -1,0 +1,15 @@
+ul.star-list li::before {
+  padding-right: 0.375rem;
+  vertical-align: bottom;
+  line-height: normal;
+  content: url("../assets/icons/star.svg");
+  filter: invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg)
+    brightness(95%) contrast(92%);
+}
+
+ul.plus-list li::before {
+  padding-right: 0.375rem;
+  vertical-align: bottom;
+  line-height: normal;
+  content: url("../assets/icons/hospital.svg");
+}

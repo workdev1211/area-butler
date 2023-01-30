@@ -3,18 +3,20 @@ import { CsvFileFormatEnum } from "./types";
 export enum ApiSubscriptionPlanType {
   TRIAL = "TRIAL",
   PAY_PER_USE_1 = "PAY_PER_USE_1",
-  PAY_PER_USE_5 = "PAY_PER_USE_5",
   PAY_PER_USE_10 = "PAY_PER_USE_10",
   BUSINESS_PLUS = "BUSINESS_PLUS",
   BUSINESS_PLUS_V2 = "BUSINESS_PLUS_V2",
+  PAY_PER_USE_1_LEGACY = "PAY_PER_USE_1_LEGACY",
+  PAY_PER_USE_10_LEGACY = "PAY_PER_USE_10_LEGACY",
+  BUSINESS_PLUS_V2_LEGACY = "BUSINESS_PLUS_V2_LEGACY",
   // TODO will be released later
   // ENTERPRISE = "ENTERPRISE",
 }
 
 // used as a text description on the paywall (subscription plan selection page)
 export enum ApiSubscriptionPlanTypeGroupEnum {
-  PAY_PER_USE = "Pay per Use",
-  BUSINESS_PLUS = "Business+",
+  PAY_PER_USE = "Nach Verbrauch",
+  BUSINESS_PLUS = "Im Abo",
 }
 
 export enum ApiSubscriptionIntervalEnum {
@@ -99,8 +101,6 @@ export interface ApiSubscriptionPricing {
   interval: IApiSubscriptionLimitAmount;
   limits?: IApiSubscriptionLimits;
   description?: string[];
-  vatStatus?: string;
-  footnote?: string;
   purchaseButtonLabel?: string;
 }
 
@@ -121,7 +121,6 @@ export interface ApiSubscriptionPlan {
   prices: ApiSubscriptionPricing[];
   limits?: IApiSubscriptionLimits;
   description?: string[];
-  footnote?: string;
   purchaseButtonLabel?: string;
   appFeatures: IApiSubscriptionPlanAppFeatures;
 }

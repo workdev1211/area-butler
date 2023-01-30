@@ -9,7 +9,6 @@ export const allSubscriptionTypes: {
 }[] = [
   { type: ApiSubscriptionPlanType.TRIAL, name: "Testphase" },
   { type: ApiSubscriptionPlanType.PAY_PER_USE_1, name: "Pay per Use x1" },
-  { type: ApiSubscriptionPlanType.PAY_PER_USE_5, name: "Pay per Use x5" },
   { type: ApiSubscriptionPlanType.PAY_PER_USE_10, name: "Pay per Use x10" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS, name: "Business+" },
   { type: ApiSubscriptionPlanType.BUSINESS_PLUS_V2, name: "Business+" },
@@ -27,7 +26,6 @@ export const cumulativeRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
 export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.TRIAL,
   ApiSubscriptionPlanType.PAY_PER_USE_1,
-  ApiSubscriptionPlanType.PAY_PER_USE_5,
   ApiSubscriptionPlanType.PAY_PER_USE_10,
 ];
 
