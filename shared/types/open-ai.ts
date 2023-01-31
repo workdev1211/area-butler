@@ -17,9 +17,21 @@ export enum OpenAiCustomTextEnum {
   NONE = "NONE",
 }
 
-export interface IApiOpenAiLocationDescriptionQuery {
-  searchResultSnapshotId: string;
+export interface IOpenAiLocationFormValues {
   meanOfTransportation: MeansOfTransportation;
   tonality: OpenAiTonalityEnum;
   customText?: string;
+}
+
+export interface IApiOpenAiLocationDescriptionQuery
+  extends IOpenAiLocationFormValues {
+  searchResultSnapshotId: string;
+}
+
+export enum OpenAiQueryTypeEnum {
+  "LOCATION_DESCRIPTION" = "LOCATION_DESCRIPTION",
+  "REAL_ESTATE_DESCRIPTION" = "REAL_ESTATE_DESCRIPTION",
+  "LOCATION_ESTATE_DESCRIPTION" = "LOCATION_ESTATE_DESCRIPTION",
+  "FORMAL_TO_INFORMAL" = "FORMAL_TO_INFORMAL",
+  "GENERAL_QUESTION" = "GENERAL_QUESTION",
 }

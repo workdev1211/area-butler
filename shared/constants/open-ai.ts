@@ -1,4 +1,8 @@
-import { OpenAiCustomTextEnum, OpenAiTonalityEnum } from "../types/open-ai";
+import {
+  OpenAiCustomTextEnum,
+  OpenAiQueryTypeEnum,
+  OpenAiTonalityEnum,
+} from "../types/open-ai";
 import { OsmName } from "../types/types";
 
 export const openAiTranslationDictionary: Record<
@@ -85,3 +89,29 @@ export const openAiCustomText: { type: OpenAiCustomTextEnum; label: string }[] =
     },
     { type: OpenAiCustomTextEnum.CUSTOM, label: "Eigenen Text eingeben." },
   ];
+
+export const openAiQueryType: Array<{
+  type: OpenAiQueryTypeEnum;
+  label: string;
+}> = [
+  {
+    type: OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+    label: "Lagetext",
+  },
+  {
+    type: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+    label: "Beschreibung der Immobilie",
+  },
+  {
+    type: OpenAiQueryTypeEnum.LOCATION_ESTATE_DESCRIPTION,
+    label: "Exposé Text für",
+  },
+  {
+    type: OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+    label: "Transformation Sie-Form in Du-Form",
+  },
+  {
+    type: OpenAiQueryTypeEnum.GENERAL_QUESTION,
+    label: "Generelle Frage an KI stellen",
+  },
+];

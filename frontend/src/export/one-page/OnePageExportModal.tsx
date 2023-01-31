@@ -19,7 +19,7 @@ import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
 import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
-import OpenAiLocationForm from "../../map-snippets/OpenAiLocationForm";
+import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
 import { IApiOpenAiLocationDescriptionQuery } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
@@ -134,8 +134,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           searchResultSnapshotId: snapshotId,
           meanOfTransportation,
           tonality,
-          // TODO remove in future
-          // textLength,
           customText,
         }
       )
@@ -193,7 +191,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               {hasOpenAiFeature && (
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
-                    <OpenAiLocationForm
+                    <OpenAiLocationDescriptionForm
                       formId={"open-ai-location-description-form"}
                       onSubmit={fetchOpenAiLocationDescription}
                     />

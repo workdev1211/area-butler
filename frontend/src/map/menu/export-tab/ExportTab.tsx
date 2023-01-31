@@ -20,7 +20,6 @@ import {
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
 import { getQrCodeBase64 } from "../../../export/QrCode";
-import OpenAiLocationDescriptionModal from "../../../components/OpenAiLocationDescriptionModal";
 import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
 import aiIcon from "../../../assets/icons/ai-big.svg";
 import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
@@ -39,6 +38,7 @@ import { UserActionTypes, UserContext } from "../../../context/UserContext";
 import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
 import { localStorageSearchContext } from "../../../../../shared/constants/constants";
+import OpenAiModal from "../../../components/OpenAiModal";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -56,8 +56,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const { userState, userDispatch } = useContext(UserContext);
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
-  const [isShownOpenAiLocationModal, setIsShownOpenAiLocationModal] =
-    useState(false);
+  const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
@@ -137,11 +136,10 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   return (
     <>
       <div className="export-tab z-9000">
-        {hasOpenAiFeature && isShownOpenAiLocationModal && (
-          <OpenAiLocationDescriptionModal
-            isShownModal={isShownOpenAiLocationModal}
+        {hasOpenAiFeature && isShownOpenAiModal && (
+          <OpenAiModal
             closeModal={() => {
-              setIsShownOpenAiLocationModal(false);
+              setIsShownOpenAiModal(false);
             }}
             searchResultSnapshotId={snapshotId}
           />
@@ -452,7 +450,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   <h3
                     className="flex max-w-fit items-center cursor-pointer gap-2"
                     onClick={() => {
-                      setIsShownOpenAiLocationModal(true);
+                      setIsShownOpenAiModal(true);
                     }}
                   >
                     <img
