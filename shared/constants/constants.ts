@@ -346,4 +346,4 @@ export const osmEntityTypes: ApiOsmEntity[] = [
 export const defaultColor = "#c91444";
 
 export const placeholderSelectOptionKey: TPlaceholderSelectOptionKey =
-  "PLACEHOLDER";
+  "placeholder";

@@ -432,4 +432,4 @@ export interface IApiAddressesInRangeRequestStatus {
   message?: string;
 }
 
-export type TPlaceholderSelectOptionKey = "PLACEHOLDER";
+export type TPlaceholderSelectOptionKey = "placeholder";

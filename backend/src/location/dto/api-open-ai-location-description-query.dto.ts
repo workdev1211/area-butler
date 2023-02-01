@@ -6,7 +6,7 @@ import {
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 
-class ApiAiDescriptionQueryDto implements IApiOpenAiLocationDescriptionQuery {
+class ApiOpenAiLocationDescriptionQueryDto implements IApiOpenAiLocationDescriptionQuery {
   @IsNotEmpty()
   @IsString()
   searchResultSnapshotId: string;
@@ -24,4 +24,4 @@ class ApiAiDescriptionQueryDto implements IApiOpenAiLocationDescriptionQuery {
   customText?: string;
 }
 
-export default ApiAiDescriptionQueryDto;
+export default ApiOpenAiLocationDescriptionQueryDto;

@@ -129,7 +129,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     setIsOpenAiBusy(true);
     const openAiLocationDescription = (
       await post<string, IApiOpenAiLocationDescriptionQuery>(
-        "/api/location/ai-description",
+        "/api/location/open-ai-location-description",
         {
           searchResultSnapshotId: snapshotId,
           meanOfTransportation,

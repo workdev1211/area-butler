@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -303,6 +303,22 @@ export class RealEstateListingService {
     );
 
     return errorLineNumbers.sort();
+  }
+
+  async fetchRealEstateListingById(
+    { id: userId }: UserDocument,
+    realEstateListingId: string,
+  ): Promise<RealEstateListingDocument> {
+    const realEstateListing = await this.realEstateListingModel.findOne({
+      _id: realEstateListingId,
+      userId: userId,
+    });
+
+    if (!realEstateListing) {
+      throw new HttpException('Unknown real estate id', 404);
+    }
+
+    return realEstateListing;
   }
 
   private async processRealEstateListingData({

@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, Ref } from "react";
+import { FunctionComponent, useContext } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -10,17 +10,17 @@ import {
 } from "../../../../shared/constants/open-ai";
 import { meansOfTransportations } from "../../../../shared/constants/constants";
 import {
-  IOpenAiLocationFormValues,
+  IOpenAiLocationDescriptionFormValues,
   OpenAiCustomTextEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
 import CustomTextareaSelect from "../inputs/formik/CustomTextareaSelect";
-import { FormikProps } from "formik/dist/types";
+import { TFormikInnerRef } from "../../shared/shared.types";
 
 interface ILocationDescriptionFormProps {
   formId: string;
-  onSubmit: (values: IOpenAiLocationFormValues) => void;
-  formRef?: Ref<FormikProps<IOpenAiLocationFormValues>>;
+  onSubmit: (values: IOpenAiLocationDescriptionFormValues) => void;
+  formRef?: TFormikInnerRef<IOpenAiLocationDescriptionFormValues>;
 }
 
 const OpenAiLocationDescriptionForm: FunctionComponent<
@@ -49,7 +49,7 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
       initialValues={{
         meanOfTransportation: meansOfTransportation[0].value,
         tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
-        customText: "",
+        customText: undefined,
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {

@@ -32,11 +32,18 @@ import {
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
+import { OpenAiService } from '../client/open-ai/open-ai.service';
+import { SubscriptionService } from '../user/subscription.service';
+import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
 export class RealEstateListingController extends AuthenticatedController {
-  constructor(private realEstateListingService: RealEstateListingService) {
+  constructor(
+    private readonly realEstateListingService: RealEstateListingService,
+    private readonly openAiService: OpenAiService,
+    private readonly subscriptionService: SubscriptionService,
+  ) {
     super();
   }
 
@@ -146,5 +153,31 @@ export class RealEstateListingController extends AuthenticatedController {
     );
 
     return new StreamableFile(createReadStream(path));
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @Post('open-ai-real-estate-description')
+  async fetchOpenAiRealEstateDescription(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() { realEstateListingId }: ApiOpenAiRealEstateDescriptionQueryDto,
+  ): Promise<string> {
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const realEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        user,
+        realEstateListingId,
+      );
+
+    const openAiText = this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
+
+    return this.openAiService.fetchResponseText(openAiText);
   }
 }

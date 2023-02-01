@@ -3,7 +3,8 @@ import { FormikProps } from "formik/dist/types";
 import copy from "copy-to-clipboard";
 
 import {
-  IOpenAiLocationFormValues,
+  IOpenAiLocationDescriptionFormValues,
+  IOpenAiRealEstateDescriptionFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
 import { openAiQueryType } from "../../../../shared/constants/open-ai";
@@ -11,8 +12,10 @@ import { placeholderSelectOptionKey } from "../../../../shared/constants/constan
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
 import { useOpenAiData } from "../../hooks/openaidata";
-import { toastSuccess } from "../../shared/shared.functions";
+import { toastError, toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
+import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
+import { TFormikInnerRef } from "../../shared/shared.types";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
@@ -27,8 +30,9 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   isFetchResponse,
   onResponseFetched,
 }) => {
-  const formRef = useRef<FormikProps<IOpenAiLocationFormValues>>(null);
-  const { fetchLocationDescription } = useOpenAiData();
+  const formRef = useRef<FormikProps<unknown>>(null);
+  const { fetchLocationDescription, fetchRealEstateDescription } =
+    useOpenAiData();
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey
   >(placeholderSelectOptionKey);
@@ -39,29 +43,41 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       return;
     }
 
-    const fetchResponse = async (): Promise<string> => {
+    const fetchResponse = async (): Promise<void> => {
       formRef.current?.handleSubmit();
-      let response = "";
+      let response;
 
-      switch (queryType) {
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
-          response = await fetchLocationDescription({
-            searchResultSnapshotId,
-            ...(formRef.current?.values as IOpenAiLocationFormValues),
-          });
-          break;
+      try {
+        switch (queryType) {
+          case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
+            response = await fetchLocationDescription({
+              searchResultSnapshotId,
+              ...(formRef.current
+                ?.values as IOpenAiLocationDescriptionFormValues),
+            });
+            break;
+          }
+
+          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+            response = await fetchRealEstateDescription({
+              ...(formRef.current
+                ?.values as IOpenAiRealEstateDescriptionFormValues),
+            });
+            break;
+          }
         }
+      } catch (e) {
+        toastError("Fehler beim Senden der KI-Anfrage!");
       }
 
       onResponseFetched();
       setFetchedResponse(response);
-
-      return response;
     };
 
     void fetchResponse();
   }, [
     fetchLocationDescription,
+    fetchRealEstateDescription,
     isFetchResponse,
     onResponseFetched,
     queryType,
@@ -100,7 +116,18 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           <OpenAiLocationDescriptionForm
             formId={"open-ai-location-description-form"}
             onSubmit={() => {}}
-            formRef={formRef}
+            formRef={
+              formRef as TFormikInnerRef<IOpenAiLocationDescriptionFormValues>
+            }
+          />
+        )}
+        {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
+          <OpenAiRealEstateDescriptionForm
+            formId={"open-ai-real-estate-description-form"}
+            onSubmit={() => {}}
+            formRef={
+              formRef as TFormikInnerRef<IOpenAiRealEstateDescriptionFormValues>
+            }
           />
         )}
 

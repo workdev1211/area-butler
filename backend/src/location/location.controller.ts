@@ -31,7 +31,7 @@ import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-que
 import { ApiSnapshotService } from './api-snapshot.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
-import ApiAiDescriptionQueryDto from './dto/api-ai-description-query.dto';
+import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -180,10 +180,10 @@ export class LocationController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })
-  @Post('ai-description')
+  @Post('open-ai-location-description')
   async fetchOpenAiLocationDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() aiDescriptionQuery: ApiAiDescriptionQueryDto,
+    @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
   ): Promise<string> {
     // TODO think about moving everything to the UserSubscriptionPipe
     await this.subscriptionService.checkSubscriptionViolation(
@@ -196,16 +196,16 @@ export class LocationController extends AuthenticatedController {
 
     const searchResultSnapshot = await this.locationService.fetchSnapshotById(
       user,
-      aiDescriptionQuery.searchResultSnapshotId,
+      locationDescriptionQuery.searchResultSnapshotId,
     );
 
-    const openAiText = this.openAiService.getLocationDescriptionQueryText({
+    const openAiText = this.openAiService.getLocationDescriptionQuery({
       snapshot: searchResultSnapshot.snapshot,
-      meanOfTransportation: aiDescriptionQuery.meanOfTransportation,
-      tonality: openAiTonalities[aiDescriptionQuery.tonality],
-      customText: aiDescriptionQuery.customText,
+      meanOfTransportation: locationDescriptionQuery.meanOfTransportation,
+      tonality: openAiTonalities[locationDescriptionQuery.tonality],
+      customText: locationDescriptionQuery.customText,
     });
 
-    return this.openAiService.fetchTextCompletion(openAiText);
+    return this.openAiService.fetchResponseText(openAiText);
   }
 }

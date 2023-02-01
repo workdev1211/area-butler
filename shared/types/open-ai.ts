@@ -17,15 +17,19 @@ export enum OpenAiCustomTextEnum {
   NONE = "NONE",
 }
 
-export interface IOpenAiLocationFormValues {
+export interface IOpenAiLocationDescriptionFormValues {
   meanOfTransportation: MeansOfTransportation;
   tonality: OpenAiTonalityEnum;
-  customText?: string;
+  customText?: string | undefined;
 }
 
 export interface IApiOpenAiLocationDescriptionQuery
-  extends IOpenAiLocationFormValues {
+  extends IOpenAiLocationDescriptionFormValues {
   searchResultSnapshotId: string;
+}
+
+export interface IOpenAiRealEstateDescriptionFormValues {
+  realEstateListingId: string | undefined;
 }
 
 export enum OpenAiQueryTypeEnum {

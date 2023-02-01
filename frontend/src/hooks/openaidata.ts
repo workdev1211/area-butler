@@ -1,5 +1,8 @@
 import { useHttp } from "./http";
-import { IApiOpenAiLocationDescriptionQuery } from "../../../shared/types/open-ai";
+import {
+  IApiOpenAiLocationDescriptionQuery,
+  IOpenAiRealEstateDescriptionFormValues
+} from "../../../shared/types/open-ai";
 
 export const useOpenAiData = () => {
   const { post } = useHttp();
@@ -9,10 +12,20 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiLocationDescriptionQuery>(
-        "/api/location/ai-description",
+        "/api/location/open-ai-location-description",
         locationDescriptionQuery
       )
     ).data;
 
-  return { fetchLocationDescription };
+  const fetchRealEstateDescription = async (
+    realEstateQuery: IOpenAiRealEstateDescriptionFormValues
+  ): Promise<string> =>
+    (
+      await post<string, IOpenAiRealEstateDescriptionFormValues>(
+        "/api/real-estate-listings/open-ai-real-estate-description",
+        realEstateQuery
+      )
+    ).data;
+
+  return { fetchLocationDescription, fetchRealEstateDescription };
 };
