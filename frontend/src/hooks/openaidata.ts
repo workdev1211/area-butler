@@ -1,7 +1,9 @@
 import { useHttp } from "./http";
 import {
   IApiOpenAiLocationDescriptionQuery,
-  IOpenAiRealEstateDescriptionFormValues
+  IApiOpenAiRealEstateDescriptionQuery,
+  IApiOpenAiLocationRealEstateDescriptionQuery,
+  IApiOpenAiQuery,
 } from "../../../shared/types/open-ai";
 
 export const useOpenAiData = () => {
@@ -18,14 +20,32 @@ export const useOpenAiData = () => {
     ).data;
 
   const fetchRealEstateDescription = async (
-    realEstateQuery: IOpenAiRealEstateDescriptionFormValues
+    realEstateDescriptionQuery: IApiOpenAiRealEstateDescriptionQuery
   ): Promise<string> =>
     (
-      await post<string, IOpenAiRealEstateDescriptionFormValues>(
+      await post<string, IApiOpenAiRealEstateDescriptionQuery>(
         "/api/real-estate-listings/open-ai-real-estate-description",
-        realEstateQuery
+        realEstateDescriptionQuery
       )
     ).data;
 
-  return { fetchLocationDescription, fetchRealEstateDescription };
+  const fetchLocationRealEstateDescription = async (
+    locationRealEstateDescriptionQuery: IApiOpenAiLocationRealEstateDescriptionQuery
+  ): Promise<string> =>
+    (
+      await post<string, IApiOpenAiRealEstateDescriptionQuery>(
+        "/api/location/open-ai-location-real-estate-description",
+        locationRealEstateDescriptionQuery
+      )
+    ).data;
+
+  const fetchQuery = async (query: IApiOpenAiQuery): Promise<string> =>
+    (await post<string, IApiOpenAiQuery>("/api/open-ai/query", query)).data;
+
+  return {
+    fetchLocationDescription,
+    fetchRealEstateDescription,
+    fetchLocationRealEstateDescription,
+    fetchQuery,
+  };
 };

@@ -11,21 +11,24 @@ import {
 import { meansOfTransportations } from "../../../../shared/constants/constants";
 import {
   IOpenAiLocationDescriptionFormValues,
+  IApiOpenAiRealEstateDescriptionQuery,
   OpenAiCustomTextEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
 import CustomTextareaSelect from "../inputs/formik/CustomTextareaSelect";
 import { TFormikInnerRef } from "../../shared/shared.types";
+import FormikValuesChangeListener from "../FormikValuesChangeListener";
 
 interface ILocationDescriptionFormProps {
   formId: string;
-  onSubmit: (values: IOpenAiLocationDescriptionFormValues) => void;
+  onSubmit?: (values: IOpenAiLocationDescriptionFormValues) => void;
+  onValuesChange?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
   formRef?: TFormikInnerRef<IOpenAiLocationDescriptionFormValues>;
 }
 
 const OpenAiLocationDescriptionForm: FunctionComponent<
   ILocationDescriptionFormProps
-> = ({ formId, onSubmit, formRef }) => {
+> = ({ formId, onSubmit, onValuesChange, formRef }) => {
   const validationSchema = Yup.object({
     meanOfTransportation: Yup.string(),
     tonality: Yup.string(),
@@ -53,76 +56,89 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
       }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
-        onSubmit(values);
+        if (typeof onSubmit === "function") {
+          onSubmit(values);
+        }
       }}
       innerRef={formRef}
     >
       {({ values }) => {
         return (
           <Form id={formId}>
-            <div className="form-control">
-              <Select
-                className="input input-bordered w-full"
-                label="Transportmitteln"
-                placeholder="Transportmitteln"
-                name="meanOfTransportation"
-                disabled={meansOfTransportation.length === 1}
-              >
-                {meansOfTransportation.map(({ label, value }) => (
-                  <option value={value} key={value}>
-                    {label}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="form-control">
-              <Select
-                className="input input-bordered w-full"
-                label="Texttonalität"
-                placeholder="Texttonalität"
-                name="tonality"
-              >
-                {Object.values(OpenAiTonalityEnum).map((key) => (
-                  <option value={key} key={key}>
-                    {openAiTonalities[key]}
-                  </option>
-                ))}
-              </Select>
-            </div>
-            <div className="form-control mt-3">
-              <div className="indicator w-full">
-                <div
-                  className="indicator-item badge w-5 h-5 text-white"
-                  style={{
-                    border: "1px solid var(--primary)",
-                    borderRadius: "50%",
-                    backgroundColor: "var(--primary)",
-                  }}
+            <>
+              <div className="form-control">
+                <Select
+                  className="input input-bordered w-full"
+                  label="Transportmitteln"
+                  placeholder="Transportmitteln"
+                  name="meanOfTransportation"
+                  disabled={meansOfTransportation.length === 1}
                 >
+                  {meansOfTransportation.map(({ label, value }) => (
+                    <option value={value} key={value}>
+                      {label}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+              <div className="form-control">
+                <Select
+                  className="input input-bordered w-full"
+                  label="Texttonalität"
+                  placeholder="Texttonalität"
+                  name="tonality"
+                >
+                  {Object.values(OpenAiTonalityEnum).map((key) => (
+                    <option value={key} key={key}>
+                      {openAiTonalities[key]}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="form-control mt-3">
+                <div className="indicator w-full">
                   <div
-                    className="tooltip tooltip-left tooltip-accent text-justify font-medium"
-                    data-tip="In dieses Feld können Sie einen zusätzlichen Wunsch an die KI eingeben. Dieser Wunsch wird bei der Erstellung des Textes möglichst berücksichtigt."
+                    className="indicator-item badge w-5 h-5 text-white"
+                    style={{
+                      border: "1px solid var(--primary)",
+                      borderRadius: "50%",
+                      backgroundColor: "var(--primary)",
+                    }}
                   >
-                    i
+                    <div
+                      className="tooltip tooltip-left tooltip-accent text-justify font-medium"
+                      data-tip="In dieses Feld können Sie einen zusätzlichen Wunsch an die KI eingeben. Dieser Wunsch wird bei der Erstellung des Textes möglichst berücksichtigt."
+                    >
+                      i
+                    </div>
+                  </div>
+                  <div className="grid place-items-center w-full">
+                    <CustomTextareaSelect
+                      label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
+                      name="customText"
+                      placeholder="Benutzerdefinierter Text"
+                      customTextValue={OpenAiCustomTextEnum.CUSTOM}
+                      emptyTextValue={OpenAiCustomTextEnum.NONE}
+                    >
+                      {openAiCustomText.map(({ type, label }) => (
+                        <option value={type} key={type}>
+                          {label}
+                        </option>
+                      ))}
+                    </CustomTextareaSelect>
                   </div>
                 </div>
-                <div className="grid place-items-center w-full">
-                  <CustomTextareaSelect
-                    label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
-                    name="customText"
-                    placeholder="Benutzerdefinierter Text"
-                    customTextValue={OpenAiCustomTextEnum.CUSTOM}
-                    emptyTextValue={OpenAiCustomTextEnum.NONE}
-                  >
-                    {openAiCustomText.map(({ type, label }) => (
-                      <option value={type} key={type}>
-                        {label}
-                      </option>
-                    ))}
-                  </CustomTextareaSelect>
-                </div>
               </div>
-            </div>
+
+              {typeof onValuesChange === "function" && (
+                <FormikValuesChangeListener
+                  onValuesChange={(values) => {
+                    onValuesChange(values);
+                  }}
+                />
+              )}
+            </>
           </Form>
         );
       }}

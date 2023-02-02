@@ -28,9 +28,13 @@ export interface IApiOpenAiLocationDescriptionQuery
   searchResultSnapshotId: string;
 }
 
-export interface IOpenAiRealEstateDescriptionFormValues {
+export interface IApiOpenAiRealEstateDescriptionQuery {
   realEstateListingId: string | undefined;
 }
+
+export interface IApiOpenAiLocationRealEstateDescriptionQuery
+  extends IApiOpenAiLocationDescriptionQuery,
+    IApiOpenAiRealEstateDescriptionQuery {}
 
 export enum OpenAiQueryTypeEnum {
   "LOCATION_DESCRIPTION" = "LOCATION_DESCRIPTION",
@@ -59,7 +63,7 @@ export enum OpenAiOsmQueryNameEnum {
   SIGHTS = "SIGHTS",
 }
 
-export interface IOpenAiQuery {
-  text: string;
+export interface IApiOpenAiQuery {
+  text: string | undefined;
   isFormalToInformal?: boolean;
 }

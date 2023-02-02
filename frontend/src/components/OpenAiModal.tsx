@@ -31,10 +31,8 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
         </div>
         <OpenAiModule
           searchResultSnapshotId={searchResultSnapshotId}
-          onQueryTypeChange={() => {
-            if (isGenerateButtonDisabled) {
-              setIsGenerateButtonDisabled(false);
-            }
+          onModuleStatusChange={(isReady) => {
+            setIsGenerateButtonDisabled(!isReady);
           }}
           isFetchResponse={isFetchResponse}
           onResponseFetched={() => {
