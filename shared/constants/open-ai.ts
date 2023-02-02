@@ -1,5 +1,6 @@
 import {
   OpenAiCustomTextEnum,
+  OpenAiOsmQueryNameEnum,
   OpenAiQueryTypeEnum,
   OpenAiTonalityEnum,
 } from "../types/open-ai";
@@ -103,7 +104,7 @@ export const openAiQueryType: Array<{
     label: "Beschreibung der Immobilie",
   },
   {
-    type: OpenAiQueryTypeEnum.LOCATION_ESTATE_DESCRIPTION,
+    type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     label: "Exposé Text für",
   },
   {
@@ -115,3 +116,33 @@ export const openAiQueryType: Array<{
     label: "Generelle Frage an KI stellen",
   },
 ];
+
+export const osmNameToOsmQueryNameMapping: Partial<
+  Record<OsmName, OpenAiOsmQueryNameEnum>
+> = {
+  [OsmName.bus_stop]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
+  [OsmName.station]: OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT,
+  [OsmName.motorway_link]: OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS,
+  [OsmName.charging_station]: OpenAiOsmQueryNameEnum.CHARGING_STATIONS,
+  [OsmName.fuel]: OpenAiOsmQueryNameEnum.GAS_STATIONS,
+  [OsmName.supermarket]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
+  [OsmName.chemist]: OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES,
+  [OsmName.kindergarten]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
+  [OsmName.school]: OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN,
+  [OsmName.university]: OpenAiOsmQueryNameEnum.UNIVERSITIES,
+  [OsmName.playground]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
+  [OsmName.park]: OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS,
+  [OsmName.bar]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
+  [OsmName.restaurant]: OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS,
+  [OsmName.theatre]: OpenAiOsmQueryNameEnum.THEATERS,
+  [OsmName.fitness_centre]: OpenAiOsmQueryNameEnum.SPORTS,
+  [OsmName.sports_centre]: OpenAiOsmQueryNameEnum.SPORTS,
+  [OsmName.sports_hall]: OpenAiOsmQueryNameEnum.SPORTS,
+  [OsmName.swimming_pool]: OpenAiOsmQueryNameEnum.SWIMMING_POOLS,
+  [OsmName.doctors]: OpenAiOsmQueryNameEnum.DOCTORS,
+  [OsmName.dentist]: OpenAiOsmQueryNameEnum.DOCTORS,
+  [OsmName.clinic]: OpenAiOsmQueryNameEnum.DOCTORS,
+  [OsmName.pharmacy]: OpenAiOsmQueryNameEnum.PHARMACIES,
+  [OsmName.hospital]: OpenAiOsmQueryNameEnum.HOSPITALS,
+  [OsmName.attraction]: OpenAiOsmQueryNameEnum.SIGHTS,
+};

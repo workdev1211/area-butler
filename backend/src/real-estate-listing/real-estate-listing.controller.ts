@@ -32,9 +32,9 @@ import {
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
-import { OpenAiService } from '../client/open-ai/open-ai.service';
 import { SubscriptionService } from '../user/subscription.service';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
+import { OpenAiService } from '../open-ai/open-ai.service';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
@@ -176,8 +176,9 @@ export class RealEstateListingController extends AuthenticatedController {
         realEstateListingId,
       );
 
-    const openAiText = this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
+    const queryText =
+      this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
 
-    return this.openAiService.fetchResponseText(openAiText);
+    return this.openAiService.fetchResponse(queryText);
   }
 }

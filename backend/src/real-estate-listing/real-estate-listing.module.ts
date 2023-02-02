@@ -9,11 +9,13 @@ import {
   RealEstateListingSchema,
 } from './schema/real-estate-listing.schema';
 import { ClientModule } from '../client/client.module';
+import { OpenAiModule } from '../open-ai/open-ai.module';
 
 @Module({
   imports: [
     UserModule,
     ClientModule,
+    OpenAiModule,
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),

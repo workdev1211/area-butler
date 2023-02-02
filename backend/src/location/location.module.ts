@@ -32,6 +32,7 @@ import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
+import { OpenAiModule } from "../open-ai/open-ai.module";
 
 @Module({
   imports: [
@@ -40,6 +41,7 @@ import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
     UserModule,
     DataProvisionModule,
     HttpModule,
+    OpenAiModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },

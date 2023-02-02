@@ -9,7 +9,6 @@ import { StripeService } from './stripe/stripe.service';
 import { MapboxService } from './mapbox/mapbox.service';
 import { PaypalService } from './paypal/paypal.service';
 import { GoogleGeocodeService } from './google/google-geocode.service';
-import { OpenAiService } from './open-ai/open-ai.service';
 import { HereGeocodeService } from './here/here-geocode.service';
 import { OnOfficeApiService } from './on-office/on-office-api.service';
 
@@ -23,7 +22,6 @@ import { OnOfficeApiService } from './on-office/on-office-api.service';
     MapboxService,
     PaypalService,
     GoogleGeocodeService,
-    OpenAiService,
     HereGeocodeService,
     OnOfficeApiService,
   ],
@@ -37,7 +35,6 @@ import { OnOfficeApiService } from './on-office/on-office-api.service';
     MapboxService,
     PaypalService,
     GoogleGeocodeService,
-    OpenAiService,
     HereGeocodeService,
     OnOfficeApiService,
   ],

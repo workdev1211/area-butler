@@ -23,6 +23,7 @@ import { DataProvisionModule } from './data-provision/data-provision.module';
 import { HealthModule } from './health/health.module';
 import { configService } from './config/config.service';
 import { OnOfficeModule } from './on-office/on-office.module';
+import { OpenAiModule } from './open-ai/open-ai.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { OnOfficeModule } from './on-office/on-office.module';
     BillingModule,
     HealthModule,
     OnOfficeModule,
+    OpenAiModule,
   ],
   providers: [
     {
