@@ -1,30 +1,8 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
-import { MeansOfTransportation } from '@area-butler-types/types';
-import {
-  IApiOpenAiLocationRealEstateDescriptionQuery,
-  OpenAiTonalityEnum,
-} from '@area-butler-types/open-ai';
+import ApiOpenAiLocationDescriptionQueryDto from './api-open-ai-location-description-query.dto';
 
-class ApiOpenAiLocationRealEstateDescriptionQueryDto
-  implements IApiOpenAiLocationRealEstateDescriptionQuery
-{
-  @IsNotEmpty()
-  @IsString()
-  searchResultSnapshotId: string;
-
-  @IsNotEmpty()
-  @IsEnum(MeansOfTransportation)
-  meanOfTransportation: MeansOfTransportation;
-
-  @IsNotEmpty()
-  @IsEnum(OpenAiTonalityEnum)
-  tonality: OpenAiTonalityEnum;
-
-  @IsOptional()
-  @IsString()
-  customText?: string;
-
+class ApiOpenAiLocationRealEstateDescriptionQueryDto extends ApiOpenAiLocationDescriptionQueryDto {
   @IsNotEmpty()
   @IsString()
   realEstateListingId: string;

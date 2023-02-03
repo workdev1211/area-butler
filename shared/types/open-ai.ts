@@ -1,4 +1,4 @@
-import { MeansOfTransportation } from "./types";
+import { ISelectTextValue, MeansOfTransportation } from "./types";
 
 export enum OpenAiTonalityEnum {
   FORMAL_SERIOUS = "FORMAL_SERIOUS",
@@ -20,7 +20,7 @@ export enum OpenAiCustomTextEnum {
 export interface IOpenAiLocationDescriptionFormValues {
   meanOfTransportation: MeansOfTransportation;
   tonality: OpenAiTonalityEnum;
-  customText?: string | undefined;
+  customText?: ISelectTextValue | undefined;
 }
 
 export interface IApiOpenAiLocationDescriptionQuery

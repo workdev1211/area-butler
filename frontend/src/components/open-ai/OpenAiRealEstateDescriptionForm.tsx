@@ -1,5 +1,5 @@
 import { FunctionComponent, useContext, useEffect } from "react";
-import { Form, Formik } from "formik";
+import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
@@ -12,18 +12,35 @@ import {
 } from "../../context/RealEstateContext";
 import { useHttp } from "../../hooks/http";
 import { TFormikInnerRef } from "../../shared/shared.types";
-import FormikValuesChangeListener from "../FormikValuesChangeListener";
+
+interface IOpenAiRealEstateDescriptionFormListenerProps {
+  onValuesChange: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
+}
+
+const OpenAiRealEstateDescriptionFormListener: FunctionComponent<
+  IOpenAiRealEstateDescriptionFormListenerProps
+> = ({ onValuesChange }) => {
+  const { values } = useFormikContext<IApiOpenAiRealEstateDescriptionQuery>();
+
+  useEffect(() => {
+    onValuesChange(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.realEstateListingId]);
+
+  return null;
+};
 
 interface IRealEstateDescriptionFormProps {
   formId: string;
-  onSubmit?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
+  initialValues?: IApiOpenAiRealEstateDescriptionQuery;
   onValuesChange?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
+  onSubmit?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
   formRef?: TFormikInnerRef<IApiOpenAiRealEstateDescriptionQuery>;
 }
 
 const OpenAiRealEstateDescriptionForm: FunctionComponent<
   IRealEstateDescriptionFormProps
-> = ({ formId, onSubmit, onValuesChange, formRef }) => {
+> = ({ formId, initialValues, onValuesChange, onSubmit, formRef }) => {
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
   const { get } = useHttp();
 
@@ -43,15 +60,23 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const processedInitialValues = {
+    realEstateListingId:
+      initialValues &&
+      realEstateState.listings.some(
+        ({ id }) => id === initialValues.realEstateListingId
+      )
+        ? initialValues.realEstateListingId
+        : undefined,
+  };
+
   const validationSchema = Yup.object({
     realEstateListingId: Yup.string(),
   });
 
   return (
     <Formik
-      initialValues={{
-        realEstateListingId: undefined,
-      }}
+      initialValues={processedInitialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -64,12 +89,15 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
         <>
           <div className="form-control">
             <Select
-              className="input input-bordered w-full"
+              className="select select-bordered w-full max-w-full"
               label="Immobilienbeschreibung"
               placeholder="Immobilienbeschreibung"
               name="realEstateListingId"
               disabled={!realEstateState.listings.length}
-              defaultValue={placeholderSelectOptionKey}
+              defaultValue={
+                processedInitialValues.realEstateListingId ||
+                placeholderSelectOptionKey
+              }
             >
               <option
                 value={placeholderSelectOptionKey}
@@ -87,7 +115,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
           </div>
 
           {typeof onValuesChange === "function" && (
-            <FormikValuesChangeListener
+            <OpenAiRealEstateDescriptionFormListener
               onValuesChange={(values) => {
                 onValuesChange(values);
               }}

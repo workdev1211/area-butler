@@ -1,7 +1,28 @@
+import { FunctionComponent, useEffect } from "react";
 import { useField } from "formik";
 
-const Select = ({ label, ...props }: any) => {
-  const [field, meta] = useField(props);
+interface ISelectProps {
+  label: string | undefined;
+  defaultValue?: string;
+  className?: string;
+  [key: string | number | symbol]: unknown;
+}
+
+const Select: FunctionComponent<ISelectProps> = ({
+  label,
+  defaultValue,
+  className = "select select-bordered w-full max-w-xs",
+  ...props
+}: any) => {
+  const [field, meta, helpers] = useField(props);
+  const { setValue } = helpers;
+
+  useEffect(() => {
+    if (defaultValue) {
+      setValue(defaultValue);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <div>
@@ -11,7 +32,7 @@ const Select = ({ label, ...props }: any) => {
       <select
         {...field}
         {...props}
-        className="select select-bordered w-full max-w-xs"
+        className={className}
       />
       {meta.touched && meta.error ? (
         <label className="label">

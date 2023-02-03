@@ -1,4 +1,10 @@
-import { FunctionComponent, useEffect, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FormikProps } from "formik/dist/types";
 import copy from "copy-to-clipboard";
 
@@ -18,6 +24,10 @@ import copyIcon from "../../assets/icons/copy.svg";
 import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
 import { TFormikInnerRef } from "../../shared/shared.types";
+import {
+  CachingActionTypesEnum,
+  CachingContext,
+} from "../../context/CachingContext";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
@@ -32,6 +42,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   isFetchResponse,
   onResponseFetched,
 }) => {
+  const { cachingState, cachingDispatch } = useContext(CachingContext);
+
   const formRef = useRef<FormikProps<unknown>>(null);
   const realEstateDescriptionFormRef =
     useRef<FormikProps<IApiOpenAiRealEstateDescriptionQuery>>(null);
@@ -161,6 +173,13 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
           <OpenAiLocationDescriptionForm
             formId={"open-ai-location-description-form"}
+            initialValues={cachingState.openAi.locationDescription}
+            onValuesChange={(values) => {
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { locationDescription: { ...values } },
+              });
+            }}
             formRef={
               formRef as TFormikInnerRef<IOpenAiLocationDescriptionFormValues>
             }
@@ -170,8 +189,14 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
           <OpenAiRealEstateDescriptionForm
             formId={"open-ai-real-estate-description-form"}
-            onValuesChange={({ realEstateListingId }) => {
-              onModuleStatusChange(!!queryType && !!realEstateListingId);
+            initialValues={cachingState.openAi.realEstateDescription}
+            onValuesChange={(values) => {
+              onModuleStatusChange(!!queryType && !!values.realEstateListingId);
+
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { realEstateDescription: { ...values } },
+              });
             }}
             formRef={realEstateDescriptionFormRef}
           />
@@ -181,14 +206,29 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           <>
             <OpenAiLocationDescriptionForm
               formId={"open-ai-location-description-form"}
+              initialValues={cachingState.openAi.locationDescription}
+              onValuesChange={(values) => {
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_OPEN_AI,
+                  payload: { locationDescription: { ...values } },
+                });
+              }}
               formRef={
                 formRef as TFormikInnerRef<IOpenAiLocationDescriptionFormValues>
               }
             />
             <OpenAiRealEstateDescriptionForm
               formId={"open-ai-real-estate-description-form"}
-              onValuesChange={({ realEstateListingId }) => {
-                onModuleStatusChange(!!queryType && !!realEstateListingId);
+              initialValues={cachingState.openAi.realEstateDescription}
+              onValuesChange={(values) => {
+                onModuleStatusChange(
+                  !!queryType && !!values.realEstateListingId
+                );
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_OPEN_AI,
+                  payload: { realEstateDescription: { ...values } },
+                });
               }}
               formRef={realEstateDescriptionFormRef}
             />
@@ -198,9 +238,19 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
           <OpenAiQueryForm
             formId={"open-ai-formal-to-informal-form"}
-            isFormalToInformal={true}
-            onValuesChange={({ text }) => {
-              onModuleStatusChange(!!queryType && !!text);
+            initialValues={
+              cachingState.openAi.query || {
+                text: undefined,
+                isFormalToInformal: true,
+              }
+            }
+            onValuesChange={(values) => {
+              onModuleStatusChange(!!queryType && !!values.text);
+
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { query: { ...values } },
+              });
             }}
             formRef={formRef as TFormikInnerRef<IApiOpenAiQuery>}
           />
@@ -209,8 +259,14 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
           <OpenAiQueryForm
             formId={"open-ai-general-question-form"}
-            onValuesChange={({ text }) => {
-              onModuleStatusChange(!!queryType && !!text);
+            initialValues={cachingState.openAi.query}
+            onValuesChange={(values) => {
+              onModuleStatusChange(!!queryType && !!values.text);
+
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { query: { ...values } },
+              });
             }}
             formRef={formRef as TFormikInnerRef<IApiOpenAiQuery>}
           />

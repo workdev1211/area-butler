@@ -1,28 +1,44 @@
-import { FunctionComponent } from "react";
-import { Form, Formik } from "formik";
+import { FunctionComponent, useEffect } from "react";
+import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import { IApiOpenAiQuery } from "../../../../shared/types/open-ai";
 import { TFormikInnerRef } from "../../shared/shared.types";
-import FormikValuesChangeListener from "../FormikValuesChangeListener";
 import Textarea from "../inputs/formik/Textarea";
 
-interface IRequestFormProps {
+interface IOpenAiQueryFormListenerProps {
+  onValuesChange: (values: IApiOpenAiQuery) => void;
+}
+
+const OpenAiQueryFormListener: FunctionComponent<
+  IOpenAiQueryFormListenerProps
+> = ({ onValuesChange }) => {
+  const { values } = useFormikContext<IApiOpenAiQuery>();
+
+  useEffect(() => {
+    onValuesChange(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.text]);
+
+  return null;
+};
+
+interface IQueryFormProps {
   formId: string;
-  isFormalToInformal?: boolean;
-  onSubmit?: (values: IApiOpenAiQuery) => void;
+  initialValues?: IApiOpenAiQuery;
   onValuesChange?: (values: IApiOpenAiQuery) => void;
+  onSubmit?: (values: IApiOpenAiQuery) => void;
   formRef?: TFormikInnerRef<IApiOpenAiQuery>;
 }
 
-const OpenAiQueryForm: FunctionComponent<IRequestFormProps> = ({
+const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
   formId,
-  isFormalToInformal = false,
-  onSubmit,
+  initialValues,
   onValuesChange,
+  onSubmit,
   formRef,
 }) => {
-  const label = isFormalToInformal
+  const label = initialValues?.isFormalToInformal
     ? "Kopieren Sie hier den Text in Sie Form hinein"
     : "Ihre Anfrage an die KI";
 
@@ -33,7 +49,8 @@ const OpenAiQueryForm: FunctionComponent<IRequestFormProps> = ({
 
   return (
     <Formik
-      initialValues={{ isFormalToInformal, text: undefined }}
+      enableReinitialize={true}
+      initialValues={initialValues || { text: undefined }}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -49,7 +66,7 @@ const OpenAiQueryForm: FunctionComponent<IRequestFormProps> = ({
           </div>
 
           {typeof onValuesChange === "function" && (
-            <FormikValuesChangeListener
+            <OpenAiQueryFormListener
               onValuesChange={(values) => {
                 onValuesChange(values);
               }}

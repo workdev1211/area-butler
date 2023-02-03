@@ -433,3 +433,8 @@ export interface IApiAddressesInRangeRequestStatus {
 }
 
 export type TPlaceholderSelectOptionKey = "placeholder";
+
+export interface ISelectTextValue {
+  text: string;
+  value: string;
+}

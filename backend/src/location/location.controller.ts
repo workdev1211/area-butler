@@ -205,7 +205,7 @@ export class LocationController extends AuthenticatedController {
       snapshot: searchResultSnapshot.snapshot,
       meanOfTransportation: locationDescriptionQuery.meanOfTransportation,
       tonality: openAiTonalities[locationDescriptionQuery.tonality],
-      customText: locationDescriptionQuery.customText,
+      customText: locationDescriptionQuery.customText?.text,
     });
 
     return this.openAiService.fetchResponse(queryText);
@@ -255,7 +255,7 @@ export class LocationController extends AuthenticatedController {
       snapshot: searchResultSnapshot.snapshot,
       meanOfTransportation: meanOfTransportation,
       tonality: openAiTonalities[tonality],
-      customText: customText,
+      customText: customText?.text,
     });
 
     return this.openAiService.fetchResponse(queryText);

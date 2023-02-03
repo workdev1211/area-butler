@@ -1,11 +1,14 @@
 import { FunctionComponent, useState } from "react";
 import { useField } from "formik";
 
+import { ISelectTextValue } from "../../../../../shared/types/types";
+
 interface ICustomTextAreaSelectProps {
   label: string;
   name: string;
-  customTextValue: string;
-  emptyTextValue: string;
+  customTextValue: ISelectTextValue;
+  emptyTextValue: ISelectTextValue;
+  selectedTextValue?: ISelectTextValue;
   textLengthLimit?: number;
   placeholder?: string;
 }
@@ -15,11 +18,12 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
   name,
   customTextValue,
   emptyTextValue,
+  selectedTextValue,
   textLengthLimit,
   placeholder,
   children,
 }) => {
-  const [, meta, helpers] = useField(name);
+  const [, meta, helpers] = useField<ISelectTextValue>(name);
   const [isCustomText, setIsCustomText] = useState(false);
   const { value } = meta;
   const { setValue } = helpers;
@@ -31,23 +35,27 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
     >
       <select
         className="select select-bordered w-full"
+        defaultValue={selectedTextValue?.value}
         onChange={({ target: { selectedOptions } }): void => {
           const selectedOption = selectedOptions[0];
 
-          if (emptyTextValue === selectedOption.value) {
-            setValue("");
+          if (emptyTextValue.value === selectedOption.value) {
+            setValue(emptyTextValue);
             setIsCustomText(false);
             return;
           }
 
-          if (customTextValue === selectedOption.value) {
-            setValue("");
+          if (customTextValue.value === selectedOption.value) {
+            setValue(customTextValue);
             setIsCustomText(true);
             return;
           }
 
           setIsCustomText(false);
-          setValue(selectedOptions[0].label);
+          setValue({
+            text: selectedOptions[0].text,
+            value: selectedOptions[0].value,
+          });
         }}
       >
         {children}
@@ -65,12 +73,13 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
               if (
                 !textLengthLimit ||
                 textValue.length < textLengthLimit + 1 ||
-                textValue.length < value.length
+                textValue.length < value.text.length
               ) {
-                setValue(textValue);
+                setValue({ ...value, text: textValue });
               }
             }}
-            value={value}
+            defaultValue={selectedTextValue?.text}
+            value={value.text}
             placeholder={placeholder}
           />
         </>

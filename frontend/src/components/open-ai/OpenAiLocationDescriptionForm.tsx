@@ -1,5 +1,5 @@
-import { FunctionComponent, useContext } from "react";
-import { Form, Formik } from "formik";
+import { FunctionComponent, useContext, useEffect } from "react";
+import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
@@ -11,30 +11,40 @@ import {
 import { meansOfTransportations } from "../../../../shared/constants/constants";
 import {
   IOpenAiLocationDescriptionFormValues,
-  IApiOpenAiRealEstateDescriptionQuery,
   OpenAiCustomTextEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
 import CustomTextareaSelect from "../inputs/formik/CustomTextareaSelect";
 import { TFormikInnerRef } from "../../shared/shared.types";
-import FormikValuesChangeListener from "../FormikValuesChangeListener";
+
+interface IOpenAiLocationDescriptionFormListenerProps {
+  onValuesChange: (values: IOpenAiLocationDescriptionFormValues) => void;
+}
+
+const OpenAiLocationDescriptionFormListener: FunctionComponent<
+  IOpenAiLocationDescriptionFormListenerProps
+> = ({ onValuesChange }) => {
+  const { values } = useFormikContext<IOpenAiLocationDescriptionFormValues>();
+
+  useEffect(() => {
+    onValuesChange(values);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.meanOfTransportation, values.tonality, values.customText]);
+
+  return null;
+};
 
 interface ILocationDescriptionFormProps {
   formId: string;
+  initialValues?: IOpenAiLocationDescriptionFormValues;
+  onValuesChange?: (values: IOpenAiLocationDescriptionFormValues) => void;
   onSubmit?: (values: IOpenAiLocationDescriptionFormValues) => void;
-  onValuesChange?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
   formRef?: TFormikInnerRef<IOpenAiLocationDescriptionFormValues>;
 }
 
 const OpenAiLocationDescriptionForm: FunctionComponent<
   ILocationDescriptionFormProps
-> = ({ formId, onSubmit, onValuesChange, formRef }) => {
-  const validationSchema = Yup.object({
-    meanOfTransportation: Yup.string(),
-    tonality: Yup.string(),
-    customText: Yup.string(),
-  });
-
+> = ({ formId, initialValues, onValuesChange, onSubmit, formRef }) => {
   const { searchContextState } = useContext(SearchContext);
 
   const meansOfTransportation = searchContextState.transportationParams.map(
@@ -47,13 +57,33 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
     }
   );
 
-  return (
-    <Formik
-      initialValues={{
+  const processedInitialValues = initialValues
+    ? {
+        ...initialValues,
+        meanOfTransportation: meansOfTransportation.some(
+          ({ value }) => value === initialValues?.meanOfTransportation
+        )
+          ? initialValues?.meanOfTransportation
+          : meansOfTransportation[0].value,
+      }
+    : {
         meanOfTransportation: meansOfTransportation[0].value,
         tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
         customText: undefined,
-      }}
+      };
+
+  const validationSchema = Yup.object({
+    meanOfTransportation: Yup.string(),
+    tonality: Yup.string(),
+    customText: Yup.object().optional().shape({
+      text: Yup.string().required(),
+      value: Yup.string().required(),
+    }),
+  });
+
+  return (
+    <Formik
+      initialValues={processedInitialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -68,7 +98,6 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
             <>
               <div className="form-control">
                 <Select
-                  className="input input-bordered w-full"
                   label="Transportmitteln"
                   placeholder="Transportmitteln"
                   name="meanOfTransportation"
@@ -83,7 +112,6 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
               </div>
               <div className="form-control">
                 <Select
-                  className="input input-bordered w-full"
                   label="Texttonalität"
                   placeholder="Texttonalität"
                   name="tonality"
@@ -115,11 +143,18 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
                   </div>
                   <div className="grid place-items-center w-full">
                     <CustomTextareaSelect
-                      label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
+                      label={`Ergebnisse und Arbeitsfeld, ${values.customText?.text.length} Zeichen`}
                       name="customText"
                       placeholder="Benutzerdefinierter Text"
-                      customTextValue={OpenAiCustomTextEnum.CUSTOM}
-                      emptyTextValue={OpenAiCustomTextEnum.NONE}
+                      customTextValue={{
+                        text: "",
+                        value: OpenAiCustomTextEnum.CUSTOM,
+                      }}
+                      emptyTextValue={{
+                        text: "",
+                        value: OpenAiCustomTextEnum.NONE,
+                      }}
+                      selectedTextValue={initialValues?.customText}
                     >
                       {openAiCustomText.map(({ type, label }) => (
                         <option value={type} key={type}>
@@ -132,7 +167,7 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
               </div>
 
               {typeof onValuesChange === "function" && (
-                <FormikValuesChangeListener
+                <OpenAiLocationDescriptionFormListener
                   onValuesChange={(values) => {
                     onValuesChange(values);
                   }}

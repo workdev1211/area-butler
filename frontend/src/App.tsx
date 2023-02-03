@@ -30,6 +30,7 @@ import {
   commonPaypalOptions,
   feedbackModalConfig,
 } from "./shared/shared.constants";
+import { CachingContextProvider } from "./context/CachingContext";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -184,77 +185,79 @@ function App() {
             <PotentialCustomerContextProvider>
               <RealEstateContextProvider>
                 <SearchContextProvider>
-                  <Switch>
-                    <Route path="/register">
-                      <Auth0ConsentPage />
-                    </Route>
-                    <Route path="/verify">
-                      <Authenticated>
-                        <VerifyEmailPage />
-                      </Authenticated>
-                    </Route>
-                    {/*Subscription Selection*/}
-                    <Route path="/profile">
-                      <Authenticated>
-                        <UserProfilePage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/callback">
-                      <Authenticated>
-                        <CallbackPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/impress">
-                      <ImpressPage />
-                    </Route>
-                    <Route path="/privacy">
-                      <PrivacyPage />
-                    </Route>
-                    <Route path="/terms">
-                      <TermsPage />
-                    </Route>
-                    <Route path="/snippet-editor/:snapshotId">
-                      <Authenticated>
-                        <SnippetEditorPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/potential-customers/:customerId">
-                      <Authenticated>
-                        <PotentialCustomerPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/potential-customers">
-                      <Authenticated>
-                        <PotentialCustomersPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/questionnaire/:inputToken">
-                      <CustomerQuestionnairePage />
-                    </Route>
-                    <Route path="/real-estates/:realEstateId">
-                      <Authenticated>
-                        <RealEstatePage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/real-estates">
-                      <Authenticated>
-                        <RealEstatesPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/search">
-                      <Authenticated>
-                        <SearchParamsPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/map-snippets">
-                      <Authenticated>
-                        <MapSnippetsPage />
-                      </Authenticated>
-                    </Route>
-                    <Route path="/">
-                      <LoginPage />
-                    </Route>
-                  </Switch>
+                  <CachingContextProvider>
+                    <Switch>
+                      <Route path="/register">
+                        <Auth0ConsentPage />
+                      </Route>
+                      <Route path="/verify">
+                        <Authenticated>
+                          <VerifyEmailPage />
+                        </Authenticated>
+                      </Route>
+                      {/*Subscription Selection*/}
+                      <Route path="/profile">
+                        <Authenticated>
+                          <UserProfilePage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/callback">
+                        <Authenticated>
+                          <CallbackPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/impress">
+                        <ImpressPage />
+                      </Route>
+                      <Route path="/privacy">
+                        <PrivacyPage />
+                      </Route>
+                      <Route path="/terms">
+                        <TermsPage />
+                      </Route>
+                      <Route path="/snippet-editor/:snapshotId">
+                        <Authenticated>
+                          <SnippetEditorPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/potential-customers/:customerId">
+                        <Authenticated>
+                          <PotentialCustomerPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/potential-customers">
+                        <Authenticated>
+                          <PotentialCustomersPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/questionnaire/:inputToken">
+                        <CustomerQuestionnairePage />
+                      </Route>
+                      <Route path="/real-estates/:realEstateId">
+                        <Authenticated>
+                          <RealEstatePage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/real-estates">
+                        <Authenticated>
+                          <RealEstatesPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/search">
+                        <Authenticated>
+                          <SearchParamsPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/map-snippets">
+                        <Authenticated>
+                          <MapSnippetsPage />
+                        </Authenticated>
+                      </Route>
+                      <Route path="/">
+                        <LoginPage />
+                      </Route>
+                    </Switch>
+                  </CachingContextProvider>
                 </SearchContextProvider>
               </RealEstateContextProvider>
             </PotentialCustomerContextProvider>
