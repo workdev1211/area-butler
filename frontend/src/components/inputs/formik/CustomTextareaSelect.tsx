@@ -85,11 +85,11 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
         </>
       )}
 
-      {meta.touched && meta.error ? (
+      {meta.touched && meta.error && (
         <label className="label">
           <span className="label-text-alt text-red-500">{meta.error}</span>
         </label>
-      ) : null}
+      )}
     </div>
   );
 };

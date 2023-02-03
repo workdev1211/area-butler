@@ -441,33 +441,43 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <div className="collapse-title-container">
                 <img src={aiDescriptionIcon} alt="ai-description-icon" />
                 <div className="collapse-title-text">
-                  <div className="collapse-title-text-1">KI-Lagetexte</div>
+                  <div className="collapse-title-text-1 flex gap-2">
+                    <span>Automatische Texte (KI)</span>{" "}
+                    <span
+                      className={`badge ${
+                        isAiDescriptionOpen ? "badge-accent" : "badge-primary"
+                      }`}
+                    >
+                      NEU
+                    </span>
+                  </div>
                   <div className="collapse-title-text-2">
-                    Für originelle Texte aus der magischen Feder
+                    Für Inspiration aus der magischen Feder
                   </div>
                 </div>
               </div>
             </div>
             <div className="collapse-content">
               <ul>
-                <li>
-                  <h3
-                    className="flex max-w-fit items-center cursor-pointer gap-2"
-                    onClick={() => {
-                      setOpenAiQueryType(undefined);
-                      setIsShownOpenAiModal(true);
-                    }}
-                  >
-                    <img
-                      className="w-6 h-6"
-                      style={invertFilter}
-                      src={aiIcon}
-                      alt="ai"
-                    />
-                    Lagetext generieren
-                  </h3>
-                </li>
-                {openAiQueryTypes.map(({ type, label }) => (
+                {/* Could be needed in future */}
+                {/*<li>*/}
+                {/*  <h3*/}
+                {/*    className="flex max-w-fit items-center cursor-pointer gap-2"*/}
+                {/*    onClick={() => {*/}
+                {/*      setOpenAiQueryType(undefined);*/}
+                {/*      setIsShownOpenAiModal(true);*/}
+                {/*    }}*/}
+                {/*  >*/}
+                {/*    <img*/}
+                {/*      className="w-6 h-6"*/}
+                {/*      style={invertFilter}*/}
+                {/*      src={aiIcon}*/}
+                {/*      alt="ai"*/}
+                {/*    />*/}
+                {/*    Lagetext generieren*/}
+                {/*  </h3>*/}
+                {/*</li>*/}
+                {openAiQueryTypes.map(({ type, sidebarLabel }) => (
                   <li key={type}>
                     <h3
                       className="flex max-w-fit items-center cursor-pointer gap-2"
@@ -482,7 +492,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                         src={aiIcon}
                         alt="ai"
                       />
-                      {label}
+                      <span>{sidebarLabel}</span>{" "}
+                      <span className={"badge badge-primary"}>NEU</span>
                     </h3>
                   </li>
                 ))}

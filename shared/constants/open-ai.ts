@@ -94,26 +94,32 @@ export const openAiCustomText: { type: OpenAiCustomTextEnum; label: string }[] =
 export const openAiQueryTypes: Array<{
   type: OpenAiQueryTypeEnum;
   label: string;
+  sidebarLabel: string;
 }> = [
   {
     type: OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
     label: "Lagetext",
+    sidebarLabel: "Lage - Beschreibung",
   },
   {
     type: OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
     label: "Beschreibung der Immobilie",
+    sidebarLabel: "Objekt - Beschreibung",
   },
   {
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     label: "Exposé Text für",
+    sidebarLabel: "Exposé-Text",
   },
   {
     type: OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
     label: "Transformation Sie-Form in Du-Form",
+    sidebarLabel: "Umwandlung Sie in Du Form",
   },
   {
     type: OpenAiQueryTypeEnum.GENERAL_QUESTION,
     label: "Generelle Frage an KI stellen",
+    sidebarLabel: "Generelle Anfrage – Ihre Tür zur KI",
   },
 ];
 

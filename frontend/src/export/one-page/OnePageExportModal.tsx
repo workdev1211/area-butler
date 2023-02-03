@@ -25,7 +25,7 @@ import { useHttp } from "../../hooks/http";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 
 const SCREENSHOT_LIMIT = 2;
-const CHARACTER_LIMIT = 580;
+const CHARACTER_LIMIT = 800;
 
 export interface IQrCodeState {
   isShownQrCode: boolean;

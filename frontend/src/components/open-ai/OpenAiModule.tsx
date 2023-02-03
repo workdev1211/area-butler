@@ -195,7 +195,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             formId={"open-ai-real-estate-description-form"}
             initialValues={cachingState.openAi.realEstateDescription}
             onValuesChange={(values) => {
-              onModuleStatusChange(!!queryType && !!values.realEstateListingId);
+              onModuleStatusChange(
+                !!queryType &&
+                  !!values.realEstateListingId &&
+                  values.realEstateListingId !== placeholderSelectOptionKey
+              );
 
               cachingDispatch({
                 type: CachingActionTypesEnum.SET_OPEN_AI,
@@ -226,7 +230,9 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               initialValues={cachingState.openAi.realEstateDescription}
               onValuesChange={(values) => {
                 onModuleStatusChange(
-                  !!queryType && !!values.realEstateListingId
+                  !!queryType &&
+                    !!values.realEstateListingId &&
+                    values.realEstateListingId !== placeholderSelectOptionKey
                 );
 
                 cachingDispatch({

@@ -121,8 +121,8 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
       <PdfOnePage>
         {/* Logo and address */}
         {/* TODO move to a separate component? */}
-        <div className="flex flex-col gap-5">
-          <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <img className="self-start h-14" src={logo} alt="Logo" />
             <div>
               {!props.realEstateListing && (
@@ -158,7 +158,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
 
           {/* Description */}
           {props.addressDescription && (
-            <div className="flex flex-col gap-3">
+            <div className="flex flex-col gap-1.5">
               <div className="text-2xl font-bold">Lagebeschreibung</div>
               <div className="text-justify">{props.addressDescription}</div>
             </div>
@@ -166,9 +166,9 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
 
           {/* POIs */}
           {/* TODO move to a separate component */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-1.5">
             <div className="text-2xl font-bold">Überblick</div>
-            <div className="flex gap-5 flex-wrap">
+            <div className="flex gap-3 flex-wrap">
               {filteredGroups.map((group) => {
                 return (
                   <div
@@ -176,7 +176,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
                     key={`one-page-group-${group.title}`}
                     style={{ flex: "0 0 21vw" }}
                   >
-                    <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5">
                       {group.icon && <OnePageLegendIcon icon={group.icon} />}
                       <div className="text-base font-bold">{group.title}</div>
                     </div>

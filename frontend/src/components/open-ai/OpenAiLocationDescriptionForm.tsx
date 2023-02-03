@@ -76,8 +76,8 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
     meanOfTransportation: Yup.string(),
     tonality: Yup.string(),
     customText: Yup.object({
-      text: Yup.string().required(),
-      value: Yup.string().required(),
+      text: Yup.string().optional(),
+      value: Yup.string().optional(),
     }).optional(),
   });
 
