@@ -44,7 +44,6 @@ const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
 
   const validationSchema = Yup.object({
     text: Yup.string(),
-    isFormalToInformal: Yup.boolean(),
   });
 
   return (

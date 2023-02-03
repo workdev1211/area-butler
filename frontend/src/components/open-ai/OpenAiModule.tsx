@@ -14,7 +14,7 @@ import {
   IApiOpenAiRealEstateDescriptionQuery,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
-import { openAiQueryType } from "../../../../shared/constants/open-ai";
+import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
@@ -34,6 +34,7 @@ interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
   onResponseFetched: () => void;
+  initialQueryType?: OpenAiQueryTypeEnum;
 }
 
 const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
@@ -41,6 +42,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   onModuleStatusChange,
   isFetchResponse,
   onResponseFetched,
+  initialQueryType,
 }) => {
   const { cachingState, cachingDispatch } = useContext(CachingContext);
 
@@ -56,8 +58,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   } = useOpenAiData();
 
   const [queryType, setQueryType] = useState<
-    OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey
-  >();
+    OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
+  >(initialQueryType);
   const [fetchedResponse, setFetchedResponse] = useState<string>();
 
   useEffect(() => {
@@ -111,6 +113,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
             response = await fetchQuery({
               ...(formRef.current?.values as IApiOpenAiQuery),
+              isFormalToInformal:
+                queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
             });
             break;
           }
@@ -151,7 +155,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         <select
           className="select select-bordered w-full max-w-xs"
           name="queryType"
-          defaultValue={placeholderSelectOptionKey}
+          value={queryType || placeholderSelectOptionKey}
           onChange={({ target: { value } }) => {
             setQueryType(value as OpenAiQueryTypeEnum);
           }}
@@ -163,7 +167,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           >
             Was möchten Sie generieren?
           </option>
-          {openAiQueryType.map(({ type, label }) => (
+          {openAiQueryTypes.map(({ type, label }) => (
             <option value={type} key={type} className="flex flex-col">
               {label}
             </option>
@@ -238,12 +242,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
           <OpenAiQueryForm
             formId={"open-ai-formal-to-informal-form"}
-            initialValues={
-              cachingState.openAi.query || {
-                text: undefined,
-                isFormalToInformal: true,
-              }
-            }
+            initialValues={cachingState.openAi.query}
             onValuesChange={(values) => {
               onModuleStatusChange(!!queryType && !!values.text);
 

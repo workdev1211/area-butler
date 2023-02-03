@@ -75,10 +75,10 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
   const validationSchema = Yup.object({
     meanOfTransportation: Yup.string(),
     tonality: Yup.string(),
-    customText: Yup.object().optional().shape({
+    customText: Yup.object({
       text: Yup.string().required(),
       value: Yup.string().required(),
-    }),
+    }).optional(),
   });
 
   return (

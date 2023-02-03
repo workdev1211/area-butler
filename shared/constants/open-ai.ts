@@ -91,7 +91,7 @@ export const openAiCustomText: { type: OpenAiCustomTextEnum; label: string }[] =
     { type: OpenAiCustomTextEnum.CUSTOM, label: "Eigenen Text eingeben." },
   ];
 
-export const openAiQueryType: Array<{
+export const openAiQueryTypes: Array<{
   type: OpenAiQueryTypeEnum;
   label: string;
 }> = [

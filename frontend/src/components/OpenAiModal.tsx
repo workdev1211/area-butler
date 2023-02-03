@@ -1,15 +1,18 @@
 import { FunctionComponent, useState } from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
+import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
   searchResultSnapshotId: string;
+  queryType?: OpenAiQueryTypeEnum;
 }
 
 const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   closeModal,
   searchResultSnapshotId,
+  queryType,
 }) => {
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
@@ -30,6 +33,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
           und es wird empfohlen, die Fakten vor Verwendung zu überprüfen.
         </div>
         <OpenAiModule
+          initialQueryType={queryType}
           searchResultSnapshotId={searchResultSnapshotId}
           onModuleStatusChange={(isReady) => {
             setIsGenerateButtonDisabled(!isReady);

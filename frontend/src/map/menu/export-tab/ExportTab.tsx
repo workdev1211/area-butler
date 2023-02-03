@@ -39,6 +39,8 @@ import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
 import { localStorageSearchContext } from "../../../../../shared/constants/constants";
 import OpenAiModal from "../../../components/OpenAiModal";
+import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
+import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -57,6 +59,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
+  const [openAiQueryType, setOpenAiQueryType] = useState<OpenAiQueryTypeEnum>();
   const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
   const [isReportsOpen, setIsReportsOpen] = useState(false);
@@ -142,6 +145,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               setIsShownOpenAiModal(false);
             }}
             searchResultSnapshotId={snapshotId}
+            queryType={openAiQueryType}
           />
         )}
 
@@ -450,6 +454,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   <h3
                     className="flex max-w-fit items-center cursor-pointer gap-2"
                     onClick={() => {
+                      setOpenAiQueryType(undefined);
                       setIsShownOpenAiModal(true);
                     }}
                   >
@@ -462,6 +467,25 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     Lagetext generieren
                   </h3>
                 </li>
+                {openAiQueryTypes.map(({ type, label }) => (
+                  <li key={type}>
+                    <h3
+                      className="flex max-w-fit items-center cursor-pointer gap-2"
+                      onClick={() => {
+                        setOpenAiQueryType(type);
+                        setIsShownOpenAiModal(true);
+                      }}
+                    >
+                      <img
+                        className="w-6 h-6"
+                        style={invertFilter}
+                        src={aiIcon}
+                        alt="ai"
+                      />
+                      {label}
+                    </h3>
+                  </li>
+                ))}
               </ul>
             </div>
           </div>
