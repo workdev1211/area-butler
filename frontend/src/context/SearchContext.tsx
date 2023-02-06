@@ -158,7 +158,9 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.ADD_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.REMOVE_MAP_CLIPPING]: MapClipping;
   [SearchContextActionTypes.CLEAR_MAP_CLIPPINGS]: undefined;
-  [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]: ApiRealEstateListing;
+  [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]:
+    | ApiRealEstateListing
+    | undefined;
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
 };
@@ -340,7 +342,10 @@ export const searchContextReducer = (
       return { ...state, mapClippings: [] };
     }
     case SearchContextActionTypes.SET_REAL_ESTATE_LISTING: {
-      return { ...state, realEstateListing: { ...action.payload } };
+      return {
+        ...state,
+        realEstateListing: action.payload ? { ...action.payload } : undefined,
+      };
     }
     case SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING: {
       return { ...state, realEstateListing: undefined };

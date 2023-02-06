@@ -2,7 +2,10 @@ import { forwardRef, useEffect, useState } from "react";
 
 import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import { ApiUser } from "../../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotConfig,
+  ApiUser,
+} from "../../../../shared/types/types";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
@@ -27,10 +30,10 @@ interface IOnePageProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   user: ApiUser | null;
-  color?: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCode: IQrCodeState;
+  snapshotConfig: ApiSearchResultSnapshotConfig;
 }
 
 export const OnePage = forwardRef((props: IOnePageProps, ref) => {
@@ -96,7 +99,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
   }, []);
 
   const user = props.user;
-  const color = props.color || user?.color || "#aa0c54";
+  const color = props.snapshotConfig.primaryColor || user?.color || "#aa0c54";
   const logo = user?.logo || areaButlerLogo;
 
   return (
@@ -125,32 +128,36 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
           <div className="flex flex-col gap-1.5">
             <img className="self-start h-14" src={logo} alt="Logo" />
             <div>
-              {!props.realEstateListing && (
+              {props.snapshotConfig.showAddress && !props.realEstateListing && (
                 <div className="text-2xl font-bold">{props.listingAddress}</div>
               )}
 
               {props.realEstateListing && (
                 <>
-                  <div className="font-bold">
-                    {props.realEstateListing.address}
-                  </div>
-                  {props.realEstateListing?.costStructure && (
-                    <div>
-                      <strong>Kosten:</strong>{" "}
-                      {getRealEstateCost(
-                        props.realEstateListing?.costStructure
-                      )}{" "}
-                      (
-                      {
-                        allRealEstateCostTypes.find(
-                          (t) =>
-                            t.type ===
-                            props.realEstateListing.costStructure?.type
-                        )?.label
-                      }
-                      )
+                  {props.snapshotConfig.showAddress && (
+                    <div className="font-bold">
+                      {props.realEstateListing.address}
                     </div>
                   )}
+
+                  {props.snapshotConfig?.showDetailsInOnePage &&
+                    props.realEstateListing?.costStructure && (
+                      <div>
+                        <strong>Kosten:</strong>{" "}
+                        {getRealEstateCost(
+                          props.realEstateListing?.costStructure
+                        )}{" "}
+                        (
+                        {
+                          allRealEstateCostTypes.find(
+                            (t) =>
+                              t.type ===
+                              props.realEstateListing.costStructure?.type
+                          )?.label
+                        }
+                        )
+                      </div>
+                    )}
                 </>
               )}
             </div>

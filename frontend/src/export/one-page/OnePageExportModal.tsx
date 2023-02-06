@@ -7,7 +7,10 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { ApiUser } from "../../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotConfig,
+  ApiUser,
+} from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import {
@@ -43,7 +46,6 @@ interface IOnePageExportModalProps {
   snapshotToken: string;
   snapshotId: string;
   hasOpenAiFeature?: boolean;
-  primaryColor?: string;
 }
 
 const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
@@ -51,7 +53,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   snapshotToken,
   snapshotId,
   hasOpenAiFeature = false,
-  primaryColor,
 }) => {
   const { post } = useHttp();
 
@@ -119,7 +120,8 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   };
 
   const buttonTitle = "Lage Exposé generieren";
-  const color = primaryColor || "var(--primary-gradient)";
+  const snapshotConfig = searchContextState.responseConfig!;
+  const color = snapshotConfig.primaryColor || "var(--primary-gradient)";
 
   const fetchOpenAiLocationDescription = async ({
     meanOfTransportation,
@@ -188,7 +190,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               {CHARACTER_LIMIT})
             </div>
             <div className="collapse-content textarea-content">
-              {hasOpenAiFeature && (
+              {snapshotConfig.showAddress && hasOpenAiFeature && (
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiLocationDescriptionForm
@@ -381,10 +383,10 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               }
               onAfterPrint={onClose}
               user={user}
-              color={searchContextState.responseConfig?.primaryColor}
               legend={legend}
               mapClippings={selectableMapClippings}
               qrCode={qrCodeState}
+              snapshotConfig={snapshotConfig}
             />
           )}
 
@@ -400,11 +402,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 ) || locationDescription.length > CHARACTER_LIMIT
               }
               user={user}
-              color={searchContextState.responseConfig?.primaryColor}
               legend={legend}
               mapClippings={selectableMapClippings}
               qrCode={qrCodeState}
               isTransparentBackground={isTransparentBackground}
+              snapshotConfig={snapshotConfig}
             />
           )}
         </div>

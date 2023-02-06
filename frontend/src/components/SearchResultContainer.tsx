@@ -109,6 +109,7 @@ export interface IEditorTabProps {
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
   snapshotId: string;
   additionalMapBoxStyles?: { key: string; label: string }[];
+  isNewSnapshot: boolean;
 }
 
 export interface IExportTabProps {

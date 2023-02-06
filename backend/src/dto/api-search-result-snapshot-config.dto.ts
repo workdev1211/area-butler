@@ -78,6 +78,10 @@ class ApiSearchResultSnapshotConfigDto
   @IsEnum(ApiRealEstateStatusEnum)
   @NotEquals(ApiRealEstateStatusEnum.ALLE)
   realEstateStatus?: ApiRealEstateStatusEnum;
+
+  @IsOptional()
+  @IsBoolean()
+  showDetailsInOnePage?: boolean;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

@@ -266,23 +266,39 @@ export class LocationService {
   async createSnapshot(
     user: UserDocument,
     snapshot: ApiSearchResultSnapshot,
-    config: ApiSearchResultSnapshotConfig = {
-      showLocation: true,
-      showAddress: true,
-      groupItems: false,
-      showStreetViewLink: true,
-    },
+    config?: ApiSearchResultSnapshotConfig,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const token = randomBytes(60).toString('hex');
     const { mapboxAccessToken } =
       await this.userService.createMapboxAccessToken(user);
 
+    let parsedConfig = config;
+
+    if (!parsedConfig) {
+      const [snapshot] = await this.fetchSnapshots(
+        user,
+        0,
+        1,
+        { config: 1 },
+        { updatedAt: -1 },
+      );
+
+      parsedConfig = snapshot?.config || {
+        showLocation: true,
+        showAddress: false,
+        groupItems: false,
+        showStreetViewLink: false,
+        fixedRealEstates: true,
+        showDetailsInOnePage: true,
+      };
+    }
+
     const snapshotDoc = {
-      userId: user.id,
-      token,
       mapboxAccessToken,
       snapshot,
-      config,
+      token,
+      userId: user.id,
+      config: parsedConfig,
       isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
@@ -308,7 +324,7 @@ export class LocationService {
       id: savedSnapshotDoc.id,
       token,
       snapshot,
-      config,
+      config: parsedConfig,
       mapboxToken: mapboxAccessToken,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,

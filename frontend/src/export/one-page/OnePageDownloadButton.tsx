@@ -2,7 +2,10 @@ import { FunctionComponent, useRef } from "react";
 import ReactToPrint from "react-to-print";
 
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import { ApiUser } from "../../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotConfig,
+  ApiUser,
+} from "../../../../shared/types/types";
 import OnePage from "./OnePage";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
@@ -16,10 +19,10 @@ interface IOnePageDownloadProps {
   downloadButtonDisabled: boolean;
   onAfterPrint: () => void;
   user: ApiUser | null;
-  color?: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCode: IQrCodeState;
+  snapshotConfig: ApiSearchResultSnapshotConfig;
 }
 
 export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
@@ -30,10 +33,10 @@ export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
   downloadButtonDisabled,
   user,
   onAfterPrint,
-  color,
   legend,
   mapClippings,
   qrCode,
+  snapshotConfig,
 }) => {
   const componentRef = useRef(null);
 
@@ -73,10 +76,10 @@ export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
         listingAddress={listingAddress}
         realEstateListing={realEstateListing}
         user={user}
-        color={color}
         legend={legend}
         mapClippings={mapClippings}
         qrCode={qrCode}
+        snapshotConfig={snapshotConfig}
       />
     </div>
   );

@@ -8,3 +8,20 @@ export interface IPoiIcon {
 }
 
 export type TFormikInnerRef<T> = RefObject<FormikProps<T>>;
+
+export interface IRealEstatesHistoryState {
+  isFromRealEstates?: boolean;
+}
+
+export interface IPotentialCustomersHistoryState {
+  isFromPotentialCustomers?: boolean;
+}
+
+export interface ISnippetEditorHistoryState {
+  isNewSnapshot?: boolean;
+}
+
+export interface ISearchParamsHistoryState
+  extends IRealEstatesHistoryState,
+    IPotentialCustomersHistoryState,
+    ISnippetEditorHistoryState {}

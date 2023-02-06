@@ -26,6 +26,7 @@ import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { preferredLocationsTitle } from "../shared/shared.functions";
+import { IPotentialCustomersHistoryState } from "../shared/shared.types";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -57,7 +58,7 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
 
 const PotentialCustomersPage: FunctionComponent = () => {
   const { get } = useHttp();
-  const history = useHistory();
+  const history = useHistory<IPotentialCustomersHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const customerHighlightId = queryParams.get("id");
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
@@ -97,7 +98,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
       payload: preferredLocations || [],
     });
 
-    history.push("/");
+    history.push("/search", { isFromPotentialCustomers: true });
   };
 
   useEffect(() => {

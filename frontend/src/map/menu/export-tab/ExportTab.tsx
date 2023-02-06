@@ -112,7 +112,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   ]);
 
   const clippings = searchContextState.mapClippings;
-  const config = searchContextState.responseConfig;
 
   const groupedEntities = deriveEntityGroupsByActiveMeans(
     searchContextState.responseGroupedEntities,
@@ -134,7 +133,9 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
     }
   };
 
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
+  const backgroundColor =
+    searchContextState.responseConfig?.primaryColor ||
+    "var(--primary-gradient)";
 
   return (
     <>
@@ -300,7 +301,16 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <img src={reportsIcon} alt="reports-icon" />
               <div className="collapse-title-text">
                 <div className="collapse-title-text-1">
-                  Reporte und Lage Exposé
+                  <div className="collapse-title-text-1 flex gap-2">
+                    <span>Reporte und Lage Exposé</span>{" "}
+                    <span
+                      className={`badge ${
+                        isReportsOpen ? "badge-accent" : "badge-primary"
+                      }`}
+                    >
+                      NEU
+                    </span>
+                  </div>
                 </div>
                 <div className="collapse-title-text-2">
                   Für Zahlen, Daten & Fakten zur Lage
@@ -310,6 +320,34 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           </div>
           <div className="collapse-content">
             <ul>
+              <li>
+                <h3
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  onClick={() => {
+                    hasFullyCustomizableExpose
+                      ? searchContextDispatch({
+                          type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
+                          payload: true,
+                        })
+                      : userDispatch({
+                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                          payload: {
+                            open: true,
+                            message: subscriptionUpgradeFullyCustomizableExpose,
+                          },
+                        });
+                  }}
+                >
+                  <img
+                    className="w-6 h-6"
+                    style={invertFilter}
+                    src={pdfIcon}
+                    alt="pdf"
+                  />
+                  <span>Lage Exposé generieren</span>{" "}
+                  <span className={"badge badge-primary"}>NEU</span>
+                </h3>
+              </li>
               <li>
                 <h3
                   className="flex max-w-fit items-center cursor-pointer gap-2"
@@ -389,33 +427,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     alt="pdf"
                   />
                   Überblick PDF
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
-                  onClick={() => {
-                    hasFullyCustomizableExpose
-                      ? searchContextDispatch({
-                          type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
-                          payload: true,
-                        })
-                      : userDispatch({
-                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                          payload: {
-                            open: true,
-                            message: subscriptionUpgradeFullyCustomizableExpose,
-                          },
-                        });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    style={invertFilter}
-                    src={pdfIcon}
-                    alt="pdf"
-                  />
-                  Lage Exposé generieren
                 </h3>
               </li>
             </ul>
@@ -633,7 +644,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           groupedEntries={groupedEntities}
           snapshotToken={searchContextState.responseToken}
           snapshotId={snapshotId}
-          primaryColor={config?.primaryColor}
           hasOpenAiFeature={hasOpenAiFeature}
         />
       )}

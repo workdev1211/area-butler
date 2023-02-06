@@ -307,12 +307,12 @@ export interface ApiSnippetEntityVisibility {
 
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
+  groupItems: boolean;
   showAddress?: boolean;
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   defaultActiveMeans?: MeansOfTransportation[];
   defaultActiveGroups?: string[];
-  groupItems: boolean;
   entityVisibility?: ApiSnippetEntityVisibility[];
   primaryColor?: string;
   mapIcon?: string;
@@ -321,6 +321,7 @@ export interface ApiSearchResultSnapshotConfig {
   hideIsochrones?: boolean;
   zoomLevel?: number;
   realEstateStatus?: ApiRealEstateStatusEnum;
+  showDetailsInOnePage?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {

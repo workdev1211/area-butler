@@ -35,6 +35,7 @@ export const useAnalysis = () => {
 
     let index = 0;
 
+    // TODO change to await for in case of HERE API rate limits
     await Promise.all(
       preferredLocations.map(async (preferredLocation) => {
         items.push({

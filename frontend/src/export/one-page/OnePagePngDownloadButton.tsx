@@ -4,7 +4,10 @@ import { saveAs } from "file-saver";
 import { toPng } from "html-to-image";
 
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import { ApiUser } from "../../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotConfig,
+  ApiUser,
+} from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
@@ -24,11 +27,11 @@ interface IOnePageDownloadProps {
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
   user: ApiUser | null;
-  color?: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCode: IQrCodeState;
   isTransparentBackground: boolean;
+  snapshotConfig: ApiSearchResultSnapshotConfig;
 }
 
 export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
@@ -38,11 +41,11 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
   realEstateListing,
   downloadButtonDisabled,
   user,
-  color,
   legend,
   mapClippings,
   qrCode,
   isTransparentBackground,
+  snapshotConfig,
 }) => {
   const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectedMapClippings, setSelectedMapClippings] = useState<
@@ -140,12 +143,12 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
               listingAddress={listingAddress}
               realEstateListing={realEstateListing}
               user={user}
-              color={color}
               legend={legend}
               mapClippings={selectedMapClippings}
               qrCodeImage={qrCodeImage}
               isTransparentBackground={isTransparentBackground}
               style={onePagePngStyle}
+              snapshotConfig={snapshotConfig}
             />
           );
 

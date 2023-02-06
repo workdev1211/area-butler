@@ -44,6 +44,7 @@ import { getRealEstateCost } from "../shared/real-estate.functions";
 import CsvImportModal from "../real-estates/CsvImportModal";
 import { ConfigContext } from "../context/ConfigContext";
 import { googleMapsApiOptions } from "../shared/shared.constants";
+import { IRealEstatesHistoryState } from "../shared/shared.types";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -52,7 +53,7 @@ const deleteRealEstateModalConfig = {
 
 const RealEstatesPage: FunctionComponent = () => {
   const { get } = useHttp();
-  const history = useHistory();
+  const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
 
@@ -142,7 +143,7 @@ const RealEstatesPage: FunctionComponent = () => {
       },
     });
 
-    history.push("/");
+    history.push("/search", { isFromRealEstates: true });
   };
 
   const fetchRealEstates = async () => {
@@ -263,9 +264,9 @@ const RealEstatesPage: FunctionComponent = () => {
           }}
           getOptionValue={(option) => option.status}
         />
-        <span>Typfilter</span>
+        <span>Immobilienart</span>
       </div>
-      <div className="overflow-x-auto" data-tour="real-estates-table">
+      <div data-tour="real-estates-table">
         <table className="table w-full">
           <thead>
             <tr>
@@ -322,7 +323,9 @@ const RealEstatesPage: FunctionComponent = () => {
                         src={searchIcon}
                         alt="icon-search"
                         className="cursor-pointer"
-                        onClick={() => startSearchFromRealEstate(realEstate)}
+                        onClick={() => {
+                          void startSearchFromRealEstate(realEstate);
+                        }}
                         data-tour={`real-estates-table-item-search-button-${index}`}
                       />
                       {!realEstate.belongsToParent ? (

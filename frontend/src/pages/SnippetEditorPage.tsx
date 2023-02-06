@@ -6,7 +6,7 @@ import {
   useState,
 } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { useHistory, useParams } from "react-router-dom";
+import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
@@ -50,13 +50,15 @@ import { defaultMapZoom } from "../map/Map";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
+import { ISnippetEditorHistoryState } from "../shared/shared.types";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
 }
 
 const SnippetEditorPage: FunctionComponent = () => {
-  const history = useHistory();
+  const history = useHistory<ISnippetEditorHistoryState>();
+  const { state } = useLocation<ISnippetEditorHistoryState>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { get, put } = useHttp();
   const { fetchNearData } = useCensusData();
@@ -412,6 +414,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     },
     snapshotId,
     additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
+    isNewSnapshot: !!state?.isNewSnapshot,
   };
 
   const exportTabProps: IExportTabProps = {

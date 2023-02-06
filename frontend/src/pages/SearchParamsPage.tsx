@@ -23,7 +23,7 @@ import { UserContext } from "context/UserContext";
 import { useFederalElectionData } from "hooks/federalelectiondata";
 import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
-import { useHistory } from "react-router-dom";
+import { useHistory, useLocation } from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
   deriveAvailableMeansFromResponse,
@@ -76,6 +76,7 @@ import {
   getCombinedOsmEntityTypes,
   getUncombinedOsmEntityTypes,
 } from "../../../shared/functions/shared.functions";
+import { ISearchParamsHistoryState } from "../shared/shared.types";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -84,7 +85,8 @@ const SearchParamsPage: FunctionComponent = () => {
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
-  const history = useHistory();
+  const history = useHistory<ISearchParamsHistoryState>();
+  const { state } = useLocation<ISearchParamsHistoryState>();
   const { createSnapshot } = useAnalysis();
 
   const { userState } = useContext(UserContext);
@@ -111,15 +113,27 @@ const SearchParamsPage: FunctionComponent = () => {
 
   const user: ApiUser = userState.user!;
 
-  useEffect(() => {
+  const clearRealEstateParams = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: undefined,
     });
 
     searchContextDispatch({
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+      payload: undefined,
+    });
+
+    searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCATION,
       payload: undefined,
+    });
+  };
+
+  const clearPotentialCustomerParams = () => {
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+      payload: getCombinedOsmEntityTypes(),
     });
 
     searchContextDispatch({
@@ -131,12 +145,23 @@ const SearchParamsPage: FunctionComponent = () => {
       type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
       payload: [],
     });
+  };
 
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: getCombinedOsmEntityTypes(),
-    });
+  // Clears initial values
+  useEffect(() => {
+    if (!state) {
+      clearRealEstateParams();
+      clearPotentialCustomerParams();
+      return;
+    }
 
+    if (state.isFromRealEstates) {
+      clearPotentialCustomerParams();
+    }
+
+    if (state.isFromPotentialCustomers) {
+      clearRealEstateParams();
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -503,8 +528,8 @@ const SearchParamsPage: FunctionComponent = () => {
       setBusyModalItems([...items]);
 
       const { config: snapshotConfig } = createdSnapshotResponse;
-      snapshotConfig!.primaryColor = user.color;
-      snapshotConfig!.mapIcon = user.mapIcon;
+      snapshotConfig!.primaryColor = snapshotConfig!.primaryColor || user.color;
+      snapshotConfig!.mapIcon = snapshotConfig!.mapIcon || user.mapIcon;
 
       const { data: updatedSnapshotResponse } =
         await put<ApiUpdateSearchResultSnapshot>(
@@ -558,7 +583,9 @@ const SearchParamsPage: FunctionComponent = () => {
 
   const performAnalysis = async (): Promise<void> => {
     const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
-      history.push(`snippet-editor/${snapshotResponse.id}`);
+      history.push(`snippet-editor/${snapshotResponse.id}`, {
+        isNewSnapshot: true,
+      });
     };
 
     const onFinally = () => {

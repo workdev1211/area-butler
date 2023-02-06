@@ -49,10 +49,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   onConfigChange,
   snapshotId,
   additionalMapBoxStyles = [],
+  isNewSnapshot = false,
 }) => {
   const { get } = useHttp();
 
-  const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(true);
+  const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
     useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
@@ -77,9 +78,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
 
   useEffect(() => {
     const fetchEmbeddableMaps = async () => {
+      const limit = isNewSnapshot ? 6 : 5;
+
       const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
         await get<ApiSearchResultSnapshotResponse[]>(
-          `/api/location/snapshots?limit=5&sort=${JSON.stringify({
+          `/api/location/snapshots?limit=${limit}&sort=${JSON.stringify({
             updatedAt: -1,
           })}`
         )
@@ -96,7 +99,13 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             config,
           }
         ) => {
-          if (!id || !label || !config) {
+          if (
+            !id ||
+            !label ||
+            !config ||
+            result.length === 5 ||
+            (id === snapshotId && isNewSnapshot)
+          ) {
             return result;
           }
 
@@ -189,6 +198,13 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({
       ...config,
       hideIsochrones: !config.hideIsochrones,
+    });
+  };
+
+  const changeShowDetailsInOnePage = () => {
+    onConfigChange({
+      ...config,
+      showDetailsInOnePage: !config.showDetailsInOnePage,
     });
   };
 
@@ -301,6 +317,147 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
       <div
         className={
           "collapse collapse-arrow view-option" +
+          (isPreselectedCategoriesOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsPreselectedCategoriesOpen(!isPreselectedCategoriesOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img
+              src={preselectedCategoriesIcon}
+              alt="preselected-categories-icon"
+            />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">
+                Vorausgewählte Kategorien
+              </div>
+              <div className="collapse-title-text-2">
+                POIs die zu Beginn angezeigt werden
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content preselected-groups">
+          <ul>
+            {groupedEntries
+              .filter((ge) => ge.items.length)
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((group) => (
+                <li key={group.title}>
+                  <input
+                    type="checkbox"
+                    checked={isDefaultActiveGroup(group.title)}
+                    className="checkbox checkbox-primary"
+                    onChange={() => {
+                      changeDefaultActiveGroups(group.title);
+                    }}
+                  />
+                  <h4 className="font-medium pl-2">
+                    {group.title === realEstateListingsTitle
+                      ? realEstateListingsTitleEmbed
+                      : group.title}{" "}
+                  </h4>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
+          (isPoiVisibilityOpen ? " collapse-open" : " collapse-closed")
+        }
+      >
+        <div
+          className="collapse-title"
+          ref={(node) => {
+            setBackgroundColor(node, backgroundColor);
+          }}
+          onClick={() => {
+            setIsPoiVisibilityOpen(!isPoiVisibilityOpen);
+          }}
+        >
+          <div className="collapse-title-container">
+            <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
+            <div className="collapse-title-text">
+              <div className="collapse-title-text-1">POI-Detail-Filter</div>
+              <div className="collapse-title-text-2">
+                Einzelne POIs ausblenden
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="collapse-content entity-groups">
+          <ul>
+            {groupedEntries
+              .filter((ge) => ge.items.length)
+              .sort((a, b) => a.title.localeCompare(b.title))
+              .map((group) => (
+                <li key={group.title}>
+                  <div className="flex flex-col">
+                    <div className="flex items-center py-4">
+                      <input
+                        type="checkbox"
+                        checked={!isGroupHidden(group)}
+                        className="checkbox checkbox-primary"
+                        onChange={() => {
+                          toggleGroupVisibility(group);
+                        }}
+                      />
+                      <h4 className="font-medium pl-2 cursor-pointer">
+                        {group.title === realEstateListingsTitle
+                          ? realEstateListingsTitleEmbed
+                          : group.title}{" "}
+                      </h4>
+                      <button
+                        className="btn-sm btn-link"
+                        onClick={() => {
+                          toggleGroupOpen(group);
+                        }}
+                      >
+                        {isGroupOpen(group) ? "Schließen" : "Öffnen"}
+                      </button>
+                    </div>
+                    {isGroupOpen(group) && (
+                      <div className="group-items flex flex-col pl-2">
+                        <ul>
+                          {group.items.map((item) => (
+                            <li key={item.id}>
+                              <div className="item-title">
+                                <input
+                                  type="checkbox"
+                                  checked={!isEntityHidden(item, config)}
+                                  className="checkbox checkbox-xs"
+                                  onChange={() => {
+                                    toggleSingleEntityVisibility(item);
+                                  }}
+                                />{" "}
+                                <span>{item.name ?? item.label}</span>
+                              </div>
+                              <LocalityItemContent item={item} />
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
+                  </div>
+                </li>
+              ))}
+          </ul>
+        </div>
+      </div>
+
+      <div
+        className={
+          "collapse collapse-arrow view-option" +
           (isConfigOptionsOpen ? " collapse-open" : " collapse-closed")
         }
       >
@@ -325,32 +482,34 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         </div>
         <div className="collapse-content">
           <ul>
-            <li>
-              <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-16 font-bold">Vorlagen</h4>
-                <select
-                  className="select select-bordered select-sm flex-1"
-                  value={selectedSnippetConfigId}
-                  disabled={recentSnippetConfigs.length === 1}
-                  onChange={(e) => {
-                    const changedSnippetConfigId = e.target.value;
-                    setSelectedSnippetConfigId(changedSnippetConfigId);
+            {recentSnippetConfigs.length && (
+              <li>
+                <div className="flex items-center gap-6 py-1 w-full">
+                  <h4 className="w-16 font-bold">Vorlagen</h4>
+                  <select
+                    className="select select-bordered select-sm flex-1"
+                    value={selectedSnippetConfigId}
+                    disabled={recentSnippetConfigs.length === 1}
+                    onChange={(e) => {
+                      const changedSnippetConfigId = e.target.value;
+                      setSelectedSnippetConfigId(changedSnippetConfigId);
 
-                    onConfigChange({
-                      ...recentSnippetConfigs.find(
-                        ({ id }) => id === changedSnippetConfigId
-                      )!.config,
-                    });
-                  }}
-                >
-                  {recentSnippetConfigs.map((snippetConfig) => (
-                    <option value={snippetConfig.id} key={snippetConfig.id}>
-                      {snippetConfig.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </li>
+                      onConfigChange({
+                        ...recentSnippetConfigs.find(
+                          ({ id }) => id === changedSnippetConfigId
+                        )!.config,
+                      });
+                    }}
+                  >
+                    {recentSnippetConfigs.map((snippetConfig) => (
+                      <option value={snippetConfig.id} key={snippetConfig.id}>
+                        {snippetConfig.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </li>
+            )}
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
                 <h4 className="w-16 font-bold">Menu</h4>
@@ -407,7 +566,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-16 font-bold">Typfilter</h4>
+                <h4 className="w-16 font-bold">Immobilienart</h4>
                 <select
                   className="select select-bordered select-sm flex-1"
                   value={config?.realEstateStatus}
@@ -591,6 +750,24 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="hideIsochrones"
+                    checked={config?.showDetailsInOnePage}
+                    onChange={() => {
+                      changeShowDetailsInOnePage();
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Objekt Infos in Lage-Exposé anzeigen
+                  </span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
                 <ColorPicker
                   label="Primärfarbe"
                   color={color}
@@ -635,147 +812,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 )}
               </div>
             </li>
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className={
-          "collapse collapse-arrow view-option" +
-          (isPreselectedCategoriesOpen ? " collapse-open" : " collapse-closed")
-        }
-      >
-        <div
-          className="collapse-title"
-          ref={(node) => {
-            setBackgroundColor(node, backgroundColor);
-          }}
-          onClick={() => {
-            setIsPreselectedCategoriesOpen(!isPreselectedCategoriesOpen);
-          }}
-        >
-          <div className="collapse-title-container">
-            <img
-              src={preselectedCategoriesIcon}
-              alt="preselected-categories-icon"
-            />
-            <div className="collapse-title-text">
-              <div className="collapse-title-text-1">
-                Vorausgewählte Kategorien
-              </div>
-              <div className="collapse-title-text-2">
-                POIs die zu Beginn angezeigt werden
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="collapse-content preselected-groups">
-          <ul>
-            {groupedEntries
-              .filter((ge) => ge.items.length)
-              .sort((a, b) => a.title.localeCompare(b.title))
-              .map((group) => (
-                <li key={group.title}>
-                  <input
-                    type="checkbox"
-                    checked={isDefaultActiveGroup(group.title)}
-                    className="checkbox checkbox-primary"
-                    onChange={() => {
-                      changeDefaultActiveGroups(group.title);
-                    }}
-                  />
-                  <h4 className="font-medium pl-2">
-                    {group.title === realEstateListingsTitle
-                      ? realEstateListingsTitleEmbed
-                      : group.title}{" "}
-                  </h4>
-                </li>
-              ))}
-          </ul>
-        </div>
-      </div>
-
-      <div
-        className={
-          "collapse collapse-arrow view-option" +
-          (isPoiVisibilityOpen ? " collapse-open" : " collapse-closed")
-        }
-      >
-        <div
-          className="collapse-title"
-          ref={(node) => {
-            setBackgroundColor(node, backgroundColor);
-          }}
-          onClick={() => {
-            setIsPoiVisibilityOpen(!isPoiVisibilityOpen);
-          }}
-        >
-          <div className="collapse-title-container">
-            <img src={poiVisibilityIcon} alt="poi-visibility-icon" />
-            <div className="collapse-title-text">
-              <div className="collapse-title-text-1">POI-Detail-Filter</div>
-              <div className="collapse-title-text-2">
-                Einzelne POIs ausblenden
-              </div>
-            </div>
-          </div>
-        </div>
-        <div className="collapse-content entity-groups">
-          <ul>
-            {groupedEntries
-              .filter((ge) => ge.items.length)
-              .sort((a, b) => a.title.localeCompare(b.title))
-              .map((group) => (
-                <li key={group.title}>
-                  <div className="flex flex-col">
-                    <div className="flex items-center py-4">
-                      <input
-                        type="checkbox"
-                        checked={!isGroupHidden(group)}
-                        className="checkbox checkbox-primary"
-                        onChange={() => {
-                          toggleGroupVisibility(group);
-                        }}
-                      />
-                      <h4 className="font-medium pl-2 cursor-pointer">
-                        {group.title === realEstateListingsTitle
-                          ? realEstateListingsTitleEmbed
-                          : group.title}{" "}
-                      </h4>
-                      <button
-                        className="btn-sm btn-link"
-                        onClick={() => {
-                          toggleGroupOpen(group);
-                        }}
-                      >
-                        {isGroupOpen(group) ? "Schließen" : "Öffnen"}
-                      </button>
-                    </div>
-                    {isGroupOpen(group) && (
-                      <div className="group-items flex flex-col pl-2">
-                        <ul>
-                          {group.items.map((item) => (
-                            <li key={item.id}>
-                              <div className="item-title">
-                                <input
-                                  type="checkbox"
-                                  checked={!isEntityHidden(item, config)}
-                                  className="checkbox checkbox-xs"
-                                  onChange={() => {
-                                    toggleSingleEntityVisibility(item);
-                                  }}
-                                />{" "}
-                                <span>{item.name ?? item.label}</span>
-                              </div>
-                              <LocalityItemContent item={item} />
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              ))}
           </ul>
         </div>
       </div>
