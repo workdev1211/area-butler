@@ -93,7 +93,9 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
   appFeatures,
 };
 
-export const payPerUse1SubscriptionLegacy = { ...payPerUse1Subscription };
+export const payPerUse1SubscriptionLegacy = JSON.parse(
+  JSON.stringify(payPerUse1Subscription)
+);
 payPerUse1SubscriptionLegacy.prices[0].id = {
   dev: "price_1LAUOVLcbb2Q3qBpRhqjaCb5",
   prod: "price_1LFzpKLcbb2Q3qBpuRsjhPNa",
@@ -127,7 +129,9 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
   appFeatures,
 };
 
-export const payPerUse10SubscriptionLegacy = { ...payPerUse10Subscription };
+export const payPerUse10SubscriptionLegacy = JSON.parse(
+  JSON.stringify(payPerUse10Subscription)
+);
 payPerUse10SubscriptionLegacy.prices[0].id = {
   dev: "price_1LAUPsLcbb2Q3qBpmM72R6DK",
   prod: "price_1LFzpULcbb2Q3qBplTPeFi36",

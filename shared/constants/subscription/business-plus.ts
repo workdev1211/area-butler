@@ -153,9 +153,9 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
   appFeatures,
 };
 
-export const businessPlusV2SubscriptionLegacy = {
-  ...businessPlusV2Subscription,
-};
+export const businessPlusV2SubscriptionLegacy = JSON.parse(
+  JSON.stringify(businessPlusV2Subscription)
+);
 businessPlusV2SubscriptionLegacy.prices[0].id = {
   dev: "price_1LG01pLcbb2Q3qBp75uFSyCx",
   prod: "price_1LFznwLcbb2Q3qBp3acGp9ni",
