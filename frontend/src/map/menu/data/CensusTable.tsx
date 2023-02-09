@@ -23,7 +23,12 @@ interface ICensusTableProps {
 }
 
 const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
-  if (!censusData) {
+  if (
+    !censusData ||
+    !Object.keys(censusData).some(
+      (provisionKey) => censusData[provisionKey as ApiDataProvisionEnum].length
+    )
+  ) {
     return null;
   }
 
