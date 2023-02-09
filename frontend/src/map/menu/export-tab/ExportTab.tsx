@@ -586,7 +586,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
                     if (!searchContextState.localityParams.length) {
-                      toastSuccess("Wird geladen...");
+                      toastSuccess("Wird geladen ... bitte erneut klicken.");
                       return;
                     }
 
@@ -607,7 +607,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
                     if (!searchContextState.placesLocation.label) {
-                      toastSuccess("Wird geladen...");
+                      toastSuccess("Wird geladen ... bitte erneut klicken.");
                       return;
                     }
 

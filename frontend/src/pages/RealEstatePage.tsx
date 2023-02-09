@@ -33,7 +33,7 @@ const RealEstatePage: FunctionComponent = () => {
     localStorageSearchContext
   );
 
-  if (realEstateId === "from-result" && !!searchContextFromLocalStorageString) {
+  if (realEstateId === "from-result" && searchContextFromLocalStorageString) {
     const searchContextFromLocalStorage = JSON.parse(
       searchContextFromLocalStorageString!
     ) as SearchContextState;

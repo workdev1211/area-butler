@@ -7,10 +7,7 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import {
-  ApiSearchResultSnapshotConfig,
-  ApiUser,
-} from "../../../../shared/types/types";
+import { ApiUser } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import {
