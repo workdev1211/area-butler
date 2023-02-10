@@ -7,7 +7,6 @@ import {
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
 import { SubscriptionService } from '../user/subscription.service';
-import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   checkAnyStringIsEmpty,
@@ -18,6 +17,7 @@ import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
   ApiRealEstateStatusEnum,
+  ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { ApiCoordinates, CsvFileFormatEnum } from '@area-butler-types/types';
@@ -80,7 +80,7 @@ export class RealEstateListingService {
 
   async insertRealEstateListing(
     user: UserDocument,
-    { coordinates, ...upsertData }: ApiUpsertRealEstateListingDto,
+    { coordinates, ...upsertData }: ApiUpsertRealEstateListing,
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
     subscriptionCheck &&
@@ -112,7 +112,7 @@ export class RealEstateListingService {
   async updateRealEstateListing(
     user: UserDocument,
     id: string,
-    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListingDto>,
+    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
     const existingListing = await this.realEstateListingModel.findById({
       _id: id,

@@ -32,7 +32,9 @@ import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
-import { OpenAiModule } from "../open-ai/open-ai.module";
+import { OpenAiModule } from '../open-ai/open-ai.module';
+import { ApiOpenImmoService } from './api/open-immo/api-open-immo.service';
+import { ApiOpenImmoController } from './api/open-immo/api-open-immo.controller';
 
 @Module({
   imports: [
@@ -54,6 +56,7 @@ import { OpenAiModule } from "../open-ai/open-ai.module";
     ApiSnapshotController,
     TilesController,
     ApiAddressesInRangeController,
+    ApiOpenImmoController,
   ],
   providers: [
     LocationService,
@@ -65,6 +68,7 @@ import { OpenAiModule } from "../open-ai/open-ai.module";
     MongoParamPipe,
     MongoSortParamPipe,
     ApiAddressesInRangeService,
+    ApiOpenImmoService,
   ],
   exports: [LocationService],
 })

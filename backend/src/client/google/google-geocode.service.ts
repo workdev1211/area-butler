@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { configService } from '../../config/config.service';
 import { ApiCoordinates } from '@area-butler-types/types';
-import { ApiGoogleLanguageEnum } from '../../../../shared/constants/google';
+import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 
 export interface IGoogleGeocodeResult {
   address_components: Array<{

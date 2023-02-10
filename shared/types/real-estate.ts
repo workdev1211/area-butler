@@ -14,14 +14,14 @@ export interface ApiRealEstateListing {
 }
 
 export interface ApiUpsertRealEstateListing {
-  showInSnippet: boolean;
   name: string;
   address: string;
-  externalUrl?: string;
   coordinates?: ApiCoordinates;
+  externalUrl?: string;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
   status: ApiRealEstateStatusEnum;
+  showInSnippet: boolean;
 }
 
 // should be present either minPrice or maxPrice, or both

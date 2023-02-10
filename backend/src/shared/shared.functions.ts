@@ -23,11 +23,21 @@ export const randomizeCoordinates = ({
   };
 };
 
-export const getRawPriceValue = (priceValue: string) =>
+export const getRawPriceValue = (priceValue: string): string =>
   priceValue.replace('.', '');
 
-export const getPriceValueWithVat = (priceValue: string) =>
+export const getPriceValueWithVat = (priceValue: string): string =>
   `${Math.round(+priceValue * 119) / 100}`;
+
+export const getGrossPriceValue = (price: string | number): number => {
+  const priceValue = Number(price);
+
+  if (typeof priceValue !== 'number') {
+    throw new Error('Price is not a numeric value!');
+  }
+
+  return Math.round(priceValue * 119) / 100;
+};
 
 export const parseCsv = async (
   csvFile: Express.Multer.File,

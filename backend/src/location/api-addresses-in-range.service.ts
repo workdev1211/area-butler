@@ -14,10 +14,10 @@ import { distanceInMeters } from '../shared/shared.functions';
 import {
   allowedCountries,
   ApiGoogleLanguageEnum,
-} from '../../../shared/constants/google';
-import { ApiHereLanguageEnum } from '../../../shared/constants/here';
+} from '@area-butler-types/google';
+import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
-import { createChunks } from '../../../shared/functions/shared.functions';
+// import { createChunks } from '../../../shared/functions/shared.functions';
 
 @Injectable()
 export class ApiAddressesInRangeService {

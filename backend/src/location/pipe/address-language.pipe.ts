@@ -1,7 +1,7 @@
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
 
-import { ApiHereLanguageEnum } from '../../../../shared/constants/here';
-import { ApiGoogleLanguageEnum } from '../../../../shared/constants/google';
+import { ApiHereLanguageEnum } from '@area-butler-types/here';
+import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 
 @Injectable()
 export class AddressLanguagePipe implements PipeTransform {

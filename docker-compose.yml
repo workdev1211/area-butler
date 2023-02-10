@@ -66,7 +66,7 @@ services:
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.area-butler-http.entrypoints=web"
       - "traefik.http.routers.area-butler-http.middlewares=redirect"
-#      - "traefik.http.routers.area-butler-http.middlewares=a-b-to-ab"
+      #      - "traefik.http.routers.area-butler-http.middlewares=a-b-to-ab"
       - "traefik.http.routers.area-butler-http.rule=Host(`area-butler.dev.area-butler.de`, `areabutler.dev.areabutler.de`)"
       - "traefik.http.routers.area-butler.entrypoints=websecure"
       - "traefik.http.routers.area-butler.rule=Host(`area-butler.dev.area-butler.de`, `areabutler.dev.areabutler.de`)"
@@ -76,12 +76,30 @@ services:
     depends_on:
       - area-butler-db
 
+  area-butler-ftp:
+    image: delfer/alpine-ftp-server
+    container_name: area-butler-ftp
+    restart: always
+    networks:
+      - web
+    expose:
+      - 21
+    volumes:
+      - area-butler-ftp:/ftp/ftp
+    environment:
+      - USERS="one|sjhfoeihfvnlxnzdsfkq3r4"
+      - ADDRESS=23.88.7.41
+    labels:
+      - "traefik.enable=false"
+
 volumes:
   area-butler-db:
     external: true
   area-butler-db-dump:
     external: true
   area-butler-assets:
+    external: true
+  area-butler-ftp:
     external: true
 
 networks:
