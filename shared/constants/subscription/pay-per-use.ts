@@ -1,29 +1,11 @@
 import {
-  ApiDataSource,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
   IApiSubscriptionLimitIncreaseParams,
 } from "../../types/subscription-plan";
-import { subscriptionIntervals } from "./common";
-import { CsvFileFormatEnum } from "../../types/types";
-
-const appFeatures = {
-  sendCustomerQuestionnaireRequest: false,
-  dataSources: [
-    ApiDataSource.OSM,
-    ApiDataSource.CENSUS,
-    ApiDataSource.FEDERAL_ELECTION,
-    ApiDataSource.PARTICLE_POLLUTION,
-    ApiDataSource.LOCATION_INDICES,
-  ],
-  canCustomizeExport: true,
-  fullyCustomizableExpose: true,
-  htmlSnippet: true,
-  openAi: true,
-  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
-};
+import { commonAppFeatures, subscriptionIntervals } from "./common";
 
 const payPerUseRequestLimitIncrease: IApiSubscriptionLimitIncreaseParams[] = [
   {
@@ -90,7 +72,7 @@ export const payPerUse1Subscription: ApiSubscriptionPlan = {
       },
     },
   ],
-  appFeatures,
+  appFeatures: commonAppFeatures,
 };
 
 export const payPerUse1SubscriptionLegacy = JSON.parse(
@@ -126,7 +108,7 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
       },
     },
   ],
-  appFeatures,
+  appFeatures: commonAppFeatures,
 };
 
 export const payPerUse10SubscriptionLegacy = JSON.parse(

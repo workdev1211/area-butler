@@ -5,26 +5,11 @@ import {
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
-import { subscriptionIntervals } from "./common";
+import { commonAppFeatures, subscriptionIntervals } from "./common";
 import { CsvFileFormatEnum } from "../../types/types";
 
 export const TRIAL_DAYS = 4;
 export const TRIAL_PRICE_ID = "trial";
-
-const appFeatures = {
-  sendCustomerQuestionnaireRequest: true,
-  dataSources: [
-    ApiDataSource.OSM,
-    ApiDataSource.CENSUS,
-    ApiDataSource.FEDERAL_ELECTION,
-    ApiDataSource.PARTICLE_POLLUTION,
-  ],
-  canCustomizeExport: true,
-  fullyCustomizableExpose: true,
-  htmlSnippet: true,
-  openAi: true,
-  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
-};
 
 export const trialSubscription: ApiSubscriptionPlan = {
   name: "Trial",
@@ -56,5 +41,5 @@ export const trialSubscription: ApiSubscriptionPlan = {
     "Individuelles Onboarding Ihres Teams",
     "24/7 individueller Service",
   ],
-  appFeatures,
+  appFeatures: commonAppFeatures,
 };

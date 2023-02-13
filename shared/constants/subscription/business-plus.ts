@@ -1,28 +1,10 @@
 import {
-  ApiDataSource,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlan,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
-import { subscriptionIntervals } from "../subscription-plan";
-import { CsvFileFormatEnum } from "../../types/types";
-
-const appFeatures = {
-  sendCustomerQuestionnaireRequest: true,
-  dataSources: [
-    ApiDataSource.OSM,
-    ApiDataSource.CENSUS,
-    ApiDataSource.FEDERAL_ELECTION,
-    ApiDataSource.PARTICLE_POLLUTION,
-    ApiDataSource.LOCATION_INDICES,
-  ],
-  canCustomizeExport: true,
-  fullyCustomizableExpose: true,
-  htmlSnippet: true,
-  openAi: true,
-  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
-};
+import { commonAppFeatures, subscriptionIntervals } from "../subscription-plan";
 
 // Legacy Business+ subscription
 export const businessPlusSubscription: ApiSubscriptionPlan = {
@@ -73,7 +55,7 @@ export const businessPlusSubscription: ApiSubscriptionPlan = {
     "Analyse basierend auf allen Geo-Daten",
     "Versand von Fragebögen",
   ],
-  appFeatures,
+  appFeatures: commonAppFeatures,
 };
 
 // Actual Business+ subscription
@@ -150,7 +132,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
     "Individuelles Onboarding Ihres Teams",
     "24/7 individueller Service",
   ],
-  appFeatures,
+  appFeatures: commonAppFeatures,
 };
 
 export const businessPlusV2SubscriptionLegacy = JSON.parse(

@@ -1,7 +1,9 @@
 import {
+  ApiDataSource,
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
+import { CsvFileFormatEnum } from "../../types/types";
 
 export const allSubscriptionTypes: {
   type: ApiSubscriptionPlanType;
@@ -35,4 +37,20 @@ export const subscriptionIntervals = {
   [ApiSubscriptionIntervalEnum.ANNUALLY]: { value: 1, unit: "year" },
   [ApiSubscriptionIntervalEnum.TWELVE_WEEKS]: { value: 12, unit: "weeks" },
   [ApiSubscriptionIntervalEnum.QUARTERLY]: { value: 3, unit: "months" },
+};
+
+export const commonAppFeatures = {
+  sendCustomerQuestionnaireRequest: true,
+  dataSources: [
+    ApiDataSource.OSM,
+    ApiDataSource.CENSUS,
+    ApiDataSource.FEDERAL_ELECTION,
+    ApiDataSource.PARTICLE_POLLUTION,
+    ApiDataSource.LOCATION_INDICES,
+  ],
+  canCustomizeExport: true,
+  fullyCustomizableExpose: true,
+  htmlSnippet: true,
+  openAi: true,
+  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
 };
