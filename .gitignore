@@ -54,3 +54,4 @@ db
 
 # assets are kept in the external docker volume
 shared/assets/*
+shared/ftp/*

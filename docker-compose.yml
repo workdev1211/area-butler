@@ -27,6 +27,7 @@ services:
       - 8073:3000
     volumes:
       - area-butler-assets:/home/node/app/shared/assets
+#      - area-butler-ftp:/home/node/app/shared/ftp
     environment:
       - PORT=3000
       - MAPBOX_ACCESS_TOKEN
@@ -76,21 +77,21 @@ services:
     depends_on:
       - area-butler-db
 
-  area-butler-ftp:
-    image: delfer/alpine-ftp-server
-    container_name: area-butler-ftp
-    restart: always
-    networks:
-      - web
-    expose:
-      - 21
-    volumes:
-      - area-butler-ftp:/ftp/ftp
-    environment:
-      - USERS="one|sjhfoeihfvnlxnzdsfkq3r4"
-      - ADDRESS=23.88.7.41
-    labels:
-      - "traefik.enable=false"
+#  area-butler-ftp:
+#    image: delfer/alpine-ftp-server
+#    container_name: area-butler-ftp
+#    restart: always
+#    networks:
+#      - web
+#    expose:
+#      - 21
+#    volumes:
+#      - area-butler-ftp:/ftp/ftp
+#    environment:
+#      - USERS=one|1fghfsadfa3rhudhgf
+#      - ADDRESS=23.88.7.41
+#    labels:
+#      - "traefik.enable=false"
 
 volumes:
   area-butler-db:
@@ -99,8 +100,8 @@ volumes:
     external: true
   area-butler-assets:
     external: true
-  area-butler-ftp:
-    external: true
+#  area-butler-ftp:
+#    external: true
 
 networks:
   web:

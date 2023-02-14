@@ -31,7 +31,16 @@ export class ApiOpenImmoController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<HttpStatus> {
-    await this.openImmoService.importXmlFile(user, file);
+    await this.openImmoService.importXmlFile(user, file.buffer);
+    return HttpStatus.OK;
+  }
+
+  @ApiOperation({
+    description: 'Triggers the import of xml files from FTP folder',
+  })
+  @Post('trigger-ftp-import')
+  async triggerFtpImport(): Promise<HttpStatus> {
+    void this.openImmoService.handleFtpImport();
     return HttpStatus.OK;
   }
 }

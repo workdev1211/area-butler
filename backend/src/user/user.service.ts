@@ -92,7 +92,7 @@ export class UserService {
     const existingUser = await this.userModel.findOne({ email });
 
     if (!existingUser) {
-      throw new HttpException('Unknown User', 400);
+      throw new HttpException('Unknown user!', 400);
     }
 
     Object.assign(existingUser, { fullname });
@@ -104,7 +104,7 @@ export class UserService {
     const existingUser = await this.upsertUser(email, email);
 
     if (!existingUser) {
-      throw new HttpException('Unknown User', 400);
+      throw new HttpException('Unknown user!', 400);
     }
 
     if (!existingUser.consentGiven) {
@@ -118,7 +118,7 @@ export class UserService {
     const user = await this.findByEmail(email);
 
     if (!user) {
-      throw new HttpException('Unknown User', 400);
+      throw new HttpException('Unknown user!', 400);
     }
 
     const showTour = { ...user.showTour };
@@ -164,6 +164,20 @@ export class UserService {
 
   async findById(id: string): Promise<UserDocument> {
     return this.userModel.findById({ _id: id });
+  }
+
+  async findByIdWithSubscription(id: string): Promise<UserDocument> {
+    const user = await this.userModel.findById({ _id: id });
+
+    if (!user) {
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    user.subscription = await this.subscriptionService.findActiveByUserId(
+      user.parentId || user.id,
+    );
+
+    return user;
   }
 
   async fetchByIdWithAssets(id: string): Promise<UserDocument> {
