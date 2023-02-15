@@ -644,7 +644,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         return;
       }
 
-      let image = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.5; transform: rotate(45deg)" alt="watermark">`;
+      let image = `<img src="${areaButlerLogo}" style="width: auto; height: 7vh; opacity: 0.3; transform: rotate(45deg); filter: grayscale(1);" alt="watermark">`;
 
       if (
         mapboxMapId ===
