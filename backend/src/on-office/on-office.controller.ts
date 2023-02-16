@@ -28,12 +28,12 @@ export class OnOfficeController {
     @Query('apiToken') token: string,
     @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
-  ): IApiOnOfficeRenderData {
-    this.logger.debug(
-      JSON.stringify({ token, parameterCacheId, extendedClaim }),
-    );
+    @Query('userId') userId: string,
+  ): Promise<IApiOnOfficeRenderData> {
+    this.logger.debug({ userId, token, parameterCacheId, extendedClaim });
 
     return this.onOfficeService.getRenderData({
+      userId,
       token,
       parameterCacheId,
       extendedClaim,
@@ -45,11 +45,13 @@ export class OnOfficeController {
   async unlockProvider(
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderDto,
   ): Promise<string> {
-    this.logger.debug(JSON.stringify(unlockProviderData));
+    this.logger.debug(unlockProviderData);
+
     const response = await this.onOfficeService.unlockProvider(
       unlockProviderData,
     );
-    this.logger.debug(JSON.stringify(response));
+
+    this.logger.debug(response);
 
     return 'active';
   }

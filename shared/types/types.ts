@@ -439,3 +439,16 @@ export interface ISelectTextValue {
   text: string;
   value: string;
 }
+
+export interface IApiIntegrationUserOnOfficeParameters {
+  extendedClaim: string;
+  apiKey?: string;
+  token?: string;
+}
+
+export type TApiIntegrationUserParameters =
+  IApiIntegrationUserOnOfficeParameters;
+
+export enum ApiUserIntegrationTypesEnum {
+  "ON_OFFICE" = "ON_OFFICE",
+}

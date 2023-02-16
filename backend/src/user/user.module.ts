@@ -9,6 +9,11 @@ import { Subscription, SubscriptionSchema } from './schema/subscription.schema';
 import { SubscriptionService } from './subscription.service';
 import { ClientModule } from '../client/client.module';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import {
+  IntegrationUser,
+  IntegrationUserSchema,
+} from './schema/integration-user.schema';
+import { IntegrationUserService } from './integration-user.service';
 
 @Module({
   imports: [
@@ -18,6 +23,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
         name: Subscription.name,
         schema: SubscriptionSchema,
       },
+      { name: IntegrationUser.name, schema: IntegrationUserSchema },
     ]),
     ClientModule,
   ],
@@ -26,8 +32,9 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
     SubscriptionService,
     SubscriptionListener,
     UserSubscriptionPipe,
+    IntegrationUserService,
   ],
-  exports: [UserService, SubscriptionService],
+  exports: [UserService, SubscriptionService, IntegrationUserService],
   controllers: [UserController],
 })
 export class UserModule {}

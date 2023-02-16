@@ -8,22 +8,35 @@ import {
   IApiOnOfficeRenderData,
   IApiOnOfficeUnlockProvider,
 } from '../shared/on-office.types';
+import { IntegrationUserService } from '../user/integration-user.service';
+import { ApiUserIntegrationTypesEnum } from '@area-butler-types/types';
 
 @Injectable()
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
 
-  constructor(private readonly onOfficeApiService: OnOfficeApiService) {}
+  constructor(
+    private readonly onOfficeApiService: OnOfficeApiService,
+    private readonly integrationUserService: IntegrationUserService,
+  ) {}
 
-  getRenderData({
+  async getRenderData({
+    userId,
     token,
     parameterCacheId,
     extendedClaim,
   }: {
+    userId: string;
     token: string;
     parameterCacheId: string;
     extendedClaim: string;
-  }): IApiOnOfficeRenderData {
+  }): Promise<IApiOnOfficeRenderData> {
+    await this.integrationUserService.upsertUser(
+      userId,
+      ApiUserIntegrationTypesEnum.ON_OFFICE,
+      { extendedClaim },
+    );
+
     const scripts = [{ script: `${this.apiUrl}/on-office/unlockProvider.js` }];
 
     return {
@@ -39,11 +52,17 @@ export class OnOfficeService {
 
   async unlockProvider({
     token,
-    secret,
+    secret: apiKey,
     parameterCacheId,
     extendedClaim,
   }: IApiOnOfficeUnlockProvider): Promise<unknown> {
-    // TODO implement signature generation using token and secret
+    await this.integrationUserService.updateParameters(
+      {
+        integrationType: ApiUserIntegrationTypesEnum.ON_OFFICE,
+        'parameters.extendedClaim': extendedClaim,
+      },
+      { token, apiKey, extendedClaim },
+    );
 
     return this.onOfficeApiService.sendRequest<IApiOnOfficeProviderData>({
       actionid: 'urn:onoffice-de-ns:smart:2.5:smartml:action:do',
