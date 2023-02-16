@@ -4,7 +4,10 @@ import Stripe from 'stripe';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
-import { stripeToPaypalPriceIdMapping } from '../../../shared/constants/subscription-plan';
+import {
+  stripeSubscriptionsCheckoutMode,
+  stripeToPaypalPriceIdMapping,
+} from '../../../shared/constants/subscription-plan';
 import { SubscriptionService } from '../user/subscription.service';
 import { ApiCreateCheckoutDto } from '../dto/api-create-checkout.dto';
 import {
@@ -15,8 +18,8 @@ import { StripeService } from '../client/stripe/stripe.service';
 import {
   EventType,
   ILimitIncreaseEvent,
-  ISubscriptionUpsertEvent,
   ISubscriptionRenewEvent,
+  ISubscriptionUpsertEvent,
 } from '../event/event.types';
 import { UserDocument } from '../user/schema/user.schema';
 import {
@@ -25,6 +28,7 @@ import {
   PaymentSystemTypeEnum,
 } from '@area-butler-types/subscription-plan';
 import {
+  ApiStripeCheckoutModeEnum,
   ApiStripeCheckoutPaymentStatusEnum,
   ILimitIncreaseMetadata,
 } from '@area-butler-types/billing';
@@ -117,20 +121,49 @@ export class BillingService {
         checkoutSessionId,
       );
 
-    if (lineItems.length > 0) {
-      const lineItem = lineItems[0];
+    if (!lineItems.length) {
+      return;
+    }
 
-      const limitIncreaseParams =
-        this.subscriptionService.getLimitIncreaseParams(lineItem.price.id);
+    const lineItem = lineItems[0];
 
-      // skips if there are no increase package items (adds the number of requests) in the checkout
-      if (limitIncreaseParams) {
-        this.emitLimitIncreaseEvent(limitIncreaseParams, {
-          customerId,
-          metadata,
-          paymentSystemType: PaymentSystemTypeEnum.STRIPE,
-        });
-      }
+    const limitIncreaseParams = this.subscriptionService.getLimitIncreaseParams(
+      lineItem.price.id,
+    );
+
+    // skips if there are no increase package items (adds the number of requests) in the checkout
+    if (limitIncreaseParams) {
+      this.emitLimitIncreaseEvent(limitIncreaseParams, {
+        customerId,
+        metadata,
+        paymentSystemType: PaymentSystemTypeEnum.STRIPE,
+      });
+
+      return;
+    }
+
+    const subscriptionPlanPrice =
+      this.subscriptionService.getApiSubscriptionPlanPrice(lineItem.price.id);
+
+    if (
+      subscriptionPlanPrice &&
+      stripeSubscriptionsCheckoutMode[subscriptionPlanPrice.plan.type] ===
+        ApiStripeCheckoutModeEnum.Payment
+    ) {
+      const payload = eventData.object as any;
+
+      this.emitSubscriptionUpsertEvent(
+        payload.customer,
+        payload.id,
+        subscriptionPlanPrice.price.id[configService.getStripeEnv()],
+        dayjs()
+          .add(
+            subscriptionPlanPrice.price.interval.value,
+            subscriptionPlanPrice.price.interval.unit as ManipulateType,
+          )
+          .toDate(),
+        PaymentSystemTypeEnum.STRIPE,
+      );
     }
   }
 
@@ -225,7 +258,7 @@ export class BillingService {
     { id: userId }: UserDocument,
     priceId: string,
   ): Promise<string> {
-    let paypalSubscriptionPlanId = stripeToPaypalPriceIdMapping.get(priceId);
+    const paypalSubscriptionPlanId = stripeToPaypalPriceIdMapping.get(priceId);
     const paymentItem = this.subscriptionService.getPaymentItem(priceId);
 
     if (

@@ -1,3 +1,5 @@
+import { ApiSubscriptionPlanType } from "./subscription-plan";
+
 export interface ApiCreateCheckout {
   priceId: string;
   amount?: number;
@@ -30,3 +32,7 @@ export enum LimitIncreaseModelNameEnum {
   LocationSearch = "LocationSearch",
   SearchResultSnapshot = "SearchResultSnapshot",
 }
+
+export type TApiStripeCheckoutMode = {
+  [key in ApiSubscriptionPlanType]?: ApiStripeCheckoutModeEnum;
+};

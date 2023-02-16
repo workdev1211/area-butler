@@ -21,7 +21,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
     super();
   }
 
-  catch(exception: unknown, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost) {
     const httpContext = host.switchToHttp();
     const req = httpContext.getRequest();
     // const res = httpContext.getResponse();
@@ -32,6 +32,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
         : HttpStatus.INTERNAL_SERVER_ERROR;
 
     this.logger.error('Error while performing a request');
+    this.logger.debug(exception);
 
     if (
       status === HttpStatus.INTERNAL_SERVER_ERROR ||
@@ -45,6 +46,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
         environmentName === 'prod' ? ':red_circle:' : ':large_green_circle:'
       }`;
       const errorTitle =
+        exception?.message ||
         'Error while performing a request - more information in log';
       const userEmail = `*User email:* ${req.user?.email}`;
       const reqUrlDescription = `*Request Url:* ${JSON.stringify(req.url)}`;
@@ -74,8 +76,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
         reqBodyDescription,
       ];
 
-      this.logger.error(textBlocks);
-      this.logger.error(exception);
+      console.error(textBlocks);
 
       void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
         textBlocks,

@@ -6,6 +6,7 @@ import {
   businessPlusV2Subscription,
   payPerUse10Subscription,
   payPerUse1Subscription,
+  stripeSubscriptionsCheckoutMode,
 } from "../../../shared/constants/subscription-plan";
 import {
   ApiSubscriptionPlanType,
@@ -13,12 +14,15 @@ import {
 } from "../../../shared/types/subscription-plan";
 import { ConfigContext } from "../context/ConfigContext";
 import PaymentMethodModal from "./PaymentMethodModal";
-import { ApiCreateCheckout } from "../../../shared/types/billing";
+import {
+  ApiCreateCheckout,
+  ApiStripeCheckoutModeEnum,
+} from "../../../shared/types/billing";
 import {
   BusinessPlusMonthlyDescription,
   BusinessPlusYearlyDescription,
-  PayPerUse1Description,
   PayPerUse10Description,
+  PayPerUse1Description,
 } from "./SubscriptionDescriptions";
 
 type TSubscriptionPlanGroups = {
@@ -26,6 +30,7 @@ type TSubscriptionPlanGroups = {
 };
 
 interface ISubscriptionPlan {
+  stripeCheckoutMode: ApiStripeCheckoutModeEnum;
   stripePriceId: string;
   description: JSX.Element;
   purchaseButtonLabel?: string;
@@ -69,6 +74,9 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   const [shouldRender, setShouldRender] = useState(false);
   const [isShownPaymentModal, setIsShownPaymentModal] = useState(false);
   const [paymentStripePriceId, setPaymentStripePriceId] = useState("");
+  const [paymentStripeCheckoutMode, setPaymentStripeCheckoutMode] = useState(
+    ApiStripeCheckoutModeEnum.Subscription
+  );
   const [stripeCheckoutUrl, setStripeCheckoutUrl] = useState("");
 
   useEffect(() => {
@@ -112,6 +120,9 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
           }
 
           result[getSubscriptionGroup(type)].push({
+            stripeCheckoutMode:
+              stripeSubscriptionsCheckoutMode[type] ||
+              ApiStripeCheckoutModeEnum.Subscription,
             stripePriceId: priceId,
             description: getPlanPriceDescription(priceId),
             purchaseButtonLabel: priceButtonLabel || planButtonLabel,
@@ -141,6 +152,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
           "/api/billing/create-checkout-url",
           {
             priceId: paymentStripePriceId,
+            mode: paymentStripeCheckoutMode,
           }
         )
       ).data;
@@ -154,6 +166,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
   }, [paymentStripePriceId]);
 
   const SubscriptionPlanCard: FunctionComponent<ISubscriptionPlan> = ({
+    stripeCheckoutMode,
     stripePriceId,
     description,
     purchaseButtonLabel,
@@ -165,6 +178,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
           <div className="card-actions justify-center">
             <button
               onClick={() => {
+                setPaymentStripeCheckoutMode(stripeCheckoutMode);
                 setPaymentStripePriceId(stripePriceId);
                 setIsShownPaymentModal(true);
               }}
@@ -243,9 +257,15 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
             {sortedSubscriptionPlans[activeSubscriptionGroup].length && (
               <div className={cardContainerClassNames}>
                 {sortedSubscriptionPlans[activeSubscriptionGroup].map(
-                  ({ stripePriceId, description, purchaseButtonLabel }, i) => (
+                  ({
+                    stripeCheckoutMode,
+                    stripePriceId,
+                    description,
+                    purchaseButtonLabel,
+                  }) => (
                     <SubscriptionPlanCard
                       key={stripePriceId}
+                      stripeCheckoutMode={stripeCheckoutMode}
                       stripePriceId={stripePriceId}
                       description={description}
                       purchaseButtonLabel={purchaseButtonLabel}

@@ -4,6 +4,10 @@ import {
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
 import { CsvFileFormatEnum } from "../../types/types";
+import {
+  ApiStripeCheckoutModeEnum,
+  TApiStripeCheckoutMode,
+} from "../../types/billing";
 
 export const allSubscriptionTypes: {
   type: ApiSubscriptionPlanType;
@@ -30,6 +34,14 @@ export const fixedRequestSubscriptionTypes: ApiSubscriptionPlanType[] = [
   ApiSubscriptionPlanType.PAY_PER_USE_1,
   ApiSubscriptionPlanType.PAY_PER_USE_10,
 ];
+
+// TODO refactor this temporary hack
+export const stripeSubscriptionsCheckoutMode: TApiStripeCheckoutMode = {
+  [ApiSubscriptionPlanType.PAY_PER_USE_1]: ApiStripeCheckoutModeEnum.Payment,
+  [ApiSubscriptionPlanType.PAY_PER_USE_10]: ApiStripeCheckoutModeEnum.Payment,
+  [ApiSubscriptionPlanType.BUSINESS_PLUS_V2]:
+    ApiStripeCheckoutModeEnum.Subscription,
+};
 
 export const subscriptionIntervals = {
   [ApiSubscriptionIntervalEnum.FOUR_DAYS]: { value: 4, unit: "days" },
