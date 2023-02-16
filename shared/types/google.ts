@@ -82,4 +82,5 @@ export enum ApiGoogleLanguageEnum {
   "ZU" = "zu",
 }
 
-export const allowedCountries = ["DE", "AT", "CH", "NL", "LU"];
+// TODO move away from google, use alpha2 enum
+export const allowedCountries = ["DE", "AT", "CH", "NL", "LU", "BE"];
