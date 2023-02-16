@@ -168,7 +168,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
         {(route?.show.length || []) > 0 && (
           <>
             <div className="locality-item-cell">
-              <span className="locality-item-cell-label">Distanz</span>
+              <span className="locality-item-cell-label">Luftlinie</span>
               <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
             </div>
             {route?.show.includes(MeansOfTransportation.WALK) && (
@@ -224,7 +224,7 @@ export const LocalityItemContent: FunctionComponent<{
   return (
     <div className="locality-item-content">
       <div className="locality-item-cell">
-        <span className="locality-item-cell-label">Distanz</span>
+        <span className="locality-item-cell-label">Luftlinie</span>
         <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
       </div>
       <div className="locality-item-cell">

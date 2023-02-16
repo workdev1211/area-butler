@@ -62,7 +62,7 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
       <div className="mean-items">
         <div className="item">
           <img src={distanceIcon} alt="icon-distance" />
-          Distanz
+          Luftlinie
         </div>
         <div className="item">
           <img src={walkIcon} alt="icon-walk" />
