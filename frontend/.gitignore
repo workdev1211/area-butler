@@ -11,6 +11,7 @@
 # production
 /build
 /build-embed
+/build-on-office
 
 # misc
 .DS_Store

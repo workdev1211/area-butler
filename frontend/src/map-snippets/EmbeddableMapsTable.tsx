@@ -9,7 +9,6 @@ import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import {
   createCodeSnippet,
-  createDirectLink,
   toastError,
   toastSuccess,
 } from "shared/shared.functions";
@@ -18,6 +17,7 @@ import FormModal, { ModalConfig } from "../components/FormModal";
 import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
 import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
+import { useTools } from "../hooks/tools";
 
 interface IEmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
@@ -28,6 +28,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
 }) => {
   const history = useHistory();
   const { deleteRequest } = useHttp();
+  const { createDirectLink } = useTools();
   const { userDispatch } = useContext(UserContext);
 
   const [isShownModal, setIsShownModal] = useState(false);
