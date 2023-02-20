@@ -1,13 +1,16 @@
 import { ApiConfigDto } from '../dto/api-config.dto';
 import RollbarConfigDto from '../dto/rollbar-config.dto';
+import {
+  TPaymentEnvironment,
+  TSystemEnvironment,
+} from '@area-butler-types/types';
+import {
+  paymentEnvironments,
+  systemEnvironments,
+} from '../../../shared/constants/constants';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
-
-const paymentEnvironments = ['dev', 'prod'] as const;
-const environments = ['local', ...paymentEnvironments] as const;
-type TStripeEnvironment = typeof paymentEnvironments[number];
-type TEnvironment = typeof environments[number];
 
 class ConfigService {
   constructor(private readonly env: { [k: string]: string | undefined }) {}
@@ -101,10 +104,10 @@ class ConfigService {
     return this.getValue('HERE_API_KEY');
   }
 
-  // TODO rename to the "paymentEnv"
-  getStripeEnv(): TStripeEnvironment {
-    const env = this.getValue('STRIPE_ENV') as TStripeEnvironment;
-    return paymentEnvironments.includes(env) ? env : 'dev';
+  // TODO rename to the "paymentEnv" and make it dependable from the systemEnv
+  getStripeEnv(): TPaymentEnvironment {
+    const stripeEnv = this.getValue('STRIPE_ENV') as TPaymentEnvironment;
+    return paymentEnvironments.includes(stripeEnv) ? stripeEnv : 'dev';
   }
 
   getStripeKey(): string {
@@ -159,6 +162,7 @@ class ConfigService {
     const { domain, audience } = this.getAuth0SpaConfig();
     const googleApiKey = this.getGoogleApiKey();
     const mapBoxAccessToken = this.getMapBoxAccessToken();
+    const systemEnv = this.getSystemEnv();
     const stripeEnv = this.getStripeEnv();
     const rollbarConfig = this.getRollbarConfig();
     const paypalClientId = this.getPaypalClientId();
@@ -170,15 +174,19 @@ class ConfigService {
       },
       googleApiKey,
       mapBoxAccessToken,
+      systemEnv,
       stripeEnv,
       rollbarConfig,
       paypalClientId,
     };
   }
 
-  getEnv(): TEnvironment {
-    const env = this.getValue('ENV', false) as TEnvironment;
-    return environments.includes(env) ? env : this.getStripeEnv();
+  getSystemEnv(): TSystemEnvironment {
+    const systemEnv = this.getValue('SYSTEM_ENV', false) as TSystemEnvironment;
+
+    return systemEnvironments.includes(systemEnv)
+      ? systemEnv
+      : this.getStripeEnv();
   }
 
   getBaseApiUrl(): string {
@@ -188,9 +196,9 @@ class ConfigService {
       return baseApiUrl;
     }
 
-    const env = this.getEnv();
+    const systemEnv = this.getSystemEnv();
 
-    switch (env) {
+    switch (systemEnv) {
       case 'prod': {
         return 'https://app.areabutler.de';
       }

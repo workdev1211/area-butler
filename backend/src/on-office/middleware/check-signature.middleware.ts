@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import * as hmacSHA256 from 'crypto-js/hmac-sha256';
-import Base64 from 'crypto-js/enc-base64';
+import { createHmac } from 'crypto';
 
 import { configService } from '../../config/config.service';
 
@@ -20,7 +19,12 @@ export const checkSignature = (
     req.route.path
   }?${new URLSearchParams(processedQueryParams)}`;
 
-  if (hmacSHA256(url, onOfficeProviderSecret).toString(Base64) !== signature) {
+  const hmac = createHmac('sha256', onOfficeProviderSecret)
+    .update(url)
+    .digest()
+    .toString('hex');
+
+  if (hmac !== signature) {
     res.render('on-office/activation-iframe-wrong-signature');
     return;
   }

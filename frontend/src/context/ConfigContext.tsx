@@ -6,6 +6,7 @@ export const ConfigContext = createContext<ApiConfig>({
   auth: { clientId: "", domain: "" },
   googleApiKey: "",
   mapBoxAccessToken: "",
+  systemEnv: "dev",
   stripeEnv: "dev",
   rollbarConfig: {
     accessToken: "",

@@ -347,3 +347,7 @@ export const defaultColor = "#c91444";
 
 export const placeholderSelectOptionKey: TPlaceholderSelectOptionKey =
   "placeholder";
+
+export const paymentEnvironments = ["dev", "prod"] as const;
+
+export const systemEnvironments = ["local", ...paymentEnvironments] as const;

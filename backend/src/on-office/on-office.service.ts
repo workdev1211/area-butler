@@ -1,11 +1,13 @@
 import { Injectable } from '@nestjs/common';
+import * as dayjs from 'dayjs';
+import { createHmac } from 'crypto';
 
 import { configService } from '../config/config.service';
 import { activateUserPath } from '../shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import {
-  IApiOnOfficeProviderData,
   IApiOnOfficeRenderData,
+  IApiOnOfficeRequest,
   IApiOnOfficeUnlockProvider,
 } from '../shared/on-office.types';
 import { IntegrationUserService } from '../user/integration-user.service';
@@ -55,8 +57,8 @@ export class OnOfficeService {
     secret: apiKey,
     parameterCacheId,
     extendedClaim,
-  }: IApiOnOfficeUnlockProvider): Promise<unknown> {
-    await this.integrationUserService.updateParameters(
+  }: IApiOnOfficeUnlockProvider): Promise<any> {
+    await this.integrationUserService.findUserAndUpdateParameters(
       {
         integrationType: ApiUserIntegrationTypesEnum.ON_OFFICE,
         'parameters.extendedClaim': extendedClaim,
@@ -64,13 +66,35 @@ export class OnOfficeService {
       { token, apiKey, extendedClaim },
     );
 
-    return this.onOfficeApiService.sendRequest<IApiOnOfficeProviderData>({
-      actionid: 'urn:onoffice-de-ns:smart:2.5:smartml:action:do',
-      resourcetype: 'unlockProvider',
-      parameters: {
-        parameterCacheId: parameterCacheId,
-        extendedclaim: extendedClaim,
+    const actionId = 'urn:onoffice-de-ns:smart:2.5:smartml:action:do';
+    const resourceType = 'unlockProvider';
+    const timestamp = dayjs().unix();
+
+    const hmac = createHmac('sha256', apiKey)
+      .update([timestamp, token, resourceType, actionId].join(''))
+      .digest()
+      .toString('base64');
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: '',
+            resourcetype: resourceType,
+            parameters: {
+              parameterCacheId: parameterCacheId,
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
       },
-    });
+    };
+
+    return this.onOfficeApiService.sendRequest(request);
   }
 }

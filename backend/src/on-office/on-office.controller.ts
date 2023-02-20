@@ -21,16 +21,23 @@ export class OnOfficeController {
 
   constructor(private readonly onOfficeService: OnOfficeService) {}
 
+  // TODO think about uniting the OnOffice React module with the current controller using the React Router
   @ApiOperation({ description: 'Renders the activation iFrame' })
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
+    @Query('userId') userId: string,
     @Query('apiToken') token: string,
     @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
-    @Query('userId') userId: string,
   ): Promise<IApiOnOfficeRenderData> {
-    this.logger.debug({ userId, token, parameterCacheId, extendedClaim });
+    this.logger.debug({
+      method: this.renderActivationIframe.name,
+      userId,
+      token,
+      parameterCacheId,
+      extendedClaim,
+    });
 
     return this.onOfficeService.getRenderData({
       userId,
@@ -45,14 +52,19 @@ export class OnOfficeController {
   async unlockProvider(
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderDto,
   ): Promise<string> {
-    this.logger.debug(unlockProviderData);
+    this.logger.debug({
+      method: this.unlockProvider.name,
+      unlockProviderData,
+    });
 
     const response = await this.onOfficeService.unlockProvider(
       unlockProviderData,
     );
 
-    this.logger.debug(response);
-
-    return 'active';
+    return response?.status?.code === 200 &&
+      response?.status?.errorcode === 0 &&
+      response?.status?.message === 'OK'
+      ? 'active'
+      : 'error';
   }
 }

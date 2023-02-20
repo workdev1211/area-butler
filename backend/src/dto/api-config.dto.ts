@@ -1,8 +1,16 @@
-import {IsNotEmpty, IsIn, ValidateNested, IsString} from 'class-validator';
+import { IsNotEmpty, IsIn, ValidateNested, IsString } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { ApiConfig } from '@area-butler-types/types';
+import {
+  ApiConfig,
+  TPaymentEnvironment,
+  TSystemEnvironment,
+} from '@area-butler-types/types';
 import RollbarConfigDto from './rollbar-config.dto';
+import {
+  paymentEnvironments,
+  systemEnvironments,
+} from '../../../shared/constants/constants';
 
 export class ApiConfigDto implements ApiConfig {
   @IsNotEmpty()
@@ -20,8 +28,12 @@ export class ApiConfigDto implements ApiConfig {
   rollbarConfig: RollbarConfigDto;
 
   @IsNotEmpty()
-  @IsIn(['dev', 'prod'])
-  stripeEnv: 'dev' | 'prod';
+  @IsIn(systemEnvironments)
+  systemEnv: TSystemEnvironment;
+
+  @IsNotEmpty()
+  @IsIn(paymentEnvironments)
+  stripeEnv: TPaymentEnvironment;
 
   @IsNotEmpty()
   @IsString()

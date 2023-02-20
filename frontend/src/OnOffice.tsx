@@ -13,14 +13,14 @@ import "assets/fonts/archia-semibold-webfont.eot";
 import "assets/fonts/archia-semibold-webfont.ttf";
 import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
-import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
 import "./index.scss";
+import OnOfficeContainer from "./on-office/OnOfficeContainer";
 
 render(
   <StrictMode>
     <SearchContextProvider>
-      <EmbedContainer />
+      <OnOfficeContainer />
     </SearchContextProvider>
   </StrictMode>,
   document.getElementById("root")

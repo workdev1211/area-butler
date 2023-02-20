@@ -29,7 +29,7 @@ export class IntegrationUserService {
     });
 
     if (existingUser) {
-      return existingUser;
+      return this.updateParameters(existingUser, parameters);
     }
 
     return new this.integrationUserModel({
@@ -39,7 +39,7 @@ export class IntegrationUserService {
     }).save();
   }
 
-  async updateParameters(
+  async findUserAndUpdateParameters(
     findQuery: unknown,
     parameters: TApiIntegrationUserParameters,
   ): Promise<IntegrationUserDocument> {
@@ -49,11 +49,18 @@ export class IntegrationUserService {
       throw new HttpException('Unknown user!', 400);
     }
 
-    existingUser.parameters =
-      typeof existingUser.parameters === 'object'
-        ? { ...existingUser.parameters, ...parameters }
+    return this.updateParameters(existingUser, parameters);
+  }
+
+  private async updateParameters(
+    user: IntegrationUserDocument,
+    parameters: TApiIntegrationUserParameters,
+  ): Promise<IntegrationUserDocument> {
+    user.parameters =
+      typeof user.parameters === 'object'
+        ? { ...user.parameters, ...parameters }
         : { ...parameters };
 
-    return existingUser.save();
+    return user.save();
   }
 }

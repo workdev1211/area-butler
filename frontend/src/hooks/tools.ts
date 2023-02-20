@@ -3,11 +3,15 @@ import { useContext } from "react";
 import { ConfigContext } from "../context/ConfigContext";
 
 export const useTools = () => {
-  const { stripeEnv } = useContext(ConfigContext);
+  const { systemEnv } = useContext(ConfigContext);
 
   const createDirectLink = (token: string): string => {
-    return `${window.location.origin}${
-      stripeEnv === "dev" ? ":3002" : ""
+    const origin = window.location.origin;
+
+    return `${
+      systemEnv !== "local"
+        ? origin
+        : `${origin.replace(/^(https?:\/\/\w*)(:.*)?$/, "$1")}:3002`
     }/embed?token=${token}`;
   };
 

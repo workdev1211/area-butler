@@ -2,20 +2,34 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
+import {
+  IApiOnOfficeRequest,
+  IApiOnOfficeResponse,
+} from '../../shared/on-office.types';
+
 @Injectable()
 export class OnOfficeApiService {
   private readonly apiUrl = 'https://api.onoffice.de/api/stable/api.php';
 
   constructor(private readonly http: HttpService) {}
 
-  async sendRequest<T = unknown, U = unknown>(requestBody: T): Promise<U> {
+  async sendRequest(
+    requestBody: IApiOnOfficeRequest,
+    headers?: { [key: string]: string },
+  ): Promise<IApiOnOfficeResponse> {
+    let resultingHeaders = {
+      'Content-Type': 'application/json',
+    };
+
+    if (headers) {
+      resultingHeaders = { ...resultingHeaders, ...headers };
+    }
+
     const { data } = await firstValueFrom<{
-      data: U;
+      data: IApiOnOfficeResponse;
     }>(
-      this.http.post<U>(this.apiUrl, requestBody, {
-        headers: {
-          'Content-Type': 'application/json',
-        },
+      this.http.post<IApiOnOfficeResponse>(this.apiUrl, requestBody, {
+        headers: resultingHeaders,
       }),
     );
 

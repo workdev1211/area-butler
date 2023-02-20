@@ -3,6 +3,10 @@ import { EntityRoute, EntityTransitRoute } from "./routing";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 import { ApiRealEstateListing, ApiRealEstateStatusEnum } from "./real-estate";
 import { ILimitIncreaseMetadata } from "./billing";
+import {
+  paymentEnvironments,
+  systemEnvironments,
+} from "../constants/constants";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -17,7 +21,8 @@ export interface ApiConfig {
   };
   googleApiKey: string;
   mapBoxAccessToken: string;
-  stripeEnv: "dev" | "prod";
+  systemEnv: TSystemEnvironment;
+  stripeEnv: TPaymentEnvironment;
   rollbarConfig: RollbarConfig;
   paypalClientId: string;
 }
@@ -452,3 +457,7 @@ export type TApiIntegrationUserParameters =
 export enum ApiUserIntegrationTypesEnum {
   "ON_OFFICE" = "ON_OFFICE",
 }
+
+export type TPaymentEnvironment = typeof paymentEnvironments[number];
+
+export type TSystemEnvironment = typeof systemEnvironments[number];
