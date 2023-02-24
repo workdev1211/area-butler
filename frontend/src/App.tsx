@@ -4,7 +4,7 @@ import {
   Suspense,
   useContext,
   useEffect,
-  useState,
+  // useState,
 } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
@@ -32,7 +32,7 @@ import {
   feedbackModalConfig,
 } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
-import MaintenanceModal from "./components/MaintenanceModal";
+// import MaintenanceModal from "./components/MaintenanceModal";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -84,7 +84,7 @@ const ScrollToTop: FunctionComponent = () => {
   return null;
 };
 
-const maintenanceKey = "is-seen-maintenance-2023-02-23";
+// const maintenanceKey = "is-seen-maintenance-2023-02-23";
 
 function App() {
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
@@ -95,9 +95,9 @@ function App() {
   const { paypalClientId } = useContext(ConfigContext);
   const { userDispatch } = useContext(UserContext);
 
-  const [isSeenMaintenance, setIsSeenMaintenance] = useState(
-    window.localStorage.getItem(maintenanceKey) === "true"
-  );
+  // const [isSeenMaintenance, setIsSeenMaintenance] = useState(
+  //   window.localStorage.getItem(maintenanceKey) === "true"
+  // );
 
   const initialPaypalOptions = {
     "client-id": paypalClientId || "test",
@@ -168,41 +168,41 @@ function App() {
     <>
       <ScrollToTop />
       <div className="app">
-        {isAuthenticated && !isSeenMaintenance && (
-          <MaintenanceModal
-            onClose={() => {
-              window.localStorage.setItem(maintenanceKey, "true");
-              setIsSeenMaintenance(true);
-            }}
-          >
-            <div className="flex flex-col gap-3">
-              <div className="text-justify">
-                <div>Sehr geehrte Kundin,</div>
-                <div>sehr geehrter Kunde,</div>
-                <div>
-                  am Donnerstag, den 23.02.2023, werden wir in der Zeit zwischen
-                  22:00 Uhr und 23:59 Uhr Wartungsarbeiten an unserem Server und
-                  der App durchführen. Innerhalb des o.g. Zeitraums wird es zu
-                  einer Nicht-Erreichbarkeit der von Ihnen gebuchten Produkte
-                  kommen, die voraussichtlich 20 Minuten betragen wird. Wir sind
-                  bemüht, die Wartungsarbeiten schnellstmöglich abzuschließen.
-                </div>
-              </div>
-              <div>Vielen Dank für Ihr Verständnis.</div>
-              <div>Bei Rückfragen stehen wir Ihnen gerne zur Verfügung.</div>
-              <div>
-                <div>Mit freundlichem Gruß aus Hamburg,</div>
-                <div>Ihr Team AreaButler</div>
-                <a
-                  href="mailto:info@areabutler.de"
-                  className="text-blue-600 dark:text-blue-500 hover:underline"
-                >
-                  info@areabutler.de
-                </a>
-              </div>
-            </div>
-          </MaintenanceModal>
-        )}
+        {/*{isAuthenticated && !isSeenMaintenance && (*/}
+        {/*  <MaintenanceModal*/}
+        {/*    onClose={() => {*/}
+        {/*      window.localStorage.setItem(maintenanceKey, "true");*/}
+        {/*      setIsSeenMaintenance(true);*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    <div className="flex flex-col gap-3">*/}
+        {/*      <div className="text-justify">*/}
+        {/*        <div>Sehr geehrte Kundin,</div>*/}
+        {/*        <div>sehr geehrter Kunde,</div>*/}
+        {/*        <div>*/}
+        {/*          am Donnerstag, den 23.02.2023, werden wir in der Zeit zwischen*/}
+        {/*          22:00 Uhr und 23:59 Uhr Wartungsarbeiten an unserem Server und*/}
+        {/*          der App durchführen. Innerhalb des o.g. Zeitraums wird es zu*/}
+        {/*          einer Nicht-Erreichbarkeit der von Ihnen gebuchten Produkte*/}
+        {/*          kommen, die voraussichtlich 20 Minuten betragen wird. Wir sind*/}
+        {/*          bemüht, die Wartungsarbeiten schnellstmöglich abzuschließen.*/}
+        {/*        </div>*/}
+        {/*      </div>*/}
+        {/*      <div>Vielen Dank für Ihr Verständnis.</div>*/}
+        {/*      <div>Bei Rückfragen stehen wir Ihnen gerne zur Verfügung.</div>*/}
+        {/*      <div>*/}
+        {/*        <div>Mit freundlichem Gruß aus Hamburg,</div>*/}
+        {/*        <div>Ihr Team AreaButler</div>*/}
+        {/*        <a*/}
+        {/*          href="mailto:info@areabutler.de"*/}
+        {/*          className="text-blue-600 dark:text-blue-500 hover:underline"*/}
+        {/*        >*/}
+        {/*          info@areabutler.de*/}
+        {/*        </a>*/}
+        {/*      </div>*/}
+        {/*    </div>*/}
+        {/*  </MaintenanceModal>*/}
+        {/*)}*/}
         <ToastContainer
           position="top-right"
           autoClose={10000}
