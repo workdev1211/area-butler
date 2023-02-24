@@ -8,16 +8,19 @@ import {
   IsIn,
   IsNumber,
   NotEquals,
+  IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
+  IApiPoiFilter,
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisibilityDto from './api-snippet-entity-visiblity.dto';
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
+import ApiPoiFilter from './api-poi-filter.dto';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
@@ -82,6 +85,12 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsBoolean()
   showDetailsInOnePage?: boolean;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiPoiFilter)
+  poiFilter?: IApiPoiFilter;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

@@ -18,7 +18,6 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
-import ApiSearchDto from '../dto/api-search.dto';
 import {
   ApiIsochrone,
   ApiOsmEntityCategory,
@@ -28,6 +27,8 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  ApiUpdateSearchResultSnapshot,
+  ApiUserRequests,
   IApiMongoParams,
   MeansOfTransportation,
   OsmName,
@@ -35,8 +36,6 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import ApiUserRequestsDto from '../dto/api-user-requests.dto';
-import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 import { IsochroneService } from '../client/isochrone/isochrone.service';
 import { OverpassService } from '../client/overpass/overpass.service';
 import {
@@ -239,7 +238,7 @@ export class LocationService {
     };
   }
 
-  async latestUserRequests(user: UserDocument): Promise<ApiUserRequestsDto> {
+  async latestUserRequests(user: UserDocument): Promise<ApiUserRequests> {
     // TODO think about using class-transformer for mapping
     const requests = (
       await this.locationSearchModel
@@ -254,7 +253,7 @@ export class LocationService {
     // TODO think about using lodash.groupBy or making all the grouping (etc, etc) in one cycle
     const grouped = groupBy(
       requests,
-      (request: ApiSearchDto) =>
+      (request: ApiSearch) =>
         `${request.coordinates.lat}${request.coordinates.lng}`,
     );
 
@@ -351,7 +350,7 @@ export class LocationService {
   async updateSnapshot(
     user: UserDocument,
     id: string,
-    { snapshot, config }: ApiUpdateSearchResultSnapshotDto,
+    { snapshot, config }: ApiUpdateSearchResultSnapshot,
   ): Promise<SearchResultSnapshotDocument> {
     await this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,

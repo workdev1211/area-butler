@@ -330,6 +330,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.defaultActiveGroups,
     searchContextState.responseConfig?.entityVisibility,
     searchContextState.responseConfig?.realEstateStatus,
+    searchContextState.responseConfig?.poiFilter,
   ]);
 
   const onPoiAdd = (poi: ApiOsmLocation) => {

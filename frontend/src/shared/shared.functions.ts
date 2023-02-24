@@ -16,6 +16,7 @@ import {
   IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
+  PoiFilterTypesEnum,
 } from "../../../shared/types/types";
 import parkIcon from "../assets/icons/pois/park.svg";
 import fuelIcon from "../assets/icons/pois/fuel.svg";
@@ -449,10 +450,18 @@ export const buildEntityData = (
     );
   }
 
-  return allLocationIds.map((locationId) => {
+  return allLocationIds.reduce<ResultEntity[]>((result, locationId) => {
     const location = allLocations.find((l) => l.entity.id === locationId)!;
 
-    return {
+    // POI Filter by distance
+    if (
+      config?.poiFilter?.type === PoiFilterTypesEnum.BY_DISTANCE &&
+      config?.poiFilter?.value! < location.distanceInMeters
+    ) {
+      return result;
+    }
+
+    result.push({
       id: locationId!,
       name: location.entity.title,
       label: location.entity.label,
@@ -477,8 +486,10 @@ export const buildEntityData = (
           (l) => l.entity.id === locationId
         ) ?? false,
       selected: false,
-    };
-  });
+    });
+
+    return result;
+  }, []);
 };
 
 export const buildEntityDataFromPreferredLocations = (
@@ -521,31 +532,40 @@ export const buildEntityDataFromRealEstateListings = (
     }
   };
 
-  const mappedRealEstateListings = realEstateListings
-    .filter((realEstateListing) => !!realEstateListing.coordinates)
-    .map((realEstateListing) => ({
-      id: realEstateListing.id ?? v4(),
-      name: deriveName(realEstateListing),
-      label: realEstateListingsTitle,
-      osmName: OsmName.property,
-      distanceInMeters: distanceInMeters(
-        centerCoordinates,
-        realEstateListing.coordinates!
-      ), // Calc distance
-      realEstateData: {
-        costStructure: realEstateListing.costStructure,
-        characteristics: realEstateListing.characteristics,
-      },
-      coordinates: realEstateListing.coordinates!,
-      address: config?.showLocation
-        ? { street: realEstateListing.address }
-        : { street: undefined },
-      byFoot: true,
-      byBike: true,
-      byCar: true,
-      selected: false,
-      externalUrl: realEstateListing.externalUrl,
-    }));
+  const mappedRealEstateListings = realEstateListings.reduce<ResultEntity[]>(
+    (result, realEstateListing) => {
+      if (!realEstateListing.coordinates) {
+        return result;
+      }
+
+      result.push({
+        id: realEstateListing.id ?? v4(),
+        name: deriveName(realEstateListing),
+        label: realEstateListingsTitle,
+        osmName: OsmName.property,
+        distanceInMeters: distanceInMeters(
+          centerCoordinates,
+          realEstateListing.coordinates!
+        ), // Calc distance
+        realEstateData: {
+          costStructure: realEstateListing.costStructure,
+          characteristics: realEstateListing.characteristics,
+        },
+        coordinates: realEstateListing.coordinates!,
+        address: config?.showLocation
+          ? { street: realEstateListing.address }
+          : { street: undefined },
+        byFoot: true,
+        byBike: true,
+        byCar: true,
+        selected: false,
+        externalUrl: realEstateListing.externalUrl,
+      });
+
+      return result;
+    },
+    []
+  );
 
   if (config && config.entityVisibility) {
     const { entityVisibility = [] } = config;
@@ -665,7 +685,18 @@ export const deriveInitialEntityGroups = (
   }
 
   // TODO is triggered two times on map load, try to reduce to a 1 time only
-  const allEntities = buildEntityData(searchResponse, config, ignoreVisibility);
+  // POI filter by distance is in the "buildEntityData" method
+  // Sorting could be excessive here
+  const allEntities = buildEntityData(
+    searchResponse,
+    config,
+    ignoreVisibility
+  )?.sort(
+    (
+      { distanceInMeters: distanceInMeters1 },
+      { distanceInMeters: distanceInMeters2 }
+    ) => distanceInMeters1 - distanceInMeters2
+  );
 
   const initialGroupedEntities: EntityGroup[] = osmEntityTypes.map(
     ({ label }) => ({ title: label, active: true, items: [] })
@@ -673,20 +704,34 @@ export const deriveInitialEntityGroups = (
 
   const groupedEntitiesWithItems = (
     Array.isArray(allEntities) ? allEntities : []
-  ).reduce((result, entity) => {
-    result.find(({ title }) => title === entity.label)!.items.push(entity);
+  ).reduce((result, resultEntity) => {
+    const foundEntityGroupItems = result.find(
+      ({ title }) => title === resultEntity.label
+    )!.items;
+
+    if (
+      config?.poiFilter?.type === PoiFilterTypesEnum.BY_AMOUNT &&
+      config?.poiFilter?.value! === foundEntityGroupItems.length
+    ) {
+      return result;
+    }
+
+    foundEntityGroupItems.push(resultEntity);
 
     return result;
   }, initialGroupedEntities);
 
-  return groupedEntitiesWithItems.reduce<EntityGroup[]>((result, entity, i) => {
-    if (entity.items.length > 0) {
-      entity.active = deriveActiveState(entity.title, i);
-      result.push(entity);
-    }
+  return groupedEntitiesWithItems.reduce<EntityGroup[]>(
+    (result, entityGroup, i) => {
+      if (entityGroup.items.length > 0) {
+        entityGroup.active = deriveActiveState(entityGroup.title, i);
+        result.push(entityGroup);
+      }
 
-    return result;
-  }, groupedEntities);
+      return result;
+    },
+    groupedEntities
+  );
 };
 
 export const sanitizeFilename = (filename: string): string =>

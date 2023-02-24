@@ -310,6 +310,17 @@ export interface ApiSnippetEntityVisibility {
   excluded?: boolean;
 }
 
+export enum PoiFilterTypesEnum {
+  NONE = "NONE",
+  BY_DISTANCE = "BY_DISTANCE",
+  BY_AMOUNT = "BY_AMOUNT",
+}
+
+export interface IApiPoiFilter {
+  type: PoiFilterTypesEnum;
+  value?: number;
+}
+
 export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
   groupItems: boolean;
@@ -327,6 +338,7 @@ export interface ApiSearchResultSnapshotConfig {
   zoomLevel?: number;
   realEstateStatus?: ApiRealEstateStatusEnum;
   showDetailsInOnePage?: boolean;
+  poiFilter?: IApiPoiFilter;
 }
 
 export interface ApiSearchResultSnapshotResponse {

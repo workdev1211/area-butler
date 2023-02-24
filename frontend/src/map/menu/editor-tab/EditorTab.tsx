@@ -11,6 +11,7 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   ApiSearchResultSnapshotResponse,
   ApiSnippetEntityVisibility,
+  IApiPoiFilter,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import { LocalityItemContent } from "../menu-item/locality-item/LocalityItem";
@@ -33,6 +34,7 @@ import {
   defaultMapboxStyles,
   TMapboxStyleLabels,
 } from "../../../shared/shared.constants";
+import PoiFilter from "./PoiFilter";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -263,6 +265,13 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     });
   };
 
+  const changePoiFilter = (resultingPoiFilter: IApiPoiFilter): void => {
+    onConfigChange({
+      ...config,
+      poiFilter: { ...resultingPoiFilter },
+    });
+  };
+
   const isDefaultActiveGroup = (activeGroup: string) => {
     return (config.defaultActiveGroups ?? []).includes(activeGroup);
   };
@@ -397,6 +406,16 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         </div>
         <div className="collapse-content entity-groups">
           <ul>
+            {groupedEntries.length > 0 && (
+              <li>
+                <PoiFilter
+                  poiFilter={config.poiFilter}
+                  onChange={(resultingPoiFilter) => {
+                    changePoiFilter(resultingPoiFilter);
+                  }}
+                />
+              </li>
+            )}
             {groupedEntries
               .filter((ge) => ge.items.length)
               .sort((a, b) => a.title.localeCompare(b.title))
