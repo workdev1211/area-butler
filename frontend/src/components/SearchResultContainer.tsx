@@ -689,14 +689,7 @@ const SearchResultContainer = forwardRef<
               searchResponse={searchResponse}
               searchAddress={placesLocation?.label}
               groupedEntities={resultingGroupedEntities ?? []}
-              highlightId={searchContextState.highlightId}
               snippetToken={searchContextState.responseToken}
-              setHighlightId={(id) =>
-                searchContextDispatch({
-                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                  payload: id,
-                })
-              }
               means={{
                 byFoot: searchContextState.responseActiveMeans.includes(
                   MeansOfTransportation.WALK

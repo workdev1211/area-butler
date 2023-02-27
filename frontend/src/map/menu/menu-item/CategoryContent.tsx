@@ -47,11 +47,6 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
     });
 
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-      payload: item.id,
-    });
-
-    searchContextDispatch({
       type: SearchContextActionTypes.GOTO_MAP_CENTER,
       payload: { goto: true, withZoom: true },
     });

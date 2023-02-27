@@ -42,8 +42,6 @@
   display: flex !important;
   border-radius: 100%;
   padding: 2px;
-  height: 32px !important;
-  width: 32px !important;
   @apply bg-white justify-center items-center;
 
   &.locality-marker-wrapper-custom {
@@ -53,15 +51,11 @@
 
 .leaflet-container.no-group {
   .locality-marker-wrapper {
-    height: 22px !important;
-    width: 22px !important;
     padding: 1px;
   }
 
   &.small-markers {
     .locality-marker-wrapper {
-      height: 16px !important;
-      width: 16px !important;
       padding: 1px;
     }
   }
@@ -73,16 +67,6 @@
   border-radius: 100%;
   border: 0.1rem solid rgba(0, 0, 0, 0.2);
   @apply justify-center items-center h-full w-full;
-}
-
-.locality-icon {
-  width: 16px !important;
-  height: 16px !important;
-}
-
-.locality-icon-custom {
-  width: 46px !important;
-  height: auto;
 }
 
 .real-estate-cta {

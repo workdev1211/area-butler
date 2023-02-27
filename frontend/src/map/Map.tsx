@@ -258,9 +258,8 @@ export class IdMarker extends L.Marker {
 }
 
 export const defaultMapZoom = 16.5;
-const defaultAmenityIconSize = new L.Point(32, 32);
-const myLocationIconSize = new L.Point(46, 46);
-const customMyLocationIconSize = new L.Point(46, 46);
+export const defaultMyLocationIconSize = 46;
+export const defaultAmenityIconSize = 32;
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -292,8 +291,6 @@ interface MapProps {
     byBike: boolean;
     byCar: boolean;
   };
-  highlightId?: string | null | undefined;
-  setHighlightId: (id: string | null) => void;
   addMapClipping: (zoom: number, dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
@@ -337,7 +334,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const meansEqual =
     JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
   const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
-  const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
   const routesEqual = prevProps.routes === nextProps.routes;
   const transitRoutesEqual =
     prevProps.transitRoutes === nextProps.transitRoutes;
@@ -361,7 +357,6 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     entityGroupsEqual &&
     meansEqual &&
     mapZoomLevelEqual &&
-    highlightIdEqual &&
     routesEqual &&
     transitRoutesEqual &&
     configEqual &&
@@ -384,8 +379,6 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       mapCenter,
       mapZoomLevel = defaultMapZoom,
       leafletMapId = "mymap",
-      highlightId,
-      setHighlightId,
       routes,
       transitRoutes,
       embedMode = false,
@@ -441,6 +434,11 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
     >();
     const [addPoiAddress, setAddPoiAddress] = useState<any>();
     const [fullscreen, setFullscreen] = useState(false);
+    const [mapIconMarker, setMapIconMarker] = useState<L.Marker>();
+    const [mapIconRatio, setMapIconRatio] = useState<number>();
+    const [poiIconSize, setPoiIconSize] = useState(
+      config?.iconSizes?.poiIconSize
+    );
 
     let addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
@@ -482,7 +480,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
     const initialMapCenter = searchResponse.centerOfInterest.coordinates;
 
-    // draw map
+    // draw the map (main component)
     useEffect(() => {
       const attribution =
         'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>';
@@ -571,56 +569,6 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         maxZoom: 18,
       }).addTo(localMap);
 
-      if (!embedMode || config?.showLocation) {
-        let detailContent = `${searchAddress}`;
-
-        if (!embedMode || config?.showStreetViewLink) {
-          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
-
-          const streetViewContent = `
-            <br/><br/>
-            <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
-              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
-               <span>Street View</span>
-            </a>
-          `;
-
-          detailContent = `${detailContent}${streetViewContent}`;
-        }
-
-        const iconStyle = config?.mapIcon
-          ? "height: 46px; width: auto;"
-          : "height: 100%; width: auto;";
-
-        const positionIcon = L.divIcon({
-          iconUrl: config?.mapIcon ?? myLocationIcon,
-          shadowUrl: leafletShadow,
-          shadowSize: [0, 0],
-          iconSize: config?.mapIcon
-            ? customMyLocationIconSize
-            : myLocationIconSize,
-          className: "my-location-icon-wrapper",
-          html: `<img src="${
-            config?.mapIcon ?? myLocationIcon
-          }" alt="marker-icon-address" style="${iconStyle}" />`,
-        });
-
-        const { lat, lng } = searchResponse.centerOfInterest.coordinates;
-
-        const myLocationMarker = L.marker([lat, lng], {
-          icon: positionIcon,
-        }).addTo(localMap);
-
-        if (config?.showAddress || !embedMode) {
-          myLocationMarker.on("click", function (event) {
-            const marker = event.target;
-            marker.unbindPopup();
-            marker.bindPopup(detailContent);
-            marker.openPopup();
-          });
-        }
-      }
-
       currentMap = localMap;
       mapRef.current = currentMap;
 
@@ -685,49 +633,89 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       isTrial,
     ]);
 
-    // scale marker (e.g., POIs) sizes and reattach the popup for the POI
+    // draw my location (map) icon
     useEffect(() => {
-      if (!currentMap || !mapZoomLevel || !amenityMarkerGroup) {
+      if (!currentMap) {
         return;
       }
 
-      // handle growing/shrinking of icons based on zoom level
-      const markers = amenityMarkerGroup.getLayers() as IdMarker[];
+      const drawMapIcon = async () => {
+        if (!(!embedMode || config?.showLocation)) {
+          return;
+        }
 
-      if (!markers.length) {
-        return;
-      }
+        const mapIconImage = new Image();
+        mapIconImage.src = config?.mapIcon ?? myLocationIcon;
+        await mapIconImage.decode();
+        const mapIconImageRatio =
+          Math.round((mapIconImage.width / mapIconImage.height) * 10) / 10;
+        setMapIconRatio(mapIconImageRatio);
 
-      const currentSize = markers[0].getIcon().options.iconSize;
+        let detailContent = `${searchAddress}`;
 
-      if ((currentSize as L.Point).x === 20 && mapZoomLevel >= 16) {
-        markers.forEach((marker) => {
-          const icon = marker.getIcon();
-          icon.options.iconSize = new L.Point(25, 25);
-          marker.setIcon(icon);
+        if (!embedMode || config?.showStreetViewLink) {
+          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
+
+          const streetViewContent = `
+            <br/><br/>
+            <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
+              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
+               <span>Street View</span>
+            </a>
+          `;
+
+          detailContent = `${detailContent}${streetViewContent}`;
+        }
+
+        const resultingSize = config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
+
+        const myLocationLeafletIcon = L.divIcon({
+          iconUrl: config?.mapIcon ?? myLocationIcon,
+          shadowUrl: leafletShadow,
+          shadowSize: [0, 0],
+          iconSize: new L.Point(
+            resultingSize * mapIconImageRatio,
+            resultingSize
+          ),
+          className: "my-location-icon-wrapper",
+          html: `<img src="${
+            config?.mapIcon ?? myLocationIcon
+          }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
         });
-      }
 
-      if ((currentSize as L.Point).x === 35 && mapZoomLevel < 16) {
-        markers.forEach((marker) => {
-          const icon = marker.getIcon();
-          icon.options.iconSize = defaultAmenityIconSize;
-          marker.setIcon(icon);
-        });
-      }
+        const { lat, lng } = searchResponse.centerOfInterest.coordinates;
 
-      const marker = markers.find((m) => m.getEntity().id === highlightId);
+        const myLocationMarker = L.marker([lat, lng], {
+          icon: myLocationLeafletIcon,
+          zIndexOffset: 3000,
+        }).addTo(currentMap!);
 
-      if (marker) {
-        // use timeout to wait for de-spider animation of cluster
-        setTimeout(() => {
-          marker.createOpenPopup();
-          setHighlightId(null);
-        }, 1200);
-      }
+        setMapIconMarker(myLocationMarker);
+
+        if (config?.showAddress || !embedMode) {
+          myLocationMarker.on("click", function (event) {
+            const marker = event.target;
+            marker.unbindPopup();
+            marker.bindPopup(detailContent);
+            marker.openPopup();
+          });
+        }
+      };
+
+      void drawMapIcon();
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mapZoomLevel, highlightId]);
+    }, [
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
+      config?.showStreetViewLink,
+      embedMode,
+      mapCenter.lat,
+      mapCenter.lng,
+      searchAddress,
+      searchResponse.centerOfInterest.coordinates,
+    ]);
 
     const meansStringified = JSON.stringify(means);
 
@@ -964,6 +952,10 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
     // draw POIs (amenities)
     useEffect(() => {
+      if (!currentMap) {
+        return;
+      }
+
       const parsedEntities: ResultEntity[] | null =
         JSON.parse(entitiesStringified);
 
@@ -1024,66 +1016,72 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         }
 
         // Add each POI to the marker cluster group
-        parsedEntities?.forEach((entity) => {
+        parsedEntities?.every((entity) => {
           if (
-            parsedEntityGroups.some(
+            !parsedEntityGroups.some(
               (eg) => eg.title === entity.label && eg.active
             )
           ) {
-            const isRealEstateListing = entity.osmName === OsmName.property;
-            const isPreferredLocation = entity.osmName === OsmName.favorite;
-
-            const markerIcon: IPoiIcon = isRealEstateListing
-              ? config?.mapIcon
-                ? {
-                    icon: config?.mapIcon,
-                    color:
-                      config.primaryColor ?? getRealEstateListingsIcon().color,
-                  }
-                : getRealEstateListingsIcon(userPoiIcons)
-              : isPreferredLocation
-              ? getPreferredLocationsIcon(userPoiIcons)
-              : deriveIconForOsmName(entity.osmName, userPoiIcons);
-
-            const iconStyle = config?.mapIcon
-              ? `height: 32px; width: auto !important;`
-              : "height: 100%; width: auto;";
-
-            const icon = L.divIcon({
-              iconUrl: markerIcon.icon,
-              shadowUrl: leafletShadow,
-              shadowSize: [0, 0],
-              iconSize: config?.mapIcon
-                ? customMyLocationIconSize
-                : myLocationIconSize,
-              className: `locality-marker-wrapper ${
-                (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
-                  ? "locality-marker-wrapper-custom"
-                  : ""
-              } icon-${entity.osmName}`,
-              html:
-                (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
-                  ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.osmName} locality-icon-custom" style="${iconStyle}" />`
-                  : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName} locality-icon" /></div>`,
-            });
-
-            const hideEntityFunction = editorMode ? hideEntity : undefined;
-
-            const marker = new IdMarker(
-              entity.coordinates,
-              entity,
-              searchAddress,
-              {
-                icon,
-              },
-              hideEntityFunction
-            ).on("click", function (e) {
-              const marker = e.target;
-              marker.createOpenPopup();
-            });
-
-            amenityMarkerGroup.addLayer(marker);
+            return true;
           }
+
+          const isRealEstateListing = entity.osmName === OsmName.property;
+          const isPreferredLocation = entity.osmName === OsmName.favorite;
+
+          const markerIcon: IPoiIcon = isRealEstateListing
+            ? config?.mapIcon
+              ? {
+                  icon: config?.mapIcon,
+                  color:
+                    config.primaryColor ?? getRealEstateListingsIcon().color,
+                }
+              : getRealEstateListingsIcon(userPoiIcons)
+            : isPreferredLocation
+            ? getPreferredLocationsIcon(userPoiIcons)
+            : deriveIconForOsmName(entity.osmName, userPoiIcons);
+
+          const resultingIconSize = config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
+          const iconSize = new L.Point(resultingIconSize, resultingIconSize);
+          const resultingIconStyleSize =
+            (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
+              ? resultingIconSize
+              : Math.floor(resultingIconSize / 2);
+          const iconStyle = `width: ${resultingIconStyleSize}px; height: ${resultingIconStyleSize}px;`;
+
+          const icon = L.divIcon({
+            iconUrl: markerIcon.icon,
+            shadowUrl: leafletShadow,
+            shadowSize: [0, 0],
+            iconSize,
+            className: `locality-marker-wrapper ${
+              (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
+                ? "locality-marker-wrapper-custom"
+                : ""
+            } icon-${entity.osmName}`,
+            html:
+              (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
+                ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.osmName} locality-icon-custom" style="${iconStyle}" />`
+                : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName} locality-icon" style="${iconStyle}" /></div>`,
+          });
+
+          const hideEntityFunction = editorMode ? hideEntity : undefined;
+
+          const marker = new IdMarker(
+            entity.coordinates,
+            entity,
+            searchAddress,
+            {
+              icon,
+            },
+            hideEntityFunction
+          ).on("click", function (e) {
+            const marker = e.target;
+            marker.createOpenPopup();
+          });
+
+          amenityMarkerGroup.addLayer(marker);
+
+          return true;
         });
 
         // react on the marker group click
@@ -1098,9 +1096,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         currentMap!.addLayer(amenityMarkerGroup);
       };
 
-      if (currentMap) {
-        drawAmenityMarkers();
-      }
+      void drawAmenityMarkers();
 
       // config?.showLocation and config?.showAddress are required for the "Objekt anzeigen" and "Adresse anzeigen" checkboxes
       // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -1113,6 +1109,67 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       config?.showAddress,
       mapboxMapId,
     ]);
+
+    // change icon sizes
+    useEffect(() => {
+      if (
+        !currentMap ||
+        !amenityMarkerGroup ||
+        !mapIconMarker ||
+        !mapIconRatio ||
+        !config?.iconSizes
+      ) {
+        return;
+      }
+
+      const mapIcon: L.DivIcon = mapIconMarker.getIcon();
+      const mapIconHtml = mapIcon.options.html as string;
+      const resultingMapIconSize: number = config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
+
+      mapIcon.options.html = mapIconHtml.replace(
+        /^(.*style=").*(".*)$/,
+        `$1width: ${
+          resultingMapIconSize * mapIconRatio
+        }px; height: ${resultingMapIconSize}px;$2`
+      );
+
+      mapIcon.options.iconSize = new L.Point(
+        resultingMapIconSize * mapIconRatio,
+        resultingMapIconSize
+      );
+
+      mapIconMarker.setIcon(mapIcon);
+
+      // to prevent unnecessary computations
+      if (config?.iconSizes?.poiIconSize === poiIconSize) {
+        return;
+      }
+
+      setPoiIconSize(config?.iconSizes?.poiIconSize);
+      const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
+
+      poiMarkers.forEach((marker) => {
+        const icon: L.DivIcon = marker.getIcon();
+        const iconHtml = icon.options.html as string;
+
+        const resultingSize: number = iconHtml.match(/^.*locality-icon[^-].*$/)
+          ?.length
+          ? Math.floor(config?.iconSizes?.poiIconSize! / 2)
+          : config?.iconSizes?.poiIconSize!;
+
+        icon.options.html = iconHtml.replace(
+          /^(.*locality-icon.*style=").*(".*)$/,
+          `$1width: ${resultingSize}px; height: ${resultingSize}px;$2`
+        );
+
+        icon.options.iconSize = new L.Point(
+          config?.iconSizes?.poiIconSize!,
+          config?.iconSizes?.poiIconSize!
+        );
+
+        marker.setIcon(icon);
+      });
+    }, [config?.iconSizes, mapIconMarker, mapIconRatio, poiIconSize]);
 
     useEffect(() => {
       if (!currentMap || !gotoMapCenter) {
@@ -1271,7 +1328,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"
           >
-            {/*eslint-disable-next-line jsx-a11y/anchor-is-valid*/}
+            {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
             <a
               data-tour="toggle-bounds"
               className="leaflet-control-zoom-in cursor-pointer p-2"

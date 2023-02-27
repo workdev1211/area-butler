@@ -11,7 +11,8 @@ import {
   ApiSearchResultSnapshotConfigTheme,
   ApiSearchResultSnapshotResponse,
   ApiSnippetEntityVisibility,
-  IApiPoiFilter,
+  IApiSnapshotPoiFilter,
+  IApiSnapshotIconSizes,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import { LocalityItemContent } from "../menu-item/locality-item/LocalityItem";
@@ -35,6 +36,7 @@ import {
   TMapboxStyleLabels,
 } from "../../../shared/shared.constants";
 import PoiFilter from "./PoiFilter";
+import IconSizes from "./IconSize";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -146,7 +148,12 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     ...additionalMapBoxStyles,
     {
       key: "",
-      label: "> Karte in Ihrem Branding? Sprechen Sie uns an. <",
+      label: "> Karte in Ihrem Branding? <",
+      isDisabled: true,
+    },
+    {
+      key: "",
+      label: "> Sprechen Sie uns an. <",
       isDisabled: true,
     },
   ];
@@ -265,10 +272,17 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     });
   };
 
-  const changePoiFilter = (resultingPoiFilter: IApiPoiFilter): void => {
+  const changePoiFilter = (resultingPoiFilter: IApiSnapshotPoiFilter): void => {
     onConfigChange({
       ...config,
       poiFilter: { ...resultingPoiFilter },
+    });
+  };
+
+  const changeIconSizes = (iconSizes: IApiSnapshotIconSizes): void => {
+    onConfigChange({
+      ...config,
+      iconSizes: { ...iconSizes },
     });
   };
 
@@ -500,11 +514,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
           </div>
         </div>
         <div className="collapse-content">
-          <ul>
+          <ul className="editor-configuration-list">
             {recentSnippetConfigs.length && (
               <li>
                 <div className="flex items-center gap-6 py-1 w-full">
-                  <h4 className="w-16 font-bold">Vorlagen</h4>
+                  <h4 className="w-[6.5rem] font-bold">Vorlagen</h4>
                   <select
                     className="select select-bordered select-sm flex-1"
                     value={selectedSnippetConfigId}
@@ -531,7 +545,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             )}
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-16 font-bold">Menu</h4>
+                <h4 className="w-[6.5rem] font-bold">Menu</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -560,7 +574,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-16 font-bold">Karte</h4>
+                <h4 className="w-[6.5rem] font-bold">Karte</h4>
                 <select
                   className="select select-bordered select-sm flex-1"
                   value={
@@ -585,7 +599,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-16 font-bold">Immobilienart</h4>
+                <h4 className="w-[6.5rem] font-bold">Immobilienart</h4>
                 <select
                   className="select select-bordered select-sm flex-1"
                   value={config?.realEstateStatus}
@@ -666,6 +680,14 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   )}
                 </div>
               </div>
+            </li>
+            <li>
+              <IconSizes
+                iconSizes={config?.iconSizes}
+                onChange={(resultingIconSizes) => {
+                  changeIconSizes(resultingIconSizes);
+                }}
+              />
             </li>
             <li>
               <div className="flex items-center gap-6 py-1">

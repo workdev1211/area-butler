@@ -316,9 +316,14 @@ export enum PoiFilterTypesEnum {
   BY_AMOUNT = "BY_AMOUNT",
 }
 
-export interface IApiPoiFilter {
+export interface IApiSnapshotPoiFilter {
   type: PoiFilterTypesEnum;
   value?: number;
+}
+
+export interface IApiSnapshotIconSizes {
+  mapIconSize?: number;
+  poiIconSize?: number;
 }
 
 export interface ApiSearchResultSnapshotConfig {
@@ -338,7 +343,8 @@ export interface ApiSearchResultSnapshotConfig {
   zoomLevel?: number;
   realEstateStatus?: ApiRealEstateStatusEnum;
   showDetailsInOnePage?: boolean;
-  poiFilter?: IApiPoiFilter;
+  poiFilter?: IApiSnapshotPoiFilter;
+  iconSizes?: IApiSnapshotIconSizes;
 }
 
 export interface ApiSearchResultSnapshotResponse {

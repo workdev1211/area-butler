@@ -15,12 +15,14 @@ import { Type } from 'class-transformer';
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
-  IApiPoiFilter,
+  IApiSnapshotIconSizes,
+  IApiSnapshotPoiFilter,
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisibilityDto from './api-snippet-entity-visiblity.dto';
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
-import ApiPoiFilter from './api-poi-filter.dto';
+import ApiSnapshotIconSizesDto from './api-snapshot-icon-sizes.dto';
+import ApiSnapshotPoiFilterDto from './api-snapshot-poi-filter.dto';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
@@ -89,8 +91,14 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiPoiFilter)
-  poiFilter?: IApiPoiFilter;
+  @Type(() => ApiSnapshotPoiFilterDto)
+  poiFilter?: IApiSnapshotPoiFilter;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiSnapshotIconSizesDto)
+  iconSizes?: IApiSnapshotIconSizes;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

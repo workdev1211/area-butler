@@ -45,6 +45,10 @@
     display: flex;
     justify-content: flex-start !important;
   }
+
+  .collapse .collapse-content ul.editor-configuration-list li {
+    padding-right: var(--menu-item-pl);
+  }
 }
 
 @media (max-width: 1024px) {

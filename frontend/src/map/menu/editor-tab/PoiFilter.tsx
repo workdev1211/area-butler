@@ -1,14 +1,14 @@
 import { FunctionComponent, useState } from "react";
 
 import {
-  IApiPoiFilter,
+  IApiSnapshotPoiFilter,
   PoiFilterTypesEnum,
 } from "../../../../../shared/types/types";
 import { toastError } from "../../../shared/shared.functions";
 
 interface IPoiFilterProps {
-  poiFilter?: IApiPoiFilter;
-  onChange: (poiFilter: IApiPoiFilter) => void;
+  poiFilter?: IApiSnapshotPoiFilter;
+  onChange: (poiFilter: IApiSnapshotPoiFilter) => void;
 }
 
 const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
@@ -132,7 +132,9 @@ const PoiFilter: FunctionComponent<IPoiFilterProps> = ({
               return;
             }
 
-            const resultingPoiFilter: IApiPoiFilter = { type: poiFilterType };
+            const resultingPoiFilter: IApiSnapshotPoiFilter = {
+              type: poiFilterType,
+            };
 
             if (poiFilterType !== PoiFilterTypesEnum.NONE) {
               resultingPoiFilter.value =

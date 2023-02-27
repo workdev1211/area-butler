@@ -1,8 +1,11 @@
 import { IsEnum, IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
-import { IApiPoiFilter, PoiFilterTypesEnum } from '@area-butler-types/types';
+import {
+  IApiSnapshotPoiFilter,
+  PoiFilterTypesEnum,
+} from '@area-butler-types/types';
 
-class ApiPoiFilter implements IApiPoiFilter {
+class ApiSnapshotPoiFilterDto implements IApiSnapshotPoiFilter {
   @IsNotEmpty()
   @IsEnum(PoiFilterTypesEnum)
   type: PoiFilterTypesEnum;
@@ -12,4 +15,4 @@ class ApiPoiFilter implements IApiPoiFilter {
   value?: number;
 }
 
-export default ApiPoiFilter;
+export default ApiSnapshotPoiFilterDto;
