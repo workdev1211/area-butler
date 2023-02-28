@@ -41,8 +41,6 @@ async function bootstrap() {
   }
 
   app.useStaticAssets(resolve('./src/public'));
-  // TODO think about moving it to a controller protected by a guard
-  app.useStaticAssets(resolve('../shared/assets'));
   app.setBaseViewsDir(resolve('./src/views'));
   app.setViewEngine('hbs');
 

@@ -5,7 +5,7 @@ import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
   ApiShowTour,
   IApiUserExportFont,
-  IApiUserPoiIcon,
+  IApiUserPoiIcons,
   IApiUserUsageStatistics,
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
@@ -15,7 +15,7 @@ export type UserDocument = User &
   Document & {
     subscription?: SubscriptionDocument;
     parentUser?: UserDocument;
-    poiIcons?: IApiUserPoiIcon[];
+    poiIcons?: IApiUserPoiIcons;
   };
 
 @Schema()

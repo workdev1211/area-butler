@@ -91,7 +91,7 @@ interface IMapTabProps {
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   locationIndexData?: TLocationIndexData;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userMenuPoiIcons?: IApiUserPoiIcon[];
   editorMode?: boolean;
 }
 
@@ -110,7 +110,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   federalElectionData,
   particlePollutionData,
   locationIndexData,
-  userPoiIcons = user?.poiIcons,
+  userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
   editorMode = false,
 }) => {
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!editorMode);
@@ -194,10 +194,10 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                 const groupIconInfo: IPoiIcon = isRealEstateListing
                   ? !!config?.mapIcon
                     ? { icon: config.mapIcon, color: "transparent" }
-                    : getRealEstateListingsIcon(userPoiIcons)
+                    : getRealEstateListingsIcon(userMenuPoiIcons)
                   : isPreferredLocation
-                  ? getPreferredLocationsIcon(userPoiIcons)
-                  : deriveIconForOsmName(ge.items[0].osmName, userPoiIcons);
+                  ? getPreferredLocationsIcon(userMenuPoiIcons)
+                  : deriveIconForOsmName(ge.items[0].osmName, userMenuPoiIcons);
 
                 return (
                   <MapMenuListItem
@@ -251,12 +251,12 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                         ge.items[0].label === preferredLocationsTitle;
 
                       const groupIconInfo: IPoiIcon = isRealEstateListing
-                        ? getRealEstateListingsIcon(userPoiIcons)
+                        ? getRealEstateListingsIcon(userMenuPoiIcons)
                         : isPreferredLocation
-                        ? getPreferredLocationsIcon(userPoiIcons)
+                        ? getPreferredLocationsIcon(userMenuPoiIcons)
                         : deriveIconForOsmName(
                             ge.items[0].osmName,
-                            userPoiIcons
+                            userMenuPoiIcons
                           );
 
                       return (

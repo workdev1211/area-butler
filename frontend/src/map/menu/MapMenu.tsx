@@ -66,7 +66,7 @@ interface IMapMenuProps {
   locationIndexData?: TLocationIndexData;
   editorTabProps?: IEditorTabProps;
   exportTabProps?: IExportTabProps;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
 const MapMenu: FunctionComponent<IMapMenuProps> = ({
@@ -94,7 +94,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   locationIndexData,
   editorTabProps,
   exportTabProps,
-  userPoiIcons = user?.poiIcons,
+  userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
 
@@ -217,7 +217,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
             user={user}
-            userPoiIcons={userPoiIcons}
+            userMenuPoiIcons={userMenuPoiIcons}
             config={config}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             showInsights={showInsights}

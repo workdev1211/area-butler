@@ -51,7 +51,7 @@ export interface ApiUser {
   additionalMapBoxStyles: MapBoxStyle[];
   isChild: boolean;
   parentSettings?: IApiUserParentSettings;
-  poiIcons?: IApiUserPoiIcon[];
+  poiIcons?: IApiUserPoiIcons;
   exportFonts?: IApiUserExportFont[];
 }
 
@@ -360,7 +360,7 @@ export interface ApiSearchResultSnapshotResponse {
   endsAt?: Date;
   updatedAt?: Date;
   isTrial?: boolean;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userPoiIcons?: IApiUserPoiIcons;
 }
 
 export interface IApiPlacesLocation {
@@ -399,8 +399,13 @@ export interface IApiUserPoiIcon {
   file: string;
 }
 
+export interface IApiUserPoiIcons {
+  mapPoiIcons?: IApiUserPoiIcon[];
+  menuPoiIcons?: IApiUserPoiIcon[];
+}
+
 export interface IApiUserAssets {
-  poiIcons: IApiUserPoiIcon[];
+  poiIcons: IApiUserPoiIcons;
 }
 
 export enum ApiDataProvisionEnum {

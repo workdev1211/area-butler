@@ -28,7 +28,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   ApiUser,
-  IApiUserPoiIcon,
+  IApiUserPoiIcons,
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
@@ -135,7 +135,7 @@ interface ISearchResultContainerProps {
   editorMode?: boolean;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userPoiIcons?: IApiUserPoiIcons;
   editorTabProps?: IEditorTabProps;
   exportTabProps?: IExportTabProps;
 }
@@ -751,7 +751,7 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               isTrial={isTrial}
-              userPoiIcons={userPoiIcons}
+              userMapPoiIcons={userPoiIcons?.mapPoiIcons}
               ref={mapRef}
             />
           </div>
@@ -800,7 +800,7 @@ const SearchResultContainer = forwardRef<
               }}
               saveConfig={saveConfig}
               user={user}
-              userPoiIcons={userPoiIcons}
+              userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
               openUpgradeSubscriptionModal={(message) => {
                 userDispatch({
                   type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,

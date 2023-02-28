@@ -42,6 +42,7 @@ export class UserController {
     const user = await this.userService.upsertUser(
       requestUser.email,
       requestUser.email,
+      true,
     );
 
     return this.transformToApiUser(user);

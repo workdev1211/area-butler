@@ -14,7 +14,7 @@ import { Type, Transform, Expose, Exclude } from 'class-transformer';
 import {
   ApiUser,
   IApiUserExportFont,
-  IApiUserPoiIcon,
+  IApiUserPoiIcons,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
@@ -23,8 +23,8 @@ import MapBoxStyleDto from './map-box-style.dto';
 import { mapSubscriptionToApiSubscription } from '../user/mapper/subscription.mapper';
 import { retrieveTotalRequestContingent } from '../user/schema/user.schema';
 import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
-import ApiUserPoiIconDto from './api-user-poi-icon.dto';
 import ApiUserExportFontDto from './api-user-export-font.dto';
+import ApiUserPoiIconsDto from './api-user-poi-icons.dto';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
@@ -137,8 +137,8 @@ class ApiUserDto implements ApiUser {
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiUserPoiIconDto)
-  poiIcons?: IApiUserPoiIcon[];
+  @Type(() => ApiUserPoiIconsDto)
+  poiIcons?: IApiUserPoiIcons;
 
   @Expose()
   @IsOptional()

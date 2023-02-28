@@ -312,7 +312,7 @@ interface MapProps {
   gotoMapCenter: IGotoMapCenter | undefined;
   setGotoMapCenter: (data: IGotoMapCenter | undefined) => void;
   isTrial: boolean;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userMapPoiIcons?: IApiUserPoiIcon[];
 }
 
 interface MapMemoProps extends MapProps {
@@ -346,9 +346,9 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     JSON.stringify(prevProps.gotoMapCenter) ===
     JSON.stringify(nextProps.gotoMapCenter);
   const isTrialEqual = prevProps.isTrial === nextProps.isTrial;
-  const userPoiIconsEqual =
-    JSON.stringify(prevProps.userPoiIcons) ===
-    JSON.stringify(nextProps.userPoiIcons);
+  const userMapPoiIconsEqual =
+    JSON.stringify(prevProps.userMapPoiIcons) ===
+    JSON.stringify(nextProps.userMapPoiIcons);
 
   return (
     mapboxKeyEqual &&
@@ -364,7 +364,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     hideIsochronesEqual &&
     gotoMapCenterEqual &&
     isTrialEqual &&
-    userPoiIconsEqual
+    userMapPoiIconsEqual
   );
 };
 
@@ -399,7 +399,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       gotoMapCenter,
       setGotoMapCenter,
       isTrial,
-      userPoiIcons,
+      userMapPoiIcons,
     },
     parentMapRef
   ) => {
@@ -1035,10 +1035,10 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                   color:
                     config.primaryColor ?? getRealEstateListingsIcon().color,
                 }
-              : getRealEstateListingsIcon(userPoiIcons)
+              : getRealEstateListingsIcon(userMapPoiIcons)
             : isPreferredLocation
-            ? getPreferredLocationsIcon(userPoiIcons)
-            : deriveIconForOsmName(entity.osmName, userPoiIcons);
+            ? getPreferredLocationsIcon(userMapPoiIcons)
+            : deriveIconForOsmName(entity.osmName, userMapPoiIcons);
 
           const resultingIconSize = config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
           const iconSize = new L.Point(resultingIconSize, resultingIconSize);

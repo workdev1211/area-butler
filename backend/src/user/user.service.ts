@@ -46,13 +46,21 @@ export class UserService {
     private readonly userSubscriptionPipe: UserSubscriptionPipe,
   ) {}
 
-  async upsertUser(email: string, fullname: string): Promise<UserDocument> {
+  async upsertUser(
+    email: string,
+    fullname: string,
+    withAssets = false,
+  ): Promise<UserDocument> {
     const existingUser = await this.userModel.findOne({ email });
 
     if (existingUser) {
+      if (!withAssets) {
+        return existingUser;
+      }
+
       const { poiIcons } = await this.fetchUserAssets(existingUser.email);
 
-      if (poiIcons?.length > 0) {
+      if (Object.keys(poiIcons).some(key => poiIcons[key]?.length)) {
         existingUser.poiIcons = poiIcons;
       }
 
@@ -185,7 +193,7 @@ export class UserService {
 
     const { poiIcons } = await this.fetchUserAssets(user.email);
 
-    if (poiIcons?.length > 0) {
+    if (Object.keys(poiIcons).some(key => poiIcons[key]?.length)) {
       user.poiIcons = poiIcons;
     }
 
@@ -445,13 +453,22 @@ export class UserService {
     );
   }
 
-  // TODO change to the path check and providing the urls for assets instead of retrieving them
   private async fetchUserAssets(userEmail: string): Promise<IApiUserAssets> {
     const dirPath = joinPath(process.cwd(), `../shared/assets/${userEmail}`);
-    const iconPath = joinPath(dirPath, '/icons/pois');
-    const poiIcons = await this.fetchUserAsset(iconPath, this.fetchUserPoiIcon);
+    const mapPoiIconPath = joinPath(dirPath, '/icons/poi/map');
+    const menuPoiIconPath = joinPath(dirPath, '/icons/poi/menu');
 
-    return { poiIcons };
+    const mapPoiIcons = await this.fetchUserAsset(
+      mapPoiIconPath,
+      this.fetchUserPoiIcon,
+    );
+
+    const menuPoiIcons = await this.fetchUserAsset(
+      menuPoiIconPath,
+      this.fetchUserPoiIcon,
+    );
+
+    return { poiIcons: { mapPoiIcons, menuPoiIcons } };
   }
 
   private async fetchUserAsset<T>(

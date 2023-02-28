@@ -12,7 +12,7 @@ import "./OnOfficeContainer.scss";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  IApiUserPoiIcon,
+  IApiUserPoiIcons,
 } from "../../../shared/types/types";
 import {
   SearchContext,
@@ -57,7 +57,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [searchConfig, setSearchConfig] =
     useState<ApiSearchResultSnapshotConfig>();
-  const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcon[]>([]);
+  const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcons>();
 
   const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1);
@@ -117,7 +117,7 @@ const OnOfficeContainer: FunctionComponent = () => {
         setMapBoxToken(response.mapboxToken);
         setResult(response);
         setSearchConfig(config);
-        setUserPoiIcons(response.userPoiIcons || []);
+        setUserPoiIcons(response.userPoiIcons);
       } catch (e: any) {
         const { statusCode, message } = e.response.data;
 

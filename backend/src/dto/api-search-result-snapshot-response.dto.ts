@@ -15,11 +15,11 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-  IApiUserPoiIcon,
+  IApiUserPoiIcons,
 } from '@area-butler-types/types';
 import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-config.dto';
 import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
-import ApiUserPoiIconDto from './api-user-poi-icon.dto';
+import ApiUserPoiIconsDto from './api-user-poi-icons.dto';
 
 class ApiSearchResultSnapshotResponseDto
   implements ApiSearchResultSnapshotResponse
@@ -79,8 +79,8 @@ class ApiSearchResultSnapshotResponseDto
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiUserPoiIconDto)
-  userPoiIcons?: IApiUserPoiIcon[];
+  @Type(() => ApiUserPoiIconsDto)
+  userPoiIcons?: IApiUserPoiIcons;
 }
 
 export default ApiSearchResultSnapshotResponseDto;
