@@ -20,7 +20,7 @@ import { ConfigContext } from "../context/ConfigContext";
 import { commonPaypalOptions } from "../shared/shared.constants";
 
 interface PaymentMethodModalProps {
-  stripePriceId: string;
+  priceId: string;
   closeModal: () => void;
   isNotRecurring?: boolean;
   stripeCheckoutUrl: string;
@@ -34,7 +34,7 @@ const paypalHandlersInitialState = {
 };
 
 const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
-  stripePriceId,
+  priceId,
   closeModal,
   isNotRecurring = false,
   stripeCheckoutUrl,
@@ -72,7 +72,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           const { data: orderId } = await post<string>(
             "/api/billing/create-paypal-order",
             {
-              priceId: stripePriceId,
+              priceId,
             }
           );
 
@@ -106,7 +106,7 @@ const PaymentMethodModal: FunctionComponent<PaymentMethodModalProps> = ({
           const { data: orderId } = await post<string>(
             "/api/billing/create-paypal-subscription",
             {
-              priceId: stripePriceId,
+              priceId,
             }
           );
 

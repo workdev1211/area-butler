@@ -120,7 +120,7 @@ const IncreaseLimitFormHandler: FunctionComponent<
     <>
       {isShownPaymentModal && (
         <PaymentMethodModal
-          stripePriceId={paymentStripePriceId}
+          priceId={paymentStripePriceId}
           closeModal={() => {
             setIsShownPaymentModal(false);
             postSubmit(true);

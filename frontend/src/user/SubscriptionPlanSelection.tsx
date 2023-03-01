@@ -211,7 +211,7 @@ const SubscriptionPlanSelection: FunctionComponent = () => {
     <div className="mt-20 flex flex-col gap-5">
       {isShownPaymentModal && (
         <PaymentMethodModal
-          stripePriceId={paymentStripePriceId}
+          priceId={paymentStripePriceId}
           closeModal={() => {
             setIsShownPaymentModal(false);
           }}
