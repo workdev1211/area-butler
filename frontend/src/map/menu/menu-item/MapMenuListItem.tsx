@@ -1,6 +1,5 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import "./MapMenuListItem.scss";
 import {
   EntityGroup,
   ResultEntity,
@@ -49,7 +48,7 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
 }) => {
   const [isListOpen, setIsListOpen] = useState(false);
   const { searchContextDispatch } = useContext(SearchContext);
-  const imgClass = !isCustomIcon ? "item" : "";
+  const imgClass = isCustomIcon ? "item-custom" : "item";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
     ? "checkbox checkbox-custom checkbox-sm"
@@ -66,19 +65,25 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
           (isListOpen ? " collapse-child-open" : " collapse-child-closed")
         }
       >
-        <input type="checkbox" onChange={() => setIsListOpen(!isListOpen)} />
+        <input
+          type="checkbox"
+          onChange={() => {
+            setIsListOpen(!isListOpen);
+          }}
+        />
         <div className="collapse-title">
-          <div onClick={() => setIsListOpen(!isListOpen)}>
+          <div
+            onClick={() => {
+              setIsListOpen(!isListOpen);
+            }}
+          >
             <div
-              className="img-container"
+              className={`img-container${
+                isCustomIcon ? "" : " mask mask-circle"
+              }`}
               style={{ background: groupIcon.color }}
             >
-              <img
-                className={imgClass}
-                src={groupIcon.icon}
-                alt="group-icon"
-                onClick={() => setIsListOpen(!isListOpen)}
-              />
+              <img className={imgClass} src={groupIcon.icon} alt="group-icon" />
             </div>
             {entityGroup.title === realEstateListingsTitle
               ? realEstateListingsTitleEmbed

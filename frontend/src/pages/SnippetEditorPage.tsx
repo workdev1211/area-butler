@@ -46,8 +46,10 @@ import {
 import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
-import { defaultMapZoom } from "../map/Map";
-import { googleMapsApiOptions } from "../shared/shared.constants";
+import {
+  defaultMapZoom,
+  googleMapsApiOptions,
+} from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { ISnippetEditorHistoryState } from "../shared/shared.types";

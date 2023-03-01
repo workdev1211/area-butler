@@ -253,16 +253,7 @@ export const deriveIconForOsmName = (
         icon: fuelIcon,
         color: "#8E71EB",
       };
-    case OsmName.park:
-      return {
-        icon: parkIcon,
-        color: "#165B4E",
-      };
     case OsmName.chemist:
-      return {
-        icon: chemistIcon,
-        color: "#267F9D",
-      };
     case OsmName.supermarket:
       return {
         icon: chemistIcon,
@@ -321,20 +312,12 @@ export const deriveIconForOsmName = (
         color: "#201C1E",
       };
     case OsmName.doctors:
-      return {
-        icon: doctorsIcon,
-        color: "#10A877",
-      };
     case OsmName.dentist:
       return {
         icon: doctorsIcon,
         color: "#10A877",
       };
     case OsmName.clinic:
-      return {
-        icon: clinicIcon,
-        color: "#42AEA7",
-      };
     case OsmName.hospital:
       return {
         icon: clinicIcon,
@@ -400,6 +383,7 @@ export const deriveIconForOsmName = (
         icon: windTurbineIcon,
         color: "#1A5A6B",
       };
+    case OsmName.park:
     default:
       return {
         icon: parkIcon,

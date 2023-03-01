@@ -30,9 +30,9 @@ import {
   addressExpiredMessage,
   subscriptionExpiredMessage,
 } from "../../../shared/messages/error.message";
-import { defaultMapZoom } from "../map/Map";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { defaultMapZoom } from "../shared/shared.constants";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();

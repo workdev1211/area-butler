@@ -1,6 +1,5 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import "./MapMenuListItem.scss";
 import distanceIcon from "../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";

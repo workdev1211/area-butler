@@ -75,7 +75,10 @@ import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { IPoiIcon } from "../shared/shared.types";
 import {
+  defaultAmenityIconSize,
   defaultMapboxStyles,
+  defaultMapZoom,
+  defaultMyLocationIconSize,
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 
@@ -256,10 +259,6 @@ export class IdMarker extends L.Marker {
     }
   }
 }
-
-export const defaultMapZoom = 16.5;
-export const defaultMyLocationIconSize = 46;
-export const defaultAmenityIconSize = 32;
 
 let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
@@ -667,7 +666,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           detailContent = `${detailContent}${streetViewContent}`;
         }
 
-        const resultingSize = config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
+        const resultingSize =
+          config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
         const myLocationLeafletIcon = L.divIcon({
           iconUrl: config?.mapIcon ?? myLocationIcon,
@@ -1040,19 +1040,24 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             ? getPreferredLocationsIcon(userMapPoiIcons)
             : deriveIconForOsmName(entity.osmName, userMapPoiIcons);
 
-          const resultingIconSize = config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
-          const iconSize = new L.Point(resultingIconSize, resultingIconSize);
+          const resultingIconSize =
+            config?.iconSizes?.poiIconSize || defaultAmenityIconSize;
+          const leafletIconSize = new L.Point(
+            resultingIconSize,
+            resultingIconSize
+          );
+
           const resultingIconStyleSize =
             (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
               ? resultingIconSize
               : Math.floor(resultingIconSize / 2);
-          const iconStyle = `width: ${resultingIconStyleSize}px; height: ${resultingIconStyleSize}px;`;
+          const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
 
           const icon = L.divIcon({
             iconUrl: markerIcon.icon,
             shadowUrl: leafletShadow,
             shadowSize: [0, 0],
-            iconSize,
+            iconSize: leafletIconSize,
             className: `locality-marker-wrapper ${
               (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
                 ? "locality-marker-wrapper-custom"
@@ -1124,7 +1129,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
       const mapIcon: L.DivIcon = mapIconMarker.getIcon();
       const mapIconHtml = mapIcon.options.html as string;
-      const resultingMapIconSize: number = config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
+      const resultingMapIconSize: number =
+        config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
       mapIcon.options.html = mapIconHtml.replace(
         /^(.*style=").*(".*)$/,

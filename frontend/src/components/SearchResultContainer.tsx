@@ -41,7 +41,7 @@ import {
 } from "../shared/shared.functions";
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
-import Map, { defaultMapZoom } from "../map/Map";
+import Map from "../map/Map";
 import { UserActions, UserActionTypes } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.scss";
@@ -55,6 +55,7 @@ import { defaultColor } from "../../../shared/constants/constants";
 import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
 import {
   defaultMapboxStyles,
+  defaultMapZoom,
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";

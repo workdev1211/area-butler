@@ -58,3 +58,7 @@ export const feedbackModalConfig: ModalConfig = {
     document.querySelector("#sib-conversations")?.remove();
   },
 };
+
+export const defaultMapZoom = 16.5;
+export const defaultMyLocationIconSize = 46;
+export const defaultAmenityIconSize = 32;

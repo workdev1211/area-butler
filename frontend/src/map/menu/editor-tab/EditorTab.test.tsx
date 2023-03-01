@@ -14,11 +14,11 @@ describe("EditorTab", () => {
     const component = render(
       <EditorTab
         snapshotId="a"
+        isNewSnapshot={true}
         availableMeans={[]}
         groupedEntries={[]}
         config={testConfig}
         onConfigChange={jest.fn()}
-        saveConfig={jest.fn()}
       />
     );
 
