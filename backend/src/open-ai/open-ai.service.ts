@@ -109,7 +109,7 @@ export class OpenAiService {
       },
       costStructure: { minPrice, price: maxPrice, type: costType },
     }: RealEstateListingDocument,
-    initialQueryText = `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange, werbliche Beschreibung in einem Immobilienexposee.`,
+    initialQueryText = `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
   ): string {
     const objectType = 'Haus';
 
@@ -161,7 +161,7 @@ export class OpenAiService {
       queryText += ` Die Adresse lautet ${address}.`;
     }
     if (propertySizeInSquareMeters) {
-      queryText += ` Zu den Objekt gehört ein Grundstück mit einer Fläche von ${propertySizeInSquareMeters}qm.`;
+      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${propertySizeInSquareMeters}qm.`;
     }
     if (realEstateSizeInSquareMeters) {
       queryText += ` Die Wohnfläche beträgt ${realEstateSizeInSquareMeters}qm.`;
@@ -239,7 +239,7 @@ export class OpenAiService {
     if (poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]) {
       queryText += ` Es gibt ${
         poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]
-      } Haltestellen des ÖPNV in der Nähe.`;
+      } ÖPNV Haltestellen in der Nähe.`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS]) {
       queryText += ` Mit ${
@@ -333,7 +333,7 @@ export class OpenAiService {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createCompletion(
       {
-        model: 'text-davinci-001',
+        model: 'text-davinci-003',
         prompt: queryText,
         temperature: 1,
         max_tokens: 1200,
