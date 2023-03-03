@@ -20,7 +20,7 @@ interface IMapMenuKarlaFrickeProps {
   groupedEntries: EntityGroup[];
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (isShown: boolean) => void;
-  userPoiIcons?: IApiUserPoiIcon[];
+  userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
 const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
@@ -28,7 +28,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
   groupedEntries,
   isShownPreferredLocationsModal,
   togglePreferredLocationsModal,
-  userPoiIcons,
+  userMenuPoiIcons,
 }) => {
   interface IListItemProps {
     group: EntityGroup;
@@ -48,10 +48,10 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
       group.items[0].label === preferredLocationsTitle;
 
     const groupIconInfo = isRealEstateListing
-      ? getRealEstateListingsIcon(userPoiIcons)
+      ? getRealEstateListingsIcon(userMenuPoiIcons)
       : isPreferredLocation
-      ? getPreferredLocationsIcon(userPoiIcons)
-      : deriveIconForOsmName(group.items[0].osmName, userPoiIcons);
+      ? getPreferredLocationsIcon(userMenuPoiIcons)
+      : deriveIconForOsmName(group.items[0].osmName, userMenuPoiIcons);
 
     return (
       <li
@@ -67,7 +67,9 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
         }}
         className={group.active ? "active" : ""}
       >
-        <img src={groupIconInfo.icon} alt="group-icon" />
+        <div className="img-container">
+          <img src={groupIconInfo.icon} alt="group-icon" />
+        </div>
         {group.title}
         {dropdown && <span className="dropdown-triangle">&#9660;</span>}
       </li>

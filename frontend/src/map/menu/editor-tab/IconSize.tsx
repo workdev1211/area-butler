@@ -27,7 +27,7 @@ const IconSizes: FunctionComponent<IIconSizeProps> = ({
       <h4 className="font-bold">Symbolgrößen</h4>
       <div
         className="grid auto-rows-fr gap-2"
-        style={{ gridTemplateColumns: "2fr 1.5fr" }}
+        style={{ gridTemplateColumns: "2fr 0.5fr 1.5fr" }}
       >
         <input
           className="range"
@@ -47,6 +47,7 @@ const IconSizes: FunctionComponent<IIconSizeProps> = ({
             }
           }}
         />
+        <div className="label-text">{mapIconSize}px</div>
         <div className="label-text">Karten Icon Größe</div>
         <input
           className="range"
@@ -66,6 +67,7 @@ const IconSizes: FunctionComponent<IIconSizeProps> = ({
             }
           }}
         />
+        <div className="label-text">{poiIconSize}px</div>
         <div className="label-text">POI Icon Größe</div>
       </div>
     </div>

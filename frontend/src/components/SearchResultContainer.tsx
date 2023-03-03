@@ -768,6 +768,7 @@ const SearchResultContainer = forwardRef<
               isMapMenuOpen={isMapMenuOpen}
               isShownPreferredLocationsModal={isShownPreferredLocationsModal}
               togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+              userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
             />
           )}
           {(!isThemeKf || (isThemeKf && editorMode)) && (
