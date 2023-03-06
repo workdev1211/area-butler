@@ -1,9 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
-import { ApiUserIntegrationTypesEnum } from '@area-butler-types/types';
+import {
+  ApiUserIntegrationTypesEnum,
+  TApiIntegrationUserParameters,
+} from '@area-butler-types/types';
 
-export type IntegrationUserDocument = IntegrationUser & Document;
+export type TIntegrationUserDocument = IntegrationUser & Document;
 
 @Schema()
 export class IntegrationUser {
@@ -14,7 +17,7 @@ export class IntegrationUser {
   integrationType: ApiUserIntegrationTypesEnum;
 
   @Prop({ type: Object })
-  parameters: unknown;
+  parameters: TApiIntegrationUserParameters;
 
   @Prop()
   userId: string;

@@ -1,6 +1,6 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { IApiOnOfficeUnlockProvider } from "../../shared/on-office.types";
+import { IApiOnOfficeUnlockProvider } from '@area-butler-types/on-office';
 
 class ApiOnOfficeUnlockProviderDto implements IApiOnOfficeUnlockProvider {
   @IsNotEmpty()

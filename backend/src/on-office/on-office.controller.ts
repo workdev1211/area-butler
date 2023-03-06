@@ -12,7 +12,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { OnOfficeService } from './on-office.service';
 import { activateUserPath } from '../shared/on-office.constants';
 import ApiOnOfficeUnlockProviderDto from './dto/api-on-office-unlock-provider.dto';
-import { IApiOnOfficeRenderData } from '../shared/on-office.types';
+import ApiOnOfficeRequestParamsDto from './dto/api-on-office-request-params.dto';
+import { IApiOnOfficeRenderData } from '@area-butler-types/on-office';
+import ApiOnOfficeCreateOrderDto from './dto/api-on-office-create-order.dto';
+import ApiOnOfficeConfirmOrderDto from './dto/api-on-office-confirm-order.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -31,14 +34,6 @@ export class OnOfficeController {
     @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
   ): Promise<IApiOnOfficeRenderData> {
-    this.logger.debug({
-      method: this.renderActivationIframe.name,
-      userId,
-      token,
-      parameterCacheId,
-      extendedClaim,
-    });
-
     return this.onOfficeService.getRenderData({
       userId,
       token,
@@ -52,11 +47,7 @@ export class OnOfficeController {
   async unlockProvider(
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderDto,
   ): Promise<string> {
-    this.logger.debug({
-      method: this.unlockProvider.name,
-      unlockProviderData,
-    });
-
+    // TODO add signature verification?
     const response = await this.onOfficeService.unlockProvider(
       unlockProviderData,
     );
@@ -66,5 +57,37 @@ export class OnOfficeController {
       response?.status?.message === 'OK'
       ? 'active'
       : 'error';
+  }
+
+  // @ApiOperation({ description: 'Verifies the OnOffice request signature' })
+  // @Post('verify-signature')
+  // verifySignature(
+  //   @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
+  // ): boolean {
+  //   return this.onOfficeService.verifySignature(onOfficeRequestParams);
+  // }
+
+  @ApiOperation({ description: 'Logs in the user' })
+  @Post('login')
+  login(
+    @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
+  ): Promise<any> {
+    return this.onOfficeService.login(onOfficeRequestParams);
+  }
+
+  @ApiOperation({ description: 'Creates an order' })
+  @Post('create-order')
+  createOrder(
+    @Body() createOrderData: ApiOnOfficeCreateOrderDto,
+  ): Promise<any> {
+    return this.onOfficeService.createOrder(createOrderData);
+  }
+
+  @ApiOperation({ description: 'Confirms an order' })
+  @Post('confirm-order')
+  confirmOrder(
+    @Body() confirmOrderData: ApiOnOfficeConfirmOrderDto,
+  ): Promise<any> {
+    return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 }

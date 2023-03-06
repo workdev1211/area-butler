@@ -1,5 +1,8 @@
-import React from "react";
-import ReactDOM from "react-dom";
+import { StrictMode } from "react";
+import { render } from "react-dom";
+
+import "./index.scss";
+
 import "assets/fonts/archia-light-webfont.eot";
 import "assets/fonts/archia-light-webfont.ttf";
 import "assets/fonts/archia-light-webfont.woff";
@@ -12,15 +15,15 @@ import "assets/fonts/archia-semibold-webfont.eot";
 import "assets/fonts/archia-semibold-webfont.ttf";
 import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
+
 import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
-import "./index.scss";
 
-ReactDOM.render(
-  <React.StrictMode>
+render(
+  <StrictMode>
     <SearchContextProvider>
       <EmbedContainer />
     </SearchContextProvider>
-  </React.StrictMode>,
+  </StrictMode>,
   document.getElementById("root")
 );

@@ -67,3 +67,82 @@ export const createChunks = <T = unknown>(
     new Array(Math.ceil(initialArray.length / size)),
     (arrayValue, i) => initialArray.slice(i * size, i * size + size)
   );
+
+export const convertPriceToHuman = (price: number): string =>
+  `${price.toFixed(2)} €`;
+
+export const getOnOfficeSortedMapData = (data: unknown): unknown => {
+  if (!Array.isArray(data) && typeof data !== "object") {
+    return data;
+  }
+
+  if (Array.isArray(data)) {
+    return data.map((element) => getOnOfficeSortedMapData(element)).sort();
+  }
+
+  const resultingMap = new Map();
+  const keys = Object.keys(data).sort();
+
+  if (!keys.length) {
+    return resultingMap;
+  }
+
+  for (const key of keys) {
+    resultingMap.set(key, getOnOfficeSortedMapData(data[key]));
+  }
+
+  return resultingMap;
+};
+
+export const buildOnOfficeQueryString = (data: any): string => {
+  let queryString = "";
+
+  for (const [key, value] of data) {
+    if (Array.isArray(value)) {
+      value.every((valueElement, i) => {
+        if (typeof valueElement === "object") {
+          queryString += queryString ? "&" : "";
+          queryString += `${buildOnOfficeQueryString([
+            [[`${key}[${i}]`], valueElement],
+          ])}`;
+
+          return true;
+        }
+
+        queryString += queryString ? "&" : "";
+        queryString += `${encodeURIComponent(
+          `${key}[${i}]`
+        )}=${encodeURIComponent(valueElement)}`;
+
+        return true;
+      });
+
+      continue;
+    }
+
+    if (value instanceof Map) {
+      for (const [valueKey, valueValue] of value) {
+        if (typeof valueValue === "object") {
+          queryString += queryString ? "&" : "";
+          queryString += `${buildOnOfficeQueryString([
+            [[`${key}[${valueKey}]`], valueValue],
+          ])}`;
+
+          continue;
+        }
+
+        queryString += queryString ? "&" : "";
+        queryString += `${encodeURIComponent(
+          `${key}[${valueKey}]`
+        )}=${encodeURIComponent(value.get(valueKey))}`;
+      }
+
+      continue;
+    }
+
+    queryString += queryString ? "&" : "";
+    queryString += `${new URLSearchParams([[key, value]])}`;
+  }
+
+  return queryString;
+};

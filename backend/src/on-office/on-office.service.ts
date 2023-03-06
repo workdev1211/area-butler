@@ -1,21 +1,32 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 import { createHmac } from 'crypto';
 
 import { configService } from '../config/config.service';
 import { activateUserPath } from '../shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
-import {
-  IApiOnOfficeRenderData,
-  IApiOnOfficeRequest,
-  IApiOnOfficeUnlockProvider,
-} from '../shared/on-office.types';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiUserIntegrationTypesEnum } from '@area-butler-types/types';
+import {
+  IApiOnOfficeConfirmOrder,
+  IApiOnOfficeCreateOrder,
+  IApiOnOfficeRenderData,
+  IApiOnOfficeRequest,
+  IApiOnOfficeRequestParams,
+  IApiOnOfficeUnlockProvider,
+} from '@area-butler-types/on-office';
+import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
+import {
+  buildOnOfficeQueryString,
+  getOnOfficeSortedMapData,
+} from '../../../shared/functions/shared.functions';
 
 @Injectable()
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
+  private readonly appUrl = configService.getBaseAppUrl();
+  private readonly providerSecret = configService.getOnOfficeProviderSecret();
+  private readonly logger = new Logger(OnOfficeApiService.name);
 
   constructor(
     private readonly onOfficeApiService: OnOfficeApiService,
@@ -96,5 +107,100 @@ export class OnOfficeService {
     };
 
     return this.onOfficeApiService.sendRequest(request);
+  }
+
+  generateSignature(data: string): string {
+    return createHmac('sha256', this.providerSecret)
+      .update(data)
+      .digest()
+      .toString('hex');
+  }
+
+  verifySignature(
+    requestParams: IApiOnOfficeRequestParams | IApiOnOfficeConfirmOrder,
+  ): void {
+    const { url: initialUrl, signature, ...queryParams } = requestParams;
+
+    const processedQueryParams = Object.keys(queryParams)
+      .sort()
+      .map<string[]>((key) => [key, queryParams[key] as string]);
+
+    const resultingUrl = `${initialUrl}?${new URLSearchParams(
+      processedQueryParams,
+    )}`;
+
+    if (this.generateSignature(resultingUrl) !== signature) {
+      throw new HttpException('Request verification failed!', 400);
+    }
+  }
+
+  async login(requestParams: IApiOnOfficeRequestParams): Promise<any> {
+    this.verifySignature(requestParams);
+    const { userId } = requestParams;
+
+    // TODO add user products
+    const { integrationUserId } = await this.integrationUserService.findUser(
+      userId,
+      ApiUserIntegrationTypesEnum.ON_OFFICE,
+    );
+
+    return { integrationUserId };
+  }
+
+  async createOrder({
+    userId,
+    parameterCacheId,
+    products,
+  }: IApiOnOfficeCreateOrder): Promise<any> {
+    // const {
+    //   parameters: { apiKey },
+    // } = await this.integrationUserService.findUser(
+    //   userId,
+    //   ApiUserIntegrationTypesEnum.ON_OFFICE,
+    // );
+
+    let totalPrice = 0;
+
+    const processedProducts = products.map(({ type, quantity }) => {
+      const { price } = allOnOfficeProducts[type];
+      totalPrice += price * quantity;
+
+      return {
+        name: type,
+        price: price.toFixed(2),
+        quantity: `${quantity}`,
+        circleofusers: 'customer',
+      };
+    });
+
+    // TODO add type
+    const initialOrderData: any = {
+      callbackurl: `${this.appUrl}/on-office/map`,
+      parametercacheid: parameterCacheId,
+      products: processedProducts,
+      totalprice: totalPrice.toFixed(2),
+      timestamp: dayjs().unix(),
+    };
+
+    const sortedOrderData = getOnOfficeSortedMapData(initialOrderData);
+    const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
+    initialOrderData.signature = this.generateSignature(orderQueryString);
+
+    return initialOrderData;
+  }
+
+  async confirmOrder(confirmOrderData: IApiOnOfficeConfirmOrder): Promise<any> {
+    const { userId, ...otherData } = confirmOrderData;
+    this.verifySignature(otherData);
+
+    // TODO add products return
+    // const {
+    //   parameters: { apiKey },
+    // } = await this.integrationUserService.findUser(
+    //   userId,
+    //   ApiUserIntegrationTypesEnum.ON_OFFICE,
+    // );
+
+    return;
   }
 }

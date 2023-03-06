@@ -1,5 +1,8 @@
 import { StrictMode } from "react";
 import { render } from "react-dom";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+
+import "./index.scss";
 
 import "assets/fonts/archia-light-webfont.eot";
 import "assets/fonts/archia-light-webfont.ttf";
@@ -13,15 +16,36 @@ import "assets/fonts/archia-semibold-webfont.eot";
 import "assets/fonts/archia-semibold-webfont.ttf";
 import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
+
 import { SearchContextProvider } from "./context/SearchContext";
-import "./index.scss";
+import { OnOfficeContextProvider } from "./context/OnOfficeContext";
 import OnOfficeContainer from "./on-office/OnOfficeContainer";
+import LoginPage from "./on-office/pages/LoginPage";
+import ConfirmOrderPage from "./on-office/pages/ConfirmOrderPage";
+import ProductPage from "./on-office/pages/ProductPage";
 
 render(
   <StrictMode>
-    <SearchContextProvider>
-      <OnOfficeContainer />
-    </SearchContextProvider>
+    <Router basename="/on-office">
+      <OnOfficeContextProvider>
+        <SearchContextProvider>
+          <Switch>
+            <Route path="/confirm-order">
+              <ConfirmOrderPage />
+            </Route>
+            <Route path="/map">
+              <OnOfficeContainer />
+            </Route>
+            <Route path="/products">
+              <ProductPage />
+            </Route>
+            <Route path="/">
+              <LoginPage />
+            </Route>
+          </Switch>
+        </SearchContextProvider>
+      </OnOfficeContextProvider>
+    </Router>
   </StrictMode>,
   document.getElementById("root")
 );

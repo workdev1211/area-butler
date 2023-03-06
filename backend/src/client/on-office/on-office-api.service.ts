@@ -5,7 +5,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   IApiOnOfficeRequest,
   IApiOnOfficeResponse,
-} from '../../shared/on-office.types';
+} from '@area-butler-types/on-office';
 
 @Injectable()
 export class OnOfficeApiService {

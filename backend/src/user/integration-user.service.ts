@@ -8,21 +8,21 @@ import {
 } from '@area-butler-types/types';
 import {
   IntegrationUser,
-  IntegrationUserDocument,
+  TIntegrationUserDocument,
 } from './schema/integration-user.schema';
 
 @Injectable()
 export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
-    private readonly integrationUserModel: Model<IntegrationUserDocument>,
+    private readonly integrationUserModel: Model<TIntegrationUserDocument>,
   ) {}
 
   async upsertUser(
     integrationUserId: string,
     integrationType: ApiUserIntegrationTypesEnum,
-    parameters,
-  ): Promise<IntegrationUserDocument> {
+    parameters?: TApiIntegrationUserParameters,
+  ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.integrationUserModel.findOne({
       integrationUserId,
       integrationType,
@@ -42,7 +42,7 @@ export class IntegrationUserService {
   async findUserAndUpdateParameters(
     findQuery: unknown,
     parameters: TApiIntegrationUserParameters,
-  ): Promise<IntegrationUserDocument> {
+  ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.integrationUserModel.findOne(findQuery);
 
     if (!existingUser) {
@@ -53,14 +53,30 @@ export class IntegrationUserService {
   }
 
   private async updateParameters(
-    user: IntegrationUserDocument,
+    user: TIntegrationUserDocument,
     parameters: TApiIntegrationUserParameters,
-  ): Promise<IntegrationUserDocument> {
+  ): Promise<TIntegrationUserDocument> {
     user.parameters =
       typeof user.parameters === 'object'
         ? { ...user.parameters, ...parameters }
         : { ...parameters };
 
     return user.save();
+  }
+
+  async findUser(
+    integrationUserId: string,
+    integrationType: ApiUserIntegrationTypesEnum,
+  ): Promise<TIntegrationUserDocument> {
+    const foundUser = await this.integrationUserModel.findOne({
+      integrationUserId,
+      integrationType,
+    });
+
+    if (!foundUser) {
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    return foundUser;
   }
 }
