@@ -24,9 +24,6 @@ module.exports = {
       );
 
       webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
-      webpackConfig.resolve.alias = {
-        "@types": resolveApp("../shared/types"),
-      };
 
       webpackConfig.module.rules.push({
         test: /\.tsx?$/,

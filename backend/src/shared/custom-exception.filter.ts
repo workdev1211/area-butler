@@ -78,9 +78,10 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
       console.error(textBlocks);
 
-      void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
-        textBlocks,
-      });
+      // TODO uncomment on deploy
+      // void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
+      //   textBlocks,
+      // });
     }
 
     super.catch(exception, host);
