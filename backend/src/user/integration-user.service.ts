@@ -3,24 +3,26 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import {
-  ApiUserIntegrationTypesEnum,
+  IntegrationTypesEnum,
   TApiIntegrationUserParameters,
 } from '@area-butler-types/types';
 import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from './schema/integration-user.schema';
+import { UserService } from './user.service';
 
 @Injectable()
 export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
+    private readonly userService: UserService,
   ) {}
 
   async upsertUser(
     integrationUserId: string,
-    integrationType: ApiUserIntegrationTypesEnum,
+    integrationType: IntegrationTypesEnum,
     parameters?: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.integrationUserModel.findOne({
@@ -32,8 +34,14 @@ export class IntegrationUserService {
       return this.updateParameters(existingUser, parameters);
     }
 
+    // TODO add correct email
+    const { _id: userId } = await this.userService.upsertUserForIntegration(
+      'test@test.test',
+    );
+
     return new this.integrationUserModel({
       integrationUserId,
+      userId,
       integrationType,
       parameters,
     }).save();
@@ -66,8 +74,9 @@ export class IntegrationUserService {
 
   async findUser(
     integrationUserId: string,
-    integrationType: ApiUserIntegrationTypesEnum,
+    integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
+    // TODO insert AB user to response instead of userId
     const foundUser = await this.integrationUserModel.findOne({
       integrationUserId,
       integrationType,

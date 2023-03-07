@@ -60,7 +60,7 @@ export class UserService {
 
       const { poiIcons } = await this.fetchUserAssets(existingUser.email);
 
-      if (Object.keys(poiIcons).some(key => poiIcons[key]?.length)) {
+      if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
         existingUser.poiIcons = poiIcons;
       }
 
@@ -91,6 +91,23 @@ export class UserService {
     });
 
     return newUser;
+  }
+
+  async upsertUserForIntegration(
+    email: string,
+    fullname?: string,
+  ): Promise<UserDocument> {
+    const existingUser = await this.userModel.findOne({ email });
+
+    if (existingUser) {
+      return existingUser;
+    }
+
+    return new this.userModel({
+      email,
+      fullname: fullname || email,
+      consentGiven: null,
+    }).save();
   }
 
   async patchUser(
@@ -193,7 +210,7 @@ export class UserService {
 
     const { poiIcons } = await this.fetchUserAssets(user.email);
 
-    if (Object.keys(poiIcons).some(key => poiIcons[key]?.length)) {
+    if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
       user.poiIcons = poiIcons;
     }
 

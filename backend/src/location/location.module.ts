@@ -70,6 +70,6 @@ import { ApiOpenImmoController } from './api/open-immo/api-open-immo.controller'
     ApiAddressesInRangeService,
     ApiOpenImmoService,
   ],
-  exports: [LocationService],
+  exports: [LocationService, ApiSnapshotService],
 })
 export class LocationModule {}

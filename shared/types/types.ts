@@ -289,14 +289,15 @@ export interface ApiSearchResultSnapshot {
   realEstateListings: ApiRealEstateListing[];
 }
 
-export interface IApiCreateRouteSnapshotQuery {
+export interface IApiCreateRouteSnapshot {
   searchData: ApiSearch;
   searchResponse: ApiSearchResponse;
   placesLocation: IApiPlacesLocation;
   config?: ApiSearchResultSnapshotConfig;
+  integrationParams?: IApiIntegrationParams;
 }
 
-export interface IApiCreateSnapshotFromTemplateQuery {
+export interface IApiCreateSnapshotFromTemplate {
   coordinates?: ApiCoordinates;
   address?: string;
   snapshotId: string;
@@ -349,7 +350,7 @@ export interface ApiSearchResultSnapshotConfig {
 
 export interface ApiSearchResultSnapshotResponse {
   id: string;
-  mapboxToken: string;
+  mapboxAccessToken: string;
   token: string;
   config?: ApiSearchResultSnapshotConfig;
   snapshot: ApiSearchResultSnapshot;
@@ -376,15 +377,15 @@ export interface IApiMongoParams {
   [key: string]: number;
 }
 
-export interface IApiCreatePaypalOrderQuery {
+export interface IApiCreatePaypalOrder {
   priceId: string;
 }
 
-export interface IApiApprovePaypalSubscriptionQuery {
+export interface IApiApprovePaypalSubscription {
   subscriptionId: string;
 }
 
-export interface IApiCapturePaypalPaymentQuery {
+export interface IApiCapturePaypalPayment {
   orderId: string;
   metadata?: ILimitIncreaseMetadata;
 }
@@ -477,10 +478,15 @@ export interface IApiIntegrationUserOnOfficeParameters {
 export type TApiIntegrationUserParameters =
   IApiIntegrationUserOnOfficeParameters;
 
-export enum ApiUserIntegrationTypesEnum {
+export enum IntegrationTypesEnum {
   "ON_OFFICE" = "ON_OFFICE",
 }
 
 export type TPaymentEnvironment = typeof paymentEnvironments[number];
 
 export type TSystemEnvironment = typeof systemEnvironments[number];
+
+export interface IApiIntegrationParams {
+  integrationId: string;
+  integrationType: IntegrationTypesEnum;
+}

@@ -86,7 +86,7 @@ export const mapSnapshotToEmbeddableMap = (
     visitAmount: searchResultSnapshot.visitAmount,
     config: searchResultSnapshot.config,
     token: searchResultSnapshot.token,
-    mapboxToken: searchResultSnapshot.mapboxAccessToken,
+    mapboxAccessToken: searchResultSnapshot.mapboxAccessToken,
     createdAt: searchResultSnapshot.createdAt,
     endsAt: searchResultSnapshot.endsAt,
     updatedAt: searchResultSnapshot.updatedAt,

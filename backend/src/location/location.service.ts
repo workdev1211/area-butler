@@ -29,6 +29,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
+  IApiIntegrationParams,
   IApiMongoParams,
   MeansOfTransportation,
   OsmName,
@@ -50,6 +51,7 @@ import {
 } from '@area-butler-types/subscription-plan';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
+import { defaultSnapshotConfig } from '../../../shared/constants/location';
 
 @Injectable()
 export class LocationService {
@@ -262,11 +264,18 @@ export class LocationService {
     };
   }
 
-  async createSnapshot(
-    user: UserDocument,
-    snapshot: ApiSearchResultSnapshot,
-    config?: ApiSearchResultSnapshotConfig,
-  ): Promise<ApiSearchResultSnapshotResponse> {
+  // TODO add type
+  async createSnapshot({
+    user,
+    snapshot,
+    config,
+    integrationParams,
+  }: {
+    user: UserDocument;
+    snapshot: ApiSearchResultSnapshot;
+    config?: ApiSearchResultSnapshotConfig;
+    integrationParams?: IApiIntegrationParams;
+  }): Promise<ApiSearchResultSnapshotResponse> {
     const token = randomBytes(60).toString('hex');
     const { mapboxAccessToken } =
       await this.userService.createMapboxAccessToken(user);
@@ -282,20 +291,14 @@ export class LocationService {
         { updatedAt: -1 },
       );
 
-      parsedConfig = snapshot?.config || {
-        showLocation: true,
-        showAddress: false,
-        groupItems: false,
-        showStreetViewLink: false,
-        fixedRealEstates: true,
-        showDetailsInOnePage: true,
-      };
+      parsedConfig = snapshot?.config || defaultSnapshotConfig;
     }
 
     const snapshotDoc = {
       mapboxAccessToken,
       snapshot,
       token,
+      integrationParams,
       userId: user.id,
       config: parsedConfig,
       isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
@@ -324,7 +327,7 @@ export class LocationService {
       token,
       snapshot,
       config: parsedConfig,
-      mapboxToken: mapboxAccessToken,
+      mapboxAccessToken,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
     };
@@ -472,6 +475,20 @@ export class LocationService {
     }
 
     this.checkAddressExpiration(snapshotDoc);
+
+    return snapshotDoc;
+  }
+
+  async fetchSnapshotByIntegrationId(
+    integrationId: string,
+  ): Promise<SearchResultSnapshotDocument> {
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
+      'integrationParams.integrationId': integrationId,
+    });
+
+    if (!snapshotDoc) {
+      throw new HttpException('Unknown integration id', 404);
+    }
 
     return snapshotDoc;
   }

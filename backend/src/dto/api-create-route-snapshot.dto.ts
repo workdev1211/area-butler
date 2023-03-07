@@ -5,7 +5,7 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
-  IApiCreateRouteSnapshotQuery,
+  IApiCreateRouteSnapshot,
   IApiPlacesLocation,
 } from '@area-butler-types/types';
 import ApiSearchDto from './api-search.dto';
@@ -13,7 +13,7 @@ import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-confi
 import ApiPlacesLocationDto from './api-places-location.dto';
 import ApiSearchResponseDto from './api-search-response.dto';
 
-class ApiCreateRouteSnapshotQueryDto implements IApiCreateRouteSnapshotQuery {
+class ApiCreateRouteSnapshotDto implements IApiCreateRouteSnapshot {
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiSearchDto)
@@ -35,4 +35,4 @@ class ApiCreateRouteSnapshotQueryDto implements IApiCreateRouteSnapshotQuery {
   config?: ApiSearchResultSnapshotConfig;
 }
 
-export default ApiCreateRouteSnapshotQueryDto;
+export default ApiCreateRouteSnapshotDto;

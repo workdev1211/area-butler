@@ -7,11 +7,11 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import { IApiCapturePaypalPaymentQuery } from '@area-butler-types/types';
+import { IApiCapturePaypalPayment } from '@area-butler-types/types';
 import { ILimitIncreaseMetadata } from '@area-butler-types/billing';
 import ApiLimitIncreaseMetadataDto from './api-limit-increase-metadata.dto';
 
-class ApiCapturePaypalPaymentQueryDto implements IApiCapturePaypalPaymentQuery {
+class ApiCapturePaypalPaymentDto implements IApiCapturePaypalPayment {
   @IsNotEmpty()
   @IsString()
   orderId: string;
@@ -23,4 +23,4 @@ class ApiCapturePaypalPaymentQueryDto implements IApiCapturePaypalPaymentQuery {
   metadata?: ILimitIncreaseMetadata;
 }
 
-export default ApiCapturePaypalPaymentQueryDto;
+export default ApiCapturePaypalPaymentDto;

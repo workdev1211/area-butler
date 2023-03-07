@@ -114,7 +114,7 @@ const EmbedContainer: FunctionComponent = () => {
           config["showStreetViewLink"] = true;
         }
 
-        setMapBoxToken(response.mapboxToken);
+        setMapBoxToken(response.mapboxAccessToken);
         setResult(response);
         setSearchConfig(config);
         setUserPoiIcons(response.userPoiIcons);

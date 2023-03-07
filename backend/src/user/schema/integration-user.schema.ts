@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
 import {
-  ApiUserIntegrationTypesEnum,
+  IntegrationTypesEnum,
   TApiIntegrationUserParameters,
 } from '@area-butler-types/types';
 
@@ -13,8 +13,8 @@ export class IntegrationUser {
   @Prop({ required: true })
   integrationUserId: string;
 
-  @Prop({ required: true, type: String, enum: ApiUserIntegrationTypesEnum })
-  integrationType: ApiUserIntegrationTypesEnum;
+  @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
+  integrationType: IntegrationTypesEnum;
 
   @Prop({ type: Object })
   parameters: TApiIntegrationUserParameters;

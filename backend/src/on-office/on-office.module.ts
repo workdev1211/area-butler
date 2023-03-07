@@ -10,9 +10,10 @@ import { OnOfficeController } from './on-office.controller';
 import { ClientModule } from '../client/client.module';
 import { checkSignature } from './middleware/check-signature.middleware';
 import { UserModule } from '../user/user.module';
+import { LocationModule } from '../location/location.module';
 
 @Module({
-  imports: [ClientModule, UserModule],
+  imports: [ClientModule, UserModule, LocationModule],
   controllers: [OnOfficeController],
   providers: [OnOfficeService],
 })

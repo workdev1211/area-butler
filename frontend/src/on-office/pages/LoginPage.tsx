@@ -47,12 +47,13 @@ const LoginPage: FunctionComponent = () => {
         }, {} as IApiOnOfficeRequestParams);
 
       onOfficeRequestParams.url = parsedUrl[1];
-      const baseUrl = process.env.REACT_APP_BASE_URL || "";
+      console.log(2, "LoginPage", onOfficeRequestParams);
 
       try {
+        // TODO add type
         const response = (
           await post<{ integrationUserId: string }>(
-            `${baseUrl}/api/on-office/login`,
+            "/api/on-office/login",
             onOfficeRequestParams
           )
         ).data;
@@ -69,6 +70,7 @@ const LoginPage: FunctionComponent = () => {
 
         // TODO add check if no products
         history.push("/products");
+        // TODO if user have products
         // history.push('/map');
       } catch (e: any) {
         setIsSignatureNotCorrect(true);

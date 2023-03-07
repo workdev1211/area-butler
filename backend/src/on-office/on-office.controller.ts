@@ -16,6 +16,7 @@ import ApiOnOfficeRequestParamsDto from './dto/api-on-office-request-params.dto'
 import { IApiOnOfficeRenderData } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderDto from './dto/api-on-office-create-order.dto';
 import ApiOnOfficeConfirmOrderDto from './dto/api-on-office-confirm-order.dto';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -89,5 +90,17 @@ export class OnOfficeController {
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderDto,
   ): Promise<any> {
     return this.onOfficeService.confirmOrder(confirmOrderData);
+  }
+
+  // TODO add dto
+  @ApiOperation({
+    description: 'Fetches or creates a snapshot by real estate address',
+  })
+  @Post('find-create-snapshot')
+  async findOrCreateSnapshot(
+    @Body() findOrCreateData: any,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    // TODO add user id to body
+    return this.onOfficeService.findOrCreateSnapshot(findOrCreateData);
   }
 }

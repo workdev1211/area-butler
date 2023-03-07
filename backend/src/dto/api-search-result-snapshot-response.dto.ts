@@ -60,7 +60,7 @@ class ApiSearchResultSnapshotResponseDto
 
   @IsNotEmpty()
   @IsString()
-  mapboxToken: string;
+  mapboxAccessToken: string;
 
   @IsNotEmpty()
   @IsObject()

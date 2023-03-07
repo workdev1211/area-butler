@@ -6,7 +6,10 @@ import { configService } from '../config/config.service';
 import { activateUserPath } from '../shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { ApiUserIntegrationTypesEnum } from '@area-butler-types/types';
+import {
+  ApiSearchResultSnapshotResponse,
+  IntegrationTypesEnum,
+} from '@area-butler-types/types';
 import {
   IApiOnOfficeConfirmOrder,
   IApiOnOfficeCreateOrder,
@@ -20,6 +23,9 @@ import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
 } from '../../../shared/functions/shared.functions';
+import { ApiSnapshotService } from '../location/api-snapshot.service';
+import { UserService } from '../user/user.service';
+import { LocationService } from '../location/location.service';
 
 @Injectable()
 export class OnOfficeService {
@@ -31,6 +37,9 @@ export class OnOfficeService {
   constructor(
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly userService: UserService,
+    private readonly apiSnapshotService: ApiSnapshotService,
+    private readonly locationService: LocationService,
   ) {}
 
   async getRenderData({
@@ -46,7 +55,7 @@ export class OnOfficeService {
   }): Promise<IApiOnOfficeRenderData> {
     await this.integrationUserService.upsertUser(
       userId,
-      ApiUserIntegrationTypesEnum.ON_OFFICE,
+      IntegrationTypesEnum.ON_OFFICE,
       { extendedClaim },
     );
 
@@ -71,7 +80,7 @@ export class OnOfficeService {
   }: IApiOnOfficeUnlockProvider): Promise<any> {
     await this.integrationUserService.findUserAndUpdateParameters(
       {
-        integrationType: ApiUserIntegrationTypesEnum.ON_OFFICE,
+        integrationType: IntegrationTypesEnum.ON_OFFICE,
         'parameters.extendedClaim': extendedClaim,
       },
       { token, apiKey, extendedClaim },
@@ -141,7 +150,7 @@ export class OnOfficeService {
     // TODO add user products
     const { integrationUserId } = await this.integrationUserService.findUser(
       userId,
-      ApiUserIntegrationTypesEnum.ON_OFFICE,
+      IntegrationTypesEnum.ON_OFFICE,
     );
 
     return { integrationUserId };
@@ -202,5 +211,37 @@ export class OnOfficeService {
     // );
 
     return;
+  }
+
+  async findOrCreateSnapshot(
+    findOrCreateData: any,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const { userId } = await this.integrationUserService.findUser(
+      '21',
+      IntegrationTypesEnum.ON_OFFICE,
+    );
+
+    const user = await this.userService.findByIdWithSubscription(userId);
+
+    try {
+      // use mapSnapshotToEmbeddableMap method instead of as
+      const existingSnapshot =
+        (await this.locationService.fetchSnapshotByIntegrationId(
+          findOrCreateData.integrationId,
+        )) as ApiSearchResultSnapshotResponse;
+
+      existingSnapshot.mapboxAccessToken = user.mapboxAccessToken;
+
+      return existingSnapshot;
+    } catch {}
+
+    return this.apiSnapshotService.createSnapshot({
+      user,
+      location: findOrCreateData.address,
+      integrationParams: {
+        integrationId: findOrCreateData.integrationId,
+        integrationType: IntegrationTypesEnum.ON_OFFICE,
+      },
+    });
   }
 }

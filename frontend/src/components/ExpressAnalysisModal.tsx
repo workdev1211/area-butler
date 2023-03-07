@@ -332,7 +332,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
             style={{ border: "0.25rem solid var(--primary)" }}
           >
             <SearchResultContainer
-              mapBoxToken={snapshotResponse.mapboxToken}
+              mapBoxToken={snapshotResponse.mapboxAccessToken}
               mapBoxMapId={
                 snapshotResponse.config?.mapBoxMapId ||
                 searchContextState.responseConfig?.mapBoxMapId

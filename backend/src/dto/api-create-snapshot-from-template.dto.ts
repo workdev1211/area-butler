@@ -8,12 +8,12 @@ import { Type } from 'class-transformer';
 
 import {
   ApiCoordinates,
-  IApiCreateSnapshotFromTemplateQuery,
+  IApiCreateSnapshotFromTemplate,
 } from '@area-butler-types/types';
 import ApiCoordinatesDto from './api-coordinates.dto';
 
-class ApiCreateSnapshotFromTemplateQueryDto
-  implements IApiCreateSnapshotFromTemplateQuery
+class ApiCreateSnapshotFromTemplateDto
+  implements IApiCreateSnapshotFromTemplate
 {
   @ValidateIf(({ address }) => !address)
   @IsNotEmpty()
@@ -31,4 +31,4 @@ class ApiCreateSnapshotFromTemplateQueryDto
   snapshotId: string;
 }
 
-export default ApiCreateSnapshotFromTemplateQueryDto;
+export default ApiCreateSnapshotFromTemplateDto;

@@ -31,14 +31,10 @@ const ConfirmOrderPage: FunctionComponent = () => {
         }, {} as IApiOnOfficeConfirmOrder);
 
       onOfficeRequestParams.url = parsedUrl[1];
-      const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
       try {
         const response = (
-          await post<any>(
-            `${baseUrl}/api/on-office/confirm-order`,
-            onOfficeRequestParams
-          )
+          await post<any>("/api/on-office/confirm-order", onOfficeRequestParams)
         ).data;
 
         // update user products in context

@@ -5,7 +5,7 @@ import {
   IApiLocationIndexFeature,
   LocationIndicesEnum,
 } from "../../../shared/types/location-index";
-import { locationIndexNames } from "../../../shared/constants/location-index";
+import { locationIndexNames } from "../../../shared/constants/location";
 
 export type TLocationIndexData = Record<
   LocationIndicesEnum,

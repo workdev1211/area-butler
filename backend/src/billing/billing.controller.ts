@@ -6,9 +6,9 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { BillingService } from './billing.service';
-import ApiCreatePaypalOrderQueryDto from '../dto/api-create-paypal-order-query.dto';
-import ApiCapturePaypalPaymentQueryDto from '../dto/api-capture-paypal-payment-query.dto';
-import ApiApprovePaypalSubscriptionQueryDto from '../dto/api-approve-paypal-subscription-query.dto';
+import ApiCreatePaypalOrderDto from '../dto/api-create-paypal-order.dto';
+import ApiCapturePaypalPaymentDto from '../dto/api-capture-paypal-payment.dto';
+import ApiApprovePaypalSubscriptionDto from '../dto/api-approve-paypal-subscription.dto';
 
 @ApiTags('billing')
 @Controller('api/billing')
@@ -38,12 +38,9 @@ export class BillingController extends AuthenticatedController {
   @Post('create-paypal-order')
   async createPaypalOrder(
     @InjectUser() user: UserDocument,
-    @Body() createPaypalOrder: ApiCreatePaypalOrderQueryDto,
+    @Body() { priceId }: ApiCreatePaypalOrderDto,
   ): Promise<string> {
-    return this.billingService.createPaypalOrder(
-      user,
-      createPaypalOrder.priceId,
-    );
+    return this.billingService.createPaypalOrder(user, priceId);
   }
 
   @ApiOperation({ description: 'Capture a PayPal order payment' })
@@ -51,12 +48,12 @@ export class BillingController extends AuthenticatedController {
   async capturePaypalOrderPayment(
     @InjectUser() user: UserDocument,
     @Body()
-    capturePaypalPayment: ApiCapturePaypalPaymentQueryDto,
+    { orderId, metadata }: ApiCapturePaypalPaymentDto,
   ): Promise<string> {
     return this.billingService.capturePaypalOrderPayment(
       user,
-      capturePaypalPayment.orderId,
-      capturePaypalPayment.metadata,
+      orderId,
+      metadata,
     );
   }
 
@@ -64,23 +61,17 @@ export class BillingController extends AuthenticatedController {
   @Post('create-paypal-subscription')
   async createPaypalSubscription(
     @InjectUser() user: UserDocument,
-    @Body() createPaypalSubscription: ApiCreatePaypalOrderQueryDto,
+    @Body() { priceId }: ApiCreatePaypalOrderDto,
   ): Promise<string> {
-    return this.billingService.createPaypalSubscription(
-      user,
-      createPaypalSubscription.priceId,
-    );
+    return this.billingService.createPaypalSubscription(user, priceId);
   }
 
   @ApiOperation({ description: 'Capture a PayPal subscription payment' })
   @Post('approve-paypal-subscription')
   async approvePaypalSubscription(
     @InjectUser() user: UserDocument,
-    @Body() approvePaypalSubscription: ApiApprovePaypalSubscriptionQueryDto,
+    @Body() { subscriptionId }: ApiApprovePaypalSubscriptionDto,
   ): Promise<string> {
-    return this.billingService.approvePaypalSubscription(
-      user,
-      approvePaypalSubscription.subscriptionId,
-    );
+    return this.billingService.approvePaypalSubscription(user, subscriptionId);
   }
 }

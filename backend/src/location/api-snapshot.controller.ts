@@ -6,7 +6,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiSnapshotService } from './api-snapshot.service';
-import ApiCreateSnapshotFromTemplateQueryDto from '../dto/api-create-snapshot-from-template-query.dto';
+import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
 import { ApiGuard } from './api.guard';
 import { configService } from '../config/config.service';
 
@@ -23,7 +23,7 @@ export class ApiSnapshotController {
   async createSnapshotFromTemplate(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    { coordinates, address, snapshotId }: ApiCreateSnapshotFromTemplateQueryDto,
+    { coordinates, address, snapshotId }: ApiCreateSnapshotFromTemplateDto,
   ): Promise<{ snapshotId: string; directLink: string }> {
     const { id, token } = await this.snapshotService.createSnapshotFromTemplate(
       user,

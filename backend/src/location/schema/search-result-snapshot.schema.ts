@@ -4,7 +4,9 @@ import { Document } from 'mongoose';
 import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
+  IApiIntegrationParams,
 } from '@area-butler-types/types';
+import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 
@@ -42,6 +44,9 @@ export class SearchResultSnapshot {
 
   @Prop({ default: 0 })
   visitAmount: number;
+
+  @Prop({ type: IntegrationParamsSchema })
+  integrationParams: IApiIntegrationParams;
 
   @Prop({ default: false })
   isTrial: boolean;

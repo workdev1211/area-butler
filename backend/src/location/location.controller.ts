@@ -27,7 +27,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
 import { IApiMongoParams } from '@area-butler-types/types';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
-import ApiCreateRouteSnapshotQueryDto from '../dto/api-create-route-snapshot-query.dto';
+import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { ApiSnapshotService } from './api-snapshot.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
@@ -66,7 +66,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSnapshot(user, snapshot);
+    return this.locationService.createSnapshot({ user, snapshot });
   }
 
   @ApiOperation({
@@ -75,9 +75,9 @@ export class LocationController extends AuthenticatedController {
   @Post('route-snapshot')
   async createRouteSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() snapshotData: ApiCreateRouteSnapshotQueryDto,
+    @Body() snapshot: ApiCreateRouteSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.apiSnapshotService.createRouteSnapshot(user, snapshotData);
+    return this.apiSnapshotService.createRouteSnapshot(user, snapshot);
   }
 
   // TODO think about merging updateSnapshot and updateSnapshotDescription
