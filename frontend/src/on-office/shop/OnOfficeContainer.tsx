@@ -1,195 +1,84 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-import "../../embed/EmbedContainer.scss";
-
 import { useHttp } from "../../hooks/http";
-import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
-import {
-  SearchContext,
-  SearchContextActionTypes,
-} from "../../context/SearchContext";
-import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
-import { defaultMapZoom } from "../../shared/shared.constants";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "../../context/RealEstateContext";
-import { deriveInitialEntityGroups } from "../../shared/shared.functions";
-import {
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-} from "../../../../shared/types/types";
-import SearchResultContainer from "../../components/SearchResultContainer";
+import { ApiSearchResultSnapshotResponse } from "../../../../shared/types/types";
 import { OnOfficeContext } from "../../context/OnOfficeContext";
-
-window.addEventListener("resize", () => {
-  calculateViewHeight();
-});
-
-const calculateViewHeight = () => {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty("--vh", `${vh}px`);
-};
-
-calculateViewHeight();
+import OpenAiModule from "../../components/open-ai/OpenAiModule";
+import { LoadingMessage } from "../../OnOfficeShop";
 
 const OnOfficeContainer: FunctionComponent = () => {
   const { post } = useHttp();
 
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-  const { realEstateDispatch } = useContext(RealEstateContext);
   const { onOfficeContextState } = useContext(OnOfficeContext);
 
-  const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
-  const [searchConfig, setSearchConfig] =
-    useState<ApiSearchResultSnapshotConfig>();
-  const [mapBoxToken, setMapBoxToken] = useState("");
+  const [searchResultSnapshotId, setSearchResultSnapshotId] =
+    useState<string>();
+  const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
+    useState(true);
+  const [isFetchResponse, setIsFetchResponse] = useState(false);
 
   useEffect(() => {
     const findOrCreateSnapshot = async () => {
       // TODO change integration id
-      const response = (
+      const { id } = (
         await post<ApiSearchResultSnapshotResponse>(
           "/api/on-office/find-create-snapshot",
           {
             integrationId: "111",
-            integrationUserId: onOfficeContextState.integrationUserId || '21',
+            integrationUserId: onOfficeContextState.integrationUserId || "21",
           }
         )
       ).data;
 
-      const config = response.config;
-
-      if (config && !("showAddress" in config)) {
-        config["showAddress"] = true;
-      }
-
-      if (config && !("showStreetViewLink" in config)) {
-        config["showStreetViewLink"] = true;
-      }
-
-      setResult(response);
-      setSearchConfig(config);
-      setMapBoxToken(response.mapboxAccessToken);
+      setSearchResultSnapshotId(id);
     };
 
     void findOrCreateSnapshot();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    if (!result || !searchConfig) {
-      return;
-    }
-
-    const {
-      searchResponse,
-      transportationParams,
-      localityParams,
-      location,
-      placesLocation,
-      preferredLocations = [],
-      routes = [],
-      transitRoutes = [],
-      realEstateListings = [],
-    } = result.snapshot;
-
-    const filteredRealEstateListings = searchConfig.realEstateStatus
-      ? realEstateListings.filter(
-          ({ status }) =>
-            searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
-            status === searchConfig.realEstateStatus
-        )
-      : realEstateListings;
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
-      payload: searchResponse,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: transportationParams,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-      payload: getCombinedOsmEntityTypes(localityParams),
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: placesLocation,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_LOCATION,
-      payload: location,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
-      payload: searchConfig.zoomLevel || defaultMapZoom,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-      payload: preferredLocations,
-    });
-
-    realEstateDispatch({
-      type: RealEstateActionTypes.SET_REAL_ESTATES,
-      payload: realEstateListings,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-      payload: routes,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-      payload: transitRoutes,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-      payload: { ...searchConfig },
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: result.token,
-    });
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
-        searchResponse,
-        searchConfig,
-        filteredRealEstateListings,
-        preferredLocations
-      ),
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, searchConfig, searchContextDispatch]);
-
-  if (!searchContextState.searchResponse) {
-    return <div>Loading...</div>;
+  if (!searchResultSnapshotId) {
+    return <LoadingMessage />;
   }
 
   return (
-    <SearchResultContainer
-      mapBoxToken={mapBoxToken}
-      mapBoxMapId={searchConfig?.mapBoxMapId}
-      searchResponse={searchContextState.searchResponse}
-      placesLocation={searchContextState.placesLocation}
-      location={searchContextState.mapCenter ?? searchContextState.location!}
-      isTrial={false}
-      embedMode={true}
-    />
+    <div className="flex flex-col mx-10 my-5 gap-5">
+      <h1 className="text-xl flex items-center gap-2">
+        <span>KI Texte aus der magischen Feder</span>
+        <span className="badge badge-primary">BETA</span>
+      </h1>
+      <div className="text-justify text-base">
+        Unser KI-Textgenerator bietet Inspiration für die Konstruktion von
+        Texten, insbesondere bei Schwierigkeiten bei der Struktur und
+        Formulierung. Er bezieht Umgebungsdaten und Informationen zur Immobilie
+        mit ein. Das Feature befindet sich derzeit in der Beta-Phase und es wird
+        empfohlen, die Fakten vor Verwendung zu überprüfen.
+      </div>
+      <OpenAiModule
+        searchResultSnapshotId={searchResultSnapshotId}
+        onModuleStatusChange={(isReady) => {
+          setIsGenerateButtonDisabled(!isReady);
+        }}
+        isFetchResponse={isFetchResponse}
+        onResponseFetched={() => {
+          setIsFetchResponse(false);
+        }}
+      />
+      <div className="flex justify-end">
+        <button
+          className={`btn bg-primary-gradient max-w-fit self-end ${
+            isFetchResponse ? "loading" : ""
+          }`}
+          form={"open-ai-location-description-form"}
+          onClick={() => {
+            setIsFetchResponse(true);
+          }}
+          disabled={isGenerateButtonDisabled || isFetchResponse}
+        >
+          Generieren
+        </button>
+      </div>
+    </div>
   );
 };
 

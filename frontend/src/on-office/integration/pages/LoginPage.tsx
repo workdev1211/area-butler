@@ -50,7 +50,7 @@ const LoginPage: FunctionComponent = () => {
       console.log(2, "LoginPage", onOfficeRequestParams);
 
       try {
-        // TODO add type
+        // TODO a add type
         const response = (
           await post<{ integrationUserId: string }>(
             "/api/on-office/login",
@@ -68,7 +68,7 @@ const LoginPage: FunctionComponent = () => {
           },
         });
 
-        // TODO add check if no products
+        // TODO add a check if no products
         history.push("/products");
         // TODO if user have products
         // history.push('/map');
