@@ -103,7 +103,7 @@ export interface IApiOnOfficeRequestParams {
 }
 
 export interface IApiOnOfficeCreateOrder {
-  userId: string;
+  integrationUserId: string;
   parameterCacheId: string;
   products: IApiOnOfficeCreateOrderProduct[];
 }

@@ -63,7 +63,7 @@ const LoginPage: FunctionComponent = () => {
         onOfficeContextDispatch({
           type: OnOfficeContextActionTypesEnum.SET_STATE,
           payload: {
-            userId: response.integrationUserId,
+            integrationUserId: response.integrationUserId,
             parameterCacheId: onOfficeRequestParams.parameterCacheId,
           },
         });

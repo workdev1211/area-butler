@@ -30,13 +30,13 @@ export class OnOfficeController {
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
-    @Query('userId') userId: string,
+    @Query('userId') integrationUserId: string,
     @Query('apiToken') token: string,
     @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
   ): Promise<IApiOnOfficeRenderData> {
     return this.onOfficeService.getRenderData({
-      userId,
+      integrationUserId,
       token,
       parameterCacheId,
       extendedClaim,

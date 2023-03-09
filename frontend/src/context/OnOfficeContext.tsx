@@ -1,7 +1,7 @@
 import { Dispatch, createContext, useReducer, FunctionComponent } from "react";
 
 export interface IOnOfficeContextState {
-  userId?: string;
+  integrationUserId?: string;
   parameterCacheId?: string;
 }
 

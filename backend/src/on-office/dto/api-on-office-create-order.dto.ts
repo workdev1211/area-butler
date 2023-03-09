@@ -10,7 +10,7 @@ import ApiOnOfficeCreateOrderProductDto from './api-on-office-create-order-produ
 class ApiOnOfficeCreateOrderDto implements IApiOnOfficeCreateOrder {
   @IsNotEmpty()
   @IsString()
-  userId: string;
+  integrationUserId: string;
 
   @IsNotEmpty()
   @IsString()

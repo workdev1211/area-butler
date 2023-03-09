@@ -43,18 +43,18 @@ export class OnOfficeService {
   ) {}
 
   async getRenderData({
-    userId,
+    integrationUserId,
     token,
     parameterCacheId,
     extendedClaim,
   }: {
-    userId: string;
+    integrationUserId: string;
     token: string;
     parameterCacheId: string;
     extendedClaim: string;
   }): Promise<IApiOnOfficeRenderData> {
     await this.integrationUserService.upsertUser(
-      userId,
+      integrationUserId,
       IntegrationTypesEnum.ON_OFFICE,
       { extendedClaim },
     );
@@ -157,14 +157,14 @@ export class OnOfficeService {
   }
 
   async createOrder({
-    userId,
+    integrationUserId,
     parameterCacheId,
     products,
   }: IApiOnOfficeCreateOrder): Promise<any> {
     // const {
     //   parameters: { apiKey },
     // } = await this.integrationUserService.findUser(
-    //   userId,
+    //   integrationUserId,
     //   ApiUserIntegrationTypesEnum.ON_OFFICE,
     // );
 
@@ -206,7 +206,7 @@ export class OnOfficeService {
     // const {
     //   parameters: { apiKey },
     // } = await this.integrationUserService.findUser(
-    //   userId,
+    //   integrationUserId,
     //   ApiUserIntegrationTypesEnum.ON_OFFICE,
     // );
 

@@ -98,7 +98,7 @@ export const ProductPage: FunctionComponent = () => {
               await post<unknown, IApiOnOfficeCreateOrder>(
                 "/api/on-office/create-order",
                 {
-                  userId: onOfficeContextState.userId!,
+                  integrationUserId: onOfficeContextState.integrationUserId!,
                   parameterCacheId: onOfficeContextState.parameterCacheId!,
                   products: Object.values(createOrderProducts).filter(
                     ({ quantity }) => quantity > 0
