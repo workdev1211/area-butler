@@ -1,9 +1,9 @@
 import { FunctionComponent, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-import { IApiOnOfficeConfirmOrder } from "../../../../shared/types/on-office";
-import { useHttp } from "../../hooks/http";
-import { toastError } from "../../shared/shared.functions";
+import { useHttp } from "../../../hooks/http";
+import { IApiOnOfficeConfirmOrder } from "../../../../../shared/types/on-office";
+import { toastError } from "../../../shared/shared.functions";
 
 const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();
@@ -41,7 +41,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
         console.log(9, "ConfirmOrderPage", response);
         history.push("/map");
       } catch (e: any) {
-        toastError("Error!");
+        toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", e);
       }
     };

@@ -1,12 +1,12 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { IApiOnOfficeRequestParams } from "../../../../shared/types/on-office";
+import { IApiOnOfficeRequestParams } from "../../../../../shared/types/on-office";
 import {
   OnOfficeContext,
   OnOfficeContextActionTypesEnum,
-} from "../../context/OnOfficeContext";
-import { useHttp } from "../../hooks/http";
+} from "../../../context/OnOfficeContext";
+import { useHttp } from "../../../hooks/http";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();

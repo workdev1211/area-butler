@@ -1,24 +1,26 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-import "../embed/EmbedContainer.scss";
-import { useHttp } from "../hooks/http";
-import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
+import "../../embed/EmbedContainer.scss";
+
+import { useHttp } from "../../hooks/http";
+import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
 import {
   SearchContext,
   SearchContextActionTypes,
-} from "../context/SearchContext";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { defaultMapZoom } from "../shared/shared.constants";
+} from "../../context/SearchContext";
+import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
+import { defaultMapZoom } from "../../shared/shared.constants";
 import {
   RealEstateActionTypes,
   RealEstateContext,
-} from "../context/RealEstateContext";
-import { deriveInitialEntityGroups } from "../shared/shared.functions";
+} from "../../context/RealEstateContext";
+import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-} from "../../../shared/types/types";
-import SearchResultContainer from "../components/SearchResultContainer";
+} from "../../../../shared/types/types";
+import SearchResultContainer from "../../components/SearchResultContainer";
+import { OnOfficeContext } from "../../context/OnOfficeContext";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -37,6 +39,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
+  const { onOfficeContextState } = useContext(OnOfficeContext);
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
   const [searchConfig, setSearchConfig] =
@@ -45,13 +48,13 @@ const OnOfficeContainer: FunctionComponent = () => {
 
   useEffect(() => {
     const findOrCreateSnapshot = async () => {
-      // TODO Change address
+      // TODO change integration id
       const response = (
         await post<ApiSearchResultSnapshotResponse>(
           "/api/on-office/find-create-snapshot",
           {
-            address: "Schadowstraße 55, Düsseldorf",
             integrationId: "111",
+            integrationUserId: onOfficeContextState.integrationUserId || '21',
           }
         )
       ).data;

@@ -103,7 +103,6 @@ export interface IApiOnOfficeRequestParams {
 }
 
 export interface IApiOnOfficeCreateOrder {
-  integrationUserId: string;
   parameterCacheId: string;
   products: IApiOnOfficeCreateOrderProduct[];
 }
@@ -122,4 +121,9 @@ export interface IApiOnOfficeConfirmOrder {
 export interface IApiOnOfficeCreateOrderProduct {
   type: OnOfficeProductTypesEnum;
   quantity: number;
+}
+
+export interface IApiOnOfficeFindCreateSnapshot {
+  integrationId: string;
+  integrationUserId: string;
 }

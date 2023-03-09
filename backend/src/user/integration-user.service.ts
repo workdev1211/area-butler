@@ -20,7 +20,7 @@ export class IntegrationUserService {
     private readonly userService: UserService,
   ) {}
 
-  async upsertUser(
+  async upsert(
     integrationUserId: string,
     integrationType: IntegrationTypesEnum,
     parameters?: TApiIntegrationUserParameters,
@@ -31,7 +31,7 @@ export class IntegrationUserService {
     });
 
     if (existingUser) {
-      return this.updateParameters(existingUser, parameters);
+      return this.updateParams(existingUser, parameters);
     }
 
     // TODO add correct email
@@ -47,7 +47,7 @@ export class IntegrationUserService {
     }).save();
   }
 
-  async findUserAndUpdateParameters(
+  async findOneAndUpdateParams(
     findQuery: unknown,
     parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
@@ -57,10 +57,10 @@ export class IntegrationUserService {
       throw new HttpException('Unknown user!', 400);
     }
 
-    return this.updateParameters(existingUser, parameters);
+    return this.updateParams(existingUser, parameters);
   }
 
-  private async updateParameters(
+  private async updateParams(
     user: TIntegrationUserDocument,
     parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
@@ -72,7 +72,7 @@ export class IntegrationUserService {
     return user.save();
   }
 
-  async findUser(
+  async findOneOrFail(
     integrationUserId: string,
     integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {

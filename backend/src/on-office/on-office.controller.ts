@@ -1,13 +1,5 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Logger,
-  Post,
-  Query,
-  Render,
-} from '@nestjs/common';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Body, Get, Logger, Post, Query, Render } from '@nestjs/common';
+import { ApiOperation } from '@nestjs/swagger';
 
 import { OnOfficeService } from './on-office.service';
 import { activateUserPath } from '../shared/on-office.constants';
@@ -16,14 +8,24 @@ import ApiOnOfficeRequestParamsDto from './dto/api-on-office-request-params.dto'
 import { IApiOnOfficeRenderData } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderDto from './dto/api-on-office-create-order.dto';
 import ApiOnOfficeConfirmOrderDto from './dto/api-on-office-confirm-order.dto';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import {
+  ApiSearchResultSnapshotResponse,
+  IntegrationTypesEnum,
+} from '@area-butler-types/types';
+import ApiOnOfficeFindCreateSnapshotDto from './dto/api-on-office-find-create-snapshot.dto';
 
-@ApiTags('OnOffice')
-@Controller('api/on-office')
 export class OnOfficeController {
-  private readonly logger = new Logger(OnOfficeController.name);
+  private readonly logger: Logger;
+  private readonly integrationType: IntegrationTypesEnum;
 
-  constructor(private readonly onOfficeService: OnOfficeService) {}
+  constructor(
+    protected readonly onOfficeService: OnOfficeService,
+    childIntegrationType: IntegrationTypesEnum,
+    childClassName?: string,
+  ) {
+    this.logger = new Logger(childClassName || OnOfficeController.name);
+    this.integrationType = childIntegrationType;
+  }
 
   // TODO think about uniting the OnOffice React module with the current controller using the React Router
   @ApiOperation({ description: 'Renders the activation iFrame' })
@@ -37,6 +39,7 @@ export class OnOfficeController {
   ): Promise<IApiOnOfficeRenderData> {
     return this.onOfficeService.getRenderData({
       integrationUserId,
+      integrationType: this.integrationType,
       token,
       parameterCacheId,
       extendedClaim,
@@ -51,6 +54,7 @@ export class OnOfficeController {
     // TODO add signature verification?
     const response = await this.onOfficeService.unlockProvider(
       unlockProviderData,
+      this.integrationType,
     );
 
     return response?.status?.code === 200 &&
@@ -60,20 +64,15 @@ export class OnOfficeController {
       : 'error';
   }
 
-  // @ApiOperation({ description: 'Verifies the OnOffice request signature' })
-  // @Post('verify-signature')
-  // verifySignature(
-  //   @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
-  // ): boolean {
-  //   return this.onOfficeService.verifySignature(onOfficeRequestParams);
-  // }
-
   @ApiOperation({ description: 'Logs in the user' })
   @Post('login')
   login(
     @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
   ): Promise<any> {
-    return this.onOfficeService.login(onOfficeRequestParams);
+    return this.onOfficeService.login(
+      onOfficeRequestParams,
+      this.integrationType,
+    );
   }
 
   @ApiOperation({ description: 'Creates an order' })
@@ -92,15 +91,16 @@ export class OnOfficeController {
     return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 
-  // TODO add dto
   @ApiOperation({
     description: 'Fetches or creates a snapshot by real estate address',
   })
   @Post('find-create-snapshot')
   async findOrCreateSnapshot(
-    @Body() findOrCreateData: any,
+    @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    // TODO add user id to body
-    return this.onOfficeService.findOrCreateSnapshot(findOrCreateData);
+    return this.onOfficeService.findOrCreateSnapshot(
+      findOrCreateSnapshotData,
+      this.integrationType,
+    );
   }
 }

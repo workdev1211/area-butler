@@ -19,10 +19,10 @@ import "assets/fonts/archia-semibold-webfont.woff2";
 
 import { SearchContextProvider } from "./context/SearchContext";
 import { OnOfficeContextProvider } from "./context/OnOfficeContext";
-import OnOfficeContainer from "./on-office/OnOfficeContainer";
-import LoginPage from "./on-office/pages/LoginPage";
-import ConfirmOrderPage from "./on-office/pages/ConfirmOrderPage";
-import ProductPage from "./on-office/pages/ProductPage";
+import OnOfficeContainer from "./on-office/integration/OnOfficeContainer";
+import LoginPage from "./on-office/integration/pages/LoginPage";
+import ConfirmOrderPage from "./on-office/integration/pages/ConfirmOrderPage";
+import ProductPage from "./on-office/integration/pages/ProductPage";
 
 render(
   <StrictMode>

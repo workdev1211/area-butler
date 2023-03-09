@@ -13,9 +13,11 @@ import {
 import {
   IApiOnOfficeConfirmOrder,
   IApiOnOfficeCreateOrder,
+  IApiOnOfficeFindCreateSnapshot,
   IApiOnOfficeRenderData,
   IApiOnOfficeRequest,
   IApiOnOfficeRequestParams,
+  IApiOnOfficeResponse,
   IApiOnOfficeUnlockProvider,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
@@ -26,6 +28,7 @@ import {
 import { ApiSnapshotService } from '../location/api-snapshot.service';
 import { UserService } from '../user/user.service';
 import { LocationService } from '../location/location.service';
+import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 
 @Injectable()
 export class OnOfficeService {
@@ -42,20 +45,23 @@ export class OnOfficeService {
     private readonly locationService: LocationService,
   ) {}
 
+  // TODO add a type
   async getRenderData({
     integrationUserId,
+    integrationType,
     token,
     parameterCacheId,
     extendedClaim,
   }: {
     integrationUserId: string;
+    integrationType: IntegrationTypesEnum;
     token: string;
     parameterCacheId: string;
     extendedClaim: string;
   }): Promise<IApiOnOfficeRenderData> {
-    await this.integrationUserService.upsertUser(
+    await this.integrationUserService.upsert(
       integrationUserId,
-      IntegrationTypesEnum.ON_OFFICE,
+      integrationType,
       { extendedClaim },
     );
 
@@ -72,15 +78,18 @@ export class OnOfficeService {
     };
   }
 
-  async unlockProvider({
-    token,
-    secret: apiKey,
-    parameterCacheId,
-    extendedClaim,
-  }: IApiOnOfficeUnlockProvider): Promise<any> {
-    await this.integrationUserService.findUserAndUpdateParameters(
+  async unlockProvider(
+    {
+      token,
+      secret: apiKey,
+      parameterCacheId,
+      extendedClaim,
+    }: IApiOnOfficeUnlockProvider,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<IApiOnOfficeResponse> {
+    await this.integrationUserService.findOneAndUpdateParams(
       {
-        integrationType: IntegrationTypesEnum.ON_OFFICE,
+        integrationType,
         'parameters.extendedClaim': extendedClaim,
       },
       { token, apiKey, extendedClaim },
@@ -143,31 +152,27 @@ export class OnOfficeService {
     }
   }
 
-  async login(requestParams: IApiOnOfficeRequestParams): Promise<any> {
+  async login(
+    requestParams: IApiOnOfficeRequestParams,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<any> {
     this.verifySignature(requestParams);
-    const { userId } = requestParams;
+    const { userId: integrationUserId } = requestParams;
 
     // TODO add user products
-    const { integrationUserId } = await this.integrationUserService.findUser(
-      userId,
-      IntegrationTypesEnum.ON_OFFICE,
+    await this.integrationUserService.findOneOrFail(
+      integrationUserId,
+      integrationType,
     );
 
+    // TODO add a type
     return { integrationUserId };
   }
 
   async createOrder({
-    integrationUserId,
     parameterCacheId,
     products,
   }: IApiOnOfficeCreateOrder): Promise<any> {
-    // const {
-    //   parameters: { apiKey },
-    // } = await this.integrationUserService.findUser(
-    //   integrationUserId,
-    //   ApiUserIntegrationTypesEnum.ON_OFFICE,
-    // );
-
     let totalPrice = 0;
 
     const processedProducts = products.map(({ type, quantity }) => {
@@ -182,7 +187,7 @@ export class OnOfficeService {
       };
     });
 
-    // TODO add type
+    // TODO add a type
     const initialOrderData: any = {
       callbackurl: `${this.appUrl}/on-office/map`,
       parametercacheid: parameterCacheId,
@@ -202,7 +207,7 @@ export class OnOfficeService {
     const { userId, ...otherData } = confirmOrderData;
     this.verifySignature(otherData);
 
-    // TODO add products return
+    // TODO add products in the return
     // const {
     //   parameters: { apiKey },
     // } = await this.integrationUserService.findUser(
@@ -214,33 +219,35 @@ export class OnOfficeService {
   }
 
   async findOrCreateSnapshot(
-    findOrCreateData: any,
+    { integrationId, integrationUserId }: IApiOnOfficeFindCreateSnapshot,
+    integrationType: IntegrationTypesEnum,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    const { userId } = await this.integrationUserService.findUser(
-      '21',
-      IntegrationTypesEnum.ON_OFFICE,
+    // TODO add extract address call from OnOffice
+    const address = 'Schadowstraße 55, Düsseldorf';
+
+    const { userId } = await this.integrationUserService.findOneOrFail(
+      integrationUserId,
+      integrationType,
     );
 
     const user = await this.userService.findByIdWithSubscription(userId);
 
     try {
-      // use mapSnapshotToEmbeddableMap method instead of as
-      const existingSnapshot =
-        (await this.locationService.fetchSnapshotByIntegrationId(
-          findOrCreateData.integrationId,
-        )) as ApiSearchResultSnapshotResponse;
-
-      existingSnapshot.mapboxAccessToken = user.mapboxAccessToken;
-
-      return existingSnapshot;
-    } catch {}
+      return mapSnapshotToEmbeddableMap(
+        await this.locationService.fetchSnapshotByIntegrationId(integrationId),
+      );
+    } catch {
+      this.logger.log(
+        `Snapshot with integration id ${integrationId} was not found.`,
+      );
+    }
 
     return this.apiSnapshotService.createSnapshot({
       user,
-      location: findOrCreateData.address,
+      location: address,
       integrationParams: {
-        integrationId: findOrCreateData.integrationId,
-        integrationType: IntegrationTypesEnum.ON_OFFICE,
+        integrationId,
+        integrationType,
       },
     });
   }

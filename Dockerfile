@@ -33,8 +33,9 @@ RUN CI=true yarn test
 RUN tmp=$(mktemp); jq '.homepage = "/embed"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-embed
 
+# TODO change to homepage to on-office-shop
 RUN tmp=$(mktemp); jq '.homepage = "/on-office"' ./package.json > "$tmp" && mv "$tmp" package.json
-RUN yarn build-on-office
+RUN yarn build-on-office-shop
 
 RUN tmp=$(mktemp); jq '.homepage = "/"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build

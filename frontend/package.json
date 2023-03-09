@@ -64,10 +64,10 @@
   "scripts": {
     "start": "cross-env TAILWIND_MODE=watch PORT=3001 craco start",
     "start-embed": "cross-env TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
-    "start-on-office": "cross-env TAILWIND_MODE=watch PORT=3003 craco start --config craco-on-office.config.js",
+    "start-on-office-shop": "cross-env TAILWIND_MODE=watch PORT=3003 craco start --config craco-on-office-shop.config.js",
     "build": "craco build",
     "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
-    "build-on-office": "craco build --config craco-on-office.config.js && mv build build-on-office",
+    "build-on-office-shop": "craco build --config craco-on-office-shop.config.js && mv build build-on-office-shop",
     "test": "craco test"
   },
   "eslintConfig": {

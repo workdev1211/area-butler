@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "copyfe": "mkdir -p dist/static/main && mkdir -p dist/static/embed && mkdir -p dist/static/on-office && cp -R ../frontend/build/* dist/static/main && cp -R ../frontend/build-embed/* dist/static/embed && cp -R ../frontend/build-on-office/* dist/static/on-office",
+    "copyfe": "mkdir -p dist/static/main && mkdir -p dist/static/embed && mkdir -p dist/static/on-office-shop && cp -R ../frontend/build/* dist/static/main && cp -R ../frontend/build-embed/* dist/static/embed && cp -R ../frontend/build-on-office-shop/* dist/static/on-office-shop",
     "prebuild": "rimraf dist",
     "build": "nest build && npm run copyfe",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
