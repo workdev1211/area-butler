@@ -52,19 +52,28 @@ import {
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
+import { openAiTonalities } from '../../../shared/constants/open-ai';
+import {
+  IApiOpenAiLocationDescriptionQuery,
+  IApiOpenAiLocationRealEstateDescriptionQuery,
+} from '@area-butler-types/open-ai';
+import { OpenAiService } from '../open-ai/open-ai.service';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 @Injectable()
 export class LocationService {
   constructor(
-    private overpassService: OverpassService,
-    private isochroneService: IsochroneService,
+    private readonly overpassService: OverpassService,
+    private readonly isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
-    private locationSearchModel: Model<LocationSearchDocument>,
+    private readonly locationSearchModel: Model<LocationSearchDocument>,
     @InjectModel(SearchResultSnapshot.name)
-    private searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
-    private userService: UserService,
-    private subscriptionService: SubscriptionService,
-    private overpassDataService: OverpassDataService,
+    private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
+    private readonly userService: UserService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly overpassDataService: OverpassDataService,
+    private readonly openAiService: OpenAiService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   async searchLocation(
@@ -532,5 +541,78 @@ export class LocationService {
         break;
       }
     }
+  }
+
+  async fetchOpenAiLocationDescription(
+    user: UserDocument,
+    locationDescriptionQuery: IApiOpenAiLocationDescriptionQuery,
+  ): Promise<string> {
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const searchResultSnapshot = await this.fetchSnapshotById(
+      user,
+      locationDescriptionQuery.searchResultSnapshotId,
+    );
+
+    const queryText = this.openAiService.getLocationDescriptionQuery({
+      snapshot: searchResultSnapshot.snapshot,
+      meanOfTransportation: locationDescriptionQuery.meanOfTransportation,
+      tonality: openAiTonalities[locationDescriptionQuery.tonality],
+      customText: locationDescriptionQuery.customText?.text,
+    });
+
+    return this.openAiService.fetchResponse(queryText);
+  }
+
+  async fetchOpenAiLocationRealEstateDescription(
+    user: UserDocument,
+    {
+      searchResultSnapshotId,
+      meanOfTransportation,
+      tonality,
+      customText,
+      realEstateListingId,
+    }: IApiOpenAiLocationRealEstateDescriptionQuery,
+  ): Promise<string> {
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const searchResultSnapshot = await this.fetchSnapshotById(
+      user,
+      searchResultSnapshotId,
+    );
+
+    const realEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        user,
+        realEstateListingId,
+      );
+
+    if (!searchResultSnapshot || !realEstateListing) {
+      throw new HttpException('Unknown snapshot or real estate id', 404);
+    }
+
+    const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
+      realEstateListing,
+      snapshot: searchResultSnapshot.snapshot,
+      meanOfTransportation: meanOfTransportation,
+      tonality: openAiTonalities[tonality],
+      customText: customText?.text,
+    });
+
+    return this.openAiService.fetchResponse(queryText);
   }
 }

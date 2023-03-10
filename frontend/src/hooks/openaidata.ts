@@ -6,7 +6,7 @@ import {
   IApiOpenAiQuery,
 } from "../../../shared/types/open-ai";
 
-export const useOpenAiData = () => {
+export const useOpenAiData = (url?: string) => {
   const { post } = useHttp();
 
   const fetchLocationDescription = async (
@@ -14,7 +14,7 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiLocationDescriptionQuery>(
-        "/api/location/open-ai-location-description",
+        url || "/api/location/open-ai-location-description",
         locationDescriptionQuery
       )
     ).data;
@@ -24,7 +24,7 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        "/api/real-estate-listings/open-ai-real-estate-description",
+        url || "/api/real-estate-listings/open-ai-real-estate-description",
         realEstateDescriptionQuery
       )
     ).data;
@@ -34,13 +34,14 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        "/api/location/open-ai-location-real-estate-description",
+        url || "/api/location/open-ai-location-real-estate-description",
         locationRealEstateDescriptionQuery
       )
     ).data;
 
   const fetchQuery = async (query: IApiOpenAiQuery): Promise<string> =>
-    (await post<string, IApiOpenAiQuery>("/api/open-ai/query", query)).data;
+    (await post<string, IApiOpenAiQuery>(url || "/api/open-ai/query", query))
+      .data;
 
   return {
     fetchLocationDescription,

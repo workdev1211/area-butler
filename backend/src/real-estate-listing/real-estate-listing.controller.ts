@@ -32,17 +32,13 @@ import {
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
-import { SubscriptionService } from '../user/subscription.service';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
-import { OpenAiService } from '../open-ai/open-ai.service';
 
 @ApiTags('real-estate-listings')
 @Controller('api/real-estate-listings')
 export class RealEstateListingController extends AuthenticatedController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly openAiService: OpenAiService,
-    private readonly subscriptionService: SubscriptionService,
   ) {
     super();
   }
@@ -159,26 +155,11 @@ export class RealEstateListingController extends AuthenticatedController {
   @Post('open-ai-real-estate-description')
   async fetchOpenAiRealEstateDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() { realEstateListingId }: ApiOpenAiRealEstateDescriptionQueryDto,
+    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    return this.realEstateListingService.fetchOpenAiRealEstateDescription(
+      user,
+      realEstateDescriptionQuery,
     );
-
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        user,
-        realEstateListingId,
-      );
-
-    const queryText =
-      this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
-
-    return this.openAiService.fetchResponse(queryText);
   }
 }

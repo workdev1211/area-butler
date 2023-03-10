@@ -19,7 +19,7 @@ import {
 } from '@area-butler-types/real-estate';
 import { OpenAiOsmQueryNameEnum } from '@area-butler-types/open-ai';
 
-// Was left just in case in order to be able to calculate the number of tokens
+// Left just in case in order to be able to calculate the number of tokens
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 // const { encode } = require('gpt-3-encoder');
 // const usedTokens = encode(queryString).length;

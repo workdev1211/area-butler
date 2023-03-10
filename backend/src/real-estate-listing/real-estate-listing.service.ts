@@ -21,6 +21,8 @@ import {
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { ApiCoordinates, CsvFileFormatEnum } from '@area-butler-types/types';
+import { IApiOpenAiRealEstateDescriptionQuery } from '@area-butler-types/open-ai';
+import { OpenAiService } from '../open-ai/open-ai.service';
 
 interface IListingData {
   listing: unknown;
@@ -58,6 +60,7 @@ export class RealEstateListingService {
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly subscriptionService: SubscriptionService,
     private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly openAiService: OpenAiService,
   ) {}
 
   async fetchRealEstateListings(
@@ -447,5 +450,29 @@ export class RealEstateListingService {
         return ApiRealEstateStatusEnum.FOR_SALE;
       }
     }
+  }
+
+  async fetchOpenAiRealEstateDescription(
+    user: UserDocument,
+    { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
+  ) {
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const realEstateListing = await this.fetchRealEstateListingById(
+      user,
+      realEstateListingId,
+    );
+
+    const queryText =
+      this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
+
+    return this.openAiService.fetchResponse(queryText);
   }
 }

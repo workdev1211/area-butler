@@ -3,7 +3,6 @@ import {
   Controller,
   Delete,
   Get,
-  HttpException,
   Param,
   Post,
   Put,
@@ -26,13 +25,11 @@ import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
 import { IApiMongoParams } from '@area-butler-types/types';
-import { openAiTonalities } from '../../../shared/constants/open-ai';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { ApiSnapshotService } from './api-snapshot.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
-import { OpenAiService } from '../open-ai/open-ai.service';
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
 
 @ApiTags('location')
@@ -42,7 +39,6 @@ export class LocationController extends AuthenticatedController {
     private readonly locationService: LocationService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly openAiService: OpenAiService,
     private readonly apiSnapshotService: ApiSnapshotService,
   ) {
     super();
@@ -187,28 +183,10 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
-
-    const searchResultSnapshot = await this.locationService.fetchSnapshotById(
+    return this.locationService.fetchOpenAiLocationDescription(
       user,
-      locationDescriptionQuery.searchResultSnapshotId,
+      locationDescriptionQuery,
     );
-
-    const queryText = this.openAiService.getLocationDescriptionQuery({
-      snapshot: searchResultSnapshot.snapshot,
-      meanOfTransportation: locationDescriptionQuery.meanOfTransportation,
-      tonality: openAiTonalities[locationDescriptionQuery.tonality],
-      customText: locationDescriptionQuery.customText?.text,
-    });
-
-    return this.openAiService.fetchResponse(queryText);
   }
 
   @ApiOperation({
@@ -218,46 +196,11 @@ export class LocationController extends AuthenticatedController {
   async fetchOpenAiLocationRealEstateDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    {
-      searchResultSnapshotId,
-      meanOfTransportation,
-      tonality,
-      customText,
-      realEstateListingId,
-    }: ApiOpenAiLocationRealEstateDescriptionQueryDto,
+    locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
-
-    const searchResultSnapshot = await this.locationService.fetchSnapshotById(
+    return this.locationService.fetchOpenAiLocationRealEstateDescription(
       user,
-      searchResultSnapshotId,
+      locationRealEstateDescriptionQuery,
     );
-
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        user,
-        realEstateListingId,
-      );
-
-    if (!searchResultSnapshot || !realEstateListing) {
-      throw new HttpException('Unknown snapshot or real estate id', 404);
-    }
-
-    const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
-      realEstateListing,
-      snapshot: searchResultSnapshot.snapshot,
-      meanOfTransportation: meanOfTransportation,
-      tonality: openAiTonalities[tonality],
-      customText: customText?.text,
-    });
-
-    return this.openAiService.fetchResponse(queryText);
   }
 }
