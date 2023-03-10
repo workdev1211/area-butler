@@ -331,10 +331,17 @@ export class OpenAiService {
   async fetchResponse(queryText: string): Promise<string> {
     const {
       data: { choices },
-    }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createCompletion(
+    }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(
       {
-        model: 'text-davinci-003',
-        prompt: queryText,
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'Du bist Texter/in in einer Immobilienagentur. Du schreibst kreative und korrekte Beschreibungen von Immobilienangeboten und deren Umgebung',
+          },
+          { role: 'user', content: queryText },
+        ],
         temperature: 1,
         max_tokens: 1200,
         top_p: 1,
@@ -344,6 +351,6 @@ export class OpenAiService {
       },
     );
 
-    return choices[0].text.replace(/^(\n)*(.*)/g, '$2');
+    return choices[0]['message']['content'].replace(/^(\n)*(.*)/g, '$2');
   }
 }
