@@ -31,7 +31,7 @@ import { OpenAiModule } from './open-ai/open-ai.module';
     ServeStaticModule.forRoot(
       {
         serveRoot: '/',
-        rootPath: join(__dirname, '..', '..', 'static/main'),
+        rootPath: join(__dirname, '..', '..', 'static'),
       },
       {
         serveRoot: '/on-office',
