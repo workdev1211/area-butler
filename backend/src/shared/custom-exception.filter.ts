@@ -35,54 +35,70 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
     this.logger.debug(exception);
 
     if (
-      status === HttpStatus.INTERNAL_SERVER_ERROR ||
-      status === HttpStatus.BAD_REQUEST
-    ) {
-      const headers = { ...req.headers };
-      delete headers.authorization;
-      const environmentName = configService.getStripeEnv();
-
-      const environmentDescription = `*Environment:* ${environmentName.toUpperCase()} ${
-        environmentName === 'prod' ? ':red_circle:' : ':large_green_circle:'
-      }`;
-      const errorTitle =
-        exception?.message ||
-        'Error while performing a request - more information in log';
-      const userEmail = `*User email:* ${req.user?.email}`;
-      const reqUrlDescription = `*Request Url:* ${JSON.stringify(req.url)}`;
-      const reqStatusDescription = `*Request Status:* ${JSON.stringify(
+      ![HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.BAD_REQUEST].includes(
         status,
-      )}`;
-      const reqMethodDescription = `*Request Method:* ${JSON.stringify(
-        req.method,
-      )}`;
-      const reqHeadersDescription = `*Request Headers:* ${JSON.stringify(
-        headers,
-      )}`;
-      const reqBodyDescription = `*Request Body:* ${JSON.stringify(req.body)}`;
-      const reqParamsDescription = `*Request Params:* ${JSON.stringify(
-        req.params,
-      )}`;
-
-      const textBlocks = [
-        environmentDescription,
-        errorTitle,
-        userEmail,
-        reqUrlDescription,
-        reqHeadersDescription,
-        reqParamsDescription,
-        reqStatusDescription,
-        reqMethodDescription,
-        reqBodyDescription,
-      ];
-
-      console.error(textBlocks);
-
-      // TODO uncomment on deploy
-      // void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
-      //   textBlocks,
-      // });
+      )
+    ) {
+      super.catch(exception, host);
+      return;
     }
+
+    const headers = { ...req.headers };
+    delete headers.authorization;
+    const environmentName = configService.getStripeEnv();
+    const responseMessage = exception?.response?.message;
+
+    const environmentDescription = `*Environment:* ${environmentName.toUpperCase()} ${
+      environmentName === 'prod' ? ':red_circle:' : ':large_green_circle:'
+    }`;
+    const errorTitle =
+      exception?.message ||
+      'Error while performing a request - more information is in the log';
+
+    const textBlocks = [environmentDescription, errorTitle];
+
+    const errorMessage = responseMessage
+      ? `*Error message:* ${
+          Array.isArray(responseMessage)
+            ? `\n  ${responseMessage.join('\n  ')}\n`
+            : responseMessage
+        }`
+      : undefined;
+
+    if (errorMessage) {
+      textBlocks.push(errorMessage);
+    }
+
+    const userEmail = `*User email:* ${req.user?.email}`;
+    const reqUrlDescription = `*Request Url:* ${JSON.stringify(req.url)}`;
+    const reqStatusDescription = `*Request Status:* ${JSON.stringify(status)}`;
+    const reqMethodDescription = `*Request Method:* ${JSON.stringify(
+      req.method,
+    )}`;
+    const reqHeadersDescription = `*Request Headers:* ${JSON.stringify(
+      headers,
+    )}`;
+    const reqBodyDescription = `*Request Body:* ${JSON.stringify(req.body)}`;
+    const reqParamsDescription = `*Request Params:* ${JSON.stringify(
+      req.params,
+    )}`;
+
+    textBlocks.push(
+      userEmail,
+      reqUrlDescription,
+      reqHeadersDescription,
+      reqParamsDescription,
+      reqStatusDescription,
+      reqMethodDescription,
+      reqBodyDescription,
+    );
+
+    console.error(textBlocks);
+
+    // TODO uncomment on deploy
+    // void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
+    //   textBlocks,
+    // });
 
     super.catch(exception, host);
   }
