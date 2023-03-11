@@ -1,15 +1,15 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import DefaultLayout from "../../../layout/defaultLayout";
-import { allOnOfficeProducts } from "../../../../../shared/constants/on-office/products";
+import DefaultLayout from "../../layout/defaultLayout";
+import { allOnOfficeProducts } from "../../../../shared/constants/on-office/products";
 import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrder,
   OnOfficeProductTypesEnum,
-} from "../../../../../shared/types/on-office";
-import { useHttp } from "../../../hooks/http";
-import { convertPriceToHuman } from "../../../../../shared/functions/shared.functions";
-import { OnOfficeContext } from "../../../context/OnOfficeContext";
+} from "../../../../shared/types/on-office";
+import { useHttp } from "../../hooks/http";
+import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
+import { OnOfficeContext } from "../../context/OnOfficeContext";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -98,7 +98,8 @@ export const ProductPage: FunctionComponent = () => {
               await post<unknown, IApiOnOfficeCreateOrder>(
                 "/api/on-office/create-order",
                 {
-                  parameterCacheId: onOfficeContextState.parameterCacheId!,
+                  // parameterCacheId: onOfficeContextState.parameterCacheId!,
+                  parameterCacheId: onOfficeContextState.extendedClaim!,
                   products: Object.values(createOrderProducts).filter(
                     ({ quantity }) => quantity > 0
                   ),

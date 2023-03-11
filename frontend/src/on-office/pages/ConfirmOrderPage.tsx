@@ -1,9 +1,9 @@
 import { FunctionComponent, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
-import { useHttp } from "../../../hooks/http";
-import { IApiOnOfficeConfirmOrder } from "../../../../../shared/types/on-office";
-import { toastError } from "../../../shared/shared.functions";
+import { useHttp } from "../../hooks/http";
+import { IApiOnOfficeConfirmOrder } from "../../../../shared/types/on-office";
+import { toastError } from "../../shared/shared.functions";
 
 const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();

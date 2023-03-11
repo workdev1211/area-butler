@@ -24,10 +24,12 @@ import { OnOfficeContextProvider } from "./context/OnOfficeContext";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
-const OnOfficeContainer = lazy(
-  () => import("./on-office/shop/OnOfficeContainer")
+const OnOfficeContainer = lazy(() => import("./on-office/OnOfficeContainer"));
+const LoginPage = lazy(() => import("./on-office/pages/LoginPage"));
+const ProductPage = lazy(() => import("./on-office/pages/ProductPage"));
+const ConfirmOrderPage = lazy(
+  () => import("./on-office/pages/ConfirmOrderPage")
 );
-const LoginPage = lazy(() => import("./on-office/shop/pages/LoginPage"));
 
 render(
   <StrictMode>
@@ -49,6 +51,15 @@ render(
             <Switch>
               <Route path="/open-ai">
                 <OnOfficeContainer />
+              </Route>
+              <Route path="/confirm-order">
+                <ConfirmOrderPage />
+              </Route>
+              {/*<Route path="/map">*/}
+              {/*  <OnOfficeContainer />*/}
+              {/*</Route>*/}
+              <Route path="/products">
+                <ProductPage />
               </Route>
               <Route path="/">
                 <LoginPage />

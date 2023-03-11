@@ -1,23 +1,14 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
-import { IApiOnOfficeRequestParams } from "../../../../../shared/types/on-office";
+import { useHttp } from "../../hooks/http";
 import {
   OnOfficeContext,
   OnOfficeContextActionTypesEnum,
-} from "../../../context/OnOfficeContext";
-import { useHttp } from "../../../hooks/http";
-
-window.addEventListener("resize", () => {
-  calculateViewHeight();
-});
-
-const calculateViewHeight = () => {
-  const vh = window.innerHeight * 0.01;
-  document.documentElement.style.setProperty("--vh", `${vh}px`);
-};
-
-calculateViewHeight();
+} from "../../context/OnOfficeContext";
+import { IApiOnOfficeRequestParams } from "../../../../shared/types/on-office";
+import { LoadingMessage } from "../../OnOffice";
+import { toastError } from "../../shared/shared.functions";
 
 const LoginPage: FunctionComponent = () => {
   const history = useHistory();
@@ -50,31 +41,25 @@ const LoginPage: FunctionComponent = () => {
       console.log(2, "LoginPage", onOfficeRequestParams);
 
       try {
-        // TODO a add type
+        // TODO add a type
         const response = (
-          await post<{ integrationUserId: string }>(
-            "/api/on-office/login",
-            onOfficeRequestParams
-          )
+          await post<any>("/api/on-office/login", onOfficeRequestParams)
         ).data;
-
-        console.log(9, "LoginPage", response);
 
         onOfficeContextDispatch({
           type: OnOfficeContextActionTypesEnum.SET_STATE,
           payload: {
             integrationUserId: response.integrationUserId,
-            parameterCacheId: onOfficeRequestParams.parameterCacheId,
+            extendedClaim: response.extendedClaim,
+            estateId: response.estateId,
           },
         });
 
-        // TODO add a check if no products
-        history.push("/products");
-        // TODO if user have products
-        // history.push('/map');
+        history.push("/open-ai");
       } catch (e: any) {
         setIsSignatureNotCorrect(true);
-        console.error("Verification error: ", "OnOfficeContainer", e);
+        toastError("Ein Fehler ist aufgetreten!");
+        console.error("Verification error: ", e);
       }
     };
 
@@ -84,7 +69,7 @@ const LoginPage: FunctionComponent = () => {
 
   return (
     <div className="flex items-center justify-center h-[100vh] text-lg">
-      {isSignatureNotCorrect ? "Signatur nicht korrekt!" : "Loading..."}
+      {isSignatureNotCorrect ? "Signatur nicht korrekt!" : <LoadingMessage />}
     </div>
   );
 };

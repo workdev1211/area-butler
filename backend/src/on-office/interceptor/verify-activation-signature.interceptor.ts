@@ -9,9 +9,7 @@ import { Observable, scheduled, asyncScheduler } from 'rxjs';
 import { OnOfficeService } from '../on-office.service';
 
 @Injectable()
-export class CheckActivationIframeSignatureInterceptor
-  implements NestInterceptor
-{
+export class VerifyActivationSignatureInterceptor implements NestInterceptor {
   constructor(private readonly onOfficeService: OnOfficeService) {}
 
   async intercept(

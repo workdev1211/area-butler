@@ -479,8 +479,7 @@ export type TApiIntegrationUserParameters =
   IApiIntegrationUserOnOfficeParameters;
 
 export enum IntegrationTypesEnum {
-  "ON_OFFICE_INTEGRATION" = "ON_OFFICE_INTEGRATION",
-  "ON_OFFICE_SHOP" = "ON_OFFICE_SHOP",
+  "ON_OFFICE" = "ON_OFFICE",
 }
 
 export type TPaymentEnvironment = typeof paymentEnvironments[number];

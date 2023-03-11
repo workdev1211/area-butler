@@ -2,6 +2,7 @@ import {
   IApiSubscriptionEnvIds,
   PaymentSystemTypeEnum,
 } from "./subscription-plan";
+import { IntegrationTypesEnum } from "./types";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -42,20 +43,36 @@ export interface IApiOnOfficeRequest {
   request: { actions: IApiOnOfficeRequestAction[] };
 }
 
+export enum ApiOnOfficeActionIdsEnum {
+  "READ" = "urn:onoffice-de-ns:smart:2.5:smartml:action:read",
+  "CREATE" = "urn:onoffice-de-ns:smart:2.5:smartml:action:create",
+  "MODIFY" = "urn:onoffice-de-ns:smart:2.5:smartml:action:modify",
+  "GET" = "urn:onoffice-de-ns:smart:2.5:smartml:action:get",
+  "DO" = "urn:onoffice-de-ns:smart:2.5:smartml:action:do",
+  "DELETE" = "urn:onoffice-de-ns:smart:2.5:smartml:action:delete",
+}
+
+export enum ApiOnOfficeResourceTypesEnum {
+  "UNLOCK_PROVIDER" = "unlockProvider",
+  "ESTATE" = "estate",
+}
+
 interface IApiOnOfficeRequestAction {
-  timestamp: number;
+  timestamp?: number;
   hmac: string;
   hmac_version: 2;
-  actionid: string; // enum
+  actionid: ApiOnOfficeActionIdsEnum;
   resourceid: string;
-  resourcetype: string; // enum
-  parameters: IApiOnOfficeRequestActionParameters;
+  identifier: string;
+  resourcetype: ApiOnOfficeResourceTypesEnum;
+  parameters?: IApiOnOfficeRequestActionParameters;
 }
 
 interface IApiOnOfficeRequestActionParameters {
-  parameterCacheId: string;
+  parameterCacheId?: string;
   extendedclaim: string;
   isRegularCustomer?: number;
+  data?: string[]; // enum?
 }
 
 export interface IApiOnOfficeResponse {
@@ -70,9 +87,9 @@ export interface IApiOnOfficeResponse {
 }
 
 interface IApiOnOfficeResponseResult {
-  actionid: string; // enum
+  actionid: ApiOnOfficeActionIdsEnum;
   resourceid: string;
-  resourcetype: string; // enum
+  resourcetype: ApiOnOfficeResourceTypesEnum;
   identifier: string;
   status: {
     code: number; // enum?
@@ -91,12 +108,13 @@ interface IApiOnOfficeResponseResultRecord {
 
 export interface IApiOnOfficeRequestParams {
   url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
-  apiClaim: string;
+  apiClaim: string; // extendedClaim
   customerName: string;
   customerWebId: string;
   parameterCacheId: string;
   timestamp: string;
   userId: string;
+  estateId: string;
   groupId?: string;
   signature: string;
   imageIds?: string;
@@ -109,7 +127,7 @@ export interface IApiOnOfficeCreateOrder {
 
 export interface IApiOnOfficeConfirmOrder {
   url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
-  userId?: string; // from OnOfficeContext
+  extendedClaim?: string; // from OnOfficeContext
   timestamp: string;
   signature: string;
   message?: string;
@@ -124,6 +142,7 @@ export interface IApiOnOfficeCreateOrderProduct {
 }
 
 export interface IApiOnOfficeFindCreateSnapshot {
-  integrationId: string;
-  integrationUserId: string;
+  estateId: string;
+  extendedClaim: string;
+  integrationType: IntegrationTypesEnum;
 }

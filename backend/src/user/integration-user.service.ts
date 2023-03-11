@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 
 import {
   IntegrationTypesEnum,
@@ -47,17 +47,36 @@ export class IntegrationUserService {
     }).save();
   }
 
-  async findOneAndUpdateParams(
-    findQuery: unknown,
-    parameters: TApiIntegrationUserParameters,
+  async findOneOrFail(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
+    integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne(findQuery);
+    const existingUser = await this.integrationUserModel.findOne({
+      ...findQuery,
+      integrationType,
+    });
 
     if (!existingUser) {
       throw new HttpException('Unknown user!', 400);
     }
 
-    return this.updateParams(existingUser, parameters);
+    return existingUser;
+  }
+
+  async findOneOrFailByExtendedClaim(
+    extendedClaim: string,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.integrationUserModel.findOne({
+      'parameters.extendedClaim': extendedClaim,
+      integrationType,
+    });
+
+    if (!existingUser) {
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    return existingUser;
   }
 
   private async updateParams(
@@ -72,20 +91,13 @@ export class IntegrationUserService {
     return user.save();
   }
 
-  async findOneOrFail(
-    integrationUserId: string,
+  async findOneAndUpdateParams(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
     integrationType: IntegrationTypesEnum,
+    parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
-    // TODO insert AB user to response instead of userId
-    const foundUser = await this.integrationUserModel.findOne({
-      integrationUserId,
-      integrationType,
-    });
+    const existingUser = await this.findOneOrFail(findQuery, integrationType);
 
-    if (!foundUser) {
-      throw new HttpException('Unknown user!', 400);
-    }
-
-    return foundUser;
+    return this.updateParams(existingUser, parameters);
   }
 }

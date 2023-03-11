@@ -1,10 +1,13 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-import { useHttp } from "../../hooks/http";
-import { ApiSearchResultSnapshotResponse } from "../../../../shared/types/types";
-import { OnOfficeContext } from "../../context/OnOfficeContext";
-import OpenAiModule from "../../components/open-ai/OpenAiModule";
-import { LoadingMessage } from "../../OnOfficeShop";
+import { useHttp } from "../hooks/http";
+import {
+  ApiSearchResultSnapshotResponse,
+  IntegrationTypesEnum,
+} from "../../../shared/types/types";
+import { OnOfficeContext } from "../context/OnOfficeContext";
+import OpenAiModule from "../components/open-ai/OpenAiModule";
+import { LoadingMessage } from "../OnOffice";
 
 const OnOfficeContainer: FunctionComponent = () => {
   const { post } = useHttp();
@@ -19,13 +22,14 @@ const OnOfficeContainer: FunctionComponent = () => {
 
   useEffect(() => {
     const findOrCreateSnapshot = async () => {
-      // TODO change integration id
       const { id } = (
         await post<ApiSearchResultSnapshotResponse>(
           "/api/on-office/find-create-snapshot",
           {
-            integrationId: "111",
-            integrationUserId: onOfficeContextState.integrationUserId || "21",
+            integrationType: IntegrationTypesEnum.ON_OFFICE,
+            // TODO remove test value
+            estateId: onOfficeContextState.estateId || "33",
+            extendedClaim: onOfficeContextState.extendedClaim,
           }
         )
       ).data;

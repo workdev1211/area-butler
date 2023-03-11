@@ -33,6 +33,10 @@ class ApiOnOfficeRequestParamsDto implements IApiOnOfficeRequestParams {
 
   @IsNotEmpty()
   @IsString()
+  estateId: string;
+
+  @IsNotEmpty()
+  @IsString()
   signature: string;
 }
 

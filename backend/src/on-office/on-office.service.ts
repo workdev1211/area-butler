@@ -11,6 +11,8 @@ import {
   IntegrationTypesEnum,
 } from '@area-butler-types/types';
 import {
+  ApiOnOfficeActionIdsEnum,
+  ApiOnOfficeResourceTypesEnum,
   IApiOnOfficeConfirmOrder,
   IApiOnOfficeCreateOrder,
   IApiOnOfficeFindCreateSnapshot,
@@ -29,12 +31,14 @@ import { ApiSnapshotService } from '../location/api-snapshot.service';
 import { UserService } from '../user/user.service';
 import { LocationService } from '../location/location.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 @Injectable()
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
   private readonly appUrl = configService.getBaseAppUrl();
   private readonly providerSecret = configService.getOnOfficeProviderSecret();
+  private readonly integrationType = IntegrationTypesEnum.ON_OFFICE;
   private readonly logger = new Logger(OnOfficeApiService.name);
 
   constructor(
@@ -48,20 +52,18 @@ export class OnOfficeService {
   // TODO add a type
   async getRenderData({
     integrationUserId,
-    integrationType,
     token,
     parameterCacheId,
     extendedClaim,
   }: {
     integrationUserId: string;
-    integrationType: IntegrationTypesEnum;
     token: string;
     parameterCacheId: string;
     extendedClaim: string;
   }): Promise<IApiOnOfficeRenderData> {
     await this.integrationUserService.upsert(
       integrationUserId,
-      integrationType,
+      this.integrationType,
       { extendedClaim },
     );
 
@@ -78,31 +80,27 @@ export class OnOfficeService {
     };
   }
 
-  async unlockProvider(
-    {
-      token,
-      secret: apiKey,
-      parameterCacheId,
-      extendedClaim,
-    }: IApiOnOfficeUnlockProvider,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<IApiOnOfficeResponse> {
+  async unlockProvider({
+    token,
+    secret: apiKey,
+    parameterCacheId,
+    extendedClaim,
+  }: IApiOnOfficeUnlockProvider): Promise<IApiOnOfficeResponse> {
     await this.integrationUserService.findOneAndUpdateParams(
-      {
-        integrationType,
-        'parameters.extendedClaim': extendedClaim,
-      },
+      { 'parameters.extendedClaim': extendedClaim },
+      this.integrationType,
       { token, apiKey, extendedClaim },
     );
 
-    const actionId = 'urn:onoffice-de-ns:smart:2.5:smartml:action:do';
-    const resourceType = 'unlockProvider';
+    const actionId = ApiOnOfficeActionIdsEnum.DO;
+    const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
     const timestamp = dayjs().unix();
 
-    const hmac = createHmac('sha256', apiKey)
-      .update([timestamp, token, resourceType, actionId].join(''))
-      .digest()
-      .toString('base64');
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
 
     const request: IApiOnOfficeRequest = {
       token,
@@ -110,10 +108,11 @@ export class OnOfficeService {
         actions: [
           {
             timestamp,
-            hmac,
+            hmac: signature,
             hmac_version: 2,
             actionid: actionId,
             resourceid: '',
+            identifier: '',
             resourcetype: resourceType,
             parameters: {
               parameterCacheId: parameterCacheId,
@@ -127,43 +126,22 @@ export class OnOfficeService {
     return this.onOfficeApiService.sendRequest(request);
   }
 
-  generateSignature(data: string): string {
-    return createHmac('sha256', this.providerSecret)
-      .update(data)
-      .digest()
-      .toString('hex');
-  }
+  async login(requestParams: IApiOnOfficeRequestParams): Promise<any> {
+    const {
+      userId: integrationUserId,
+      apiClaim: extendedClaim,
+      estateId,
+    } = requestParams;
 
-  verifySignature(
-    requestParams: IApiOnOfficeRequestParams | IApiOnOfficeConfirmOrder,
-  ): void {
-    const { url: initialUrl, signature, ...queryParams } = requestParams;
-    const sortedQueryParams = getOnOfficeSortedMapData(queryParams);
-    const testQueryString = buildOnOfficeQueryString(sortedQueryParams);
-    const testUrl = `${initialUrl}?${testQueryString}`;
-    const generatedSignature = this.generateSignature(testUrl);
-
-    if (generatedSignature !== signature) {
-      this.logger.error(testUrl, generatedSignature, signature);
-      throw new HttpException('Request verification failed!', 400);
-    }
-  }
-
-  async login(
-    requestParams: IApiOnOfficeRequestParams,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<any> {
-    this.verifySignature(requestParams);
-    const { userId: integrationUserId } = requestParams;
-
-    // TODO add user products
-    await this.integrationUserService.findOneOrFail(
-      integrationUserId,
-      integrationType,
+    // TODO return user products
+    await this.integrationUserService.findOneAndUpdateParams(
+      { integrationUserId },
+      this.integrationType,
+      { extendedClaim },
     );
 
     // TODO add a type
-    return { integrationUserId };
+    return { integrationUserId, extendedClaim, estateId };
   }
 
   async createOrder({
@@ -201,7 +179,7 @@ export class OnOfficeService {
   }
 
   async confirmOrder(confirmOrderData: IApiOnOfficeConfirmOrder): Promise<any> {
-    const { userId, ...otherData } = confirmOrderData;
+    const { extendedClaim, ...otherData } = confirmOrderData;
     this.verifySignature(otherData);
 
     // TODO add products in the return
@@ -216,14 +194,15 @@ export class OnOfficeService {
   }
 
   async findOrCreateSnapshot(
-    { integrationId, integrationUserId }: IApiOnOfficeFindCreateSnapshot,
+    { estateId }: IApiOnOfficeFindCreateSnapshot,
     integrationType: IntegrationTypesEnum,
   ): Promise<ApiSearchResultSnapshotResponse> {
     // TODO add extract address call from OnOffice
     const address = 'Schadowstraße 55, Düsseldorf';
+    const extendedClaim = '21';
 
     const { userId } = await this.integrationUserService.findOneOrFail(
-      integrationUserId,
+      {},
       integrationType,
     );
 
@@ -231,11 +210,12 @@ export class OnOfficeService {
 
     try {
       return mapSnapshotToEmbeddableMap(
-        await this.locationService.fetchSnapshotByIntegrationId(integrationId),
+        await this.locationService.fetchSnapshotByIntegrationId(estateId),
       );
     } catch {
       this.logger.log(
-        `Snapshot with integration id ${integrationId} was not found.`,
+        this.findOrCreateSnapshot.name,
+        `Snapshot with the integration id ${estateId} was not found.`,
       );
     }
 
@@ -243,9 +223,106 @@ export class OnOfficeService {
       user,
       location: address,
       integrationParams: {
-        integrationId,
         integrationType,
+        integrationId: estateId,
       },
     });
+  }
+
+  async test(
+    { estateId }: IApiOnOfficeFindCreateSnapshot,
+    integrationUser: TIntegrationUserDocument,
+  ) {
+    const {
+      parameters: { token, apiKey, extendedClaim },
+    } = integrationUser;
+    const actionId = ApiOnOfficeActionIdsEnum.READ;
+    const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
+    const timestamp = dayjs().unix();
+
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: estateId,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              data: [
+                'strasse',
+                'hausnummer',
+                'plz',
+                'ort',
+                'land',
+                'breitengrad',
+                'laengengrad',
+                'nutzflaeche',
+                'gesamtflaeche',
+                'anzahl_zimmer',
+                'kaufpreis',
+                'nettokaltmiete',
+                'kaltmiete',
+                'warmmiete',
+                'objektart',
+                'objekttyp',
+              ],
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
+      },
+    };
+
+    this.logger.debug(this.test.name, request);
+    const a1 = await this.onOfficeApiService.sendRequest(request);
+    this.logger.debug(this.test.name, a1);
+    const a2 = 'halt';
+
+    return a1;
+  }
+
+  generateSignature(
+    data: string,
+    secret = this.providerSecret,
+    encoding: BufferEncoding = 'hex',
+  ): string {
+    return createHmac('sha256', secret)
+      .update(data)
+      .digest()
+      .toString(encoding);
+  }
+
+  verifySignature(
+    requestParams: IApiOnOfficeRequestParams | IApiOnOfficeConfirmOrder,
+  ): void {
+    const { url: initialUrl, signature, ...queryParams } = requestParams;
+    const sortedQueryParams = getOnOfficeSortedMapData(queryParams);
+    const testQueryString = buildOnOfficeQueryString(sortedQueryParams);
+    const testUrl = `${initialUrl}?${testQueryString}`;
+    const generatedSignature = this.generateSignature(testUrl);
+
+    if (generatedSignature === signature) {
+      return;
+    }
+
+    this.logger.error(
+      this.verifySignature.name,
+      testUrl,
+      generatedSignature,
+      signature,
+    );
+
+    throw new HttpException('Request verification failed!', 400);
   }
 }

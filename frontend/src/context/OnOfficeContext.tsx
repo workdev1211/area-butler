@@ -2,7 +2,8 @@ import { Dispatch, createContext, useReducer, FunctionComponent } from "react";
 
 export interface IOnOfficeContextState {
   integrationUserId?: string;
-  parameterCacheId?: string;
+  extendedClaim?: string;
+  estateId?: string;
 }
 
 export enum OnOfficeContextActionTypesEnum {

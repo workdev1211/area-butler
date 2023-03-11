@@ -1,5 +1,6 @@
 import {
   Body,
+  Controller,
   Get,
   Logger,
   Post,
@@ -7,7 +8,7 @@ import {
   Render,
   UseInterceptors,
 } from '@nestjs/common';
-import { ApiOperation } from '@nestjs/swagger';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { OnOfficeService } from './on-office.service';
 import { activateUserPath } from '../shared/on-office.constants';
@@ -16,29 +17,24 @@ import ApiOnOfficeRequestParamsDto from './dto/api-on-office-request-params.dto'
 import { IApiOnOfficeRenderData } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderDto from './dto/api-on-office-create-order.dto';
 import ApiOnOfficeConfirmOrderDto from './dto/api-on-office-confirm-order.dto';
-import {
-  ApiSearchResultSnapshotResponse,
-  IntegrationTypesEnum,
-} from '@area-butler-types/types';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import ApiOnOfficeFindCreateSnapshotDto from './dto/api-on-office-find-create-snapshot.dto';
-import { CheckActivationIframeSignatureInterceptor } from './interceptor/check-activation-iframe-signature.interceptor';
+import { InjectIntegrationUserInterceptor } from './interceptor/inject-integration-user.interceptor';
+import { VerifyActivationSignatureInterceptor } from './interceptor/verify-activation-signature.interceptor';
+import { VerifySignatureInterceptor } from './interceptor/verify-signature.interceptor';
+import { InjectUser } from '../user/inject-user.decorator';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
+@ApiTags('OnOffice')
+@Controller('api/on-office')
 export class OnOfficeController {
-  private readonly logger: Logger;
-  private readonly integrationType: IntegrationTypesEnum;
+  private readonly logger = new Logger(OnOfficeController.name);
 
-  constructor(
-    protected readonly onOfficeService: OnOfficeService,
-    childIntegrationType: IntegrationTypesEnum,
-    childClassName?: string,
-  ) {
-    this.logger = new Logger(childClassName || OnOfficeController.name);
-    this.integrationType = childIntegrationType;
-  }
+  constructor(private readonly onOfficeService: OnOfficeService) {}
 
   // TODO think about uniting the OnOffice React module with the current controller using the React Router
   @ApiOperation({ description: 'Renders the activation iFrame' })
-  @UseInterceptors(CheckActivationIframeSignatureInterceptor)
+  @UseInterceptors(VerifyActivationSignatureInterceptor)
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
@@ -49,7 +45,6 @@ export class OnOfficeController {
   ): Promise<IApiOnOfficeRenderData> {
     return this.onOfficeService.getRenderData({
       integrationUserId,
-      integrationType: this.integrationType,
       token,
       parameterCacheId,
       extendedClaim,
@@ -61,10 +56,11 @@ export class OnOfficeController {
   async unlockProvider(
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderDto,
   ): Promise<string> {
-    // TODO add signature verification?
+    this.logger.debug(this.unlockProvider.name, unlockProviderData);
+
+    // TODO add signature verification
     const response = await this.onOfficeService.unlockProvider(
       unlockProviderData,
-      this.integrationType,
     );
 
     return response?.status?.code === 200 &&
@@ -75,21 +71,23 @@ export class OnOfficeController {
   }
 
   @ApiOperation({ description: 'Logs in the user' })
+  @UseInterceptors(VerifySignatureInterceptor)
   @Post('login')
   login(
     @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
   ): Promise<any> {
-    return this.onOfficeService.login(
-      onOfficeRequestParams,
-      this.integrationType,
-    );
+    this.logger.debug(this.login.name, onOfficeRequestParams);
+    // TODO add a type
+    return this.onOfficeService.login(onOfficeRequestParams);
   }
 
+  // TODO add a verification interceptor
   @ApiOperation({ description: 'Creates an order' })
   @Post('create-order')
   createOrder(
     @Body() createOrderData: ApiOnOfficeCreateOrderDto,
   ): Promise<any> {
+    this.logger.debug(this.createOrder.name, createOrderData);
     return this.onOfficeService.createOrder(createOrderData);
   }
 
@@ -98,19 +96,25 @@ export class OnOfficeController {
   confirmOrder(
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderDto,
   ): Promise<any> {
+    this.logger.debug(this.confirmOrder.name, confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 
   @ApiOperation({
     description: 'Fetches or creates a snapshot by real estate address',
   })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('find-create-snapshot')
   async findOrCreateSnapshot(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.onOfficeService.findOrCreateSnapshot(
-      findOrCreateSnapshotData,
-      this.integrationType,
-    );
+  ): Promise<ApiSearchResultSnapshotResponse | any> {
+    this.logger.debug(this.findOrCreateSnapshot.name, findOrCreateSnapshotData);
+    return this.onOfficeService.test(findOrCreateSnapshotData, integrationUser);
+
+    // return this.onOfficeService.findOrCreateSnapshot(
+    //   findOrCreateSnapshotData,
+    //   this.integrationType,
+    // );
   }
 }

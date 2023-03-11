@@ -23,7 +23,7 @@ module.exports = {
           constructor && constructor.name === "ModuleScopePlugin"
       );
 
-      webpackConfig.entry = "./src/OnOfficeShop.tsx";
+      webpackConfig.entry = "./src/OnOffice.tsx";
 
       webpackConfig.resolve.plugins.splice(scopePluginIndex, 1);
 
