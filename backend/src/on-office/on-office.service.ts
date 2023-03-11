@@ -138,16 +138,13 @@ export class OnOfficeService {
     requestParams: IApiOnOfficeRequestParams | IApiOnOfficeConfirmOrder,
   ): void {
     const { url: initialUrl, signature, ...queryParams } = requestParams;
+    const sortedQueryParams = getOnOfficeSortedMapData(queryParams);
+    const testQueryString = buildOnOfficeQueryString(sortedQueryParams);
+    const testUrl = `${initialUrl}?${testQueryString}`;
+    const generatedSignature = this.generateSignature(testUrl);
 
-    const processedQueryParams = Object.keys(queryParams)
-      .sort()
-      .map<string[]>((key) => [key, queryParams[key] as string]);
-
-    const resultingUrl = `${initialUrl}?${new URLSearchParams(
-      processedQueryParams,
-    )}`;
-
-    if (this.generateSignature(resultingUrl) !== signature) {
+    if (generatedSignature !== signature) {
+      this.logger.error(testUrl, generatedSignature, signature);
       throw new HttpException('Request verification failed!', 400);
     }
   }

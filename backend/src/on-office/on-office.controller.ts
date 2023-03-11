@@ -1,4 +1,12 @@
-import { Body, Get, Logger, Post, Query, Render } from '@nestjs/common';
+import {
+  Body,
+  Get,
+  Logger,
+  Post,
+  Query,
+  Render,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation } from '@nestjs/swagger';
 
 import { OnOfficeService } from './on-office.service';
@@ -13,6 +21,7 @@ import {
   IntegrationTypesEnum,
 } from '@area-butler-types/types';
 import ApiOnOfficeFindCreateSnapshotDto from './dto/api-on-office-find-create-snapshot.dto';
+import { CheckActivationIframeSignatureInterceptor } from './interceptor/check-activation-iframe-signature.interceptor';
 
 export class OnOfficeController {
   private readonly logger: Logger;
@@ -29,6 +38,7 @@ export class OnOfficeController {
 
   // TODO think about uniting the OnOffice React module with the current controller using the React Router
   @ApiOperation({ description: 'Renders the activation iFrame' })
+  @UseInterceptors(CheckActivationIframeSignatureInterceptor)
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
