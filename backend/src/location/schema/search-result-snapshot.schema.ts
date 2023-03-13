@@ -45,8 +45,8 @@ export class SearchResultSnapshot {
   @Prop({ default: 0 })
   visitAmount: number;
 
-  @Prop({ type: IntegrationParamsSchema })
-  integrationParams: IApiIntegrationParams;
+  // @Prop({ type: IntegrationParamsSchema })
+  // integrationParams: IApiIntegrationParams;
 
   @Prop({ default: false })
   isTrial: boolean;
