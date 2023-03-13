@@ -28,20 +28,9 @@ import { OpenAiModule } from './open-ai/open-ai.module';
 @Module({
   imports: [
     ClientModule,
-    ServeStaticModule.forRoot(
-      {
-        serveRoot: '/',
-        rootPath: join(__dirname, '..', '..', 'static'),
-      },
-      {
-        serveRoot: '/on-office',
-        rootPath: join(__dirname, '..', '..', 'static/on-office'),
-      },
-      {
-        serveRoot: '/embed',
-        rootPath: join(__dirname, '..', '..', 'static/embed'),
-      },
-    ),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', '..', 'static'),
+    }),
     ScheduleModule.forRoot(),
     MongooseModule.forRoot(configService.getMongoConnectionUri()),
     HttpModule,
