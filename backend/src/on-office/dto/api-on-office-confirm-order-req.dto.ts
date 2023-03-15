@@ -1,8 +1,8 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { IApiOnOfficeConfirmOrder } from '@area-butler-types/on-office';
+import { IApiOnOfficeConfirmOrderReq } from '@area-butler-types/on-office';
 
-class ApiOnOfficeConfirmOrderDto implements IApiOnOfficeConfirmOrder {
+class ApiOnOfficeConfirmOrderReqDto implements IApiOnOfficeConfirmOrderReq {
   @IsNotEmpty()
   @IsString()
   url: string;
@@ -37,4 +37,4 @@ class ApiOnOfficeConfirmOrderDto implements IApiOnOfficeConfirmOrder {
   status: 'success';
 }
 
-export default ApiOnOfficeConfirmOrderDto;
+export default ApiOnOfficeConfirmOrderReqDto;

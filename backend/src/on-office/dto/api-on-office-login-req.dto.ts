@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { IApiOnOfficeRequestParams } from '@area-butler-types/on-office';
+import { IApiOnOfficeLoginReq } from '@area-butler-types/on-office';
 
-class ApiOnOfficeRequestParamsDto implements IApiOnOfficeRequestParams {
+class ApiOnOfficeLoginReqDto implements IApiOnOfficeLoginReq {
   @IsNotEmpty()
   @IsString()
   url: string;
@@ -40,4 +40,4 @@ class ApiOnOfficeRequestParamsDto implements IApiOnOfficeRequestParams {
   signature: string;
 }
 
-export default ApiOnOfficeRequestParamsDto;
+export default ApiOnOfficeLoginReqDto;

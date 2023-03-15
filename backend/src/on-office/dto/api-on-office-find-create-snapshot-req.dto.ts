@@ -1,10 +1,10 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { IApiOnOfficeFindCreateSnapshot } from '@area-butler-types/on-office';
+import { IApiOnOfficeFindCreateSnapshotReq } from '@area-butler-types/on-office';
 import { IntegrationTypesEnum } from '@area-butler-types/types';
 
-class ApiOnOfficeFindCreateSnapshotDto
-  implements IApiOnOfficeFindCreateSnapshot
+class ApiOnOfficeFindCreateSnapshotReqDto
+  implements IApiOnOfficeFindCreateSnapshotReq
 {
   @IsNotEmpty()
   @IsString()
@@ -19,4 +19,4 @@ class ApiOnOfficeFindCreateSnapshotDto
   integrationType: IntegrationTypesEnum;
 }
 
-export default ApiOnOfficeFindCreateSnapshotDto;
+export default ApiOnOfficeFindCreateSnapshotReqDto;

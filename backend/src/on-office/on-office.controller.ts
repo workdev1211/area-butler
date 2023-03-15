@@ -12,13 +12,16 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { OnOfficeService } from './on-office.service';
 import { activateUserPath } from '../shared/on-office.constants';
-import ApiOnOfficeUnlockProviderDto from './dto/api-on-office-unlock-provider.dto';
-import ApiOnOfficeRequestParamsDto from './dto/api-on-office-request-params.dto';
-import { IApiOnOfficeRenderData } from '@area-butler-types/on-office';
-import ApiOnOfficeCreateOrderDto from './dto/api-on-office-create-order.dto';
-import ApiOnOfficeConfirmOrderDto from './dto/api-on-office-confirm-order.dto';
+import ApiOnOfficeUnlockProviderReqDto from './dto/api-on-office-unlock-provider-req.dto';
+import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
+import {
+  IApiOnOfficeLoginRes,
+  IApiOnOfficeActivationRes,
+} from '@area-butler-types/on-office';
+import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
+import ApiOnOfficeConfirmOrderReqDto from './dto/api-on-office-confirm-order-req.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import ApiOnOfficeFindCreateSnapshotDto from './dto/api-on-office-find-create-snapshot.dto';
+import ApiOnOfficeFindCreateSnapshotReqDto from './dto/api-on-office-find-create-snapshot-req.dto';
 import { InjectIntegrationUserInterceptor } from './interceptor/inject-integration-user.interceptor';
 import { VerifyActivationSignatureInterceptor } from './interceptor/verify-activation-signature.interceptor';
 import { VerifySignatureInterceptor } from './interceptor/verify-signature.interceptor';
@@ -42,7 +45,7 @@ export class OnOfficeController {
     @Query('apiToken') token: string,
     @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
-  ): Promise<IApiOnOfficeRenderData> {
+  ): Promise<IApiOnOfficeActivationRes> {
     return this.onOfficeService.getRenderData({
       integrationUserId,
       token,
@@ -54,7 +57,7 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
   @Post(activateUserPath)
   async unlockProvider(
-    @Body() unlockProviderData: ApiOnOfficeUnlockProviderDto,
+    @Body() unlockProviderData: ApiOnOfficeUnlockProviderReqDto,
   ): Promise<string> {
     this.logger.debug(this.unlockProvider.name, unlockProviderData);
 
@@ -74,18 +77,17 @@ export class OnOfficeController {
   @UseInterceptors(VerifySignatureInterceptor)
   @Post('login')
   login(
-    @Body() onOfficeRequestParams: ApiOnOfficeRequestParamsDto,
-  ): Promise<any> {
-    this.logger.debug(this.login.name, onOfficeRequestParams);
-    // TODO add a type
-    return this.onOfficeService.login(onOfficeRequestParams);
+    @Body() loginData: ApiOnOfficeLoginReqDto,
+  ): Promise<IApiOnOfficeLoginRes> {
+    this.logger.debug(this.login.name, loginData);
+    return this.onOfficeService.login(loginData);
   }
 
   // TODO add a verification interceptor
   @ApiOperation({ description: 'Creates an order' })
   @Post('create-order')
   createOrder(
-    @Body() createOrderData: ApiOnOfficeCreateOrderDto,
+    @Body() createOrderData: ApiOnOfficeCreateOrderReqDto,
   ): Promise<any> {
     this.logger.debug(this.createOrder.name, createOrderData);
     return this.onOfficeService.createOrder(createOrderData);
@@ -94,7 +96,7 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Confirms an order' })
   @Post('confirm-order')
   confirmOrder(
-    @Body() confirmOrderData: ApiOnOfficeConfirmOrderDto,
+    @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
   ): Promise<any> {
     this.logger.debug(this.confirmOrder.name, confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData);
@@ -107,7 +109,7 @@ export class OnOfficeController {
   @Post('find-create-snapshot')
   async findOrCreateSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotDto,
+    @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse | any> {
     this.logger.debug(this.findOrCreateSnapshot.name, findOrCreateSnapshotData);
     return this.onOfficeService.test(findOrCreateSnapshotData, integrationUser);

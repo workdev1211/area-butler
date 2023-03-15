@@ -3,11 +3,11 @@ import { Type } from 'class-transformer';
 
 import {
   IApiOnOfficeCreateOrderProduct,
-  IApiOnOfficeCreateOrder,
+  IApiOnOfficeCreateOrderReq,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderProductDto from './api-on-office-create-order-product.dto';
 
-class ApiOnOfficeCreateOrderDto implements IApiOnOfficeCreateOrder {
+class ApiOnOfficeCreateOrderReqDto implements IApiOnOfficeCreateOrderReq {
   @IsNotEmpty()
   @IsString()
   parameterCacheId: string;
@@ -19,4 +19,4 @@ class ApiOnOfficeCreateOrderDto implements IApiOnOfficeCreateOrder {
   products: IApiOnOfficeCreateOrderProduct[];
 }
 
-export default ApiOnOfficeCreateOrderDto;
+export default ApiOnOfficeCreateOrderReqDto;

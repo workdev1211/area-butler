@@ -1,8 +1,8 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { IApiOnOfficeUnlockProvider } from '@area-butler-types/on-office';
+import { IApiOnOfficeUnlockProviderReq } from '@area-butler-types/on-office';
 
-class ApiOnOfficeUnlockProviderDto implements IApiOnOfficeUnlockProvider {
+class ApiOnOfficeUnlockProviderReqDto implements IApiOnOfficeUnlockProviderReq {
   @IsNotEmpty()
   @IsString()
   token: string;
@@ -20,4 +20,4 @@ class ApiOnOfficeUnlockProviderDto implements IApiOnOfficeUnlockProvider {
   extendedClaim: string;
 }
 
-export default ApiOnOfficeUnlockProviderDto;
+export default ApiOnOfficeUnlockProviderReqDto;

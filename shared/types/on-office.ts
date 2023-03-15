@@ -26,14 +26,14 @@ export type TPriceIds = {
   [key in PaymentSystemTypeEnum]?: IApiSubscriptionEnvIds;
 };
 
-export interface IApiOnOfficeUnlockProvider {
+export interface IApiOnOfficeUnlockProviderReq {
   token: string;
   secret: string;
   parameterCacheId: string;
   extendedClaim: string;
 }
 
-export interface IApiOnOfficeRenderData {
+export interface IApiOnOfficeActivationRes {
   providerData: string;
   scripts: Array<{ script: string }>;
 }
@@ -106,7 +106,7 @@ interface IApiOnOfficeResponseResultRecord {
   elements: Array<{ [key: string]: string }>;
 }
 
-export interface IApiOnOfficeRequestParams {
+export interface IApiOnOfficeLoginReq {
   url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
   apiClaim: string; // extendedClaim
   customerName: string;
@@ -120,12 +120,18 @@ export interface IApiOnOfficeRequestParams {
   imageIds?: string;
 }
 
-export interface IApiOnOfficeCreateOrder {
+export interface IApiOnOfficeLoginRes {
+  integrationUserId: string;
+  extendedClaim: string;
+  estateId: string;
+}
+
+export interface IApiOnOfficeCreateOrderReq {
   parameterCacheId: string;
   products: IApiOnOfficeCreateOrderProduct[];
 }
 
-export interface IApiOnOfficeConfirmOrder {
+export interface IApiOnOfficeConfirmOrderReq {
   url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
   extendedClaim?: string; // from OnOfficeContext
   timestamp: string;
@@ -141,7 +147,7 @@ export interface IApiOnOfficeCreateOrderProduct {
   quantity: number;
 }
 
-export interface IApiOnOfficeFindCreateSnapshot {
+export interface IApiOnOfficeFindCreateSnapshotReq {
   estateId: string;
   extendedClaim: string;
   integrationType: IntegrationTypesEnum;

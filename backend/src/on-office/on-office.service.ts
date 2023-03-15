@@ -13,14 +13,15 @@ import {
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
-  IApiOnOfficeConfirmOrder,
-  IApiOnOfficeCreateOrder,
-  IApiOnOfficeFindCreateSnapshot,
-  IApiOnOfficeRenderData,
+  IApiOnOfficeConfirmOrderReq,
+  IApiOnOfficeCreateOrderReq,
+  IApiOnOfficeFindCreateSnapshotReq,
+  IApiOnOfficeActivationRes,
   IApiOnOfficeRequest,
-  IApiOnOfficeRequestParams,
+  IApiOnOfficeLoginReq,
   IApiOnOfficeResponse,
-  IApiOnOfficeUnlockProvider,
+  IApiOnOfficeUnlockProviderReq,
+  IApiOnOfficeLoginRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -60,7 +61,7 @@ export class OnOfficeService {
     token: string;
     parameterCacheId: string;
     extendedClaim: string;
-  }): Promise<IApiOnOfficeRenderData> {
+  }): Promise<IApiOnOfficeActivationRes> {
     await this.integrationUserService.upsert(
       integrationUserId,
       this.integrationType,
@@ -85,7 +86,7 @@ export class OnOfficeService {
     secret: apiKey,
     parameterCacheId,
     extendedClaim,
-  }: IApiOnOfficeUnlockProvider): Promise<IApiOnOfficeResponse> {
+  }: IApiOnOfficeUnlockProviderReq): Promise<IApiOnOfficeResponse> {
     await this.integrationUserService.findOneAndUpdateParams(
       { 'parameters.extendedClaim': extendedClaim },
       this.integrationType,
@@ -126,7 +127,9 @@ export class OnOfficeService {
     return this.onOfficeApiService.sendRequest(request);
   }
 
-  async login(requestParams: IApiOnOfficeRequestParams): Promise<any> {
+  async login(
+    requestParams: IApiOnOfficeLoginReq,
+  ): Promise<IApiOnOfficeLoginRes> {
     const {
       userId: integrationUserId,
       apiClaim: extendedClaim,
@@ -140,14 +143,13 @@ export class OnOfficeService {
       { extendedClaim },
     );
 
-    // TODO add a type
     return { integrationUserId, extendedClaim, estateId };
   }
 
   async createOrder({
     parameterCacheId,
     products,
-  }: IApiOnOfficeCreateOrder): Promise<any> {
+  }: IApiOnOfficeCreateOrderReq): Promise<any> {
     let totalPrice = 0;
 
     const processedProducts = products.map(({ type, quantity }) => {
@@ -178,7 +180,9 @@ export class OnOfficeService {
     return initialOrderData;
   }
 
-  async confirmOrder(confirmOrderData: IApiOnOfficeConfirmOrder): Promise<any> {
+  async confirmOrder(
+    confirmOrderData: IApiOnOfficeConfirmOrderReq,
+  ): Promise<any> {
     const { extendedClaim, ...otherData } = confirmOrderData;
     this.verifySignature(otherData);
 
@@ -194,7 +198,7 @@ export class OnOfficeService {
   }
 
   async findOrCreateSnapshot(
-    { estateId }: IApiOnOfficeFindCreateSnapshot,
+    { estateId }: IApiOnOfficeFindCreateSnapshotReq,
     integrationType: IntegrationTypesEnum,
   ): Promise<ApiSearchResultSnapshotResponse> {
     // TODO add extract address call from OnOffice
@@ -230,7 +234,7 @@ export class OnOfficeService {
   }
 
   async test(
-    { estateId }: IApiOnOfficeFindCreateSnapshot,
+    { estateId }: IApiOnOfficeFindCreateSnapshotReq,
     integrationUser: TIntegrationUserDocument,
   ) {
     const {
@@ -269,13 +273,13 @@ export class OnOfficeService {
                 'laengengrad',
                 'nutzflaeche',
                 'gesamtflaeche',
-                'anzahl_zimmer',
+                'energyClass',
                 'kaufpreis',
-                'nettokaltmiete',
                 'kaltmiete',
                 'warmmiete',
-                'objektart',
-                'objekttyp',
+                'anzahl_zimmer',
+                'anzahl_balkone',
+                'unterkellert',
               ],
               extendedclaim: extendedClaim,
             },
@@ -304,7 +308,7 @@ export class OnOfficeService {
   }
 
   verifySignature(
-    requestParams: IApiOnOfficeRequestParams | IApiOnOfficeConfirmOrder,
+    requestParams: IApiOnOfficeLoginReq | IApiOnOfficeConfirmOrderReq,
   ): void {
     const { url: initialUrl, signature, ...queryParams } = requestParams;
     const sortedQueryParams = getOnOfficeSortedMapData(queryParams);
