@@ -22,10 +22,12 @@ export class VerifyOnOfficeActSignInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const res = context.switchToHttp().getResponse();
     const queryParams = { ...req.query };
-    queryParams.url = `https://${req.get('host')}${req.route.path}`;
 
     try {
-      this.onOfficeService.verifySignature(queryParams);
+      this.onOfficeService.verifySignature(
+        queryParams,
+        `https://${req.get('host')}${req.route.path}`,
+      );
     } catch {
       this.logger.debug(queryParams, req.query);
 

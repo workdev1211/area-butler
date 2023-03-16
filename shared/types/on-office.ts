@@ -1,7 +1,3 @@
-import {
-  IApiSubscriptionEnvIds,
-  PaymentSystemTypeEnum,
-} from "./subscription-plan";
 import { TApiIntUserAvailableProductContingents } from "./types";
 
 export enum OnOfficeProductTypesEnum {
@@ -102,8 +98,7 @@ interface IApiOnOfficeResponseResultRecord {
   elements: Array<{ [key: string]: string }>;
 }
 
-export interface IApiOnOfficeLoginReq {
-  url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
+export interface IApiOnOfficeLoginQueryParams {
   apiClaim: string; // extendedClaim
   customerName: string;
   customerWebId: string;
@@ -111,9 +106,14 @@ export interface IApiOnOfficeLoginReq {
   timestamp: string;
   userId: string;
   estateId: string;
-  groupId?: string;
   signature: string;
+  groupId?: string;
   imageIds?: string;
+}
+
+export interface IApiOnOfficeLoginReq {
+  url: string; // for passing to the backend - NestJs gets incorrect protocol from request object
+  onOfficeQueryParams: IApiOnOfficeLoginQueryParams;
 }
 
 export interface IApiOnOfficeLoginRes {
@@ -128,24 +128,20 @@ export interface IApiOnOfficeCreateOrderReq {
   extendedClaim: string;
 }
 
-interface IApiOnOfficeExtendedClaim {
-  extendedClaim: string; // from OnOfficeContext
-}
-
-interface IApiOnOfficeUrl {
-  url: string;
-}
-
-export interface IApiOnOfficeConfirmOrderReq
-  extends IApiOnOfficeUrl,
-    IApiOnOfficeExtendedClaim {
-  errorCodes?: string;
+export interface IApiOnOfficeConfirmOrderQueryParams {
   message: string;
   signature: string;
   status: ApiOnOfficeTransactionStatusesEnum;
   timestamp: string;
+  errorCodes?: string;
   transactionid?: string;
   referenceid?: string;
+}
+
+export interface IApiOnOfficeConfirmOrderReq {
+  url: string;
+  extendedClaim: string; // from localStorage
+  onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
 export interface IApiOnOfficeCreateOrderProduct {

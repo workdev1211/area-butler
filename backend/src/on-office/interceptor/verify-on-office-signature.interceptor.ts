@@ -20,13 +20,12 @@ export class VerifyOnOfficeSignatureInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
-    const requestParams = { ...req.body };
-    delete requestParams.extendedClaim;
+    const onOfficeQueryParams = { ...req.body.onOfficeQueryParams };
 
     try {
-      this.onOfficeService.verifySignature(requestParams);
+      this.onOfficeService.verifySignature(onOfficeQueryParams, req.body.url);
     } catch (e) {
-      this.logger.debug(requestParams, req.body);
+      this.logger.debug(onOfficeQueryParams, req.body);
       throw e;
     }
 

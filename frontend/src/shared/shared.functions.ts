@@ -737,3 +737,25 @@ export const setBackgroundColor = (
 
   node.style.setProperty("background", "#FFFFFF", "important");
 };
+
+export const getQueryParamsAndUrl = <T>():
+  | { queryParams: T; url: string }
+  | undefined => {
+  const currentUrl = window.location.href;
+  const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);
+
+  if (parsedUrl?.length !== 3) {
+    return;
+  }
+
+  return {
+    queryParams: parsedUrl[2].split("&").reduce((result, currentParam) => {
+      const keyValue = currentParam.split("=");
+      // @ts-ignore
+      result[keyValue[0]] = keyValue[1];
+
+      return result;
+    }, {} as T),
+    url: parsedUrl[1],
+  };
+};

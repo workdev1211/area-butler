@@ -22,6 +22,8 @@ import {
   IApiOnOfficeUnlockProviderReq,
   IApiOnOfficeLoginRes,
   IApiOnOfficeCreateOrderRes,
+  IApiOnOfficeLoginQueryParams,
+  IApiOnOfficeConfirmOrderQueryParams,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -138,10 +140,12 @@ export class OnOfficeService {
   }
 
   async login({
-    userId: integrationUserId,
-    apiClaim: extendedClaim,
-    estateId,
-    parameterCacheId,
+    onOfficeQueryParams: {
+      userId: integrationUserId,
+      apiClaim: extendedClaim,
+      estateId,
+      parameterCacheId,
+    },
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
     const integrationUser = await this.integrationUserService.findOneOrFail(
       { integrationUserId },
@@ -204,8 +208,13 @@ export class OnOfficeService {
     confirmOrderData: IApiOnOfficeConfirmOrderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<any> {
-    const { extendedClaim, ...otherData } = confirmOrderData;
-    this.logger.debug(this.confirmOrder.name, extendedClaim, otherData);
+    const { extendedClaim, onOfficeQueryParams } = confirmOrderData;
+
+    this.logger.debug(
+      this.confirmOrder.name,
+      extendedClaim,
+      onOfficeQueryParams,
+    );
 
     // TODO add products in the return
     // const {
@@ -331,12 +340,15 @@ export class OnOfficeService {
   }
 
   verifySignature(
-    requestParams: IApiOnOfficeLoginReq | IApiOnOfficeConfirmOrderReq,
+    queryParams:
+      | IApiOnOfficeLoginQueryParams
+      | IApiOnOfficeConfirmOrderQueryParams,
+    url: string,
   ): void {
-    const { url: initialUrl, signature, ...queryParams } = requestParams;
-    const sortedQueryParams = getOnOfficeSortedMapData(queryParams);
+    const { signature, ...otherParams } = queryParams;
+    const sortedQueryParams = getOnOfficeSortedMapData(otherParams);
     const testQueryString = buildOnOfficeQueryString(sortedQueryParams);
-    const testUrl = `${initialUrl}?${testQueryString}`;
+    const testUrl = `${url}?${testQueryString}`;
     const generatedSignature = this.generateSignature(testUrl);
 
     if (generatedSignature === signature) {

@@ -2,8 +2,14 @@ import { FunctionComponent, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useHttp } from "../../hooks/http";
-import { IApiOnOfficeConfirmOrderReq } from "../../../../shared/types/on-office";
-import { toastError } from "../../shared/shared.functions";
+import {
+  IApiOnOfficeConfirmOrderQueryParams,
+  IApiOnOfficeConfirmOrderReq,
+} from "../../../../shared/types/on-office";
+import {
+  getQueryParamsAndUrl,
+  toastError,
+} from "../../shared/shared.functions";
 import { LoadingMessage } from "../../OnOffice";
 import { OnOfficeContext } from "../../context/OnOfficeContext";
 
@@ -14,28 +20,22 @@ const ConfirmOrderPage: FunctionComponent = () => {
 
   useEffect(() => {
     const confirmOrder = async () => {
-      const currentUrl = window.location.href;
-      const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);
+      const queryParamsAndUrl =
+        getQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>();
 
-      console.log(1, "ConfirmOrderPage", parsedUrl);
-
-      if (parsedUrl?.length !== 3) {
+      if (!queryParamsAndUrl) {
         return;
       }
 
-      const confirmOrderData = parsedUrl[2]
-        .split("&")
-        .reduce((result, currentParam) => {
-          const keyValue = currentParam.split("=");
-          // @ts-ignore
-          result[keyValue[0]] = keyValue[1];
+      const confirmOrderData: IApiOnOfficeConfirmOrderReq = {
+        url: queryParamsAndUrl.url,
+        extendedClaim:
+          onOfficeContextState.extendedClaim! ||
+          localStorage.getItem("extendedClaim")!,
+        onOfficeQueryParams: queryParamsAndUrl.queryParams,
+      };
 
-          return result;
-        }, {} as IApiOnOfficeConfirmOrderReq);
-
-      confirmOrderData.url = parsedUrl[1];
-      confirmOrderData.extendedClaim = onOfficeContextState.extendedClaim! || localStorage.getItem('extendedClaim')!;
-      console.log(2, "ConfirmOrderPage", confirmOrderData);
+      console.log(1, "ConfirmOrderPage", confirmOrderData);
 
       try {
         // TODO add a type

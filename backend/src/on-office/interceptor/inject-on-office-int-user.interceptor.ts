@@ -21,18 +21,17 @@ export class InjectOnOfficeIntUserInterceptor implements NestInterceptor {
     next: CallHandler,
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
-    const { extendedClaim, apiClaim } = req.body;
-    const resultingClaim = extendedClaim || apiClaim;
+    const { extendedClaim } = req.body;
     let integrationUser;
 
-    if (resultingClaim) {
+    if (extendedClaim) {
       integrationUser = await this.onOfficeService.findIntUserByExtendedClaim(
-        resultingClaim,
+        extendedClaim,
       );
     }
 
     if (!integrationUser) {
-      this.logger.debug(resultingClaim, req.body);
+      this.logger.debug(extendedClaim, req.body);
       throw new HttpException('Unknown user!', 400);
     }
 

@@ -1,6 +1,16 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { IApiOnOfficeLoginReq } from '@area-butler-types/on-office';
+import {
+  IApiOnOfficeLoginQueryParams,
+  IApiOnOfficeLoginReq,
+} from '@area-butler-types/on-office';
+import ApiOnOfficeLoginQueryParamsDto from './api-on-office-login-query-params.dto';
 
 class ApiOnOfficeLoginReqDto implements IApiOnOfficeLoginReq {
   @IsNotEmpty()
@@ -8,36 +18,10 @@ class ApiOnOfficeLoginReqDto implements IApiOnOfficeLoginReq {
   url: string;
 
   @IsNotEmpty()
-  @IsString()
-  apiClaim: string;
-
-  @IsNotEmpty()
-  @IsString()
-  customerName: string;
-
-  @IsNotEmpty()
-  @IsString()
-  customerWebId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  parameterCacheId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  timestamp: string;
-
-  @IsNotEmpty()
-  @IsString()
-  userId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  estateId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  signature: string;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiOnOfficeLoginQueryParamsDto)
+  onOfficeQueryParams: IApiOnOfficeLoginQueryParams;
 }
 
 export default ApiOnOfficeLoginReqDto;

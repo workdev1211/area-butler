@@ -1,40 +1,18 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsObject,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
 import {
-  ApiOnOfficeTransactionStatusesEnum,
+  IApiOnOfficeConfirmOrderQueryParams,
   IApiOnOfficeConfirmOrderReq,
 } from '@area-butler-types/on-office';
+import ApiOnOfficeConfirmOrderQueryParamsDto from './api-on-office-confirm-order-query-params.dto';
 
 class ApiOnOfficeConfirmOrderReqDto implements IApiOnOfficeConfirmOrderReq {
-  @IsOptional()
-  @IsString()
-  errorCodes?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  message: string;
-
-  @IsNotEmpty()
-  @IsString()
-  signature: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsEnum(ApiOnOfficeTransactionStatusesEnum)
-  status: ApiOnOfficeTransactionStatusesEnum;
-
-  @IsNotEmpty()
-  @IsString()
-  timestamp: string;
-
-  @IsOptional()
-  @IsString()
-  transactionid?: string;
-
-  @IsOptional()
-  @IsString()
-  referenceid?: string;
-
   @IsNotEmpty()
   @IsString()
   url: string;
@@ -42,6 +20,12 @@ class ApiOnOfficeConfirmOrderReqDto implements IApiOnOfficeConfirmOrderReq {
   @IsNotEmpty()
   @IsString()
   extendedClaim: string;
+
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiOnOfficeConfirmOrderQueryParamsDto)
+  onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
 export default ApiOnOfficeConfirmOrderReqDto;

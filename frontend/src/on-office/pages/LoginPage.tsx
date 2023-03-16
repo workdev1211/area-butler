@@ -7,11 +7,15 @@ import {
   OnOfficeContextActionTypesEnum,
 } from "../../context/OnOfficeContext";
 import {
+  IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
   IApiOnOfficeLoginRes,
 } from "../../../../shared/types/on-office";
 import { LoadingMessage } from "../../OnOffice";
-import { toastError } from "../../shared/shared.functions";
+import {
+  getQueryParamsAndUrl,
+  toastError,
+} from "../../shared/shared.functions";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/types";
 
 const LoginPage: FunctionComponent = () => {
@@ -22,27 +26,19 @@ const LoginPage: FunctionComponent = () => {
 
   useEffect(() => {
     const login = async () => {
-      const currentUrl = window.location.href;
-      const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);
+      const queryParamsAndUrl =
+        getQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>();
 
-      console.log(1, "LoginPage", parsedUrl);
-
-      if (parsedUrl?.length !== 3) {
+      if (!queryParamsAndUrl) {
         return;
       }
 
-      const loginData = parsedUrl[2]
-        .split("&")
-        .reduce((result, currentParam) => {
-          const keyValue = currentParam.split("=");
-          // @ts-ignore
-          result[keyValue[0]] = keyValue[1];
+      const loginData: IApiOnOfficeLoginReq = {
+        url: queryParamsAndUrl.url,
+        onOfficeQueryParams: queryParamsAndUrl.queryParams,
+      };
 
-          return result;
-        }, {} as IApiOnOfficeLoginReq);
-
-      loginData.url = parsedUrl[1];
-      console.log(2, "LoginPage", loginData);
+      console.log(1, "LoginPage", loginData);
 
       try {
         const {
