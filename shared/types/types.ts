@@ -7,6 +7,7 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from "../constants/constants";
+import { OnOfficeProductTypesEnum } from "./on-office";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -469,14 +470,45 @@ export interface ISelectTextValue {
   value: string;
 }
 
-export interface IApiIntegrationUserOnOfficeParameters {
+export interface IApiIntUserOnOfficeParams {
+  parameterCacheId?: string;
   extendedClaim: string;
   apiKey?: string;
   token?: string;
 }
 
-export type TApiIntegrationUserParameters =
-  IApiIntegrationUserOnOfficeParameters;
+export enum ApiIntUserOnOfficeProdContTypesEnum {
+  OPEN_AI = "OPEN_AI",
+  MAP_IFRAME = "IFRAME",
+  ONE_PAGE = "ONE_PAGE",
+}
+
+export interface IApiIntUserOnOfficeConfig {
+  showProductPage?: boolean;
+}
+
+export type TApiIntUserUsageStatisticsMetrics = {
+  [year: number]: { [month: number]: { [date: number]: number } };
+};
+
+export interface IApiIntUserOnOfficeUsageStats {
+  [OnOfficeProductTypesEnum.MAP_SNAPSHOT]: TApiIntUserUsageStatisticsMetrics;
+}
+
+export type TApiIntUserOnOfficeProductContingents = Record<
+  ApiIntUserOnOfficeProdContTypesEnum,
+  Array<{ quantity: number; expiresAt: Date }>
+>;
+
+export type TApiIntUserOnOfficeProductsUsed = Record<
+  ApiIntUserOnOfficeProdContTypesEnum,
+  number
+>;
+
+export type TApiIntUserAvailableProductContingents = Record<
+  ApiIntUserOnOfficeProdContTypesEnum,
+  boolean
+>;
 
 export enum IntegrationTypesEnum {
   "ON_OFFICE" = "ON_OFFICE",
@@ -490,3 +522,10 @@ export interface IApiIntegrationParams {
   integrationId: string;
   integrationType: IntegrationTypesEnum;
 }
+
+export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;
+export type TApiIntegrationUserProductContingents =
+  TApiIntUserOnOfficeProductContingents;
+export type TApiIntegrationUserProductsUsed = TApiIntUserOnOfficeProductsUsed;
+export type TApiIntegrationUserConfig = IApiIntUserOnOfficeConfig;
+export type TApiIntegrationUserUsageStatistics = IApiIntUserOnOfficeUsageStats;

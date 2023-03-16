@@ -17,16 +17,17 @@ import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
   IApiOnOfficeLoginRes,
   IApiOnOfficeActivationRes,
+  IApiOnOfficeCreateOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
 import ApiOnOfficeConfirmOrderReqDto from './dto/api-on-office-confirm-order-req.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import ApiOnOfficeFindCreateSnapshotReqDto from './dto/api-on-office-find-create-snapshot-req.dto';
-import { InjectIntegrationUserInterceptor } from './interceptor/inject-integration-user.interceptor';
-import { VerifyActivationSignatureInterceptor } from './interceptor/verify-activation-signature.interceptor';
-import { VerifySignatureInterceptor } from './interceptor/verify-signature.interceptor';
 import { InjectUser } from '../user/inject-user.decorator';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
+import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
+import { InjectOnOfficeIntUserInterceptor } from './interceptor/inject-on-office-int-user.interceptor';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -37,7 +38,7 @@ export class OnOfficeController {
 
   // TODO think about uniting the OnOffice React module with the current controller using the React Router
   @ApiOperation({ description: 'Renders the activation iFrame' })
-  @UseInterceptors(VerifyActivationSignatureInterceptor)
+  @UseInterceptors(VerifyOnOfficeActSignInterceptor)
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
@@ -55,26 +56,22 @@ export class OnOfficeController {
   }
 
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
+  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
   @Post(activateUserPath)
   async unlockProvider(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderReqDto,
   ): Promise<string> {
     this.logger.debug(this.unlockProvider.name, unlockProviderData);
 
-    // TODO add signature verification
-    const response = await this.onOfficeService.unlockProvider(
+    return this.onOfficeService.unlockProvider(
       unlockProviderData,
+      integrationUser,
     );
-
-    return response?.status?.code === 200 &&
-      response?.status?.errorcode === 0 &&
-      response?.status?.message === 'OK'
-      ? 'active'
-      : 'error';
   }
 
   @ApiOperation({ description: 'Logs in the user' })
-  @UseInterceptors(VerifySignatureInterceptor)
+  @UseInterceptors(VerifyOnOfficeSignatureInterceptor)
   @Post('login')
   login(
     @Body() loginData: ApiOnOfficeLoginReqDto,
@@ -83,29 +80,35 @@ export class OnOfficeController {
     return this.onOfficeService.login(loginData);
   }
 
-  // TODO add a verification interceptor
   @ApiOperation({ description: 'Creates an order' })
+  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
   @Post('create-order')
   createOrder(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() createOrderData: ApiOnOfficeCreateOrderReqDto,
-  ): Promise<any> {
+  ): Promise<IApiOnOfficeCreateOrderRes> {
     this.logger.debug(this.createOrder.name, createOrderData);
-    return this.onOfficeService.createOrder(createOrderData);
+    return this.onOfficeService.createOrder(createOrderData, integrationUser);
   }
 
   @ApiOperation({ description: 'Confirms an order' })
+  @UseInterceptors(
+    VerifyOnOfficeSignatureInterceptor,
+    InjectOnOfficeIntUserInterceptor,
+  )
   @Post('confirm-order')
   confirmOrder(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
   ): Promise<any> {
     this.logger.debug(this.confirmOrder.name, confirmOrderData);
-    return this.onOfficeService.confirmOrder(confirmOrderData);
+    return this.onOfficeService.confirmOrder(confirmOrderData, integrationUser);
   }
 
   @ApiOperation({
     description: 'Fetches or creates a snapshot by real estate address',
   })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
   @Post('find-create-snapshot')
   async findOrCreateSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,

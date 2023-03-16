@@ -1,40 +1,47 @@
-import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { IApiOnOfficeConfirmOrderReq } from '@area-butler-types/on-office';
+import {
+  ApiOnOfficeTransactionStatusesEnum,
+  IApiOnOfficeConfirmOrderReq,
+} from '@area-butler-types/on-office';
 
 class ApiOnOfficeConfirmOrderReqDto implements IApiOnOfficeConfirmOrderReq {
+  @IsOptional()
+  @IsString()
+  errorCodes?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  message: string;
+
+  @IsNotEmpty()
+  @IsString()
+  signature: string;
+
+  @IsNotEmpty()
+  @IsString()
+  @IsEnum(ApiOnOfficeTransactionStatusesEnum)
+  status: ApiOnOfficeTransactionStatusesEnum;
+
+  @IsNotEmpty()
+  @IsString()
+  timestamp: string;
+
+  @IsOptional()
+  @IsString()
+  transactionid?: string;
+
+  @IsOptional()
+  @IsString()
+  referenceid?: string;
+
   @IsNotEmpty()
   @IsString()
   url: string;
 
   @IsNotEmpty()
   @IsString()
-  userId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  timestamp: string;
-
-  @IsNotEmpty()
-  @IsString()
-  signature: string;
-
-  @IsOptional()
-  @IsString()
-  message?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  referenceid: string;
-
-  @IsNotEmpty()
-  @IsString()
-  transactionid: string;
-
-  @IsNotEmpty()
-  @IsString()
-  @IsIn(['success'])
-  status: 'success';
+  extendedClaim: string;
 }
 
 export default ApiOnOfficeConfirmOrderReqDto;

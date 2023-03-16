@@ -9,14 +9,14 @@ import ApiOnOfficeCreateOrderProductDto from './api-on-office-create-order-produ
 
 class ApiOnOfficeCreateOrderReqDto implements IApiOnOfficeCreateOrderReq {
   @IsNotEmpty()
-  @IsString()
-  parameterCacheId: string;
-
-  @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ApiOnOfficeCreateOrderProductDto)
   products: IApiOnOfficeCreateOrderProduct[];
+
+  @IsNotEmpty()
+  @IsString()
+  extendedClaim: string;
 }
 
 export default ApiOnOfficeCreateOrderReqDto;

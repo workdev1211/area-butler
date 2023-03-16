@@ -1,15 +1,18 @@
 import { FunctionComponent, useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import DefaultLayout from "../../layout/defaultLayout";
 import { allOnOfficeProducts } from "../../../../shared/constants/on-office/products";
 import {
   IApiOnOfficeCreateOrderProduct,
-  IApiOnOfficeCreateOrder,
+  IApiOnOfficeCreateOrderReq,
+  IApiOnOfficeCreateOrderRes,
   OnOfficeProductTypesEnum,
 } from "../../../../shared/types/on-office";
 import { useHttp } from "../../hooks/http";
-import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
 import { OnOfficeContext } from "../../context/OnOfficeContext";
+import { toastError } from "../../shared/shared.functions";
+import ProductCard from "../components/ProductCard";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -21,53 +24,19 @@ const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
 
 export const ProductPage: FunctionComponent = () => {
   const { onOfficeContextState } = useContext(OnOfficeContext);
-
+  const history = useHistory();
   const { post } = useHttp();
+
   const [createOrderProducts, setCreateOrderProducts] = useState(
     initialCreateOrderProducts
   );
 
-  const ProductCard: FunctionComponent<{
-    className: string;
-    type: OnOfficeProductTypesEnum;
-    title: string;
-    description: string;
-    price: number;
-  }> = ({ className, type, title, description, price }) => {
-    return (
-      <div className={`card shadow-lg bg-gray-50 ${className}`}>
-        <div className="card-body items-center text-center">
-          <h2 className="card-title">{title}</h2>
-          <div>{description}</div>
-          <div className="card-actions items-center justify-between w-full">
-            <div className="flex items-center gap-2">
-              <div>Anz.</div>
-              <input
-                className="input input-bordered h-auto"
-                type="text"
-                placeholder="XX"
-                size={4}
-                maxLength={5}
-                value={createOrderProducts[type].quantity}
-                onChange={({ target: { value } }) => {
-                  if (!+value && value !== "") {
-                    return;
-                  }
-
-                  setCreateOrderProducts({
-                    ...createOrderProducts,
-                    [type]: { type, pricePerUnit: price, quantity: +value },
-                  });
-                }}
-              />
-            </div>
-            <div className="font-bold text-xl">
-              {convertPriceToHuman(price)}
-            </div>
-          </div>
-        </div>
-      </div>
+  const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
+    const foundProduct = Object.values(createOrderProducts).find(
+      ({ quantity }) => quantity > 0
     );
+
+    return foundProduct ? [foundProduct] : undefined;
   };
 
   return (
@@ -87,31 +56,57 @@ export const ProductPage: FunctionComponent = () => {
                 title={title}
                 description={description}
                 price={price}
+                products={createOrderProducts}
+                onChangeProducts={setCreateOrderProducts}
               />
             )
           )}
         </div>
-        <button
-          className="btn bg-primary-gradient absolute bottom-14 right-14 w-48"
-          onClick={async () => {
-            const response = (
-              await post<unknown, IApiOnOfficeCreateOrder>(
-                "/api/on-office/create-order",
-                {
-                  // parameterCacheId: onOfficeContextState.parameterCacheId!,
-                  parameterCacheId: onOfficeContextState.extendedClaim!,
-                  products: Object.values(createOrderProducts).filter(
-                    ({ quantity }) => quantity > 0
-                  ),
-                }
-              )
-            ).data;
+        <div className="flex justify-end gap-5 absolute bottom-14 right-14">
+          <button
+            className="btn w-48"
+            onClick={() => {
+              history.push("/map");
+            }}
+          >
+            Kostenlos nutzen
+          </button>
+          <button
+            className="btn bg-primary-gradient w-48"
+            onClick={async () => {
+              const products = getProducts();
 
-            window.parent.postMessage(JSON.stringify(response), "*");
-          }}
-        >
-          Besorgen
-        </button>
+              if (!products) {
+                toastError("Bitte geben Sie die Menge eines der Produkte an.");
+                return;
+              }
+
+              console.log(1, "ProductPage", onOfficeContextState.extendedClaim);
+
+              // TODO TEST DATA
+              products.push({
+                type: OnOfficeProductTypesEnum.MAP_IFRAME_50,
+                quantity: 1,
+              });
+
+              const response = (
+                await post<
+                  IApiOnOfficeCreateOrderRes,
+                  IApiOnOfficeCreateOrderReq
+                >("/api/on-office/create-order", {
+                  products,
+                  extendedClaim: onOfficeContextState.extendedClaim!,
+                })
+              ).data;
+
+              console.log(9, "ProductPage", response);
+
+              window.parent.postMessage(JSON.stringify(response), "*");
+            }}
+          >
+            Besorgen
+          </button>
+        </div>
       </div>
     </DefaultLayout>
   );

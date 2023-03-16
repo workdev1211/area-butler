@@ -1,9 +1,11 @@
 import { Dispatch, createContext, useReducer, FunctionComponent } from "react";
+import { TApiIntUserAvailableProductContingents } from "../../../shared/types/types";
 
 export interface IOnOfficeContextState {
   integrationUserId?: string;
   extendedClaim?: string;
   estateId?: string;
+  availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 
 export enum OnOfficeContextActionTypesEnum {

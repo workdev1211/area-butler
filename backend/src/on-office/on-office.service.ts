@@ -19,9 +19,9 @@ import {
   IApiOnOfficeActivationRes,
   IApiOnOfficeRequest,
   IApiOnOfficeLoginReq,
-  IApiOnOfficeResponse,
   IApiOnOfficeUnlockProviderReq,
   IApiOnOfficeLoginRes,
+  IApiOnOfficeCreateOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -33,6 +33,7 @@ import { UserService } from '../user/user.service';
 import { LocationService } from '../location/location.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { UserDocument } from '../user/schema/user.schema';
 
 @Injectable()
 export class OnOfficeService {
@@ -40,7 +41,7 @@ export class OnOfficeService {
   private readonly appUrl = configService.getBaseAppUrl();
   private readonly providerSecret = configService.getOnOfficeProviderSecret();
   private readonly integrationType = IntegrationTypesEnum.ON_OFFICE;
-  private readonly logger = new Logger(OnOfficeApiService.name);
+  private readonly logger = new Logger(OnOfficeService.name);
 
   constructor(
     private readonly onOfficeApiService: OnOfficeApiService,
@@ -81,17 +82,20 @@ export class OnOfficeService {
     };
   }
 
-  async unlockProvider({
-    token,
-    secret: apiKey,
-    parameterCacheId,
-    extendedClaim,
-  }: IApiOnOfficeUnlockProviderReq): Promise<IApiOnOfficeResponse> {
-    await this.integrationUserService.findOneAndUpdateParams(
-      { 'parameters.extendedClaim': extendedClaim },
-      this.integrationType,
-      { token, apiKey, extendedClaim },
-    );
+  async unlockProvider(
+    {
+      token,
+      secret: apiKey,
+      parameterCacheId,
+      extendedClaim,
+    }: IApiOnOfficeUnlockProviderReq,
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<string> {
+    await this.integrationUserService.updateParams(integrationUser, {
+      token,
+      apiKey,
+      extendedClaim,
+    });
 
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
@@ -124,32 +128,48 @@ export class OnOfficeService {
       },
     };
 
-    return this.onOfficeApiService.sendRequest(request);
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    return response?.status?.code === 200 &&
+      response?.status?.errorcode === 0 &&
+      response?.status?.message === 'OK'
+      ? 'active'
+      : 'error';
   }
 
-  async login(
-    requestParams: IApiOnOfficeLoginReq,
-  ): Promise<IApiOnOfficeLoginRes> {
-    const {
-      userId: integrationUserId,
-      apiClaim: extendedClaim,
-      estateId,
-    } = requestParams;
-
-    // TODO return user products
-    await this.integrationUserService.findOneAndUpdateParams(
+  async login({
+    userId: integrationUserId,
+    apiClaim: extendedClaim,
+    estateId,
+    parameterCacheId,
+  }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
+    const integrationUser = await this.integrationUserService.findOneOrFail(
       { integrationUserId },
       this.integrationType,
-      { extendedClaim },
     );
 
-    return { integrationUserId, extendedClaim, estateId };
+    await this.integrationUserService.updateParams(integrationUser, {
+      extendedClaim,
+      parameterCacheId,
+    });
+
+    const availableProductContingents =
+      this.integrationUserService.getAvailableProductContingents(
+        integrationUser,
+      );
+
+    return {
+      integrationUserId,
+      extendedClaim,
+      estateId,
+      availableProductContingents,
+    };
   }
 
-  async createOrder({
-    parameterCacheId,
-    products,
-  }: IApiOnOfficeCreateOrderReq): Promise<any> {
+  async createOrder(
+    { products }: IApiOnOfficeCreateOrderReq,
+    { parameters: { parameterCacheId } }: TIntegrationUserDocument,
+  ): Promise<IApiOnOfficeCreateOrderRes> {
     let totalPrice = 0;
 
     const processedProducts = products.map(({ type, quantity }) => {
@@ -164,14 +184,13 @@ export class OnOfficeService {
       };
     });
 
-    // TODO add a type
-    const initialOrderData: any = {
-      callbackurl: `${this.appUrl}/on-office/map`,
+    const initialOrderData = {
+      callbackurl: `${this.appUrl}/on-office/confirm-order`,
       parametercacheid: parameterCacheId,
       products: processedProducts,
       totalprice: totalPrice.toFixed(2),
       timestamp: dayjs().unix(),
-    };
+    } as IApiOnOfficeCreateOrderRes;
 
     const sortedOrderData = getOnOfficeSortedMapData(initialOrderData);
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
@@ -180,11 +199,13 @@ export class OnOfficeService {
     return initialOrderData;
   }
 
+  // TODO add a type
   async confirmOrder(
     confirmOrderData: IApiOnOfficeConfirmOrderReq,
+    integrationUser: TIntegrationUserDocument,
   ): Promise<any> {
     const { extendedClaim, ...otherData } = confirmOrderData;
-    this.verifySignature(otherData);
+    this.logger.debug(this.confirmOrder.name, extendedClaim, otherData);
 
     // TODO add products in the return
     // const {
@@ -205,12 +226,14 @@ export class OnOfficeService {
     const address = 'Schadowstraße 55, Düsseldorf';
     const extendedClaim = '21';
 
-    const { userId } = await this.integrationUserService.findOneOrFail(
-      {},
-      integrationType,
-    );
+    // const { userId } = await this.integrationUserService.findOneOrFail(
+    //   {},
+    //   integrationType,
+    // );
+    //
+    // const user = await this.userService.findByIdWithSubscription(userId);
 
-    const user = await this.userService.findByIdWithSubscription(userId);
+    const user = {} as UserDocument;
 
     try {
       return mapSnapshotToEmbeddableMap(
@@ -328,5 +351,14 @@ export class OnOfficeService {
     );
 
     throw new HttpException('Request verification failed!', 400);
+  }
+
+  findIntUserByExtendedClaim(
+    extendedClaim: string,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserService.findOneOrFail(
+      { 'parameters.extendedClaim': extendedClaim },
+      this.integrationType,
+    );
   }
 }

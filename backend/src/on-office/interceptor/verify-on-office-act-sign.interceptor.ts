@@ -3,13 +3,16 @@ import {
   NestInterceptor,
   ExecutionContext,
   CallHandler,
+  Logger,
 } from '@nestjs/common';
 import { Observable, scheduled, asyncScheduler } from 'rxjs';
 
 import { OnOfficeService } from '../on-office.service';
 
 @Injectable()
-export class VerifyActivationSignatureInterceptor implements NestInterceptor {
+export class VerifyOnOfficeActSignInterceptor implements NestInterceptor {
+  private readonly logger = new Logger(VerifyOnOfficeActSignInterceptor.name);
+
   constructor(private readonly onOfficeService: OnOfficeService) {}
 
   async intercept(
@@ -24,6 +27,8 @@ export class VerifyActivationSignatureInterceptor implements NestInterceptor {
     try {
       this.onOfficeService.verifySignature(queryParams);
     } catch {
+      this.logger.debug(queryParams, req.query);
+
       return scheduled(
         [res.render('on-office/activation-iframe-wrong-signature')],
         asyncScheduler,

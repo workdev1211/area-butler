@@ -2,7 +2,7 @@ import {
   IApiSubscriptionEnvIds,
   PaymentSystemTypeEnum,
 } from "./subscription-plan";
-import { IntegrationTypesEnum } from "./types";
+import { TApiIntUserAvailableProductContingents } from "./types";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -19,12 +19,7 @@ export interface IOnOfficeProduct {
   description: string;
   type: OnOfficeProductTypesEnum;
   price: number;
-  priceIds: any;
 }
-
-export type TPriceIds = {
-  [key in PaymentSystemTypeEnum]?: IApiSubscriptionEnvIds;
-};
 
 export interface IApiOnOfficeUnlockProviderReq {
   token: string;
@@ -55,6 +50,7 @@ export enum ApiOnOfficeActionIdsEnum {
 export enum ApiOnOfficeResourceTypesEnum {
   "UNLOCK_PROVIDER" = "unlockProvider",
   "ESTATE" = "estate",
+  "FIELDS" = "fields", // field description - get all info about entity fields ("address", "estate", etc)
 }
 
 interface IApiOnOfficeRequestAction {
@@ -124,22 +120,32 @@ export interface IApiOnOfficeLoginRes {
   integrationUserId: string;
   extendedClaim: string;
   estateId: string;
+  availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 
 export interface IApiOnOfficeCreateOrderReq {
-  parameterCacheId: string;
   products: IApiOnOfficeCreateOrderProduct[];
+  extendedClaim: string;
 }
 
-export interface IApiOnOfficeConfirmOrderReq {
-  url?: string; // for passing to the backend - NestJs gets incorrect protocol from request object
-  extendedClaim?: string; // from OnOfficeContext
-  timestamp: string;
+interface IApiOnOfficeExtendedClaim {
+  extendedClaim: string; // from OnOfficeContext
+}
+
+interface IApiOnOfficeUrl {
+  url: string;
+}
+
+export interface IApiOnOfficeConfirmOrderReq
+  extends IApiOnOfficeUrl,
+    IApiOnOfficeExtendedClaim {
+  errorCodes?: string;
+  message: string;
   signature: string;
-  message?: string;
-  referenceid: string;
-  transactionid: string;
-  status: "success";
+  status: ApiOnOfficeTransactionStatusesEnum;
+  timestamp: string;
+  transactionid?: string;
+  referenceid?: string;
 }
 
 export interface IApiOnOfficeCreateOrderProduct {
@@ -150,5 +156,19 @@ export interface IApiOnOfficeCreateOrderProduct {
 export interface IApiOnOfficeFindCreateSnapshotReq {
   estateId: string;
   extendedClaim: string;
-  integrationType: IntegrationTypesEnum;
+}
+
+export interface IApiOnOfficeCreateOrderRes {
+  callbackurl: string;
+  parametercacheid: string;
+  products: any[];
+  totalprice: string;
+  timestamp: number;
+  signature: string;
+}
+
+export enum ApiOnOfficeTransactionStatusesEnum {
+  "SUCCESS" = "success",
+  "INPROCESS" = "inprocess", // inprocess is SEPA specific status
+  "ERROR" = "error",
 }

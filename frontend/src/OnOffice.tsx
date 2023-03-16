@@ -30,6 +30,7 @@ const ProductPage = lazy(() => import("./on-office/pages/ProductPage"));
 const ConfirmOrderPage = lazy(
   () => import("./on-office/pages/ConfirmOrderPage")
 );
+const OpenAiPage = lazy(() => import("./on-office/pages/OpenAiPage"));
 
 render(
   <StrictMode>
@@ -50,14 +51,14 @@ render(
           <SearchContextProvider>
             <Switch>
               <Route path="/open-ai">
-                <OnOfficeContainer />
+                <OpenAiPage />
               </Route>
               <Route path="/confirm-order">
                 <ConfirmOrderPage />
               </Route>
-              {/*<Route path="/map">*/}
-              {/*  <OnOfficeContainer />*/}
-              {/*</Route>*/}
+              <Route path="/map">
+                <OnOfficeContainer />
+              </Route>
               <Route path="/products">
                 <ProductPage />
               </Route>

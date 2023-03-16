@@ -1,13 +1,16 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useContext, useEffect } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useHttp } from "../../hooks/http";
-import { IApiOnOfficeConfirmOrder } from "../../../../shared/types/on-office";
+import { IApiOnOfficeConfirmOrderReq } from "../../../../shared/types/on-office";
 import { toastError } from "../../shared/shared.functions";
+import { LoadingMessage } from "../../OnOffice";
+import { OnOfficeContext } from "../../context/OnOfficeContext";
 
 const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();
   const history = useHistory();
+  const { onOfficeContextState } = useContext(OnOfficeContext);
 
   useEffect(() => {
     const confirmOrder = async () => {
@@ -20,7 +23,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
         return;
       }
 
-      const onOfficeRequestParams = parsedUrl[2]
+      const confirmOrderData = parsedUrl[2]
         .split("&")
         .reduce((result, currentParam) => {
           const keyValue = currentParam.split("=");
@@ -28,18 +31,21 @@ const ConfirmOrderPage: FunctionComponent = () => {
           result[keyValue[0]] = keyValue[1];
 
           return result;
-        }, {} as IApiOnOfficeConfirmOrder);
+        }, {} as IApiOnOfficeConfirmOrderReq);
 
-      onOfficeRequestParams.url = parsedUrl[1];
+      confirmOrderData.url = parsedUrl[1];
+      confirmOrderData.extendedClaim = onOfficeContextState.extendedClaim! || localStorage.getItem('extendedClaim')!;
+      console.log(2, "ConfirmOrderPage", confirmOrderData);
 
       try {
+        // TODO add a type
         const response = (
-          await post<any>("/api/on-office/confirm-order", onOfficeRequestParams)
+          await post<any>("/api/on-office/confirm-order", confirmOrderData)
         ).data;
 
-        // update user products in context
+        // TODO update user products in context
         console.log(9, "ConfirmOrderPage", response);
-        history.push("/map");
+        // history.push("/map");
       } catch (e: any) {
         toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", e);
@@ -50,7 +56,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <div>Loading...</div>;
+  return <LoadingMessage />;
 };
 
 export default ConfirmOrderPage;

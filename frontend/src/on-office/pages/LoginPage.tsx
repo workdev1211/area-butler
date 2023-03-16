@@ -6,9 +6,13 @@ import {
   OnOfficeContext,
   OnOfficeContextActionTypesEnum,
 } from "../../context/OnOfficeContext";
-import { IApiOnOfficeRequestParams } from "../../../../shared/types/on-office";
+import {
+  IApiOnOfficeLoginReq,
+  IApiOnOfficeLoginRes,
+} from "../../../../shared/types/on-office";
 import { LoadingMessage } from "../../OnOffice";
 import { toastError } from "../../shared/shared.functions";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/types";
 
 const LoginPage: FunctionComponent = () => {
   const history = useHistory();
@@ -27,7 +31,7 @@ const LoginPage: FunctionComponent = () => {
         return;
       }
 
-      const onOfficeRequestParams = parsedUrl[2]
+      const loginData = parsedUrl[2]
         .split("&")
         .reduce((result, currentParam) => {
           const keyValue = currentParam.split("=");
@@ -35,27 +39,55 @@ const LoginPage: FunctionComponent = () => {
           result[keyValue[0]] = keyValue[1];
 
           return result;
-        }, {} as IApiOnOfficeRequestParams);
+        }, {} as IApiOnOfficeLoginReq);
 
-      onOfficeRequestParams.url = parsedUrl[1];
-      console.log(2, "LoginPage", onOfficeRequestParams);
+      loginData.url = parsedUrl[1];
+      console.log(2, "LoginPage", loginData);
 
       try {
-        // TODO add a type
-        const response = (
-          await post<any>("/api/on-office/login", onOfficeRequestParams)
+        const {
+          integrationUserId,
+          extendedClaim,
+          estateId,
+          availableProductContingents,
+        } = (
+          await post<IApiOnOfficeLoginRes>("/api/on-office/login", loginData)
         ).data;
+
+        console.log(
+          9,
+          "LoginPage",
+          integrationUserId,
+          extendedClaim,
+          estateId,
+          availableProductContingents
+        );
 
         onOfficeContextDispatch({
           type: OnOfficeContextActionTypesEnum.SET_STATE,
           payload: {
-            integrationUserId: response.integrationUserId,
-            extendedClaim: response.extendedClaim,
-            estateId: response.estateId,
+            integrationUserId,
+            extendedClaim,
+            estateId,
+            availableProductContingents,
           },
         });
 
-        history.push("/open-ai");
+        const hasProductContingent =
+          availableProductContingents &&
+          Object.keys(availableProductContingents).some(
+            (contingentName) =>
+              availableProductContingents[
+                contingentName as ApiIntUserOnOfficeProdContTypesEnum
+              ]
+          );
+
+        if (hasProductContingent) {
+          history.push("/open-ai");
+          return;
+        }
+
+        history.push("/products");
       } catch (e: any) {
         setIsSignatureNotCorrect(true);
         toastError("Ein Fehler ist aufgetreten!");

@@ -5,19 +5,18 @@ import { FilterQuery, Model } from 'mongoose';
 import {
   IntegrationTypesEnum,
   TApiIntegrationUserParameters,
+  TApiIntUserAvailableProductContingents,
 } from '@area-butler-types/types';
 import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from './schema/integration-user.schema';
-import { UserService } from './user.service';
 
 @Injectable()
 export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
-    private readonly integrationUserModel: Model<TIntegrationUserDocument>,
-    private readonly userService: UserService,
+    private readonly integrationUserModel: Model<TIntegrationUserDocument>, // private readonly userService: UserService,
   ) {}
 
   async upsert(
@@ -34,14 +33,8 @@ export class IntegrationUserService {
       return this.updateParams(existingUser, parameters);
     }
 
-    // TODO add correct email
-    const { _id: userId } = await this.userService.upsertUserForIntegration(
-      'test@test.test',
-    );
-
     return new this.integrationUserModel({
       integrationUserId,
-      userId,
       integrationType,
       parameters,
     }).save();
@@ -63,41 +56,44 @@ export class IntegrationUserService {
     return existingUser;
   }
 
-  async findOneOrFailByExtendedClaim(
-    extendedClaim: string,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne({
-      'parameters.extendedClaim': extendedClaim,
-      integrationType,
-    });
-
-    if (!existingUser) {
-      throw new HttpException('Unknown user!', 400);
-    }
-
-    return existingUser;
-  }
-
-  private async updateParams(
-    user: TIntegrationUserDocument,
+  async updateParams(
+    integrationUser: TIntegrationUserDocument,
     parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
-    user.parameters =
-      typeof user.parameters === 'object'
-        ? { ...user.parameters, ...parameters }
+    integrationUser.parameters =
+      typeof integrationUser.parameters === 'object'
+        ? { ...integrationUser.parameters, ...parameters }
         : { ...parameters };
 
-    return user.save();
+    return integrationUser.save();
   }
 
-  async findOneAndUpdateParams(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
-    integrationType: IntegrationTypesEnum,
-    parameters: TApiIntegrationUserParameters,
-  ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.findOneOrFail(findQuery, integrationType);
+  getAvailableProductContingents({
+    productContingents,
+    productsUsed,
+  }: TIntegrationUserDocument): TApiIntUserAvailableProductContingents {
+    const nowDate = new Date();
 
-    return this.updateParams(existingUser, parameters);
+    return (
+      productContingents &&
+      Object.keys(productContingents).reduce((result, contingentName) => {
+        const availableQuantity = productContingents[contingentName].reduce(
+          (result, { quantity, expiresAt }) => {
+            if (nowDate < expiresAt) {
+              result += quantity;
+            }
+
+            return result;
+          },
+          0,
+        );
+
+        if (availableQuantity > productsUsed[contingentName]) {
+          result[contingentName] = true;
+        }
+
+        return result;
+      }, {} as TApiIntUserAvailableProductContingents)
+    );
   }
 }

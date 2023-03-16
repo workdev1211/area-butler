@@ -3,14 +3,18 @@ import { Document } from 'mongoose';
 
 import {
   IntegrationTypesEnum,
+  TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
+  TApiIntegrationUserProductContingents,
+  TApiIntegrationUserProductsUsed,
+  TApiIntegrationUserUsageStatistics,
 } from '@area-butler-types/types';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
 @Schema()
 export class IntegrationUser {
-  @Prop({ required: true })
+  @Prop({ required: true, type: String })
   integrationUserId: string;
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
@@ -19,11 +23,20 @@ export class IntegrationUser {
   @Prop({ type: Object })
   parameters: TApiIntegrationUserParameters;
 
-  @Prop()
+  @Prop({ type: Object })
+  config: TApiIntegrationUserConfig;
+
+  @Prop({ type: String })
   userId: string;
 
-  @Prop({ type: Date })
-  consentGiven: Date;
+  @Prop({ type: Object })
+  productsUsed: TApiIntegrationUserProductsUsed;
+
+  @Prop({ type: Object })
+  productContingents: TApiIntegrationUserProductContingents;
+
+  @Prop({ type: Object })
+  usageStatistics: TApiIntegrationUserUsageStatistics;
 
   @Prop({ type: Date, default: Date.now })
   createdAt: Date;

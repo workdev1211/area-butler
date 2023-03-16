@@ -95,6 +95,7 @@ export const getOnOfficeSortedMapData = (data: unknown): unknown => {
 };
 
 export const buildOnOfficeQueryString = (data: any): string => {
+  // ".replace(/%2B/g, "+")" hack is needed because of the OnOffice query string decoding
   let queryString = "";
 
   for (const [key, value] of data) {
@@ -112,7 +113,7 @@ export const buildOnOfficeQueryString = (data: any): string => {
         queryString += queryString ? "&" : "";
         queryString += `${encodeURIComponent(
           `${key}[${i}]`
-        )}=${encodeURIComponent(valueElement)}`;
+        )}=${encodeURIComponent(valueElement).replace(/%2B/g, "+")}`;
 
         return true;
       });
@@ -134,14 +135,17 @@ export const buildOnOfficeQueryString = (data: any): string => {
         queryString += queryString ? "&" : "";
         queryString += `${encodeURIComponent(
           `${key}[${valueKey}]`
-        )}=${encodeURIComponent(value.get(valueKey))}`;
+        )}=${encodeURIComponent(value.get(valueKey)).replace(/%2B/g, "+")}`;
       }
 
       continue;
     }
 
     queryString += queryString ? "&" : "";
-    queryString += `${new URLSearchParams([[key, value]])}`;
+    queryString += `${new URLSearchParams([[key, value]])}`.replace(
+      /%2B/g,
+      "+"
+    );
   }
 
   return queryString;
