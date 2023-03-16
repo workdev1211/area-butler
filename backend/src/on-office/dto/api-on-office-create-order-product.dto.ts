@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
+import {
+  IsEnum,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import {
   IApiOnOfficeCreateOrderProduct,
@@ -8,6 +14,10 @@ import {
 class ApiOnOfficeCreateOrderProductDto
   implements IApiOnOfficeCreateOrderProduct
 {
+  @IsOptional()
+  @IsString()
+  id?: string;
+
   @IsNotEmpty()
   @IsEnum(OnOfficeProductTypesEnum)
   type: OnOfficeProductTypesEnum;

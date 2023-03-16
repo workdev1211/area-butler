@@ -1,11 +1,14 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
+import * as dayjs from 'dayjs';
 
 import {
   IntegrationTypesEnum,
   TApiIntegrationUserParameters,
+  TApiIntegrationUserProduct,
   TApiIntUserAvailableProductContingents,
+  TApiIntUserOnOfficeProductContingents,
 } from '@area-butler-types/types';
 import {
   IntegrationUser,
@@ -68,18 +71,39 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
+  async addProduct(
+    integrationUser: TIntegrationUserDocument,
+    product: TApiIntegrationUserProduct,
+  ): Promise<TIntegrationUserDocument> {
+    if (!integrationUser.productContingents) {
+      integrationUser.productContingents =
+        {} as TApiIntUserOnOfficeProductContingents;
+    }
+
+    if (!integrationUser.productContingents[product.type]) {
+      integrationUser.productContingents[product.type] = [];
+    }
+
+    integrationUser.productContingents[product.type].push({
+      quantity: product.quantity,
+      expiresAt: dayjs().add(1, 'year').toDate(),
+    });
+
+    return integrationUser.save();
+  }
+
   getAvailableProductContingents({
     productContingents,
     productsUsed,
   }: TIntegrationUserDocument): TApiIntUserAvailableProductContingents {
-    const nowDate = new Date();
+    const nowDate = dayjs();
 
     return (
       productContingents &&
       Object.keys(productContingents).reduce((result, contingentName) => {
         const availableQuantity = productContingents[contingentName].reduce(
           (result, { quantity, expiresAt }) => {
-            if (nowDate < expiresAt) {
+            if (nowDate < dayjs(expiresAt)) {
               result += quantity;
             }
 
@@ -88,7 +112,10 @@ export class IntegrationUserService {
           0,
         );
 
-        if (availableQuantity > productsUsed[contingentName]) {
+        if (
+          availableQuantity >
+          (productsUsed ? productsUsed[contingentName] || 0 : 0)
+        ) {
           result[contingentName] = true;
         }
 

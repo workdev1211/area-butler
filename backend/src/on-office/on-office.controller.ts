@@ -18,6 +18,7 @@ import {
   IApiOnOfficeLoginRes,
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
+  IApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
 import ApiOnOfficeConfirmOrderReqDto from './dto/api-on-office-confirm-order-req.dto';
@@ -100,7 +101,7 @@ export class OnOfficeController {
   confirmOrder(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
-  ): Promise<any> {
+  ): Promise<IApiOnOfficeConfirmOrderRes> {
     this.logger.debug(this.confirmOrder.name, confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData, integrationUser);
   }

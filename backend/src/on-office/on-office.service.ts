@@ -1,4 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { createHmac } from 'crypto';
 
@@ -24,6 +26,9 @@ import {
   IApiOnOfficeCreateOrderRes,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeConfirmOrderQueryParams,
+  ApiOnOfficeTransactionStatusesEnum,
+  IApiOnOfficeConfirmOrderRes,
+  IApiOnOfficeOrderData,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -36,6 +41,10 @@ import { LocationService } from '../location/location.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { UserDocument } from '../user/schema/user.schema';
+import {
+  OnOfficeTransaction,
+  TOnOfficeTransactionDocument,
+} from './schema/on-office-transaction.schema';
 
 @Injectable()
 export class OnOfficeService {
@@ -46,6 +55,8 @@ export class OnOfficeService {
   private readonly logger = new Logger(OnOfficeService.name);
 
   constructor(
+    @InjectModel(OnOfficeTransaction.name)
+    private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly userService: UserService,
@@ -172,8 +183,24 @@ export class OnOfficeService {
 
   async createOrder(
     { products }: IApiOnOfficeCreateOrderReq,
-    { parameters: { parameterCacheId } }: TIntegrationUserDocument,
+    {
+      integrationUserId,
+      parameters: { parameterCacheId },
+    }: TIntegrationUserDocument,
   ): Promise<IApiOnOfficeCreateOrderRes> {
+    const savedProducts = await Promise.all(
+      products.map(async (product) => {
+        const { _id: id } = await new this.onOfficeTransactionModel({
+          integrationUserId,
+          product,
+        }).save();
+
+        product.id = id;
+
+        return product;
+      }),
+    );
+
     let totalPrice = 0;
 
     const processedProducts = products.map(({ type, quantity }) => {
@@ -188,43 +215,67 @@ export class OnOfficeService {
       };
     });
 
-    const initialOrderData = {
+    const onOfficeOrderData = {
       callbackurl: `${this.appUrl}/on-office/confirm-order`,
       parametercacheid: parameterCacheId,
       products: processedProducts,
       totalprice: totalPrice.toFixed(2),
       timestamp: dayjs().unix(),
-    } as IApiOnOfficeCreateOrderRes;
+    } as IApiOnOfficeOrderData;
 
-    const sortedOrderData = getOnOfficeSortedMapData(initialOrderData);
+    const sortedOrderData = getOnOfficeSortedMapData(onOfficeOrderData);
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
-    initialOrderData.signature = this.generateSignature(orderQueryString);
+    onOfficeOrderData.signature = this.generateSignature(orderQueryString);
 
-    return initialOrderData;
+    return { onOfficeOrderData, products: savedProducts };
   }
 
   // TODO add a type
   async confirmOrder(
     confirmOrderData: IApiOnOfficeConfirmOrderReq,
     integrationUser: TIntegrationUserDocument,
-  ): Promise<any> {
-    const { extendedClaim, onOfficeQueryParams } = confirmOrderData;
+  ): Promise<IApiOnOfficeConfirmOrderRes> {
+    const { extendedClaim, product, onOfficeQueryParams } = confirmOrderData;
 
     this.logger.debug(
       this.confirmOrder.name,
       extendedClaim,
+      product,
       onOfficeQueryParams,
     );
 
-    // TODO add products in the return
-    // const {
-    //   parameters: { apiKey },
-    // } = await this.integrationUserService.findUser(
-    //   integrationUserId,
-    //   ApiUserIntegrationTypesEnum.ON_OFFICE,
-    // );
+    switch (onOfficeQueryParams.status) {
+      case ApiOnOfficeTransactionStatusesEnum.INPROCESS:
+      case ApiOnOfficeTransactionStatusesEnum.SUCCESS: {
+        this.logger.debug(1, JSON.parse(JSON.stringify(integrationUser)));
 
-    return;
+        await this.onOfficeTransactionModel.updateOne(
+          { _id: product.id },
+          {
+            transactionId: onOfficeQueryParams.transactionid,
+            referenceId: onOfficeQueryParams.referenceid,
+            status: onOfficeQueryParams.status,
+          },
+        );
+
+        await this.integrationUserService.addProduct(integrationUser, product);
+
+        this.logger.debug(2, JSON.parse(JSON.stringify(integrationUser)));
+
+        return {
+          availableProductContingents:
+            await this.integrationUserService.getAvailableProductContingents(
+              integrationUser,
+            ),
+        };
+      }
+
+      case ApiOnOfficeTransactionStatusesEnum.ERROR:
+      default: {
+        await this.onOfficeTransactionModel.deleteOne({ _id: product.id });
+        return { message: onOfficeQueryParams.message.replace(/\+/g, ' ') };
+      }
+    }
   }
 
   async findOrCreateSnapshot(

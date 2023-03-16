@@ -12,7 +12,7 @@ import {
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
-@Schema()
+@Schema({ timestamps: true })
 export class IntegrationUser {
   @Prop({ required: true, type: String })
   integrationUserId: string;
@@ -37,9 +37,6 @@ export class IntegrationUser {
 
   @Prop({ type: Object })
   usageStatistics: TApiIntegrationUserUsageStatistics;
-
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
 }
 
 export const IntegrationUserSchema =

@@ -124,12 +124,12 @@ export interface IApiOnOfficeLoginRes {
 }
 
 export interface IApiOnOfficeCreateOrderReq {
-  products: IApiOnOfficeCreateOrderProduct[];
   extendedClaim: string;
+  products: IApiOnOfficeCreateOrderProduct[];
 }
 
 export interface IApiOnOfficeConfirmOrderQueryParams {
-  message: string;
+  message?: string;
   signature: string;
   status: ApiOnOfficeTransactionStatusesEnum;
   timestamp: string;
@@ -141,10 +141,17 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
   extendedClaim: string; // from localStorage
+  product: IApiOnOfficeCreateOrderProduct;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
+export interface IApiOnOfficeConfirmOrderRes {
+  message?: string;
+  availableProductContingents?: TApiIntUserAvailableProductContingents;
+}
+
 export interface IApiOnOfficeCreateOrderProduct {
+  id?: string;
   type: OnOfficeProductTypesEnum;
   quantity: number;
 }
@@ -154,13 +161,25 @@ export interface IApiOnOfficeFindCreateSnapshotReq {
   extendedClaim: string;
 }
 
-export interface IApiOnOfficeCreateOrderRes {
+export interface IApiOnOfficeProduct {
+  name: string;
+  price: string;
+  quantity: string;
+  circleofusers: "customer"; // enum
+}
+
+export interface IApiOnOfficeOrderData {
   callbackurl: string;
   parametercacheid: string;
-  products: any[];
+  products: IApiOnOfficeProduct[];
   totalprice: string;
   timestamp: number;
   signature: string;
+}
+
+export interface IApiOnOfficeCreateOrderRes {
+  onOfficeOrderData: IApiOnOfficeOrderData;
+  products: IApiOnOfficeCreateOrderProduct[];
 }
 
 export enum ApiOnOfficeTransactionStatusesEnum {

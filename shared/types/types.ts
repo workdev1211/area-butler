@@ -7,7 +7,10 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from "../constants/constants";
-import { OnOfficeProductTypesEnum } from "./on-office";
+import {
+  IApiOnOfficeCreateOrderProduct,
+  OnOfficeProductTypesEnum,
+} from "./on-office";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -495,9 +498,16 @@ export interface IApiIntUserOnOfficeUsageStats {
   [OnOfficeProductTypesEnum.MAP_SNAPSHOT]: TApiIntUserUsageStatisticsMetrics;
 }
 
+export type TApiIntegrationUserProduct = IApiOnOfficeCreateOrderProduct;
+
+export interface IApiIntegrationUserProductContingent {
+  quantity: number;
+  expiresAt: Date;
+}
+
 export type TApiIntUserOnOfficeProductContingents = Record<
   ApiIntUserOnOfficeProdContTypesEnum,
-  Array<{ quantity: number; expiresAt: Date }>
+  IApiIntegrationUserProductContingent[]
 >;
 
 export type TApiIntUserOnOfficeProductsUsed = Record<

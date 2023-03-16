@@ -8,9 +8,9 @@ import {
 class ApiOnOfficeConfirmOrderQueryParamsDto
   implements IApiOnOfficeConfirmOrderQueryParams
 {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  message: string;
+  message?: string;
 
   @IsNotEmpty()
   @IsString()

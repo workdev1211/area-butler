@@ -1,10 +1,11 @@
-import { FunctionComponent, useContext, useEffect } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useHttp } from "../../hooks/http";
 import {
   IApiOnOfficeConfirmOrderQueryParams,
   IApiOnOfficeConfirmOrderReq,
+  IApiOnOfficeConfirmOrderRes,
 } from "../../../../shared/types/on-office";
 import {
   getQueryParamsAndUrl,
@@ -17,6 +18,8 @@ const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();
   const history = useHistory();
   const { onOfficeContextState } = useContext(OnOfficeContext);
+
+  const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
   useEffect(() => {
     const confirmOrder = async () => {
@@ -32,23 +35,41 @@ const ConfirmOrderPage: FunctionComponent = () => {
         extendedClaim:
           onOfficeContextState.extendedClaim! ||
           localStorage.getItem("extendedClaim")!,
+        product: JSON.parse(localStorage.getItem("products")!)[0],
         onOfficeQueryParams: queryParamsAndUrl.queryParams,
       };
+
+      localStorage.removeItem("extendedClaim");
+      localStorage.removeItem("products");
 
       console.log(1, "ConfirmOrderPage", confirmOrderData);
 
       try {
-        // TODO add a type
-        const response = (
-          await post<any>("/api/on-office/confirm-order", confirmOrderData)
+        const { message, availableProductContingents } = (
+          await post<IApiOnOfficeConfirmOrderRes, IApiOnOfficeConfirmOrderReq>(
+            "/api/on-office/confirm-order",
+            confirmOrderData
+          )
         ).data;
 
+        if (message) {
+          toastError("Ein Fehler ist aufgetreten!");
+          console.error("Order confirmation error: ", message);
+          setIsErrorOccurred(true);
+        }
+
         // TODO update user products in context
-        console.log(9, "ConfirmOrderPage", response);
+        console.log(
+          9,
+          "ConfirmOrderPage",
+          message,
+          availableProductContingents
+        );
         // history.push("/map");
       } catch (e: any) {
         toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", e);
+        setIsErrorOccurred(true);
       }
     };
 
@@ -56,7 +77,11 @@ const ConfirmOrderPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  return <LoadingMessage />;
+  return (
+    <div className="flex items-center justify-center h-[100vh] text-lg">
+      {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <LoadingMessage />}
+    </div>
+  );
 };
 
 export default ConfirmOrderPage;

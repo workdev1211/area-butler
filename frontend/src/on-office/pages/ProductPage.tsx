@@ -83,25 +83,23 @@ export const ProductPage: FunctionComponent = () => {
 
               console.log(1, "ProductPage", onOfficeContextState.extendedClaim);
 
-              // TODO TEST DATA
-              products.push({
-                type: OnOfficeProductTypesEnum.MAP_IFRAME_50,
-                quantity: 1,
-              });
+              const extendedClaim = onOfficeContextState.extendedClaim;
 
-              const response = (
+              const { onOfficeOrderData, products: savedProducts } = (
                 await post<
                   IApiOnOfficeCreateOrderRes,
                   IApiOnOfficeCreateOrderReq
                 >("/api/on-office/create-order", {
                   products,
-                  extendedClaim: onOfficeContextState.extendedClaim!,
+                  extendedClaim: extendedClaim!,
                 })
               ).data;
 
-              console.log(9, "ProductPage", response);
+              localStorage.setItem("extendedClaim", extendedClaim!);
+              localStorage.setItem("products", JSON.stringify(savedProducts));
+              console.log(9, "ProductPage", onOfficeOrderData, savedProducts);
 
-              window.parent.postMessage(JSON.stringify(response), "*");
+              window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
             }}
           >
             Besorgen
