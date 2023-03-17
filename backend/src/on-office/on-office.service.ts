@@ -8,10 +8,7 @@ import { configService } from '../config/config.service';
 import { activateUserPath } from './shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
-import {
-  ApiSearchResultSnapshotResponse,
-  IntegrationTypesEnum,
-} from '@area-butler-types/types';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
@@ -46,6 +43,7 @@ import {
   TOnOfficeTransactionDocument,
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class OnOfficeService {
@@ -318,6 +316,7 @@ export class OnOfficeService {
       location: address,
       integrationParams: {
         integrationType,
+        integrationUserId: extendedClaim,
         integrationId: estateId,
       },
     });

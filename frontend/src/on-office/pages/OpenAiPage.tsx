@@ -1,13 +1,11 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import { useHttp } from "../../hooks/http";
-import {
-  ApiSearchResultSnapshotResponse,
-  IntegrationTypesEnum,
-} from "../../../../shared/types/types";
+import { ApiSearchResultSnapshotResponse } from "../../../../shared/types/types";
 import { OnOfficeContext } from "../../context/OnOfficeContext";
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../../OnOffice";
+import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 
 const OpenAiPage: FunctionComponent = () => {
   const { post } = useHttp();

@@ -1,4 +1,4 @@
-import { TApiIntUserAvailableProductContingents } from "./types";
+import { TApiIntUserAvailableProductContingents } from "./integration-user";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",

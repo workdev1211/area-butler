@@ -5,7 +5,7 @@ import {
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntUserOnOfficeProduct,
-} from '@area-butler-types/types';
+} from '@area-butler-types/integration-user';
 
 // TODO think about simplifying the logic
 export const convertOnOfficeProdToIntUserProd = ({

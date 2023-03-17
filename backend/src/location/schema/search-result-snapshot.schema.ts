@@ -4,9 +4,9 @@ import { Document } from 'mongoose';
 import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
-  IApiIntegrationParams,
 } from '@area-butler-types/types';
 import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 

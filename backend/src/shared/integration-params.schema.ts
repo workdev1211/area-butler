@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
   IApiIntegrationParams,
   IntegrationTypesEnum,
-} from '@area-butler-types/types';
+} from '@area-butler-types/integration';
 
 @Schema({ _id: false })
 export class IntegrationParams implements IApiIntegrationParams {

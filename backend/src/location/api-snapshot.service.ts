@@ -8,7 +8,6 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotResponse,
   IApiCreateRouteSnapshot,
-  IApiIntegrationParams,
   TransportationParam,
 } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
@@ -22,6 +21,7 @@ import {
   defaultSnapshotConfig,
   defaultTransportationParams,
 } from '../../../shared/constants/location';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 @Injectable()
 export class ApiSnapshotService {

@@ -4,16 +4,16 @@ import { FilterQuery, Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import {
-  IntegrationTypesEnum,
+  IntegrationUser,
+  TIntegrationUserDocument,
+} from './schema/integration-user.schema';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import {
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
   TApiIntUserAvailableProductContingents,
   TApiIntUserOnOfficeProductContingents,
-} from '@area-butler-types/types';
-import {
-  IntegrationUser,
-  TIntegrationUserDocument,
-} from './schema/integration-user.schema';
+} from '@area-butler-types/integration-user';
 
 @Injectable()
 export class IntegrationUserService {

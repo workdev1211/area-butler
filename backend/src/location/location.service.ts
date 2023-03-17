@@ -29,7 +29,6 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
-  IApiIntegrationParams,
   IApiMongoParams,
   MeansOfTransportation,
   OsmName,
@@ -59,6 +58,7 @@ import {
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 @Injectable()
 export class LocationService {

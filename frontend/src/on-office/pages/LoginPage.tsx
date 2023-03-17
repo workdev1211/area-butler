@@ -16,7 +16,7 @@ import {
   getQueryParamsAndUrl,
   toastError,
 } from "../../shared/shared.functions";
-import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/types";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 
 const LoginPage: FunctionComponent = () => {
   const history = useHistory();

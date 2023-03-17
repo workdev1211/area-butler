@@ -1,14 +1,14 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
-  IntegrationTypesEnum,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProductContingents,
   TApiIntegrationUserProductsUsed,
   TApiIntegrationUserUsageStatistics,
-} from '@area-butler-types/types';
+} from '@area-butler-types/integration-user';
 
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
