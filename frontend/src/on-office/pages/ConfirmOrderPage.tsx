@@ -66,7 +66,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
           availableProductContingents
         );
         // history.push("/map");
-      } catch (e: any) {
+      } catch (e) {
         toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", e);
         setIsErrorOccurred(true);

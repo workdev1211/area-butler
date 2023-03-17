@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { createHmac } from 'crypto';
+import { plainToInstance } from 'class-transformer';
 
 import { configService } from '../config/config.service';
 import { activateUserPath } from './shared/on-office.constants';
@@ -26,6 +27,7 @@ import {
   ApiOnOfficeTransactionStatusesEnum,
   IApiOnOfficeConfirmOrderRes,
   IApiOnOfficeOrderData,
+  IApiOnOfficeResponse,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -44,6 +46,10 @@ import {
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import OnOfficeEstateToAreaButlerEstateDto from './dto/on-office-estate-to-areabutler-estate.dto';
+import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GeoJsonPoint } from '../shared/geo-json.types';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
 @Injectable()
 export class OnOfficeService {
@@ -58,6 +64,9 @@ export class OnOfficeService {
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
+
     private readonly userService: UserService,
     private readonly apiSnapshotService: ApiSnapshotService,
     private readonly locationService: LocationService,
@@ -142,11 +151,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    return response?.status?.code === 200 &&
-      response?.status?.errorcode === 0 &&
-      response?.status?.message === 'OK'
-      ? 'active'
-      : 'error';
+    return this.checkOnOfficeResponseSuccess(response) ? 'active' : 'error';
   }
 
   async login({
@@ -172,14 +177,30 @@ export class OnOfficeService {
         integrationUser,
       );
 
-    const estateData = await this.getEstateData(estateId, integrationUser);
+    const areaButlerEstate = await this.getEstateData(
+      estateId,
+      integrationUser,
+    );
+
+    await this.realEstateListingIntService.upsertByIntegrationParams(
+      {
+        integrationId: estateId,
+        integrationUserId,
+        integrationType: this.integrationType,
+      },
+      areaButlerEstate,
+    );
+
+    this.logger.debug(this.login.name, areaButlerEstate);
+
     // TODO save to DB as a real estate entity
 
     return {
+      estateId,
       integrationUserId,
       extendedClaim,
-      estateId,
       availableProductContingents,
+      address: areaButlerEstate.address,
     };
   }
 
@@ -324,11 +345,11 @@ export class OnOfficeService {
 
   async getEstateData(
     estateId: string,
-    integrationUser: TIntegrationUserDocument,
-  ) {
-    const {
+    {
+      integrationUserId,
       parameters: { token, apiKey, extendedClaim },
-    } = integrationUser;
+    }: TIntegrationUserDocument,
+  ): Promise<OnOfficeEstateToAreaButlerEstateDto> {
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
@@ -379,12 +400,57 @@ export class OnOfficeService {
       },
     };
 
-    this.logger.debug(this.getEstateData.name, request);
-    const a1 = await this.onOfficeApiService.sendRequest(request);
-    this.logger.debug(this.getEstateData.name, a1);
-    const a2 = 'halt';
+    const response = await this.onOfficeApiService.sendRequest(request);
 
-    return a1;
+    if (!this.checkOnOfficeResponseSuccess(response)) {
+      throw new HttpException('The estate entity has not been retrieved!', 400);
+    }
+
+    const onOfficeEstate =
+      response.response.results[0].data.records[0].elements;
+
+    const {
+      breitengrad: lat,
+      laengengrad: lng,
+      strasse: street,
+      hausnummer: houseNumber,
+      plz: zipCode,
+      ort: city,
+      land: country,
+    } = onOfficeEstate;
+
+    const location =
+      +lat && +lng
+        ? {
+            lat: +lat,
+            lng: +lng,
+          }
+        : `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
+
+    const place = await this.googleGeocodeService.fetchPlace(location);
+
+    if (!place) {
+      throw new HttpException('Place has not been found!', 400);
+    }
+
+    Object.assign(onOfficeEstate, {
+      integrationParams: {
+        integrationUserId,
+        integrationId: estateId,
+        integrationType: this.integrationType,
+      },
+      address: place.formatted_address,
+      location: {
+        type: 'Point',
+        coordinates: [place.geometry.location.lat, place.geometry.location.lng],
+      } as GeoJsonPoint,
+    });
+
+    return plainToInstance(
+      OnOfficeEstateToAreaButlerEstateDto,
+      onOfficeEstate,
+      { excludeExtraneousValues: true, exposeUnsetFields: false },
+    );
   }
 
   generateSignature(
@@ -431,5 +497,11 @@ export class OnOfficeService {
       { 'parameters.extendedClaim': extendedClaim },
       this.integrationType,
     );
+  }
+
+  private checkOnOfficeResponseSuccess<T>({
+    status: { code, errorcode, message },
+  }: IApiOnOfficeResponse<T>) {
+    return code === 200 && errorcode === 0 && message === 'OK';
   }
 }

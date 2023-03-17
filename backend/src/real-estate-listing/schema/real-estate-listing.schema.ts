@@ -5,14 +5,17 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateStatusEnum,
+  IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
 
 @Schema()
-export class RealEstateListing {
-  @Prop({ required: true })
+export class RealEstateListing implements IApiRealEstateListingSchema {
+  @Prop()
   userId: string;
 
   @Prop({ required: true })
@@ -44,6 +47,9 @@ export class RealEstateListing {
 
   @Prop({ type: String })
   externalId: string;
+
+  @Prop({ type: IntegrationParamsSchema })
+  integrationParams: IApiIntegrationParams;
 }
 
 export const RealEstateListingSchema =

@@ -3,9 +3,9 @@ import { Dispatch, createContext, useReducer, FunctionComponent } from "react";
 import { TApiIntUserAvailableProductContingents } from "../../../shared/types/integration-user";
 
 export interface IOnOfficeContextState {
+  estateId?: string;
   integrationUserId?: string;
   extendedClaim?: string;
-  estateId?: string;
   availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 

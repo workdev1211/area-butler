@@ -67,18 +67,19 @@ interface IApiOnOfficeRequestActionParameters {
   data?: string[]; // enum?
 }
 
-export interface IApiOnOfficeResponse {
+// TODO make it the right way - without anys
+export interface IApiOnOfficeResponse<T = any> {
   status: {
     code: number; // enum?
     errorcode: number; // enum?
     message: string; // enum?
   };
   response: {
-    results: IApiOnOfficeResponseResult[];
+    results: IApiOnOfficeResponseResult<T>[];
   };
 }
 
-interface IApiOnOfficeResponseResult {
+interface IApiOnOfficeResponseResult<T> {
   actionid: ApiOnOfficeActionIdsEnum;
   resourceid: string;
   resourcetype: ApiOnOfficeResourceTypesEnum;
@@ -88,14 +89,35 @@ interface IApiOnOfficeResponseResult {
     message: string; // enum?
   };
   data: {
-    records: IApiOnOfficeResponseResultRecord[];
+    records: IApiOnOfficeResponseResultRecord<T>[];
   };
 }
 
-interface IApiOnOfficeResponseResultRecord {
+interface IApiOnOfficeResponseResultRecord<T> {
   id: string;
   type: string;
-  elements: Array<{ [key: string]: string }>;
+  elements: T;
+}
+
+export interface IApiOnOfficeResponseEstateElement {
+  objekttitel: string;
+  strasse: string;
+  hausnummer: string;
+  plz: string;
+  ort: string;
+  land: string;
+  breitengrad: string;
+  laengengrad: string;
+  anzahl_zimmer: string;
+  wohnflaeche: string;
+  grundstuecksflaeche: string;
+  energyClass: string;
+  kaufpreis: string;
+  waehrung: string;
+  kaltmiete: string;
+  warmmiete: string;
+  anzahl_balkone: string;
+  unterkellert: string;
 }
 
 export interface IApiOnOfficeLoginQueryParams {
@@ -117,9 +139,10 @@ export interface IApiOnOfficeLoginReq {
 }
 
 export interface IApiOnOfficeLoginRes {
+  address: string;
+  estateId: string;
   integrationUserId: string;
   extendedClaim: string;
-  estateId: string;
   availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 

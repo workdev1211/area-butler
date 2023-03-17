@@ -1,4 +1,21 @@
 import { ApiCoordinates, ApiMoneyAmount } from "./types";
+import { GeoJsonPoint } from "../../backend/src/shared/geo-json.types";
+import { IApiIntegrationParams } from "./integration";
+
+export interface IApiRealEstateListingSchema {
+  userId?: string;
+  name: string;
+  address: string;
+  externalUrl?: string;
+  createdAt?: Date;
+  showInSnippet?: boolean;
+  costStructure?: ApiRealEstateCost;
+  characteristics?: ApiRealEstateCharacteristics;
+  location: GeoJsonPoint;
+  status?: ApiRealEstateStatusEnum;
+  externalId?: string;
+  integrationParams?: IApiIntegrationParams;
+}
 
 export interface ApiRealEstateListing {
   id: string;

@@ -10,6 +10,7 @@ import {
   OnOfficeTransaction,
   OnOfficeTransactionSchema,
 } from './schema/on-office-transaction.schema';
+import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 
 @Module({
   imports: [
@@ -17,6 +18,8 @@ import {
       { name: OnOfficeTransaction.name, schema: OnOfficeTransactionSchema },
     ]),
     ClientModule,
+    RealEstateListingModule,
+
     UserModule,
     LocationModule,
   ],

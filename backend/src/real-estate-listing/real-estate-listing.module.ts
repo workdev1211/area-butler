@@ -10,6 +10,7 @@ import {
 } from './schema/real-estate-listing.schema';
 import { ClientModule } from '../client/client.module';
 import { OpenAiModule } from '../open-ai/open-ai.module';
+import { RealEstateListingIntService } from './real-estate-listing-int.service';
 
 @Module({
   imports: [
@@ -20,8 +21,8 @@ import { OpenAiModule } from '../open-ai/open-ai.module';
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
-  providers: [RealEstateListingService],
+  providers: [RealEstateListingService, RealEstateListingIntService],
   controllers: [RealEstateListingController],
-  exports: [RealEstateListingService],
+  exports: [RealEstateListingService, RealEstateListingIntService],
 })
 export class RealEstateListingModule {}

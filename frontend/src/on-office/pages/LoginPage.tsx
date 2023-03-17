@@ -42,9 +42,10 @@ const LoginPage: FunctionComponent = () => {
 
       try {
         const {
+          address,
+          estateId,
           integrationUserId,
           extendedClaim,
-          estateId,
           availableProductContingents,
         } = (
           await post<IApiOnOfficeLoginRes>("/api/on-office/login", loginData)
@@ -53,18 +54,19 @@ const LoginPage: FunctionComponent = () => {
         console.log(
           9,
           "LoginPage",
+          address,
+          estateId,
           integrationUserId,
           extendedClaim,
-          estateId,
           availableProductContingents
         );
 
         onOfficeContextDispatch({
           type: OnOfficeContextActionTypesEnum.SET_STATE,
           payload: {
+            estateId,
             integrationUserId,
             extendedClaim,
-            estateId,
             availableProductContingents,
           },
         });
@@ -75,11 +77,11 @@ const LoginPage: FunctionComponent = () => {
             (contingentName) =>
               availableProductContingents[
                 contingentName as ApiIntUserOnOfficeProdContTypesEnum
-              ]
+              ] > 0
           );
 
         if (hasProductContingent) {
-          history.push("/open-ai");
+          history.push("/search", { address });
           return;
         }
 

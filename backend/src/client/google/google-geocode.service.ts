@@ -73,4 +73,19 @@ export class GoogleGeocodeService {
 
     return results[0];
   }
+
+  async fetchPlace(
+    location: string | ApiCoordinates,
+    language = ApiGoogleLanguageEnum.DE,
+  ) {
+    if (
+      typeof location === 'object' &&
+      'lat' in location &&
+      'lng' in location
+    ) {
+      return this.fetchPlaceByCoordinates(location, language);
+    }
+
+    return this.fetchPlaceByAddress(location, language);
+  }
 }

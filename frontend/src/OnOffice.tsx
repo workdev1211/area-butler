@@ -24,7 +24,7 @@ import { OnOfficeContextProvider } from "./context/OnOfficeContext";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
-const OnOfficeContainer = lazy(() => import("./on-office/OnOfficeContainer"));
+const SearchParamsPage = lazy(() => import("../src/pages/SearchParamsPage"));
 const LoginPage = lazy(() => import("./on-office/pages/LoginPage"));
 const ProductPage = lazy(() => import("./on-office/pages/ProductPage"));
 const ConfirmOrderPage = lazy(
@@ -56,11 +56,11 @@ render(
               <Route path="/confirm-order">
                 <ConfirmOrderPage />
               </Route>
-              <Route path="/map">
-                <OnOfficeContainer />
-              </Route>
               <Route path="/products">
                 <ProductPage />
+              </Route>
+              <Route path="/search">
+                <SearchParamsPage />
               </Route>
               <Route path="/">
                 <LoginPage />
