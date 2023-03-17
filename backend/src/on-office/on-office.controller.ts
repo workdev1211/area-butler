@@ -11,7 +11,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { OnOfficeService } from './on-office.service';
-import { activateUserPath } from '../shared/on-office.constants';
+import { activateUserPath } from './shared/on-office.constants';
 import ApiOnOfficeUnlockProviderReqDto from './dto/api-on-office-unlock-provider-req.dto';
 import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
@@ -116,7 +116,11 @@ export class OnOfficeController {
     @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse | any> {
     this.logger.debug(this.findOrCreateSnapshot.name, findOrCreateSnapshotData);
-    return this.onOfficeService.test(findOrCreateSnapshotData, integrationUser);
+
+    return this.onOfficeService.getEstateData(
+      findOrCreateSnapshotData.estateId,
+      integrationUser,
+    );
 
     // return this.onOfficeService.findOrCreateSnapshot(
     //   findOrCreateSnapshotData,

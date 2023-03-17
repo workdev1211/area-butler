@@ -71,21 +71,21 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
-  async addProduct(
+  async addProductContingent(
     integrationUser: TIntegrationUserDocument,
-    product: TApiIntegrationUserProduct,
+    { type, quantity }: TApiIntegrationUserProduct,
   ): Promise<TIntegrationUserDocument> {
     if (!integrationUser.productContingents) {
       integrationUser.productContingents =
         {} as TApiIntUserOnOfficeProductContingents;
     }
 
-    if (!integrationUser.productContingents[product.type]) {
-      integrationUser.productContingents[product.type] = [];
+    if (!integrationUser.productContingents[type]) {
+      integrationUser.productContingents[type] = [];
     }
 
-    integrationUser.productContingents[product.type].push({
-      quantity: product.quantity,
+    integrationUser.productContingents[type].push({
+      quantity,
       expiresAt: dayjs().add(1, 'year').toDate(),
     });
 
@@ -112,11 +112,14 @@ export class IntegrationUserService {
           0,
         );
 
-        if (
-          availableQuantity >
-          (productsUsed ? productsUsed[contingentName] || 0 : 0)
-        ) {
-          result[contingentName] = true;
+        const usedQuantity = productsUsed
+          ? productsUsed[contingentName] || 0
+          : 0;
+
+        const remainingQuantity = availableQuantity - usedQuantity;
+
+        if (remainingQuantity > 0) {
+          result[contingentName] = remainingQuantity;
         }
 
         return result;

@@ -482,7 +482,7 @@ export interface IApiIntUserOnOfficeParams {
 
 export enum ApiIntUserOnOfficeProdContTypesEnum {
   OPEN_AI = "OPEN_AI",
-  MAP_IFRAME = "IFRAME",
+  MAP_IFRAME = "MAP_IFRAME",
   ONE_PAGE = "ONE_PAGE",
 }
 
@@ -498,7 +498,12 @@ export interface IApiIntUserOnOfficeUsageStats {
   [OnOfficeProductTypesEnum.MAP_SNAPSHOT]: TApiIntUserUsageStatisticsMetrics;
 }
 
-export type TApiIntegrationUserProduct = IApiOnOfficeCreateOrderProduct;
+export interface IApiIntUserOnOfficeProduct {
+  type: ApiIntUserOnOfficeProdContTypesEnum;
+  quantity: number;
+}
+
+export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 
 export interface IApiIntegrationUserProductContingent {
   quantity: number;
@@ -517,7 +522,7 @@ export type TApiIntUserOnOfficeProductsUsed = Record<
 
 export type TApiIntUserAvailableProductContingents = Record<
   ApiIntUserOnOfficeProdContTypesEnum,
-  boolean
+  number
 >;
 
 export enum IntegrationTypesEnum {

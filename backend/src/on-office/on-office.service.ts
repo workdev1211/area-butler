@@ -5,7 +5,7 @@ import * as dayjs from 'dayjs';
 import { createHmac } from 'crypto';
 
 import { configService } from '../config/config.service';
-import { activateUserPath } from '../shared/on-office.constants';
+import { activateUserPath } from './shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -45,6 +45,7 @@ import {
   OnOfficeTransaction,
   TOnOfficeTransactionDocument,
 } from './schema/on-office-transaction.schema';
+import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 
 @Injectable()
 export class OnOfficeService {
@@ -173,6 +174,9 @@ export class OnOfficeService {
         integrationUser,
       );
 
+    const estateData = await this.getEstateData(estateId, integrationUser);
+    // TODO save to DB as a real estate entity
+
     return {
       integrationUserId,
       extendedClaim,
@@ -258,7 +262,10 @@ export class OnOfficeService {
           },
         );
 
-        await this.integrationUserService.addProduct(integrationUser, product);
+        await this.integrationUserService.addProductContingent(
+          integrationUser,
+          convertOnOfficeProdToIntUserProd(product),
+        );
 
         this.logger.debug(2, JSON.parse(JSON.stringify(integrationUser)));
 
@@ -316,8 +323,8 @@ export class OnOfficeService {
     });
   }
 
-  async test(
-    { estateId }: IApiOnOfficeFindCreateSnapshotReq,
+  async getEstateData(
+    estateId: string,
     integrationUser: TIntegrationUserDocument,
   ) {
     const {
@@ -347,6 +354,7 @@ export class OnOfficeService {
             resourcetype: resourceType,
             parameters: {
               data: [
+                'objekttitel',
                 'strasse',
                 'hausnummer',
                 'plz',
@@ -354,13 +362,14 @@ export class OnOfficeService {
                 'land',
                 'breitengrad',
                 'laengengrad',
-                'nutzflaeche',
-                'gesamtflaeche',
+                'anzahl_zimmer',
+                'wohnflaeche', // nutzflaeche - realEstateSizeInSquareMeters
+                'grundstuecksflaeche', // gesamtflaeche - propertySizeInSquareMeters
                 'energyClass',
                 'kaufpreis',
+                'waehrung',
                 'kaltmiete',
                 'warmmiete',
-                'anzahl_zimmer',
                 'anzahl_balkone',
                 'unterkellert',
               ],
@@ -371,9 +380,9 @@ export class OnOfficeService {
       },
     };
 
-    this.logger.debug(this.test.name, request);
+    this.logger.debug(this.getEstateData.name, request);
     const a1 = await this.onOfficeApiService.sendRequest(request);
-    this.logger.debug(this.test.name, a1);
+    this.logger.debug(this.getEstateData.name, a1);
     const a2 = 'halt';
 
     return a1;
