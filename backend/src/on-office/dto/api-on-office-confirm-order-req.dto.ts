@@ -20,10 +20,6 @@ class ApiOnOfficeConfirmOrderReqDto implements IApiOnOfficeConfirmOrderReq {
   url: string;
 
   @IsNotEmpty()
-  @IsString()
-  extendedClaim: string;
-
-  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
   @Type(() => ApiOnOfficeCreateOrderProductDto)

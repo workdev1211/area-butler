@@ -28,6 +28,7 @@ import {
   IApiOnOfficeConfirmOrderRes,
   IApiOnOfficeOrderData,
   IApiOnOfficeResponse,
+  IApiOnOfficeActivationReq,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -72,21 +73,16 @@ export class OnOfficeService {
     private readonly locationService: LocationService,
   ) {}
 
-  // TODO add a type
   async getRenderData({
     integrationUserId,
     token,
     parameterCacheId,
     extendedClaim,
-  }: {
-    integrationUserId: string;
-    token: string;
-    parameterCacheId: string;
-    extendedClaim: string;
-  }): Promise<IApiOnOfficeActivationRes> {
+  }: IApiOnOfficeActivationReq): Promise<IApiOnOfficeActivationRes> {
     await this.integrationUserService.upsert(
       integrationUserId,
       this.integrationType,
+      extendedClaim,
       { extendedClaim },
     );
 
@@ -112,11 +108,15 @@ export class OnOfficeService {
     }: IApiOnOfficeUnlockProviderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<string> {
-    await this.integrationUserService.updateParams(integrationUser, {
-      token,
-      apiKey,
+    await this.integrationUserService.updateParams(
+      integrationUser,
       extendedClaim,
-    });
+      {
+        token,
+        apiKey,
+        extendedClaim,
+      },
+    );
 
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
@@ -167,10 +167,14 @@ export class OnOfficeService {
       this.integrationType,
     );
 
-    await this.integrationUserService.updateParams(integrationUser, {
+    await this.integrationUserService.updateParams(
+      integrationUser,
       extendedClaim,
-      parameterCacheId,
-    });
+      {
+        extendedClaim,
+        parameterCacheId,
+      },
+    );
 
     const availableProductContingents =
       this.integrationUserService.getAvailableProductContingents(
@@ -198,9 +202,13 @@ export class OnOfficeService {
     return {
       estateId,
       integrationUserId,
-      extendedClaim,
       availableProductContingents,
+      accessToken: extendedClaim,
       address: areaButlerEstate.address,
+      coordinates: {
+        lat: areaButlerEstate.location.coordinates[0],
+        lng: areaButlerEstate.location.coordinates[1],
+      },
     };
   }
 
@@ -253,19 +261,13 @@ export class OnOfficeService {
     return { onOfficeOrderData, products: savedProducts };
   }
 
-  // TODO add a type
   async confirmOrder(
     confirmOrderData: IApiOnOfficeConfirmOrderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<IApiOnOfficeConfirmOrderRes> {
-    const { extendedClaim, product, onOfficeQueryParams } = confirmOrderData;
+    const { product, onOfficeQueryParams } = confirmOrderData;
 
-    this.logger.debug(
-      this.confirmOrder.name,
-      extendedClaim,
-      product,
-      onOfficeQueryParams,
-    );
+    this.logger.debug(this.confirmOrder.name, product, onOfficeQueryParams);
 
     switch (onOfficeQueryParams.status) {
       case ApiOnOfficeTransactionStatusesEnum.INPROCESS:
@@ -488,15 +490,6 @@ export class OnOfficeService {
     );
 
     throw new HttpException('Request verification failed!', 400);
-  }
-
-  findIntUserByExtendedClaim(
-    extendedClaim: string,
-  ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserService.findOneOrFail(
-      { 'parameters.extendedClaim': extendedClaim },
-      this.integrationType,
-    );
   }
 
   private checkOnOfficeResponseSuccess<T>({

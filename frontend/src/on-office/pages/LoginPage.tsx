@@ -45,7 +45,7 @@ const LoginPage: FunctionComponent = () => {
           address,
           estateId,
           integrationUserId,
-          extendedClaim,
+          accessToken,
           availableProductContingents,
         } = (
           await post<IApiOnOfficeLoginRes>("/api/on-office/login", loginData)
@@ -57,7 +57,7 @@ const LoginPage: FunctionComponent = () => {
           address,
           estateId,
           integrationUserId,
-          extendedClaim,
+          accessToken,
           availableProductContingents
         );
 
@@ -66,7 +66,7 @@ const LoginPage: FunctionComponent = () => {
           payload: {
             estateId,
             integrationUserId,
-            extendedClaim,
+            accessToken,
             availableProductContingents,
           },
         });

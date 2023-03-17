@@ -81,21 +81,24 @@ export const ProductPage: FunctionComponent = () => {
                 return;
               }
 
-              console.log(1, "ProductPage", onOfficeContextState.extendedClaim);
+              console.log(1, "ProductPage", onOfficeContextState.accessToken);
 
-              const extendedClaim = onOfficeContextState.extendedClaim;
+              const accessToken = onOfficeContextState.accessToken;
 
               const { onOfficeOrderData, products: savedProducts } = (
                 await post<
                   IApiOnOfficeCreateOrderRes,
                   IApiOnOfficeCreateOrderReq
-                >("/api/on-office/create-order", {
-                  products,
-                  extendedClaim: extendedClaim!,
-                })
+                >(
+                  "/api/on-office/create-order",
+                  {
+                    products,
+                  },
+                  { authorization: `AccessToken ${accessToken}` }
+                )
               ).data;
 
-              localStorage.setItem("extendedClaim", extendedClaim!);
+              localStorage.setItem("accessToken", accessToken!);
               localStorage.setItem("products", JSON.stringify(savedProducts));
               console.log(9, "ProductPage", onOfficeOrderData, savedProducts);
 

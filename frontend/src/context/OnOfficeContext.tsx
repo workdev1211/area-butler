@@ -5,7 +5,7 @@ import { TApiIntUserAvailableProductContingents } from "../../../shared/types/in
 export interface IOnOfficeContextState {
   estateId?: string;
   integrationUserId?: string;
-  extendedClaim?: string;
+  accessToken?: string;
   availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 

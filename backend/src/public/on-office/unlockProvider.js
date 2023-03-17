@@ -47,6 +47,10 @@ const unlockProvider = (inputParameters) => {
       'Content-Type',
       'application/json; charset=UTF-8',
     );
+    httpRequest.setRequestHeader(
+      'Authorization',
+      `AccessToken ${extendedClaim}`,
+    );
     httpRequest.send(data);
   }, 1000);
 };

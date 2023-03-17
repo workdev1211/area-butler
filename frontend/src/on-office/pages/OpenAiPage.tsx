@@ -28,7 +28,7 @@ const OpenAiPage: FunctionComponent = () => {
           {
             integrationType: IntegrationTypesEnum.ON_OFFICE,
             estateId: onOfficeContextState.estateId,
-            extendedClaim: onOfficeContextState.extendedClaim,
+            accessToken: onOfficeContextState.accessToken,
           }
         )
       ).data;

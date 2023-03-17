@@ -1,4 +1,5 @@
 import { TApiIntUserAvailableProductContingents } from "./integration-user";
+import { ApiCoordinates } from "./types";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -20,6 +21,13 @@ export interface IOnOfficeProduct {
 export interface IApiOnOfficeUnlockProviderReq {
   token: string;
   secret: string;
+  parameterCacheId: string;
+  extendedClaim: string;
+}
+
+export interface IApiOnOfficeActivationReq {
+  integrationUserId: string;
+  token: string;
   parameterCacheId: string;
   extendedClaim: string;
 }
@@ -140,14 +148,14 @@ export interface IApiOnOfficeLoginReq {
 
 export interface IApiOnOfficeLoginRes {
   address: string;
+  coordinates: ApiCoordinates;
   estateId: string;
   integrationUserId: string;
-  extendedClaim: string;
+  accessToken: string;
   availableProductContingents?: TApiIntUserAvailableProductContingents;
 }
 
 export interface IApiOnOfficeCreateOrderReq {
-  extendedClaim: string;
   products: IApiOnOfficeCreateOrderProduct[];
 }
 
@@ -163,7 +171,6 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
 
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
-  extendedClaim: string; // from localStorage
   product: IApiOnOfficeCreateOrderProduct;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
@@ -181,7 +188,6 @@ export interface IApiOnOfficeCreateOrderProduct {
 
 export interface IApiOnOfficeFindCreateSnapshotReq {
   estateId: string;
-  extendedClaim: string;
 }
 
 export interface IApiOnOfficeProduct {

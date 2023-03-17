@@ -8,10 +8,6 @@ class ApiOnOfficeFindCreateSnapshotReqDto
   @IsNotEmpty()
   @IsString()
   estateId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  extendedClaim: string;
 }
 
 export default ApiOnOfficeFindCreateSnapshotReqDto;

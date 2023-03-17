@@ -1,4 +1,25 @@
 import { OnOfficeProductTypesEnum } from "./on-office";
+import { IntegrationTypesEnum } from "./integration";
+
+export interface IApiIntegrationUser {
+  integrationUserId: string;
+  integrationType: IntegrationTypesEnum;
+  accessToken: string;
+  parameters?: TApiIntegrationUserParameters;
+  config?: TApiIntegrationUserConfig;
+  userId?: string;
+  productsUsed?: TApiIntegrationUserProductsUsed;
+  productContingents?: TApiIntegrationUserProductContingents;
+  usageStatistics?: TApiIntegrationUserUsageStatistics;
+}
+
+export interface IApiIntUserAvailProdContingents {
+  availProdContingents: TApiIntUserOnOfficeAvailProdContingents;
+}
+
+export type TApiIntUserOnOfficeAvailProdContingents = Partial<
+  Record<ApiIntUserOnOfficeProdContTypesEnum, number>
+>;
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;

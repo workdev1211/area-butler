@@ -7,13 +7,13 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { LocationService } from '../location/location.service';
-import { UserService } from '../user/user.service';
-import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
-import { SubscriptionService } from '../user/subscription.service';
+import { LocationService } from '../../location/location.service';
+import { UserService } from '../../user/user.service';
+import { subscriptionExpiredMessage } from '../../../../shared/messages/error.message';
+import { SubscriptionService } from '../../user/subscription.service';
 
 @Injectable()
-export class InjectUserEmailRoutingInterceptor implements NestInterceptor {
+export class InjectUserEmailInterceptor implements NestInterceptor {
   constructor(
     private readonly locationService: LocationService,
     private readonly userService: UserService,

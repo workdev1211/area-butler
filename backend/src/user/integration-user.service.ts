@@ -25,7 +25,8 @@ export class IntegrationUserService {
   async upsert(
     integrationUserId: string,
     integrationType: IntegrationTypesEnum,
-    parameters?: TApiIntegrationUserParameters,
+    accessToken: string,
+    parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.integrationUserModel.findOne({
       integrationUserId,
@@ -33,12 +34,13 @@ export class IntegrationUserService {
     });
 
     if (existingUser) {
-      return this.updateParams(existingUser, parameters);
+      return this.updateParams(existingUser, accessToken, parameters);
     }
 
     return new this.integrationUserModel({
       integrationUserId,
       integrationType,
+      accessToken,
       parameters,
     }).save();
   }
@@ -59,10 +61,26 @@ export class IntegrationUserService {
     return existingUser;
   }
 
+  async findOneByAccessTokenOrFail(
+    accessToken: string,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.integrationUserModel.findOne({
+      accessToken,
+    });
+
+    if (!existingUser) {
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    return existingUser;
+  }
+
   async updateParams(
     integrationUser: TIntegrationUserDocument,
+    accessToken: string,
     parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
+    integrationUser.accessToken = accessToken;
     integrationUser.parameters =
       typeof integrationUser.parameters === 'object'
         ? { ...integrationUser.parameters, ...parameters }

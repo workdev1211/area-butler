@@ -32,15 +32,10 @@ const ConfirmOrderPage: FunctionComponent = () => {
 
       const confirmOrderData: IApiOnOfficeConfirmOrderReq = {
         url: queryParamsAndUrl.url,
-        extendedClaim:
-          onOfficeContextState.extendedClaim! ||
-          localStorage.getItem("extendedClaim")!,
+        // TODO change to the integration user access token
         product: JSON.parse(localStorage.getItem("products")!)[0],
         onOfficeQueryParams: queryParamsAndUrl.queryParams,
       };
-
-      localStorage.removeItem("extendedClaim");
-      localStorage.removeItem("products");
 
       console.log(1, "ConfirmOrderPage", confirmOrderData);
 
@@ -48,9 +43,18 @@ const ConfirmOrderPage: FunctionComponent = () => {
         const { message, availableProductContingents } = (
           await post<IApiOnOfficeConfirmOrderRes, IApiOnOfficeConfirmOrderReq>(
             "/api/on-office/confirm-order",
-            confirmOrderData
+            confirmOrderData,
+            {
+              authorization: `AccessToken ${
+                onOfficeContextState.accessToken! ||
+                localStorage.getItem("accessToken")!
+              }`,
+            }
           )
         ).data;
+
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("products");
 
         if (message) {
           toastError("Ein Fehler ist aufgetreten!");

@@ -28,7 +28,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
-import { InjectOnOfficeIntUserInterceptor } from './interceptor/inject-on-office-int-user.interceptor';
+import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -57,7 +57,7 @@ export class OnOfficeController {
   }
 
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
-  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post(activateUserPath)
   async unlockProvider(
     @InjectUser() integrationUser: TIntegrationUserDocument,
@@ -82,7 +82,7 @@ export class OnOfficeController {
   }
 
   @ApiOperation({ description: 'Creates an order' })
-  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('create-order')
   createOrder(
     @InjectUser() integrationUser: TIntegrationUserDocument,
@@ -95,7 +95,7 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Confirms an order' })
   @UseInterceptors(
     VerifyOnOfficeSignatureInterceptor,
-    InjectOnOfficeIntUserInterceptor,
+    InjectIntegrationUserInterceptor,
   )
   @Post('confirm-order')
   confirmOrder(
@@ -109,7 +109,7 @@ export class OnOfficeController {
   @ApiOperation({
     description: 'Fetches or creates a snapshot by real estate address',
   })
-  @UseInterceptors(InjectOnOfficeIntUserInterceptor)
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('find-create-snapshot')
   async findOrCreateSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
