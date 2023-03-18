@@ -20,7 +20,6 @@ import {
   ApiSearchResultSnapshotResponse,
 } from "../../../shared/types/types";
 import SearchResultContainer from "../components/SearchResultContainer";
-import { OnOfficeContext } from "../context/OnOfficeContext";
 import { LoadingMessage } from "../OnOffice";
 
 // window.addEventListener("resize", () => {
@@ -40,7 +39,6 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
-  const { onOfficeContextState } = useContext(OnOfficeContext);
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
   const [searchConfig, setSearchConfig] =
@@ -51,13 +49,13 @@ const OnOfficeContainer: FunctionComponent = () => {
     console.log(1, "OnOfficeContainer");
 
     const findOrCreateSnapshot = async () => {
-      // TODO change integration id
+      // TODO TEST DATA
       const response = (
         await post<ApiSearchResultSnapshotResponse>(
           "/api/on-office/find-create-snapshot",
           {
             integrationId: "111",
-            integrationUserId: onOfficeContextState.integrationUserId,
+            integrationUserId: "21",
           }
         )
       ).data;

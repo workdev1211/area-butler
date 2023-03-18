@@ -19,8 +19,10 @@ import "assets/fonts/archia-semibold-webfont.ttf";
 import "assets/fonts/archia-semibold-webfont.woff";
 import "assets/fonts/archia-semibold-webfont.woff2";
 
+import { UserContextProvider } from "./context/UserContext";
 import { SearchContextProvider } from "./context/SearchContext";
-import { OnOfficeContextProvider } from "./context/OnOfficeContext";
+import { ConfigContext } from "context/ConfigContext";
+import { ApiConfig } from "../../shared/types/types";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -31,45 +33,62 @@ const ConfirmOrderPage = lazy(
   () => import("./on-office/pages/ConfirmOrderPage")
 );
 const OpenAiPage = lazy(() => import("./on-office/pages/OpenAiPage"));
+const OnOfficeContainer = lazy(() => import("./on-office/OnOfficeContainer"));
 
-render(
-  <StrictMode>
-    <Suspense fallback={<LoadingMessage />}>
-      <ToastContainer
-        position="top-right"
-        autoClose={10000}
-        hideProgressBar={false}
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-      />
-      <Router basename="/on-office">
-        <OnOfficeContextProvider>
-          <SearchContextProvider>
-            <Switch>
-              <Route path="/open-ai">
-                <OpenAiPage />
-              </Route>
-              <Route path="/confirm-order">
-                <ConfirmOrderPage />
-              </Route>
-              <Route path="/products">
-                <ProductPage />
-              </Route>
-              <Route path="/search">
-                <SearchParamsPage />
-              </Route>
-              <Route path="/">
-                <LoginPage />
-              </Route>
-            </Switch>
-          </SearchContextProvider>
-        </OnOfficeContextProvider>
-      </Router>
-    </Suspense>
-  </StrictMode>,
-  document.getElementById("root")
-);
+const baseUrl = process.env.REACT_APP_BASE_URL || "";
+
+fetch(`${baseUrl}/api/config`).then(async (result) => {
+  const { googleApiKey, mapBoxAccessToken, systemEnv, stripeEnv } =
+    (await result.json()) as ApiConfig;
+
+  render(
+    <StrictMode>
+      <Suspense fallback={<LoadingMessage />}>
+        <ToastContainer
+          position="top-right"
+          autoClose={10000}
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+        />
+        <Router basename="/on-office">
+          <UserContextProvider>
+            <SearchContextProvider>
+              <ConfigContext.Provider
+                value={{
+                  googleApiKey,
+                  mapBoxAccessToken,
+                  systemEnv,
+                  stripeEnv,
+                }}
+              >
+                <Switch>
+                  <Route path="/open-ai">
+                    <OpenAiPage />
+                  </Route>
+                  <Route path="/confirm-order">
+                    <ConfirmOrderPage />
+                  </Route>
+                  <Route path="/products">
+                    <ProductPage />
+                  </Route>
+                  <Route path="/search">
+                    <SearchParamsPage />
+                  </Route>
+                  <Route path="/">
+                    <LoginPage />
+                  </Route>
+                </Switch>
+              </ConfigContext.Provider>
+            </SearchContextProvider>
+          </UserContextProvider>
+        </Router>
+      </Suspense>
+    </StrictMode>,
+    document.getElementById("root")
+  );
+});

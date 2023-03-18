@@ -23,7 +23,7 @@ const Auth0ConsentPage: FunctionComponent = () => {
   const onSubmit = async () => {
     try {
       localStorage.setItem(localStorageConsentGivenKey, "true");
-      window.location.href = `https://${auth.domain}/continue?state=${state}`;
+      window.location.href = `https://${auth!.domain}/continue?state=${state}`;
     } catch (e) {
       toastError("Leider ist etwas bei der Zustimmung schiefgelaufen");
     } finally {

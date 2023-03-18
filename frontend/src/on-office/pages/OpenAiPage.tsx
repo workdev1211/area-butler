@@ -1,16 +1,13 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import { useHttp } from "../../hooks/http";
 import { ApiSearchResultSnapshotResponse } from "../../../../shared/types/types";
-import { OnOfficeContext } from "../../context/OnOfficeContext";
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../../OnOffice";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 
 const OpenAiPage: FunctionComponent = () => {
   const { post } = useHttp();
-
-  const { onOfficeContextState } = useContext(OnOfficeContext);
 
   const [searchResultSnapshotId, setSearchResultSnapshotId] =
     useState<string>();
@@ -22,13 +19,13 @@ const OpenAiPage: FunctionComponent = () => {
     console.log(1, "OpenAiPage");
 
     const findOrCreateSnapshot = async () => {
+      // TODO TEST DATA
       const { id } = (
         await post<ApiSearchResultSnapshotResponse>(
           "/api/on-office/find-create-snapshot",
           {
             integrationType: IntegrationTypesEnum.ON_OFFICE,
-            estateId: onOfficeContextState.estateId,
-            accessToken: onOfficeContextState.accessToken,
+            estateId: "1",
           }
         )
       ).data;

@@ -35,6 +35,7 @@ import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { ApiOpenImmoService } from './api/open-immo/api-open-immo.service';
 import { ApiOpenImmoController } from './api/open-immo/api-open-immo.controller';
+import { LocationIntegrationController } from './location-integration.controller';
 
 @Module({
   imports: [
@@ -52,6 +53,7 @@ import { ApiOpenImmoController } from './api/open-immo/api-open-immo.controller'
   ],
   controllers: [
     LocationController,
+    LocationIntegrationController,
     EmbeddedMapController,
     ApiSnapshotController,
     TilesController,

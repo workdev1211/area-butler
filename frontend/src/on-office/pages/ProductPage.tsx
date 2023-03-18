@@ -10,9 +10,9 @@ import {
   OnOfficeProductTypesEnum,
 } from "../../../../shared/types/on-office";
 import { useHttp } from "../../hooks/http";
-import { OnOfficeContext } from "../../context/OnOfficeContext";
 import { toastError } from "../../shared/shared.functions";
 import ProductCard from "../components/ProductCard";
+import { TIntegrationUser, UserContext } from "../../context/UserContext";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -23,13 +23,15 @@ const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
 }, {} as Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>);
 
 export const ProductPage: FunctionComponent = () => {
-  const { onOfficeContextState } = useContext(OnOfficeContext);
   const history = useHistory();
   const { post } = useHttp();
+  const { userState } = useContext(UserContext);
 
   const [createOrderProducts, setCreateOrderProducts] = useState(
     initialCreateOrderProducts
   );
+
+  const integrationUser: TIntegrationUser = userState.integrationUser!;
 
   const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
     const foundProduct = Object.values(createOrderProducts).find(
@@ -81,9 +83,9 @@ export const ProductPage: FunctionComponent = () => {
                 return;
               }
 
-              console.log(1, "ProductPage", onOfficeContextState.accessToken);
+              console.log(1, "ProductPage", integrationUser.accessToken);
 
-              const accessToken = onOfficeContextState.accessToken;
+              const accessToken = integrationUser.accessToken;
 
               const { onOfficeOrderData, products: savedProducts } = (
                 await post<

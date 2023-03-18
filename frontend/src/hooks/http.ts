@@ -1,6 +1,9 @@
 import { useAuth0 } from "@auth0/auth0-react";
 import { AxiosResponse } from "axios";
 import axios from "axios";
+import { useContext } from "react";
+
+import { UserContext } from "../context/UserContext";
 
 const defaultHeaders = {
   Accept: "application/json",
@@ -9,6 +12,9 @@ const defaultHeaders = {
 
 export const useHttp = () => {
   const { isLoading, getIdTokenClaims } = useAuth0();
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
   const get = async <T>(
@@ -37,8 +43,12 @@ export const useHttp = () => {
     const headers: any = { ...defaultHeaders, ...requestHeaders };
     const idToken = !isLoading && (await getIdTokenClaims());
 
-    if (idToken) {
+    if (idToken && !integrationUser) {
       headers["Authorization"] = `Bearer ${idToken.__raw}`;
+    }
+
+    if (integrationUser) {
+      headers["Authorization"] = `AccessToken ${integrationUser.accessToken}`;
     }
 
     return axios.post(`${baseUrl}${url}`, body, {

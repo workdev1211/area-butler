@@ -59,6 +59,9 @@ import {
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { IntegrationUserService } from '../user/integration-user.service';
+import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 
 @Injectable()
 export class LocationService {
@@ -70,6 +73,7 @@ export class LocationService {
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly userService: UserService,
+    private readonly integrationUserService: IntegrationUserService,
     private readonly subscriptionService: SubscriptionService,
     private readonly overpassDataService: OverpassDataService,
     private readonly openAiService: OpenAiService,
@@ -77,21 +81,34 @@ export class LocationService {
   ) {}
 
   async searchLocation(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     search: ApiSearch,
   ): Promise<ApiSearchResponse> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    const existingLocationFilter = {
+      'locationSearch.coordinates': search.coordinates,
+    };
+
+    Object.assign(
+      existingLocationFilter,
+      isIntegrationUser
+        ? {
+            'integrationParams.integrationUserId': user.integrationUserId,
+            'integrationParams.integrationType': user.integrationType,
+          }
+        : { userId: user.id },
+    );
+
     const existingLocation = await this.locationSearchModel.findOne(
-      {
-        userId: user.id,
-        'locationSearch.coordinates': search.coordinates,
-      },
+      existingLocationFilter,
       { endsAt: 1 },
       { sort: { createdAt: -1 } },
     );
 
     this.checkAddressExpiration(existingLocation);
 
-    if (!existingLocation) {
+    if (!existingLocation && !isIntegrationUser) {
       let parentUser = user;
 
       if (user.parentId) {
@@ -158,7 +175,6 @@ export class LocationService {
       }
     }
 
-    // TODO think about changing to Promise.all
     for (const routingProfile of search.meansOfTransportation) {
       const locationsOfInterest = !!configService.useOverpassDb()
         ? await this.overpassDataService.findForCenterAndDistance(
@@ -192,16 +208,31 @@ export class LocationService {
     }
 
     const location: Partial<LocationSearchDocument> = {
-      userId: user.id,
       locationSearch: search,
-      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
+    Object.assign(
+      location,
+      isIntegrationUser
+        ? {
+            'integrationParams.integrationId': search.integrationId,
+            'integrationParams.integrationUserId': user.integrationUserId,
+            'integrationParams.integrationType': user.integrationType,
+          }
+        : {
+            userId: user.id,
+            isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
+          },
+    );
+
     if (!existingLocation) {
-      const addressExpiration = this.subscriptionService.getLimitAmount(
-        user.subscription.stripePriceId,
-        ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-      );
+      // TODO change from hardcoded in case of the integration user
+      const addressExpiration = isIntegrationUser
+        ? { value: 1, unit: 'year' }
+        : this.subscriptionService.getLimitAmount(
+            user.subscription.stripePriceId,
+            ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+          );
 
       if (addressExpiration) {
         const currentDate = dayjs();
@@ -224,8 +255,15 @@ export class LocationService {
     // TODO ask Kai what is the purpose of saving a new locationSearch record after each search request
     await new this.locationSearchModel(location).save();
 
-    if (!existingLocation) {
+    if (!existingLocation && !isIntegrationUser) {
       await this.userService.incrementExecutedRequestCount(user);
+    }
+
+    if (!existingLocation && isIntegrationUser) {
+      await this.integrationUserService.incrementUsageStatsParam(
+        user,
+        ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT,
+      );
     }
 
     return {

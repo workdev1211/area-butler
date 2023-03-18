@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 import { useHistory } from "react-router-dom";
 
 import { useHttp } from "../../hooks/http";
@@ -12,12 +12,10 @@ import {
   toastError,
 } from "../../shared/shared.functions";
 import { LoadingMessage } from "../../OnOffice";
-import { OnOfficeContext } from "../../context/OnOfficeContext";
 
 const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();
   const history = useHistory();
-  const { onOfficeContextState } = useContext(OnOfficeContext);
 
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
 
@@ -45,10 +43,10 @@ const ConfirmOrderPage: FunctionComponent = () => {
             "/api/on-office/confirm-order",
             confirmOrderData,
             {
-              authorization: `AccessToken ${
-                onOfficeContextState.accessToken! ||
-                localStorage.getItem("accessToken")!
-              }`,
+              // TODO get access token from query params sent from create order page
+              Authorization: `AccessToken ${localStorage.getItem(
+                "accessToken"
+              )!}`,
             }
           )
         ).data;

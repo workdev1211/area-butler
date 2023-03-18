@@ -5,6 +5,13 @@ import {
   ApiUser,
   ApiUserRequests,
 } from "../../../shared/types/types";
+import {
+  IApiIntegrationUser,
+  IApiIntUserAvailProdContingents,
+} from "../../../shared/types/integration-user";
+
+export type TIntegrationUser = IApiIntegrationUser &
+  IApiIntUserAvailProdContingents;
 
 export interface UserState {
   user?: ApiUser;
@@ -15,6 +22,7 @@ export interface UserState {
   };
   startTour: boolean;
   embeddableMaps: ApiSearchResultSnapshotResponse[];
+  integrationUser?: TIntegrationUser;
 }
 
 export const initialState: UserState = {
@@ -26,10 +34,12 @@ export const initialState: UserState = {
   },
   startTour: false,
   embeddableMaps: [],
+  integrationUser: undefined,
 };
 
 export enum UserActionTypes {
   SET_USER = "SET_USER",
+  SET_INTEGRATION_USER = "SET_INTEGRATION_USER",
   SET_LATEST_USER_REQUESTS = "SET_LATEST_USER_REQUESTS",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
   SET_EMBEDDABLE_MAPS = "SET_EMBEDDABLE_MAPS",
@@ -43,6 +53,8 @@ export enum UserActionTypes {
 
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
+  [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser &
+    IApiIntUserAvailProdContingents;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {
@@ -70,6 +82,9 @@ export const userReducer = (
   switch (action.type) {
     case UserActionTypes.SET_USER: {
       return { ...state, user: action.payload };
+    }
+    case UserActionTypes.SET_INTEGRATION_USER: {
+      return { ...state, integrationUser: { ...action.payload } };
     }
     case UserActionTypes.SET_LATEST_USER_REQUESTS: {
       return { ...state, latestUserRequests: action.payload };

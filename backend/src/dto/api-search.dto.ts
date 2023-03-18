@@ -61,6 +61,10 @@ class ApiSearchDto implements ApiSearch {
   @IsOptional()
   @IsDate()
   endsAt?: Date;
+
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
 }
 
 export default ApiSearchDto;

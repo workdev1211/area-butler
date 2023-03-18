@@ -3,7 +3,7 @@ export enum IntegrationTypesEnum {
 }
 
 export interface IApiIntegrationParams {
-  integrationId: string;
+  integrationId?: string;
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
 }

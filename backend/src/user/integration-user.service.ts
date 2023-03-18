@@ -13,6 +13,7 @@ import {
   TApiIntegrationUserProduct,
   TApiIntUserAvailableProductContingents,
   TApiIntUserOnOfficeProductContingents,
+  TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
 
 @Injectable()
@@ -142,6 +143,25 @@ export class IntegrationUserService {
 
         return result;
       }, {} as TApiIntUserAvailableProductContingents)
+    );
+  }
+
+  async incrementUsageStatsParam(
+    integrationUser: TIntegrationUserDocument,
+    paramName: TApiIntUserUsageStatsParamNames,
+  ): Promise<void> {
+    const currentDate = dayjs();
+
+    await this.integrationUserModel.updateOne(
+      { _id: integrationUser._id },
+      {
+        $inc: {
+          [`usageStatistics.${paramName}.${currentDate.year()}.${
+            currentDate.month() + 1
+          }.${currentDate.date()}`]: 1,
+        },
+      },
+      { upsert: true },
     );
   }
 }

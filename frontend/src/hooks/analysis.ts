@@ -7,19 +7,35 @@ import { useHttp } from "./http";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
+  ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { UserContext } from "../context/UserContext";
 
 export const useAnalysis = () => {
   const { searchContextState } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
   const { post } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
+
+  const createLocation = async (search: ApiSearch) => {
+    const { data: searchResponse } = await post<ApiSearchResponse>(
+      integrationUser
+        ? "/api/location-integration/search"
+        : "/api/location/search",
+      search
+    );
+
+    return searchResponse;
+  };
 
   const createSnapshot = async (
     items: IBusyModalItem[],
@@ -35,65 +51,62 @@ export const useAnalysis = () => {
 
     let index = 0;
 
-    // TODO change to await for in case of HERE API rate limits
-    await Promise.all(
-      preferredLocations.map(async (preferredLocation) => {
-        items.push({
-          key: `fetch-routes-${preferredLocation.title}-${index}`,
-        });
-        setBusyModalItems([...items]);
+    for (const preferredLocation of preferredLocations) {
+      items.push({
+        key: `fetch-routes-${preferredLocation.title}-${index}`,
+      });
+      setBusyModalItems([...items]);
 
-        const routesResult = await fetchRoutes({
-          userEmail,
-          meansOfTransportation: [
-            MeansOfTransportation.BICYCLE,
-            MeansOfTransportation.CAR,
-            MeansOfTransportation.WALK,
-          ],
-          origin: location,
-          destinations: [
-            {
-              title: preferredLocation.title,
-              coordinates: preferredLocation.coordinates!,
-            },
-          ],
-        });
+      const routesResult = await fetchRoutes({
+        userEmail,
+        meansOfTransportation: [
+          MeansOfTransportation.BICYCLE,
+          MeansOfTransportation.CAR,
+          MeansOfTransportation.WALK,
+        ],
+        origin: location,
+        destinations: [
+          {
+            title: preferredLocation.title,
+            coordinates: preferredLocation.coordinates!,
+          },
+        ],
+      });
 
-        routes.push({
-          routes: routesResult[0].routes,
-          title: routesResult[0].title,
-          show: [],
+      routes.push({
+        routes: routesResult[0].routes,
+        title: routesResult[0].title,
+        show: [],
+        coordinates: preferredLocation.coordinates!,
+      });
+
+      items.push({
+        key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
+      });
+      setBusyModalItems([...items]);
+
+      const transitRoutesResult = await fetchTransitRoutes({
+        userEmail,
+        origin: location,
+        destinations: [
+          {
+            title: preferredLocation.title,
+            coordinates: preferredLocation.coordinates!,
+          },
+        ],
+      });
+
+      if (transitRoutesResult.length && transitRoutesResult[0].route) {
+        transitRoutes.push({
+          route: transitRoutesResult[0].route,
+          title: transitRoutesResult[0].title,
+          show: false,
           coordinates: preferredLocation.coordinates!,
         });
+      }
 
-        items.push({
-          key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
-        });
-        setBusyModalItems([...items]);
-
-        const transitRoutesResult = await fetchTransitRoutes({
-          userEmail,
-          origin: location,
-          destinations: [
-            {
-              title: preferredLocation.title,
-              coordinates: preferredLocation.coordinates!,
-            },
-          ],
-        });
-
-        if (transitRoutesResult.length && transitRoutesResult[0].route) {
-          transitRoutes.push({
-            route: transitRoutesResult[0].route,
-            title: transitRoutesResult[0].title,
-            show: false,
-            coordinates: preferredLocation.coordinates!,
-          });
-        }
-
-        index += 1;
-      })
-    );
+      index += 1;
+    }
 
     items.push({
       key: "save-map-snippet",
@@ -101,21 +114,26 @@ export const useAnalysis = () => {
     setBusyModalItems([...items]);
 
     return (
-      await post<ApiSearchResultSnapshotResponse>("/api/location/snapshot", {
-        placesLocation: searchContextState.placesLocation,
-        location,
-        transportationParams: searchContextState.transportationParams,
-        localityParams: getUncombinedOsmEntityTypes(
-          searchContextState.localityParams
-        ),
-        searchResponse: searchResponse,
-        realEstateListings: realEstateState.listings,
-        preferredLocations,
-        routes,
-        transitRoutes,
-      })
+      await post<ApiSearchResultSnapshotResponse>(
+        integrationUser
+          ? "/api/location-integration/snapshot"
+          : "/api/location/snapshot",
+        {
+          placesLocation: searchContextState.placesLocation,
+          location,
+          transportationParams: searchContextState.transportationParams,
+          localityParams: getUncombinedOsmEntityTypes(
+            searchContextState.localityParams
+          ),
+          searchResponse: searchResponse,
+          realEstateListings: realEstateState.listings,
+          preferredLocations,
+          routes,
+          transitRoutes,
+        }
+      )
     ).data;
   };
 
-  return { createSnapshot };
+  return { createLocation, createSnapshot };
 };

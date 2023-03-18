@@ -16,7 +16,7 @@ export interface RollbarConfig {
 }
 
 export interface ApiConfig {
-  auth: {
+  auth?: {
     clientId: string;
     domain: string;
   };
@@ -24,8 +24,8 @@ export interface ApiConfig {
   mapBoxAccessToken: string;
   systemEnv: TSystemEnvironment;
   stripeEnv: TPaymentEnvironment;
-  rollbarConfig: RollbarConfig;
-  paypalClientId: string;
+  rollbarConfig?: RollbarConfig;
+  paypalClientId?: string;
 }
 
 export interface MapBoxStyle {
@@ -114,6 +114,7 @@ export interface ApiSearch {
   meansOfTransportation: TransportationParam[];
   preferredAmenities: OsmName[];
   endsAt?: Date;
+  integrationId?: string;
 }
 
 export interface ApiSearchResponse {

@@ -19,7 +19,7 @@ import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "context/RealEstateContext";
-import { UserContext } from "context/UserContext";
+import { TIntegrationUser, UserContext } from "context/UserContext";
 import { useFederalElectionData } from "hooks/federalelectiondata";
 import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
@@ -70,8 +70,6 @@ import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useAnalysis } from "../hooks/analysis";
-// TODO remove in future
-// import ExpressAnalysisModal from "../components/ExpressAnalysisModal";
 import {
   getCombinedOsmEntityTypes,
   getUncombinedOsmEntityTypes,
@@ -81,13 +79,13 @@ import { ISearchParamsHistoryState } from "../shared/shared.types";
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FunctionComponent = () => {
-  const { get, post, put } = useHttp();
+  const { get, put } = useHttp();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createSnapshot } = useAnalysis();
+  const { createLocation, createSnapshot } = useAnalysis();
 
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
@@ -104,14 +102,10 @@ const SearchParamsPage: FunctionComponent = () => {
     name: LimitIncreaseModelNameEnum;
     id: string | undefined;
   }>();
-  // TODO remove in future
-  // const [isShownMapSnippetModal, setIsShownMapSnippetModal] = useState(false);
-  // TODO remove in future
-  // const [snapshotResponse, setSnapshotResponse] =
-  //   useState<ApiSearchResultSnapshotResponse>();
   const [placesLocation, setPlacesLocation] = useState<any>(null);
 
   const user: ApiUser = userState.user!;
+  const integrationUser: TIntegrationUser = userState.integrationUser!;
 
   const clearRealEstateParams = () => {
     searchContextDispatch({
@@ -149,17 +143,18 @@ const SearchParamsPage: FunctionComponent = () => {
 
   // Clears initial values
   useEffect(() => {
-    if (!state) {
+    if (!state && !integrationUser) {
       clearRealEstateParams();
       clearPotentialCustomerParams();
       return;
     }
 
-    if (state.isFromRealEstates) {
+    if (state?.isFromRealEstates || integrationUser) {
       clearPotentialCustomerParams();
+      return;
     }
 
-    if (state.isFromPotentialCustomers) {
+    if (state?.isFromPotentialCustomers) {
       clearRealEstateParams();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -233,7 +228,9 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    void fetchCustomers();
+    if (!integrationUser) {
+      void fetchCustomers();
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
@@ -248,7 +245,9 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    void fetchRealEstates();
+    if (!integrationUser) {
+      void fetchRealEstates();
+    }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLocationAutocompleteChange = (payload: any) => {
@@ -295,18 +294,6 @@ const SearchParamsPage: FunctionComponent = () => {
       ({ coordinates }) => !coordinates
     );
 
-  // TODO remove in future
-  // const increaseLimitExpressButton: ReactNode = (
-  //   <button
-  //     data-tour="start-search"
-  //     type="button"
-  //     disabled={searchButtonDisabled}
-  //     className="btn bg-secondary-gradient w-full sm:w-auto ml-auto"
-  //   >
-  //     <span>One-Klick</span>
-  //   </button>
-  // );
-
   const increaseLimitSearchButton: ReactNode = (
     <button
       type="button"
@@ -318,13 +305,6 @@ const SearchParamsPage: FunctionComponent = () => {
       <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
     </button>
   );
-
-  // TODO remove in future
-  // const increaseRequestLimitExpressModalConfig: ModalConfig = {
-  //   modalTitle: "Abfragelimit erreicht",
-  //   submitButtonTitle: "Neues Kontingent kaufen",
-  //   modalButton: increaseLimitExpressButton,
-  // };
 
   const increaseRequestLimitSearchModalConfig: ModalConfig = {
     modalTitle: "Abfragelimit erreicht",
@@ -392,10 +372,7 @@ const SearchParamsPage: FunctionComponent = () => {
       ).map((l: ApiOsmEntity) => l.name),
     };
 
-    const { data: searchResponse } = await post<ApiSearchResponse>(
-      "/api/location/search",
-      search
-    );
+    const searchResponse = await createLocation(search);
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
@@ -619,35 +596,6 @@ const SearchParamsPage: FunctionComponent = () => {
     );
   };
 
-  // TODO remove in future
-  // const performExpressAnalysis = async () => {
-  //   const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
-  //     setSnapshotResponse(snapshotResponse);
-  //     setIsShownMapSnippetModal(true);
-  //   };
-  //
-  //   await handleAnalysis(onFinish);
-  // };
-
-  // TODO remove in future
-  // const ExpressAnalysisButton: FunctionComponent<{ classes?: string }> = ({
-  //   classes = "btn bg-secondary-gradient w-full sm:w-auto ml-auto",
-  // }) => {
-  //   return (
-  //     <button
-  //       data-tour="start-search"
-  //       type="button"
-  //       disabled={searchButtonDisabled}
-  //       onClick={performExpressAnalysis}
-  //       className={
-  //         searchContextState.searchBusy ? `${classes} loading` : classes
-  //       }
-  //     >
-  //       <span>One-Klick</span>
-  //     </button>
-  //   );
-  // };
-
   return (
     <DefaultLayout
       title="Suche"
@@ -656,23 +604,13 @@ const SearchParamsPage: FunctionComponent = () => {
       actionsBottom={
         limitType
           ? [
-              // TODO remove in future
-              // <IncreaseLimitModal
-              //   key="express-analysis-button"
-              //   modalConfig={increaseRequestLimitExpressModalConfig}
-              // />,
               <div key={"dummy"} />,
               <IncreaseLimitModal
                 key="search-button"
                 modalConfig={increaseRequestLimitSearchModalConfig}
               />,
             ]
-          : [
-              // TODO remove in future
-              // <ExpressAnalysisButton key="express-analysis-button" />,
-              <div key={"dummy"} />,
-              <SearchButton key="search-button" />,
-            ]
+          : [<div key={"dummy"} />, <SearchButton key="search-button" />]
       }
     >
       <TourStarter tour="search" />
@@ -684,30 +622,28 @@ const SearchParamsPage: FunctionComponent = () => {
           isRandomMessages={true}
         />
       )}
-      {/* TODO remove in future */}
-      {/*{isShownMapSnippetModal && (*/}
-      {/*  <ExpressAnalysisModal*/}
-      {/*    snapshotResponse={snapshotResponse!}*/}
-      {/*    closeModal={() => {*/}
-      {/*      setIsShownMapSnippetModal(false);*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*)}*/}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
           <h2 className="search-params-first-title">Lage</h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
-            <LocationAutocomplete
-              value={placesLocation}
-              setValue={() => {}}
-              afterChange={onLocationAutocompleteChange}
-            />
-            <div className="flex flex-wrap items-end gap-4">
-              <MyLocationButton
-                classes="btn bg-primary-gradient w-full sm:w-auto"
-                onComplete={onMyLocationChange}
+            {integrationUser && (
+              <div>{searchContextState.placesLocation.label}</div>
+            )}
+            {!integrationUser && (
+              <LocationAutocomplete
+                value={placesLocation}
+                setValue={() => {}}
+                afterChange={onLocationAutocompleteChange}
               />
-            </div>
+            )}
+            {!integrationUser && (
+              <div className="flex flex-wrap items-end gap-4">
+                <MyLocationButton
+                  classes="btn bg-primary-gradient w-full sm:w-auto"
+                  onComplete={onMyLocationChange}
+                />
+              </div>
+            )}
           </div>
           <div className="flex flex-wrap sm:gap-4">
             <LatestUserRequestsDropDown />
