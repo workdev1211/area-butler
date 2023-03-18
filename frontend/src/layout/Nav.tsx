@@ -51,13 +51,16 @@ const Nav: FunctionComponent = () => {
   return (
     <nav>
       <div className="nav">
+        {/* Mobile main menu button */}
         <div className="nav-button">
           <button
             type="button"
             className="inline-flex items-center justify-center p-2 rounded-md focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             aria-controls="mobile-menu"
             aria-expanded="false"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            onClick={() => {
+              setMobileMenuOpen(!mobileMenuOpen);
+            }}
           >
             <span className="sr-only">Menü</span>
             <svg
@@ -94,7 +97,9 @@ const Nav: FunctionComponent = () => {
           </button>
         </div>
 
+        {/* Desktop main menu */}
         <div className="h-full flex-1 flex items-center justify-center lg:items-stretch lg:justify-start">
+          {/* AreaButler logo link */}
           <NavLink to="/" className="nav-logo">
             <img
               className="block lg:hidden h-full w-auto"
@@ -146,9 +151,12 @@ const Nav: FunctionComponent = () => {
           )}
         </div>
 
-        <div className="mr-10">
-          <LoginButton />
-        </div>
+        {/* Right side login button and menu */}
+        {!isAuthenticated && (
+          <div className="mr-10">
+            <LoginButton />
+          </div>
+        )}
         {showNavBar && isAuthenticated && currentUser && (
           <div className="nav-usermenu">
             <div className="nav-usermenu-button">
@@ -157,7 +165,9 @@ const Nav: FunctionComponent = () => {
                 id="user-menu-button"
                 aria-expanded="false"
                 aria-haspopup="true"
-                onClick={() => setUserMenuOpen(!userMenuOpen)}
+                onClick={() => {
+                  setUserMenuOpen(!userMenuOpen);
+                }}
               >
                 <span className="sr-only">Benutzer Menü</span>
                 <img
@@ -180,7 +190,9 @@ const Nav: FunctionComponent = () => {
                 className="nav-usermenu-link"
                 role="menuitem"
                 exact={true}
-                onClick={() => setUserMenuOpen(false)}
+                onClick={() => {
+                  setUserMenuOpen(false);
+                }}
                 id="user-menu-item-1"
               >
                 Profil
@@ -190,6 +202,7 @@ const Nav: FunctionComponent = () => {
                   logout({
                     returnTo: window.location.origin,
                   });
+
                   setUserMenuOpen(false);
                 }}
                 className="nav-usermenu-link"
@@ -203,6 +216,7 @@ const Nav: FunctionComponent = () => {
         )}
       </div>
 
+      {/* Mobile main menu */}
       <div className={mobileMenuClass} id="mobile-menu">
         <div className="ml-5 flex flex-col gap-5 px-2 pt-2 pb-3 space-y-1 bg-white">
           <NavLink

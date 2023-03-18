@@ -68,7 +68,7 @@ export const ProductPage: FunctionComponent = () => {
           <button
             className="btn w-48"
             onClick={() => {
-              history.push("/map");
+              history.push("/search");
             }}
           >
             Kostenlos nutzen
@@ -83,7 +83,7 @@ export const ProductPage: FunctionComponent = () => {
                 return;
               }
 
-              console.log(1, "ProductPage", integrationUser.accessToken);
+              console.log("ProductPage", 1, integrationUser.accessToken);
 
               const accessToken = integrationUser.accessToken;
 
@@ -102,7 +102,7 @@ export const ProductPage: FunctionComponent = () => {
 
               localStorage.setItem("accessToken", accessToken!);
               localStorage.setItem("products", JSON.stringify(savedProducts));
-              console.log(9, "ProductPage", onOfficeOrderData, savedProducts);
+              console.log("ProductPage", 9, onOfficeOrderData, savedProducts);
 
               window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
             }}

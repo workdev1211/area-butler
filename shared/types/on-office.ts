@@ -186,8 +186,8 @@ export interface IApiOnOfficeCreateOrderProduct {
   quantity: number;
 }
 
-export interface IApiOnOfficeFindCreateSnapshotReq {
-  estateId: string;
+export interface IApiOnOfficeFetchLatestSnapshotReq {
+  integrationId: string;
 }
 
 export interface IApiOnOfficeProduct {

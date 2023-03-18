@@ -28,7 +28,7 @@ import {
 import SearchResultContainer, {
   ICurrentMapRef,
 } from "../../components/SearchResultContainer";
-import { LoadingMessage } from "../../OnOffice";
+import { LoadingMessage } from "../OnOfficeContainer";
 import { useAnalysis } from "../../hooks/analysis";
 import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
 
@@ -47,7 +47,7 @@ const MapPage: FunctionComponent = () => {
   const [mapBoxToken, setMapBoxToken] = useState("");
 
   useEffect(() => {
-    console.log(1, snapshotId);
+    console.log("MapPage", 1, snapshotId);
     if (!snapshotId) {
       return;
     }
@@ -179,6 +179,8 @@ const MapPage: FunctionComponent = () => {
     ) {
       mapRef.current.handleScrollWheelZoom.enableScrollWheelZoom();
     }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
   if (!searchContextState.searchResponse && !mapBoxToken) {

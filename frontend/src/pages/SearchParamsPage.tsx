@@ -79,6 +79,7 @@ import { ISearchParamsHistoryState } from "../shared/shared.types";
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FunctionComponent = () => {
+  console.log("SearchParamsPage", 1);
   const { get } = useHttp();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
@@ -141,13 +142,6 @@ const SearchParamsPage: FunctionComponent = () => {
     });
   };
 
-  useEffect(() => {
-    if (!user && !integrationUser) {
-      history.push("/");
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
   // Clears initial values
   useEffect(() => {
     if (!state && !integrationUser) {
@@ -168,18 +162,10 @@ const SearchParamsPage: FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (!user && !integrationUser) {
-      return;
-    }
-
     setPlacesLocation(searchContextState.placesLocation);
-  }, [user, integrationUser, searchContextState.placesLocation]);
+  }, [searchContextState.placesLocation]);
 
   useEffect(() => {
-    if (!user && !integrationUser) {
-      return;
-    }
-
     const coordinates = searchContextState.location;
 
     if (!coordinates) {
@@ -208,7 +194,7 @@ const SearchParamsPage: FunctionComponent = () => {
     const requestLimitExceeded =
       user?.requestsExecuted >= totalRequestContingent;
 
-    if (!existingRequest && requestLimitExceeded) {
+    if (!existingRequest && requestLimitExceeded && !integrationUser) {
       if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
         history.push("/profile");
         return;
@@ -223,8 +209,6 @@ const SearchParamsPage: FunctionComponent = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    user,
-    integrationUser,
     searchContextState.location,
     userState.latestUserRequests,
     user?.requestContingents,
@@ -265,7 +249,7 @@ const SearchParamsPage: FunctionComponent = () => {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onLocationAutocompleteChange = (payload: any) => {
+  const onLocationAutocompleteChange = (payload: any): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: payload.value,
@@ -279,7 +263,9 @@ const SearchParamsPage: FunctionComponent = () => {
     }
   };
 
-  const onMyLocationChange = async (coordinates: ApiCoordinates) => {
+  const onMyLocationChange = async (
+    coordinates: ApiCoordinates
+  ): Promise<void> => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCATION,
       payload: {
@@ -570,11 +556,18 @@ const SearchParamsPage: FunctionComponent = () => {
   };
 
   const performAnalysis = async (): Promise<void> => {
-    const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
+    const onFinish = ({
+      id: snapshotId,
+    }: ApiSearchResultSnapshotResponse): void => {
       if (integrationUser) {
-        history.push(`map/${snapshotResponse.id}`);
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
+          payload: snapshotId,
+        });
+
+        history.push(`map/${snapshotId}`);
       } else {
-        history.push(`snippet-editor/${snapshotResponse.id}`, {
+        history.push(`snippet-editor/${snapshotId}`, {
           isNewSnapshot: true,
         });
       }
@@ -642,16 +635,20 @@ const SearchParamsPage: FunctionComponent = () => {
           <h2 className="search-params-first-title">Lage</h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
             {integrationUser && (
-              <div>{searchContextState.placesLocation.label}</div>
+              <div className="text-xl font-bold">
+                Adresse: {searchContextState.placesLocation.label}
+              </div>
             )}
-            {user && !integrationUser && (
+            {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
+            {!integrationUser && (
               <LocationAutocomplete
                 value={placesLocation}
                 setValue={() => {}}
                 afterChange={onLocationAutocompleteChange}
               />
             )}
-            {user && !integrationUser && (
+            {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
+            {!integrationUser && (
               <div className="flex flex-wrap items-end gap-4">
                 <MyLocationButton
                   classes="btn bg-primary-gradient w-full sm:w-auto"

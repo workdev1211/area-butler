@@ -23,12 +23,12 @@ import {
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
 import ApiOnOfficeConfirmOrderReqDto from './dto/api-on-office-confirm-order-req.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import ApiOnOfficeFindCreateSnapshotReqDto from './dto/api-on-office-find-create-snapshot-req.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
+import ApiOnOfficeFetchLatestSnapshotReqDto from './dto/api-on-office-find-create-snapshot-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -107,24 +107,19 @@ export class OnOfficeController {
   }
 
   @ApiOperation({
-    description: 'Fetches or creates a snapshot by real estate address',
+    description: 'Fetches a snapshot by integration id',
   })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('find-create-snapshot')
-  async findOrCreateSnapshot(
+  @Post('fetch-latest-snapshot')
+  async fetchLatestSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() findOrCreateSnapshotData: ApiOnOfficeFindCreateSnapshotReqDto,
-  ): Promise<ApiSearchResultSnapshotResponse | any> {
-    this.logger.debug(this.findOrCreateSnapshot.name, findOrCreateSnapshotData);
+    @Body() fetchLatestSnapshotData: ApiOnOfficeFetchLatestSnapshotReqDto,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    this.logger.debug(this.fetchLatestSnapshot.name, fetchLatestSnapshotData);
 
-    return this.onOfficeService.getEstateData(
-      findOrCreateSnapshotData.estateId,
+    return this.onOfficeService.fetchLatestSnapshot(
+      fetchLatestSnapshotData.integrationId,
       integrationUser,
     );
-
-    // return this.onOfficeService.findOrCreateSnapshot(
-    //   findOrCreateSnapshotData,
-    //   this.integrationType,
-    // );
   }
 }

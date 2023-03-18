@@ -11,14 +11,15 @@ import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
+import "react-toastify/dist/ReactToastify.css";
+import "./App.scss";
+
 import FormModal from "components/FormModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import FeedbackFormHandler from "feedback/FeedbackFormHandler";
-import "react-toastify/dist/ReactToastify.css";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
 import { ApiUser, ApiUserRequests } from "../../shared/types/types";
-import "./App.scss";
 import Authenticated from "./auth/Authenticated";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 import { RealEstateContextProvider } from "./context/RealEstateContext";

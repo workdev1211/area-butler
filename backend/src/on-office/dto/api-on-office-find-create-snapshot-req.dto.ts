@@ -1,13 +1,13 @@
 import { IsNotEmpty, IsString } from 'class-validator';
 
-import { IApiOnOfficeFindCreateSnapshotReq } from '@area-butler-types/on-office';
+import { IApiOnOfficeFetchLatestSnapshotReq } from '@area-butler-types/on-office';
 
-class ApiOnOfficeFindCreateSnapshotReqDto
-  implements IApiOnOfficeFindCreateSnapshotReq
+class ApiOnOfficeFetchLatestSnapshotReqDto
+  implements IApiOnOfficeFetchLatestSnapshotReq
 {
   @IsNotEmpty()
   @IsString()
-  estateId: string;
+  integrationId: string;
 }
 
-export default ApiOnOfficeFindCreateSnapshotReqDto;
+export default ApiOnOfficeFetchLatestSnapshotReqDto;

@@ -11,7 +11,7 @@ import {
   getQueryParamsAndUrl,
   toastError,
 } from "../../shared/shared.functions";
-import { LoadingMessage } from "../../OnOffice";
+import { LoadingMessage } from "../OnOfficeContainer";
 
 const ConfirmOrderPage: FunctionComponent = () => {
   const { post } = useHttp();
@@ -35,7 +35,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
         onOfficeQueryParams: queryParamsAndUrl.queryParams,
       };
 
-      console.log(1, "ConfirmOrderPage", confirmOrderData);
+      console.log("ConfirmOrderPage", 1, confirmOrderData);
 
       try {
         const { message, availableProductContingents } = (
@@ -62,12 +62,12 @@ const ConfirmOrderPage: FunctionComponent = () => {
 
         // TODO update user products in context
         console.log(
-          9,
           "ConfirmOrderPage",
+          9,
           message,
           availableProductContingents
         );
-        // history.push("/map");
+        // history.push("/search");
       } catch (e) {
         toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", e);

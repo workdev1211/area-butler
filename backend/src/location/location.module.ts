@@ -36,6 +36,7 @@ import { OpenAiModule } from '../open-ai/open-ai.module';
 import { ApiOpenImmoService } from './api/open-immo/api-open-immo.service';
 import { ApiOpenImmoController } from './api/open-immo/api-open-immo.controller';
 import { LocationIntegrationController } from './location-integration.controller';
+import { LocationIntegrationService } from './location-integration.service';
 
 @Module({
   imports: [
@@ -71,7 +72,8 @@ import { LocationIntegrationController } from './location-integration.controller
     MongoSortParamPipe,
     ApiAddressesInRangeService,
     ApiOpenImmoService,
+    LocationIntegrationService,
   ],
-  exports: [LocationService, ApiSnapshotService],
+  exports: [LocationService, ApiSnapshotService, LocationIntegrationService],
 })
 export class LocationModule {}

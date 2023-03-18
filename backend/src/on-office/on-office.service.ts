@@ -15,7 +15,6 @@ import {
   ApiOnOfficeResourceTypesEnum,
   IApiOnOfficeConfirmOrderReq,
   IApiOnOfficeCreateOrderReq,
-  IApiOnOfficeFindCreateSnapshotReq,
   IApiOnOfficeActivationRes,
   IApiOnOfficeRequest,
   IApiOnOfficeLoginReq,
@@ -35,12 +34,7 @@ import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
 } from '../../../shared/functions/shared.functions';
-import { ApiSnapshotService } from '../location/api-snapshot.service';
-import { UserService } from '../user/user.service';
-import { LocationService } from '../location/location.service';
-import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { UserDocument } from '../user/schema/user.schema';
 import {
   OnOfficeTransaction,
   TOnOfficeTransactionDocument,
@@ -51,6 +45,8 @@ import OnOfficeEstateToAreaButlerEstateDto from './dto/on-office-estate-to-areab
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { LocationIntegrationService } from '../location/location-integration.service';
+import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 
 @Injectable()
 export class OnOfficeService {
@@ -67,10 +63,7 @@ export class OnOfficeService {
     private readonly integrationUserService: IntegrationUserService,
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-
-    private readonly userService: UserService,
-    private readonly apiSnapshotService: ApiSnapshotService,
-    private readonly locationService: LocationService,
+    private readonly locationIntegrationService: LocationIntegrationService,
   ) {}
 
   async getRenderData({
@@ -197,8 +190,6 @@ export class OnOfficeService {
 
     this.logger.debug(this.login.name, areaButlerEstate);
 
-    // TODO save to DB as a real estate entity
-
     return {
       estateId,
       integrationUserId,
@@ -304,40 +295,6 @@ export class OnOfficeService {
         return { message: onOfficeQueryParams.message.replace(/\+/g, ' ') };
       }
     }
-  }
-
-  async findOrCreateSnapshot(
-    { estateId }: IApiOnOfficeFindCreateSnapshotReq,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    // TODO add extract address call from OnOffice
-    const address = 'Schadowstraße 55, Düsseldorf';
-    const extendedClaim = '21';
-
-    // const { userId } = await this.integrationUserService.findOneOrFail(
-    //   {},
-    //   integrationType,
-    // );
-    //
-    // const user = await this.userService.findByIdWithSubscription(userId);
-
-    const user = {} as UserDocument;
-
-    try {
-      return mapSnapshotToEmbeddableMap(
-        await this.locationService.fetchSnapshotByIntegrationId(estateId),
-      );
-    } catch {
-      this.logger.log(
-        this.findOrCreateSnapshot.name,
-        `Snapshot with the integration id ${estateId} was not found.`,
-      );
-    }
-
-    return this.apiSnapshotService.createSnapshot({
-      user,
-      location: address,
-    });
   }
 
   async getEstateData(
@@ -448,6 +405,20 @@ export class OnOfficeService {
       onOfficeEstate,
       { excludeExtraneousValues: true, exposeUnsetFields: false },
     );
+  }
+
+  async fetchLatestSnapshot(
+    integrationId: string,
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const snapshot =
+      await this.locationIntegrationService.fetchLatestSnapByIntId(
+        integrationId,
+        integrationUser,
+        this.integrationType,
+      );
+
+    return snapshot ? mapSnapshotToEmbeddableMap(snapshot) : undefined;
   }
 
   generateSignature(

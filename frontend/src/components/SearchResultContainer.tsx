@@ -638,6 +638,10 @@ const SearchResultContainer = forwardRef<
     //   }),
     // };
 
+    if (!mapBoxToken) {
+      return null;
+    }
+
     return (
       <>
         <div
