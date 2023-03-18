@@ -26,7 +26,7 @@ export const useAnalysis = () => {
     userState: { integrationUser },
   } = useContext(UserContext);
 
-  const { post, put } = useHttp();
+  const { get, post, put } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
   const createLocation = async (
@@ -40,6 +40,18 @@ export const useAnalysis = () => {
     );
 
     return searchResponse;
+  };
+
+  const fetchSnapshot = async (
+    snapshotId: string
+  ): Promise<ApiSearchResultSnapshotResponse> => {
+    return (
+      await get<ApiSearchResultSnapshotResponse>(
+        integrationUser
+          ? `/api/location-integration/snapshot/${snapshotId}`
+          : `/api/location/snapshot/${snapshotId}`
+      )
+    ).data;
   };
 
   const createSnapshot = async (
@@ -145,7 +157,7 @@ export const useAnalysis = () => {
     snapshotResponse: ApiSearchResultSnapshotResponse,
     snapshotConfig: ApiSearchResultSnapshotConfig
   ): Promise<ApiUpdateSearchResultSnapshot> => {
-    const { data: updatedSnapshotResponse } =
+    return (
       await put<ApiUpdateSearchResultSnapshot>(
         integrationUser
           ? `/api/location-integration/snapshot/${snapshotResponse?.id}`
@@ -156,10 +168,9 @@ export const useAnalysis = () => {
             ...snapshotResponse?.snapshot,
           },
         }
-      );
-
-    return updatedSnapshotResponse;
+      )
+    ).data;
   };
 
-  return { createLocation, createSnapshot, updateSnapshot };
+  return { createLocation, fetchSnapshot, createSnapshot, updateSnapshot };
 };

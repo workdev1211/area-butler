@@ -7,3 +7,7 @@ export interface IApiIntegrationParams {
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
 }
+
+export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
+  integrationId: string;
+}

@@ -67,7 +67,7 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
                 }}
               >
                 <Switch>
-                  <Route path="/map">
+                  <Route path="/map/:snapshotId">
                     <MapPage />
                   </Route>
                   <Route path="/open-ai">

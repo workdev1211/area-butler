@@ -9,6 +9,7 @@ import { Form, Formik } from "formik";
 import dayjs from "dayjs";
 
 import "./SearchParamsPage.scss";
+
 import FormModal, { ModalConfig } from "components/FormModal";
 import LatestUserRequestsDropDown from "components/LatestUserRequestsDropDown";
 import {
@@ -140,6 +141,13 @@ const SearchParamsPage: FunctionComponent = () => {
     });
   };
 
+  useEffect(() => {
+    if (!user && !integrationUser) {
+      history.push("/");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   // Clears initial values
   useEffect(() => {
     if (!state && !integrationUser) {
@@ -160,60 +168,68 @@ const SearchParamsPage: FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
+    if (!user && !integrationUser) {
+      return;
+    }
+
     setPlacesLocation(searchContextState.placesLocation);
-  }, [searchContextState.placesLocation]);
+  }, [user, integrationUser, searchContextState.placesLocation]);
 
-  useEffect(
-    () => {
-      const coordinates = searchContextState.location;
+  useEffect(() => {
+    if (!user && !integrationUser) {
+      return;
+    }
 
-      if (!coordinates) {
+    const coordinates = searchContextState.location;
+
+    if (!coordinates) {
+      return;
+    }
+
+    const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
+    let limitType;
+    let modelData;
+
+    const existingRequest = latestUserRequests.requests.find(
+      ({ coordinates: requestCoordinates }) =>
+        JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
+    );
+
+    if (dayjs().isAfter(existingRequest?.endsAt)) {
+      limitType = ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION;
+
+      modelData = {
+        name: LimitIncreaseModelNameEnum.LocationSearch,
+        id: existingRequest?.id,
+      };
+    }
+
+    const totalRequestContingent = deriveTotalRequestContingent(user);
+    const requestLimitExceeded =
+      user?.requestsExecuted >= totalRequestContingent;
+
+    if (!existingRequest && requestLimitExceeded) {
+      if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
+        history.push("/profile");
         return;
       }
 
-      const latestUserRequests: ApiUserRequests = userState.latestUserRequests!;
-      let limitType;
-      let modelData;
+      limitType = ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS;
+    }
 
-      const existingRequest = latestUserRequests.requests.find(
-        ({ coordinates: requestCoordinates }) =>
-          JSON.stringify(requestCoordinates) === JSON.stringify(coordinates)
-      );
+    setIsNewRequest(!existingRequest);
+    setLimitType(limitType);
+    setModelData(modelData);
 
-      if (dayjs().isAfter(existingRequest?.endsAt)) {
-        limitType = ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION;
-
-        modelData = {
-          name: LimitIncreaseModelNameEnum.LocationSearch,
-          id: existingRequest?.id,
-        };
-      }
-
-      const totalRequestContingent = deriveTotalRequestContingent(user);
-      const requestLimitExceeded =
-        user.requestsExecuted >= totalRequestContingent;
-
-      if (!existingRequest && requestLimitExceeded) {
-        if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
-          history.push("/profile");
-          return;
-        }
-
-        limitType = ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS;
-      }
-
-      setIsNewRequest(!existingRequest);
-      setLimitType(limitType);
-      setModelData(modelData);
-    },
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [
-      searchContextState.location,
-      userState.latestUserRequests,
-      user.requestContingents,
-      user.requestsExecuted,
-    ]
-  );
+  }, [
+    user,
+    integrationUser,
+    searchContextState.location,
+    userState.latestUserRequests,
+    user?.requestContingents,
+    user?.requestsExecuted,
+  ]);
 
   useEffect(() => {
     const fetchCustomers = async () => {
@@ -227,7 +243,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    if (!integrationUser) {
+    if (user && !integrationUser) {
       void fetchCustomers();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -244,7 +260,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    if (!integrationUser) {
+    if (user && !integrationUser) {
       void fetchRealEstates();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
@@ -324,17 +340,17 @@ const SearchParamsPage: FunctionComponent = () => {
   );
 
   const hasCensusData =
-    user.subscription?.config.appFeatures.dataSources.includes(
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
     );
 
   const hasElectionData =
-    user.subscription?.config.appFeatures.dataSources.includes(
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     );
 
   const hasPollutionData =
-    user.subscription?.config.appFeatures.dataSources.includes(
+    user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     );
 
@@ -496,7 +512,7 @@ const SearchParamsPage: FunctionComponent = () => {
         items,
         setBusyModalItems,
         searchResponse,
-        user.email
+        user?.email
       );
 
       items.push({
@@ -505,8 +521,9 @@ const SearchParamsPage: FunctionComponent = () => {
       setBusyModalItems([...items]);
 
       const { config: snapshotConfig } = createdSnapshotResponse;
-      snapshotConfig!.primaryColor = snapshotConfig!.primaryColor || user.color;
-      snapshotConfig!.mapIcon = snapshotConfig!.mapIcon || user.mapIcon;
+      snapshotConfig!.primaryColor =
+        snapshotConfig!.primaryColor || user?.color;
+      snapshotConfig!.mapIcon = snapshotConfig!.mapIcon || user?.mapIcon;
 
       const updatedSnapshotResponse = await updateSnapshot(
         createdSnapshotResponse,
@@ -555,7 +572,7 @@ const SearchParamsPage: FunctionComponent = () => {
   const performAnalysis = async (): Promise<void> => {
     const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
       if (integrationUser) {
-        history.push(`snippet-editor/${snapshotResponse.id}`);
+        history.push(`map/${snapshotResponse.id}`);
       } else {
         history.push(`snippet-editor/${snapshotResponse.id}`, {
           isNewSnapshot: true,
@@ -627,14 +644,14 @@ const SearchParamsPage: FunctionComponent = () => {
             {integrationUser && (
               <div>{searchContextState.placesLocation.label}</div>
             )}
-            {!integrationUser && (
+            {user && !integrationUser && (
               <LocationAutocomplete
                 value={placesLocation}
                 setValue={() => {}}
                 afterChange={onLocationAutocompleteChange}
               />
             )}
-            {!integrationUser && (
+            {user && !integrationUser && (
               <div className="flex flex-wrap items-end gap-4">
                 <MyLocationButton
                   classes="btn bg-primary-gradient w-full sm:w-auto"

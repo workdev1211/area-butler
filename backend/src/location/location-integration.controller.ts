@@ -1,12 +1,14 @@
 import {
   Body,
   Controller,
+  Get,
   Param,
   Post,
   Put,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import * as dayjs from 'dayjs';
 
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
@@ -18,11 +20,38 @@ import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-sn
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 @ApiTags('location', 'integration')
 @Controller('api/location-integration')
 export class LocationIntegrationController {
-  constructor(private readonly locationService: LocationService) {}
+  constructor(
+    private readonly locationService: LocationService,
+    private readonly realEstateListingService: RealEstateListingService,
+  ) {}
+
+  @ApiOperation({ description: 'Fetch a specific embeddable map' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('snapshot/:id')
+  async fetchSnapshot(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('id') id: string,
+  ): Promise<ApiSearchResultSnapshotResponseDto> {
+    const map = await this.locationService.fetchSnapshotById(
+      integrationUser,
+      id,
+    );
+
+    map.updatedAt = dayjs().toDate();
+    await map.save();
+
+    const realEstateListings =
+      await this.realEstateListingService.fetchRealEstateListings(
+        integrationUser,
+      );
+
+    return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
+  }
 
   @ApiOperation({
     description:

@@ -1,8 +1,14 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
+import { useParams } from "react-router-dom";
 
 import "../../embed/EmbedContainer.scss";
 
-import { useHttp } from "../../hooks/http";
 import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
 import {
   SearchContext,
@@ -19,38 +25,36 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
 } from "../../../../shared/types/types";
-import SearchResultContainer from "../../components/SearchResultContainer";
+import SearchResultContainer, {
+  ICurrentMapRef,
+} from "../../components/SearchResultContainer";
 import { LoadingMessage } from "../../OnOffice";
+import { useAnalysis } from "../../hooks/analysis";
+import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
 
 const MapPage: FunctionComponent = () => {
-  const { post } = useHttp();
+  const { snapshotId } = useParams<SnippetEditorRouterProps>();
+  const { fetchSnapshot } = useAnalysis();
+  const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
 
-  const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
-  const [searchConfig, setSearchConfig] =
+  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
+  const [snapshotConfig, setSnapshotConfig] =
     useState<ApiSearchResultSnapshotConfig>();
   const [mapBoxToken, setMapBoxToken] = useState("");
 
   useEffect(() => {
-    console.log(1, "OnOfficeContainer");
+    console.log(1, snapshotId);
+    if (!snapshotId) {
+      return;
+    }
 
-    const findOrCreateSnapshot = async () => {
-      // TODO TEST DATA
-      const response = (
-        await post<ApiSearchResultSnapshotResponse>(
-          "/api/on-office/find-create-snapshot",
-          {
-            integrationId: "111",
-            integrationUserId: "21",
-          }
-        )
-      ).data;
-
-      console.log(9, "OnOfficeContainer", response);
-      const config = response.config;
+    const getSnapshot = async () => {
+      const snapshotResponse = await fetchSnapshot(snapshotId);
+      const config = snapshotResponse.config!;
 
       if (config && !("showAddress" in config)) {
         config["showAddress"] = true;
@@ -60,17 +64,18 @@ const MapPage: FunctionComponent = () => {
         config["showStreetViewLink"] = true;
       }
 
-      setResult(response);
-      setSearchConfig(config);
-      setMapBoxToken(response.mapboxAccessToken);
+      setSnapshot(snapshotResponse);
+      setSnapshotConfig(config);
+      setMapBoxToken(snapshotResponse.mapboxAccessToken);
     };
 
-    void findOrCreateSnapshot();
+    void getSnapshot();
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [snapshotId]);
 
   useEffect(() => {
-    if (!result || !searchConfig) {
+    if (!snapshot || !snapshotConfig) {
       return;
     }
 
@@ -84,13 +89,13 @@ const MapPage: FunctionComponent = () => {
       routes = [],
       transitRoutes = [],
       realEstateListings = [],
-    } = result.snapshot;
+    } = snapshot.snapshot;
 
-    const filteredRealEstateListings = searchConfig.realEstateStatus
+    const filteredRealEstateListings = snapshotConfig.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
-            status === searchConfig.realEstateStatus
+            snapshotConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            status === snapshotConfig.realEstateStatus
         )
       : realEstateListings;
 
@@ -121,7 +126,7 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
-      payload: searchConfig.zoomLevel || defaultMapZoom,
+      payload: snapshotConfig.zoomLevel || defaultMapZoom,
     });
 
     searchContextDispatch({
@@ -146,40 +151,50 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-      payload: { ...searchConfig },
+      payload: { ...snapshotConfig },
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: result.token,
+      payload: snapshot.token,
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups(
         searchResponse,
-        searchConfig,
+        snapshotConfig,
         filteredRealEstateListings,
         preferredLocations
       ),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, searchConfig, searchContextDispatch]);
+  }, [snapshot, snapshotConfig]);
 
-  if (!searchContextState.searchResponse) {
+  useEffect(() => {
+    if (
+      mapRef.current &&
+      !mapRef.current.handleScrollWheelZoom.isScrollWheelZoomEnabled()
+    ) {
+      mapRef.current.handleScrollWheelZoom.enableScrollWheelZoom();
+    }
+  }, [mapRef.current]);
+
+  if (!searchContextState.searchResponse && !mapBoxToken) {
     return <LoadingMessage />;
   }
 
   return (
     <SearchResultContainer
       mapBoxToken={mapBoxToken}
-      mapBoxMapId={searchConfig?.mapBoxMapId}
-      searchResponse={searchContextState.searchResponse}
+      mapBoxMapId={snapshotConfig?.mapBoxMapId}
+      searchResponse={searchContextState.searchResponse!}
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
       isTrial={false}
       embedMode={true}
+      ref={mapRef}
     />
   );
 };

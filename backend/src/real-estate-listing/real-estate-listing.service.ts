@@ -23,6 +23,7 @@ import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { ApiCoordinates, CsvFileFormatEnum } from '@area-butler-types/types';
 import { IApiOpenAiRealEstateDescriptionQuery } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 interface IListingData {
   listing: unknown;
@@ -64,15 +65,28 @@ export class RealEstateListingService {
   ) {}
 
   async fetchRealEstateListings(
-    { id: userId, parentId }: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     status = ApiRealEstateStatusEnum.ALLE,
   ): Promise<RealEstateListingDocument[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
     const filter: {
-      userId: { $in: string[] };
+      userId?: { $in: string[] };
+      integrationParams?: {
+        integrationUserId: string;
+        integrationType: string;
+      };
       status?: ApiRealEstateStatusEnum;
-    } = {
-      userId: { $in: [userId, parentId] },
-    };
+    } = !isIntegrationUser
+      ? {
+          userId: { $in: [user.id, user.parentId] },
+        }
+      : {
+          integrationParams: {
+            integrationUserId: user.integrationUserId,
+            integrationType: user.integrationType,
+          },
+        };
 
     if (status !== ApiRealEstateStatusEnum.ALLE) {
       filter.status = status;

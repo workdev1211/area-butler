@@ -28,6 +28,15 @@ export const defaultStyles: Styles = {
   },
 };
 
+const defaultShowTour = {
+  search: false,
+  result: false,
+  realEstates: false,
+  customers: false,
+  profile: false,
+  editor: false,
+};
+
 const tourSteps: Record<ApiTour, Step[]> = {
   search: SearchSteps,
   result: SearchResulSteps,
@@ -67,7 +76,7 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
     <div>
       <StartTourModal
         tour={tour}
-        showTour={user.showTour}
+        showTour={user?.showTour || defaultShowTour}
         onShowTour={onShowTour}
       />
       <Joyride

@@ -8,8 +8,8 @@ import {
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
-import { IntegrationParamsSchema } from '../../shared/integration-params.schema';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
+import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
+import { RealEstateIntegrationParamsSchema } from '../../shared/real-estate-integration-params.schema';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
 
@@ -48,8 +48,8 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
   @Prop({ type: String })
   externalId: string;
 
-  @Prop({ type: IntegrationParamsSchema })
-  integrationParams: IApiIntegrationParams;
+  @Prop({ type: RealEstateIntegrationParamsSchema })
+  integrationParams: IApiRealEstateIntegrationParams;
 }
 
 export const RealEstateListingSchema =

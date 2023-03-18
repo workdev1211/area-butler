@@ -104,22 +104,22 @@ const LoginPage: FunctionComponent = () => {
         }
 
         // TODO DUMMY DATA
-        const user = {
-          showTour: {
-            search: false,
-            result: false,
-            realEstates: false,
-            customers: false,
-            profile: false,
-            editor: false,
-          },
-          requestContingents: [],
-        } as unknown as ApiUser;
+        // const user = {
+        //   showTour: {
+        //     search: false,
+        //     result: false,
+        //     realEstates: false,
+        //     customers: false,
+        //     profile: false,
+        //     editor: false,
+        //   },
+        //   requestContingents: [],
+        // } as unknown as ApiUser;
 
-        userDispatch({
-          type: UserActionTypes.SET_USER,
-          payload: user,
-        });
+        // userDispatch({
+        //   type: UserActionTypes.SET_USER,
+        //   payload: user,
+        // });
 
         userDispatch({
           type: UserActionTypes.SET_INTEGRATION_USER,
