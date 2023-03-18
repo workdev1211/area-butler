@@ -48,7 +48,6 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
-  ApiUpdateSearchResultSnapshot,
   ApiUser,
   ApiUserRequests,
 } from "../../../shared/types/types";
@@ -79,13 +78,13 @@ import { ISearchParamsHistoryState } from "../shared/shared.types";
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FunctionComponent = () => {
-  const { get, put } = useHttp();
+  const { get } = useHttp();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot } = useAnalysis();
+  const { createLocation, createSnapshot, updateSnapshot } = useAnalysis();
 
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
@@ -370,6 +369,7 @@ const SearchParamsPage: FunctionComponent = () => {
       preferredAmenities: getUncombinedOsmEntityTypes(
         searchContextState.localityParams
       ).map((l: ApiOsmEntity) => l.name),
+      integrationId: searchContextState.integrationId,
     };
 
     const searchResponse = await createLocation(search);
@@ -508,16 +508,10 @@ const SearchParamsPage: FunctionComponent = () => {
       snapshotConfig!.primaryColor = snapshotConfig!.primaryColor || user.color;
       snapshotConfig!.mapIcon = snapshotConfig!.mapIcon || user.mapIcon;
 
-      const { data: updatedSnapshotResponse } =
-        await put<ApiUpdateSearchResultSnapshot>(
-          `/api/location/snapshot/${createdSnapshotResponse?.id}`,
-          {
-            config: snapshotConfig,
-            snapshot: {
-              ...createdSnapshotResponse?.snapshot,
-            },
-          }
-        );
+      const updatedSnapshotResponse = await updateSnapshot(
+        createdSnapshotResponse,
+        snapshotConfig!
+      );
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
@@ -560,9 +554,13 @@ const SearchParamsPage: FunctionComponent = () => {
 
   const performAnalysis = async (): Promise<void> => {
     const onFinish = (snapshotResponse: ApiSearchResultSnapshotResponse) => {
-      history.push(`snippet-editor/${snapshotResponse.id}`, {
-        isNewSnapshot: true,
-      });
+      if (integrationUser) {
+        history.push(`snippet-editor/${snapshotResponse.id}`);
+      } else {
+        history.push(`snippet-editor/${snapshotResponse.id}`, {
+          isNewSnapshot: true,
+        });
+      }
     };
 
     const onFinally = () => {

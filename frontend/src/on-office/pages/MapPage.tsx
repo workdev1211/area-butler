@@ -1,39 +1,28 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
-import "../embed/EmbedContainer.scss";
+import "../../embed/EmbedContainer.scss";
 
-import { useHttp } from "../hooks/http";
-import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
+import { useHttp } from "../../hooks/http";
+import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
 import {
   SearchContext,
   SearchContextActionTypes,
-} from "../context/SearchContext";
-import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { defaultMapZoom } from "../shared/shared.constants";
+} from "../../context/SearchContext";
+import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
+import { defaultMapZoom } from "../../shared/shared.constants";
 import {
   RealEstateActionTypes,
   RealEstateContext,
-} from "../context/RealEstateContext";
-import { deriveInitialEntityGroups } from "../shared/shared.functions";
+} from "../../context/RealEstateContext";
+import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
-} from "../../../shared/types/types";
-import SearchResultContainer from "../components/SearchResultContainer";
-import { LoadingMessage } from "../OnOffice";
+} from "../../../../shared/types/types";
+import SearchResultContainer from "../../components/SearchResultContainer";
+import { LoadingMessage } from "../../OnOffice";
 
-// window.addEventListener("resize", () => {
-//   calculateViewHeight();
-// });
-//
-// const calculateViewHeight = () => {
-//   const vh = window.innerHeight * 0.01;
-//   document.documentElement.style.setProperty("--vh", `${vh}px`);
-// };
-//
-// calculateViewHeight();
-
-const OnOfficeContainer: FunctionComponent = () => {
+const MapPage: FunctionComponent = () => {
   const { post } = useHttp();
 
   const { searchContextState, searchContextDispatch } =
@@ -195,4 +184,4 @@ const OnOfficeContainer: FunctionComponent = () => {
   );
 };
 
-export default OnOfficeContainer;
+export default MapPage;

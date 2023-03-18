@@ -53,6 +53,7 @@ export interface SearchContextState {
   responseTransitRoutes: EntityTransitRoute[];
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
+  integrationId?: string;
 }
 
 export interface IGotoMapCenter {
@@ -112,6 +113,7 @@ export enum SearchContextActionTypes {
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
+  SET_INTEGRATION_ID = "SET_INTEGRATION_ID",
 }
 
 type SearchContextActionsPayload = {
@@ -160,6 +162,7 @@ type SearchContextActionsPayload = {
     | undefined;
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
+  [SearchContextActionTypes.SET_INTEGRATION_ID]: string;
 };
 
 export type SearchContextActions =
@@ -361,6 +364,9 @@ export const searchContextReducer = (
       );
 
       return { ...state, searchResponse };
+    }
+    case SearchContextActionTypes.SET_INTEGRATION_ID: {
+      return { ...state, integrationId: action.payload };
     }
     default:
       return state;

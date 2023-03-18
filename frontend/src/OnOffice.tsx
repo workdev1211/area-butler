@@ -33,7 +33,7 @@ const ConfirmOrderPage = lazy(
   () => import("./on-office/pages/ConfirmOrderPage")
 );
 const OpenAiPage = lazy(() => import("./on-office/pages/OpenAiPage"));
-const OnOfficeContainer = lazy(() => import("./on-office/OnOfficeContainer"));
+const MapPage = lazy(() => import("./on-office/pages/MapPage"));
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -67,6 +67,9 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
                 }}
               >
                 <Switch>
+                  <Route path="/map">
+                    <MapPage />
+                  </Route>
                   <Route path="/open-ai">
                     <OpenAiPage />
                   </Route>

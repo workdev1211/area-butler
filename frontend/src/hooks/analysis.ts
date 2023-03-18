@@ -9,7 +9,10 @@ import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
   ApiSearch,
   ApiSearchResponse,
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  ApiUpdateSearchResultSnapshot,
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
@@ -23,10 +26,12 @@ export const useAnalysis = () => {
     userState: { integrationUser },
   } = useContext(UserContext);
 
-  const { post } = useHttp();
+  const { post, put } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
-  const createLocation = async (search: ApiSearch) => {
+  const createLocation = async (
+    search: ApiSearch
+  ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
       integrationUser
         ? "/api/location-integration/search"
@@ -114,26 +119,47 @@ export const useAnalysis = () => {
     setBusyModalItems([...items]);
 
     return (
-      await post<ApiSearchResultSnapshotResponse>(
+      await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
         integrationUser
           ? "/api/location-integration/snapshot"
           : "/api/location/snapshot",
         {
-          placesLocation: searchContextState.placesLocation,
           location,
+          preferredLocations,
+          routes,
+          transitRoutes,
+          placesLocation: searchContextState.placesLocation,
           transportationParams: searchContextState.transportationParams,
           localityParams: getUncombinedOsmEntityTypes(
             searchContextState.localityParams
           ),
           searchResponse: searchResponse,
           realEstateListings: realEstateState.listings,
-          preferredLocations,
-          routes,
-          transitRoutes,
+          integrationId: searchContextState.integrationId,
         }
       )
     ).data;
   };
 
-  return { createLocation, createSnapshot };
+  const updateSnapshot = async (
+    snapshotResponse: ApiSearchResultSnapshotResponse,
+    snapshotConfig: ApiSearchResultSnapshotConfig
+  ): Promise<ApiUpdateSearchResultSnapshot> => {
+    const { data: updatedSnapshotResponse } =
+      await put<ApiUpdateSearchResultSnapshot>(
+        integrationUser
+          ? `/api/location-integration/snapshot/${snapshotResponse?.id}`
+          : `/api/location/snapshot/${snapshotResponse?.id}`,
+        {
+          config: snapshotConfig,
+          snapshot: {
+            ...snapshotResponse?.snapshot,
+          },
+        }
+      );
+
+    return updatedSnapshotResponse;
+  };
+
+  return { createLocation, createSnapshot, updateSnapshot };
 };

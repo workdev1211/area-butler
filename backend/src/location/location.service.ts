@@ -58,7 +58,6 @@ import {
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
@@ -86,18 +85,23 @@ export class LocationService {
   ): Promise<ApiSearchResponse> {
     const isIntegrationUser = 'integrationUserId' in user;
 
+    const integrationParams = isIntegrationUser
+      ? {
+          integrationParams: {
+            integrationId: search.integrationId,
+            integrationUserId: user.integrationUserId,
+            integrationType: user.integrationType,
+          },
+        }
+      : undefined;
+
     const existingLocationFilter = {
       'locationSearch.coordinates': search.coordinates,
     };
 
     Object.assign(
       existingLocationFilter,
-      isIntegrationUser
-        ? {
-            'integrationParams.integrationUserId': user.integrationUserId,
-            'integrationParams.integrationType': user.integrationType,
-          }
-        : { userId: user.id },
+      isIntegrationUser ? integrationParams : { userId: user.id },
     );
 
     const existingLocation = await this.locationSearchModel.findOne(
@@ -214,11 +218,7 @@ export class LocationService {
     Object.assign(
       location,
       isIntegrationUser
-        ? {
-            'integrationParams.integrationId': search.integrationId,
-            'integrationParams.integrationUserId': user.integrationUserId,
-            'integrationParams.integrationType': user.integrationType,
-          }
+        ? integrationParams
         : {
             userId: user.id,
             isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
@@ -311,32 +311,34 @@ export class LocationService {
     };
   }
 
-  // TODO add type
-  async createSnapshot({
-    user,
-    snapshot,
-    config,
-    integrationParams,
-  }: {
-    user: UserDocument;
-    snapshot: ApiSearchResultSnapshot;
-    config?: ApiSearchResultSnapshotConfig;
-    integrationParams?: IApiIntegrationParams;
-  }): Promise<ApiSearchResultSnapshotResponse> {
+  async createSnapshot(
+    user: UserDocument | TIntegrationUserDocument,
+    snapshot: ApiSearchResultSnapshot,
+    config?: ApiSearchResultSnapshotConfig,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const isIntegrationUser = 'integrationUserId' in user;
     const token = randomBytes(60).toString('hex');
-    const { mapboxAccessToken } =
-      await this.userService.createMapboxAccessToken(user);
+
+    const mapboxAccessToken = isIntegrationUser
+      ? (await this.integrationUserService.createMapboxAccessToken(user)).config
+          .mapboxAccessToken
+      : (await this.userService.createMapboxAccessToken(user))
+          .mapboxAccessToken;
 
     let parsedConfig = config;
 
     if (!parsedConfig) {
-      const [snapshot] = await this.fetchSnapshots(
-        user,
-        0,
-        1,
-        { config: 1 },
-        { updatedAt: -1 },
-      );
+      const snapshot = !isIntegrationUser
+        ? (
+            await this.fetchSnapshots(
+              user,
+              0,
+              1,
+              { config: 1 },
+              { updatedAt: -1 },
+            )
+          )[0]
+        : undefined;
 
       parsedConfig = snapshot?.config || defaultSnapshotConfig;
     }
@@ -345,16 +347,31 @@ export class LocationService {
       mapboxAccessToken,
       snapshot,
       token,
-      integrationParams,
-      userId: user.id,
       config: parsedConfig,
-      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
-    const addressExpiration = this.subscriptionService.getLimitAmount(
-      user.subscription.stripePriceId,
-      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+    Object.assign(
+      snapshotDoc,
+      isIntegrationUser
+        ? {
+            integrationParams: {
+              integrationId: snapshot.integrationId,
+              integrationUserId: user.integrationUserId,
+              integrationType: user.integrationType,
+            },
+          }
+        : {
+            userId: user.id,
+            isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
+          },
     );
+
+    const addressExpiration = isIntegrationUser
+      ? { value: 1, unit: 'year' }
+      : this.subscriptionService.getLimitAmount(
+          user.subscription.stripePriceId,
+          ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+        );
 
     if (addressExpiration) {
       const createdAt = dayjs();
@@ -398,17 +415,21 @@ export class LocationService {
   }
 
   async updateSnapshot(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     id: string,
     { snapshot, config }: ApiUpdateSearchResultSnapshot,
   ): Promise<SearchResultSnapshotDocument> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.htmlSnippet &&
-        !subscriptionPlan.appFeatures.htmlSnippet,
-      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchSnapshotById(user, id);
@@ -484,21 +505,33 @@ export class LocationService {
   }
 
   async fetchSnapshotById(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     id: string,
   ): Promise<SearchResultSnapshotDocument> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.htmlSnippet &&
-        !subscriptionPlan.appFeatures.htmlSnippet,
-      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
+
+    const filter = {
+      _id: id,
+    };
+
+    Object.assign(
+      filter,
+      isIntegrationUser
+        ? { 'integrationParams.integrationUserId': user.integrationUserId }
+        : { userId: user.id },
     );
 
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
-      _id: id,
-      userId: user.id,
-    });
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne(filter);
 
     if (!snapshotDoc) {
       throw new HttpException('Unknown snapshot id', 404);

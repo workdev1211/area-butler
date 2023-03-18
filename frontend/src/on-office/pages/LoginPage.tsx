@@ -88,6 +88,7 @@ const LoginPage: FunctionComponent = () => {
         //   );
 
         // TODO TEST DATA
+        const estateId = "33";
         const integrationUserId = "21";
         const accessToken = "asdas";
         const hasProductContingent = true;
@@ -140,6 +141,11 @@ const LoginPage: FunctionComponent = () => {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_LOCATION,
           payload: { ...coordinates },
+        });
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_INTEGRATION_ID,
+          payload: estateId,
         });
 
         // TODO TEST DATA

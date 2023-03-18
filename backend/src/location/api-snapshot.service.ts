@@ -21,7 +21,6 @@ import {
   defaultSnapshotConfig,
   defaultTransportationParams,
 } from '../../../shared/constants/location';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 @Injectable()
 export class ApiSnapshotService {
@@ -39,7 +38,6 @@ export class ApiSnapshotService {
       searchResponse,
       placesLocation,
       config,
-      integrationParams,
     }: IApiCreateRouteSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const realEstateListings = (
@@ -84,27 +82,20 @@ export class ApiSnapshotService {
       });
     }
 
-    return this.locationService.createSnapshot({
-      user,
-      snapshot,
-      config,
-      integrationParams,
-    });
+    return this.locationService.createSnapshot(user, snapshot, config);
   }
 
-  // TODO add type
+  // TODO add a type
   async createSnapshot({
     user,
     location,
     transportationParams = [],
     localityParams = [],
-    integrationParams,
   }: {
     user: UserDocument;
     location: ApiCoordinates | string;
     transportationParams?: TransportationParam[];
     localityParams?: ApiOsmEntity[];
-    integrationParams?: IApiIntegrationParams;
   }): Promise<ApiSearchResultSnapshotResponse> {
     if (!transportationParams.length) {
       transportationParams.push(...defaultTransportationParams);
@@ -140,7 +131,6 @@ export class ApiSnapshotService {
       searchData,
       searchResponse,
       placesLocation,
-      integrationParams,
       config: defaultSnapshotConfig,
     });
   }

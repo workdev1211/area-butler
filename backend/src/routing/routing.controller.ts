@@ -15,7 +15,7 @@ import {
 } from '@area-butler-types/routing';
 import ApiRouteQueryDto from '../dto/api-route-query.dto';
 import ApiPreferredLocationRouteQueryDto from '../dto/api-preferred-location-route-query.dto';
-import { InjectUserEmailInterceptor } from './interceptor/inject-user-email.interceptor';
+import { InjectUserEmailOrIntInterceptor } from './interceptor/inject-user-email-or-int.interceptor';
 
 @ApiTags('routes')
 @Controller('api/routes')
@@ -25,7 +25,7 @@ export class RoutingController {
   constructor(private readonly routingService: RoutingService) {}
 
   @ApiOperation({ description: 'Fetch routes for entity' })
-  @UseInterceptors(InjectUserEmailInterceptor)
+  @UseInterceptors(InjectUserEmailOrIntInterceptor)
   @Post('fetch')
   async fetchRoutes(
     @Body() query: ApiRouteQueryDto,
@@ -43,7 +43,7 @@ export class RoutingController {
   }
 
   @ApiOperation({ description: 'Fetch transit routes for entity' })
-  @UseInterceptors(InjectUserEmailInterceptor)
+  @UseInterceptors(InjectUserEmailOrIntInterceptor)
   @Post('fetch-transit')
   async fetchTransitRoutes(
     @Body() query: ApiRouteQueryDto,
@@ -63,7 +63,7 @@ export class RoutingController {
   @ApiOperation({
     description: 'Fetch all routes for preferred locations',
   })
-  @UseInterceptors(InjectUserEmailInterceptor)
+  @UseInterceptors(InjectUserEmailOrIntInterceptor)
   @Post('fetch-preferred')
   async fetchPreferredLocationRoutes(
     @Body() query: ApiPreferredLocationRouteQueryDto,

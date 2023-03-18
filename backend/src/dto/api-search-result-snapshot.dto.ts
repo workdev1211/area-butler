@@ -3,6 +3,7 @@ import {
   IsNotEmpty,
   IsObject,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -38,8 +39,10 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   location: ApiCoordinates;
 
   @IsNotEmpty()
+  @IsObject()
   placesLocation: any;
 
+  @IsNotEmpty()
   @ValidateNested({ each: true })
   @IsArray()
   @Type(() => ApiPreferredLocationDto)
@@ -78,6 +81,10 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @ValidateNested({ each: true })
   @Type(() => TransportationParamDto)
   transportationParams: TransportationParam[];
+
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
 }
 
 export default ApiSearchResultSnapshotDto;

@@ -7,7 +7,6 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from "../constants/constants";
-import { IApiIntegrationParams } from "./integration";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -289,6 +288,7 @@ export interface ApiSearchResultSnapshot {
   transitRoutes: EntityTransitRoute[];
   realEstateListing?: ApiRealEstateListing;
   realEstateListings: ApiRealEstateListing[];
+  integrationId?: string;
 }
 
 export interface IApiCreateRouteSnapshot {
@@ -296,7 +296,6 @@ export interface IApiCreateRouteSnapshot {
   searchResponse: ApiSearchResponse;
   placesLocation: IApiPlacesLocation;
   config?: ApiSearchResultSnapshotConfig;
-  integrationParams?: IApiIntegrationParams;
 }
 
 export interface IApiCreateSnapshotFromTemplate {

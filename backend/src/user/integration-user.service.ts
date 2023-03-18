@@ -9,18 +9,21 @@ import {
 } from './schema/integration-user.schema';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
+  TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
   TApiIntUserAvailableProductContingents,
   TApiIntUserOnOfficeProductContingents,
   TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
+import { MapboxService } from '../client/mapbox/mapbox.service';
 
 @Injectable()
 export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
-    private readonly integrationUserModel: Model<TIntegrationUserDocument>, // private readonly userService: UserService,
+    private readonly integrationUserModel: Model<TIntegrationUserDocument>,
+    private readonly mapboxService: MapboxService,
   ) {}
 
   async upsert(
@@ -153,7 +156,7 @@ export class IntegrationUserService {
     const currentDate = dayjs();
 
     await this.integrationUserModel.updateOne(
-      { _id: integrationUser._id },
+      { _id: integrationUser.id },
       {
         $inc: {
           [`usageStatistics.${paramName}.${currentDate.year()}.${
@@ -163,5 +166,22 @@ export class IntegrationUserService {
       },
       { upsert: true },
     );
+  }
+
+  async createMapboxAccessToken(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<TIntegrationUserDocument> {
+    if (!integrationUser.config) {
+      integrationUser.config = {} as TApiIntegrationUserConfig;
+    }
+
+    if (!integrationUser.config.mapboxAccessToken) {
+      integrationUser.config.mapboxAccessToken =
+        await this.mapboxService.createAccessToken(integrationUser.id);
+
+      return integrationUser.save();
+    }
+
+    return integrationUser;
   }
 }

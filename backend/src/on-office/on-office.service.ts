@@ -337,11 +337,6 @@ export class OnOfficeService {
     return this.apiSnapshotService.createSnapshot({
       user,
       location: address,
-      integrationParams: {
-        integrationType,
-        integrationUserId: extendedClaim,
-        integrationId: estateId,
-      },
     });
   }
 

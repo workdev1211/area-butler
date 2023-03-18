@@ -79,7 +79,9 @@ export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;
 export type TApiIntegrationUserProductContingents =
   TApiIntUserOnOfficeProductContingents;
 export type TApiIntegrationUserProductsUsed = TApiIntUserOnOfficeProductsUsed;
-export type TApiIntegrationUserConfig = IApiIntUserOnOfficeConfig;
+export type TApiIntegrationUserConfig = {
+  mapboxAccessToken: string;
+} & IApiIntUserOnOfficeConfig;
 export type TApiIntegrationUserUsageStatistics = Record<
   TApiIntUserUsageStatsParamNames,
   TApiIntUserUsageStatisticsMetrics

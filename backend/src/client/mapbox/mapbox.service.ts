@@ -1,5 +1,7 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
+import { firstValueFrom } from 'rxjs';
+
 import { configService } from '../../config/config.service';
 
 const scopes = [
@@ -12,17 +14,20 @@ const scopes = [
 
 @Injectable()
 export class MapboxService {
-  tokenCreateUrl = 'https://api.mapbox.com/tokens/v2/kudiba-tech';
+  private readonly logger = new Logger(MapboxService.name);
+  // TODO move to the config service / env vars
+  private readonly tokenCreateUrl =
+    'https://api.mapbox.com/tokens/v2/kudiba-tech';
+  private readonly tileCache: any = {};
 
-  tileCache: any = {};
-
-  constructor(private http: HttpService) {}
+  constructor(private readonly http: HttpService) {}
 
   async createAccessToken(
     userId: string,
     allowedUrls: string[] = [],
   ): Promise<string> {
     const tokenTitle = `user-token-${userId}`;
+
     const body = {
       note: tokenTitle,
       scopes: scopes,
@@ -34,13 +39,14 @@ export class MapboxService {
 
     try {
       const { token } = (
-        await this.http
-          .post<{ token: string }>(tokenCreateUrl, body)
-          .toPromise()
+        await firstValueFrom(
+          this.http.post<{ token: string }>(tokenCreateUrl, body),
+        )
       ).data;
+
       return token;
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
     }
   }
 
@@ -48,14 +54,16 @@ export class MapboxService {
     const url = `https://api.mapbox.com/${path}`;
     const cachedTile = this.tileCache[path];
 
-    if (!!cachedTile) {
+    if (cachedTile) {
       return cachedTile;
     }
 
-    const response = await this.http
-      .get(url, { responseType: 'arraybuffer' })
-      .toPromise();
-    this.tileCache[path] = response.data;
-    return response.data;
+    const tile = (
+      await firstValueFrom(this.http.get(url, { responseType: 'arraybuffer' }))
+    ).data;
+
+    this.tileCache[path] = tile;
+
+    return tile;
   }
 }

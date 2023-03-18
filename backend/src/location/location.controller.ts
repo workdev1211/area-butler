@@ -62,7 +62,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSnapshot({ user, snapshot });
+    return this.locationService.createSnapshot(user, snapshot);
   }
 
   @ApiOperation({
