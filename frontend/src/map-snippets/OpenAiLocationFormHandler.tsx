@@ -35,7 +35,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
     setLocationDescription(
       (
         await post<string, IApiOpenAiLocationDescriptionQuery>(
-          "/api/location/open-ai-location-description",
+          "/api/location/open-ai-loc-desc",
           {
             searchResultSnapshotId: searchResultSnapshotId,
             meanOfTransportation,

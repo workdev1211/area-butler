@@ -152,12 +152,12 @@ export class RealEstateListingController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Fetch Open AI real estate description' })
-  @Post('open-ai-real-estate-description')
+  @Post('open-ai-real-estate-desc')
   async fetchOpenAiRealEstateDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    return this.realEstateListingService.fetchOpenAiRealEstateDescription(
+    return this.realEstateListingService.fetchOpenAiRealEstateDesc(
       user,
       realEstateDescriptionQuery,
     );

@@ -53,7 +53,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   const {
     fetchLocationDescription,
     fetchRealEstateDescription,
-    fetchLocationRealEstateDescription,
+    fetchLocRealEstDesc,
     fetchQuery,
   } = useOpenAiData();
 
@@ -97,7 +97,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             formRef.current?.handleSubmit();
             realEstateDescriptionFormRef.current?.handleSubmit();
 
-            response = await fetchLocationRealEstateDescription({
+            response = await fetchLocRealEstDesc({
               searchResultSnapshotId,
               ...(formRef.current
                 ?.values as IOpenAiLocationDescriptionFormValues),
@@ -131,7 +131,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   }, [
     fetchLocationDescription,
     fetchRealEstateDescription,
-    fetchLocationRealEstateDescription,
+    fetchLocRealEstDesc,
     fetchQuery,
     isFetchResponse,
     onResponseFetched,

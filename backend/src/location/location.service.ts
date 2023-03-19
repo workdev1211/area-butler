@@ -615,17 +615,21 @@ export class LocationService {
   }
 
   async fetchOpenAiLocationDescription(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     locationDescriptionQuery: IApiOpenAiLocationDescriptionQuery,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      // TODO think about moving everything to the UserSubscriptionPipe
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.openAi &&
+          !subscriptionPlan.appFeatures.openAi,
+        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const searchResultSnapshot = await this.fetchSnapshotById(
       user,
@@ -642,8 +646,8 @@ export class LocationService {
     return this.openAiService.fetchResponse(queryText);
   }
 
-  async fetchOpenAiLocationRealEstateDescription(
-    user: UserDocument,
+  async fetchOpenAiLocRealEstDesc(
+    user: UserDocument | TIntegrationUserDocument,
     {
       searchResultSnapshotId,
       meanOfTransportation,
@@ -652,14 +656,18 @@ export class LocationService {
       realEstateListingId,
     }: IApiOpenAiLocationRealEstateDescriptionQuery,
   ): Promise<string> {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      // TODO think about moving everything to the UserSubscriptionPipe
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.openAi &&
+          !subscriptionPlan.appFeatures.openAi,
+        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const searchResultSnapshot = await this.fetchSnapshotById(
       user,

@@ -21,6 +21,8 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
+import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
 
 @ApiTags('location', 'integration')
 @Controller('api/location-integration')
@@ -86,6 +88,35 @@ export class LocationIntegrationController {
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     return mapSnapshotToEmbeddableMap(
       await this.locationService.updateSnapshot(integrationUser, id, body),
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI location description' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('open-ai-loc-desc')
+  async fetchOpenAiLocationDescription(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
+  ): Promise<string> {
+    return this.locationService.fetchOpenAiLocationDescription(
+      integrationUser,
+      locationDescriptionQuery,
+    );
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI location and real estate description',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('open-ai-loc-real-est-desc')
+  async fetchOpenAiLocRealEstDesc(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
+  ): Promise<string> {
+    return this.locationService.fetchOpenAiLocRealEstDesc(
+      integrationUser,
+      locationRealEstateDescriptionQuery,
     );
   }
 }

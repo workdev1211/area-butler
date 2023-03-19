@@ -11,6 +11,7 @@ import {
 import { ClientModule } from '../client/client.module';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
+import { RealEstateListingIntController } from './real-estate-listing-int.controller';
 
 @Module({
   imports: [
@@ -22,7 +23,7 @@ import { RealEstateListingIntService } from './real-estate-listing-int.service';
     ]),
   ],
   providers: [RealEstateListingService, RealEstateListingIntService],
-  controllers: [RealEstateListingController],
+  controllers: [RealEstateListingController, RealEstateListingIntController],
   exports: [RealEstateListingService, RealEstateListingIntService],
 })
 export class RealEstateListingModule {}

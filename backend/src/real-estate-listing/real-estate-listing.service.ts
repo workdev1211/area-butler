@@ -323,13 +323,25 @@ export class RealEstateListingService {
   }
 
   async fetchRealEstateListingById(
-    { id: userId }: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     realEstateListingId: string,
   ): Promise<RealEstateListingDocument> {
-    const realEstateListing = await this.realEstateListingModel.findOne({
-      _id: realEstateListingId,
-      userId: userId,
-    });
+    const isIntegrationUser = 'integrationUserId' in user;
+    const filter = { _id: realEstateListingId };
+
+    Object.assign(
+      filter,
+      isIntegrationUser
+        ? {
+            integrationParams: {
+              integrationUserId: user.integrationUserId,
+              integrationType: user.integrationType,
+            },
+          }
+        : { userId: user.id },
+    );
+
+    const realEstateListing = await this.realEstateListingModel.findOne(filter);
 
     if (!realEstateListing) {
       throw new HttpException('Unknown real estate id', 404);
@@ -466,18 +478,22 @@ export class RealEstateListingService {
     }
   }
 
-  async fetchOpenAiRealEstateDescription(
-    user: UserDocument,
+  async fetchOpenAiRealEstateDesc(
+    user: UserDocument | TIntegrationUserDocument,
     { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
   ) {
-    // TODO think about moving everything to the UserSubscriptionPipe
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.openAi &&
-        !subscriptionPlan.appFeatures.openAi,
-      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      // TODO think about moving everything to the UserSubscriptionPipe
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.openAi &&
+          !subscriptionPlan.appFeatures.openAi,
+        'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const realEstateListing = await this.fetchRealEstateListingById(
       user,

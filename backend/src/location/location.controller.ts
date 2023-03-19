@@ -178,7 +178,7 @@ export class LocationController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })
-  @Post('open-ai-location-description')
+  @Post('open-ai-loc-desc')
   async fetchOpenAiLocationDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
@@ -192,13 +192,13 @@ export class LocationController extends AuthenticatedController {
   @ApiOperation({
     description: 'Fetch Open AI location and real estate description',
   })
-  @Post('open-ai-location-real-estate-description')
-  async fetchOpenAiLocationRealEstateDescription(
+  @Post('open-ai-loc-real-est-desc')
+  async fetchOpenAiLocRealEstDesc(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
     locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    return this.locationService.fetchOpenAiLocationRealEstateDescription(
+    return this.locationService.fetchOpenAiLocRealEstDesc(
       user,
       locationRealEstateDescriptionQuery,
     );
