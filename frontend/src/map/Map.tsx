@@ -40,6 +40,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   IApiUserPoiIcon,
+  MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
@@ -294,8 +295,7 @@ interface MapProps {
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   snippetToken?: string;
-  embedMode?: boolean;
-  editorMode?: boolean;
+  mapDisplayMode?: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   hideEntity?: (entity: ResultEntity) => void;
@@ -380,8 +380,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       leafletMapId = "mymap",
       routes,
       transitRoutes,
-      embedMode = false,
-      editorMode = false,
+      mapDisplayMode,
       config,
       mapboxMapId,
       onPoiAdd,
@@ -447,6 +446,9 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         setAddPoiModalOpen(false);
       },
     };
+
+    const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+    const embedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
 
     const escFunction = useCallback(
       (e) => {

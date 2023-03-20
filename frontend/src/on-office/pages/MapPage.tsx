@@ -7,7 +7,7 @@ import {
 } from "react";
 import { useParams } from "react-router-dom";
 
-import "../../embed/EmbedContainer.scss";
+import "./MapPage.scss";
 
 import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
 import {
@@ -24,6 +24,7 @@ import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  MapDisplayModesEnum,
 } from "../../../../shared/types/types";
 import SearchResultContainer, {
   ICurrentMapRef,
@@ -199,7 +200,14 @@ const MapPage: FunctionComponent = () => {
       placesLocation={searchContextState.placesLocation}
       location={searchContextState.mapCenter ?? searchContextState.location!}
       isTrial={false}
-      embedMode={true}
+      mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
+      saveConfig={async (config?: ApiSearchResultSnapshotConfig) => {
+        // TODO it's a hack, change to the decent method
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: config,
+        });
+      }}
       ref={mapRef}
     />
   );

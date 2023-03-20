@@ -1,0 +1,4 @@
+.search-result-container {
+  height: calc(100vh - var(--nav-height)) !important;
+  @apply flex relative w-full;
+}

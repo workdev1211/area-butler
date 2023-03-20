@@ -1,7 +1,9 @@
 import { LocationIndicesEnum } from "../types/location-index";
 import {
+  ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
   OsmName,
+  TransportationParam,
   UnitsOfTransportation,
 } from "../types/types";
 
@@ -16,7 +18,7 @@ export const locationIndexNames: Record<LocationIndicesEnum, string> = {
   [LocationIndicesEnum.individual_mobility]: "Individualmobilität",
 };
 
-export const defaultSnapshotConfig = {
+export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
   showLocation: true,
   showAddress: false,
   groupItems: false,
@@ -25,7 +27,7 @@ export const defaultSnapshotConfig = {
   showDetailsInOnePage: true,
 };
 
-export const defaultTransportationParams = [
+export const defaultTransportationParams: TransportationParam[] = [
   {
     type: MeansOfTransportation.WALK,
     amount: 5,

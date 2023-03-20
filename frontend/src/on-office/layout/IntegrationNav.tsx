@@ -113,7 +113,10 @@ const IntegrationNav: FunctionComponent = () => {
                 className="nav-link"
                 aria-current="page"
               >
-                Map Snippet
+                Meine Karte
+              </NavLink>
+              <NavLink to="/products" className="nav-link" aria-current="page">
+                Produkte
               </NavLink>
             </div>
           </div>
@@ -145,7 +148,10 @@ const IntegrationNav: FunctionComponent = () => {
             className="nav-link"
             aria-current="page"
           >
-            Map Snippet
+            Meine Karte
+          </NavLink>
+          <NavLink to="/products" className="nav-link" aria-current="page">
+            Produkte
           </NavLink>
         </div>
       </div>

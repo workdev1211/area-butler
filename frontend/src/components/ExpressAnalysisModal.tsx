@@ -15,7 +15,10 @@ import {
   toastError,
   toastSuccess,
 } from "shared/shared.functions";
-import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotResponse,
+  MapDisplayModesEnum,
+} from "../../../shared/types/types";
 import ExportModal, { ExportTypeEnum } from "../export/ExportModal";
 import {
   SearchContext,
@@ -343,7 +346,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
               isTrial={
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
               }
-              editorMode={true}
+              mapDisplayMode={MapDisplayModesEnum.EDITOR}
               user={user}
               userPoiIcons={user?.poiIcons}
             />

@@ -524,8 +524,13 @@ const SearchParamsPage: FunctionComponent = () => {
         integrationUser?.config?.logo;
 
       const updatedSnapshotResponse = await updateSnapshot(
-        createdSnapshotResponse,
-        snapshotConfig!
+        createdSnapshotResponse.id,
+        {
+          config: snapshotConfig!,
+          snapshot: {
+            ...createdSnapshotResponse?.snapshot,
+          },
+        }
       );
 
       searchContextDispatch({

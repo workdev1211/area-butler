@@ -10,13 +10,14 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiUser,
   IApiUserPoiIcon,
+  MapDisplayModesEnum,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import {
   deriveIconForOsmName,
   getPreferredLocationsIcon,
-  preferredLocationsTitle,
   getRealEstateListingsIcon,
+  preferredLocationsTitle,
   realEstateListingsTitle,
   setBackgroundColor,
 } from "../../../shared/shared.functions";
@@ -41,9 +42,13 @@ import economicMetricsIcon from "../../../assets/icons/map-menu/12-wirtschaftlic
 import censusDataIcon from "../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../assets/icons/federal-election.svg";
 import particlePollutionIcon from "../../../assets/icons/particle-pollution.svg";
+import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
 import { getCombinedOsmEntityTypes } from "../../../../../shared/functions/shared.functions";
 import { TLocationIndexData } from "../../../hooks/locationindexdata";
 import LocationIndexTable from "../data/LocationIndexTable";
+import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschnitte.svg";
+import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
+import { MapClipping } from "../../../context/SearchContext";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -83,8 +88,11 @@ interface IMapTabProps {
   routes: EntityRoute[];
   toggleTransitRoute: (item: ResultEntity) => void;
   transitRoutes: EntityTransitRoute[];
+  mapClippings: MapClipping[];
+  searchAddress: string;
   user?: ApiUser;
   config?: ApiSearchResultSnapshotConfig;
+  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
   censusData?: TCensusData;
@@ -92,9 +100,10 @@ interface IMapTabProps {
   particlePollutionData?: ApiGeojsonFeature[];
   locationIndexData?: TLocationIndexData;
   userMenuPoiIcons?: IApiUserPoiIcon[];
-  editorMode?: boolean;
+  mapDisplayMode?: MapDisplayModesEnum;
 }
 
+// TODO think about dividing into the subscomponents
 const MapTab: FunctionComponent<IMapTabProps> = ({
   groupedEntries,
   toggleAllLocalities,
@@ -103,7 +112,10 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   toggleTransitRoute,
   transitRoutes,
   user,
+  mapClippings,
+  searchAddress,
   config,
+  saveConfig,
   openUpgradeSubscriptionModal,
   showInsights = true,
   censusData,
@@ -111,14 +123,19 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   particlePollutionData,
   locationIndexData,
   userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
-  editorMode = false,
+  mapDisplayMode,
 }) => {
+  const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+  const integrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
+
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!editorMode);
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
   const [isLocationIndicesOpen, setIsLocationIndicesOpen] = useState(false);
   const [isEconomicMetricsOpen, setIsEconomicMetricsOpen] = useState(false);
+  const [isAddressSettingsOpen, setIsAddressSettingsOpen] = useState(false);
+  const [isMapScreenshotsOpen, setIsMapScreenshotsOpen] = useState(false);
 
   const hasCensusData =
     user?.subscription?.config.appFeatures.dataSources.includes(
@@ -136,6 +153,28 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
     )!;
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
+
+  const changeShowLocation = async () => {
+    if (!saveConfig || !config) {
+      return;
+    }
+
+    await saveConfig({
+      ...config,
+      showLocation: !config?.showLocation,
+    });
+  };
+
+  const changeShowAddress = async () => {
+    if (!saveConfig || !config) {
+      return;
+    }
+
+    await saveConfig({
+      ...config,
+      showAddress: !config?.showAddress,
+    });
+  };
 
   return (
     <div className="map-tab z-9000">
@@ -280,6 +319,121 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
           </ul>
         </div>
       </div>
+
+      {integrationMode && (
+        <>
+          <div
+            className={
+              "collapse collapse-arrow view-option" +
+              (isAddressSettingsOpen ? " collapse-open" : " collapse-closed")
+            }
+          >
+            <div
+              className="collapse-title"
+              ref={(node) => {
+                setBackgroundColor(node, backgroundColor);
+              }}
+              onClick={() => {
+                setIsAddressSettingsOpen(!isAddressSettingsOpen);
+              }}
+            >
+              <div className="collapse-title-container">
+                <img src={configOptionsIcon} alt="social-demographics-icon" />
+                <div className="collapse-title-text">
+                  <div className="collapse-title-text-1">
+                    Adresseinstellungen
+                  </div>
+                  <div className="collapse-title-text-2">
+                    Was willst du sehen?
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="collapse-content">
+              <ul>
+                <li>
+                  <div className="flex items-center gap-6 py-1">
+                    <label className="cursor-pointer label">
+                      <input
+                        type="checkbox"
+                        name="showLocation"
+                        checked={!!config?.showLocation}
+                        onChange={changeShowLocation}
+                        className="checkbox checkbox-xs checkbox-primary mr-2"
+                      />
+                      <span className="label-text">Objekt anzeigen</span>
+                    </label>
+                  </div>
+                </li>
+                <li>
+                  <div className="flex items-center gap-6 py-1">
+                    <label className="cursor-pointer label">
+                      <input
+                        type="checkbox"
+                        name="showAddress"
+                        checked={!!config?.showAddress}
+                        onChange={changeShowAddress}
+                        className="checkbox checkbox-xs checkbox-primary mr-2"
+                      />
+                      <span className="label-text">Adresse anzeigen</span>
+                    </label>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            className={
+              "collapse collapse-arrow view-option" +
+              (isMapScreenshotsOpen ? " collapse-open" : " collapse-closed")
+            }
+          >
+            <div
+              className="collapse-title"
+              ref={(node) => {
+                setBackgroundColor(node, backgroundColor);
+              }}
+              onClick={() => {
+                setIsMapScreenshotsOpen(!isMapScreenshotsOpen);
+              }}
+            >
+              <div className="collapse-title-container">
+                <img src={mapScreenshotsIcon} alt="map-screenshots-icon" />
+                <div className="collapse-title-text">
+                  <div className="collapse-title-text-1">Kartenausschnitte</div>
+                  <div className="collapse-title-text-2">
+                    Für Exposés, Print Medien, Bildergalerien
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div className="collapse-content">
+              {mapClippings.length > 0 ? (
+                <MapClippingsCollapsable
+                  searchAddress={
+                    config?.showAddress
+                      ? searchAddress
+                      : "Genaue Adresse nicht veröffentlicht"
+                  }
+                  clippings={mapClippings}
+                />
+              ) : (
+                <div
+                  className="text-justify"
+                  style={{
+                    padding:
+                      "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+                  }}
+                >
+                  Bitte verwenden Sie den Screenshot-Button in der unteren
+                  linken Ecke der Karte.
+                </div>
+              )}
+            </div>
+          </div>
+        </>
+      )}
 
       {editorMode && (
         <div

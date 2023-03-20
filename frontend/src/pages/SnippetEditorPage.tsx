@@ -35,8 +35,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-  ApiUpdateSearchResultSnapshot,
+  MapDisplayModesEnum,
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
 import {
@@ -53,6 +52,7 @@ import {
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { ISnippetEditorHistoryState } from "../shared/shared.types";
+import { useLocationData } from "../hooks/locationdata";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -62,7 +62,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const history = useHistory<ISnippetEditorHistoryState>();
   const { state } = useLocation<ISnippetEditorHistoryState>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { get, put } = useHttp();
+  const { fetchSnapshot, updateSnapshot } = useLocationData();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
@@ -106,17 +106,13 @@ const SnippetEditorPage: FunctionComponent = () => {
       history.push("/profile");
     }
 
-    const fetchSnapshot = async () => {
+    const fetchSnapshotData = async () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
         payload: undefined,
       });
 
-      const snapshotResponse = (
-        await get<ApiSearchResultSnapshotResponse>(
-          `/api/location/snapshot/${snapshotId}`
-        )
-      ).data;
+      const snapshotResponse = await fetchSnapshot(snapshotId);
 
       let snapshotConfig = (snapshotResponse.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
@@ -297,7 +293,7 @@ const SnippetEditorPage: FunctionComponent = () => {
       );
     };
 
-    void fetchSnapshot();
+    void fetchSnapshotData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
@@ -486,17 +482,17 @@ const SnippetEditorPage: FunctionComponent = () => {
                   config.zoomLevel = mapZoomLevel;
                 }
 
-                await put<ApiUpdateSearchResultSnapshot>(
-                  `/api/location/snapshot/${snapshotId}`,
-                  { config, snapshot }
-                );
+                await updateSnapshot(snapshotId, {
+                  snapshot,
+                  config: config as ApiSearchResultSnapshotConfig,
+                });
 
                 toastSuccess("Einstellungen gespeichert!");
               } catch (e) {
                 toastError("Fehler beim Speichern der Einstellungen!");
               }
             }}
-            editorMode={true}
+            mapDisplayMode={MapDisplayModesEnum.EDITOR}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
             ref={mapRef}

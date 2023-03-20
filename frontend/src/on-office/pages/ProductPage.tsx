@@ -41,30 +41,41 @@ export const ProductPage: FunctionComponent = () => {
     return foundProduct ? [foundProduct] : undefined;
   };
 
+  const onOfficeProducts = Object.values(allOnOfficeProducts);
+  const onOfficeProdContClasses = `grid grid-cols-1 gap-10 xl:grid-cols-${
+    onOfficeProducts.length > 4 ? 4 : onOfficeProducts.length
+  }`;
+
   return (
     <DefaultLayout title="Anmeldung/Registrierung" withHorizontalPadding={true}>
       <div className="flex flex-col gap-10 mt-10">
-        <h1 className="font-bold text-xl">
+        <h1 className="font-bold text-xl text-justify">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
           Abonnement, bitte wählen Sie das Passende für sich aus:
         </h1>
-        <div className="grid grid-cols-2 gap-10 xl:grid-cols-4">
-          {Object.values(allOnOfficeProducts).map(
-            ({ type, title, description, price }, i) => (
-              <ProductCard
-                key={type}
-                className={i === 0 ? "row-span-2 self-center" : ""}
-                type={type}
-                title={title}
-                description={description}
-                price={price}
-                products={createOrderProducts}
-                onChangeProducts={setCreateOrderProducts}
-              />
-            )
-          )}
+        <div className={onOfficeProdContClasses}>
+          {onOfficeProducts.map(({ type, title, description, price }, i) => (
+            <ProductCard
+              key={type}
+              className={
+                i === 0 && onOfficeProducts.length > 4
+                  ? "row-span-2 self-center"
+                  : ""
+              }
+              type={type}
+              title={title}
+              description={description}
+              price={price}
+              products={createOrderProducts}
+              onChangeProducts={setCreateOrderProducts}
+            />
+          ))}
         </div>
-        <div className="flex justify-end gap-5 absolute bottom-14 right-14">
+        <div style={{ minHeight: "calc(var(--btn-height))" }} />
+        <div
+          className="flex justify-end gap-5 fixed bottom-[2.5vh]"
+          style={{ right: "var(--content-padding-x)" }}
+        >
           <button
             className="btn w-48"
             onClick={() => {

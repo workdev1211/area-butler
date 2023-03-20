@@ -13,6 +13,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   IApiUserPoiIcons,
+  MapDisplayModesEnum,
 } from "../../../shared/types/types";
 import {
   SearchContext,
@@ -274,7 +275,7 @@ const EmbedContainer: FunctionComponent = () => {
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={!!result?.isTrial}
         userPoiIcons={userPoiIcons}
-        embedMode={true}
+        mapDisplayMode={MapDisplayModesEnum.EMBED}
         ref={mapRef}
       />
     </div>

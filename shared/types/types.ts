@@ -477,3 +477,9 @@ export enum RequestStatusTypesEnum {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
 }
+
+export enum MapDisplayModesEnum {
+  "EMBED" = "EMBED",
+  "EDITOR" = "EDITOR",
+  "INTEGRATION" = "INTEGRATION",
+}

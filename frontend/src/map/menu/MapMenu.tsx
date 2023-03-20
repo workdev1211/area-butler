@@ -13,6 +13,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiUser,
   IApiUserPoiIcon,
+  MapDisplayModesEnum,
   MeansOfTransportation,
 } from "../../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
@@ -34,6 +35,7 @@ import FormModal from "../../components/FormModal";
 import FeedbackFormHandler from "../../feedback/FeedbackFormHandler";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
 import { feedbackModalConfig } from "../../shared/shared.constants";
+import { MapClipping } from "../../context/SearchContext";
 
 enum TabsEnum {
   Map = "Map",
@@ -51,13 +53,11 @@ interface IMapMenuProps {
   searchAddress: string;
   isMapMenuOpen: boolean;
   resetPosition: () => void;
-  // TODO remove in future
-  // isShownPreferredLocationsModal: boolean;
-  // togglePreferredLocationsModal: (isShown: boolean) => void;
-  editorMode: boolean;
-  saveConfig?: () => Promise<void>;
+  mapClippings: MapClipping[];
+  mapDisplayMode?: MapDisplayModesEnum;
   user?: ApiUser;
   config?: ApiSearchResultSnapshotConfig;
+  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
   censusData?: TCensusData;
@@ -79,13 +79,11 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   searchAddress,
   isMapMenuOpen,
   resetPosition,
-  // TODO remove in future
-  // isShownPreferredLocationsModal,
-  // togglePreferredLocationsModal,
-  editorMode,
-  saveConfig,
+  mapDisplayMode,
   user,
+  mapClippings,
   config,
+  saveConfig,
   openUpgradeSubscriptionModal,
   showInsights = true,
   censusData,
@@ -97,29 +95,8 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
-
-  // TODO remove in future
-  // if (config?.theme) {
-  //   switch (config?.theme) {
-  //     case "KF":
-  //       return (
-  //         <MapMenuKarlaFricke
-  //           groupedEntries={groupedEntries
-  //             .filter(
-  //               (ge) => ge.items.length && ge.title !== realEstateListingsTitle
-  //             )
-  //             .sort((a, b) => (a.title > b.title ? 1 : -1))}
-  //           mobileMenuOpen={false}
-  //           isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-  //           togglePreferredLocationsModal={togglePreferredLocationsModal}
-  //         />
-  //       );
-  //
-  //     default:
-  //   }
-  // }
-
   const isShownAddress = !!config?.showAddress || !config;
+  const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const mapMenuContentHeight = editorMode
     ? `calc(100% - calc(var(--menu-item-h) * ${
@@ -218,14 +195,17 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             transitRoutes={transitRoutes}
             user={user}
             userMenuPoiIcons={userMenuPoiIcons}
+            mapClippings={mapClippings}
+            searchAddress={searchAddress}
             config={config}
+            saveConfig={saveConfig}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             showInsights={showInsights}
             censusData={censusData}
             federalElectionData={federalElectionData}
             particlePollutionData={particlePollutionData}
             locationIndexData={locationIndexData}
-            editorMode={editorMode}
+            mapDisplayMode={mapDisplayMode}
           />
         )}
 
@@ -248,7 +228,11 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             <button
               type="button"
               className="save-button"
-              onClick={saveConfig}
+              onClick={async () => {
+                if (saveConfig) {
+                  await saveConfig();
+                }
+              }}
               data-tour="save-button"
             >
               <img src={saveIcon} alt="save-icon" />

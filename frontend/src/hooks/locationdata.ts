@@ -10,7 +10,6 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   MeansOfTransportation,
@@ -150,20 +149,15 @@ export const useLocationData = (isIntegrationUser = false) => {
   };
 
   const updateSnapshot = async (
-    snapshotResponse: ApiSearchResultSnapshotResponse,
-    snapshotConfig: ApiSearchResultSnapshotConfig
+    snapshotId: string,
+    updateSnapshotData: ApiUpdateSearchResultSnapshot
   ): Promise<ApiUpdateSearchResultSnapshot> => {
     return (
       await put<ApiUpdateSearchResultSnapshot>(
         isIntegrationUser
-          ? `/api/location-integration/snapshot/${snapshotResponse?.id}`
-          : `/api/location/snapshot/${snapshotResponse?.id}`,
-        {
-          config: snapshotConfig,
-          snapshot: {
-            ...snapshotResponse?.snapshot,
-          },
-        }
+          ? `/api/location-integration/snapshot/${snapshotId}`
+          : `/api/location/snapshot/${snapshotId}`,
+        updateSnapshotData
       )
     ).data;
   };

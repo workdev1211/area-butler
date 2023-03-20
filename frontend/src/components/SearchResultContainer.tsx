@@ -29,6 +29,7 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiUser,
   IApiUserPoiIcons,
+  MapDisplayModesEnum,
   MeansOfTransportation,
   OsmName,
 } from "../../../shared/types/types";
@@ -126,14 +127,11 @@ interface ISearchResultContainerProps {
   searchResponse: ApiSearchResponse;
   placesLocation: any;
   location: ApiCoordinates;
-  saveConfig?: () => Promise<void>;
+  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
   mapZoomLevel?: number;
   user?: ApiUser;
   userDispatch?: (action: UserActions) => void;
-  // TODO remove after some testing
-  // has been needed for the second step of the analysis "search results"
-  embedMode?: boolean;
-  editorMode?: boolean;
+  mapDisplayMode?: MapDisplayModesEnum;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcons;
@@ -156,8 +154,7 @@ const SearchResultContainer = forwardRef<
       mapZoomLevel,
       user,
       userDispatch = () => null,
-      embedMode = false,
-      editorMode = false,
+      mapDisplayMode,
       onPoiAdd,
       isTrial,
       userPoiIcons = user?.poiIcons,
@@ -201,6 +198,7 @@ const SearchResultContainer = forwardRef<
     };
 
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+    const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
     const [isMapMenuOpen, setIsMapMenuOpen] = useState(
       editorMode || (!isThemeKf && !editorMode)
@@ -717,8 +715,7 @@ const SearchResultContainer = forwardRef<
               }
               routes={searchContextState.responseRoutes}
               transitRoutes={searchContextState.responseTransitRoutes}
-              embedMode={embedMode}
-              editorMode={editorMode}
+              mapDisplayMode={mapDisplayMode}
               config={searchContextState.responseConfig}
               onPoiAdd={onPoiAdd}
               hideEntity={hideEntity}
@@ -742,7 +739,7 @@ const SearchResultContainer = forwardRef<
                   },
                 });
               }}
-              hideIsochrones={!!hideIsochrones}
+              hideIsochrones={!!hideIsochrones} // don't remove the !! operators
               setHideIsochrones={setHideIsochrones}
               mapWithLegendId={mapWithLegendId}
               toggleSatelliteMapMode={toggleSatelliteMapMode}
@@ -813,12 +810,10 @@ const SearchResultContainer = forwardRef<
                   payload: { open: true, message },
                 });
               }}
+              mapClippings={searchContextState.mapClippings}
               showInsights={editorMode}
               config={searchContextState.responseConfig}
-              // TODO remove in future
-              // isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-              // togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-              editorMode={editorMode}
+              mapDisplayMode={mapDisplayMode}
               editorTabProps={editorTabProps}
               exportTabProps={exportTabProps}
             />
