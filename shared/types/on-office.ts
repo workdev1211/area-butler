@@ -55,6 +55,7 @@ export enum ApiOnOfficeResourceTypesEnum {
   "UNLOCK_PROVIDER" = "unlockProvider",
   "ESTATE" = "estate",
   "FIELDS" = "fields", // field description - get all info about entity fields ("address", "estate", etc)
+  "BASIC_SETTINGS" = "basicsettings",
 }
 
 interface IApiOnOfficeRequestAction {
@@ -72,7 +73,7 @@ interface IApiOnOfficeRequestActionParameters {
   parameterCacheId?: string;
   extendedclaim: string;
   isRegularCustomer?: number;
-  data?: string[]; // enum?
+  data?: any;
 }
 
 // TODO make it the right way - without anys

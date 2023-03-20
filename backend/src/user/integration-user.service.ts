@@ -43,7 +43,7 @@ export class IntegrationUserService {
     });
 
     if (existingUser) {
-      return this.updateParams(existingUser, accessToken, parameters);
+      return this.updateParamsAndConfig(existingUser, accessToken, parameters);
     }
 
     return new this.integrationUserModel({
@@ -84,16 +84,24 @@ export class IntegrationUserService {
     return existingUser;
   }
 
-  async updateParams(
+  async updateParamsAndConfig(
     integrationUser: TIntegrationUserDocument,
     accessToken: string,
     parameters: TApiIntegrationUserParameters,
+    config?: TApiIntegrationUserConfig,
   ): Promise<TIntegrationUserDocument> {
     integrationUser.accessToken = accessToken;
     integrationUser.parameters =
       typeof integrationUser.parameters === 'object'
         ? { ...integrationUser.parameters, ...parameters }
         : { ...parameters };
+
+    if (config) {
+      integrationUser.config =
+        typeof integrationUser.config === 'object'
+          ? { ...integrationUser.config, ...config }
+          : { ...config };
+    }
 
     return integrationUser.save();
   }

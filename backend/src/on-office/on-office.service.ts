@@ -47,6 +47,7 @@ import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntegrationService } from '../location/location-integration.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
+import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 
 @Injectable()
 export class OnOfficeService {
@@ -101,7 +102,7 @@ export class OnOfficeService {
     }: IApiOnOfficeUnlockProviderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<string> {
-    await this.integrationUserService.updateParams(
+    await this.integrationUserService.updateParamsAndConfig(
       integrationUser,
       extendedClaim,
       {
@@ -160,12 +161,18 @@ export class OnOfficeService {
       this.integrationType,
     );
 
-    await this.integrationUserService.updateParams(
+    const { color, logo } = await this.getColorAndLogo(integrationUser);
+
+    await this.integrationUserService.updateParamsAndConfig(
       integrationUser,
       extendedClaim,
       {
         extendedClaim,
         parameterCacheId,
+      },
+      {
+        color: color ? `#${color}` : undefined,
+        logo: logo ? convertBase64ContentToUri(logo) : undefined,
       },
     );
 
@@ -460,5 +467,54 @@ export class OnOfficeService {
     status: { code, errorcode, message },
   }: IApiOnOfficeResponse<T>) {
     return code === 200 && errorcode === 0 && message === 'OK';
+  }
+
+  private async getColorAndLogo({
+    parameters: { token, apiKey, extendedClaim },
+  }: TIntegrationUserDocument): Promise<{ color: string; logo: string }> {
+    const actionId = ApiOnOfficeActionIdsEnum.READ;
+    const resourceType = ApiOnOfficeResourceTypesEnum.BASIC_SETTINGS;
+    const timestamp = dayjs().unix();
+
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: '',
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              data: {
+                basicData: {
+                  characteristicsCi: [
+                    'color',
+                    // 'color2',
+                    'logo',
+                  ],
+                },
+              },
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+    this.logger.debug(this.getColorAndLogo.name, response);
+
+    return response.response.results[0].data.records[0].elements.basicData
+      .characteristicsCi;
   }
 }

@@ -512,9 +512,16 @@ const SearchParamsPage: FunctionComponent = () => {
       setBusyModalItems([...items]);
 
       const { config: snapshotConfig } = createdSnapshotResponse;
+
       snapshotConfig!.primaryColor =
-        snapshotConfig!.primaryColor || user?.color;
-      snapshotConfig!.mapIcon = snapshotConfig!.mapIcon || user?.mapIcon;
+        snapshotConfig!.primaryColor ||
+        user?.color ||
+        integrationUser?.config?.color;
+
+      snapshotConfig!.mapIcon =
+        snapshotConfig!.mapIcon ||
+        user?.mapIcon ||
+        integrationUser?.config?.logo;
 
       const updatedSnapshotResponse = await updateSnapshot(
         createdSnapshotResponse,

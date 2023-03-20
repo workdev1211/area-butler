@@ -70,6 +70,8 @@ export type TApiIntegrationUserProductsUsed = Partial<
 export type TApiIntegrationUserConfig = {
   mapboxAccessToken?: string;
   showProductPage?: boolean;
+  color?: string;
+  logo?: string;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsParamNames, TApiIntUserUsageStatisticsMetrics>
