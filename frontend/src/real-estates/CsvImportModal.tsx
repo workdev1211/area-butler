@@ -30,7 +30,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
       data: responseData,
       headers: responseHeaders,
     }: AxiosResponse<Blob> = await get(
-      `/api/real-estate-listings/examples/${fileFormat}/${fileType}`,
+      `/api/real-estate-listing/examples/${fileFormat}/${fileType}`,
       {},
       { responseType: "arraybuffer" }
     );
@@ -50,7 +50,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
 
     try {
       const { data: errorLineNumbers } = await post<number[]>(
-        `/api/real-estate-listings/upload/${fileFormat}`,
+        `/api/real-estate-listing/upload/${fileFormat}`,
         formData,
         {
           "Content-Type": "multipart/form-data",

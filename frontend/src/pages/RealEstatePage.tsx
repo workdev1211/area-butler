@@ -54,7 +54,7 @@ const RealEstatePage: FunctionComponent = () => {
   useEffect(() => {
     const fetchRealEstates = async () => {
       const response = await get<ApiRealEstateListing[]>(
-        "/api/real-estate-listings"
+        "/api/real-estate-listing/listings"
       );
 
       realEstateDispatch({

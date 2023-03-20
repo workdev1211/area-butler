@@ -9,6 +9,8 @@ import {
   IApiIntegrationUser,
   IApiIntUserAvailProdContingents,
 } from "../../../shared/types/integration-user";
+import { TIntegrationActionTypes } from "../../../shared/types/integration";
+import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
 
 export type TIntegrationUser = IApiIntegrationUser &
   IApiIntUserAvailProdContingents;
@@ -40,6 +42,7 @@ export const initialState: UserState = {
 export enum UserActionTypes {
   SET_USER = "SET_USER",
   SET_INTEGRATION_USER = "SET_INTEGRATION_USER",
+  DECR_AVAIL_PROD_CONT = "DECR_AVAIL_PROD_CONT",
   SET_LATEST_USER_REQUESTS = "SET_LATEST_USER_REQUESTS",
   SET_SUBSCRIPTION_MODAL_PROPS = "SET_SUBSCRIPTION_MODAL_PROPS",
   SET_EMBEDDABLE_MAPS = "SET_EMBEDDABLE_MAPS",
@@ -53,8 +56,8 @@ export enum UserActionTypes {
 
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
-  [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser &
-    IApiIntUserAvailProdContingents;
+  [UserActionTypes.SET_INTEGRATION_USER]: TIntegrationUser;
+  [UserActionTypes.DECR_AVAIL_PROD_CONT]: TIntegrationActionTypes;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {
@@ -85,6 +88,26 @@ export const userReducer = (
     }
     case UserActionTypes.SET_INTEGRATION_USER: {
       return { ...state, integrationUser: { ...action.payload } };
+    }
+    case UserActionTypes.DECR_AVAIL_PROD_CONT: {
+      if (!state.integrationUser) {
+        return state;
+      }
+
+      const integrationUser = { ...state.integrationUser };
+
+      const productContingentType = getProdContTypeByActType(
+        integrationUser.integrationType,
+        action.payload
+      );
+
+      if (!integrationUser.availProdContingents[productContingentType]) {
+        return state;
+      }
+
+      integrationUser.availProdContingents[productContingentType]! -= 1;
+
+      return { ...state, integrationUser };
     }
     case UserActionTypes.SET_LATEST_USER_REQUESTS: {
       return { ...state, latestUserRequests: action.payload };

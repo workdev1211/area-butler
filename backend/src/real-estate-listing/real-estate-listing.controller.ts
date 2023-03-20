@@ -29,13 +29,14 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import FileUploadDto from '../dto/file-upload.dto';
 import {
   ApiExampleFileTypeEnum,
+  ApiRealEstateListing,
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
 
-@ApiTags('real-estate-listings')
-@Controller('api/real-estate-listings')
+@ApiTags('real-estate-listing')
+@Controller('api/real-estate-listing')
 export class RealEstateListingController extends AuthenticatedController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
@@ -44,11 +45,11 @@ export class RealEstateListingController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Get real estate listings for current user' })
-  @Get()
+  @Get('listings')
   async fetchRealEstateListings(
     @InjectUser() user: UserDocument,
     @Query('status') status: ApiRealEstateStatusEnum,
-  ): Promise<ApiRealEstateListingDto[]> {
+  ): Promise<ApiRealEstateListing[]> {
     return (
       await this.realEstateListingService.fetchRealEstateListings(user, status)
     ).map((l) => mapRealEstateListingToApiRealEstateListing(l, user.id));

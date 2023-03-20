@@ -7,16 +7,21 @@ import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from './schema/integration-user.schema';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
+  IntegrationTypesEnum,
+  TIntegrationActionTypes,
+} from '@area-butler-types/integration';
+import {
+  IApiIntegrationUserProductContingent,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
-  TApiIntUserAvailableProductContingents,
-  TApiIntUserOnOfficeProductContingents,
+  TApiIntegrationUserProductContingents,
+  TApiIntUserAvailProdContingents,
   TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
+import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
 
 @Injectable()
 export class IntegrationUserService {
@@ -93,13 +98,14 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
+  // TODO change to the increment way
   async addProductContingent(
     integrationUser: TIntegrationUserDocument,
     { type, quantity }: TApiIntegrationUserProduct,
   ): Promise<TIntegrationUserDocument> {
     if (!integrationUser.productContingents) {
       integrationUser.productContingents =
-        {} as TApiIntUserOnOfficeProductContingents;
+        {} as TApiIntegrationUserProductContingents;
     }
 
     if (!integrationUser.productContingents[type]) {
@@ -114,38 +120,27 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
-  getAvailableProductContingents({
+  getAvailProdContingents({
     productContingents,
     productsUsed,
-  }: TIntegrationUserDocument): TApiIntUserAvailableProductContingents {
-    const nowDate = dayjs();
-
+  }: TIntegrationUserDocument): TApiIntUserAvailProdContingents {
     return (
       productContingents &&
-      Object.keys(productContingents).reduce((result, contingentName) => {
-        const availableQuantity = productContingents[contingentName].reduce(
-          (result, { quantity, expiresAt }) => {
-            if (nowDate < dayjs(expiresAt)) {
-              result += quantity;
-            }
+      Object.keys(productContingents).reduce(
+        (result, productContingentType) => {
+          const remainingQuantity = this.getAvailProdCont(
+            productContingents[productContingentType],
+            productsUsed[productContingentType],
+          );
 
-            return result;
-          },
-          0,
-        );
+          if (remainingQuantity > 0) {
+            result[productContingentType] = remainingQuantity;
+          }
 
-        const usedQuantity = productsUsed
-          ? productsUsed[contingentName] || 0
-          : 0;
-
-        const remainingQuantity = availableQuantity - usedQuantity;
-
-        if (remainingQuantity > 0) {
-          result[contingentName] = remainingQuantity;
-        }
-
-        return result;
-      }, {} as TApiIntUserAvailableProductContingents)
+          return result;
+        },
+        {} as TApiIntUserAvailProdContingents,
+      )
     );
   }
 
@@ -168,6 +163,63 @@ export class IntegrationUserService {
     );
   }
 
+  async incrementProductUsage(
+    integrationUser: TIntegrationUserDocument,
+    actionType: TIntegrationActionTypes,
+  ): Promise<void> {
+    const productContingentType = getProdContTypeByActType(
+      integrationUser.integrationType,
+      actionType,
+    );
+
+    if (!productContingentType) {
+      return;
+    }
+
+    await this.integrationUserModel.updateOne(
+      { _id: integrationUser.id },
+      {
+        $inc: {
+          [`productsUsed.${productContingentType}`]: 1,
+        },
+      },
+      { upsert: true },
+    );
+  }
+
+  checkProdContAvailability(
+    integrationUser: TIntegrationUserDocument,
+    actionType: TIntegrationActionTypes,
+  ): void {
+    const productContingentType = getProdContTypeByActType(
+      integrationUser.integrationType,
+      actionType,
+    );
+
+    if (!productContingentType) {
+      return;
+    }
+
+    if (
+      !integrationUser.productContingents ||
+      !integrationUser.productContingents[productContingentType]
+    ) {
+      throw new HttpException('Please, buy a corresponding product!', 402);
+    }
+
+    const remainingQuantity = this.getAvailProdCont(
+      integrationUser.productContingents[productContingentType],
+      (integrationUser.productsUsed &&
+        integrationUser.productsUsed[productContingentType]) ||
+        0,
+    );
+
+    if (!remainingQuantity) {
+      throw new HttpException('Please, buy a corresponding product!', 402);
+    }
+  }
+
+  // TODO change to the increment way
   async createMapboxAccessToken(
     integrationUser: TIntegrationUserDocument,
   ): Promise<TIntegrationUserDocument> {
@@ -183,5 +235,28 @@ export class IntegrationUserService {
     }
 
     return integrationUser;
+  }
+
+  private getAvailProdCont(
+    productContingent: IApiIntegrationUserProductContingent[],
+    productUsed: number,
+  ): number {
+    const currentDate = dayjs();
+
+    const availableQuantity = productContingent.reduce(
+      (result, { quantity, expiresAt }) => {
+        if (currentDate < dayjs(expiresAt)) {
+          result += quantity;
+        }
+
+        return result;
+      },
+      0,
+    );
+
+    const usedQuantity = productUsed || 0;
+    const remainingQuantity = availableQuantity - usedQuantity;
+
+    return remainingQuantity > 0 ? remainingQuantity : 0;
   }
 }

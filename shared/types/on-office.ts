@@ -1,5 +1,5 @@
-import { TApiIntUserAvailableProductContingents } from "./integration-user";
 import { ApiCoordinates } from "./types";
+import { TApiIntUserAvailProdContingents } from "./integration-user";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -152,7 +152,7 @@ export interface IApiOnOfficeLoginRes {
   estateId: string;
   integrationUserId: string;
   accessToken: string;
-  availableProductContingents?: TApiIntUserAvailableProductContingents;
+  availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
 export interface IApiOnOfficeCreateOrderReq {
@@ -177,7 +177,7 @@ export interface IApiOnOfficeConfirmOrderReq {
 
 export interface IApiOnOfficeConfirmOrderRes {
   message?: string;
-  availableProductContingents?: TApiIntUserAvailableProductContingents;
+  availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
 export interface IApiOnOfficeCreateOrderProduct {

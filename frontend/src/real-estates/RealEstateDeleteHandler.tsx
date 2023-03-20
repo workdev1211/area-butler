@@ -27,7 +27,7 @@ export const RealEstateDeleteHandler: React.FunctionComponent<RealEstateDeleteHa
     try {
       beforeSubmit();
       if (!!realEstate.id) {
-        await deleteRequest(`/api/real-estate-listings/${realEstate.id}`);
+        await deleteRequest(`/api/real-estate-listing/${realEstate.id}`);
         realEstateDispatch({
           type: RealEstateActionTypes.DELETE_REAL_ESTATE,
           payload: realEstate

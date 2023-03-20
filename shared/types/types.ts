@@ -472,3 +472,8 @@ export interface ISelectTextValue {
 
 export type TPaymentEnvironment = typeof paymentEnvironments[number];
 export type TSystemEnvironment = typeof systemEnvironments[number];
+
+export enum RequestStatusTypesEnum {
+  SUCCESS = "SUCCESS",
+  FAILURE = "FAILURE",
+}

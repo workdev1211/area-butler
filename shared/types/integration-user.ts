@@ -12,13 +12,15 @@ export interface IApiIntegrationUser {
   usageStatistics?: TApiIntegrationUserUsageStatistics;
 }
 
-export interface IApiIntUserAvailProdContingents {
-  availProdContingents: TApiIntUserOnOfficeAvailProdContingents;
-}
-
-export type TApiIntUserOnOfficeAvailProdContingents = Partial<
-  Record<ApiIntUserOnOfficeProdContTypesEnum, number>
+export type TApiIntUserAvailProdContingents = Partial<
+  Record<TApiIntUserAvailProdContTypes, number>
 >;
+
+export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
+
+export interface IApiIntUserAvailProdContingents {
+  availProdContingents: TApiIntUserAvailProdContingents;
+}
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
@@ -32,10 +34,6 @@ export enum ApiIntUserOnOfficeProdContTypesEnum {
   OPEN_AI = "OPEN_AI",
   MAP_IFRAME = "MAP_IFRAME",
   ONE_PAGE = "ONE_PAGE",
-}
-
-export interface IApiIntUserOnOfficeConfig {
-  showProductPage?: boolean;
 }
 
 export type TApiIntUserOnOfficeUsageStatsParamNames =
@@ -53,6 +51,8 @@ export interface IApiIntUserOnOfficeProduct {
   quantity: number;
 }
 
+export type TApiIntUserProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
+
 export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 
 export interface IApiIntegrationUserProductContingent {
@@ -60,29 +60,17 @@ export interface IApiIntegrationUserProductContingent {
   expiresAt: Date;
 }
 
-export type TApiIntUserOnOfficeProductContingents = Record<
-  ApiIntUserOnOfficeProdContTypesEnum,
-  IApiIntegrationUserProductContingent[]
->;
-
-export type TApiIntUserAvailableProductContingents = Record<
-  ApiIntUserOnOfficeProdContTypesEnum,
-  number
->;
-
-export type TApiIntUserOnOfficeProductsUsed = Record<
-  ApiIntUserOnOfficeProdContTypesEnum,
-  number
->;
-
 export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;
-export type TApiIntegrationUserProductContingents =
-  TApiIntUserOnOfficeProductContingents;
-export type TApiIntegrationUserProductsUsed = TApiIntUserOnOfficeProductsUsed;
+export type TApiIntegrationUserProductContingents = Partial<
+  Record<TApiIntUserProdContTypes, IApiIntegrationUserProductContingent[]>
+>;
+export type TApiIntegrationUserProductsUsed = Partial<
+  Record<TApiIntUserProdContTypes, number>
+>;
 export type TApiIntegrationUserConfig = {
-  mapboxAccessToken: string;
-} & IApiIntUserOnOfficeConfig;
-export type TApiIntegrationUserUsageStatistics = Record<
-  TApiIntUserUsageStatsParamNames,
-  TApiIntUserUsageStatisticsMetrics
+  mapboxAccessToken?: string;
+  showProductPage?: boolean;
+};
+export type TApiIntegrationUserUsageStatistics = Partial<
+  Record<TApiIntUserUsageStatsParamNames, TApiIntUserUsageStatisticsMetrics>
 >;

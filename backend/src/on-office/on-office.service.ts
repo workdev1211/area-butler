@@ -169,10 +169,8 @@ export class OnOfficeService {
       },
     );
 
-    const availableProductContingents =
-      this.integrationUserService.getAvailableProductContingents(
-        integrationUser,
-      );
+    const availProdContingents =
+      this.integrationUserService.getAvailProdContingents(integrationUser);
 
     const areaButlerEstate = await this.getEstateData(
       estateId,
@@ -193,7 +191,7 @@ export class OnOfficeService {
     return {
       estateId,
       integrationUserId,
-      availableProductContingents,
+      availProdContingents,
       accessToken: extendedClaim,
       address: areaButlerEstate.address,
       coordinates: {
@@ -282,8 +280,8 @@ export class OnOfficeService {
         this.logger.debug(2, JSON.parse(JSON.stringify(integrationUser)));
 
         return {
-          availableProductContingents:
-            await this.integrationUserService.getAvailableProductContingents(
+          availProdContingents:
+            await this.integrationUserService.getAvailProdContingents(
               integrationUser,
             ),
         };

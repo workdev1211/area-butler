@@ -30,6 +30,7 @@ export interface IApiOpenAiLocationDescriptionQuery
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
   realEstateListingId: string | undefined;
+  integrationId?: string;
 }
 
 export interface IApiOpenAiLocationRealEstateDescriptionQuery

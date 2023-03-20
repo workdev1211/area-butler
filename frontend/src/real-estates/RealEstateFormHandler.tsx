@@ -115,12 +115,12 @@ export const RealEstateFormHandler: FunctionComponent<
 
       if (realEstate.id) {
         response = await put(
-          `/api/real-estate-listings/${realEstate.id}`,
+          `/api/real-estate-listing/${realEstate.id}`,
           mappedRealEstateListing
         );
       } else {
         response = await post(
-          "/api/real-estate-listings",
+          "/api/real-estate-listing",
           mappedRealEstateListing
         );
       }

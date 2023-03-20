@@ -17,14 +17,10 @@ import {
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { UserContext } from "../context/UserContext";
 
-export const useAnalysis = () => {
+export const useLocationData = (isIntegrationUser = false) => {
   const { searchContextState } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const { get, post, put } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
@@ -33,7 +29,7 @@ export const useAnalysis = () => {
     search: ApiSearch
   ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
-      integrationUser
+      isIntegrationUser
         ? "/api/location-integration/search"
         : "/api/location/search",
       search
@@ -47,7 +43,7 @@ export const useAnalysis = () => {
   ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
       await get<ApiSearchResultSnapshotResponse>(
-        integrationUser
+        isIntegrationUser
           ? `/api/location-integration/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`
       )
@@ -132,7 +128,7 @@ export const useAnalysis = () => {
 
     return (
       await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
-        integrationUser
+        isIntegrationUser
           ? "/api/location-integration/snapshot"
           : "/api/location/snapshot",
         {
@@ -159,7 +155,7 @@ export const useAnalysis = () => {
   ): Promise<ApiUpdateSearchResultSnapshot> => {
     return (
       await put<ApiUpdateSearchResultSnapshot>(
-        integrationUser
+        isIntegrationUser
           ? `/api/location-integration/snapshot/${snapshotResponse?.id}`
           : `/api/location/snapshot/${snapshotResponse?.id}`,
         {

@@ -6,11 +6,16 @@ import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
+import { IntegrationUserService } from '../user/integration-user.service';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-integration')
 export class OpenAiIntegrationController {
-  constructor(private readonly openAiService: OpenAiService) {}
+  constructor(
+    private readonly openAiService: OpenAiService,
+    private readonly integrationUserService: IntegrationUserService,
+  ) {}
 
   @ApiOperation({ description: 'Fetch Open AI response' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
@@ -19,10 +24,26 @@ export class OpenAiIntegrationController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
+    const actionType = isFormalToInformal
+      ? OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL
+      : OpenAiQueryTypeEnum.GENERAL_QUESTION;
+
+    this.integrationUserService.checkProdContAvailability(
+      integrationUser,
+      actionType,
+    );
+
     const queryText = isFormalToInformal
       ? this.openAiService.getFormalToInformalQuery(text)
       : text;
 
-    return this.openAiService.fetchResponse(queryText);
+    const queryResponse = await this.openAiService.fetchResponse(queryText);
+
+    await this.integrationUserService.incrementProductUsage(
+      integrationUser,
+      actionType,
+    );
+
+    return queryResponse;
   }
 }

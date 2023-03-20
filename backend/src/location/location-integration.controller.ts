@@ -23,6 +23,8 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
+import { IntegrationUserService } from '../user/integration-user.service';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
 @ApiTags('location', 'integration')
 @Controller('api/location-integration')
@@ -30,6 +32,7 @@ export class LocationIntegrationController {
   constructor(
     private readonly locationService: LocationService,
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly integrationUserService: IntegrationUserService,
   ) {}
 
   @ApiOperation({ description: 'Fetch a specific embeddable map' })
@@ -98,10 +101,23 @@ export class LocationIntegrationController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
   ): Promise<string> {
-    return this.locationService.fetchOpenAiLocationDescription(
+    this.integrationUserService.checkProdContAvailability(
       integrationUser,
-      locationDescriptionQuery,
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
     );
+
+    const locationDescription =
+      await this.locationService.fetchOpenAiLocationDescription(
+        integrationUser,
+        locationDescriptionQuery,
+      );
+
+    await this.integrationUserService.incrementProductUsage(
+      integrationUser,
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+    );
+
+    return locationDescription;
   }
 
   @ApiOperation({
@@ -114,9 +130,21 @@ export class LocationIntegrationController {
     @Body()
     locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    return this.locationService.fetchOpenAiLocRealEstDesc(
+    this.integrationUserService.checkProdContAvailability(
+      integrationUser,
+      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+    );
+
+    const locRealEstDesc = await this.locationService.fetchOpenAiLocRealEstDesc(
       integrationUser,
       locationRealEstateDescriptionQuery,
     );
+
+    await this.integrationUserService.incrementProductUsage(
+      integrationUser,
+      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+    );
+
+    return locRealEstDesc;
   }
 }

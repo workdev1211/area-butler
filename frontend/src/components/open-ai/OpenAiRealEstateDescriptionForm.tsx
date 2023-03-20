@@ -5,13 +5,14 @@ import * as Yup from "yup";
 import Select from "../inputs/formik/Select";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { IApiOpenAiRealEstateDescriptionQuery } from "../../../../shared/types/open-ai";
-import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "../../context/RealEstateContext";
-import { useHttp } from "../../hooks/http";
 import { TFormikInnerRef } from "../../shared/shared.types";
+import { useRealEstateData } from "../../hooks/realestatedata";
+import { UserContext } from "../../context/UserContext";
+import { SearchContext } from "../../context/SearchContext";
 
 interface IOpenAiRealEstateDescriptionFormListenerProps {
   onValuesChange: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
@@ -41,33 +42,53 @@ interface IRealEstateDescriptionFormProps {
 const OpenAiRealEstateDescriptionForm: FunctionComponent<
   IRealEstateDescriptionFormProps
 > = ({ formId, initialValues, onValuesChange, onSubmit, formRef }) => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+  const {
+    searchContextState: { integrationId },
+  } = useContext(SearchContext);
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
-  const { get } = useHttp();
+
+  const { fetchRealEstateByIntId, fetchRealEstates } = useRealEstateData();
 
   useEffect(() => {
-    const fetchRealEstates = async () => {
-      const response = await get<ApiRealEstateListing[]>(
-        "/api/real-estate-listings"
-      );
+    const fetchRealEstateData = async () => {
+      const realEstates =
+        integrationUser && integrationId
+          ? [await fetchRealEstateByIntId(integrationId)]
+          : await fetchRealEstates();
 
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: response.data,
+        payload: realEstates,
       });
     };
 
-    void fetchRealEstates();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    void fetchRealEstateData();
 
-  const processedInitialValues = {
-    realEstateListingId:
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [integrationId, integrationUser, realEstateDispatch]);
+
+  const getInitRealEstListId = (): string | undefined => {
+    if (
       initialValues &&
       realEstateState.listings.some(
         ({ id }) => id === initialValues.realEstateListingId
       )
-        ? initialValues.realEstateListingId
-        : undefined,
+    ) {
+      return initialValues.realEstateListingId;
+    }
+
+    if (realEstateState.listings.length === 1) {
+      return realEstateState.listings[0].id;
+    }
+
+    return;
+  };
+
+  const processedInitialValues = {
+    realEstateListingId: getInitRealEstListId(),
   };
 
   const validationSchema = Yup.object({
@@ -93,19 +114,21 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
               label="Immobilienbeschreibung"
               placeholder="Immobilienbeschreibung"
               name="realEstateListingId"
-              disabled={!realEstateState.listings.length}
+              disabled={realEstateState.listings.length < 2}
               defaultValue={
                 processedInitialValues.realEstateListingId ||
                 placeholderSelectOptionKey
               }
             >
-              <option
-                value={placeholderSelectOptionKey}
-                key={placeholderSelectOptionKey}
-                disabled={true}
-              >
-                Immobilie auswählen
-              </option>
+              {realEstateState.listings.length > 1 && (
+                <option
+                  value={placeholderSelectOptionKey}
+                  key={placeholderSelectOptionKey}
+                  disabled={true}
+                >
+                  Immobilie auswählen
+                </option>
+              )}
               {realEstateState.listings.map(({ id, name, address }) => (
                 <option value={id} key={id}>
                   {name} ({address})

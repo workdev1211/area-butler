@@ -29,17 +29,21 @@ import SearchResultContainer, {
   ICurrentMapRef,
 } from "../../components/SearchResultContainer";
 import { LoadingMessage } from "../OnOfficeContainer";
-import { useAnalysis } from "../../hooks/analysis";
+import { useLocationData } from "../../hooks/locationdata";
 import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
+import { UserContext } from "../../context/UserContext";
 
 const MapPage: FunctionComponent = () => {
-  const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { fetchSnapshot } = useAnalysis();
-  const mapRef = useRef<ICurrentMapRef | null>(null);
-
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
+  const { snapshotId } = useParams<SnippetEditorRouterProps>();
+  const { fetchSnapshot } = useLocationData(!!integrationUser);
+  const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
   const [snapshotConfig, setSnapshotConfig] =

@@ -1,3 +1,5 @@
+import { OpenAiQueryTypeEnum } from "./open-ai";
+
 export enum IntegrationTypesEnum {
   "ON_OFFICE" = "ON_OFFICE",
 }
@@ -11,3 +13,5 @@ export interface IApiIntegrationParams {
 export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   integrationId: string;
 }
+
+export type TIntegrationActionTypes = OpenAiQueryTypeEnum;

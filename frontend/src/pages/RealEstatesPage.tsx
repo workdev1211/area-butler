@@ -148,7 +148,7 @@ const RealEstatesPage: FunctionComponent = () => {
 
   const fetchRealEstates = async () => {
     const response = await get<ApiRealEstateListing[]>(
-      `/api/real-estate-listings?status=${selectedRealEstateStatus}`
+      `/api/real-estate-listing?status=${selectedRealEstateStatus}`
     );
 
     realEstateDispatch({

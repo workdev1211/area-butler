@@ -5,14 +5,8 @@ import {
   IApiOpenAiLocationRealEstateDescriptionQuery,
   IApiOpenAiQuery,
 } from "../../../shared/types/open-ai";
-import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
 
-export const useOpenAiData = () => {
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
+export const useOpenAiData = (isIntegrationUser = false) => {
   const { post } = useHttp();
 
   const fetchLocationDescription = async (
@@ -20,7 +14,7 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiLocationDescriptionQuery>(
-        integrationUser
+        isIntegrationUser
           ? "/api/location-integration/open-ai-loc-desc"
           : "/api/location/open-ai-loc-desc",
         locationDescriptionQuery
@@ -32,9 +26,9 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        integrationUser
-          ? "/api/real-estate-listings-int/open-ai-real-estate-desc"
-          : "/api/real-estate-listings/open-ai-real-estate-desc",
+        isIntegrationUser
+          ? "/api/real-estate-listing-int/open-ai-real-estate-desc"
+          : "/api/real-estate-listing/open-ai-real-estate-desc",
         realEstateDescriptionQuery
       )
     ).data;
@@ -44,7 +38,7 @@ export const useOpenAiData = () => {
   ): Promise<string> =>
     (
       await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        integrationUser
+        isIntegrationUser
           ? "/api/location-integration/open-ai-loc-real-est-desc"
           : "/api/location/open-ai-loc-real-est-desc",
         locationRealEstateDescriptionQuery
@@ -54,7 +48,7 @@ export const useOpenAiData = () => {
   const fetchQuery = async (query: IApiOpenAiQuery): Promise<string> =>
     (
       await post<string, IApiOpenAiQuery>(
-        integrationUser
+        isIntegrationUser
           ? "/api/open-ai-integration/query"
           : "/api/open-ai/query",
         query

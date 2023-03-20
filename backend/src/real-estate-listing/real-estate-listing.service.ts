@@ -325,6 +325,7 @@ export class RealEstateListingService {
   async fetchRealEstateListingById(
     user: UserDocument | TIntegrationUserDocument,
     realEstateListingId: string,
+    integrationId?: string,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
     const filter = { _id: realEstateListingId };
@@ -334,6 +335,7 @@ export class RealEstateListingService {
       isIntegrationUser
         ? {
             integrationParams: {
+              integrationId,
               integrationUserId: user.integrationUserId,
               integrationType: user.integrationType,
             },
@@ -344,7 +346,7 @@ export class RealEstateListingService {
     const realEstateListing = await this.realEstateListingModel.findOne(filter);
 
     if (!realEstateListing) {
-      throw new HttpException('Unknown real estate id', 404);
+      throw new HttpException('Real estate listing not found!', 404);
     }
 
     return realEstateListing;
@@ -480,7 +482,10 @@ export class RealEstateListingService {
 
   async fetchOpenAiRealEstateDesc(
     user: UserDocument | TIntegrationUserDocument,
-    { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
+    {
+      realEstateListingId,
+      integrationId,
+    }: IApiOpenAiRealEstateDescriptionQuery,
   ) {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -498,6 +503,7 @@ export class RealEstateListingService {
     const realEstateListing = await this.fetchRealEstateListingById(
       user,
       realEstateListingId,
+      integrationId,
     );
 
     const queryText =

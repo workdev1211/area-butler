@@ -16,7 +16,10 @@ import {
 } from "../../../../shared/types/open-ai";
 import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
-import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
+import {
+  RequestStatusTypesEnum,
+  TPlaceholderSelectOptionKey,
+} from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
 import { useOpenAiData } from "../../hooks/openaidata";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
@@ -28,12 +31,17 @@ import {
   CachingActionTypesEnum,
   CachingContext,
 } from "../../context/CachingContext";
+import { UserContext } from "../../context/UserContext";
+import { SearchContext } from "../../context/SearchContext";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
-  onResponseFetched: () => void;
+  onResponseFetched: (
+    queryType: OpenAiQueryTypeEnum,
+    requestStatus: RequestStatusTypesEnum
+  ) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
 }
 
@@ -45,6 +53,12 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   initialQueryType,
 }) => {
   const { cachingState, cachingDispatch } = useContext(CachingContext);
+  const {
+    searchContextState: { integrationId },
+  } = useContext(SearchContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
   const formRef = useRef<FormikProps<unknown>>(null);
   const realEstateDescriptionFormRef =
@@ -55,7 +69,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
     fetchRealEstateDescription,
     fetchLocRealEstDesc,
     fetchQuery,
-  } = useOpenAiData();
+  } = useOpenAiData(!!integrationUser);
 
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
@@ -63,12 +77,13 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   const [fetchedResponse, setFetchedResponse] = useState<string>();
 
   useEffect(() => {
-    if (!isFetchResponse) {
+    if (!isFetchResponse || !queryType) {
       return;
     }
 
     const fetchResponse = async (): Promise<void> => {
       let response;
+      let requestStatus = RequestStatusTypesEnum.SUCCESS;
 
       try {
         switch (queryType) {
@@ -87,6 +102,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             realEstateDescriptionFormRef.current?.handleSubmit();
 
             response = await fetchRealEstateDescription({
+              integrationId,
               ...(realEstateDescriptionFormRef.current
                 ?.values as IApiOpenAiRealEstateDescriptionQuery),
             });
@@ -96,9 +112,19 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
             formRef.current?.handleSubmit();
             realEstateDescriptionFormRef.current?.handleSubmit();
+            const a1 = {
+              searchResultSnapshotId,
+              integrationId,
+              ...(formRef.current
+                ?.values as IOpenAiLocationDescriptionFormValues),
+              ...(realEstateDescriptionFormRef.current
+                ?.values as IApiOpenAiRealEstateDescriptionQuery),
+            };
+            console.log(1, a1);
 
             response = await fetchLocRealEstDesc({
               searchResultSnapshotId,
+              integrationId,
               ...(formRef.current
                 ?.values as IOpenAiLocationDescriptionFormValues),
               ...(realEstateDescriptionFormRef.current
@@ -121,22 +147,22 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         }
       } catch (e) {
         toastError("Fehler beim Senden der KI-Anfrage!");
+        requestStatus = RequestStatusTypesEnum.FAILURE;
       }
 
-      onResponseFetched();
+      onResponseFetched(queryType as OpenAiQueryTypeEnum, requestStatus);
       setFetchedResponse(response);
     };
 
     void fetchResponse();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    fetchLocationDescription,
-    fetchRealEstateDescription,
-    fetchLocRealEstDesc,
-    fetchQuery,
     isFetchResponse,
     onResponseFetched,
     queryType,
     searchResultSnapshotId,
+    integrationId,
   ]);
 
   useEffect(() => {

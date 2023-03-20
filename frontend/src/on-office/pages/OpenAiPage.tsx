@@ -1,12 +1,18 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { useHistory } from "react-router-dom";
 
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../OnOfficeContainer";
 import { SearchContext } from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
+import { RequestStatusTypesEnum } from "../../../../shared/types/types";
+import { UserActionTypes, UserContext } from "../../context/UserContext";
+import { checkProdContAvailability } from "../../shared/integration.functions";
 
 const OpenAiPage: FunctionComponent = () => {
   const { searchContextState } = useContext(SearchContext);
+  const { userState, userDispatch } = useContext(UserContext);
+  const history = useHistory();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
@@ -47,8 +53,26 @@ const OpenAiPage: FunctionComponent = () => {
             setIsGenerateButtonDisabled(!isReady);
           }}
           isFetchResponse={isFetchResponse}
-          onResponseFetched={() => {
+          onResponseFetched={(queryType, requestStatus) => {
             setIsFetchResponse(false);
+
+            if (requestStatus === RequestStatusTypesEnum.FAILURE) {
+              if (
+                !checkProdContAvailability(
+                  userState.integrationUser!,
+                  queryType
+                )
+              ) {
+                history.push("/products");
+              }
+
+              return;
+            }
+
+            userDispatch({
+              type: UserActionTypes.DECR_AVAIL_PROD_CONT,
+              payload: queryType,
+            });
           }}
         />
         <div className="flex justify-end">

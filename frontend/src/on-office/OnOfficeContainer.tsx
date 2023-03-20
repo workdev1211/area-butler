@@ -44,6 +44,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { post } = useHttp();
 
   useEffect(() => {
+    // TODO split user and location data to two different useEffects
     const queryParamsAndUrl = getQueryParamsAndUrl();
     console.log("OnOfficeApp", 2, queryParamsAndUrl);
 
@@ -68,7 +69,7 @@ const OnOfficeContainer: FunctionComponent = () => {
         accessToken,
         integrationType: IntegrationTypesEnum.ON_OFFICE,
         availProdContingents: {
-          [ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI]: 5,
+          [ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI]: 3,
         },
       },
     });
@@ -90,6 +91,13 @@ const OnOfficeContainer: FunctionComponent = () => {
   }, [history, searchContextDispatch, userDispatch]);
 
   useEffect(() => {
+    if (
+      !searchContextState.integrationId ||
+      !userState.integrationUser?.accessToken
+    ) {
+      return;
+    }
+
     const fetchLatestSnapshot = async () => {
       const snapshotResponse = (
         await post<
@@ -104,20 +112,23 @@ const OnOfficeContainer: FunctionComponent = () => {
         )
       ).data;
 
-      if (snapshotResponse) {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
-          payload: snapshotResponse.id,
-        });
+      if (!snapshotResponse) {
+        return;
       }
+
+      // TODO add other important snapshot context data
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
+        payload: snapshotResponse.id,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
+        payload: snapshotResponse.snapshot.transportationParams,
+      });
     };
 
-    if (
-      searchContextState.integrationId &&
-      userState.integrationUser?.accessToken
-    ) {
-      void fetchLatestSnapshot();
-    }
+    void fetchLatestSnapshot();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [

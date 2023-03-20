@@ -102,6 +102,7 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
                   placeholder="Transportmitteln"
                   name="meanOfTransportation"
                   disabled={meansOfTransportation.length === 1}
+                  defaultValue={processedInitialValues.meanOfTransportation}
                 >
                   {meansOfTransportation.map(({ label, value }) => (
                     <option value={value} key={value}>
@@ -115,6 +116,7 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
                   label="Texttonalität"
                   placeholder="Texttonalität"
                   name="tonality"
+                  defaultValue={processedInitialValues.tonality}
                 >
                   {Object.values(OpenAiTonalityEnum).map((key) => (
                     <option value={key} key={key}>

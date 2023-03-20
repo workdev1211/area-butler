@@ -52,15 +52,14 @@ export const onePage50OnOfficeProduct: IOnOfficeProduct = {
   price: 458.94,
 };
 
-export const allOnOfficeProducts: Record<
-  OnOfficeProductTypesEnum,
-  IOnOfficeProduct
+export const allOnOfficeProducts: Partial<
+  Record<OnOfficeProductTypesEnum, IOnOfficeProduct>
 > = {
   [OnOfficeProductTypesEnum.MAP_SNAPSHOT]: mapSnapshotOnOfficeProduct,
   [OnOfficeProductTypesEnum.OPEN_AI]: openAiOnOfficeProduct,
   [OnOfficeProductTypesEnum.OPEN_AI_50]: openAi50OnOfficeProduct,
-  [OnOfficeProductTypesEnum.MAP_IFRAME]: mapIframeOnOfficeProduct,
-  [OnOfficeProductTypesEnum.MAP_IFRAME_50]: mapIframe50OnOfficeProduct,
-  [OnOfficeProductTypesEnum.ONE_PAGE]: onePageOnOfficeProduct,
-  [OnOfficeProductTypesEnum.ONE_PAGE_50]: onePage50OnOfficeProduct,
+  // [OnOfficeProductTypesEnum.MAP_IFRAME]: mapIframeOnOfficeProduct,
+  // [OnOfficeProductTypesEnum.MAP_IFRAME_50]: mapIframe50OnOfficeProduct,
+  // [OnOfficeProductTypesEnum.ONE_PAGE]: onePageOnOfficeProduct,
+  // [OnOfficeProductTypesEnum.ONE_PAGE_50]: onePage50OnOfficeProduct,
 };

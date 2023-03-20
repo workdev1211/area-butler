@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -22,7 +22,6 @@ export class RealEstateListingIntService {
   ): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
       { integrationParams },
-      realEstateListing,
     );
 
     if (existingRealEstateListing) {
@@ -31,5 +30,19 @@ export class RealEstateListingIntService {
     }
 
     return new this.realEstateListingModel(realEstateListing).save();
+  }
+
+  async findOneOrFailByIntParams(
+    integrationParams: IApiIntegrationParams,
+  ): Promise<RealEstateListingDocument> {
+    const existingRealEstateListing = await this.realEstateListingModel.findOne(
+      { integrationParams },
+    );
+
+    if (!existingRealEstateListing) {
+      throw new HttpException('Real estate listing not found!', 404);
+    }
+
+    return existingRealEstateListing;
   }
 }

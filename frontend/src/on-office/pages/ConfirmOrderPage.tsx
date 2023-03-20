@@ -38,7 +38,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
       console.log("ConfirmOrderPage", 1, confirmOrderData);
 
       try {
-        const { message, availableProductContingents } = (
+        const { message, availProdContingents } = (
           await post<IApiOnOfficeConfirmOrderRes, IApiOnOfficeConfirmOrderReq>(
             "/api/on-office/confirm-order",
             confirmOrderData,
@@ -61,12 +61,7 @@ const ConfirmOrderPage: FunctionComponent = () => {
         }
 
         // TODO update user products in context
-        console.log(
-          "ConfirmOrderPage",
-          9,
-          message,
-          availableProductContingents
-        );
+        console.log("ConfirmOrderPage", 9, message, availProdContingents);
         // history.push("/search");
       } catch (e) {
         toastError("Ein Fehler ist aufgetreten!");

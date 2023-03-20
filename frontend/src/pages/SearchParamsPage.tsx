@@ -69,7 +69,7 @@ import { useHttp } from "../hooks/http";
 import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
-import { useAnalysis } from "../hooks/analysis";
+import { useLocationData } from "../hooks/locationdata";
 import {
   getCombinedOsmEntityTypes,
   getUncombinedOsmEntityTypes,
@@ -79,20 +79,24 @@ import { ISearchParamsHistoryState } from "../shared/shared.types";
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FunctionComponent = () => {
-  console.log("SearchParamsPage", 1);
+  const { userState } = useContext(UserContext);
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
+  const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
+  const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
+
+  const user: ApiUser = userState.user!;
+  const integrationUser: TIntegrationUser = userState.integrationUser!;
+
   const { get } = useHttp();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot, updateSnapshot } = useAnalysis();
-
-  const { userState } = useContext(UserContext);
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-  const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
-  const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
+  const { createLocation, createSnapshot, updateSnapshot } = useLocationData(
+    !!integrationUser
+  );
 
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
@@ -104,9 +108,6 @@ const SearchParamsPage: FunctionComponent = () => {
     id: string | undefined;
   }>();
   const [placesLocation, setPlacesLocation] = useState<any>(null);
-
-  const user: ApiUser = userState.user!;
-  const integrationUser: TIntegrationUser = userState.integrationUser!;
 
   const clearRealEstateParams = () => {
     searchContextDispatch({
@@ -216,6 +217,10 @@ const SearchParamsPage: FunctionComponent = () => {
   ]);
 
   useEffect(() => {
+    if (integrationUser) {
+      return;
+    }
+
     const fetchCustomers = async () => {
       const response = await get<ApiPotentialCustomer[]>(
         "/api/potential-customers"
@@ -227,15 +232,17 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    if (user && !integrationUser) {
-      void fetchCustomers();
-    }
+    void fetchCustomers();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
+    if (integrationUser) {
+      return;
+    }
+
     const fetchRealEstates = async () => {
       const response = await get<ApiRealEstateListing[]>(
-        "/api/real-estate-listings"
+        "/api/real-estate-listing/listings"
       );
 
       realEstateDispatch({
@@ -244,9 +251,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
     };
 
-    if (user && !integrationUser) {
-      void fetchRealEstates();
-    }
+    void fetchRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLocationAutocompleteChange = (payload: any): void => {
