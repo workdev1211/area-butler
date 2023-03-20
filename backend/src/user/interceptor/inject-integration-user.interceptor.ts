@@ -24,7 +24,7 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
     const { authorization } = req.headers;
-    const accessToken = authorization.replace(/^AccessToken (.*)$/, '$1');
+    const accessToken = authorization?.replace(/^AccessToken (.*)$/, '$1');
     let integrationUser;
 
     if (accessToken) {

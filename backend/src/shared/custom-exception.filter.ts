@@ -69,7 +69,17 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
       textBlocks.push(errorMessage);
     }
 
-    const userEmail = `*User email:* ${req.user?.email}`;
+    if (req.user?.email) {
+      const userEmail = `*User email:* ${req.user?.email}`;
+      textBlocks.push(userEmail);
+    }
+
+    if (req.user?.integrationParams) {
+      const integrationUserDbId = `*User integration user DB id:* ${req.user?.integrationParams.integrationUserDbId}`;
+      const integrationUserType = `*User integration type:* ${req.user?.integrationParams.integrationType}`;
+      textBlocks.push(integrationUserDbId, integrationUserType);
+    }
+
     const reqUrlDescription = `*Request Url:* ${JSON.stringify(req.url)}`;
     const reqStatusDescription = `*Request Status:* ${JSON.stringify(status)}`;
     const reqMethodDescription = `*Request Method:* ${JSON.stringify(
@@ -84,7 +94,6 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
     )}`;
 
     textBlocks.push(
-      userEmail,
       reqUrlDescription,
       reqHeadersDescription,
       reqParamsDescription,
@@ -95,10 +104,9 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
     console.error(textBlocks);
 
-    // TODO uncomment on deploy
-    // void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
-    //   textBlocks,
-    // });
+    void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
+      textBlocks,
+    });
 
     super.catch(exception, host);
   }
