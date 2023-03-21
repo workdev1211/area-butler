@@ -28,7 +28,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import ApiOnOfficeFetchLatestSnapshotReqDto from './dto/api-on-office-find-create-snapshot-req.dto';
+import ApiOnOfficeFetchLatestSnapshotReqDto from './dto/api-on-office-fetch-latest-snapshot-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')

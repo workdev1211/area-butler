@@ -8,8 +8,12 @@ import { TApiIntUserAvailProdContingents } from "../../../shared/types/integrati
 export const checkProdContAvailability = (
   integrationType: IntegrationTypesEnum,
   actionType: TIntegrationActionTypes,
-  availProdContingents: TApiIntUserAvailProdContingents
+  availProdContingents?: TApiIntUserAvailProdContingents
 ) => {
+  if (!availProdContingents) {
+    return false;
+  }
+
   const productContingentType = getProdContTypeByActType(
     integrationType,
     actionType

@@ -48,6 +48,7 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { LocationIntegrationService } from '../location/location-integration.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
+import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 @Injectable()
 export class OnOfficeService {
@@ -163,7 +164,7 @@ export class OnOfficeService {
 
     const { color, logo } = await this.getColorAndLogo(integrationUser);
 
-    await this.integrationUserService.updateParamsAndConfig(
+    const { config } = await this.integrationUserService.updateParamsAndConfig(
       integrationUser,
       extendedClaim,
       {
@@ -184,27 +185,25 @@ export class OnOfficeService {
       integrationUser,
     );
 
-    await this.realEstateListingIntService.upsertByIntegrationParams(
-      {
-        integrationId: estateId,
-        integrationUserId,
-        integrationType: this.integrationType,
-      },
-      areaButlerEstate,
+    const realEstate = mapRealEstateListingToApiRealEstateListing(
+      await this.realEstateListingIntService.upsertByIntegrationParams(
+        {
+          integrationId: estateId,
+          integrationUserId,
+          integrationType: this.integrationType,
+        },
+        areaButlerEstate,
+      ),
     );
 
     this.logger.debug(this.login.name, areaButlerEstate);
 
     return {
-      estateId,
-      integrationUserId,
+      config,
       availProdContingents,
+      realEstate,
+      integrationId: estateId,
       accessToken: extendedClaim,
-      address: areaButlerEstate.address,
-      coordinates: {
-        lat: areaButlerEstate.location.coordinates[0],
-        lng: areaButlerEstate.location.coordinates[1],
-      },
     };
   }
 

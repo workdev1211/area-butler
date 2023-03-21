@@ -86,7 +86,7 @@ export const userReducer = (
       return { ...state, integrationUser: { ...action.payload } };
     }
     case UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT: {
-      if (!state.integrationUser) {
+      if (!state.integrationUser?.availProdContingents) {
         return state;
       }
 
@@ -97,11 +97,11 @@ export const userReducer = (
         action.payload.actionType
       );
 
-      if (!integrationUser.availProdContingents[productContingentType]) {
+      if (!integrationUser.availProdContingents![productContingentType]) {
         return state;
       }
 
-      integrationUser.availProdContingents[productContingentType]! -= 1;
+      integrationUser.availProdContingents![productContingentType]! -= 1;
 
       return { ...state, integrationUser };
     }

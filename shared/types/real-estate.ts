@@ -22,10 +22,10 @@ export interface ApiRealEstateListing {
   name: string;
   address: string;
   externalUrl?: string;
-  coordinates?: ApiCoordinates;
+  showInSnippet: boolean;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
-  showInSnippet: boolean;
+  coordinates: ApiCoordinates;
   status: ApiRealEstateStatusEnum;
   belongsToParent: boolean;
 }

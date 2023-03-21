@@ -12,17 +12,15 @@ export const mapRealEstateListingToApiRealEstateListing = (
     name: realEstateListing.name,
     address: showAddress ? realEstateListing.address : '',
     externalUrl: realEstateListing.externalUrl,
-    coordinates: realEstateListing.location
-      ? showAddress
-        ? {
-            lat: realEstateListing.location.coordinates[0],
-            lng: realEstateListing.location.coordinates[1],
-          }
-        : randomizeCoordinates({
-            lat: realEstateListing.location.coordinates[0],
-            lng: realEstateListing.location.coordinates[1],
-          })
-      : null,
+    coordinates: showAddress
+      ? {
+          lat: realEstateListing.location.coordinates[0],
+          lng: realEstateListing.location.coordinates[1],
+        }
+      : randomizeCoordinates({
+          lat: realEstateListing.location.coordinates[0],
+          lng: realEstateListing.location.coordinates[1],
+        }),
     showInSnippet: realEstateListing.showInSnippet,
     costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,

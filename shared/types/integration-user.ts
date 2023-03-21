@@ -14,8 +14,8 @@ export interface IApiIntegrationUser {
 
 export interface IIntegrationUserContext {
   accessToken: string;
-  config: TApiIntegrationUserConfig;
-  availProdContingents: TApiIntUserAvailProdContingents;
+  config?: TApiIntegrationUserConfig;
+  availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
 export interface IIntUserContextDecrAvailProdCont {
@@ -76,7 +76,7 @@ export type TApiIntegrationUserProductsUsed = Partial<
 >;
 export type TApiIntegrationUserConfig = {
   mapboxAccessToken?: string;
-  showProductPage?: boolean;
+  hideProductPage?: boolean;
   color?: string;
   logo?: string;
 };

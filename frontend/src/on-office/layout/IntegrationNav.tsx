@@ -5,7 +5,7 @@ import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
 import { SearchContext } from "../../context/SearchContext";
-import { onOfficeRouteEntries } from "../OnOfficeContainer";
+import { onOfficeRootEntries } from "../OnOfficeContainer";
 
 const IntegrationNav: FunctionComponent = () => {
   const {
@@ -78,7 +78,7 @@ const IntegrationNav: FunctionComponent = () => {
             to="/search"
             className="nav-logo"
             isActive={(match, { pathname }) =>
-              onOfficeRouteEntries.includes(pathname)
+              onOfficeRootEntries.includes(pathname)
             }
           >
             <img
@@ -100,7 +100,7 @@ const IntegrationNav: FunctionComponent = () => {
                 className="nav-link"
                 aria-current="page"
                 isActive={(match, { pathname }) =>
-                  onOfficeRouteEntries.includes(pathname)
+                  onOfficeRootEntries.includes(pathname)
                 }
               >
                 Umgebungsanalyse
@@ -131,7 +131,7 @@ const IntegrationNav: FunctionComponent = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
             isActive={(match, { pathname }) =>
-              onOfficeRouteEntries.includes(pathname)
+              onOfficeRootEntries.includes(pathname)
             }
           >
             Umgebungsanalyse

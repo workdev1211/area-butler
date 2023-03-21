@@ -1,5 +1,8 @@
-import { ApiCoordinates } from "./types";
-import { TApiIntUserAvailProdContingents } from "./integration-user";
+import {
+  TApiIntegrationUserConfig,
+  TApiIntUserAvailProdContingents,
+} from "./integration-user";
+import { ApiRealEstateListing } from "./real-estate";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -148,11 +151,10 @@ export interface IApiOnOfficeLoginReq {
 }
 
 export interface IApiOnOfficeLoginRes {
-  address: string;
-  coordinates: ApiCoordinates;
-  estateId: string;
-  integrationUserId: string;
+  integrationId: string;
+  realEstate: ApiRealEstateListing;
   accessToken: string;
+  config?: TApiIntegrationUserConfig;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 

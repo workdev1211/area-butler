@@ -38,6 +38,7 @@ export class RealEstateListingIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
   ): Promise<string> {
+    // TODO move to the interceptor
     this.integrationUserService.checkProdContAvailability(
       integrationUser,
       OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
@@ -49,6 +50,7 @@ export class RealEstateListingIntController {
         realEstateDescriptionQuery,
       );
 
+    // TODO move to the interceptor
     await this.integrationUserService.incrementProductUsage(
       integrationUser,
       OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,

@@ -30,7 +30,7 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   @IsOptional()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
-  coordinates?: ApiCoordinatesDto;
+  coordinates: ApiCoordinatesDto;
 
   @IsOptional()
   @ValidateNested()

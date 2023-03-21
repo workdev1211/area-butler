@@ -98,27 +98,21 @@ export class OpenAiService {
   }
 
   getRealEstateDescriptionQuery(
-    {
-      address,
-      characteristics: {
-        numberOfRooms,
-        energyEfficiency,
-        furnishing,
-        realEstateSizeInSquareMeters,
-        propertySizeInSquareMeters,
-      },
-      costStructure: { minPrice, price: maxPrice, type: costType },
-    }: RealEstateListingDocument,
+    { address, characteristics, costStructure }: RealEstateListingDocument,
     initialQueryText = `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
   ): string {
     const objectType = 'Haus';
 
     // Keep in mind that in the future, the currency may not only be the Euro
+    // minPrice is a minimum price, price is a price or a maximum one
     const price =
-      (!minPrice?.amount && maxPrice?.amount) ||
-      (minPrice?.amount && !maxPrice?.amount)
-        ? minPrice?.amount || maxPrice?.amount
-        : (minPrice?.amount + maxPrice?.amount) / 2;
+      costStructure &&
+      ((!costStructure.minPrice?.amount && costStructure.price?.amount) ||
+      (costStructure.minPrice?.amount && !costStructure.price?.amount)
+        ? costStructure.minPrice?.amount || costStructure.price?.amount
+        : (costStructure.minPrice?.amount + costStructure.price?.amount) / 2);
+
+    const costType = costStructure?.type;
 
     let queryText = initialQueryText;
 
@@ -160,40 +154,44 @@ export class OpenAiService {
     if (address) {
       queryText += ` Die Adresse lautet ${address}.`;
     }
-    if (propertySizeInSquareMeters) {
-      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${propertySizeInSquareMeters}qm.`;
+    if (characteristics.propertySizeInSquareMeters) {
+      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm.`;
     }
-    if (realEstateSizeInSquareMeters) {
-      queryText += ` Die Wohnfläche beträgt ${realEstateSizeInSquareMeters}qm.`;
+    if (characteristics.realEstateSizeInSquareMeters) {
+      queryText += ` Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm.`;
     }
-    if (numberOfRooms) {
-      queryText += ` Es gibt ${numberOfRooms} Zimmer.`;
+    if (characteristics.numberOfRooms) {
+      queryText += ` Es gibt ${characteristics.numberOfRooms} Zimmer.`;
     }
-    if (energyEfficiency) {
-      queryText += ` Die Energieeffizienzklasse des Objektes ist '${energyEfficiency}'.`;
+    if (characteristics.energyEfficiency) {
+      queryText += ` Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'.`;
     }
-    if (furnishing.includes(ApiFurnishing.GARDEN)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.GARDEN)) {
       queryText += ' Es gibt einen Garten.';
     }
-    if (furnishing.includes(ApiFurnishing.BALCONY)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.BALCONY)) {
       queryText += ' Das Objekt verfügt über einen Balkon.';
     }
-    if (furnishing.includes(ApiFurnishing.BASEMENT)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.BASEMENT)) {
       queryText += ' Zu dem Objekt gehört ein Keller.';
     }
-    if (furnishing.includes(ApiFurnishing.GUEST_REST_ROOMS)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.GUEST_REST_ROOMS)) {
       queryText += ' Es gibt ein Gäste-WC.';
     }
-    if (furnishing.includes(ApiFurnishing.UNDERFLOOR_HEATING)) {
+    if (
+      characteristics?.furnishing?.includes(ApiFurnishing.UNDERFLOOR_HEATING)
+    ) {
       queryText += ' Bei der Heizung handelt es sich um ein Fußbodenheizung.';
     }
-    if (furnishing.includes(ApiFurnishing.GARAGE_PARKING_SPACE)) {
+    if (
+      characteristics?.furnishing?.includes(ApiFurnishing.GARAGE_PARKING_SPACE)
+    ) {
       queryText += ' Zugehörig gibt es einen Stellplatz.';
     }
-    if (furnishing.includes(ApiFurnishing.ACCESSIBLE)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.ACCESSIBLE)) {
       queryText += ' Das Objekt ist barrierefrei eingerichtet und zugänglich.';
     }
-    if (furnishing.includes(ApiFurnishing.FITTED_KITCHEN)) {
+    if (characteristics?.furnishing?.includes(ApiFurnishing.FITTED_KITCHEN)) {
       queryText += ' Das Objekt verfügt über eine Einbauküche.';
     }
 
