@@ -7,7 +7,7 @@ import {
 } from "../../../shared/types/types";
 import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
 import {
-  IIntegrationUserContext,
+  IApiIntegrationUser,
   IIntUserContextDecrAvailProdCont,
 } from "../../../shared/types/integration-user";
 
@@ -20,7 +20,7 @@ export interface UserState {
   };
   startTour: boolean;
   embeddableMaps: ApiSearchResultSnapshotResponse[];
-  integrationUser?: IIntegrationUserContext;
+  integrationUser?: IApiIntegrationUser;
 }
 
 export const initialState: UserState = {
@@ -52,7 +52,7 @@ export enum UserActionTypes {
 
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
-  [UserActionTypes.SET_INTEGRATION_USER]: IIntegrationUserContext;
+  [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser;
   [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: IIntUserContextDecrAvailProdCont;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
@@ -80,7 +80,7 @@ export const userReducer = (
 ): UserState => {
   switch (action.type) {
     case UserActionTypes.SET_USER: {
-      return { ...state, user: action.payload };
+      return { ...state, user: { ...action.payload } };
     }
     case UserActionTypes.SET_INTEGRATION_USER: {
       return { ...state, integrationUser: { ...action.payload } };

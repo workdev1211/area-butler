@@ -2,7 +2,7 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { ApiTour, ApiUser } from "../../../shared/types/types";
+import { ApiTour } from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
 import SearchResulSteps from "./SearchResultPageSteps";
@@ -47,21 +47,29 @@ const tourSteps: Record<ApiTour, Step[]> = {
 };
 
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
-  const [runTour, setRunTour] = useState(false);
-  const { userState, userDispatch } = useContext(UserContext);
-  const user: ApiUser = userState.user!;
+  const {
+    userState: { startTour, user, integrationUser },
+    userDispatch,
+  } = useContext(UserContext);
 
-  const onShowTour = () => setRunTour(true);
+  const [runTour, setRunTour] = useState(false);
+
+  const onShowTour = () => {
+    setRunTour(true);
+  };
 
   useEffect(() => {
-    if (userState.startTour) {
-      setRunTour(true);
-      userDispatch({
-        type: UserActionTypes.SET_START_TOUR,
-        payload: false,
-      });
+    if (!startTour) {
+      return;
     }
-  }, [userDispatch, userState.startTour]);
+
+    setRunTour(true);
+
+    userDispatch({
+      type: UserActionTypes.SET_START_TOUR,
+      payload: false,
+    });
+  }, [userDispatch, startTour]);
 
   const handleJoyrideCallback = (data: CallBackProps) => {
     const { status } = data;
@@ -72,11 +80,20 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
     }
   };
 
+  console.log(
+    "TourStarter",
+    1,
+    user?.showTour,
+    integrationUser?.config.showTour
+  );
+
   return (
     <div>
       <StartTourModal
         tour={tour}
-        showTour={user?.showTour || defaultShowTour}
+        showTour={
+          user?.showTour || integrationUser?.config?.showTour || defaultShowTour
+        }
         onShowTour={onShowTour}
       />
       <Joyride

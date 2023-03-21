@@ -14,6 +14,7 @@ import {
   IntegrationUserSchema,
 } from './schema/integration-user.schema';
 import { IntegrationUserService } from './integration-user.service';
+import { IntegrationUserController } from './integration-user.controller';
 
 @Module({
   imports: [
@@ -35,6 +36,6 @@ import { IntegrationUserService } from './integration-user.service';
     IntegrationUserService,
   ],
   exports: [UserService, SubscriptionService, IntegrationUserService],
-  controllers: [UserController],
+  controllers: [UserController, IntegrationUserController],
 })
 export class UserModule {}

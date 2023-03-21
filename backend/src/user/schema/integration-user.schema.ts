@@ -3,7 +3,7 @@ import { Document } from 'mongoose';
 
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
-  IApiIntegrationUser,
+  IApiIntegrationUserSchema,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProductContingents,
@@ -14,7 +14,7 @@ import {
 export type TIntegrationUserDocument = IntegrationUser & Document;
 
 @Schema({ timestamps: true })
-export class IntegrationUser implements IApiIntegrationUser {
+export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
   integrationUserId: string;
 

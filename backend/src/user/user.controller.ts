@@ -140,7 +140,7 @@ export class UserController {
 
   @ApiProperty({ description: 'Hide tours for current user' })
   @Post('me/hide-tour')
-  public async hideAllTours(@Req() request): Promise<ApiUserDto> {
+  async hideAllTours(@Req() request): Promise<ApiUserDto> {
     const requestUser = request?.user;
     const user = await this.userService.hideTour(requestUser.email);
 

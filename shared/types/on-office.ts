@@ -159,7 +159,7 @@ export interface IApiOnOfficeLoginRes {
   realEstate: ApiRealEstateListing;
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   accessToken: string;
-  config?: TApiIntegrationUserConfig;
+  config: TApiIntegrationUserConfig;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 

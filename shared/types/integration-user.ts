@@ -1,6 +1,7 @@
 import { IntegrationTypesEnum, TIntegrationActionTypes } from "./integration";
+import { ApiShowTour } from "./types";
 
-export interface IApiIntegrationUser {
+export interface IApiIntegrationUserSchema {
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
   accessToken: string;
@@ -12,9 +13,9 @@ export interface IApiIntegrationUser {
   usageStatistics?: TApiIntegrationUserUsageStatistics;
 }
 
-export interface IIntegrationUserContext {
+export interface IApiIntegrationUser {
   accessToken: string;
-  config?: TApiIntegrationUserConfig;
+  config: TApiIntegrationUserConfig;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
@@ -79,6 +80,7 @@ export type TApiIntegrationUserConfig = {
   hideProductPage?: boolean;
   color?: string;
   logo?: string;
+  showTour: ApiShowTour;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsParamNames, TApiIntUserUsageStatisticsMetrics>

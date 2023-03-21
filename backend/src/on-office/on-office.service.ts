@@ -49,6 +49,7 @@ import { LocationIntegrationService } from '../location/location-integration.ser
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { TApiIntegrationUserConfig } from '@area-butler-types/integration-user';
 
 @Injectable()
 export class OnOfficeService {
@@ -174,7 +175,7 @@ export class OnOfficeService {
       {
         color: color ? `#${color}` : undefined,
         logo: logo ? convertBase64ContentToUri(logo) : undefined,
-      },
+      } as TApiIntegrationUserConfig,
     );
 
     const availProdContingents =

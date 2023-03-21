@@ -22,6 +22,7 @@ import {
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
+import { ApiTour } from '@area-butler-types/types';
 
 @Injectable()
 export class IntegrationUserService {
@@ -51,6 +52,16 @@ export class IntegrationUserService {
       integrationType,
       accessToken,
       parameters,
+      config: {
+        showTour: {
+          search: true,
+          result: true,
+          realEstates: true,
+          customers: true,
+          profile: true,
+          editor: true,
+        },
+      },
     }).save();
   }
 
@@ -243,6 +254,25 @@ export class IntegrationUserService {
     }
 
     return integrationUser;
+  }
+
+  async hideTour(
+    integrationUser: TIntegrationUserDocument,
+    tour?: ApiTour,
+  ): Promise<TIntegrationUserDocument> {
+    const showTour = { ...integrationUser.config.showTour };
+
+    if (tour) {
+      showTour[tour] = false;
+    } else {
+      Object.keys(integrationUser.config.showTour).forEach((tour) => {
+        showTour[tour] = false;
+      });
+    }
+
+    integrationUser.config.showTour = showTour;
+
+    return integrationUser.save();
   }
 
   private getAvailProdCont(

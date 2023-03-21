@@ -127,6 +127,7 @@ export const useLogin = () => {
     url,
   }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<RequestStatusTypesEnum> => {
     console.log("confirmOrder", 1, url, url.replace(/\/$/, ""));
+    // TODO HACK
     const confirmOrderReq: IApiOnOfficeConfirmOrderReq = {
       url: url.replace(/\/$/, ""),
       onOfficeQueryParams: queryParams,
@@ -186,16 +187,11 @@ export const useLogin = () => {
       },
     });
 
-    userDispatch({
-      type: UserActionTypes.SET_INTEGRATION_USER,
-      payload: {
-        accessToken,
-        config,
-        availProdContingents: {
-          [ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI]: 5,
-        },
-      },
-    });
+    console.log(
+      "dispatchContextData",
+      2,
+      Object.values(config.showTour).some((tour) => tour)
+    );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,

@@ -1,9 +1,9 @@
 import { FunctionComponent, useContext, useState } from "react";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
 import { toastError } from "shared/shared.functions";
 import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
+import { useTour } from "../hooks/tour";
 
 const tourDescriptions: Record<ApiTour, string> = {
   search: "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
@@ -26,28 +26,33 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   showTour,
   onShowTour = () => {},
 }) => {
+  const {
+    userState: { integrationUser },
+    userDispatch,
+  } = useContext(UserContext);
+
+  const { hideTour, hideTours } = useTour(!!integrationUser);
+
   const [showModal, setShowModal] = useState(showTour[tour]);
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
-  const { userDispatch } = useContext(UserContext);
-
-  const { post } = useHttp();
 
   const doNotShowTourAgain = (tour: ApiTour) => {
     const postDoNotShowTour = async (tour: ApiTour) => {
       try {
-        let user = {};
+        const user = !showNoMoreTips ? await hideTour(tour) : await hideTours();
+        console.log("StartTourModal", 1, user);
 
-        if (!showNoMoreTips) {
-          user = (await post<ApiUser>(`/api/users/me/hide-tour/${tour}`, {}))
-            .data;
+        if ("integrationUserId" in user) {
+          userDispatch({
+            type: UserActionTypes.SET_INTEGRATION_USER,
+            payload: user,
+          });
         } else {
-          user = (await post<ApiUser>(`/api/users/me/hide-tour`, {})).data;
+          userDispatch({
+            type: UserActionTypes.SET_USER,
+            payload: user as ApiUser,
+          });
         }
-
-        userDispatch({
-          type: UserActionTypes.SET_USER,
-          payload: user as ApiUser,
-        });
 
         setShowModal(false);
       } catch (err) {
