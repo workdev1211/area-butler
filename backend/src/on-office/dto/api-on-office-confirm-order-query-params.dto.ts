@@ -36,6 +36,18 @@ class ApiOnOfficeConfirmOrderQueryParamsDto
   @IsOptional()
   @IsString()
   referenceid?: string;
+
+  @IsNotEmpty()
+  @IsString()
+  accessToken: string;
+
+  @IsNotEmpty()
+  @IsString()
+  integrationId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  products: string;
 }
 
 export default ApiOnOfficeConfirmOrderQueryParamsDto;

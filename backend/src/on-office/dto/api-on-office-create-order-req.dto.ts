@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, ValidateNested } from 'class-validator';
+import { IsArray, IsNotEmpty, IsString, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
@@ -8,6 +8,10 @@ import {
 import ApiOnOfficeCreateOrderProductDto from './api-on-office-create-order-product.dto';
 
 class ApiOnOfficeCreateOrderReqDto implements IApiOnOfficeCreateOrderReq {
+  @IsNotEmpty()
+  @IsString()
+  integrationId: string;
+
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })

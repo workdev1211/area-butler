@@ -18,17 +18,15 @@ import {
   IApiOnOfficeLoginRes,
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
-  IApiOnOfficeConfirmOrderRes,
+  TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
 import ApiOnOfficeConfirmOrderReqDto from './dto/api-on-office-confirm-order-req.dto';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { InjectUser } from '../user/inject-user.decorator';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import ApiOnOfficeFetchLatestSnapshotReqDto from './dto/api-on-office-fetch-latest-snapshot-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -101,25 +99,8 @@ export class OnOfficeController {
   confirmOrder(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
-  ): Promise<IApiOnOfficeConfirmOrderRes> {
+  ): Promise<TApiOnOfficeConfirmOrderRes> {
     this.logger.debug(this.confirmOrder.name, confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData, integrationUser);
-  }
-
-  @ApiOperation({
-    description: 'Fetches a snapshot by integration id',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('fetch-latest-snapshot')
-  async fetchLatestSnapshot(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() fetchLatestSnapshotData: ApiOnOfficeFetchLatestSnapshotReqDto,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    this.logger.debug(this.fetchLatestSnapshot.name, fetchLatestSnapshotData);
-
-    return this.onOfficeService.fetchLatestSnapshot(
-      fetchLatestSnapshotData.integrationId,
-      integrationUser,
-    );
   }
 }

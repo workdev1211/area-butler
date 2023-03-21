@@ -12,7 +12,7 @@ import {
 import { useHttp } from "../../hooks/http";
 import { toastError } from "../../shared/shared.functions";
 import ProductCard from "../components/ProductCard";
-import { UserContext } from "../../context/UserContext";
+import { SearchContext } from "../../context/SearchContext";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -23,15 +23,14 @@ const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
 }, {} as Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>);
 
 export const ProductPage: FunctionComponent = () => {
+  const { searchContextState } = useContext(SearchContext);
+
   const history = useHistory();
   const { post } = useHttp();
-  const { userState } = useContext(UserContext);
 
   const [createOrderProducts, setCreateOrderProducts] = useState(
     initialCreateOrderProducts
   );
-
-  const integrationUser = userState.integrationUser!;
 
   const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
     const foundProduct = Object.values(createOrderProducts).find(
@@ -94,26 +93,19 @@ export const ProductPage: FunctionComponent = () => {
                 return;
               }
 
-              console.log("ProductPage", 1, integrationUser.accessToken);
+              console.log("ProductPage", 1);
 
-              const accessToken = integrationUser.accessToken;
-
-              const { onOfficeOrderData, products: savedProducts } = (
+              const { onOfficeOrderData } = (
                 await post<
                   IApiOnOfficeCreateOrderRes,
                   IApiOnOfficeCreateOrderReq
-                >(
-                  "/api/on-office/create-order",
-                  {
-                    products,
-                  },
-                  { authorization: `AccessToken ${accessToken}` }
-                )
+                >("/api/on-office/create-order", {
+                  products,
+                  integrationId: searchContextState.integrationId!,
+                })
               ).data;
 
-              localStorage.setItem("accessToken", accessToken!);
-              localStorage.setItem("products", JSON.stringify(savedProducts));
-              console.log("ProductPage", 9, onOfficeOrderData, savedProducts);
+              console.log("ProductPage", 9, onOfficeOrderData);
 
               window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
             }}

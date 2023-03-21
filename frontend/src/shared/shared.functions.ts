@@ -54,7 +54,7 @@ import {
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { IPoiIcon } from "./shared.types";
+import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
 
 const tinyColor = require("tinycolor2");
 
@@ -739,7 +739,7 @@ export const setBackgroundColor = (
 };
 
 export const getQueryParamsAndUrl = <T>():
-  | { queryParams: T; url: string }
+  | IQueryParamsAndUrl<T>
   | undefined => {
   const currentUrl = window.location.href;
   const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);

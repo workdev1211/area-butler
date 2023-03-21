@@ -16,7 +16,7 @@ class ApiOnOfficeCreateOrderProductDto
 {
   @IsOptional()
   @IsString()
-  id?: string;
+  transactionDbId?: string;
 
   @IsNotEmpty()
   @IsEnum(OnOfficeProductTypesEnum)

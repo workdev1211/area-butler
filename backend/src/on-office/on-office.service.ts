@@ -9,7 +9,6 @@ import { configService } from '../config/config.service';
 import { activateUserPath } from './shared/on-office.constants';
 import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
@@ -24,10 +23,11 @@ import {
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeConfirmOrderQueryParams,
   ApiOnOfficeTransactionStatusesEnum,
-  IApiOnOfficeConfirmOrderRes,
   IApiOnOfficeOrderData,
   IApiOnOfficeResponse,
   IApiOnOfficeActivationReq,
+  IApiOnOfficeCreateOrderProduct,
+  TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -196,7 +196,14 @@ export class OnOfficeService {
       ),
     );
 
-    this.logger.debug(this.login.name, areaButlerEstate);
+    const snapshot =
+      await this.locationIntegrationService.fetchLatestSnapByIntId(
+        estateId,
+        integrationUser,
+        this.integrationType,
+      );
+
+    this.logger.debug(this.login.name, areaButlerEstate, snapshot);
 
     return {
       config,
@@ -204,24 +211,28 @@ export class OnOfficeService {
       realEstate,
       integrationId: estateId,
       accessToken: extendedClaim,
+      latestSnapshot: snapshot
+        ? mapSnapshotToEmbeddableMap(snapshot)
+        : undefined,
     };
   }
 
   async createOrder(
-    { products }: IApiOnOfficeCreateOrderReq,
+    { integrationId, products }: IApiOnOfficeCreateOrderReq,
     {
+      accessToken,
       integrationUserId,
       parameters: { parameterCacheId },
     }: TIntegrationUserDocument,
   ): Promise<IApiOnOfficeCreateOrderRes> {
-    const savedProducts = await Promise.all(
+    await Promise.all(
       products.map(async (product) => {
         const { _id: id } = await new this.onOfficeTransactionModel({
           integrationUserId,
           product,
         }).save();
 
-        product.id = id;
+        product.transactionDbId = id;
 
         return product;
       }),
@@ -242,7 +253,11 @@ export class OnOfficeService {
     });
 
     const onOfficeOrderData = {
-      callbackurl: `${this.appUrl}/on-office/confirm-order`,
+      callbackurl: `${
+        this.appUrl
+      }/on-office?accessToken=${accessToken}&integrationId=${integrationId}&products=${encodeURIComponent(
+        JSON.stringify(products),
+      )}`,
       parametercacheid: parameterCacheId,
       products: processedProducts,
       totalprice: totalPrice.toFixed(2),
@@ -253,52 +268,98 @@ export class OnOfficeService {
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
     onOfficeOrderData.signature = this.generateSignature(orderQueryString);
 
-    return { onOfficeOrderData, products: savedProducts };
+    this.logger.debug(this.createOrder.name, onOfficeOrderData);
+
+    return { onOfficeOrderData };
   }
 
   async confirmOrder(
-    confirmOrderData: IApiOnOfficeConfirmOrderReq,
+    {
+      onOfficeQueryParams: {
+        message,
+        status,
+        transactionid: transactionId,
+        referenceid: referenceId,
+        accessToken,
+        integrationId,
+        products,
+      },
+    }: IApiOnOfficeConfirmOrderReq,
     integrationUser: TIntegrationUserDocument,
-  ): Promise<IApiOnOfficeConfirmOrderRes> {
-    const { product, onOfficeQueryParams } = confirmOrderData;
+  ): Promise<TApiOnOfficeConfirmOrderRes> {
+    const [product]: [IApiOnOfficeCreateOrderProduct] = JSON.parse(
+      decodeURIComponent(products),
+    );
 
-    this.logger.debug(this.confirmOrder.name, product, onOfficeQueryParams);
+    this.logger.debug(
+      this.confirmOrder.name,
+      status,
+      transactionId,
+      referenceId,
+      accessToken,
+      integrationId,
+      products,
+      JSON.parse(products),
+    );
 
-    switch (onOfficeQueryParams.status) {
-      case ApiOnOfficeTransactionStatusesEnum.INPROCESS:
-      case ApiOnOfficeTransactionStatusesEnum.SUCCESS: {
-        this.logger.debug(1, JSON.parse(JSON.stringify(integrationUser)));
+    if (
+      ![
+        ApiOnOfficeTransactionStatusesEnum.INPROCESS,
+        ApiOnOfficeTransactionStatusesEnum.SUCCESS,
+      ].includes(status)
+    ) {
+      const parsedMessage = message?.replace(/\+/g, ' ');
 
-        await this.onOfficeTransactionModel.updateOne(
-          { _id: product.id },
-          {
-            transactionId: onOfficeQueryParams.transactionid,
-            referenceId: onOfficeQueryParams.referenceid,
-            status: onOfficeQueryParams.status,
-          },
-        );
+      await this.onOfficeTransactionModel.updateOne(
+        { _id: product.transactionDbId },
+        { message: parsedMessage },
+      );
 
-        await this.integrationUserService.addProductContingent(
-          integrationUser,
-          convertOnOfficeProdToIntUserProd(product),
-        );
-
-        this.logger.debug(2, JSON.parse(JSON.stringify(integrationUser)));
-
-        return {
-          availProdContingents:
-            await this.integrationUserService.getAvailProdContingents(
-              integrationUser,
-            ),
-        };
-      }
-
-      case ApiOnOfficeTransactionStatusesEnum.ERROR:
-      default: {
-        await this.onOfficeTransactionModel.deleteOne({ _id: product.id });
-        return { message: onOfficeQueryParams.message.replace(/\+/g, ' ') };
-      }
+      return { message: parsedMessage };
     }
+
+    await this.onOfficeTransactionModel.updateOne(
+      { _id: product.transactionDbId },
+      {
+        transactionId: transactionId,
+        referenceId: referenceId,
+        status: status,
+      },
+    );
+
+    await this.integrationUserService.addProductContingent(
+      integrationUser,
+      convertOnOfficeProdToIntUserProd(product),
+    );
+
+    const snapshot =
+      await this.locationIntegrationService.fetchLatestSnapByIntId(
+        integrationId,
+        integrationUser,
+        this.integrationType,
+      );
+
+    this.logger.debug(this.confirmOrder.name, snapshot);
+
+    return {
+      config: integrationUser.config,
+      availProdContingents:
+        await this.integrationUserService.getAvailProdContingents(
+          integrationUser,
+        ),
+      realEstate: mapRealEstateListingToApiRealEstateListing(
+        await this.realEstateListingIntService.findOneOrFailByIntParams({
+          integrationId,
+          integrationUserId: integrationUser.integrationUserId,
+          integrationType: this.integrationType,
+        }),
+      ),
+      integrationId,
+      accessToken,
+      latestSnapshot: snapshot
+        ? mapSnapshotToEmbeddableMap(snapshot)
+        : undefined,
+    };
   }
 
   async getEstateData(
@@ -409,20 +470,6 @@ export class OnOfficeService {
       onOfficeEstate,
       { excludeExtraneousValues: true, exposeUnsetFields: false },
     );
-  }
-
-  async fetchLatestSnapshot(
-    integrationId: string,
-    integrationUser: TIntegrationUserDocument,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    const snapshot =
-      await this.locationIntegrationService.fetchLatestSnapByIntId(
-        integrationId,
-        integrationUser,
-        this.integrationType,
-      );
-
-    return snapshot ? mapSnapshotToEmbeddableMap(snapshot) : undefined;
   }
 
   generateSignature(

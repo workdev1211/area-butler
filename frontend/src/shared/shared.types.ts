@@ -25,3 +25,8 @@ export interface ISearchParamsHistoryState
   extends IRealEstatesHistoryState,
     IPotentialCustomersHistoryState,
     ISnippetEditorHistoryState {}
+
+export interface IQueryParamsAndUrl<T> {
+  queryParams: T;
+  url: string;
+}

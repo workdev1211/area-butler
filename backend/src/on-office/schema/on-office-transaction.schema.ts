@@ -16,11 +16,14 @@ export class OnOfficeTransaction {
   @Prop({ required: true, type: Object })
   product: IApiOnOfficeCreateOrderProduct;
 
-  @Prop({ type: String, unique: true })
+  @Prop({ type: String, unique: true, sparse: true })
   transactionId: string;
 
   @Prop({ type: String })
   referenceId: string;
+
+  @Prop({ type: String })
+  message: string;
 
   @Prop({
     type: String,

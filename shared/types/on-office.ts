@@ -3,6 +3,10 @@ import {
   TApiIntUserAvailProdContingents,
 } from "./integration-user";
 import { ApiRealEstateListing } from "./real-estate";
+import {
+  ApiSearchResultSnapshotResponse,
+  RequestStatusTypesEnum,
+} from "./types";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -153,12 +157,14 @@ export interface IApiOnOfficeLoginReq {
 export interface IApiOnOfficeLoginRes {
   integrationId: string;
   realEstate: ApiRealEstateListing;
+  latestSnapshot?: ApiSearchResultSnapshotResponse;
   accessToken: string;
   config?: TApiIntegrationUserConfig;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
 export interface IApiOnOfficeCreateOrderReq {
+  integrationId: string;
   products: IApiOnOfficeCreateOrderProduct[];
 }
 
@@ -170,21 +176,26 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
   errorCodes?: string;
   transactionid?: string;
   referenceid?: string;
+  accessToken: string;
+  integrationId: string;
+  products: string;
 }
 
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
-  product: IApiOnOfficeCreateOrderProduct;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
-export interface IApiOnOfficeConfirmOrderRes {
-  message?: string;
-  availProdContingents?: TApiIntUserAvailProdContingents;
+export interface IApiOnOfficeConfirmOrderErrorRes {
+  message: string;
 }
 
+export type TApiOnOfficeConfirmOrderRes =
+  | IApiOnOfficeLoginRes
+  | IApiOnOfficeConfirmOrderErrorRes;
+
 export interface IApiOnOfficeCreateOrderProduct {
-  id?: string;
+  transactionDbId?: string;
   type: OnOfficeProductTypesEnum;
   quantity: number;
 }
@@ -211,11 +222,20 @@ export interface IApiOnOfficeOrderData {
 
 export interface IApiOnOfficeCreateOrderRes {
   onOfficeOrderData: IApiOnOfficeOrderData;
-  products: IApiOnOfficeCreateOrderProduct[];
 }
 
 export enum ApiOnOfficeTransactionStatusesEnum {
   "SUCCESS" = "success",
   "INPROCESS" = "inprocess", // inprocess is SEPA specific status
   "ERROR" = "error",
+}
+
+export enum OnOfficeLoginActionTypesEnum {
+  "PERFORM_LOGIN" = "PERFORM_LOGIN",
+  "CONFIRM_ORDER" = "CONFIRM_ORDER",
+}
+
+export interface IOnOfficeHandleLogin {
+  requestStatus: RequestStatusTypesEnum;
+  actionType?: OnOfficeLoginActionTypesEnum;
 }
