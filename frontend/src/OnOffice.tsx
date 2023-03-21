@@ -23,6 +23,7 @@ import { ConfigContext } from "context/ConfigContext";
 import { ApiConfig } from "../../shared/types/types";
 import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
+import { IntegrationTypesEnum } from "../../shared/types/integration";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -38,6 +39,7 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
           mapBoxAccessToken,
           systemEnv,
           stripeEnv,
+          integrationType: IntegrationTypesEnum.ON_OFFICE,
         }}
       >
         <UserContextProvider>

@@ -17,7 +17,6 @@ import {
   ApiSearchResultSnapshotResponse,
 } from "../../../shared/types/types";
 import { UserActionTypes, UserContext } from "../context/UserContext";
-import { IntegrationTypesEnum } from "../../../shared/types/integration";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
 import {
   SearchContext,
@@ -50,7 +49,6 @@ const OnOfficeContainer: FunctionComponent = () => {
     console.log("OnOfficeApp", 2, queryParamsAndUrl);
 
     const estateId = "33";
-    const integrationUserId = "21";
     const accessToken = "asdas";
     const hasProductContingent = true;
     const address = "Herzbergstraße 2A, 14469 Potsdam, Deutschland";
@@ -70,9 +68,7 @@ const OnOfficeContainer: FunctionComponent = () => {
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {
-        integrationUserId,
         accessToken,
-        integrationType: IntegrationTypesEnum.ON_OFFICE,
         availProdContingents: {
           [ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI]: 3,
         },

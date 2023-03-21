@@ -12,7 +12,7 @@ import {
 import { useHttp } from "../../hooks/http";
 import { toastError } from "../../shared/shared.functions";
 import ProductCard from "../components/ProductCard";
-import { TIntegrationUser, UserContext } from "../../context/UserContext";
+import { UserContext } from "../../context/UserContext";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -31,7 +31,7 @@ export const ProductPage: FunctionComponent = () => {
     initialCreateOrderProducts
   );
 
-  const integrationUser: TIntegrationUser = userState.integrationUser!;
+  const integrationUser = userState.integrationUser!;
 
   const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
     const foundProduct = Object.values(createOrderProducts).find(

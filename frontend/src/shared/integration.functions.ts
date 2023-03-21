@@ -1,10 +1,14 @@
-import { TIntegrationActionTypes } from "../../../shared/types/integration";
+import {
+  IntegrationTypesEnum,
+  TIntegrationActionTypes,
+} from "../../../shared/types/integration";
 import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
-import { TIntegrationUser } from "../context/UserContext";
+import { TApiIntUserAvailProdContingents } from "../../../shared/types/integration-user";
 
 export const checkProdContAvailability = (
-  { integrationType, availProdContingents }: TIntegrationUser,
-  actionType: TIntegrationActionTypes
+  integrationType: IntegrationTypesEnum,
+  actionType: TIntegrationActionTypes,
+  availProdContingents: TApiIntUserAvailProdContingents
 ) => {
   const productContingentType = getProdContTypeByActType(
     integrationType,

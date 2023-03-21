@@ -7,6 +7,7 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from "../constants/constants";
+import { IntegrationTypesEnum } from "./integration";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -25,6 +26,7 @@ export interface ApiConfig {
   stripeEnv: TPaymentEnvironment;
   rollbarConfig?: RollbarConfig;
   paypalClientId?: string;
+  integrationType?: IntegrationTypesEnum;
 }
 
 export interface MapBoxStyle {

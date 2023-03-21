@@ -1,4 +1,4 @@
-import { IntegrationTypesEnum } from "./integration";
+import { IntegrationTypesEnum, TIntegrationActionTypes } from "./integration";
 
 export interface IApiIntegrationUser {
   integrationUserId: string;
@@ -12,15 +12,22 @@ export interface IApiIntegrationUser {
   usageStatistics?: TApiIntegrationUserUsageStatistics;
 }
 
+export interface IIntegrationUserContext {
+  accessToken: string;
+  config: TApiIntegrationUserConfig;
+  availProdContingents: TApiIntUserAvailProdContingents;
+}
+
+export interface IIntUserContextDecrAvailProdCont {
+  integrationType: IntegrationTypesEnum;
+  actionType: TIntegrationActionTypes;
+}
+
 export type TApiIntUserAvailProdContingents = Partial<
   Record<TApiIntUserAvailProdContTypes, number>
 >;
 
 export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
-
-export interface IApiIntUserAvailProdContingents {
-  availProdContingents: TApiIntUserAvailProdContingents;
-}
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;

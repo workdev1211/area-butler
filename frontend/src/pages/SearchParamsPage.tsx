@@ -20,7 +20,7 @@ import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "context/RealEstateContext";
-import { TIntegrationUser, UserContext } from "context/UserContext";
+import { UserContext } from "context/UserContext";
 import { useFederalElectionData } from "hooks/federalelectiondata";
 import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
@@ -49,7 +49,6 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
-  ApiUser,
   ApiUserRequests,
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
@@ -85,8 +84,8 @@ const SearchParamsPage: FunctionComponent = () => {
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
 
-  const user: ApiUser = userState.user!;
-  const integrationUser: TIntegrationUser = userState.integrationUser!;
+  const user = userState.user!;
+  const integrationUser = userState.integrationUser!;
 
   const { get } = useHttp();
   const { fetchNearData } = useCensusData();

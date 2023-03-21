@@ -8,10 +8,16 @@ import DefaultLayout from "../../layout/defaultLayout";
 import { RequestStatusTypesEnum } from "../../../../shared/types/types";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { checkProdContAvailability } from "../../shared/integration.functions";
+import { ConfigContext } from "../../context/ConfigContext";
+import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 
 const OpenAiPage: FunctionComponent = () => {
+  const { integrationType } = useContext(ConfigContext);
   const { searchContextState } = useContext(SearchContext);
-  const { userState, userDispatch } = useContext(UserContext);
+  const {
+    userState: { integrationUser },
+    userDispatch,
+  } = useContext(UserContext);
   const history = useHistory();
 
   const [snapshotId, setSnapshotId] = useState<string>();
@@ -24,6 +30,35 @@ const OpenAiPage: FunctionComponent = () => {
       setSnapshotId(searchContextState.integrationSnapshotId);
     }
   }, [searchContextState.integrationSnapshotId]);
+
+  const handleResponseFetched = (
+    queryType: OpenAiQueryTypeEnum,
+    requestStatus: RequestStatusTypesEnum
+  ) => {
+    setIsFetchResponse(false);
+
+    if (requestStatus === RequestStatusTypesEnum.FAILURE) {
+      if (
+        !checkProdContAvailability(
+          integrationType!,
+          queryType,
+          integrationUser!.availProdContingents
+        )
+      ) {
+        history.push("/products");
+      }
+
+      return;
+    }
+
+    userDispatch({
+      type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+      payload: {
+        integrationType: integrationType!,
+        actionType: queryType,
+      },
+    });
+  };
 
   if (!snapshotId) {
     return <LoadingMessage />;
@@ -53,27 +88,7 @@ const OpenAiPage: FunctionComponent = () => {
             setIsGenerateButtonDisabled(!isReady);
           }}
           isFetchResponse={isFetchResponse}
-          onResponseFetched={(queryType, requestStatus) => {
-            setIsFetchResponse(false);
-
-            if (requestStatus === RequestStatusTypesEnum.FAILURE) {
-              if (
-                !checkProdContAvailability(
-                  userState.integrationUser!,
-                  queryType
-                )
-              ) {
-                history.push("/products");
-              }
-
-              return;
-            }
-
-            userDispatch({
-              type: UserActionTypes.DECR_AVAIL_PROD_CONT,
-              payload: queryType,
-            });
-          }}
+          onResponseFetched={handleResponseFetched}
         />
         <div className="flex justify-end">
           <button
