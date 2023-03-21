@@ -346,7 +346,7 @@ export class RealEstateListingService {
     const realEstateListing = await this.realEstateListingModel.findOne(filter);
 
     if (!realEstateListing) {
-      throw new HttpException('Real estate listing not found!', 404);
+      throw new HttpException('Real estate listing not found!', 400);
     }
 
     return realEstateListing;

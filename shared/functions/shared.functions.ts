@@ -94,7 +94,10 @@ export const getOnOfficeSortedMapData = (data: unknown): unknown => {
   return resultingMap;
 };
 
-export const buildOnOfficeQueryString = (data: any): string => {
+export const buildOnOfficeQueryString = (
+  data: any,
+  skippedKeys?: string[]
+): string => {
   // ".replace(/%2B/g, "+")" hack is needed because of the OnOffice query string decoding
   let queryString = "";
 
@@ -142,6 +145,12 @@ export const buildOnOfficeQueryString = (data: any): string => {
     }
 
     queryString += queryString ? "&" : "";
+
+    if (skippedKeys?.includes(key)) {
+      queryString += `${key}=${value}`.replace(/%2B/g, "+");
+      continue;
+    }
+
     queryString += `${new URLSearchParams([[key, value]])}`.replace(
       /%2B/g,
       "+"

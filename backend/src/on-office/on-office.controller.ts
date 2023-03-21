@@ -91,16 +91,12 @@ export class OnOfficeController {
   }
 
   @ApiOperation({ description: 'Confirms an order' })
-  @UseInterceptors(
-    VerifyOnOfficeSignatureInterceptor,
-    InjectIntegrationUserInterceptor,
-  )
+  @UseInterceptors(VerifyOnOfficeSignatureInterceptor)
   @Post('confirm-order')
   confirmOrder(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
   ): Promise<TApiOnOfficeConfirmOrderRes> {
-    this.logger.debug(this.confirmOrder.name, confirmOrderData);
-    return this.onOfficeService.confirmOrder(confirmOrderData, integrationUser);
+    this.logger.debug('confirmOrderController', confirmOrderData);
+    return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 }

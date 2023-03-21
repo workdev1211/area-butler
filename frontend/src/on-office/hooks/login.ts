@@ -126,10 +126,9 @@ export const useLogin = () => {
     queryParams,
     url,
   }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<RequestStatusTypesEnum> => {
-    console.log("confirmOrder", 1, url, url.replace(/\/$/, ""));
-    // TODO HACK
+    console.log("confirmOrder", 1, url);
     const confirmOrderReq: IApiOnOfficeConfirmOrderReq = {
-      url: url.replace(/\/$/, ""),
+      url,
       onOfficeQueryParams: queryParams,
     };
 

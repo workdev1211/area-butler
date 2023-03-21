@@ -40,7 +40,7 @@ export class RealEstateListingIntService {
     );
 
     if (!existingRealEstateListing) {
-      throw new HttpException('Real estate listing not found!', 404);
+      throw new HttpException('Real estate listing not found!', 400);
     }
 
     return existingRealEstateListing;

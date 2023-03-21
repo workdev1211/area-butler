@@ -256,7 +256,7 @@ export class OnOfficeService {
     const onOfficeOrderData = {
       callbackurl: `${
         this.appUrl
-      }/on-office?accessToken=${accessToken}&integrationId=${integrationId}&products=${encodeURIComponent(
+      }/on-office/?accessToken=${accessToken}&integrationId=${integrationId}&products=${encodeURIComponent(
         JSON.stringify(products),
       )}`,
       parametercacheid: parameterCacheId,
@@ -274,33 +274,34 @@ export class OnOfficeService {
     return { onOfficeOrderData };
   }
 
-  async confirmOrder(
-    {
-      onOfficeQueryParams: {
-        message,
-        status,
-        transactionid: transactionId,
-        referenceid: referenceId,
-        accessToken,
-        integrationId,
-        products,
-      },
-    }: IApiOnOfficeConfirmOrderReq,
-    integrationUser: TIntegrationUserDocument,
-  ): Promise<TApiOnOfficeConfirmOrderRes> {
+  async confirmOrder({
+    onOfficeQueryParams: {
+      message,
+      status,
+      transactionid: transactionId,
+      referenceid: referenceId,
+      accessToken,
+      integrationId,
+      products,
+    },
+  }: IApiOnOfficeConfirmOrderReq): Promise<TApiOnOfficeConfirmOrderRes> {
+    const integrationUser = await this.integrationUserService.findOneOrFail(
+      { accessToken },
+      this.integrationType,
+    );
+
     const [product]: [IApiOnOfficeCreateOrderProduct] = JSON.parse(
       decodeURIComponent(products),
     );
 
     this.logger.debug(
-      this.confirmOrder.name,
+      'confirmOrderService',
       status,
       transactionId,
       referenceId,
       accessToken,
       integrationId,
-      products,
-      JSON.parse(products),
+      product,
     );
 
     if (
@@ -492,7 +493,12 @@ export class OnOfficeService {
   ): void {
     const { signature, ...otherParams } = queryParams;
     const sortedQueryParams = getOnOfficeSortedMapData(otherParams);
-    const testQueryString = buildOnOfficeQueryString(sortedQueryParams);
+
+    // added "products" as a skipped key because it's already encoded
+    const testQueryString = buildOnOfficeQueryString(sortedQueryParams, [
+      'products',
+    ]);
+
     const testUrl = `${url}?${testQueryString}`;
     const generatedSignature = this.generateSignature(testUrl);
 

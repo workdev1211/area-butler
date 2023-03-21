@@ -16,7 +16,6 @@ import {
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
-  TApiIntegrationUserProductContingents,
   TApiIntUserAvailProdContingents,
   TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
@@ -117,26 +116,26 @@ export class IntegrationUserService {
     return integrationUser.save();
   }
 
-  // TODO change to the increment way
   async addProductContingent(
     integrationUser: TIntegrationUserDocument,
     { type, quantity }: TApiIntegrationUserProduct,
   ): Promise<TIntegrationUserDocument> {
-    if (!integrationUser.productContingents) {
-      integrationUser.productContingents =
-        {} as TApiIntegrationUserProductContingents;
+    if (!type || !quantity) {
+      throw new HttpException('Incorrect product has been provided!', 400);
     }
 
-    if (!integrationUser.productContingents[type]) {
-      integrationUser.productContingents[type] = [];
-    }
-
-    integrationUser.productContingents[type].push({
-      quantity,
-      expiresAt: dayjs().add(1, 'year').toDate(),
-    });
-
-    return integrationUser.save();
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUser.id,
+      {
+        $push: {
+          [`productContingents.${type}`]: {
+            quantity,
+            expiresAt: dayjs().add(1, 'year').toDate(),
+          },
+        },
+      },
+      { upsert: true },
+    );
   }
 
   getAvailProdContingents({
@@ -238,7 +237,6 @@ export class IntegrationUserService {
     }
   }
 
-  // TODO change to the increment way
   async createMapboxAccessToken(
     integrationUser: TIntegrationUserDocument,
   ): Promise<TIntegrationUserDocument> {

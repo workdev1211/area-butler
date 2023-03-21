@@ -403,7 +403,7 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown token', 404);
+      throw new HttpException('Unknown token', 400);
     }
 
     this.checkAddressExpiration(snapshotDoc);
@@ -534,7 +534,7 @@ export class LocationService {
     const snapshotDoc = await this.searchResultSnapshotModel.findOne(filter);
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown snapshot id', 404);
+      throw new HttpException('Unknown snapshot id', 400);
     }
 
     this.checkAddressExpiration(snapshotDoc);
@@ -551,7 +551,7 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown token', 404);
+      throw new HttpException('Unknown token', 400);
     }
 
     this.checkAddressExpiration(snapshotDoc);
@@ -567,7 +567,7 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown integration id', 404);
+      throw new HttpException('Unknown integration id', 400);
     }
 
     return snapshotDoc;
@@ -683,7 +683,7 @@ export class LocationService {
       );
 
     if (!searchResultSnapshot || !realEstateListing) {
-      throw new HttpException('Unknown snapshot or real estate id', 404);
+      throw new HttpException('Unknown snapshot or real estate id', 400);
     }
 
     const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
