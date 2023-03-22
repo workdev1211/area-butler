@@ -49,7 +49,10 @@ import { LocationIntegrationService } from '../location/location-integration.ser
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { TApiIntegrationUserConfig } from '@area-butler-types/integration-user';
+import {
+  IApiIntUserOnOfficeParams,
+  TApiIntegrationUserConfig,
+} from '@area-butler-types/integration-user';
 
 @Injectable()
 export class OnOfficeService {
@@ -163,7 +166,10 @@ export class OnOfficeService {
       this.integrationType,
     );
 
-    const { color, logo } = await this.getColorAndLogo(integrationUser);
+    const { color, logo } = await this.getColorAndLogo({
+      ...integrationUser.parameters,
+      extendedClaim,
+    });
 
     const { config } = await this.integrationUserService.updateParamsAndConfig(
       integrationUser,
@@ -523,8 +529,10 @@ export class OnOfficeService {
   }
 
   private async getColorAndLogo({
-    parameters: { token, apiKey, extendedClaim },
-  }: TIntegrationUserDocument): Promise<{ color: string; logo: string }> {
+    token,
+    apiKey,
+    extendedClaim,
+  }: IApiIntUserOnOfficeParams): Promise<{ color: string; logo: string }> {
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.BASIC_SETTINGS;
     const timestamp = dayjs().unix();
