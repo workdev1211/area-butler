@@ -50,6 +50,7 @@ export class LocationIntegrationController {
     map.updatedAt = dayjs().toDate();
     await map.save();
 
+    // TODO doesn't work
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(
         integrationUser,

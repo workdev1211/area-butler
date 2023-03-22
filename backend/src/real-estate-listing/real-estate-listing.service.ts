@@ -69,24 +69,29 @@ export class RealEstateListingService {
     status = ApiRealEstateStatusEnum.ALLE,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
+    let filter;
 
-    const filter: {
-      userId?: { $in: string[] };
-      integrationParams?: {
-        integrationUserId: string;
-        integrationType: string;
+    // TODO doesn't work
+    if (isIntegrationUser) {
+      filter = {
+        integrationParams: {
+          integrationUserId: user.integrationUserId,
+          integrationType: user.integrationType,
+        },
       };
-      status?: ApiRealEstateStatusEnum;
-    } = !isIntegrationUser
-      ? {
-          userId: { $in: [user.id, user.parentId] },
-        }
-      : {
-          integrationParams: {
-            integrationUserId: user.integrationUserId,
-            integrationType: user.integrationType,
-          },
-        };
+    }
+
+    if (!isIntegrationUser) {
+      const userIds = [user.id];
+
+      if (user.parentId) {
+        userIds.push(user.parentId);
+      }
+
+      filter = {
+        userId: { $in: userIds },
+      };
+    }
 
     if (status !== ApiRealEstateStatusEnum.ALLE) {
       filter.status = status;
