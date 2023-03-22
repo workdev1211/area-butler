@@ -106,7 +106,7 @@ const IntegrationNav: FunctionComponent = () => {
                 Umgebungsanalyse
               </NavLink>
               <NavLink to="/open-ai" className="nav-link" aria-current="page">
-                KI-Text generieren
+                KI-Assistent
               </NavLink>
               <NavLink
                 to={`/map/${integrationSnapshotId}`}
@@ -116,7 +116,7 @@ const IntegrationNav: FunctionComponent = () => {
                 Meine Karte
               </NavLink>
               <NavLink to="/products" className="nav-link" aria-current="page">
-                Produkte
+                Weitere Produkte
               </NavLink>
             </div>
           </div>
@@ -141,7 +141,7 @@ const IntegrationNav: FunctionComponent = () => {
             className="nav-mobile-menu-link"
             aria-current="page"
           >
-            KI-Text generieren
+            KI-Assistent
           </NavLink>
           <NavLink
             to={`/map/${integrationSnapshotId}`}
@@ -151,7 +151,7 @@ const IntegrationNav: FunctionComponent = () => {
             Meine Karte
           </NavLink>
           <NavLink to="/products" className="nav-link" aria-current="page">
-            Produkte
+            Weitere Produkte
           </NavLink>
         </div>
       </div>

@@ -41,33 +41,49 @@ export const ProductPage: FunctionComponent = () => {
   };
 
   const onOfficeProducts = Object.values(allOnOfficeProducts);
-  const onOfficeProdContClasses = `grid grid-cols-1 gap-10 xl:grid-cols-${
-    onOfficeProducts.length > 4 ? 4 : onOfficeProducts.length
-  }`;
 
   return (
-    <DefaultLayout title="Anmeldung/Registrierung" withHorizontalPadding={true}>
+    <DefaultLayout
+      title="Herzlich Willkommen im AreaButler Shop"
+      withHorizontalPadding={true}
+      isOverriddenActionsTop={true}
+    >
       <div className="flex flex-col gap-10 mt-10">
         <h1 className="font-bold text-xl text-justify">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
           Abonnement, bitte wählen Sie das Passende für sich aus:
         </h1>
-        <div className={onOfficeProdContClasses}>
-          {onOfficeProducts.map(({ type, title, description, price }, i) => (
-            <ProductCard
-              key={type}
-              className={
+        <div className="grid grid-cols-1 xl:grid-flow-col xl:grid-cols-4 gap-10">
+          {onOfficeProducts.map(({ type, price, isDisabled }, i) => (
+            <div
+              className={`flex flex-col items-center gap-10 ${
                 i === 0 && onOfficeProducts.length > 4
                   ? "row-span-2 self-center"
                   : ""
-              }
-              type={type}
-              title={title}
-              description={description}
-              price={price}
-              products={createOrderProducts}
-              onChangeProducts={setCreateOrderProducts}
-            />
+              }`}
+              key={type}
+            >
+              <ProductCard
+                type={type}
+                price={price}
+                isDisabled={isDisabled}
+                products={createOrderProducts}
+                onChangeProducts={setCreateOrderProducts}
+              />
+              {i === 0 && (
+                <button
+                  className="btn w-48"
+                  onClick={() => {
+                    history.push("/search");
+                  }}
+                  style={{
+                    padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+                  }}
+                >
+                  Karte gratis erstellen
+                </button>
+              )}
+            </div>
           ))}
         </div>
         <div style={{ minHeight: "calc(var(--btn-height))" }} />
@@ -75,14 +91,6 @@ export const ProductPage: FunctionComponent = () => {
           className="flex justify-end gap-5 fixed bottom-[2.5vh]"
           style={{ right: "var(--content-padding-x)" }}
         >
-          <button
-            className="btn w-48"
-            onClick={() => {
-              history.push("/search");
-            }}
-          >
-            Kostenlos nutzen
-          </button>
           <button
             className="btn bg-primary-gradient w-48"
             onClick={async () => {

@@ -18,7 +18,6 @@ import {
 } from "../../../../shared/types/on-office";
 import { useHttp } from "../../hooks/http";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
-import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 import {
   SearchContext,
   SearchContextActionTypes,

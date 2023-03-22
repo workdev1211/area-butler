@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -19,6 +19,16 @@ import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
+
+const ScrollToTop: FunctionComponent = () => {
+  const { pathname } = useLocation();
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+
+  return null;
+};
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
@@ -49,6 +59,7 @@ const OnOfficeContainer: FunctionComponent = () => {
       if (actionType === OnOfficeLoginActionTypesEnum.PERFORM_LOGIN) {
         console.log("OnOfficeApp", 3, userState.integrationUser?.config);
         history.push("/products");
+        return;
       }
 
       history.push("/search");
@@ -69,6 +80,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   return (
     <div className="on-office-app">
       <Suspense fallback={<LoadingMessage />}>
+        <ScrollToTop />
         <IntegrationNav />
         <ToastContainer
           position="top-right"

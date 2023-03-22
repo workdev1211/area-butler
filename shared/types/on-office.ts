@@ -19,10 +19,9 @@ export enum OnOfficeProductTypesEnum {
 }
 
 export interface IOnOfficeProduct {
-  title: string;
-  description: string;
   type: OnOfficeProductTypesEnum;
   price: number;
+  isDisabled?: boolean;
 }
 
 export interface IApiOnOfficeUnlockProviderReq {

@@ -449,6 +449,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
     const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
     const embedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const integrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
     const escFunction = useCallback(
       (e) => {
@@ -1452,7 +1453,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             >
               <img src={satelliteIcon} alt="" />
             </a>
-            {(!embedMode || editorMode) && (
+            {(!embedMode || editorMode || integrationMode) && (
               <a
                 href="/"
                 data-tour="take-map-picture"
@@ -1461,6 +1462,9 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 onClick={(event) => {
                   event.preventDefault();
                   takePicture();
+                }}
+                style={{
+                  backgroundColor: integrationMode ? "#15d40f" : "inherit",
                 }}
               >
                 📷

@@ -2,39 +2,36 @@ import { FunctionComponent } from "react";
 
 import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
 import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
+import { getProductDescription } from "./ProductDescription";
 
 interface IProductCardProps {
-  className: string;
   type: OnOfficeProductTypesEnum;
-  title: string;
-  description: string;
   price: number;
   products: any;
   onChangeProducts: (products: any) => void;
+  isDisabled?: boolean;
 }
 
 const ProductCard: FunctionComponent<IProductCardProps> = ({
-  className,
   type,
-  title,
-  description,
   price,
   products,
   onChangeProducts,
+  isDisabled = false,
 }) => {
-  const isDisabled =
-    products &&
-    Object.keys(products).some(
-      (productType) =>
-        products[productType as OnOfficeProductTypesEnum].quantity > 0
-    ) &&
-    !(products[type].quantity > 0);
+  const isCardDisabled =
+    isDisabled ||
+    (products &&
+      Object.keys(products).some(
+        (productType) =>
+          products[productType as OnOfficeProductTypesEnum].quantity > 0
+      ) &&
+      !(products[type].quantity > 0));
 
   return (
-    <div className={`card shadow-lg bg-gray-50 ${className}`}>
+    <div className="card shadow-lg bg-gray-50">
       <div className="card-body items-center text-center">
-        <h2 className="card-title">{title}</h2>
-        <div>{description}</div>
+        {getProductDescription(type)}
         <div className="card-actions items-center justify-between w-full">
           <div className="flex items-center gap-2">
             {price !== 0 && (
@@ -46,7 +43,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                   placeholder="XX"
                   size={4}
                   maxLength={5}
-                  disabled={isDisabled}
+                  disabled={isCardDisabled}
                   value={products[type].quantity}
                   onChange={({ target: { value } }) => {
                     if (!+value && value !== "") {

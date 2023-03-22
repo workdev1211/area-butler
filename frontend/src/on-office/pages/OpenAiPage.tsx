@@ -66,21 +66,17 @@ const OpenAiPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="KI Texte"
+      title={`Adresse: ${searchContextState.placesLocation.label}`}
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
     >
       <div className="flex flex-col my-5 gap-5">
-        <h1 className="text-xl flex items-center gap-2">
-          <span>KI Texte aus der magischen Feder</span>
-          <span className="badge badge-primary">BETA</span>
-        </h1>
+        <h1 className="text-xl gap-2">KI Texte aus der magischen Feder</h1>
         <div className="text-justify text-base">
           Unser KI-Textgenerator bietet Inspiration für die Konstruktion von
           Texten, insbesondere bei Schwierigkeiten bei der Struktur und
           Formulierung. Er bezieht Umgebungsdaten und Informationen zur
-          Immobilie mit ein. Das Feature befindet sich derzeit in der Beta-Phase
-          und es wird empfohlen, die Fakten vor Verwendung zu überprüfen.
+          Immobilie mit ein.
         </div>
         <OpenAiModule
           searchResultSnapshotId={snapshotId}

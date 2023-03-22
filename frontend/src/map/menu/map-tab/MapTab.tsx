@@ -128,7 +128,9 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
   const integrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
-  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!editorMode);
+  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(
+    integrationMode ? false : !editorMode
+  );
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
@@ -341,7 +343,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                 <img src={configOptionsIcon} alt="social-demographics-icon" />
                 <div className="collapse-title-text">
                   <div className="collapse-title-text-1">
-                    Adresseinstellungen
+                    Adresse und/oder Objekt ausblenden
                   </div>
                   <div className="collapse-title-text-2">
                     Was willst du sehen?
@@ -426,8 +428,11 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                       "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
                   }}
                 >
-                  Bitte verwenden Sie den Screenshot-Button in der unteren
-                  linken Ecke der Karte.
+                  Bitte verwenden Sie den Kamera-Knopf in der unteren linken
+                  Ecke der Karte im Lagepläne in hoher Auflösung zu erstellen.
+                  Tipp: Verändern sie das Seitenverhältnis dieses Fensters, und
+                  blenden Sie die Seitenleiste mit dem roten Pfeil, oben rechts
+                  aus, um Ihren perfekten Ausschnitt aufzunehmen.
                 </div>
               )}
             </div>

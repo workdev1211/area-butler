@@ -623,7 +623,11 @@ const SearchParamsPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title="Suche"
+      title={
+        integrationUser
+          ? `Adresse: ${searchContextState.placesLocation.label}`
+          : "Suche"
+      }
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
       actionsBottom={
@@ -649,13 +653,12 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
-          <h2 className="search-params-first-title">Lage</h2>
+          <h2 className="search-params-first-title">
+            {integrationUser
+              ? "Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives Abonnement, bitte wählen Sie das Passende für sich aus:"
+              : "Lage"}
+          </h2>
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {integrationUser && (
-              <div className="text-xl font-bold">
-                Adresse: {searchContextState.placesLocation.label}
-              </div>
-            )}
             {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
             {!integrationUser && (
               <LocationAutocomplete
