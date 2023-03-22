@@ -27,12 +27,12 @@ import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropD
 import { useHistory, useLocation } from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
-  deriveAvailableMeansFromResponse,
   deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates,
+  deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
   deriveTotalRequestContingent,
-  toastError,
   preferredLocationsTitle,
+  toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import IncreaseLimitFormHandler from "user/IncreaseLimitFormHandler";
@@ -49,6 +49,7 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
+  ApiTourNameEnum,
   ApiUserRequests,
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
@@ -637,7 +638,7 @@ const SearchParamsPage: FunctionComponent = () => {
           : [<div key={"dummy"} />, <SearchButton key="search-button" />]
       }
     >
-      <TourStarter tour="search" />
+      <TourStarter tour={ApiTourNameEnum.SEARCH} />
       {isShownBusyModal && (
         <BusyModal
           items={busyModalItems}

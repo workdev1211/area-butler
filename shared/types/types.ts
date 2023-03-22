@@ -77,22 +77,16 @@ export interface ApiUserRequests {
   requests: ApiSearch[];
 }
 
-export type ApiTour =
-  | "search"
-  | "result"
-  | "realEstates"
-  | "customers"
-  | "profile"
-  | "editor";
-
-export interface ApiShowTour {
-  search: boolean;
-  result: boolean;
-  realEstates: boolean;
-  customers: boolean;
-  profile: boolean;
-  editor: boolean;
+export enum ApiTourNameEnum {
+  "SEARCH" = "search",
+  "RESULT" = "result",
+  "REAL_ESTATES" = "realEstates",
+  "CUSTOMERS" = "customers",
+  "PROFILE" = "profile",
+  "EDITOR" = "editor",
 }
+
+export type ApiShowTour = Record<ApiTourNameEnum, boolean>;
 
 export interface ApiInsertFeedback {
   description: string;

@@ -21,7 +21,7 @@ import { PotentialCustomerFormDeleteHandler } from "../potential-customer/Potent
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import { ApiUser } from "../../../shared/types/types";
+import { ApiTourNameEnum, ApiUser } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
@@ -159,7 +159,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
       withHorizontalPadding={false}
       actionsTop={<ActionsTop />}
     >
-      <TourStarter tour="customers" />
+      <TourStarter tour={ApiTourNameEnum.CUSTOMERS} />
       <FormModal modalConfig={questionnaireModalConfig}>
         <QuestionnaireRequestFormHandler
           postSubmit={() => setQuestionnaireModalOpen(false)}

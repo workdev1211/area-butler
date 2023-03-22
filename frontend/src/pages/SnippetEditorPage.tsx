@@ -18,7 +18,6 @@ import SearchResultContainer, {
 import { ConfigContext } from "context/ConfigContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
 import DefaultLayout from "layout/defaultLayout";
 import {
   buildEntityData,
@@ -35,6 +34,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
+  ApiTourNameEnum,
   MapDisplayModesEnum,
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
@@ -426,7 +426,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   return (
     <>
       <DefaultLayout withHorizontalPadding={false}>
-        <TourStarter tour="editor" />
+        <TourStarter tour={ApiTourNameEnum.EDITOR} />
         <div className="hidden">
           <GooglePlacesAutocomplete
             apiOptions={googleMapsApiOptions}

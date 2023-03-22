@@ -2,7 +2,7 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { ApiTour } from "../../../shared/types/types";
+import {ApiShowTour, ApiTourNameEnum} from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
 import SearchResulSteps from "./SearchResultPageSteps";
@@ -12,7 +12,7 @@ import SnippetEditorSteps from "./SnippetEditorPageSteps";
 import StartTourModal from "./StartTourModal";
 
 interface ITourStarterProps {
-  tour: ApiTour;
+  tour: ApiTourNameEnum;
 }
 
 export const defaultStyles: Styles = {
@@ -28,7 +28,7 @@ export const defaultStyles: Styles = {
   },
 };
 
-const defaultShowTour = {
+const fallbackShowTour: ApiShowTour = {
   search: false,
   result: false,
   realEstates: false,
@@ -37,7 +37,7 @@ const defaultShowTour = {
   editor: false,
 };
 
-const tourSteps: Record<ApiTour, Step[]> = {
+const tourSteps: Record<ApiTourNameEnum, Step[]> = {
   search: SearchSteps,
   result: SearchResulSteps,
   realEstates: RealEstatesSteps,
@@ -92,7 +92,9 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
       <StartTourModal
         tour={tour}
         showTour={
-          user?.showTour || integrationUser?.config?.showTour || defaultShowTour
+          user?.showTour ||
+          integrationUser?.config?.showTour ||
+          fallbackShowTour
         }
         onShowTour={onShowTour}
       />

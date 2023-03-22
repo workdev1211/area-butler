@@ -14,7 +14,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { ApiBearerAuth, ApiProperty, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
-import { ApiTour } from '@area-butler-types/types';
+import { ApiTourNameEnum } from '@area-butler-types/types';
 import { mapSubscriptionToApiSubscription } from './mapper/subscription.mapper';
 import { SubscriptionService } from './subscription.service';
 import { UserService } from './user.service';
@@ -151,7 +151,7 @@ export class UserController {
   @Post('me/hide-tour/:tour')
   async hideTour(
     @Req() request,
-    @Param('tour') tour: ApiTour,
+    @Param('tour') tour: ApiTourNameEnum,
   ): Promise<ApiUserDto> {
     const requestUser = request?.user;
     const user = await this.userService.hideTour(requestUser.email, tour);

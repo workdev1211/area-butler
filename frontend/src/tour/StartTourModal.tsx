@@ -2,21 +2,30 @@ import { FunctionComponent, useContext, useState } from "react";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { toastError } from "shared/shared.functions";
-import { ApiShowTour, ApiTour, ApiUser } from "../../../shared/types/types";
+import {
+  ApiShowTour,
+  ApiTourNameEnum,
+  ApiUser,
+} from "../../../shared/types/types";
 import { useTour } from "../hooks/tour";
 
-const tourDescriptions: Record<ApiTour, string> = {
-  search: "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
-  result: "Möchten Sie eine kurze Einführung zur Ergebnisseite bekommen?",
-  customers:
+const tourDescriptions: Record<ApiTourNameEnum, string> = {
+  [ApiTourNameEnum.SEARCH]:
+    "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
+  [ApiTourNameEnum.RESULT]:
+    "Möchten Sie eine kurze Einführung zur Ergebnisseite bekommen?",
+  [ApiTourNameEnum.CUSTOMERS]:
     "Möchten Sie eine kurze Einführung zur Interessentenseite bekommen?",
-  realEstates: "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
-  profile: "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
-  editor: "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?",
+  [ApiTourNameEnum.REAL_ESTATES]:
+    "Möchten Sie eine kurze Einführung zur Objekteseite bekommen?",
+  [ApiTourNameEnum.PROFILE]:
+    "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
+  [ApiTourNameEnum.EDITOR]:
+    "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?",
 };
 
 interface IStartTourModalProps {
-  tour: ApiTour;
+  tour: ApiTourNameEnum;
   showTour: ApiShowTour;
   onShowTour: () => void;
 }
@@ -36,8 +45,8 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   const [showModal, setShowModal] = useState(showTour[tour]);
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 
-  const doNotShowTourAgain = (tour: ApiTour) => {
-    const postDoNotShowTour = async (tour: ApiTour) => {
+  const doNotShowTourAgain = (tour: ApiTourNameEnum) => {
+    const postDoNotShowTour = async (tour: ApiTourNameEnum) => {
       try {
         const user = !showNoMoreTips ? await hideTour(tour) : await hideTours();
         console.log("StartTourModal", 1, user);

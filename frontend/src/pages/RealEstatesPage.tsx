@@ -38,7 +38,10 @@ import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotResponse,
+  ApiTourNameEnum,
+} from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import CsvImportModal from "../real-estates/CsvImportModal";
@@ -229,7 +232,7 @@ const RealEstatesPage: FunctionComponent = () => {
       withHorizontalPadding={false}
       actionsTop={<ActionsTop />}
     >
-      <TourStarter tour="realEstates" />
+      <TourStarter tour={ApiTourNameEnum.REAL_ESTATES} />
       {showEmbeddableMapsModal && (
         <EmbeddableMapsModal
           showModal={showEmbeddableMapsModal}

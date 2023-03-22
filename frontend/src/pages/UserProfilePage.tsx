@@ -9,7 +9,7 @@ import TourStarter from "tour/TourStarter";
 import ProfileFormHandler from "user/ProfileFormHandler";
 import SubscriptionPlanLimits from "user/SubscriptionPlanLimits";
 import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
-import { ApiUser } from "../../../shared/types/types";
+import { ApiTourNameEnum, ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
 
@@ -84,7 +84,7 @@ const UserProfilePage: FunctionComponent = () => {
         <SubmitButton key="user-profile-submit" />,
       ]}
     >
-      {hasSubscription && <TourStarter tour="profile" />}
+      {hasSubscription && <TourStarter tour={ApiTourNameEnum.PROFILE} />}
       <div className="mt-10" data-tour="profile-form">
         <ProfileFormHandler
           user={userState.user!}
