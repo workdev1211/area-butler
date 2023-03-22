@@ -45,6 +45,7 @@ import CsvImportModal from "../real-estates/CsvImportModal";
 import { ConfigContext } from "../context/ConfigContext";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
+import { useRealEstateData } from "../hooks/realestatedata";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -52,24 +53,23 @@ const deleteRealEstateModalConfig = {
 };
 
 const RealEstatesPage: FunctionComponent = () => {
-  const { get } = useHttp();
-  const history = useHistory<IRealEstatesHistoryState>();
-  const queryParams = new URLSearchParams(useLocation().search);
-  const realEstateHighlightId = queryParams.get("id");
-
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { googleApiKey } = useContext(ConfigContext);
 
+  const { get } = useHttp();
+  const { fetchRealEstates } = useRealEstateData();
+  const history = useHistory<IRealEstatesHistoryState>();
+  const queryParams = new URLSearchParams(useLocation().search);
+  const realEstateHighlightId = queryParams.get("id");
+
   const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState(
     ApiRealEstateStatusEnum.ALLE
   );
-
   const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
     ApiSearchResultSnapshotResponse[]
   >([]);
-
   const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
 
@@ -146,19 +146,17 @@ const RealEstatesPage: FunctionComponent = () => {
     history.push("/search", { isFromRealEstates: true });
   };
 
-  const fetchRealEstates = async () => {
-    const response = await get<ApiRealEstateListing[]>(
-      `/api/real-estate-listing?status=${selectedRealEstateStatus}`
-    );
+  const fetchRealEstateData = async () => {
+    const realEstateData = await fetchRealEstates(selectedRealEstateStatus);
 
     realEstateDispatch({
       type: RealEstateActionTypes.SET_REAL_ESTATES,
-      payload: response.data,
+      payload: realEstateData,
     });
   };
 
   useEffect(() => {
-    void fetchRealEstates();
+    void fetchRealEstateData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRealEstateStatus]);
 
@@ -242,7 +240,7 @@ const RealEstatesPage: FunctionComponent = () => {
       <CsvImportModal
         isShownModal={isShownCsvImportModal}
         closeModal={async () => {
-          await fetchRealEstates();
+          await fetchRealEstateData();
           setIsShownCsvImportModal(false);
         }}
         fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
