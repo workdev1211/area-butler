@@ -10,6 +10,7 @@ import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { checkProdContAvailability } from "../../shared/integration.functions";
 import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
+import { useHttp } from "../../hooks/http";
 
 const OpenAiPage: FunctionComponent = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -18,12 +19,18 @@ const OpenAiPage: FunctionComponent = () => {
     userState: { integrationUser },
     userDispatch,
   } = useContext(UserContext);
+
   const history = useHistory();
+  const { post } = useHttp();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
+  const [isCopyTextButtonDisabled, setIsCopyTextButtonDisabled] =
+    useState(true);
   const [isFetchResponse, setIsFetchResponse] = useState(false);
+  const [queryType, setQueryType] = useState<OpenAiQueryTypeEnum>();
+  const [queryResponse, setQueryResponse] = useState<string | undefined>();
 
   useEffect(() => {
     if (searchContextState.integrationSnapshotId) {
@@ -32,8 +39,9 @@ const OpenAiPage: FunctionComponent = () => {
   }, [searchContextState.integrationSnapshotId]);
 
   const handleResponseFetched = (
-    queryType: OpenAiQueryTypeEnum,
-    requestStatus: RequestStatusTypesEnum
+    responseQueryType: OpenAiQueryTypeEnum,
+    requestStatus: RequestStatusTypesEnum,
+    responseText?: string
   ) => {
     setIsFetchResponse(false);
 
@@ -41,7 +49,7 @@ const OpenAiPage: FunctionComponent = () => {
       if (
         !checkProdContAvailability(
           integrationType!,
-          queryType,
+          responseQueryType,
           integrationUser!.availProdContingents
         )
       ) {
@@ -51,11 +59,14 @@ const OpenAiPage: FunctionComponent = () => {
       return;
     }
 
+    setQueryResponse(responseText);
+    setIsCopyTextButtonDisabled(false);
+
     userDispatch({
       type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
       payload: {
         integrationType: integrationType!,
-        actionType: queryType,
+        actionType: responseQueryType,
       },
     });
   };
@@ -85,14 +96,33 @@ const OpenAiPage: FunctionComponent = () => {
           }}
           isFetchResponse={isFetchResponse}
           onResponseFetched={handleResponseFetched}
+          onQueryTypeChange={(changedQueryType) => {
+            setIsCopyTextButtonDisabled(true);
+            setQueryType(changedQueryType);
+          }}
         />
-        <div className="flex justify-end">
+        <div className="flex justify-between">
+          <button
+            className="btn bg-primary-gradient max-w-fit self-end"
+            onClick={() => {
+              setIsCopyTextButtonDisabled(true);
+
+              void post(
+                `/api/on-office/estate/${searchContextState.integrationId}`,
+                { queryType, queryResponse }
+              );
+            }}
+            disabled={isCopyTextButtonDisabled}
+          >
+            An onOffice senden
+          </button>
           <button
             className={`btn bg-primary-gradient max-w-fit self-end ${
               isFetchResponse ? "loading" : ""
             }`}
             form={"open-ai-location-description-form"}
             onClick={() => {
+              setIsCopyTextButtonDisabled(true);
               setIsFetchResponse(true);
             }}
             disabled={isGenerateButtonDisabled || isFetchResponse}

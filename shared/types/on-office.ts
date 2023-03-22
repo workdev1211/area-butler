@@ -7,6 +7,7 @@ import {
   ApiSearchResultSnapshotResponse,
   RequestStatusTypesEnum,
 } from "./types";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
@@ -100,7 +101,7 @@ interface IApiOnOfficeResponseResult<T> {
   resourcetype: ApiOnOfficeResourceTypesEnum;
   identifier: string;
   status: {
-    code: number; // enum?
+    errorcode: number; // enum?
     message: string; // enum?
   };
   data: {
@@ -183,6 +184,11 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
+}
+
+export interface IApiOnOfficeUpdateEstateReq {
+  queryType: OpenAiQueryTypeEnum;
+  queryResponse: string;
 }
 
 export interface IApiOnOfficeConfirmOrderErrorRes {

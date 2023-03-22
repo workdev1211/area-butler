@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Logger,
+  Param,
   Post,
   Query,
   Render,
@@ -27,6 +28,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
+import ApiOnOfficeUpdateEstateReqDto from './dto/api-on-office-update-estate-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -98,5 +100,22 @@ export class OnOfficeController {
   ): Promise<TApiOnOfficeConfirmOrderRes> {
     this.logger.debug('confirmOrderController', confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData);
+  }
+
+  @ApiOperation({ description: 'Update an estate' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('estate/:integrationId')
+  updateEstate(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('integrationId') integrationId: string,
+    @Body() updateEstateData: ApiOnOfficeUpdateEstateReqDto,
+  ): Promise<void> {
+    this.logger.debug('updateEstateController', updateEstateData);
+
+    return this.onOfficeService.updateEstate(
+      integrationUser,
+      integrationId,
+      updateEstateData,
+    );
   }
 }

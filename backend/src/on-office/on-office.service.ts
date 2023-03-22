@@ -28,6 +28,7 @@ import {
   IApiOnOfficeActivationReq,
   IApiOnOfficeCreateOrderProduct,
   TApiOnOfficeConfirmOrderRes,
+  IApiOnOfficeUpdateEstateReq,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -53,6 +54,7 @@ import {
   IApiIntUserOnOfficeParams,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
+import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 
 @Injectable()
 export class OnOfficeService {
@@ -522,10 +524,74 @@ export class OnOfficeService {
     throw new HttpException('Request verification failed!', 400);
   }
 
+  async updateEstate(
+    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+    integrationId: string,
+    { queryType, queryResponse }: IApiOnOfficeUpdateEstateReq,
+  ): Promise<void> {
+    const actionId = ApiOnOfficeActionIdsEnum.MODIFY;
+    const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
+    const timestamp = dayjs().unix();
+
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: integrationId,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              data: {
+                [openAiQueryTypeToOnOfficeEstateFieldMapping[queryType]]:
+                  queryResponse.slice(0, 2000),
+              },
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+    this.logger.debug(this.updateEstate.name, JSON.stringify(response));
+
+    if (!this.checkOnOfficeResponseSuccess(response)) {
+      throw new HttpException('Estate update failed!', 400);
+    }
+  }
+
   private checkOnOfficeResponseSuccess<T>({
-    status: { code, errorcode, message },
-  }: IApiOnOfficeResponse<T>) {
-    return code === 200 && errorcode === 0 && message === 'OK';
+    status: {
+      code: responseCode,
+      errorcode: responseErrorCode,
+      message: responseMessage,
+    },
+    response: {
+      results: [
+        {
+          status: { errorcode: actionErrorCode, message: actionMessage },
+        },
+      ],
+    },
+  }: IApiOnOfficeResponse<T>): boolean {
+    return (
+      responseCode === 200 &&
+      responseErrorCode === 0 &&
+      responseMessage === 'OK' &&
+      actionErrorCode === 0 &&
+      actionMessage === 'OK'
+    );
   }
 
   private async getColorAndLogo({
@@ -573,6 +639,14 @@ export class OnOfficeService {
     };
 
     const response = await this.onOfficeApiService.sendRequest(request);
+
+    if (!this.checkOnOfficeResponseSuccess(response)) {
+      throw new HttpException(
+        "User color and logo haven't been retrieved!",
+        400,
+      );
+    }
+
     this.logger.debug(this.getColorAndLogo.name, response);
 
     return response.response.results[0].data.records[0].elements.basicData

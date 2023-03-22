@@ -40,9 +40,11 @@ interface IOpenAiModuleProps {
   isFetchResponse: boolean;
   onResponseFetched: (
     queryType: OpenAiQueryTypeEnum,
-    requestStatus: RequestStatusTypesEnum
+    requestStatus: RequestStatusTypesEnum,
+    responseText?: string
   ) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
+  onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
 }
 
 const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
@@ -51,6 +53,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   isFetchResponse,
   onResponseFetched,
   initialQueryType,
+  onQueryTypeChange,
 }) => {
   const { cachingState, cachingDispatch } = useContext(CachingContext);
   const {
@@ -112,15 +115,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
             formRef.current?.handleSubmit();
             realEstateDescriptionFormRef.current?.handleSubmit();
-            const a1 = {
-              searchResultSnapshotId,
-              integrationId,
-              ...(formRef.current
-                ?.values as IOpenAiLocationDescriptionFormValues),
-              ...(realEstateDescriptionFormRef.current
-                ?.values as IApiOpenAiRealEstateDescriptionQuery),
-            };
-            console.log(1, a1);
 
             response = await fetchLocRealEstDesc({
               searchResultSnapshotId,
@@ -150,7 +144,12 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         requestStatus = RequestStatusTypesEnum.FAILURE;
       }
 
-      onResponseFetched(queryType as OpenAiQueryTypeEnum, requestStatus);
+      onResponseFetched(
+        queryType as OpenAiQueryTypeEnum,
+        requestStatus,
+        response
+      );
+
       setFetchedResponse(response);
     };
 
@@ -184,6 +183,10 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           value={queryType || placeholderSelectOptionKey}
           onChange={({ target: { value } }) => {
             setQueryType(value as OpenAiQueryTypeEnum);
+
+            if (onQueryTypeChange) {
+              onQueryTypeChange(value as OpenAiQueryTypeEnum);
+            }
           }}
         >
           <option
