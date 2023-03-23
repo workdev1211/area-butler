@@ -36,7 +36,7 @@ interface ILocationRealEstateDescriptionQueryData
   realEstateListing: RealEstateListingDocument;
 }
 
-const MAX_CHARACTER_LENGTH = 200;
+const MAX_CHARACTER_LENGTH = 700;
 
 @Injectable()
 export class OpenAiService {
@@ -72,8 +72,10 @@ export class OpenAiService {
       }, {});
 
     const initialQueryText =
-      `Schreibe eine werbliche, ${tonality} Umgebungsbeschreibung für eine Immobilien-Anzeige an der Adresse ${snapshot.placesLocation.label}.\n` +
-      'Füge Umgebungsinformationen hinzu:\n';
+      `Schreibe eine Beschreibung der Lage einer Immobilie für Immobilienexposee. 
+      Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points 
+      of Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". Beende den Text 
+      mit einer Bullet-Liste der Points of Interest.\n Die Points of interest sind: ${snapshot.placesLocation.label}`;
 
     const poiCountEntries = Object.entries(poiCount);
 
@@ -231,88 +233,91 @@ export class OpenAiService {
 
     let queryText = this.getRealEstateDescriptionQuery(
       realEstateListing,
-      `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange, werbliche Beschreibung in einem Immobilienexposee. Nutze eine ${tonality} Art der Formulierung.`,
+      `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange Beschreibung der Lage einer Immobilie für Immobilienexposee. 
+      Nutze eine ${tonality} Art der Formulierung. Im Fließtext erwähne die Points 
+      of Interest nicht mit Zahlen, sondern nur mit Worten "einige, viele, ausreichend, ...". Im Anschluss an den
+      Text füge dann eine Bullet-Liste mit den Zahlen der Points of Interest hinzu. Verwende HTML Zeilenumbrüche.`,
     ).replace('\n\n', '');
 
     if (poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]) {
-      queryText += ` Es gibt ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]
-      } ÖPNV Haltestellen in der Nähe.`;
+      } ÖPNV Haltestellen\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS]) {
-      queryText += ` Mit ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS]
-      } erreichbaren Autobahnauffahrten kommen Sie schnell überall hin.`;
+      } Autobahnauffahrten\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.CHARGING_STATIONS]) {
-      queryText += ` Sie finden ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.CHARGING_STATIONS]
-      } E-Ladestellen in der Nähe.`;
+      } E-Ladestellen\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.GAS_STATIONS]) {
-      queryText += ` Im Umkreis befinden sich ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.GAS_STATIONS]
-      } Tankstellen.`;
+      } Tankstellen\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES]) {
-      queryText += ` Die Nahversorgung wird durch ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES]
-      } Supermärkte und Drogerien sichergestellt.`;
+      } Supermärkte und Drogerien\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN]) {
-      queryText += ` Es gibt ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN]
-      } in der Nähe`;
+      } Schulen und Kindergärten`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.UNIVERSITIES]) {
-      queryText += ` Die Erwachsenenbildung wird du ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.UNIVERSITIES]
-      } Univerität(en) sichergestellt.`;
+      } Univerität(en)\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS]) {
-      queryText += ` Zur Naherholung finden Sie ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS]
-      } Spielplätze und Parks in der Nähe.`;
+      } Spielplätze und Parks\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS]) {
-      queryText += ` Es befinden sich ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS]
-      } Bars und Restaurants im Umkreis.`;
+      } Bars und Restaurants\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.THEATERS]) {
-      queryText += ` Das Kulturangebot umfasst ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.THEATERS]
-      } Theater.`;
+      } Theater\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SPORTS]) {
-      queryText += ` Sie finden ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.SPORTS]
-      } Angebote aus dem Bereich Sport.`;
+      } Sportangebote\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SWIMMING_POOLS]) {
-      queryText += ` Die Anzahl der Schwimmbäder beläuft sich auf ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.SWIMMING_POOLS]
-      }.`;
+      } Swimmingpools und Schwimmbäder\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.DOCTORS]) {
-      queryText += ` Die medizinische Versorgung wird duch ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.DOCTORS]
-      } Ärzte gewährleistet.`;
+      } Ärzte\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.PHARMACIES]) {
-      queryText += ` Es befinden sich ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.PHARMACIES]
-      } Apotheken im näheren Umfeld.`;
+      } Apotheken\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.HOSPITALS]) {
-      queryText += ` Für Ernstfälle stehen ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.HOSPITALS]
-      } Krankenhäuser gut erreichbar zur Verfügung.`;
+      } Krankenhäuser\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SIGHTS]) {
-      queryText += ` Falls Besuch auftaucht sind ${
+      queryText += ` - ${
         poiCount[OpenAiOsmQueryNameEnum.SIGHTS]
-      } Sehenswürdigkeiten gut erreichbar.`;
+      } Sehenswürdigkeiten\n`;
     }
 
     if (customText) {
@@ -327,6 +332,7 @@ export class OpenAiService {
   }
 
   async fetchResponse(queryText: string): Promise<string> {
+    console.log(queryText)
     const {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(
