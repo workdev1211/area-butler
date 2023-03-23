@@ -32,7 +32,7 @@ export const QuestionnaireRequestFormHandler: React.FunctionComponent<FormModalD
         toastSuccess("Fragebogen erfolgreich versandt!");
         postSubmit(true);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         toastError("Fehler beim Versenden des Fragebogens");
         postSubmit(false);
       }

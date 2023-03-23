@@ -36,28 +36,25 @@ const MapPage = lazy(() => import("./pages/MapPage"));
 const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
 
 const OnOfficeContainer: FunctionComponent = () => {
-  console.log("OnOfficeApp", 1);
-
   const { userState } = useContext(UserContext);
 
   const history = useHistory();
   const { handleLogin } = useLogin();
 
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>();
 
   useEffect(() => {
-    console.log("OnOfficeApp", 2);
-
     const login = async () => {
-      const { requestStatus, actionType } = await handleLogin();
+      const { requestStatus, actionType, message } = await handleLogin();
 
       if (requestStatus === RequestStatusTypesEnum.FAILURE) {
+        setErrorMessage(message);
         setIsErrorOccurred(true);
         return;
       }
 
       if (actionType === OnOfficeLoginActionTypesEnum.PERFORM_LOGIN) {
-        console.log("OnOfficeApp", 3, userState.integrationUser?.config);
         history.push("/products");
         return;
       }
@@ -72,7 +69,11 @@ const OnOfficeContainer: FunctionComponent = () => {
   if (!userState.integrationUser || isErrorOccurred) {
     return (
       <div className="flex items-center justify-center h-[100vh] text-lg">
-        {isErrorOccurred ? "Ein Fehler ist aufgetreten!" : <LoadingMessage />}
+        {isErrorOccurred ? (
+          errorMessage || "Ein Fehler ist aufgetreten!"
+        ) : (
+          <LoadingMessage />
+        )}
       </div>
     );
   }

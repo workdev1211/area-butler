@@ -57,7 +57,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
       beforeSubmit();
       await generateLocationText(aiDescriptionQuery);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toastError("Der Fehler ist aufgetreten!");
       closeModal();
     } finally {

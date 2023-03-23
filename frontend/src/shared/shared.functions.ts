@@ -742,7 +742,6 @@ export const getQueryParamsAndUrl = <T>():
   | IQueryParamsAndUrl<T>
   | undefined => {
   const currentUrl = window.location.href;
-  console.log(100, currentUrl);
   const parsedUrl = currentUrl.match(/^(.*)\?(.*)$/);
 
   if (parsedUrl?.length !== 3) {

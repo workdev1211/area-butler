@@ -50,7 +50,7 @@ const FeedbackFormHandler: FunctionComponent<FormModalData> = ({
       await post("/api/feedback", { description: content, type });
       postSubmit(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       postSubmit(false);
     }
   };

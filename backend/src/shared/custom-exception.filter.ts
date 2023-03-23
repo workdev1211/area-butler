@@ -104,9 +104,9 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
 
     console.error(textBlocks);
 
-    // void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
-    //   textBlocks,
-    // });
+    void this.slackSenderService.sendNotification(SlackChannel.OPERATIONS, {
+      textBlocks,
+    });
 
     super.catch(exception, host);
   }

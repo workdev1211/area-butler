@@ -279,17 +279,21 @@ export class OnOfficeService {
     return { onOfficeOrderData };
   }
 
-  async confirmOrder({
-    onOfficeQueryParams: {
-      message,
-      status,
-      transactionid: transactionId,
-      referenceid: referenceId,
-      accessToken,
-      integrationId,
-      products,
-    },
-  }: IApiOnOfficeConfirmOrderReq): Promise<TApiOnOfficeConfirmOrderRes> {
+  async confirmOrder(
+    confirmOrderData: IApiOnOfficeConfirmOrderReq,
+  ): Promise<TApiOnOfficeConfirmOrderRes> {
+    const {
+      onOfficeQueryParams: {
+        message,
+        status,
+        transactionid: transactionId,
+        referenceid: referenceId,
+        accessToken,
+        integrationId,
+        products,
+      },
+    } = confirmOrderData;
+
     const integrationUser = await this.integrationUserService.findOneOrFail(
       { accessToken },
       this.integrationType,
@@ -305,7 +309,15 @@ export class OnOfficeService {
         ApiOnOfficeTransactionStatusesEnum.SUCCESS,
       ].includes(status)
     ) {
-      const parsedMessage = message?.replace(/\+/g, ' ');
+      const parsedMessage = message
+        ? decodeURIComponent(message.replace(/\+/g, ' '))
+        : undefined;
+
+      this.logger.debug(
+        this.confirmOrder.name,
+        parsedMessage,
+        confirmOrderData,
+      );
 
       await this.onOfficeTransactionModel.updateOne(
         { _id: product.transactionDbId },
@@ -492,6 +504,7 @@ export class OnOfficeService {
     // added "products" as a skipped key because it's already encoded
     const testQueryString = buildOnOfficeQueryString(sortedQueryParams, [
       'products',
+      'message',
     ]);
 
     const testUrl = `${url}?${testQueryString}`;

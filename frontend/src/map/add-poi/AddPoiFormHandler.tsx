@@ -56,7 +56,7 @@ const AddPoiFormHandler: FunctionComponent<AddPoiFormHandlerProps> = ({
       toastSuccess("Objekt erfolgreich hinzugefügt!");
     } catch (err) {
       toastError("Fehler beim Speichern des Objektes");
-      console.log(err);
+      console.error(err);
       postSubmit(false);
     }
   };

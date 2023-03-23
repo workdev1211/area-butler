@@ -49,7 +49,6 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
     const postDoNotShowTour = async (tour: ApiTourNameEnum) => {
       try {
         const user = !showNoMoreTips ? await hideTour(tour) : await hideTours();
-        console.log("StartTourModal", 1, user);
 
         if ("integrationUserId" in user) {
           userDispatch({
@@ -65,7 +64,7 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
 
         setShowModal(false);
       } catch (err) {
-        console.log(err);
+        console.error(err);
         toastError("Fehler beim Beenden der Tour");
       }
     };

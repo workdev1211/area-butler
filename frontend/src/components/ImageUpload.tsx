@@ -35,7 +35,7 @@ const ImageUpload: FunctionComponent<ImageUploadProps> = ({
       onChange(`${reader.result}`);
     };
     reader.onerror = function (error) {
-      console.log("Error: ", error);
+      console.error("Error: ", error);
     };
   };
 

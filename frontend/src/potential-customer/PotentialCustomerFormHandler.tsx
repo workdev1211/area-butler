@@ -77,7 +77,7 @@ const PotentialCustomerFormHandler: FunctionComponent<
       toastSuccess("Interessent erfolgreich gespeichert!");
       history.push(`/potential-customers?id=${storedCustomer.id}`);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toastError("Fehler beim Speichern eines Interessenten");
       postSubmit(false);
     }

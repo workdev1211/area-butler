@@ -80,13 +80,6 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
     }
   };
 
-  console.log(
-    "TourStarter",
-    1,
-    user?.showTour,
-    integrationUser?.config.showTour
-  );
-
   return (
     <div>
       <StartTourModal

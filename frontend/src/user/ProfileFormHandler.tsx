@@ -43,7 +43,7 @@ const ProfileFormHandler: React.FunctionComponent<ProfileFormHandlerProps> = ({
       toastSuccess("Profil aktualisiert!");
       postSubmit(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toastError("Fehler beim Aktualisieren Ihres Profiles");
       postSubmit(false);
     }

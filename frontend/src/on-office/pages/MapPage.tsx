@@ -52,7 +52,6 @@ const MapPage: FunctionComponent = () => {
   const [mapBoxToken, setMapBoxToken] = useState("");
 
   useEffect(() => {
-    console.log("MapPage", 1, snapshotId);
     if (!snapshotId) {
       return;
     }

@@ -38,7 +38,7 @@ export const PotentialCustomerFormDeleteHandler: React.FunctionComponent<Potenti
       toastSuccess("Interessent erfolgreich gelöscht!");
       postSubmit(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       postSubmit(false);
     }
   };

@@ -101,8 +101,6 @@ export const ProductPage: FunctionComponent = () => {
                 return;
               }
 
-              console.log("ProductPage", 1);
-
               const { onOfficeOrderData } = (
                 await post<
                   IApiOnOfficeCreateOrderRes,
@@ -113,12 +111,10 @@ export const ProductPage: FunctionComponent = () => {
                 })
               ).data;
 
-              console.log("ProductPage", 9, onOfficeOrderData);
-
               window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
             }}
           >
-            Besorgen
+            Bestellen
           </button>
         </div>
       </div>

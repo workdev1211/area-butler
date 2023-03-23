@@ -1,10 +1,7 @@
 import { useContext } from "react";
 import * as Yup from "yup";
 
-import {
-  getQueryParamsAndUrl,
-  toastError,
-} from "../../shared/shared.functions";
+import { getQueryParamsAndUrl } from "../../shared/shared.functions";
 import {
   ApiOnOfficeTransactionStatusesEnum,
   IApiOnOfficeConfirmOrderQueryParams,
@@ -62,34 +59,24 @@ export const useLogin = () => {
   const handleLogin = async (): Promise<IOnOfficeHandleLogin> => {
     const queryParamsAndUrl = getQueryParamsAndUrl();
 
-    console.log("handleLogin", 1, queryParamsAndUrl);
-
     if (!queryParamsAndUrl) {
       return { requestStatus: RequestStatusTypesEnum.FAILURE };
     }
 
     try {
       await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
-      const requestStatus = await performLogin(
+
+      return performLogin(
         queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>
       );
-
-      return {
-        requestStatus,
-        actionType: OnOfficeLoginActionTypesEnum.PERFORM_LOGIN,
-      };
     } catch {}
 
     try {
       await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
-      const requestStatus = await confirmOrder(
+
+      return confirmOrder(
         queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
       );
-
-      return {
-        requestStatus,
-        actionType: OnOfficeLoginActionTypesEnum.CONFIRM_ORDER,
-      };
     } catch {}
 
     return { requestStatus: RequestStatusTypesEnum.FAILURE };
@@ -98,13 +85,16 @@ export const useLogin = () => {
   const performLogin = async ({
     queryParams,
     url,
-  }: IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>): Promise<RequestStatusTypesEnum> => {
+  }: IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>): Promise<IOnOfficeHandleLogin> => {
     const loginReq: IApiOnOfficeLoginReq = {
       url,
       onOfficeQueryParams: queryParams,
     };
 
-    console.log("performLogin", 1, loginReq);
+    const response: IOnOfficeHandleLogin = {
+      requestStatus: RequestStatusTypesEnum.SUCCESS,
+      actionType: OnOfficeLoginActionTypesEnum.PERFORM_LOGIN,
+    };
 
     try {
       const loginRes = (
@@ -112,26 +102,27 @@ export const useLogin = () => {
       ).data;
 
       dispatchContextData(loginRes);
-
-      return RequestStatusTypesEnum.SUCCESS;
     } catch (e: any) {
-      toastError("Ein Fehler ist aufgetreten!");
       console.error("Verification error: ", e);
-      return RequestStatusTypesEnum.FAILURE;
+      response.requestStatus = RequestStatusTypesEnum.FAILURE;
     }
+
+    return response;
   };
 
   const confirmOrder = async ({
     queryParams,
     url,
-  }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<RequestStatusTypesEnum> => {
-    console.log("confirmOrder", 1, url);
+  }: IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>): Promise<IOnOfficeHandleLogin> => {
     const confirmOrderReq: IApiOnOfficeConfirmOrderReq = {
       url,
       onOfficeQueryParams: queryParams,
     };
 
-    console.log("confirmOrder", 2, confirmOrderReq);
+    const response: IOnOfficeHandleLogin = {
+      requestStatus: RequestStatusTypesEnum.SUCCESS,
+      actionType: OnOfficeLoginActionTypesEnum.CONFIRM_ORDER,
+    };
 
     try {
       const confirmOrderRes = (
@@ -142,19 +133,20 @@ export const useLogin = () => {
       ).data;
 
       if ("message" in confirmOrderRes) {
-        toastError("Ein Fehler ist aufgetreten!");
         console.error("Order confirmation error: ", confirmOrderRes.message);
-        return RequestStatusTypesEnum.FAILURE;
+        response.requestStatus = RequestStatusTypesEnum.FAILURE;
+        response.message = confirmOrderRes.message;
+
+        return response;
       }
 
       dispatchContextData(confirmOrderRes);
-
-      return RequestStatusTypesEnum.SUCCESS;
     } catch (e) {
-      toastError("Ein Fehler ist aufgetreten!");
       console.error("Order confirmation error: ", e);
-      return RequestStatusTypesEnum.FAILURE;
+      response.requestStatus = RequestStatusTypesEnum.FAILURE;
     }
+
+    return response;
   };
 
   const dispatchContextData = ({
@@ -165,17 +157,6 @@ export const useLogin = () => {
     availProdContingents,
     latestSnapshot,
   }: IApiOnOfficeLoginRes): void => {
-    console.log(
-      "dispatchContextData",
-      1,
-      integrationId,
-      realEstate,
-      accessToken,
-      config,
-      availProdContingents,
-      latestSnapshot
-    );
-
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {
@@ -184,12 +165,6 @@ export const useLogin = () => {
         config,
       },
     });
-
-    console.log(
-      "dispatchContextData",
-      2,
-      Object.values(config.showTour).some((tour) => tour)
-    );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,

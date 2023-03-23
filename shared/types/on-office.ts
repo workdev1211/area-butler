@@ -243,4 +243,5 @@ export enum OnOfficeLoginActionTypesEnum {
 export interface IOnOfficeHandleLogin {
   requestStatus: RequestStatusTypesEnum;
   actionType?: OnOfficeLoginActionTypesEnum;
+  message?: string;
 }

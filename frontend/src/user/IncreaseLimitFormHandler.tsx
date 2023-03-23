@@ -110,7 +110,7 @@ const IncreaseLimitFormHandler: FunctionComponent<
       setPaymentMetadata(metadata);
       setIsShownPaymentModal(true);
     } catch (err) {
-      console.log(err);
+      console.error(err);
       toastError("Fehler bei der Erhöhung des Limits");
       postSubmit(false);
     }

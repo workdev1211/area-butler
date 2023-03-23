@@ -34,7 +34,7 @@ const CustomerQuestionnairePage: FunctionComponent = () => {
             });
             setSuccess(true);
         } catch (err) {
-            console.log(err);
+            console.error(err);
             setError(true);
         } finally {
             setBusy(false);
