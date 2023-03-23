@@ -133,7 +133,7 @@ export class ApiAddressesInRangeService {
   ): ApiCoordinates[] {
     const nMin = -1 * Math.floor(radius / distanceStep);
     const nMax = Math.ceil(radius / distanceStep);
-    const locations = [];
+    const locations = [location];
 
     for (let i = nMin; i < nMax; i += 1) {
       for (let j = nMin; j < nMax; j += 1) {
