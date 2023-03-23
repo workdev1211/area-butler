@@ -137,8 +137,8 @@ export class ApiAddressesInRangeService {
 
     for (let i = nMin; i < nMax; i += 1) {
       for (let j = nMin; j < nMax; j += 1) {
-        const deltaLat = i / 2500;
-        const deltaLng = j / 2500;
+        const deltaLat = i / 1200;
+        const deltaLng = j / 1200;
 
         const estimatedLocation = {
           lat: location.lat + deltaLat,

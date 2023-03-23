@@ -47,7 +47,7 @@ export class HereGeocodeService {
     radius: number,
     language = ApiHereLanguageEnum.DE,
   ): Promise<IHereReverseGeocodeItem[]> {
-    const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?in=circle:${lat},${lng};r=${radius}&lang=${language}&limit=100&apiKey=${this.hereApiKey}`;
+    const url = `https://revgeocode.search.hereapi.com/v1/revgeocode?in=circle:${lat},${lng};r=1000&lang=${language}&limit=100&apiKey=${this.hereApiKey}`;
 
     const {
       data: { items },
