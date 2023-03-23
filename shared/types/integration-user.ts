@@ -32,9 +32,9 @@ export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
-  extendedClaim: string;
-  apiKey?: string;
-  token?: string;
+  extendedClaim: string; // used by us as access token
+  apiKey?: string; // client secret
+  token?: string; // client access token
 }
 
 export enum ApiIntUserOnOfficeProdContTypesEnum {

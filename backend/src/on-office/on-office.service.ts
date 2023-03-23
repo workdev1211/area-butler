@@ -163,17 +163,18 @@ export class OnOfficeService {
       parameterCacheId,
     },
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
-    const integrationUser = await this.integrationUserService.findOneOrFail(
+    let integrationUser = await this.integrationUserService.findOneOrFail(
       { integrationUserId },
       this.integrationType,
     );
 
-    const { color, logo } = await this.getColorAndLogo({
+    // Could be a race condition with the extendedClaims
+    const { color, logo } = await this.fetchLogoAndColor({
       ...integrationUser.parameters,
       extendedClaim,
     });
 
-    const { config } = await this.integrationUserService.updateParamsAndConfig(
+    integrationUser = await this.integrationUserService.updateParamsAndConfig(
       integrationUser,
       extendedClaim,
       {
@@ -189,7 +190,7 @@ export class OnOfficeService {
     const availProdContingents =
       this.integrationUserService.getAvailProdContingents(integrationUser);
 
-    const areaButlerEstate = await this.getEstateData(
+    const areaButlerEstate = await this.fetchAndProcessEstateData(
       estateId,
       integrationUser,
     );
@@ -212,14 +213,12 @@ export class OnOfficeService {
         this.integrationType,
       );
 
-    this.logger.debug(this.login.name, areaButlerEstate, snapshot);
-
     return {
-      config,
       availProdContingents,
       realEstate,
       integrationId: estateId,
       accessToken: extendedClaim,
+      config: integrationUser.config,
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(snapshot)
         : undefined,
@@ -277,8 +276,6 @@ export class OnOfficeService {
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
     onOfficeOrderData.signature = this.generateSignature(orderQueryString);
 
-    this.logger.debug(this.createOrder.name, onOfficeOrderData);
-
     return { onOfficeOrderData };
   }
 
@@ -300,16 +297,6 @@ export class OnOfficeService {
 
     const [product]: [IApiOnOfficeCreateOrderProduct] = JSON.parse(
       decodeURIComponent(products),
-    );
-
-    this.logger.debug(
-      'confirmOrderService',
-      status,
-      transactionId,
-      referenceId,
-      accessToken,
-      integrationId,
-      product,
     );
 
     if (
@@ -349,8 +336,6 @@ export class OnOfficeService {
         this.integrationType,
       );
 
-    this.logger.debug(this.confirmOrder.name, snapshot);
-
     return {
       config: integrationUser.config,
       availProdContingents:
@@ -372,7 +357,7 @@ export class OnOfficeService {
     };
   }
 
-  async getEstateData(
+  async fetchAndProcessEstateData(
     estateId: string,
     {
       integrationUserId,
@@ -432,6 +417,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     if (!this.checkOnOfficeResponseSuccess(response)) {
+      this.logger.error(this.fetchAndProcessEstateData.name, request, response);
       throw new HttpException('The estate entity has not been retrieved!', 400);
     }
 
@@ -459,6 +445,7 @@ export class OnOfficeService {
     const place = await this.googleGeocodeService.fetchPlace(location);
 
     if (!place) {
+      this.logger.error(this.fetchAndProcessEstateData.name, location, place);
       throw new HttpException('Place has not been found!', 400);
     }
 
@@ -564,9 +551,9 @@ export class OnOfficeService {
     };
 
     const response = await this.onOfficeApiService.sendRequest(request);
-    this.logger.debug(this.updateEstate.name, JSON.stringify(response));
 
     if (!this.checkOnOfficeResponseSuccess(response)) {
+      this.logger.error(this.updateEstate.name, request, response);
       throw new HttpException('Estate update failed!', 400);
     }
   }
@@ -594,7 +581,7 @@ export class OnOfficeService {
     );
   }
 
-  private async getColorAndLogo({
+  private async fetchLogoAndColor({
     token,
     apiKey,
     extendedClaim,
@@ -641,13 +628,13 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     if (!this.checkOnOfficeResponseSuccess(response)) {
+      this.logger.error(this.fetchLogoAndColor.name, request, response);
+
       throw new HttpException(
         "User color and logo haven't been retrieved!",
         400,
       );
     }
-
-    this.logger.debug(this.getColorAndLogo.name, response);
 
     return response.response.results[0].data.records[0].elements.basicData
       .characteristicsCi;

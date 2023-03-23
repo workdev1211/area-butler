@@ -63,8 +63,6 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderReqDto,
   ): Promise<string> {
-    this.logger.debug(this.unlockProvider.name, unlockProviderData);
-
     return this.onOfficeService.unlockProvider(
       unlockProviderData,
       integrationUser,
@@ -88,7 +86,6 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() createOrderData: ApiOnOfficeCreateOrderReqDto,
   ): Promise<IApiOnOfficeCreateOrderRes> {
-    this.logger.debug(this.createOrder.name, createOrderData);
     return this.onOfficeService.createOrder(createOrderData, integrationUser);
   }
 
@@ -98,7 +95,6 @@ export class OnOfficeController {
   confirmOrder(
     @Body() confirmOrderData: ApiOnOfficeConfirmOrderReqDto,
   ): Promise<TApiOnOfficeConfirmOrderRes> {
-    this.logger.debug('confirmOrderController', confirmOrderData);
     return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 
@@ -110,8 +106,6 @@ export class OnOfficeController {
     @Param('integrationId') integrationId: string,
     @Body() updateEstateData: ApiOnOfficeUpdateEstateReqDto,
   ): Promise<void> {
-    this.logger.debug('updateEstateController', updateEstateData);
-
     return this.onOfficeService.updateEstate(
       integrationUser,
       integrationId,
