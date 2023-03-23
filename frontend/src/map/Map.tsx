@@ -642,7 +642,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       }
 
       const drawMapIcon = async () => {
-        if (!(!embedMode || config?.showLocation)) {
+        if (!config?.showLocation) {
           return;
         }
 
