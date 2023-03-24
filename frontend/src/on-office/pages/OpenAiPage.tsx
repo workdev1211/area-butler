@@ -11,6 +11,7 @@ import { checkProdContAvailability } from "../../shared/integration.functions";
 import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
+import { toastSuccess } from "../../shared/shared.functions";
 
 const OpenAiPage: FunctionComponent = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -84,10 +85,13 @@ const OpenAiPage: FunctionComponent = () => {
       <div className="flex flex-col my-5 gap-5">
         <h1 className="text-xl gap-2">KI Texte aus der magischen Feder</h1>
         <div className="text-justify text-base">
-          Unser KI-Textgenerator bietet Inspiration für die Konstruktion von
-          Texten, insbesondere bei Schwierigkeiten bei der Struktur und
-          Formulierung. Er bezieht Umgebungsdaten und Informationen zur
-          Immobilie mit ein.
+          Unser KI-Assistent bietet Inspiration für die Konstruktion von Texten,
+          insbesondere bei Schwierigkeiten bei der Struktur und Formulierung. Er
+          bezieht Umgebungsdaten unserer Analyse und die Informationen zur
+          Immobilie mit ein - dies ist unser USP. Die Abfrage kann bis zu 20
+          Sekunden dauern. Mit einem Klick auf "An onOffice senden" wird der
+          Text automatisch in das äquivalente Standardfeld in der Immobilie
+          eingefügt.
         </div>
         <OpenAiModule
           searchResultSnapshotId={snapshotId}
@@ -105,6 +109,7 @@ const OpenAiPage: FunctionComponent = () => {
           <button
             className="btn bg-primary-gradient max-w-fit self-end"
             onClick={() => {
+              toastSuccess("Die Daten wurden an onOffice gesendet!");
               setIsCopyTextButtonDisabled(true);
 
               void post(

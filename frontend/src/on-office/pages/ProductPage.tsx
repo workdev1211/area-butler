@@ -7,6 +7,7 @@ import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
+  IOnOfficeProduct,
   OnOfficeProductTypesEnum,
 } from "../../../../shared/types/on-office";
 import { useHttp } from "../../hooks/http";
@@ -40,7 +41,22 @@ export const ProductPage: FunctionComponent = () => {
     return foundProduct ? [foundProduct] : undefined;
   };
 
-  const onOfficeProducts = Object.values(allOnOfficeProducts);
+  let firstOnOfficeProduct: IOnOfficeProduct;
+
+  const onOfficeProducts = Object.values(allOnOfficeProducts).reduce<
+    Array<IOnOfficeProduct[]>
+  >((result, product, i, products) => {
+    if (i === 0) {
+      firstOnOfficeProduct = product;
+      return result;
+    }
+
+    if (i % 2 === 1) {
+      result.push(products.slice(i, i + 2));
+    }
+
+    return result;
+  }, []);
 
   return (
     <DefaultLayout
@@ -53,36 +69,47 @@ export const ProductPage: FunctionComponent = () => {
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
           Abonnement, bitte wählen Sie das Passende für sich aus:
         </h1>
-        <div className="grid grid-cols-1 xl:grid-flow-col xl:grid-cols-4 gap-10">
-          {onOfficeProducts.map(({ type, price, isDisabled }, i) => (
-            <div
-              className={`flex flex-col items-center gap-10 ${
-                i === 0 && onOfficeProducts.length > 4
-                  ? "row-span-2 self-center"
-                  : ""
-              }`}
-              key={type}
-            >
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
+          <div className="xl:row-start-1 xl:row-end-4 xl:p-3">
+            <div className={`flex flex-col items-center gap-10`}>
               <ProductCard
-                type={type}
-                price={price}
-                isDisabled={isDisabled}
+                type={firstOnOfficeProduct!.type}
+                price={firstOnOfficeProduct!.price}
+                isDisabled={firstOnOfficeProduct!.isDisabled}
                 products={createOrderProducts}
                 onChangeProducts={setCreateOrderProducts}
               />
-              {i === 0 && (
-                <button
-                  className="btn w-48"
-                  onClick={() => {
-                    history.push("/search");
-                  }}
-                  style={{
-                    padding: "0 var(--btn-padding) 0 var(--btn-padding)",
-                  }}
-                >
-                  Karte gratis erstellen
-                </button>
-              )}
+              <button
+                className="btn w-48"
+                onClick={() => {
+                  history.push("/search");
+                }}
+                style={{
+                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+                }}
+              >
+                Karte gratis erstellen
+              </button>
+            </div>
+          </div>
+          {onOfficeProducts.map((groupedProducts, i) => (
+            <div
+              className={`grid xl:col-start-2 xl:col-end-4 grid-cols-1 xl:grid-cols-2 gap-10 p-3 rounded-3xl ${
+                i > 0 ? "opacity-50" : ""
+              }`}
+              style={{ outline: "3px #a9a9a9 solid" }}
+              key={i}
+            >
+              {groupedProducts.map(({ type, price, isDisabled }) => (
+                <ProductCard
+                  key={type}
+                  type={type}
+                  price={price}
+                  isDisabled={isDisabled}
+                  products={createOrderProducts}
+                  onChangeProducts={setCreateOrderProducts}
+                />
+              ))}
             </div>
           ))}
         </div>

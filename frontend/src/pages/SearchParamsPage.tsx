@@ -653,11 +653,9 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
-          <h2 className="search-params-first-title">
-            {integrationUser
-              ? "Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives Abonnement, bitte wählen Sie das Passende für sich aus:"
-              : "Lage"}
-          </h2>
+          {!integrationUser && (
+            <h2 className="search-params-first-title">"Lage"</h2>
+          )}
           <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
             {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
             {!integrationUser && (
