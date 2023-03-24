@@ -111,6 +111,35 @@ export const payPerUse10Subscription: ApiSubscriptionPlan = {
   appFeatures: commonAppFeatures,
 };
 
+// A legacy one, applied only to 633414f62b84bfee88fa3e6e and 634667debb7ddab1eff8d518
+export const payPerUse5SubscriptionLegacy: ApiSubscriptionPlan = {
+  name: "5er Karte",
+  type: ApiSubscriptionPlanType.PAY_PER_USE_5_LEGACY,
+  prices: [
+    {
+      id: {
+        dev: "price_1LFzpPLcbb2Q3qBpNDijoJqd",
+        prod: "price_1LFzpPLcbb2Q3qBpNDijoJqd",
+      },
+      name: "5er Karte",
+      price: "190",
+      purchaseButtonLabel: "5er Karte kaufen",
+      interval: subscriptionIntervals[ApiSubscriptionIntervalEnum.ANNUALLY],
+      limits: {
+        [ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS]: {
+          amount: { value: 5 },
+          increaseParams: payPerUseRequestLimitIncrease,
+        },
+        [ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION]: {
+          amount: { value: 12, unit: "months" },
+          increaseParams: payPerUseAddressDurationIncrease,
+        },
+      },
+    },
+  ],
+  appFeatures: commonAppFeatures,
+};
+
 export const payPerUse10SubscriptionLegacy = JSON.parse(
   JSON.stringify(payPerUse10Subscription)
 );

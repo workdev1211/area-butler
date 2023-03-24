@@ -8,6 +8,7 @@ import {
   payPerUse10SubscriptionLegacy,
   payPerUse1Subscription,
   payPerUse1SubscriptionLegacy,
+  payPerUse5SubscriptionLegacy,
 } from "./pay-per-use";
 import {
   businessPlusSubscription,
@@ -26,6 +27,7 @@ export const allSubscriptions: Record<
   [ApiSubscriptionPlanType.BUSINESS_PLUS]: businessPlusSubscription,
   [ApiSubscriptionPlanType.BUSINESS_PLUS_V2]: businessPlusV2Subscription,
   [ApiSubscriptionPlanType.PAY_PER_USE_1_LEGACY]: payPerUse1SubscriptionLegacy,
+  [ApiSubscriptionPlanType.PAY_PER_USE_5_LEGACY]: payPerUse5SubscriptionLegacy,
   [ApiSubscriptionPlanType.PAY_PER_USE_10_LEGACY]:
     payPerUse10SubscriptionLegacy,
   [ApiSubscriptionPlanType.BUSINESS_PLUS_V2_LEGACY]:
