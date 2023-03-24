@@ -403,7 +403,8 @@ export class LocationService {
     });
 
     if (!snapshotDoc) {
-      throw new HttpException('Unknown token', 400);
+      // 404 code is used because it's not processed by the custom exception handler
+      throw new HttpException('Unknown token', 404);
     }
 
     this.checkAddressExpiration(snapshotDoc);
