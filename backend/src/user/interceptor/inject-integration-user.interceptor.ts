@@ -24,13 +24,13 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
     const { authorization } = req.headers;
-    const accessToken = authorization?.replace(/^AccessToken (.*)$/, '$1');
+    const accessToken = authorization?.match(/^AccessToken (.*)$/);
     let integrationUser;
 
-    if (accessToken) {
+    if (accessToken?.length === 2) {
       integrationUser =
         await this.integrationUserService.findOneByAccessTokenOrFail(
-          accessToken,
+          accessToken[1],
         );
     }
 

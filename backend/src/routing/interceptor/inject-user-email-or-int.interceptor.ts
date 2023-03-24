@@ -30,7 +30,7 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
   ): Promise<Observable<Request>> {
     const req = context.switchToHttp().getRequest();
     const { authorization } = req.headers;
-    const accessToken = authorization?.replace(/^AccessToken (.*)$/, '$1');
+    const accessToken = authorization?.match(/^AccessToken (.*)$/);
     let user: UserDocument | TIntegrationUserDocument;
 
     if (req.body.userEmail) {
@@ -45,14 +45,14 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
       user = await this.userService.findById(userId);
     }
 
-    if (accessToken) {
+    if (accessToken?.length === 2) {
       user = await this.integrationUserService.findOneByAccessTokenOrFail(
-        accessToken,
+        accessToken[1],
       );
     }
 
     if (!user) {
-      throw new HttpException('Unknown User', 400);
+      throw new HttpException('Unknown user', 400);
     }
 
     if ('integrationUserId' in user) {
