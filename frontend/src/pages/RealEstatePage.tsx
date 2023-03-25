@@ -23,11 +23,18 @@ const defaultRealEstate: Partial<ApiRealEstateListing> = {
 };
 
 const RealEstatePage: FunctionComponent = () => {
+  const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
+  const { get } = useHttp();
   const { realEstateId } = useParams<RealEstatePageRouterProps>();
+
   const isNewRealEstate =
     realEstateId === "new" || realEstateId === "from-result";
 
   let initialRealEstate = { ...defaultRealEstate };
+
+  const [realEstate, setRealEstate] =
+    useState<Partial<ApiRealEstateListing>>(initialRealEstate);
+  const [busy, setBusy] = useState(false);
 
   const searchContextFromLocalStorageString = window.localStorage.getItem(
     localStorageSearchContext
@@ -44,15 +51,9 @@ const RealEstatePage: FunctionComponent = () => {
     };
   }
 
-  const [realEstate, setRealEstate] =
-    useState<Partial<ApiRealEstateListing>>(initialRealEstate);
-  const [busy, setBusy] = useState(false);
-
-  const { get } = useHttp();
-  const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
-
   useEffect(() => {
     const fetchRealEstates = async () => {
+      // TODO move to useRealEstateData hook
       const response = await get<ApiRealEstateListing[]>(
         "/api/real-estate-listing/listings"
       );

@@ -59,8 +59,16 @@ const mapFormToApiUpsertRealEstateListing = async (
     characteristics: {
       startingAt: values.propertyStartingAt,
       numberOfRooms: values.numberOfRooms,
-      propertySizeInSquareMeters: values.propertySizeInSquareMeters,
-      realEstateSizeInSquareMeters: values.realEstateSizeInSquareMeters,
+      propertySizeInSquareMeters: Number.isFinite(
+        values.propertySizeInSquareMeters
+      )
+        ? values.propertySizeInSquareMeters
+        : undefined,
+      realEstateSizeInSquareMeters: Number.isFinite(
+        values.realEstateSizeInSquareMeters
+      )
+        ? values.realEstateSizeInSquareMeters
+        : undefined,
       energyEfficiency: values.energyEfficiency,
       furnishing,
     },

@@ -267,6 +267,7 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
             </div>
             <label className="label mt-4">
               <span className="label-text">
+                {/* TODO make the option selectable not for the whole width */}
                 <strong>Ausstattung</strong>
               </span>
             </label>

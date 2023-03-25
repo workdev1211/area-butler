@@ -18,7 +18,9 @@ const Select: FunctionComponent<ISelectProps> = ({
   const { setValue } = helpers;
 
   useEffect(() => {
-    setValue(defaultValue);
+    if (defaultValue) {
+      setValue(defaultValue);
+    }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [defaultValue]);
