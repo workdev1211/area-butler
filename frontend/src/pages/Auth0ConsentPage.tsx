@@ -38,7 +38,7 @@ const Auth0ConsentPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout title="Registrierung" withHorizontalPadding={true}>
-      <div className="w-1/3 mx-auto pt-20">
+      <div className="max-w-screen-md mx-auto md:pt-20">
         <h2>Herzlich willkommen !</h2>
         <div className="mt-5 text-justify">
           <p>
