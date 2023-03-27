@@ -21,12 +21,15 @@ const Auth0ConsentPage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
 
   const onSubmit = async () => {
+    if (busy) {
+      return;
+    }
+    setBusy(true);
     try {
       localStorage.setItem(localStorageConsentGivenKey, "true");
       window.location.href = `https://${auth!.domain}/continue?state=${state}`;
     } catch (e) {
       toastError("Leider ist etwas bei der Zustimmung schiefgelaufen");
-    } finally {
       setBusy(false);
     }
   };
@@ -99,6 +102,7 @@ const Auth0ConsentPage: FunctionComponent = () => {
           form={formId}
           key="submit"
           type="submit"
+          disabled={busy}
           className={
             busy ? "busy btn btn-primary mt-5" : "btn btn-primary mt-5"
           }
