@@ -33,9 +33,9 @@ export const getProductDescription = (type: OnOfficeProductTypesEnum) => {
 const OpenAiDescription = (title = "KI-Assistent") => {
   return (
     <>
-      <h2 className="card-title w-full">{title}</h2>
+      <div className="card-title w-full mb-7">{title}</div>
 
-      <div className="flex flex-col gap-3 min-h-[27vh]">
+      <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie Inspiration aus der magischen Feder. Mit
           Standortanalyse-Infos, den Fakten Ihren Immobilien.
@@ -56,9 +56,9 @@ const OpenAiDescription = (title = "KI-Assistent") => {
 const MapIframeDescription = (title = "Interaktive Karten Paket") => {
   return (
     <>
-      <h2 className="card-title w-full">{title}</h2>
+      <div className="card-title w-full mb-7">{title}</div>
 
-      <div className="flex flex-col gap-3 min-h-[27vh]">
+      <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie interaktive Karten, im eigenen Design, für alle Medien.
           Passen Sie Inhalte und Aussehen auf Ihre Zielgruppe an.
@@ -88,9 +88,9 @@ const MapIframeDescription = (title = "Interaktive Karten Paket") => {
 const OnePageDescription = (title = "Automatisches Lage-Exposé") => {
   return (
     <>
-      <h2 className="card-title w-full">{title}</h2>
+      <div className="card-title w-full mb-7">{title}</div>
 
-      <div className="flex flex-col gap-3 min-h-[27vh]">
+      <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie ein fertiges Lage-Exposé auf einer DinA4 Seite.
           Beinhaltet:
@@ -125,9 +125,9 @@ const OnePageDescription = (title = "Automatisches Lage-Exposé") => {
 const MapSnapshotDescription = (title = "Lagepläne und Distanzen") => {
   return (
     <>
-      <h2 className="card-title w-full">{title}</h2>
+      <div className="card-title w-full mb-7">{title}</div>
 
-      <div className="text-justify min-h-[27vh]">
+      <div className="text-justify min-h-[25vh]">
         Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit der
         Erreichbarkeitslinie für alle Mobilitätsarten, POIs und Distanzen.
       </div>
