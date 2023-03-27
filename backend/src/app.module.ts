@@ -1,5 +1,4 @@
 import { Module } from '@nestjs/common';
-import { APP_FILTER } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
@@ -15,7 +14,6 @@ import { LocationModule } from './location/location.module';
 import { PotentialCustomerModule } from './potential-customer/potential-customer.module';
 import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { RoutingModule } from './routing/routing.module';
-import { CustomExceptionFilter } from './shared/custom-exception.filter';
 import { UserModule } from './user/user.module';
 import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { BillingModule } from './billing/billing.module';
@@ -24,9 +22,12 @@ import { HealthModule } from './health/health.module';
 import { configService } from './config/config.service';
 import { OnOfficeModule } from './on-office/on-office.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
+import { RavenInterceptor, RavenModule } from 'nest-raven';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
+    RavenModule,
     ClientModule,
     ServeStaticModule.forRoot(
       {
@@ -71,8 +72,8 @@ import { OpenAiModule } from './open-ai/open-ai.module';
   ],
   providers: [
     {
-      provide: APP_FILTER,
-      useClass: CustomExceptionFilter,
+      provide: APP_INTERCEPTOR,
+      useValue: new RavenInterceptor(),
     },
   ],
   controllers: [ConfigController],

@@ -9,6 +9,7 @@ import { useAuth0 } from "@auth0/auth0-react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import * as Sentry from "@sentry/browser";
 
 import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
@@ -30,6 +31,15 @@ import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
 import FeedbackModal from "./components/FeedbackModal";
 // import MaintenanceModal from "./components/MaintenanceModal";
+
+Sentry.init({
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    environment: process.env.REACT_APP_SENTRY_ENV,
+    tracesSampleRate: 1.0,
+    debug: true,
+    attachStacktrace: true,
+    autoSessionTracking: false
+});
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
@@ -156,6 +166,7 @@ function App() {
   return (
     <>
       <ScrollToTop />
+      <div>{process.env.REACT_APP_SENTRY_DSN_FE}</div>
       <div className="app">
         {/*{isAuthenticated && !isSeenMaintenance && (*/}
         {/*  <MaintenanceModal*/}

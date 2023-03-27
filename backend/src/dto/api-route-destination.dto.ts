@@ -4,7 +4,6 @@ import { IsNotEmpty, ValidateNested } from 'class-validator';
 import ApiCoordinatesDto from './api-coordinates.dto';
 
 class ApiRouteDestinationDto implements ApiRouteDestination {
-
   @ValidateNested()
   @IsNotEmpty()
   @Type(() => ApiCoordinatesDto)

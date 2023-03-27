@@ -7,7 +7,6 @@ import {
 import { IsNumber, IsNotEmpty, Max, Min, IsEnum } from 'class-validator';
 
 class TransportationParamDto implements TransportationParam {
-
   @IsNumber()
   @IsNotEmpty()
   @Min(0)

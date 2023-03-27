@@ -5,9 +5,7 @@ import ApiRouteSectionDto from './api-route-section.dto';
 import { Type } from 'class-transformer';
 import { IsArray, IsEnum, IsNotEmpty, ValidateNested } from 'class-validator';
 
-
 class ApiRouteDto implements ApiRoute {
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
@@ -24,7 +22,7 @@ class ApiRouteDto implements ApiRoute {
 
   @IsArray()
   @IsNotEmpty()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => ApiRouteSectionDto)
   sections: ApiRouteSectionDto[];
 }

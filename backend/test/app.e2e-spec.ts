@@ -6,32 +6,31 @@ import { MongoMemoryServer } from 'mongodb-memory-server';
 import { configService } from '../src/config/config.service';
 
 describe('Config', () => {
-    let mongod: MongoMemoryServer;
-    let app: INestApplication;
-  
-    beforeAll(async () => {
-      mongod = await MongoMemoryServer.create({instance:{port:27097}});
+  let mongod: MongoMemoryServer;
+  let app: INestApplication;
 
-      const uri = mongod.getUri();
+  beforeAll(async () => {
+    mongod = await MongoMemoryServer.create({ instance: { port: 27097 } });
 
-      const moduleRef = await Test.createTestingModule({
-        imports: [AppModule],
-      })
-        .compile();
-  
-      app = moduleRef.createNestApplication();
-      await app.init();
-    });
-  
-    it(`/GET config`, () => {
-      return request(app.getHttpServer())
-        .get('/api/config')
-        .expect(200)
-        .expect(configService.getFrontendConfig());
-    });
-  
-    afterAll(async () => {
-      await app.close();
-      await mongod.stop();
-    });
+    const uri = mongod.getUri();
+
+    const moduleRef = await Test.createTestingModule({
+      imports: [AppModule],
+    }).compile();
+
+    app = moduleRef.createNestApplication();
+    await app.init();
   });
+
+  it(`/GET config`, () => {
+    return request(app.getHttpServer())
+      .get('/api/config')
+      .expect(200)
+      .expect(configService.getFrontendConfig());
+  });
+
+  afterAll(async () => {
+    await app.close();
+    await mongod.stop();
+  });
+});

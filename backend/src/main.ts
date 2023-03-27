@@ -4,6 +4,7 @@ import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { json } from 'body-parser';
 import { resolve } from 'path';
+import * as Sentry from '@sentry/node';
 
 import { AppModule } from './app.module';
 
@@ -12,6 +13,14 @@ const cloneBuffer = require('clone-buffer');
 
 async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.SENTRY_ENV,
+    tracesSampleRate: 1.0,
+    debug: true,
+  });
+
   app.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
   app.use(

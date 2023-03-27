@@ -6,21 +6,20 @@ import { Type } from 'class-transformer';
 import { IsArray, IsNotEmpty, ValidateNested, IsEnum } from 'class-validator';
 
 class EntityRouteDto implements EntityRoute {
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
   coordinates: ApiCoordinatesDto;
-  
+
   @IsNotEmpty()
   @IsArray()
-  @ValidateNested({each: true})
+  @ValidateNested({ each: true })
   @Type(() => ApiRouteDto)
   routes: ApiRouteDto[];
 
   @IsNotEmpty()
   @IsArray()
-  @IsEnum(MeansOfTransportation, {each: true})
+  @IsEnum(MeansOfTransportation, { each: true })
   show: MeansOfTransportation[];
 
   @IsNotEmpty()

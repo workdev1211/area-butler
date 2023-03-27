@@ -71,8 +71,7 @@ export class OpenAiService {
         return result;
       }, {});
 
-    const initialQueryText =
-      `Schreibe eine Beschreibung der Lage einer Immobilie für Immobilienexposee. 
+    const initialQueryText = `Schreibe eine Beschreibung der Lage einer Immobilie für Immobilienexposee. 
       Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points 
       of Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". Beende den Text 
       mit einer Bullet-Liste der Points of Interest.\n Die Points of interest sind: ${snapshot.placesLocation.label}`;
@@ -285,9 +284,7 @@ export class OpenAiService {
       } Bars und Restaurants\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.THEATERS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.THEATERS]
-      } Theater\n`;
+      queryText += ` - ${poiCount[OpenAiOsmQueryNameEnum.THEATERS]} Theater\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.SPORTS]) {
       queryText += ` - ${
@@ -300,9 +297,7 @@ export class OpenAiService {
       } Swimmingpools und Schwimmbäder\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.DOCTORS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.DOCTORS]
-      } Ärzte\n`;
+      queryText += ` - ${poiCount[OpenAiOsmQueryNameEnum.DOCTORS]} Ärzte\n`;
     }
     if (poiCount[OpenAiOsmQueryNameEnum.PHARMACIES]) {
       queryText += ` - ${
@@ -332,7 +327,7 @@ export class OpenAiService {
   }
 
   async fetchResponse(queryText: string): Promise<string> {
-    console.log(queryText)
+    console.log(queryText);
     const {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(

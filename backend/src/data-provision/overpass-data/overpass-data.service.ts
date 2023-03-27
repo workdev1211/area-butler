@@ -94,6 +94,10 @@ export class OverpassDataService {
 
     const response = await this.overpassDataModel.find(dbQuery).lean().exec();
 
-    return this.overpassService.mapResponse(response, coordinates, preferredAmenities);
+    return this.overpassService.mapResponse(
+      response,
+      coordinates,
+      preferredAmenities,
+    );
   }
 }

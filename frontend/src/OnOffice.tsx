@@ -24,6 +24,16 @@ import { ApiConfig } from "../../shared/types/types";
 import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { IntegrationTypesEnum } from "../../shared/types/integration";
+import * as Sentry from "@sentry/browser";
+
+Sentry.init({
+    dsn: process.env.REACT_APP_SENTRY_DSN,
+    environment: process.env.REACT_APP_SENTRY_ENV,
+    tracesSampleRate: 1.0,
+    debug: true,
+    attachStacktrace: true,
+    autoSessionTracking: false
+});
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 

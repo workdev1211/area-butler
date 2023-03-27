@@ -1,4 +1,4 @@
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsString } from 'class-validator';
 import { Expose, Exclude } from 'class-transformer';
 
 import { IApiUserExportFont } from '@area-butler-types/types';

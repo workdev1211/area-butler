@@ -5,12 +5,11 @@ import { Type } from 'class-transformer';
 import { IsNotEmpty, ValidateNested, IsBoolean } from 'class-validator';
 
 class EntityTransitRouteDto implements EntityTransitRoute {
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiCoordinatesDto)
   coordinates: ApiCoordinatesDto;
-  
+
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiTransitRouteDto)

@@ -1,11 +1,10 @@
 import {
   ApiRequestContingent,
-  ApiRequestContingentType
+  ApiRequestContingentType,
 } from '@area-butler-types/subscription-plan';
 import { IsDate, IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 
 class ApiRequestContingentDto implements ApiRequestContingent {
-
   @IsNotEmpty()
   @IsNumber()
   amount: number;

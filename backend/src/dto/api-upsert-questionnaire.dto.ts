@@ -4,7 +4,6 @@ import { IsNotEmpty, ValidateNested } from 'class-validator';
 import ApiUpsertPotentialCustomerDto from './api-upsert-potential-customer.dto';
 
 class ApiUpsertQuestionnaireDto implements ApiUpsertQuestionnaire {
-
   @IsNotEmpty()
   @ValidateNested()
   @Type(() => ApiUpsertPotentialCustomerDto)
