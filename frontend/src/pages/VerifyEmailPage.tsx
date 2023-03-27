@@ -35,12 +35,13 @@ const VerifyEmailPage: FunctionComponent = () => {
           in Ihrem Spam-Ordner nach.
         </p>
         <button
+          type="button"
           className="btn btn-primary mt-5"
           onClick={() => {
             history.go(0);
           }}
         >
-          Nochmal versuchen
+          Erneut überprüfen
         </button>
       </div>
     </DefaultLayout>
