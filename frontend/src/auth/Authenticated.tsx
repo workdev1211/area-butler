@@ -21,18 +21,8 @@ const Authenticated = withRouter<
   useEffect(() => {
     const verifyUserRequirements = async () => {
       const idToken = await getIdTokenClaims();
-      const registerLocation = "/register";
       const verifyEmailLocation = "/verify";
       const profileLocation = "/profile";
-
-      if (
-        userState?.user &&
-        !userState?.user?.consentGiven &&
-        location.pathname !== registerLocation
-      ) {
-        history.push(registerLocation);
-        return;
-      }
 
       if (
         idToken &&
