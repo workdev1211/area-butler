@@ -447,9 +447,10 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       },
     };
 
-    const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-    const embedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
-    const integrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
+    const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+    const isEmbedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const isIntegrationMode =
+      mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
     const escFunction = useCallback(
       (e) => {
@@ -491,7 +492,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         'Powered by &copy; <a href="https://areabutler.de" target="_blank">AreaButler</a>, ' +
         attribution;
 
-      const url = embedMode
+      const url = isEmbedMode
         ? `${
             process.env.REACT_APP_BASE_URL || ""
           }/api/location/tiles/styles/v1/{id}/tiles/{z}/{x}/{y}@2x?access_token={accessToken}`
@@ -519,7 +520,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
-        scrollWheelZoom: editorMode,
+        scrollWheelZoom: isEditorMode,
       } as any).setView(mapCenter, mapZoomLevel);
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
@@ -563,7 +564,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       }
 
       L.tileLayer(url, {
-        attribution: embedMode ? attributionEmbedded : attribution,
+        attribution: isEmbedMode ? attributionEmbedded : attribution,
         id: mapboxMapId,
         zoomOffset: -1,
         accessToken: mapBoxAccessToken,
@@ -580,7 +581,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       leafletMapId,
       mapBoxAccessToken,
       searchAddress,
-      embedMode,
+      isEmbedMode,
       mapboxMapId,
       config?.mapIcon,
       config?.showLocation,
@@ -626,7 +627,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       leafletMapId,
       mapBoxAccessToken,
       searchAddress,
-      embedMode,
+      isEmbedMode,
       mapboxMapId,
       config?.mapIcon,
       config?.showLocation,
@@ -655,7 +656,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
         let detailContent = `${searchAddress}`;
 
-        if (!embedMode || config?.showStreetViewLink) {
+        if (!isEmbedMode || config?.showStreetViewLink) {
           const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
 
           const streetViewContent = `
@@ -695,7 +696,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
         setMapIconMarker(myLocationMarker);
 
-        if (config?.showAddress || !embedMode) {
+        if (config?.showAddress || !isEmbedMode) {
           myLocationMarker.on("click", function (event) {
             const marker = event.target;
             marker.unbindPopup();
@@ -713,7 +714,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       config?.showAddress,
       config?.showLocation,
       config?.showStreetViewLink,
-      embedMode,
+      isEmbedMode,
       mapCenter.lat,
       mapCenter.lng,
       searchAddress,
@@ -1072,7 +1073,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName} locality-icon" style="${iconStyle}" /></div>`,
           });
 
-          const hideEntityFunction = editorMode ? hideEntity : undefined;
+          const hideEntityFunction = isEditorMode ? hideEntity : undefined;
 
           const marker = new IdMarker(
             entity.coordinates,
@@ -1387,7 +1388,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             )}
           </div>
           <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
-            {!embedMode ? (
+            {!isEmbedMode ? (
               <>
                 <a
                   href="/"
@@ -1453,7 +1454,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             >
               <img src={satelliteIcon} alt="" />
             </a>
-            {(!embedMode || editorMode || integrationMode) && (
+            {(!isEmbedMode || isEditorMode || isIntegrationMode) && (
               <a
                 href="/"
                 data-tour="take-map-picture"
@@ -1464,7 +1465,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                   takePicture();
                 }}
                 style={{
-                  backgroundColor: integrationMode ? "#15d40f" : "inherit",
+                  backgroundColor: isIntegrationMode ? "#15d40f" : "white",
                 }}
               >
                 📷
