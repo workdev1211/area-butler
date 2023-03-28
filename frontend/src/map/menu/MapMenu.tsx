@@ -31,11 +31,9 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./footer/MapMenuFooter";
 import BackButton from "../../layout/BackButton";
-import FormModal from "../../components/FormModal";
-import FeedbackFormHandler from "../../feedback/FeedbackFormHandler";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
-import { feedbackModalConfig } from "../../shared/shared.constants";
 import { MapClipping } from "../../context/SearchContext";
+import FeedbackModal from "../../components/FeedbackModal";
 
 enum TabsEnum {
   Map = "Map",
@@ -222,9 +220,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         <div className="map-menu-footer">
           <div className="button-container">
             <BackButton key="back-button" />
-            <FormModal modalConfig={feedbackModalConfig}>
-              <FeedbackFormHandler />
-            </FormModal>
+            <FeedbackModal />
             <button
               type="button"
               className="save-button"

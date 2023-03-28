@@ -13,9 +13,7 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "./App.scss";
 
-import FormModal from "components/FormModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import FeedbackFormHandler from "feedback/FeedbackFormHandler";
 import UpgradeSubscriptionHandlerContainer from "user/UpgradeSubscriptionHandlerContainer";
 import { localStorageConsentGivenKey } from "../../shared/constants/constants";
 import { ApiUser, ApiUserRequests } from "../../shared/types/types";
@@ -27,12 +25,10 @@ import { useHttp } from "./hooks/http";
 import Footer from "./layout/Footer";
 import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
-import {
-  commonPaypalOptions,
-  feedbackModalConfig,
-} from "./shared/shared.constants";
+import { commonPaypalOptions } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
+import FeedbackModal from "./components/FeedbackModal";
 // import MaintenanceModal from "./components/MaintenanceModal";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
@@ -78,13 +74,15 @@ const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
 // const maintenanceKey = "is-seen-maintenance-2023-02-23";
 
 function App() {
+  const { paypalClientId } = useContext(ConfigContext);
+  const { userDispatch } = useContext(UserContext);
+
   const { isAuthenticated, getIdTokenClaims } = useAuth0();
   const { get, post } = useHttp();
   const history = useHistory();
-  const path = useLocation().pathname.replace(/^\/(.*)\/.*$/, "$1");
+  const { pathname } = useLocation();
 
-  const { paypalClientId } = useContext(ConfigContext);
-  const { userDispatch } = useContext(UserContext);
+  const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
   // const [isSeenMaintenance, setIsSeenMaintenance] = useState(
   //   window.localStorage.getItem(maintenanceKey) === "true"
@@ -209,11 +207,7 @@ function App() {
           <Nav />
           <Authenticated>
             <UpgradeSubscriptionHandlerContainer />
-            {path !== "snippet-editor" && (
-              <FormModal modalConfig={feedbackModalConfig}>
-                <FeedbackFormHandler />
-              </FormModal>
-            )}
+            {!["snippet-editor"].includes(currentPath) && <FeedbackModal />}
           </Authenticated>
           <PayPalScriptProvider options={initialPaypalOptions}>
             <PotentialCustomerContextProvider>
