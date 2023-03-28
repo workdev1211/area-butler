@@ -14,8 +14,4 @@ REACT_APP_SENTRY_ENV=dev
 ### $PROD_ENV:
 SENTRY_DSN=https://f560d286d7a443d39f41ce03fd037453@glitchtip.area-butler.de/9
 
-SENTRY_ENV=dev
-
 REACT_APP_SENTRY_DSN=https://f560d286d7a443d39f41ce03fd037453@glitchtip.area-butler.de/9
-
-REACT_APP_SENTRY_ENV=dev

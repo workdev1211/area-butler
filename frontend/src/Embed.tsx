@@ -1,5 +1,6 @@
 import { StrictMode } from "react";
 import { render } from "react-dom";
+import * as Sentry from "@sentry/browser";
 
 import "./index.scss";
 
@@ -18,7 +19,6 @@ import "assets/fonts/archia-semibold-webfont.woff2";
 
 import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
-import * as Sentry from "@sentry/browser";
 
 Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN,

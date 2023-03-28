@@ -1,6 +1,7 @@
 import { StrictMode } from "react";
 import { render } from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
+import * as Sentry from "@sentry/browser";
 
 import "./index.scss";
 
@@ -24,7 +25,6 @@ import { ApiConfig } from "../../shared/types/types";
 import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { IntegrationTypesEnum } from "../../shared/types/integration";
-import * as Sentry from "@sentry/browser";
 
 Sentry.init({
     dsn: process.env.REACT_APP_SENTRY_DSN,

@@ -1,3 +1,4 @@
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
@@ -5,6 +6,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
+import { RavenInterceptor, RavenModule } from 'nest-raven';
 
 import { AuthModule } from './auth/auth.module';
 import { ClientModule } from './client/client.module';
@@ -22,8 +24,6 @@ import { HealthModule } from './health/health.module';
 import { configService } from './config/config.service';
 import { OnOfficeModule } from './on-office/on-office.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
-import { RavenInterceptor, RavenModule } from 'nest-raven';
-import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
   imports: [
