@@ -1,28 +1,37 @@
 import { FunctionComponent } from "react";
-import { Link } from "react-router-dom";
 
-import { kudibaCompany } from "../../../../../shared/constants/constants";
+import BackButton from "../../../layout/BackButton";
+import FeedbackModal from "../../../components/FeedbackModal";
+import saveIcon from "../../../assets/icons/save.svg";
+import MapMenuFooterLinks from "./MapMenuFooterLinks";
+import { ApiSearchResultSnapshotConfig } from "../../../../../shared/types/types";
 
-const MapMenuFooter: FunctionComponent = () => {
+interface IMapMenuFooterProps {
+  isEditorMode: boolean;
+  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
+}
+
+const MapMenuFooter: FunctionComponent<IMapMenuFooterProps> = ({
+  isEditorMode,
+  saveConfig,
+}) => {
   return (
-    <div id="footer" className="text-sm text-gray-400 w-full md:w-auto">
-      <div className="flex flex-col">
-        <div className="text-center">
-          Copyright &copy; {new Date().getFullYear()} {kudibaCompany.name}. Alle
-          Rechte vorbehalten.
-        </div>
-        <div className="flex justify-center font-bold gap-3">
-          <Link to="/impress" className="link" aria-current="page">
-            Impressum
-          </Link>
-          <Link to="/privacy" className="link" aria-current="page">
-            Datenschutz
-          </Link>
-          <Link to="/terms" className="link" aria-current="page">
-            Allgemeine Geschäftsbedingungen
-          </Link>
-        </div>
+    <div className="map-menu-footer">
+      <div className="button-container">
+        {isEditorMode && <BackButton key="back-button" />}
+        <FeedbackModal />
+        <button
+          type="button"
+          className="save-button"
+          onClick={() => {
+            saveConfig && void saveConfig();
+          }}
+          data-tour="save-button"
+        >
+          <img src={saveIcon} alt="save-icon" />
+        </button>
       </div>
+      <MapMenuFooterLinks />
     </div>
   );
 };

@@ -21,8 +21,8 @@ import {
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
-import { ApiTourNameEnum } from '@area-butler-types/types';
-import { initialShowTour } from '../../../shared/constants/constants';
+import { ApiTourNamesEnum } from '@area-butler-types/types';
+import { intUserInitShowTour } from '../../../shared/constants/integration-user';
 
 @Injectable()
 export class IntegrationUserService {
@@ -52,7 +52,7 @@ export class IntegrationUserService {
       integrationType,
       accessToken,
       parameters,
-      config: { showTour: initialShowTour },
+      config: { showTour: intUserInitShowTour },
     }).save();
   }
 
@@ -248,7 +248,7 @@ export class IntegrationUserService {
 
   async hideTour(
     integrationUser: TIntegrationUserDocument,
-    tour?: ApiTourNameEnum,
+    tour?: ApiTourNamesEnum,
   ): Promise<TIntegrationUserDocument> {
     const showTour = { ...integrationUser.config.showTour };
 

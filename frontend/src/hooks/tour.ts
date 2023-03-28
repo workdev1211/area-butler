@@ -1,12 +1,12 @@
 import { useHttp } from "./http";
-import { ApiTourNameEnum, ApiUser } from "../../../shared/types/types";
+import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 
 export const useTour = (isIntegrationUser: boolean) => {
   const { post } = useHttp();
 
   const hideTour = async (
-    tour: ApiTourNameEnum
+    tour: ApiTourNamesEnum
   ): Promise<ApiUser | IApiIntegrationUser> => {
     return (
       await post<ApiUser | IApiIntegrationUser>(

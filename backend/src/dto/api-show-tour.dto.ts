@@ -1,31 +1,35 @@
-import { ApiShowTour } from '@area-butler-types/types';
 import { IsBoolean, IsNotEmpty } from 'class-validator';
 
+import { ApiShowTour, ApiTourNamesEnum } from '@area-butler-types/types';
+
 class ApiShowTourDto implements ApiShowTour {
-
-  @IsBoolean()
   @IsNotEmpty()
-  customers: boolean;
-
   @IsBoolean()
-  @IsNotEmpty()
-  editor: boolean;
+  [ApiTourNamesEnum.CUSTOMERS]: boolean;
 
-  @IsBoolean()
   @IsNotEmpty()
-  profile: boolean;
+  @IsBoolean()
+  [ApiTourNamesEnum.EDITOR]: boolean;
 
-  @IsBoolean()
   @IsNotEmpty()
-  realEstates: boolean;
+  @IsBoolean()
+  [ApiTourNamesEnum.PROFILE]: boolean;
 
-  @IsBoolean()
   @IsNotEmpty()
-  result: boolean;
+  @IsBoolean()
+  [ApiTourNamesEnum.REAL_ESTATES]: boolean;
 
-  @IsBoolean()
   @IsNotEmpty()
-  search: boolean;
+  @IsBoolean()
+  [ApiTourNamesEnum.RESULT]: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  [ApiTourNamesEnum.SEARCH]: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  [ApiTourNamesEnum.INT_MAP_MENU]: boolean;
 }
 
 export default ApiShowTourDto;

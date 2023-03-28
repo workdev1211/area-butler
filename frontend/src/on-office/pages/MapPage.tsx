@@ -24,6 +24,7 @@ import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  ApiTourNamesEnum,
   MapDisplayModesEnum,
 } from "../../../../shared/types/types";
 import SearchResultContainer, {
@@ -33,6 +34,7 @@ import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
 import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
 import { UserContext } from "../../context/UserContext";
+import TourStarter from "../../tour/TourStarter";
 
 const MapPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
@@ -46,7 +48,8 @@ const MapPage: FunctionComponent = () => {
   const { fetchSnapshot } = useLocationData(!!integrationUser);
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
-  const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshotResponse>();
+  const [snapshotResponse, setSnapshotResponse] =
+    useState<ApiSearchResultSnapshotResponse>();
   const [snapshotConfig, setSnapshotConfig] =
     useState<ApiSearchResultSnapshotConfig>();
   const [mapBoxToken, setMapBoxToken] = useState("");
@@ -68,7 +71,7 @@ const MapPage: FunctionComponent = () => {
         config["showStreetViewLink"] = true;
       }
 
-      setSnapshot(snapshotResponse);
+      setSnapshotResponse(snapshotResponse);
       setSnapshotConfig(config);
       setMapBoxToken(snapshotResponse.mapboxAccessToken);
     };
@@ -79,7 +82,7 @@ const MapPage: FunctionComponent = () => {
   }, [snapshotId]);
 
   useEffect(() => {
-    if (!snapshot || !snapshotConfig) {
+    if (!snapshotResponse || !snapshotConfig) {
       return;
     }
 
@@ -93,7 +96,7 @@ const MapPage: FunctionComponent = () => {
       routes = [],
       transitRoutes = [],
       realEstateListings = [],
-    } = snapshot.snapshot;
+    } = snapshotResponse.snapshot;
 
     const filteredRealEstateListings = snapshotConfig.realEstateStatus
       ? realEstateListings.filter(
@@ -160,7 +163,7 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: snapshot.token,
+      payload: snapshotResponse.token,
     });
 
     searchContextDispatch({
@@ -174,7 +177,7 @@ const MapPage: FunctionComponent = () => {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshot, snapshotConfig]);
+  }, [snapshotResponse, snapshotConfig]);
 
   useEffect(() => {
     if (
@@ -192,23 +195,26 @@ const MapPage: FunctionComponent = () => {
   }
 
   return (
-    <SearchResultContainer
-      mapBoxToken={mapBoxToken}
-      mapBoxMapId={snapshotConfig?.mapBoxMapId}
-      searchResponse={searchContextState.searchResponse!}
-      placesLocation={searchContextState.placesLocation}
-      location={searchContextState.mapCenter ?? searchContextState.location!}
-      isTrial={false}
-      mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
-      saveConfig={async (config?: ApiSearchResultSnapshotConfig) => {
-        // TODO it's a hack, change to the decent method
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: config,
-        });
-      }}
-      ref={mapRef}
-    />
+    <>
+      <TourStarter tour={ApiTourNamesEnum.INT_MAP_MENU} />
+      <SearchResultContainer
+        mapBoxToken={mapBoxToken}
+        mapBoxMapId={snapshotConfig?.mapBoxMapId}
+        searchResponse={searchContextState.searchResponse!}
+        placesLocation={searchContextState.placesLocation}
+        location={searchContextState.mapCenter ?? searchContextState.location!}
+        isTrial={false}
+        mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
+        saveConfig={async (config?: ApiSearchResultSnapshotConfig) => {
+          // TODO it's a hack, change to the decent method
+          searchContextDispatch({
+            type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+            payload: config,
+          });
+        }}
+        ref={mapRef}
+      />
+    </>
   );
 };
 

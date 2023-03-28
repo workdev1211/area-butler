@@ -12,6 +12,7 @@ const FeedbackFormHandler: FunctionComponent<FormModalData> = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
+  onClose = () => {},
 }) => {
   const { post } = useHttp();
 
@@ -41,6 +42,7 @@ const FeedbackFormHandler: FunctionComponent<FormModalData> = ({
   const onStartTour = () => {
     userDispatch({ type: UserActionTypes.SET_START_TOUR, payload: true });
     postSubmit(true);
+    onClose();
   };
 
   const onSubmit = async ({ description, type }: ApiInsertFeedback) => {

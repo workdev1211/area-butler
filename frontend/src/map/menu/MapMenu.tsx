@@ -25,15 +25,12 @@ import {
 import editorIcon from "../../assets/icons/editor.svg";
 import mapIcon from "../../assets/icons/map.svg";
 import downloadIcon from "../../assets/icons/download.svg";
-import saveIcon from "../../assets/icons/save.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./footer/MapMenuFooter";
-import BackButton from "../../layout/BackButton";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
 import { MapClipping } from "../../context/SearchContext";
-import FeedbackModal from "../../components/FeedbackModal";
 
 enum TabsEnum {
   Map = "Map",
@@ -94,20 +91,37 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
   const isShownAddress = !!config?.showAddress || !config;
-  const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+  const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+  const isIntegrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
-  const mapMenuContentHeight = editorMode
-    ? `calc(100% - calc(var(--menu-item-h) * ${
+  let mapMenuContentHeight;
+
+  switch (mapDisplayMode) {
+    case MapDisplayModesEnum.EDITOR: {
+      mapMenuContentHeight = `calc(100% - calc(var(--menu-item-h) * ${
         isShownAddress ? 3 : 2
-      }) - var(--menu-footer-h))`
-    : "calc(100% - var(--menu-item-h))";
+      }) - var(--menu-footer-h))`;
+      break;
+    }
+
+    case MapDisplayModesEnum.INTEGRATION: {
+      mapMenuContentHeight =
+        "calc(100% - var(--menu-item-h) - var(--menu-footer-h))";
+      break;
+    }
+
+    case MapDisplayModesEnum.EMBED:
+    default: {
+      mapMenuContentHeight = "calc(100% - var(--menu-item-h))";
+    }
+  }
 
   return (
     <div
       className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}
       data-tour="side-menu"
     >
-      {editorMode && editorTabProps && (
+      {isEditorMode && editorTabProps && (
         <div className="tab-bar bg-primary-gradient">
           <div className="tab-container" data-tour="tab-icons">
             <div
@@ -150,7 +164,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      {((isShownAddress && editorMode) || !editorMode) && (
+      {((isShownAddress && isEditorMode) || !isEditorMode) && (
         <div className="map-menu-header">
           <button
             type="button"
@@ -207,35 +221,17 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
           />
         )}
 
-        {activeTab === TabsEnum.Editor && editorMode && editorTabProps && (
+        {activeTab === TabsEnum.Editor && isEditorMode && editorTabProps && (
           <EditorTab {...editorTabProps} />
         )}
 
-        {activeTab === TabsEnum.Export && editorMode && exportTabProps && (
+        {activeTab === TabsEnum.Export && isEditorMode && exportTabProps && (
           <ExportTab {...exportTabProps} />
         )}
       </div>
 
-      {editorMode && (
-        <div className="map-menu-footer">
-          <div className="button-container">
-            <BackButton key="back-button" />
-            <FeedbackModal />
-            <button
-              type="button"
-              className="save-button"
-              onClick={async () => {
-                if (saveConfig) {
-                  await saveConfig();
-                }
-              }}
-              data-tour="save-button"
-            >
-              <img src={saveIcon} alt="save-icon" />
-            </button>
-          </div>
-          <MapMenuFooter />
-        </div>
+      {(isEditorMode || isIntegrationMode) && (
+        <MapMenuFooter isEditorMode={isEditorMode} saveConfig={saveConfig} />
       )}
     </div>
   );

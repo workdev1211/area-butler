@@ -77,16 +77,17 @@ export interface ApiUserRequests {
   requests: ApiSearch[];
 }
 
-export enum ApiTourNameEnum {
+export enum ApiTourNamesEnum {
   "SEARCH" = "search",
-  "RESULT" = "result",
+  "RESULT" = "result", // is not used currently
   "REAL_ESTATES" = "realEstates",
   "CUSTOMERS" = "customers",
   "PROFILE" = "profile",
   "EDITOR" = "editor",
+  "INT_MAP_MENU" = "intMapMenu",
 }
 
-export type ApiShowTour = Record<ApiTourNameEnum, boolean>;
+export type ApiShowTour = Record<ApiTourNamesEnum, boolean>;
 
 export interface ApiInsertFeedback {
   description: string;

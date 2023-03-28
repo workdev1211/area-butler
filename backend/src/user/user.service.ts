@@ -25,7 +25,7 @@ import {
   ApiRequestContingentType,
 } from '@area-butler-types/subscription-plan';
 import {
-  ApiTourNameEnum,
+  ApiTourNamesEnum,
   IApiAddressesInRangeRequestStatus,
   IApiUserAssets,
   IApiUserPoiIcon,
@@ -139,7 +139,7 @@ export class UserService {
     return existingUser.save();
   }
 
-  async hideTour(email: string, tour?: ApiTourNameEnum): Promise<UserDocument> {
+  async hideTour(email: string, tour?: ApiTourNamesEnum): Promise<UserDocument> {
     const user = await this.findByEmail(email);
 
     if (!user) {

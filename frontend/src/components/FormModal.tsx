@@ -25,6 +25,7 @@ export interface FormModalData {
   formId?: string;
   beforeSubmit?: () => void;
   postSubmit?: (success: boolean) => void;
+  onClose?: () => void;
 }
 
 export const FormModal: FunctionComponent<{
@@ -43,11 +44,17 @@ export const FormModal: FunctionComponent<{
     }
   }, [modalConfig.modalOpen, setModalOpen]);
 
-  const beforeSubmit = () => setBusy(true);
+  const beforeSubmit = () => {
+    setBusy(true);
+  };
 
   const postSubmit = (success: boolean) => {
     setBusy(false);
     success && setModalOpen(!modalOpen);
+  };
+
+  const onClose = () => {
+    modalConfig.onClose && modalConfig.onClose();
   };
 
   return (
@@ -92,6 +99,7 @@ export const FormModal: FunctionComponent<{
                 formId,
                 beforeSubmit,
                 postSubmit,
+                onClose,
               }
             )}
             <div className="modal-action">

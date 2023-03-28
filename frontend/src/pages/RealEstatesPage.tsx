@@ -40,7 +40,7 @@ import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import {
   ApiSearchResultSnapshotResponse,
-  ApiTourNameEnum,
+  ApiTourNamesEnum,
 } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
 import { getRealEstateCost } from "../shared/real-estate.functions";
@@ -232,7 +232,7 @@ const RealEstatesPage: FunctionComponent = () => {
       withHorizontalPadding={false}
       actionsTop={<ActionsTop />}
     >
-      <TourStarter tour={ApiTourNameEnum.REAL_ESTATES} />
+      <TourStarter tour={ApiTourNamesEnum.REAL_ESTATES} />
       {showEmbeddableMapsModal && (
         <EmbeddableMapsModal
           showModal={showEmbeddableMapsModal}

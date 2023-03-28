@@ -34,7 +34,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
-  ApiTourNameEnum,
+  ApiTourNamesEnum,
   MapDisplayModesEnum,
 } from "../../../shared/types/types";
 import "./SnippetEditorPage.scss";
@@ -426,7 +426,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   return (
     <>
       <DefaultLayout withHorizontalPadding={false}>
-        <TourStarter tour={ApiTourNameEnum.EDITOR} />
+        <TourStarter tour={ApiTourNamesEnum.EDITOR} />
         <div className="hidden">
           <GooglePlacesAutocomplete
             apiOptions={googleMapsApiOptions}

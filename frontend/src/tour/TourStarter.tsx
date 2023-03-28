@@ -2,17 +2,18 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import {ApiShowTour, ApiTourNameEnum} from "../../../shared/types/types";
+import { ApiShowTour, ApiTourNamesEnum } from "../../../shared/types/types";
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
 import SearchResulSteps from "./SearchResultPageSteps";
 import SearchSteps from "./SearchPageSteps";
 import ProfileSteps from "./ProfilePageSteps";
 import SnippetEditorSteps from "./SnippetEditorPageSteps";
+import IntMapMenuSteps from "./IntMapMenuSteps";
 import StartTourModal from "./StartTourModal";
 
 interface ITourStarterProps {
-  tour: ApiTourNameEnum;
+  tour: ApiTourNamesEnum;
 }
 
 export const defaultStyles: Styles = {
@@ -29,21 +30,23 @@ export const defaultStyles: Styles = {
 };
 
 const fallbackShowTour: ApiShowTour = {
-  search: false,
-  result: false,
-  realEstates: false,
-  customers: false,
-  profile: false,
-  editor: false,
+  [ApiTourNamesEnum.SEARCH]: false,
+  [ApiTourNamesEnum.RESULT]: false,
+  [ApiTourNamesEnum.REAL_ESTATES]: false,
+  [ApiTourNamesEnum.CUSTOMERS]: false,
+  [ApiTourNamesEnum.PROFILE]: false,
+  [ApiTourNamesEnum.EDITOR]: false,
+  [ApiTourNamesEnum.INT_MAP_MENU]: false,
 };
 
-const tourSteps: Record<ApiTourNameEnum, Step[]> = {
-  search: SearchSteps,
-  result: SearchResulSteps,
-  realEstates: RealEstatesSteps,
-  customers: CustomersSteps,
-  profile: ProfileSteps,
-  editor: SnippetEditorSteps,
+const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
+  [ApiTourNamesEnum.SEARCH]: SearchSteps,
+  [ApiTourNamesEnum.RESULT]: SearchResulSteps,
+  [ApiTourNamesEnum.REAL_ESTATES]: RealEstatesSteps,
+  [ApiTourNamesEnum.CUSTOMERS]: CustomersSteps,
+  [ApiTourNamesEnum.PROFILE]: ProfileSteps,
+  [ApiTourNamesEnum.EDITOR]: SnippetEditorSteps,
+  [ApiTourNamesEnum.INT_MAP_MENU]: IntMapMenuSteps,
 };
 
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
@@ -52,18 +55,19 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
     userDispatch,
   } = useContext(UserContext);
 
-  const [runTour, setRunTour] = useState(false);
+  const showTour =
+    user?.showTour || integrationUser?.config.showTour || fallbackShowTour;
+  const isTourToBePlayed = showTour[tour];
 
-  const onShowTour = () => {
-    setRunTour(true);
-  };
+  const [isRunTour, setIsRunTour] = useState(false);
+  const [isShownModal, setIsShownModal] = useState(isTourToBePlayed);
 
   useEffect(() => {
     if (!startTour) {
       return;
     }
 
-    setRunTour(true);
+    setIsRunTour(true);
 
     userDispatch({
       type: UserActionTypes.SET_START_TOUR,
@@ -76,25 +80,31 @@ const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {
     const finishedStatuses: string[] = [STATUS.FINISHED, STATUS.SKIPPED];
 
     if (finishedStatuses.includes(status)) {
-      setRunTour(false);
+      setIsRunTour(false);
     }
   };
 
+  if (!isRunTour && !isShownModal) {
+    return null;
+  }
+
   return (
     <div>
-      <StartTourModal
-        tour={tour}
-        showTour={
-          user?.showTour ||
-          integrationUser?.config?.showTour ||
-          fallbackShowTour
-        }
-        onShowTour={onShowTour}
-      />
+      {isShownModal && (
+        <StartTourModal
+          tour={tour}
+          closeModal={() => {
+            setIsShownModal(false);
+          }}
+          onShowTour={() => {
+            setIsRunTour(true);
+          }}
+        />
+      )}
       <Joyride
         callback={handleJoyrideCallback}
         continuous={true}
-        run={runTour}
+        run={isRunTour}
         scrollToFirstStep={true}
         showProgress={true}
         showSkipButton={true}

@@ -2,6 +2,7 @@ import {
   ApiOsmEntity,
   ApiOsmEntityCategory,
   ApiShowTour,
+  ApiTourNamesEnum,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -23,12 +24,13 @@ export const kudibaCompany = {
 };
 
 export const initialShowTour: ApiShowTour = {
-  search: true,
-  result: true,
-  realEstates: true,
-  customers: true,
-  profile: true,
-  editor: true,
+  [ApiTourNamesEnum.SEARCH]: true,
+  [ApiTourNamesEnum.RESULT]: true,
+  [ApiTourNamesEnum.REAL_ESTATES]: true,
+  [ApiTourNamesEnum.CUSTOMERS]: true,
+  [ApiTourNamesEnum.PROFILE]: true,
+  [ApiTourNamesEnum.EDITOR]: true,
+  [ApiTourNamesEnum.INT_MAP_MENU]: false,
 };
 
 export const localStorageConsentGivenKey = "ab-cg";

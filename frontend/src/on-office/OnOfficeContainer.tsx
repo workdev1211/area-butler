@@ -6,10 +6,11 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Route, Switch, useHistory } from "react-router-dom";
+import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
+import "./OnOfficeContainer.scss";
 
 import IntegrationNav from "./layout/IntegrationNav";
 import { RequestStatusTypesEnum } from "../../../shared/types/types";
@@ -17,6 +18,7 @@ import { UserContext } from "../context/UserContext";
 import { useLogin } from "./hooks/login";
 import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
+import FeedbackModal from "../components/FeedbackModal";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
@@ -30,10 +32,13 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { userState } = useContext(UserContext);
 
   const history = useHistory();
+  const { pathname } = useLocation();
   const { handleLogin } = useLogin();
 
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string>();
+
+  const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
   useEffect(() => {
     const login = async () => {
@@ -85,6 +90,7 @@ const OnOfficeContainer: FunctionComponent = () => {
           draggable
           pauseOnHover
         />
+        {!["products", "map"].includes(currentPath) && <FeedbackModal />}
         <Switch>
           <Route path="/map/:snapshotId">
             <MapPage />

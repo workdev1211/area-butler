@@ -2,7 +2,7 @@ import { Controller, Param, Post, UseInterceptors } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
-import { ApiTourNameEnum } from '@area-butler-types/types';
+import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { InjectIntegrationUserInterceptor } from './interceptor/inject-integration-user.interceptor';
 import { InjectUser } from './inject-user.decorator';
 import { IntegrationUserService } from './integration-user.service';
@@ -33,7 +33,7 @@ export class IntegrationUserController {
   @Post('me/hide-tour/:tour')
   async hideTour(
     @InjectUser() integrationUser,
-    @Param('tour') tour: ApiTourNameEnum,
+    @Param('tour') tour: ApiTourNamesEnum,
   ): Promise<IApiIntegrationUser> {
     return plainToInstance(
       ApiIntegrationUserDto,

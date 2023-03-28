@@ -125,11 +125,11 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
   mapDisplayMode,
 }) => {
-  const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-  const integrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
+  const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+  const isIntegrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(
-    integrationMode ? false : !editorMode
+    isIntegrationMode ? false : !isEditorMode
   );
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
@@ -322,7 +322,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         </div>
       </div>
 
-      {integrationMode && (
+      {isIntegrationMode && (
         <>
           <div
             className={
@@ -440,7 +440,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         </>
       )}
 
-      {editorMode && (
+      {isEditorMode && (
         <div
           className={
             "collapse collapse-arrow view-option" +
@@ -481,7 +481,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         </div>
       )}
 
-      {showInsights && editorMode && (
+      {showInsights && isEditorMode && (
         <div
           className={
             "collapse collapse-arrow view-option" +
@@ -549,7 +549,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         </div>
       )}
 
-      {editorMode && (
+      {isEditorMode && (
         <>
           <div
             className={

@@ -49,7 +49,7 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
-  ApiTourNameEnum,
+  ApiTourNamesEnum,
   ApiUserRequests,
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
@@ -642,7 +642,7 @@ const SearchParamsPage: FunctionComponent = () => {
           : [<div key={"dummy"} />, <SearchButton key="search-button" />]
       }
     >
-      <TourStarter tour={ApiTourNameEnum.SEARCH} />
+      <TourStarter tour={ApiTourNamesEnum.SEARCH} />
       {isShownBusyModal && (
         <BusyModal
           items={busyModalItems}
