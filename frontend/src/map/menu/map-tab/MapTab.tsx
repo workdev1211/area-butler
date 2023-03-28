@@ -346,7 +346,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
                     Adresse und/oder Objekt ausblenden
                   </div>
                   <div className="collapse-title-text-2">
-                    Was willst du sehen?
+                    Was soll veröffentlicht werden?
                   </div>
                 </div>
               </div>
