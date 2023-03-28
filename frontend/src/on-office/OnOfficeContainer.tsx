@@ -6,7 +6,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Route, Switch, useHistory, useLocation } from "react-router-dom";
+import { Route, Switch, useHistory } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
 import "react-toastify/dist/ReactToastify.css";
@@ -16,19 +16,10 @@ import { RequestStatusTypesEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import { useLogin } from "./hooks/login";
 import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
+import ScrollToTop from "../components/ScrollToTop";
 
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
-
-const ScrollToTop: FunctionComponent = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-};
 
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));

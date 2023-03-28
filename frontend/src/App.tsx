@@ -1,5 +1,4 @@
 import {
-  FunctionComponent,
   lazy,
   Suspense,
   useContext,
@@ -33,6 +32,7 @@ import {
   feedbackModalConfig,
 } from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
+import ScrollToTop from "./components/ScrollToTop";
 // import MaintenanceModal from "./components/MaintenanceModal";
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
@@ -74,16 +74,6 @@ const CallbackPage = lazy(() => import("./pages/CallbackPage"));
 const SnippetEditorPage = lazy(() => import("./pages/SnippetEditorPage"));
 
 const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
-
-const ScrollToTop: FunctionComponent = () => {
-  const { pathname } = useLocation();
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [pathname]);
-
-  return null;
-};
 
 // const maintenanceKey = "is-seen-maintenance-2023-02-23";
 
