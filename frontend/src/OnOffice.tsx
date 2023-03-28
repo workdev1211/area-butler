@@ -1,7 +1,6 @@
 import { StrictMode } from "react";
 import { render } from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
-import * as Sentry from "@sentry/browser";
 
 import "./index.scss";
 
@@ -26,19 +25,10 @@ import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { IntegrationTypesEnum } from "../../shared/types/integration";
 
-Sentry.init({
-    dsn: process.env.REACT_APP_SENTRY_DSN,
-    environment: process.env.REACT_APP_SENTRY_ENV,
-    tracesSampleRate: 1.0,
-    debug: true,
-    attachStacktrace: true,
-    autoSessionTracking: false
-});
-
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
 fetch(`${baseUrl}/api/config`).then(async (result) => {
-  const { googleApiKey, mapBoxAccessToken, systemEnv, stripeEnv } =
+  const { googleApiKey, mapBoxAccessToken, systemEnv, stripeEnv, sentry } =
     (await result.json()) as ApiConfig;
 
   render(
@@ -50,6 +40,7 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
           systemEnv,
           stripeEnv,
           integrationType: IntegrationTypesEnum.ON_OFFICE,
+          sentry,
         }}
       >
         <UserContextProvider>

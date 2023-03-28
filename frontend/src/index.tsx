@@ -3,6 +3,7 @@ import { render } from "react-dom";
 import { Auth0Provider } from "@auth0/auth0-react";
 import { BrowserRouter as Router } from "react-router-dom";
 import { ErrorBoundary, Provider } from "@rollbar/react";
+import * as Sentry from "@sentry/browser";
 
 import "./index.scss";
 
@@ -35,7 +36,17 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
     stripeEnv,
     rollbarConfig,
     paypalClientId,
+    sentry,
   } = (await result.json()) as ApiConfig;
+
+  Sentry.init({
+    dsn: sentry.dsn,
+    environment: sentry.environment,
+    tracesSampleRate: 1.0,
+    debug: true,
+    attachStacktrace: true,
+    autoSessionTracking: false,
+  });
 
   render(
     <Provider config={rollbarConfig}>
@@ -55,6 +66,7 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
                 stripeEnv,
                 rollbarConfig,
                 paypalClientId,
+                sentry,
               }}
             >
               <UserContextProvider>

@@ -14,4 +14,5 @@ export const ConfigContext = createContext<ApiConfig>({
     code_version: "undefined",
   },
   paypalClientId: "test",
+  sentry: { dsn: "", environment: "" },
 });

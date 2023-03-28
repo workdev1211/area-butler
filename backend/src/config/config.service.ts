@@ -1,6 +1,7 @@
 import { ApiConfigDto } from '../dto/api-config.dto';
 import RollbarConfigDto from '../dto/rollbar-config.dto';
 import {
+  IApiSentryConfig,
   TPaymentEnvironment,
   TSystemEnvironment,
 } from '@area-butler-types/types';
@@ -158,6 +159,13 @@ class ConfigService {
     };
   }
 
+  getSentryConfig(): IApiSentryConfig {
+    return {
+      dsn: this.getValue('SENTRY_DSN', false),
+      environment: this.getValue('SENTRY_ENV', false),
+    };
+  }
+
   getFrontendConfig(): ApiConfigDto {
     const { domain, audience } = this.getAuth0SpaConfig();
     const googleApiKey = this.getGoogleApiKey();
@@ -166,6 +174,7 @@ class ConfigService {
     const stripeEnv = this.getStripeEnv();
     const rollbarConfig = this.getRollbarConfig();
     const paypalClientId = this.getPaypalClientId();
+    const sentry = this.getSentryConfig();
 
     return {
       auth: {
@@ -178,6 +187,7 @@ class ConfigService {
       stripeEnv,
       rollbarConfig,
       paypalClientId,
+      sentry,
     };
   }
 

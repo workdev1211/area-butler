@@ -27,6 +27,12 @@ export interface ApiConfig {
   rollbarConfig?: RollbarConfig;
   paypalClientId?: string;
   integrationType?: IntegrationTypesEnum;
+  sentry: IApiSentryConfig;
+}
+
+export interface IApiSentryConfig {
+  dsn: string;
+  environment: string;
 }
 
 export interface MapBoxStyle {
