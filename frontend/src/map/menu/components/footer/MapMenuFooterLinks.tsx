@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 import { Link } from "react-router-dom";
 
-import { kudibaCompany } from "../../../../../shared/constants/constants";
+import { kudibaCompany } from "../../../../../../shared/constants/constants";
 
 const MapMenuFooterLinks: FunctionComponent = () => {
   return (

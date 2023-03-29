@@ -11,7 +11,7 @@ import {
   EntityTransitRoute,
 } from "../../../../../shared/types/routing";
 import CloseCross from "../../../assets/icons/cross.svg";
-import CategoryContent from "../menu-item/CategoryContent";
+import CategoryContent from "../components/menu-item/CategoryContent";
 import { preferredLocationsTitle } from "../../../shared/shared.functions";
 
 export interface PreferredLocationsModalProps {

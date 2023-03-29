@@ -1,23 +1,23 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import distanceIcon from "../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
-import walkIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
-import bicycleIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
-import carIcon from "../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
+import distanceIcon from "../../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
+import walkIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
+import bicycleIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
+import carIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../components/SearchResultContainer";
+} from "../../../../components/SearchResultContainer";
 import LocalityItem from "./locality-item/LocalityItem";
-import { MeansOfTransportation } from "../../../../../shared/types/types";
+import { MeansOfTransportation } from "../../../../../../shared/types/types";
 import {
   EntityRoute,
   EntityTransitRoute,
-} from "../../../../../shared/types/routing";
+} from "../../../../../../shared/types/routing";
 import {
   SearchContext,
   SearchContextActionTypes,
-} from "../../../context/SearchContext";
+} from "../../../../context/SearchContext";
 
 export interface CategoryContentProps {
   entityGroup: EntityGroup;

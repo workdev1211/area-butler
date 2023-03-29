@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react";
 
-import BackButton from "../../../layout/BackButton";
-import FeedbackModal from "../../../components/FeedbackModal";
-import saveIcon from "../../../assets/icons/save.svg";
+import BackButton from "../../../../layout/BackButton";
+import FeedbackModal from "../../../../components/FeedbackModal";
+import saveIcon from "../../../../assets/icons/save.svg";
 import MapMenuFooterLinks from "./MapMenuFooterLinks";
-import { ApiSearchResultSnapshotConfig } from "../../../../../shared/types/types";
+import { ApiSearchResultSnapshotConfig } from "../../../../../../shared/types/types";
 
 interface IMapMenuFooterProps {
   isEditorMode: boolean;

@@ -1,6 +1,6 @@
 import { render } from "@testing-library/react";
 import ParticlePollutionTable from "./ParticlePollutionTable";
-import { ApiGeojsonFeature } from "../../../../../shared/types/types";
+import { ApiGeojsonFeature } from "../../../../../../../shared/types/types";
 
 const testData: ApiGeojsonFeature[] = [
   {

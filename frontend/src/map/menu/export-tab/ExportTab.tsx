@@ -20,7 +20,7 @@ import {
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
 import { getQrCodeBase64 } from "../../../export/QrCode";
-import MapClippingsCollapsable from "../clippings/MapClippingsCollapsable";
+import MapClippingsCollapsable from "../components/MapClippingsCollapsable";
 import aiIcon from "../../../assets/icons/ai-big.svg";
 import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import editIcon from "../../../assets/icons/icons-16-x-16-outline-ic-edit.svg";

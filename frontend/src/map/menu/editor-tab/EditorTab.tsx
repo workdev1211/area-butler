@@ -15,7 +15,7 @@ import {
   IApiSnapshotIconSizes,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
-import { LocalityItemContent } from "../menu-item/locality-item/LocalityItem";
+import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {

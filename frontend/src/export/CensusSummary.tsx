@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import "./EntityTable.scss";
-import { averageCensus } from "map/menu/data/CensusTable";
+import { averageCensus } from "map/menu/map-tab/components/data/CensusTable";
 import { deriveColorPalette } from "shared/shared.functions";
 import { TCensusData } from "../hooks/censusdata";
 

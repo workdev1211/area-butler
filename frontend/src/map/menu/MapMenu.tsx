@@ -1,6 +1,7 @@
 import { FunctionComponent, ReactNode, useState } from "react";
 
 import "./MapMenu.scss";
+
 import {
   EntityGroup,
   IEditorTabProps,
@@ -11,7 +12,6 @@ import positionIcon from "../../assets/icons/icons-16-x-16-outline-ic-position.s
 import {
   ApiGeojsonFeature,
   ApiSearchResultSnapshotConfig,
-  ApiUser,
   IApiUserPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -28,9 +28,10 @@ import downloadIcon from "../../assets/icons/download.svg";
 import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
-import MapMenuFooter from "./footer/MapMenuFooter";
+import MapMenuFooter from "./components/footer/MapMenuFooter";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
 import { MapClipping } from "../../context/SearchContext";
+import IntegrationMapTab from "./map-tab/IntegrationMapTab";
 
 enum TabsEnum {
   Map = "Map",
@@ -49,8 +50,7 @@ interface IMapMenuProps {
   isMapMenuOpen: boolean;
   resetPosition: () => void;
   mapClippings: MapClipping[];
-  mapDisplayMode?: MapDisplayModesEnum;
-  user?: ApiUser;
+  mapDisplayMode: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
   saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
@@ -74,9 +74,8 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   searchAddress,
   isMapMenuOpen,
   resetPosition,
-  mapDisplayMode,
-  user,
   mapClippings,
+  mapDisplayMode,
   config,
   saveConfig,
   openUpgradeSubscriptionModal,
@@ -87,9 +86,13 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   locationIndexData,
   editorTabProps,
   exportTabProps,
-  userMenuPoiIcons = user?.poiIcons?.menuPoiIcons,
+  userMenuPoiIcons,
 }) => {
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
+
+  const isMapTab = activeTab === TabsEnum.Map;
+  const isEditorTab = activeTab === TabsEnum.Editor;
+  const isExportTab = activeTab === TabsEnum.Export;
   const isShownAddress = !!config?.showAddress || !config;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
   const isIntegrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
@@ -125,9 +128,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         <div className="tab-bar bg-primary-gradient">
           <div className="tab-container" data-tour="tab-icons">
             <div
-              className={`tab-item${
-                activeTab === TabsEnum.Map ? " tab-item-active" : ""
-              }`}
+              className={`tab-item${isMapTab ? " tab-item-active" : ""}`}
               onClick={() => {
                 setActiveTab(TabsEnum.Map);
               }}
@@ -137,9 +138,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               <div>Karte</div>
             </div>
             <div
-              className={`tab-item${
-                activeTab === TabsEnum.Editor ? " tab-item-active" : ""
-              }`}
+              className={`tab-item${isEditorTab ? " tab-item-active" : ""}`}
               onClick={() => {
                 setActiveTab(TabsEnum.Editor);
               }}
@@ -149,9 +148,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
               <div>Editor</div>
             </div>
             <div
-              className={`tab-item${
-                activeTab === TabsEnum.Export ? " tab-item-active" : ""
-              }`}
+              className={`tab-item${isExportTab ? " tab-item-active" : ""}`}
               onClick={() => {
                 setActiveTab(TabsEnum.Export);
               }}
@@ -197,7 +194,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         }}
         data-tour="map-menu-contents"
       >
-        {activeTab === TabsEnum.Map && (
+        {isMapTab && !isIntegrationMode && (
           <MapTab
             groupedEntries={groupedEntries}
             toggleAllLocalities={toggleAllLocalities}
@@ -205,12 +202,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             routes={routes}
             toggleTransitRoute={toggleTransitRoute}
             transitRoutes={transitRoutes}
-            user={user}
-            userMenuPoiIcons={userMenuPoiIcons}
-            mapClippings={mapClippings}
-            searchAddress={searchAddress}
-            config={config}
-            saveConfig={saveConfig}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             showInsights={showInsights}
             censusData={censusData}
@@ -218,14 +209,28 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             particlePollutionData={particlePollutionData}
             locationIndexData={locationIndexData}
             mapDisplayMode={mapDisplayMode}
+            userMenuPoiIcons={userMenuPoiIcons}
           />
         )}
 
-        {activeTab === TabsEnum.Editor && isEditorMode && editorTabProps && (
+        {isMapTab && isIntegrationMode && (
+          <IntegrationMapTab
+            groupedEntries={groupedEntries}
+            toggleAllLocalities={toggleAllLocalities}
+            toggleRoute={toggleRoute}
+            routes={routes}
+            toggleTransitRoute={toggleTransitRoute}
+            transitRoutes={transitRoutes}
+            mapClippings={mapClippings}
+            searchAddress={searchAddress}
+          />
+        )}
+
+        {isEditorTab && isEditorMode && editorTabProps && (
           <EditorTab {...editorTabProps} />
         )}
 
-        {activeTab === TabsEnum.Export && isEditorMode && exportTabProps && (
+        {isExportTab && isEditorMode && exportTabProps && (
           <ExportTab {...exportTabProps} />
         )}
       </div>

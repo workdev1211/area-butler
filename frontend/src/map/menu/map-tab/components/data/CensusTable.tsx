@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react";
 
-import { TCensusData } from "../../../hooks/censusdata";
+import { TCensusData } from "../../../../../hooks/censusdata";
 import {
   ApiDataProvisionEnum,
   DataProvisionEnum,
-} from "../../../../../shared/types/types";
+} from "../../../../../../../shared/types/types";
 
 export const averageCensus = {
   "Ø Alter": 44.6,

@@ -1,7 +1,7 @@
 import {
   averageParticlePollution,
   PollutionData
-} from "map/menu/data/ParticlePollutionTable";
+} from "map/menu/map-tab/components/data/ParticlePollutionTable";
 import { deriveColorPalette } from "shared/shared.functions";
 import { ApiGeojsonFeature } from "../../../shared/types/types";
 import "./EntityTable.scss";

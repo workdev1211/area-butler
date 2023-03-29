@@ -3,25 +3,25 @@ import { FunctionComponent, useContext, useState } from "react";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../components/SearchResultContainer";
+} from "../../../../components/SearchResultContainer";
 import {
   realEstateListingsTitle,
   realEstateListingsTitleEmbed,
-} from "../../../shared/shared.functions";
+} from "../../../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
-} from "../../../../../shared/types/types";
+} from "../../../../../../shared/types/types";
 import {
   EntityRoute,
   EntityTransitRoute,
-} from "../../../../../shared/types/routing";
+} from "../../../../../../shared/types/routing";
 import {
   SearchContext,
   SearchContextActionTypes,
-} from "../../../context/SearchContext";
+} from "../../../../context/SearchContext";
 import CategoryContent from "./CategoryContent";
-import { IPoiIcon } from "../../../shared/shared.types";
+import { IPoiIcon } from "../../../../shared/shared.types";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;

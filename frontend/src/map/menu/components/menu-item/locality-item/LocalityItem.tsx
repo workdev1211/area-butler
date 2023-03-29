@@ -3,20 +3,20 @@ import { FunctionComponent } from "react";
 import {
   EntityRoute,
   EntityTransitRoute,
-} from "../../../../../../shared/types/routing";
+} from "../../../../../../../shared/types/routing";
 import {
   MeansOfTransportation,
   OsmName,
-} from "../../../../../../shared/types/types";
+} from "../../../../../../../shared/types/types";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
   timeToHumanReadable,
-} from "../../../../shared/shared.functions";
+} from "../../../../../shared/shared.functions";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../../components/SearchResultContainer";
+} from "../../../../../components/SearchResultContainer";
 import "./LocalityItem.scss";
 
 export interface LocalityItemProps {

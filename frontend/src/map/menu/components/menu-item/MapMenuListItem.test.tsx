@@ -1,5 +1,7 @@
 import { render } from "@testing-library/react";
+
 import MapMenuListItem from "./MapMenuListItem";
+import { EntityGroup } from "../../../../components/SearchResultContainer";
 
 describe("MapMenuListItem", () => {
   const entityGroup = {
@@ -8,10 +10,9 @@ describe("MapMenuListItem", () => {
     items: [
       {
         id: "test-id",
-        type: "test",
         label: "Park-Item",
         address: {
-          city: "TestCity"
+          city: "TestCity",
         },
         byFoot: true,
         byBike: true,
@@ -19,12 +20,12 @@ describe("MapMenuListItem", () => {
         realEstateData: {},
         coordinates: {
           lat: 2,
-          lng: 5
+          lng: 5,
         },
-        distanceInMeters: 5
-      }
-    ]
-  };
+        distanceInMeters: 5,
+      },
+    ],
+  } as EntityGroup;
 
   test("should render", async () => {
     const component = render(

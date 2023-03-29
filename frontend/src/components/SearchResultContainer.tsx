@@ -127,11 +127,11 @@ interface ISearchResultContainerProps {
   searchResponse: ApiSearchResponse;
   placesLocation: any;
   location: ApiCoordinates;
+  mapDisplayMode: MapDisplayModesEnum;
   saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
   mapZoomLevel?: number;
   user?: ApiUser;
   userDispatch?: (action: UserActions) => void;
-  mapDisplayMode?: MapDisplayModesEnum;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcons;
@@ -150,11 +150,11 @@ const SearchResultContainer = forwardRef<
       searchResponse,
       placesLocation,
       location,
+      mapDisplayMode,
       saveConfig,
       mapZoomLevel,
       user,
       userDispatch = () => null,
-      mapDisplayMode,
       onPoiAdd,
       isTrial,
       userPoiIcons = user?.poiIcons,
@@ -802,7 +802,6 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               saveConfig={saveConfig}
-              user={user}
               userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
               openUpgradeSubscriptionModal={(message) => {
                 userDispatch({

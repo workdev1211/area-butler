@@ -15,11 +15,11 @@ import {
   FederalElectionDistrict,
   FederalElectionResult,
 } from "hooks/federalelectiondata";
-import { averageCensus } from "map/menu/data/CensusTable";
+import { averageCensus } from "map/menu/map-tab/components/data/CensusTable";
 import {
   averageParticlePollution,
   PollutionData,
-} from "map/menu/data/ParticlePollutionTable";
+} from "map/menu/map-tab/components/data/ParticlePollutionTable";
 import {
   deriveMinutesFromMeters,
   distanceToHumanReadable,
