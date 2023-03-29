@@ -23,6 +23,18 @@ export class VerifyOnOfficeActSignInterceptor implements NestInterceptor {
     const res = context.switchToHttp().getResponse();
     const queryParams = { ...req.query };
 
+    // List of query params just in case, only the string values
+    /*
+      apiClaim
+      apiToken
+      customerName
+      customerWebId
+      parameterCacheId
+      timestamp
+      userId
+      signature
+     */
+
     try {
       this.onOfficeService.verifySignature(
         queryParams,

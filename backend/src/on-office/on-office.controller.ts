@@ -43,13 +43,14 @@ export class OnOfficeController {
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
-    @Query('userId') integrationUserId: string,
-    @Query('apiToken') token: string,
-    @Query('parameterCacheId') parameterCacheId: string,
     @Query('apiClaim') extendedClaim: string,
+    @Query('apiToken') token: string,
+    @Query('customerWebId') customerWebId: string,
+    @Query('parameterCacheId') parameterCacheId: string,
+    @Query('userId') onOfficeUserId: string,
   ): Promise<IApiOnOfficeActivationRes> {
     return this.onOfficeService.getRenderData({
-      integrationUserId,
+      integrationUserId: `${customerWebId}-${onOfficeUserId}`,
       token,
       parameterCacheId,
       extendedClaim,
@@ -58,7 +59,7 @@ export class OnOfficeController {
 
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post(activateUserPath)
+  @Post(activateUserPath) // activate-user
   async unlockProvider(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderReqDto,

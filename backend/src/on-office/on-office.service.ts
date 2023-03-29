@@ -84,7 +84,7 @@ export class OnOfficeService {
       integrationUserId,
       this.integrationType,
       extendedClaim,
-      { extendedClaim },
+      { parameterCacheId, extendedClaim, token },
     );
 
     const scripts = [{ script: `${this.apiUrl}/on-office/unlockProvider.js` }];
@@ -116,6 +116,7 @@ export class OnOfficeService {
         token,
         apiKey,
         extendedClaim,
+        parameterCacheId,
       },
     );
 
@@ -157,12 +158,15 @@ export class OnOfficeService {
 
   async login({
     onOfficeQueryParams: {
-      userId: integrationUserId,
+      userId: onOfficeUserId,
+      customerWebId,
       apiClaim: extendedClaim,
       estateId,
       parameterCacheId,
     },
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
+    const integrationUserId = `${customerWebId}-${onOfficeUserId}`;
+
     let integrationUser = await this.integrationUserService.findOneOrFail(
       { integrationUserId },
       this.integrationType,
