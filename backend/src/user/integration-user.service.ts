@@ -13,6 +13,8 @@ import {
 } from '@area-butler-types/integration';
 import {
   IApiIntegrationUserProductContingent,
+  IApiIntUserCreate,
+  IApiIntUserUpdateParamsAndConfig,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
@@ -32,38 +34,23 @@ export class IntegrationUserService {
     private readonly mapboxService: MapboxService,
   ) {}
 
-  async upsert(
-    integrationUserId: string,
+  async findOne(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
     integrationType: IntegrationTypesEnum,
-    accessToken: string,
-    parameters: TApiIntegrationUserParameters,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne({
-      integrationUserId,
-      integrationType,
-    });
-
-    if (existingUser) {
-      return this.updateParamsAndConfig(existingUser, accessToken, parameters);
-    }
-
-    return new this.integrationUserModel({
-      integrationUserId,
-      integrationType,
-      accessToken,
-      parameters,
-      config: { showTour: intUserInitShowTour },
-    }).save();
+    return this.integrationUserModel
+      .findOne({
+        findQuery,
+        integrationType,
+      })
+      .sort({ updatedAt: -1 });
   }
 
   async findOneOrFail(
     findQuery: FilterQuery<TIntegrationUserDocument>,
     integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne({
-      ...findQuery,
-      integrationType,
-    });
+    const existingUser = await this.findOne(findQuery, integrationType);
 
     if (!existingUser) {
       throw new HttpException('Unknown user!', 400);
@@ -88,28 +75,78 @@ export class IntegrationUserService {
 
   async updateParamsAndConfig(
     integrationUser: TIntegrationUserDocument,
-    accessToken: string,
-    parameters: TApiIntegrationUserParameters,
-    config?: TApiIntegrationUserConfig,
+    { accessToken, parameters, config }: IApiIntUserUpdateParamsAndConfig,
   ): Promise<TIntegrationUserDocument> {
-    integrationUser.accessToken = accessToken;
-    integrationUser.parameters =
-      typeof integrationUser.parameters === 'object'
-        ? { ...integrationUser.parameters, ...parameters }
-        : { ...parameters };
+    const updatedFields: IApiIntUserUpdateParamsAndConfig = {
+      accessToken,
+      parameters:
+        typeof integrationUser.parameters === 'object'
+          ? { ...integrationUser.parameters, ...parameters }
+          : { ...parameters },
+    };
 
     if (config) {
-      integrationUser.config =
+      updatedFields.config =
         typeof integrationUser.config === 'object'
           ? { ...integrationUser.config, ...config }
           : { ...config };
     }
 
-    return integrationUser.save();
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUser.id,
+      updatedFields,
+      { new: true },
+    );
+  }
+
+  async create({
+    integrationUserId,
+    integrationType,
+    accessToken,
+    parameters,
+    config,
+  }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
+    const processedConfig = config
+      ? { ...config }
+      : ({} as TApiIntegrationUserConfig);
+
+    if (!processedConfig.showTour) {
+      processedConfig.showTour = intUserInitShowTour;
+    }
+
+    return this.integrationUserModel.create({
+      integrationUserId,
+      integrationType,
+      accessToken,
+      parameters,
+      config: processedConfig,
+    });
+  }
+
+  async upsert(
+    integrationUserId: string,
+    integrationType: IntegrationTypesEnum,
+    accessToken: string,
+    parameters: TApiIntegrationUserParameters,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.integrationUserModel.findOneAndUpdate(
+      { integrationUserId, integrationType },
+      { accessToken, parameters },
+    );
+
+    return (
+      existingUser ||
+      this.create({
+        integrationUserId,
+        integrationType,
+        accessToken,
+        parameters,
+      })
+    );
   }
 
   async addProductContingent(
-    integrationUser: TIntegrationUserDocument,
+    integrationUserDbId: string,
     { type, quantity }: TApiIntegrationUserProduct,
   ): Promise<TIntegrationUserDocument> {
     if (!type || !quantity) {
@@ -117,7 +154,7 @@ export class IntegrationUserService {
     }
 
     return this.integrationUserModel.findByIdAndUpdate(
-      integrationUser.id,
+      integrationUserDbId,
       {
         $push: {
           [`productContingents.${type}`]: {
@@ -126,7 +163,7 @@ export class IntegrationUserService {
           },
         },
       },
-      { upsert: true },
+      { new: true },
     );
   }
 
@@ -155,13 +192,13 @@ export class IntegrationUserService {
   }
 
   async incrementUsageStatsParam(
-    integrationUser: TIntegrationUserDocument,
+    integrationUserDbId: string,
     paramName: TApiIntUserUsageStatsParamNames,
-  ): Promise<void> {
+  ): Promise<TIntegrationUserDocument> {
     const currentDate = dayjs();
 
-    await this.integrationUserModel.updateOne(
-      { _id: integrationUser.id },
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUserDbId,
       {
         $inc: {
           [`usageStatistics.${paramName}.${currentDate.year()}.${
@@ -169,31 +206,31 @@ export class IntegrationUserService {
           }.${currentDate.date()}`]: 1,
         },
       },
-      { upsert: true },
+      { new: true },
     );
   }
 
   async incrementProductUsage(
     integrationUser: TIntegrationUserDocument,
     actionType: TIntegrationActionTypes,
-  ): Promise<void> {
+  ): Promise<TIntegrationUserDocument> {
     const productContingentType = getProdContTypeByActType(
       integrationUser.integrationType,
       actionType,
     );
 
     if (!productContingentType) {
-      return;
+      return integrationUser;
     }
 
-    await this.integrationUserModel.updateOne(
-      { _id: integrationUser.id },
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUser.id,
       {
         $inc: {
           [`productsUsed.${productContingentType}`]: 1,
         },
       },
-      { upsert: true },
+      { new: true },
     );
   }
 
@@ -232,18 +269,21 @@ export class IntegrationUserService {
   async createMapboxAccessToken(
     integrationUser: TIntegrationUserDocument,
   ): Promise<TIntegrationUserDocument> {
-    if (!integrationUser.config) {
-      integrationUser.config = {} as TApiIntegrationUserConfig;
+    if (integrationUser.config.mapboxAccessToken) {
+      return integrationUser;
     }
 
-    if (!integrationUser.config.mapboxAccessToken) {
-      integrationUser.config.mapboxAccessToken =
-        await this.mapboxService.createAccessToken(integrationUser.id);
+    const mapboxAccessToken = await this.mapboxService.createAccessToken(
+      integrationUser.id,
+    );
 
-      return integrationUser.save();
-    }
-
-    return integrationUser;
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUser.id,
+      {
+        'config.mapboxAccessToken': mapboxAccessToken,
+      },
+      { new: true },
+    );
   }
 
   async hideTour(
@@ -260,9 +300,13 @@ export class IntegrationUserService {
       });
     }
 
-    return this.integrationUserModel.findByIdAndUpdate(integrationUser.id, {
-      $set: { 'config.showTour': showTour },
-    });
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUser.id,
+      {
+        'config.showTour': showTour,
+      },
+      { new: true },
+    );
   }
 
   private getAvailProdCont(

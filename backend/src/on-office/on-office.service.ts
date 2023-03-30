@@ -75,16 +75,17 @@ export class OnOfficeService {
   ) {}
 
   async getRenderData({
-    integrationUserId,
-    token,
+    customerWebId,
+    userId,
     parameterCacheId,
-    extendedClaim,
+    apiClaim: extendedClaim,
+    apiToken: token,
   }: IApiOnOfficeActivationReq): Promise<IApiOnOfficeActivationRes> {
     await this.integrationUserService.upsert(
-      integrationUserId,
+      `${customerWebId}-${userId}`,
       this.integrationType,
       extendedClaim,
-      { parameterCacheId, extendedClaim, token },
+      { parameterCacheId, extendedClaim, token, customerWebId, userId },
     );
 
     const scripts = [{ script: `${this.apiUrl}/on-office/unlockProvider.js` }];
@@ -109,16 +110,15 @@ export class OnOfficeService {
     }: IApiOnOfficeUnlockProviderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<string> {
-    await this.integrationUserService.updateParamsAndConfig(
-      integrationUser,
-      extendedClaim,
-      {
+    await this.integrationUserService.updateParamsAndConfig(integrationUser, {
+      accessToken: extendedClaim,
+      parameters: {
         token,
         apiKey,
         extendedClaim,
         parameterCacheId,
       },
-    );
+    });
 
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
@@ -158,38 +158,66 @@ export class OnOfficeService {
 
   async login({
     onOfficeQueryParams: {
-      userId: onOfficeUserId,
       customerWebId,
-      apiClaim: extendedClaim,
+      userId,
       estateId,
       parameterCacheId,
+      apiClaim: extendedClaim,
     },
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
-    const integrationUserId = `${customerWebId}-${onOfficeUserId}`;
+    const integrationUserId = `${customerWebId}-${userId}`;
 
-    let integrationUser = await this.integrationUserService.findOneOrFail(
-      { integrationUserId },
+    // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
+    let integrationUser = await this.integrationUserService.findOne(
+      {
+        $or: [
+          { integrationUserId },
+          { 'parameters.customerWebId': customerWebId },
+        ],
+        'parameters.token': { $exists: true },
+        'parameters.apiKey': { $exists: true },
+      },
       this.integrationType,
     );
 
-    // Could be a race condition with the extendedClaims
+    if (!integrationUser) {
+      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+    }
+
     const { color, logo } = await this.fetchLogoAndColor({
       ...integrationUser.parameters,
       extendedClaim,
     });
 
-    integrationUser = await this.integrationUserService.updateParamsAndConfig(
-      integrationUser,
-      extendedClaim,
-      {
-        extendedClaim,
-        parameterCacheId,
-      },
-      {
-        color: color ? `#${color}` : undefined,
-        logo: logo ? convertBase64ContentToUri(logo) : undefined,
-      } as TApiIntegrationUserConfig,
-    );
+    integrationUser =
+      integrationUser.integrationUserId === integrationUserId
+        ? await this.integrationUserService.updateParamsAndConfig(
+            integrationUser,
+            {
+              accessToken: extendedClaim,
+              parameters: {
+                extendedClaim,
+                parameterCacheId,
+              },
+              config: {
+                color: color ? `#${color}` : undefined,
+                logo: logo ? convertBase64ContentToUri(logo) : undefined,
+              } as TApiIntegrationUserConfig,
+            },
+          )
+        : await this.integrationUserService.create({
+            integrationUserId,
+            integrationType: this.integrationType,
+            accessToken: extendedClaim,
+            parameters: {
+              parameterCacheId,
+              customerWebId,
+              userId,
+              extendedClaim,
+              apiKey: integrationUser.parameters.apiKey,
+              token: integrationUser.parameters.token,
+            },
+          });
 
     const availProdContingents =
       this.integrationUserService.getAvailProdContingents(integrationUser);
@@ -341,7 +369,7 @@ export class OnOfficeService {
     );
 
     await this.integrationUserService.addProductContingent(
-      integrationUser,
+      integrationUser.id,
       convertOnOfficeProdToIntUserProd(product),
     );
 

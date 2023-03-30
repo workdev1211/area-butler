@@ -33,10 +33,11 @@ export interface IApiOnOfficeUnlockProviderReq {
 }
 
 export interface IApiOnOfficeActivationReq {
-  integrationUserId: string;
-  token: string;
+  apiClaim: string;
+  apiToken: string;
+  customerWebId: string;
   parameterCacheId: string;
-  extendedClaim: string;
+  userId: string;
 }
 
 export interface IApiOnOfficeActivationRes {

@@ -37,23 +37,24 @@ export class OnOfficeController {
 
   constructor(private readonly onOfficeService: OnOfficeService) {}
 
-  // TODO think about uniting the OnOffice React module with the current controller using the React Router
+  // TODO think about moving this part to frontend, the user then should be created in the "unlockProvider" method
   @ApiOperation({ description: 'Renders the activation iFrame' })
   @UseInterceptors(VerifyOnOfficeActSignInterceptor)
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
-    @Query('apiClaim') extendedClaim: string,
-    @Query('apiToken') token: string,
+    @Query('apiClaim') apiClaim: string,
+    @Query('apiToken') apiToken: string,
     @Query('customerWebId') customerWebId: string,
     @Query('parameterCacheId') parameterCacheId: string,
-    @Query('userId') onOfficeUserId: string,
+    @Query('userId') userId: string,
   ): Promise<IApiOnOfficeActivationRes> {
     return this.onOfficeService.getRenderData({
-      integrationUserId: `${customerWebId}-${onOfficeUserId}`,
-      token,
+      apiClaim,
+      apiToken,
+      customerWebId,
       parameterCacheId,
-      extendedClaim,
+      userId,
     });
   }
 

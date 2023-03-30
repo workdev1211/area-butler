@@ -261,7 +261,7 @@ export class LocationService {
 
     if (!existingLocation && isIntegrationUser) {
       await this.integrationUserService.incrementUsageStatsParam(
-        user,
+        user.id,
         ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT,
       );
     }

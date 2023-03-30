@@ -32,6 +32,8 @@ export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
+  customerWebId?: string; // OnOffice account id
+  userId?: string; // OnOffice account user id
   extendedClaim: string; // used by us as access token
   apiKey?: string; // client secret
   token?: string; // client access token
@@ -66,6 +68,17 @@ export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 export interface IApiIntegrationUserProductContingent {
   quantity: number;
   expiresAt: Date;
+}
+
+export interface IApiIntUserUpdateParamsAndConfig {
+  accessToken: string;
+  parameters: TApiIntegrationUserParameters;
+  config?: TApiIntegrationUserConfig;
+}
+
+export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
+  integrationUserId: string;
+  integrationType: IntegrationTypesEnum;
 }
 
 export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;

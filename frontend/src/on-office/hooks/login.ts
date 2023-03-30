@@ -105,6 +105,7 @@ export const useLogin = () => {
     } catch (e: any) {
       console.error("Verification error: ", e);
       response.requestStatus = RequestStatusTypesEnum.FAILURE;
+      response.message = e.response?.data?.message;
     }
 
     return response;

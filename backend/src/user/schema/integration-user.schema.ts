@@ -50,3 +50,5 @@ IntegrationUserSchema.index(
   { integrationUserId: 1, integrationType: 1 },
   { unique: true },
 );
+
+IntegrationUserSchema.index({ updatedAt: -1 });
