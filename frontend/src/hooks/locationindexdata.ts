@@ -21,14 +21,14 @@ export const useLocationIndexData = () => {
 
   const fetchLocationIndexData = async (
     coordinates: ApiCoordinates
-  ): Promise<TLocationIndexData | undefined> => {
+  ): Promise<TLocationIndexData> => {
     const { data } = await post<IApiLocationIndexFeature[]>(
       "/api/location-index/query",
       { type: "Point", coordinates: [coordinates.lng, coordinates.lat] }
     );
 
     if (!data.length || !data[0].properties) {
-      return undefined;
+      return {} as TLocationIndexData;
     }
 
     return Object.keys(data[0].properties).reduce<TLocationIndexData>(

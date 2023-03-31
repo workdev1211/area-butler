@@ -11,7 +11,7 @@ interface ILocationIndexTableProps {
 const LocationIndexTable: FunctionComponent<ILocationIndexTableProps> = ({
   locationIndexData,
 }) => {
-  if (!locationIndexData || !Object.keys(locationIndexData).length) {
+  if (!locationIndexData) {
     return <Loading />;
   }
 

@@ -5,7 +5,6 @@ import {
   ResultEntity,
 } from "../../../components/SearchResultContainer";
 import {
-  ApiSearchResultSnapshotConfig,
   MapDisplayModesEnum,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
@@ -27,7 +26,6 @@ interface IIntegrationMapTabProps {
   transitRoutes: EntityTransitRoute[];
   mapClippings: MapClipping[];
   searchAddress: string;
-  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
 }
 
 const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
@@ -39,7 +37,6 @@ const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
   transitRoutes,
   mapClippings,
   searchAddress,
-  saveConfig,
 }) => {
   return (
     <div className="map-tab z-9000">
@@ -53,7 +50,7 @@ const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
         mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
       />
 
-      <MapSettings saveConfig={saveConfig} />
+      <MapSettings />
 
       <MapScreenshots
         mapClippings={mapClippings}

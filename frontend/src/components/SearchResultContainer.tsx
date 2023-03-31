@@ -128,10 +128,10 @@ interface ISearchResultContainerProps {
   placesLocation: any;
   location: ApiCoordinates;
   mapDisplayMode: MapDisplayModesEnum;
-  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
+  saveConfig?: () => Promise<void>;
   mapZoomLevel?: number;
   user?: ApiUser;
-  userDispatch?: (action: UserActions) => void;
+  userDispatch?: (action: UserActions) => void; // we need it because Embed module doesn't have the user context
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcons;

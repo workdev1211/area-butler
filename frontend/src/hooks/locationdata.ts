@@ -1,6 +1,9 @@
-import { Dispatch, SetStateAction, useContext } from "react";
+import { Dispatch, RefObject, SetStateAction, useContext } from "react";
 
-import { SearchContext } from "../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
 import { useRouting } from "./routing";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { useHttp } from "./http";
@@ -10,15 +13,19 @@ import {
   ApiSearch,
   ApiSearchResponse,
   ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
+import { ICurrentMapRef } from "../components/SearchResultContainer";
+import { toastError, toastSuccess } from "../shared/shared.functions";
 
 export const useLocationData = (isIntegrationUser = false) => {
-  const { searchContextState } = useContext(SearchContext);
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
 
   const { get, post, put } = useHttp();
@@ -162,5 +169,60 @@ export const useLocationData = (isIntegrationUser = false) => {
     ).data;
   };
 
-  return { createLocation, fetchSnapshot, createSnapshot, updateSnapshot };
+  const saveSnapshotConfig = async (
+    mapRef: RefObject<ICurrentMapRef>,
+    snapshotId: string,
+    snapshot: ApiSearchResultSnapshot
+  ): Promise<void> => {
+    if (!mapRef.current || !searchContextState.responseConfig) {
+      return;
+    }
+
+    const defaultActiveGroups =
+      searchContextState.responseGroupedEntities?.reduce<string[]>(
+        (result, { title, active }) => {
+          if (active) {
+            result.push(title);
+          }
+
+          return result;
+        },
+        []
+      );
+
+    const config = {
+      ...searchContextState.responseConfig,
+      defaultActiveGroups,
+    };
+
+    const mapZoomLevel = mapRef.current.getZoom();
+
+    if (mapZoomLevel) {
+      config.zoomLevel = mapZoomLevel;
+    }
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+      payload: config,
+    });
+
+    try {
+      await updateSnapshot(snapshotId, {
+        snapshot,
+        config: config as ApiSearchResultSnapshotConfig,
+      });
+
+      toastSuccess("Einstellungen gespeichert!");
+    } catch (e) {
+      toastError("Fehler beim Speichern der Einstellungen!");
+    }
+  };
+
+  return {
+    createLocation,
+    fetchSnapshot,
+    createSnapshot,
+    updateSnapshot,
+    saveSnapshotConfig,
+  };
 };

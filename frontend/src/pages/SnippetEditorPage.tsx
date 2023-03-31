@@ -26,7 +26,6 @@ import {
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
   toastError,
-  toastSuccess,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import {
@@ -59,26 +58,28 @@ export interface SnippetEditorRouterProps {
 }
 
 const SnippetEditorPage: FunctionComponent = () => {
+  const mapRef = useRef<ICurrentMapRef | null>(null);
+
+  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
+  const { userState, userDispatch } = useContext(UserContext);
+  const { searchContextDispatch, searchContextState } =
+    useContext(SearchContext);
+
   const history = useHistory<ISnippetEditorHistoryState>();
   const { state } = useLocation<ISnippetEditorHistoryState>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { fetchSnapshot, updateSnapshot } = useLocationData();
+
+  const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const { fetchLocationIndexData } = useLocationIndexData();
-  const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-
-  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const { userState } = useContext(UserContext);
-  const { searchContextDispatch, searchContextState } =
-    useContext(SearchContext);
 
   const user = userState.user;
   const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
@@ -331,6 +332,10 @@ const SnippetEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.poiFilter,
   ]);
 
+  if (!snapshot) {
+    return <div>Lade Daten...</div>;
+  }
+
   const onPoiAdd = (poi: ApiOsmLocation) => {
     if (!snapshot) {
       return;
@@ -377,10 +382,6 @@ const SnippetEditorPage: FunctionComponent = () => {
     );
   };
 
-  if (!snapshot) {
-    return <div>Lade Daten...</div>;
-  }
-
   // TODO think about using useEffect or memoizing the props
   const editorTabProps: IEditorTabProps = {
     availableMeans: deriveAvailableMeansFromResponse(snapshot.searchResponse),
@@ -419,8 +420,8 @@ const SnippetEditorPage: FunctionComponent = () => {
   const exportTabProps: IExportTabProps = {
     codeSnippet,
     directLink,
-    placeLabel: snapshot.placesLocation.label,
     snapshotId,
+    placeLabel: snapshot.placesLocation.label,
   };
 
   return (
@@ -458,45 +459,14 @@ const SnippetEditorPage: FunctionComponent = () => {
             placesLocation={snapshot.placesLocation}
             location={snapshot.location}
             saveConfig={async () => {
-              try {
-                const mapZoomLevel = mapRef.current?.getZoom();
-
-                const defaultActiveGroups =
-                  searchContextState.responseGroupedEntities?.reduce<string[]>(
-                    (result, { title, active }) => {
-                      if (active) {
-                        result.push(title);
-                      }
-
-                      return result;
-                    },
-                    []
-                  );
-
-                const config = {
-                  ...searchContextState.responseConfig,
-                  defaultActiveGroups,
-                };
-
-                if (mapZoomLevel) {
-                  config.zoomLevel = mapZoomLevel;
-                }
-
-                await updateSnapshot(snapshotId, {
-                  snapshot,
-                  config: config as ApiSearchResultSnapshotConfig,
-                });
-
-                toastSuccess("Einstellungen gespeichert!");
-              } catch (e) {
-                toastError("Fehler beim Speichern der Einstellungen!");
-              }
+              await saveSnapshotConfig(mapRef, snapshotId, snapshot);
             }}
             mapDisplayMode={MapDisplayModesEnum.EDITOR}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
             ref={mapRef}
             user={user}
+            userDispatch={userDispatch}
             editorTabProps={editorTabProps}
             exportTabProps={exportTabProps}
           />

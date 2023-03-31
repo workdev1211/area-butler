@@ -1,42 +1,47 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { ApiSearchResultSnapshotConfig } from "../../../../../../../shared/types/types";
 import { setBackgroundColor } from "../../../../../shared/shared.functions";
 import configOptionsIcon from "../../../../../assets/icons/map-menu/04-konfiguration.svg";
-import { SearchContext } from "../../../../../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../../../../../context/SearchContext";
 
-interface IMapSettingsProps {
-  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
-}
-
-const MapSettings: FunctionComponent<IMapSettingsProps> = ({ saveConfig }) => {
+const MapSettings: FunctionComponent = () => {
   const {
     searchContextState: { responseConfig: config },
+    searchContextDispatch,
   } = useContext(SearchContext);
 
   const [isMapSettingsOpen, setIsMapSettingsOpen] = useState(false);
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
-  const changeShowLocation = async () => {
-    if (!saveConfig || !config) {
+  const toggleShowLocation = async () => {
+    if (!config) {
       return;
     }
 
-    await saveConfig({
-      ...config,
-      showLocation: !config?.showLocation,
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+      payload: {
+        ...config,
+        showLocation: !config?.showLocation,
+      },
     });
   };
 
-  const changeShowAddress = async () => {
-    if (!saveConfig || !config) {
+  const toggleShowAddress = async () => {
+    if (!config) {
       return;
     }
 
-    await saveConfig({
-      ...config,
-      showAddress: !config?.showAddress,
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+      payload: {
+        ...config,
+        showAddress: !config?.showAddress,
+      },
     });
   };
 
@@ -77,7 +82,7 @@ const MapSettings: FunctionComponent<IMapSettingsProps> = ({ saveConfig }) => {
                   type="checkbox"
                   name="showLocation"
                   checked={!!config?.showLocation}
-                  onChange={changeShowLocation}
+                  onChange={toggleShowLocation}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
                 <span className="label-text">Objekt anzeigen</span>
@@ -91,7 +96,7 @@ const MapSettings: FunctionComponent<IMapSettingsProps> = ({ saveConfig }) => {
                   type="checkbox"
                   name="showAddress"
                   checked={!!config?.showAddress}
-                  onChange={changeShowAddress}
+                  onChange={toggleShowAddress}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
                 <span className="label-text">Adresse anzeigen</span>

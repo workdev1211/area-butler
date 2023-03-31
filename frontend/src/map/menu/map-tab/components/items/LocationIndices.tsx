@@ -57,7 +57,19 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        <LocationIndexTable locationIndexData={locationIndexData} />
+        {locationIndexData && !Object.keys(locationIndexData).length ? (
+          <div
+            className="text-justify"
+            style={{
+              padding:
+                "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+            }}
+          >
+            Lageindizes sind nicht verfügbar.
+          </div>
+        ) : (
+          <LocationIndexTable locationIndexData={locationIndexData} />
+        )}
       </div>
     </div>
   );

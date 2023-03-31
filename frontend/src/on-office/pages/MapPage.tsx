@@ -33,19 +33,15 @@ import SearchResultContainer, {
 import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
 import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
-import { UserContext } from "../../context/UserContext";
 import TourStarter from "../../tour/TourStarter";
 
 const MapPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { fetchSnapshot } = useLocationData(!!integrationUser);
+  const { fetchSnapshot, saveSnapshotConfig } = useLocationData(true);
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const [snapshotResponse, setSnapshotResponse] =
@@ -190,7 +186,7 @@ const MapPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
-  if (!searchContextState.searchResponse && !mapBoxToken) {
+  if (!searchContextState.searchResponse || !mapBoxToken) {
     return <LoadingMessage />;
   }
 
@@ -205,12 +201,12 @@ const MapPage: FunctionComponent = () => {
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={false}
         mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
-        saveConfig={async (config?: ApiSearchResultSnapshotConfig) => {
-          // TODO it's a hack, change to the decent method
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-            payload: config,
-          });
+        saveConfig={async () => {
+          await saveSnapshotConfig(
+            mapRef,
+            snapshotId,
+            snapshotResponse?.snapshot!
+          );
         }}
         ref={mapRef}
       />

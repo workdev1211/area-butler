@@ -18,12 +18,15 @@ import "assets/fonts/archia-semibold-webfont.woff2";
 
 import EmbedContainer from "./embed/EmbedContainer";
 import { SearchContextProvider } from "./context/SearchContext";
+import { RealEstateContextProvider } from "./context/RealEstateContext";
 
 render(
   <StrictMode>
-    <SearchContextProvider>
-      <EmbedContainer />
-    </SearchContextProvider>
+    <RealEstateContextProvider>
+      <SearchContextProvider>
+        <EmbedContainer />
+      </SearchContextProvider>
+    </RealEstateContextProvider>
   </StrictMode>,
   document.getElementById("root")
 );

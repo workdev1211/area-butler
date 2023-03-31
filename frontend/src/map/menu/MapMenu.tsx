@@ -52,7 +52,7 @@ interface IMapMenuProps {
   mapClippings: MapClipping[];
   mapDisplayMode: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
-  saveConfig?: (config?: ApiSearchResultSnapshotConfig) => Promise<void>;
+  saveConfig?: () => Promise<void>;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
   censusData?: TCensusData;
@@ -236,7 +236,10 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       </div>
 
       {(isEditorMode || isIntegrationMode) && (
-        <MapMenuFooter isEditorMode={isEditorMode} saveConfig={saveConfig} />
+        <MapMenuFooter
+          mapDisplayMode={mapDisplayMode}
+          saveConfig={saveConfig}
+        />
       )}
     </div>
   );
