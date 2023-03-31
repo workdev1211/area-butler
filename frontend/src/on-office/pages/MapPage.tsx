@@ -192,7 +192,7 @@ const MapPage: FunctionComponent = () => {
 
   return (
     <>
-      <TourStarter tour={ApiTourNamesEnum.INT_MAP_MENU} />
+      <TourStarter tour={ApiTourNamesEnum.INT_MAP} />
       <SearchResultContainer
         mapBoxToken={mapBoxToken}
         mapBoxMapId={snapshotConfig?.mapBoxMapId}

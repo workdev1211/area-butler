@@ -18,8 +18,10 @@ const tourDescriptions: Record<ApiTourNamesEnum, string> = {
     "Möchten Sie eine kurze Einführung zur Profilseite bekommen?",
   [ApiTourNamesEnum.EDITOR]:
     "Möchten Sie eine kurze Einführung zum Karten-Editor bekommen?",
-  [ApiTourNamesEnum.INT_MAP_MENU]:
+  [ApiTourNamesEnum.INT_MAP]:
     "Möchten Sie eine kurze Einführung in die Kartenausschnittsseite?",
+  [ApiTourNamesEnum.INT_SEARCH]:
+    "Möchten Sie eine kurze Einführung zur Umgebungsanalyse bekommen?",
 };
 
 interface IStartTourModalProps {

@@ -3,14 +3,16 @@ import Joyride, { CallBackProps, STATUS, Step, Styles } from "react-joyride";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { ApiShowTour, ApiTourNamesEnum } from "../../../shared/types/types";
+import StartTourModal from "./StartTourModal";
+
 import RealEstatesSteps from "./RealEstatesPageSteps";
 import CustomersSteps from "./CustomersPageSteps";
 import SearchResulSteps from "./SearchResultPageSteps";
 import SearchSteps from "./SearchPageSteps";
 import ProfileSteps from "./ProfilePageSteps";
 import SnippetEditorSteps from "./SnippetEditorPageSteps";
-import IntMapMenuSteps from "./IntMapMenuSteps";
-import StartTourModal from "./StartTourModal";
+import IntMapPageSteps from "./IntMapPageSteps";
+import IntSearchPageSteps from "./IntSearchPageSteps";
 
 interface ITourStarterProps {
   tour: ApiTourNamesEnum;
@@ -36,7 +38,8 @@ const fallbackShowTour: ApiShowTour = {
   [ApiTourNamesEnum.CUSTOMERS]: false,
   [ApiTourNamesEnum.PROFILE]: false,
   [ApiTourNamesEnum.EDITOR]: false,
-  [ApiTourNamesEnum.INT_MAP_MENU]: false,
+  [ApiTourNamesEnum.INT_MAP]: false,
+  [ApiTourNamesEnum.INT_SEARCH]: false,
 };
 
 const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
@@ -46,7 +49,8 @@ const tourSteps: Record<ApiTourNamesEnum, Step[]> = {
   [ApiTourNamesEnum.CUSTOMERS]: CustomersSteps,
   [ApiTourNamesEnum.PROFILE]: ProfileSteps,
   [ApiTourNamesEnum.EDITOR]: SnippetEditorSteps,
-  [ApiTourNamesEnum.INT_MAP_MENU]: IntMapMenuSteps,
+  [ApiTourNamesEnum.INT_MAP]: IntMapPageSteps,
+  [ApiTourNamesEnum.INT_SEARCH]: IntSearchPageSteps,
 };
 
 const TourStarter: FunctionComponent<ITourStarterProps> = ({ tour }) => {

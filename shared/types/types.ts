@@ -90,7 +90,8 @@ export enum ApiTourNamesEnum {
   "CUSTOMERS" = "customers",
   "PROFILE" = "profile",
   "EDITOR" = "editor",
-  "INT_MAP_MENU" = "intMapMenu",
+  "INT_MAP" = "intMap",
+  "INT_SEARCH" = "intSearch",
 }
 
 export type ApiShowTour = Record<ApiTourNamesEnum, boolean>;

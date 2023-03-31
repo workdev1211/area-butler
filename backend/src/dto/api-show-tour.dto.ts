@@ -29,7 +29,11 @@ class ApiShowTourDto implements ApiShowTour {
 
   @IsNotEmpty()
   @IsBoolean()
-  [ApiTourNamesEnum.INT_MAP_MENU]: boolean;
+  [ApiTourNamesEnum.INT_MAP]: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  [ApiTourNamesEnum.INT_SEARCH]: boolean;
 }
 
 export default ApiShowTourDto;

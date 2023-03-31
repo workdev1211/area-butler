@@ -7,5 +7,6 @@ export const intUserInitShowTour: ApiShowTour = {
   [ApiTourNamesEnum.CUSTOMERS]: false,
   [ApiTourNamesEnum.PROFILE]: false,
   [ApiTourNamesEnum.EDITOR]: false,
-  [ApiTourNamesEnum.INT_MAP_MENU]: true,
+  [ApiTourNamesEnum.INT_MAP]: true,
+  [ApiTourNamesEnum.INT_SEARCH]: true,
 };

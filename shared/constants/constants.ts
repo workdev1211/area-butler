@@ -30,7 +30,8 @@ export const initialShowTour: ApiShowTour = {
   [ApiTourNamesEnum.CUSTOMERS]: true,
   [ApiTourNamesEnum.PROFILE]: true,
   [ApiTourNamesEnum.EDITOR]: true,
-  [ApiTourNamesEnum.INT_MAP_MENU]: false,
+  [ApiTourNamesEnum.INT_MAP]: false,
+  [ApiTourNamesEnum.INT_SEARCH]: false,
 };
 
 export const localStorageConsentGivenKey = "ab-cg";

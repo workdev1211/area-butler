@@ -642,7 +642,13 @@ const SearchParamsPage: FunctionComponent = () => {
           : [<div key={"dummy"} />, <SearchButton key="search-button" />]
       }
     >
-      <TourStarter tour={ApiTourNamesEnum.SEARCH} />
+      <TourStarter
+        tour={
+          integrationUser
+            ? ApiTourNamesEnum.INT_SEARCH
+            : ApiTourNamesEnum.SEARCH
+        }
+      />
       {isShownBusyModal && (
         <BusyModal
           items={busyModalItems}
