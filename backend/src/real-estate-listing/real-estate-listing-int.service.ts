@@ -26,7 +26,7 @@ export class RealEstateListingIntService {
 
     if (existingRealEstateListing) {
       Object.assign(existingRealEstateListing, realEstateListing);
-      return existingRealEstateListing;
+      return existingRealEstateListing.save();
     }
 
     return new this.realEstateListingModel(realEstateListing).save();

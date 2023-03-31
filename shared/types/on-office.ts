@@ -100,12 +100,16 @@ interface IApiOnOfficeResponseResult<T> {
   actionid: ApiOnOfficeActionIdsEnum;
   resourceid: string;
   resourcetype: ApiOnOfficeResourceTypesEnum;
+  cacheable?: boolean;
   identifier: string;
   status: {
     errorcode: number; // enum?
     message: string; // enum?
   };
   data: {
+    meta?: {
+      cntabsolute?: number;
+    };
     records: IApiOnOfficeResponseResultRecord<T>[];
   };
 }

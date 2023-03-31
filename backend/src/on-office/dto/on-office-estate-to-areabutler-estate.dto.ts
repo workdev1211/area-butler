@@ -38,9 +38,12 @@ class OnOfficeEstateToAreaButlerEstateDto
   @Expose()
   @IsNotEmpty()
   @IsString()
-  @Transform(({ obj: { objekttitel } }): string => objekttitel, {
-    toClassOnly: true,
-  })
+  @Transform(
+    ({ obj: { objekttitel, address } }): string => objekttitel || address,
+    {
+      toClassOnly: true,
+    },
+  )
   name: string;
 
   @Expose()

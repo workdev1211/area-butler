@@ -48,11 +48,11 @@ import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntegrationService } from '../location/location-integration.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
-import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
+// import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
   IApiIntUserOnOfficeParams,
-  TApiIntegrationUserConfig,
+  // TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 
@@ -184,10 +184,12 @@ export class OnOfficeService {
       throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
     }
 
-    const { color, logo } = await this.fetchLogoAndColor({
-      ...integrationUser.parameters,
-      extendedClaim,
-    });
+    // TODO check the error - "parameter extendedclaim is required, but missing, empty or invalid"
+    // Could be a race condition
+    // const { color, logo } = await this.fetchLogoAndColor({
+    //   ...integrationUser.parameters,
+    //   extendedClaim,
+    // });
 
     integrationUser =
       integrationUser.integrationUserId === integrationUserId
@@ -199,10 +201,10 @@ export class OnOfficeService {
                 extendedClaim,
                 parameterCacheId,
               },
-              config: {
-                color: color ? `#${color}` : undefined,
-                logo: logo ? convertBase64ContentToUri(logo) : undefined,
-              } as TApiIntegrationUserConfig,
+              // config: {
+              //   color: color ? `#${color}` : undefined,
+              //   logo: logo ? convertBase64ContentToUri(logo) : undefined,
+              // } as TApiIntegrationUserConfig,
             },
           )
         : await this.integrationUserService.create({
@@ -217,6 +219,10 @@ export class OnOfficeService {
               apiKey: integrationUser.parameters.apiKey,
               token: integrationUser.parameters.token,
             },
+            // config: {
+            //   color: color ? `#${color}` : undefined,
+            //   logo: logo ? convertBase64ContentToUri(logo) : undefined,
+            // } as TApiIntegrationUserConfig,
           });
 
     const availProdContingents =
@@ -490,7 +496,7 @@ export class OnOfficeService {
 
     if (!place) {
       this.logger.error(this.fetchAndProcessEstateData.name, location, place);
-      throw new HttpException('Place has not been found!', 400);
+      throw new HttpException('Adresse nicht gefunden!', 400); // Address is not found
     }
 
     Object.assign(onOfficeEstate, {
