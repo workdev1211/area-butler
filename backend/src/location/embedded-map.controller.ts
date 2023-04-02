@@ -9,15 +9,17 @@ import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapsho
 import { SubscriptionService } from '../user/subscription.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
+import { IntegrationUserService } from '../user/integration-user.service';
 
 @ApiTags('embedded-map')
 @Controller('api/location/snapshot/iframe')
 export class EmbeddedMapController {
   constructor(
-    private locationService: LocationService,
-    private userService: UserService,
-    private realEstateListingService: RealEstateListingService,
+    private readonly locationService: LocationService,
+    private readonly userService: UserService,
     private readonly subscriptionService: SubscriptionService,
+    private readonly integrationUserService: IntegrationUserService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   @ApiOperation({ description: 'Fetch an embedded map' })
@@ -25,26 +27,48 @@ export class EmbeddedMapController {
   async fetchEmbeddedMap(
     @Param('token') token: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const snapshot = await this.locationService.fetchEmbeddedMap(token);
-    const { userId } = snapshot;
-    const user = await this.userService.fetchByIdWithAssets(userId);
-    const userSubscription = await this.subscriptionService.findActiveByUserId(
-      userId,
-    );
+    // TODO think about moving to the location service
+    const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
+    const { userId, integrationParams } = snapshotDoc;
+    let isTrial = false;
+    const isIntegrationSnapshot = !userId;
+    let user;
 
-    if (!userSubscription) {
-      throw new HttpException(subscriptionExpiredMessage, 402);
+    if (!isIntegrationSnapshot) {
+      user = await this.userService.fetchByIdWithAssets(userId);
+
+      const userSubscription =
+        await this.subscriptionService.findActiveByUserId(userId);
+
+      isTrial = userSubscription.type === ApiSubscriptionPlanType.TRIAL;
+
+      if (!userSubscription) {
+        throw new HttpException(subscriptionExpiredMessage, 402);
+      }
+    }
+
+    if (isIntegrationSnapshot) {
+      user = await this.integrationUserService.findOne(
+        {
+          integrationUserId: integrationParams.integrationUserId,
+        },
+        integrationParams.integrationType,
+      );
+    }
+
+    if (!user) {
+      throw new HttpException('Unknown user!', 400);
     }
 
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(user);
 
     return mapSnapshotToEmbeddableMap(
-      snapshot,
+      snapshotDoc,
       true,
       realEstateListings,
-      userSubscription.type === ApiSubscriptionPlanType.TRIAL,
-      user.poiIcons,
+      isTrial,
+      !isIntegrationSnapshot ? user.poiIcons : undefined,
     );
   }
 }

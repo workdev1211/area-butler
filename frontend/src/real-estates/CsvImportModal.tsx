@@ -62,6 +62,7 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
           `Beim Importieren von Daten aus den folgenden Zeilen sind Fehler aufgetreten: ${errorLineNumbers
             .sort((a, b) => a - b)
             .join(", ")}`,
+          () => {},
           false
         );
       } else {

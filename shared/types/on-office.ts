@@ -250,3 +250,11 @@ export interface IOnOfficeHandleLogin {
   actionType?: OnOfficeLoginActionTypesEnum;
   message?: string;
 }
+
+export enum OnOfficeIntActTypesEnum {
+  "UNLOCK_IFRAME" = "UNLOCK_IFRAME",
+}
+
+export type TOnOfficeIntActTypes =
+  | OpenAiQueryTypeEnum
+  | OnOfficeIntActTypesEnum;

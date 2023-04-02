@@ -69,17 +69,6 @@ const MapIframeDescription = (title = "Interaktive Karten Paket") => {
           <li>QR Code</li>
           <li>Hyperlink</li>
         </ul>
-
-        <div
-          className="absolute font-bold text-4xl top-1/2 left-1/2"
-          style={{
-            transform: "translate(-50%, -50%) rotate(-45deg)",
-            letterSpacing: "1rem",
-            opacity: 0.4,
-          }}
-        >
-          Coming soon
-        </div>
       </div>
     </>
   );

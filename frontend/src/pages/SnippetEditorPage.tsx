@@ -421,7 +421,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     codeSnippet,
     directLink,
     snapshotId,
-    placeLabel: snapshot.placesLocation.label,
+    searchAddress: snapshot.placesLocation.label,
   };
 
   return (
@@ -456,7 +456,7 @@ const SnippetEditorPage: FunctionComponent = () => {
             mapBoxToken={mapBoxAccessToken}
             mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
             searchResponse={snapshot.searchResponse}
-            placesLocation={snapshot.placesLocation}
+            searchAddress={snapshot.placesLocation.label}
             location={snapshot.location}
             saveConfig={async () => {
               await saveSnapshotConfig(mapRef, snapshotId, snapshot);

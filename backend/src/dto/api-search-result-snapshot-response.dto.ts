@@ -39,6 +39,10 @@ class ApiSearchResultSnapshotResponseDto
   endsAt?: Date;
 
   @IsOptional()
+  @IsDate()
+  iframeEndsAt?: Date;
+
+  @IsOptional()
   @IsString()
   description?: string;
 

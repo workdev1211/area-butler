@@ -41,7 +41,7 @@ export const useHttp = () => {
 
   const post = async <T, U = unknown>(
     url: string,
-    body: U,
+    body?: U,
     requestHeaders = {}
   ): Promise<AxiosResponse<T>> => {
     const headers: any = { ...defaultHeaders, ...requestHeaders };

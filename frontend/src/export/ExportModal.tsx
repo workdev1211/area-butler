@@ -64,7 +64,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
     ({ title, items }: EntityGroup) =>
       title !== realEstateListingsTitle && items.length > 0
   );
-  
+
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
@@ -244,7 +244,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                   censusData={showCensus ? censusData : undefined}
                   transportationParams={searchContextState.transportationParams}
                   activeMeans={activeMeans}
-                  listingAddress={searchContextState.placesLocation.label}
+                  listingAddress={searchContextState.placesLocation?.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
                   mapClippings={selectableMapClippings}
@@ -273,7 +273,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                   censusData={showCensus ? censusData : undefined}
                   searchResponse={searchContextState.searchResponse!}
                   transportationParams={searchContextState.transportationParams}
-                  listingAddress={searchContextState.placesLocation.label}
+                  listingAddress={searchContextState.placesLocation?.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   downloadButtonDisabled={false}
                   mapClippings={selectableMapClippings}
@@ -301,7 +301,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                   groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : undefined}
                   transportationParams={searchContextState.transportationParams}
-                  listingAddress={searchContextState.placesLocation.label}
+                  listingAddress={searchContextState.placesLocation?.label}
                   realEstateListing={searchContextState.realEstateListing!}
                   mapClippings={selectableMapClippings}
                   federalElectionData={

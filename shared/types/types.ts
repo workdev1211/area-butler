@@ -364,6 +364,7 @@ export interface ApiSearchResultSnapshotResponse {
   lastAccess?: Date;
   visitAmount?: number;
   endsAt?: Date;
+  iframeEndsAt?: Date;
   updatedAt?: Date;
   isTrial?: boolean;
   userPoiIcons?: IApiUserPoiIcons;

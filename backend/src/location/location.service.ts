@@ -83,6 +83,7 @@ export class LocationService {
     user: UserDocument | TIntegrationUserDocument,
     search: ApiSearch,
   ): Promise<ApiSearchResponse> {
+    // 'in' checks a schema but not a specific document
     const isIntegrationUser = 'integrationUserId' in user;
 
     const integrationParams = isIntegrationUser
@@ -110,7 +111,9 @@ export class LocationService {
       { sort: { createdAt: -1 } },
     );
 
-    this.checkAddressExpiration(existingLocation);
+    if (!isIntegrationUser) {
+      this.checkLocationExpiration(existingLocation);
+    }
 
     if (!existingLocation && !isIntegrationUser) {
       let parentUser = user;
@@ -225,14 +228,11 @@ export class LocationService {
           },
     );
 
-    if (!existingLocation) {
-      // TODO change from hardcoded in case of the integration user
-      const addressExpiration = isIntegrationUser
-        ? { value: 1, unit: 'year' }
-        : this.subscriptionService.getLimitAmount(
-            user.subscription.stripePriceId,
-            ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-          );
+    if (!existingLocation && !isIntegrationUser) {
+      const addressExpiration = this.subscriptionService.getLimitAmount(
+        user.subscription.stripePriceId,
+        ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+      );
 
       if (addressExpiration) {
         const currentDate = dayjs();
@@ -248,7 +248,9 @@ export class LocationService {
             .toDate(),
         });
       }
-    } else {
+    }
+
+    if (existingLocation) {
       Object.assign(location, { endsAt: existingLocation.endsAt });
     }
 
@@ -312,33 +314,23 @@ export class LocationService {
   }
 
   async createSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
+    user: UserDocument,
     snapshot: ApiSearchResultSnapshot,
     config?: ApiSearchResultSnapshotConfig,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    const isIntegrationUser = 'integrationUserId' in user;
     const token = randomBytes(60).toString('hex');
 
-    const mapboxAccessToken = isIntegrationUser
-      ? (await this.integrationUserService.createMapboxAccessToken(user)).config
-          .mapboxAccessToken
-      : (await this.userService.createMapboxAccessToken(user))
-          .mapboxAccessToken;
+    const mapboxAccessToken = (
+      await this.userService.createMapboxAccessToken(user)
+    ).mapboxAccessToken;
 
     let parsedConfig = config;
 
+    // a standard flow - we should use a config from a previous snapshot
     if (!parsedConfig) {
-      const snapshot = !isIntegrationUser
-        ? (
-            await this.fetchSnapshots(
-              user,
-              0,
-              1,
-              { config: 1 },
-              { updatedAt: -1 },
-            )
-          )[0]
-        : undefined;
+      const snapshot = (
+        await this.fetchSnapshots(user, 0, 1, { config: 1 }, { updatedAt: -1 })
+      )[0];
 
       parsedConfig = snapshot?.config || defaultSnapshotConfig;
     }
@@ -348,30 +340,14 @@ export class LocationService {
       snapshot,
       token,
       config: parsedConfig,
+      userId: user.id,
+      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
-    Object.assign(
-      snapshotDoc,
-      isIntegrationUser
-        ? {
-            integrationParams: {
-              integrationId: snapshot.integrationId,
-              integrationUserId: user.integrationUserId,
-              integrationType: user.integrationType,
-            },
-          }
-        : {
-            userId: user.id,
-            isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
-          },
+    const addressExpiration = this.subscriptionService.getLimitAmount(
+      user.subscription.stripePriceId,
+      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
     );
-
-    const addressExpiration = isIntegrationUser
-      ? { value: 1, unit: 'year' }
-      : this.subscriptionService.getLimitAmount(
-          user.subscription.stripePriceId,
-          ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-        );
 
     if (addressExpiration) {
       const createdAt = dayjs();
@@ -407,7 +383,14 @@ export class LocationService {
       throw new HttpException('Unknown token', 404);
     }
 
-    this.checkAddressExpiration(snapshotDoc);
+    // to keep in consistency with 'isIntegrationUser' property
+    const isIntegrationSnapshot = !snapshotDoc.userId;
+
+    if (isIntegrationSnapshot) {
+      this.checkSnapshotIframeExpiration(snapshotDoc);
+    } else {
+      this.checkLocationExpiration(snapshotDoc);
+    }
 
     snapshotDoc.lastAccess = new Date();
     snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
@@ -481,20 +464,24 @@ export class LocationService {
   }
 
   async fetchSnapshots(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     skip = 0,
     limit = 0,
     includedFields?: IApiMongoParams,
     sortOptions?: IApiMongoParams,
     filter?: { [p: string]: unknown },
   ): Promise<SearchResultSnapshotDocument[]> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.htmlSnippet &&
-        !subscriptionPlan.appFeatures.htmlSnippet,
-      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const filterQuery = filter || { userId: user.id };
 
@@ -538,7 +525,9 @@ export class LocationService {
       throw new HttpException('Unknown snapshot id', 400);
     }
 
-    this.checkAddressExpiration(snapshotDoc);
+    if (!isIntegrationUser) {
+      this.checkLocationExpiration(snapshotDoc);
+    }
 
     return snapshotDoc;
   }
@@ -555,29 +544,36 @@ export class LocationService {
       throw new HttpException('Unknown token', 400);
     }
 
-    this.checkAddressExpiration(snapshotDoc);
+    // to keep in consistency with 'isIntegrationUser' property
+    const isIntegrationSnapshot = !snapshotDoc.userId;
 
-    return snapshotDoc;
-  }
-
-  async fetchSnapshotByIntegrationId(
-    integrationId: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
-      'integrationParams.integrationId': integrationId,
-    });
-
-    if (!snapshotDoc) {
-      throw new HttpException('Unknown integration id', 400);
+    if (!isIntegrationSnapshot) {
+      this.checkLocationExpiration(snapshotDoc);
     }
 
     return snapshotDoc;
   }
 
-  private checkAddressExpiration(
-    address: LocationSearchDocument | SearchResultSnapshotDocument,
+  private checkLocationExpiration(
+    location: LocationSearchDocument | SearchResultSnapshotDocument,
   ): void {
-    if (dayjs().isAfter(address?.endsAt)) {
+    const isLocationExpired = location.endsAt
+      ? dayjs().isAfter(location.endsAt)
+      : false;
+
+    if (isLocationExpired) {
+      throw new HttpException(addressExpiredMessage, 402);
+    }
+  }
+
+  private checkSnapshotIframeExpiration(
+    snapshotDoc: SearchResultSnapshotDocument,
+  ): void {
+    const isSnapshotIframeExpired = snapshotDoc.iframeEndsAt
+      ? dayjs().isAfter(snapshotDoc.iframeEndsAt)
+      : true;
+
+    if (isSnapshotIframeExpired) {
       throw new HttpException(addressExpiredMessage, 402);
     }
   }

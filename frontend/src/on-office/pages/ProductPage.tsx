@@ -95,7 +95,9 @@ export const ProductPage: FunctionComponent = () => {
           {onOfficeProducts.map((groupedProducts, i) => (
             <div
               className={`grid xl:col-start-2 xl:col-end-4 grid-cols-1 xl:grid-cols-2 gap-10 p-3 rounded-3xl ${
-                i > 0 ? "opacity-50" : ""
+                groupedProducts.some(({ isDisabled }) => isDisabled)
+                  ? "opacity-50"
+                  : ""
               }`}
               style={{ outline: "3px #a9a9a9 solid" }}
               key={i}

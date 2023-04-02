@@ -167,18 +167,23 @@ export class OnOfficeService {
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
+    // TODO refactor to a single request
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
     let integrationUser = await this.integrationUserService.findOne(
-      {
-        $or: [
-          { integrationUserId },
-          { 'parameters.customerWebId': customerWebId },
-        ],
-        'parameters.token': { $exists: true },
-        'parameters.apiKey': { $exists: true },
-      },
+      { integrationUserId },
       this.integrationType,
     );
+
+    if (!integrationUser) {
+      integrationUser = await this.integrationUserService.findOne(
+        {
+          'parameters.customerWebId': customerWebId,
+          'parameters.token': { $exists: true },
+          'parameters.apiKey': { $exists: true },
+        },
+        this.integrationType,
+      );
+    }
 
     if (!integrationUser) {
       throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
@@ -332,7 +337,7 @@ export class OnOfficeService {
       },
     } = confirmOrderData;
 
-    const integrationUser = await this.integrationUserService.findOneOrFail(
+    let integrationUser = await this.integrationUserService.findOneOrFail(
       { accessToken },
       this.integrationType,
     );
@@ -374,7 +379,7 @@ export class OnOfficeService {
       },
     );
 
-    await this.integrationUserService.addProductContingent(
+    integrationUser = await this.integrationUserService.addProductContingents(
       integrationUser.id,
       convertOnOfficeProdToIntUserProd(product),
     );

@@ -21,13 +21,11 @@ export const openAi50OnOfficeProduct: IOnOfficeProduct = {
 export const mapIframeOnOfficeProduct: IOnOfficeProduct = {
   type: OnOfficeProductTypesEnum.MAP_IFRAME,
   price: 7.99,
-  isDisabled: true,
 };
 
 export const mapIframe50OnOfficeProduct: IOnOfficeProduct = {
   type: OnOfficeProductTypesEnum.MAP_IFRAME_50,
   price: 262.11,
-  isDisabled: true,
 };
 
 export const onePageOnOfficeProduct: IOnOfficeProduct = {

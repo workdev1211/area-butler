@@ -11,12 +11,12 @@ import {
 export const convertOnOfficeProdToIntUserProd = ({
   type,
   quantity,
-}: IApiOnOfficeCreateOrderProduct): IApiIntUserOnOfficeProduct => {
-  const integrationUserProduct = {} as IApiIntUserOnOfficeProduct;
+}: IApiOnOfficeCreateOrderProduct): IApiIntUserOnOfficeProduct[] => {
+  const integrationUserProducts: IApiIntUserOnOfficeProduct[] = [];
 
   switch (type) {
     case OnOfficeProductTypesEnum.OPEN_AI: {
-      Object.assign(integrationUserProduct, {
+      integrationUserProducts.push({
         quantity,
         type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
       });
@@ -25,7 +25,7 @@ export const convertOnOfficeProdToIntUserProd = ({
     }
 
     case OnOfficeProductTypesEnum.OPEN_AI_50: {
-      Object.assign(integrationUserProduct, {
+      integrationUserProducts.push({
         quantity: quantity * 50,
         type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
       });
@@ -34,41 +34,77 @@ export const convertOnOfficeProdToIntUserProd = ({
     }
 
     case OnOfficeProductTypesEnum.MAP_IFRAME: {
-      Object.assign(integrationUserProduct, {
-        quantity,
-        type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-      });
+      integrationUserProducts.push(
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+      );
 
       break;
     }
 
     case OnOfficeProductTypesEnum.MAP_IFRAME_50: {
-      Object.assign(integrationUserProduct, {
-        quantity: quantity * 50,
-        type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-      });
+      const resultingQuantity = quantity * 50;
+
+      integrationUserProducts.push(
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+      );
 
       break;
     }
 
     case OnOfficeProductTypesEnum.ONE_PAGE: {
-      Object.assign(integrationUserProduct, {
-        quantity,
-        type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-      });
+      integrationUserProducts.push(
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
+        },
+      );
 
       break;
     }
 
     case OnOfficeProductTypesEnum.ONE_PAGE_50: {
-      Object.assign(integrationUserProduct, {
-        quantity: quantity * 50,
-        type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-      });
+      const resultingQuantity = quantity * 50;
+
+      integrationUserProducts.push(
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
+        },
+      );
 
       break;
     }
   }
 
-  return integrationUserProduct;
+  return integrationUserProducts;
 };

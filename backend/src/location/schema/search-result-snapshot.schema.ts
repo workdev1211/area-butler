@@ -42,6 +42,9 @@ export class SearchResultSnapshot {
   @Prop({ type: Date })
   endsAt: Date;
 
+  @Prop({ type: Date })
+  iframeEndsAt: Date;
+
   @Prop({ default: 0 })
   visitAmount: number;
 

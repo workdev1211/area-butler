@@ -7,6 +7,7 @@ import {
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
 import { OpenAiQueryTypeEnum } from "../types/open-ai";
+import { OnOfficeIntActTypesEnum } from "../types/on-office";
 
 export const getProdContTypeByActType = (
   integrationType: IntegrationTypesEnum,
@@ -21,6 +22,10 @@ export const getProdContTypeByActType = (
         case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
         case OpenAiQueryTypeEnum.GENERAL_QUESTION: {
           return ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI;
+        }
+
+        case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+          return ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME;
         }
 
         default: {

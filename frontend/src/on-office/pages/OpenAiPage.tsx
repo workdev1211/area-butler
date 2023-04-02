@@ -11,7 +11,7 @@ import { checkProdContAvailability } from "../../shared/integration.functions";
 import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
-import { toastSuccess } from "../../shared/shared.functions";
+import { toastError, toastSuccess } from "../../shared/shared.functions";
 
 const OpenAiPage: FunctionComponent = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -54,7 +54,9 @@ const OpenAiPage: FunctionComponent = () => {
           integrationUser!.availProdContingents
         )
       ) {
-        history.push("/products");
+        toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
+          history.push("/products");
+        });
       }
 
       return;
@@ -78,7 +80,7 @@ const OpenAiPage: FunctionComponent = () => {
 
   return (
     <DefaultLayout
-      title={`Adresse: ${searchContextState.placesLocation.label}`}
+      title={`Adresse: ${searchContextState.placesLocation?.label}`}
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
     >

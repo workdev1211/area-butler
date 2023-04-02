@@ -72,14 +72,15 @@ const SubscriptionPlanLimits: FunctionComponent<
 
   return (
     <>
-      <ConfirmationModal
-        isShownModal={isShownModal}
-        closeModal={() => {
-          setIsShownModal(false);
-        }}
-        onConfirm={cancelTrialSubscription}
-        text="Testphase beenden und Plan auswählen?"
-      />
+      {isShownModal && (
+        <ConfirmationModal
+          text="Testphase beenden und Plan auswählen?"
+          closeModal={() => {
+            setIsShownModal(false);
+          }}
+          onConfirm={cancelTrialSubscription}
+        />
+      )}
 
       <div className="mt-20 flex flex-col gap-5">
         <div>

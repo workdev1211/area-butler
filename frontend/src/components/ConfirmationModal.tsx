@@ -1,14 +1,12 @@
 import { FunctionComponent, useEffect } from "react";
 
 export interface ConfirmationModalProps {
-  isShownModal: boolean;
   closeModal: () => void;
   onConfirm: () => void;
   text: string;
 }
 
 const ConfirmationModal: FunctionComponent<ConfirmationModalProps> = ({
-  isShownModal = false,
   closeModal,
   onConfirm,
   text,
@@ -26,11 +24,6 @@ const ConfirmationModal: FunctionComponent<ConfirmationModalProps> = ({
     return () => document.removeEventListener("keydown", handleEscape);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // TODO refactor to the declarative call from the parent
-  if (!isShownModal) {
-    return null;
-  }
 
   return (
     <div className="modal modal-open z-9999">

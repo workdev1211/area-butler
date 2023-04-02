@@ -341,7 +341,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 searchContextState.responseConfig?.mapBoxMapId
               }
               searchResponse={searchContextState.searchResponse!}
-              placesLocation={searchContextState.placesLocation}
+              searchAddress={searchContextState.placesLocation?.label}
               location={searchContextState.location!}
               isTrial={
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL

@@ -117,7 +117,7 @@ export interface IEditorTabProps {
 export interface IExportTabProps {
   codeSnippet: string;
   directLink: string;
-  placeLabel: string;
+  searchAddress: string;
   snapshotId: string;
 }
 
@@ -125,7 +125,7 @@ interface ISearchResultContainerProps {
   mapBoxToken: string;
   mapBoxMapId?: string;
   searchResponse: ApiSearchResponse;
-  placesLocation: any;
+  searchAddress: string;
   location: ApiCoordinates;
   mapDisplayMode: MapDisplayModesEnum;
   saveConfig?: () => Promise<void>;
@@ -148,7 +148,7 @@ const SearchResultContainer = forwardRef<
       mapBoxToken,
       mapBoxMapId,
       searchResponse,
-      placesLocation,
+      searchAddress,
       location,
       mapDisplayMode,
       saveConfig,
@@ -690,7 +690,7 @@ const SearchResultContainer = forwardRef<
               mapBoxAccessToken={mapBoxToken}
               mapboxMapId={mapBoxMapIds.current}
               searchResponse={searchResponse}
-              searchAddress={placesLocation?.label}
+              searchAddress={searchAddress}
               groupedEntities={resultingGroupedEntities ?? []}
               snippetToken={searchContextState.responseToken}
               means={{
@@ -789,7 +789,7 @@ const SearchResultContainer = forwardRef<
                 toggleTransitRoutesToEntity(location, item)
               }
               transitRoutes={searchContextState.responseTransitRoutes}
-              searchAddress={placesLocation?.label}
+              searchAddress={searchAddress}
               resetPosition={() => {
                 searchContextDispatch({
                   type: SearchContextActionTypes.SET_MAP_CENTER,

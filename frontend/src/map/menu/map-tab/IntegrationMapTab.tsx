@@ -16,6 +16,7 @@ import { MapClipping } from "../../../context/SearchContext";
 import Localities from "./components/items/Localities";
 import MapSettings from "./components/integration-items/MapSettings";
 import MapScreenshots from "./components/integration-items/MapScreenshots";
+import InteractiveMap from "./components/integration-items/InteractiveMap";
 
 interface IIntegrationMapTabProps {
   groupedEntries: EntityGroup[];
@@ -56,6 +57,8 @@ const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
         mapClippings={mapClippings}
         searchAddress={searchAddress}
       />
+
+      <InteractiveMap searchAddress={searchAddress} />
     </div>
   );
 };

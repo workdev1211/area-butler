@@ -50,7 +50,7 @@ const invertFilter: CSSProperties = { filter: "invert(100%)" };
 const ExportTab: FunctionComponent<IExportTabProps> = ({
   codeSnippet,
   directLink,
-  placeLabel,
+  searchAddress,
   snapshotId,
 }) => {
   const { searchContextState, searchContextDispatch } =
@@ -178,7 +178,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           <div className="collapse-content">
             {clippings.length > 0 ? (
               <MapClippingsCollapsable
-                searchAddress={placeLabel}
+                searchAddress={searchAddress}
                 clippings={clippings}
               />
             ) : (
@@ -241,7 +241,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                   onClick={async () => {
                     saveAs(
                       await getQrCodeBase64(directLink),
-                      `${placeLabel.replace(/[\s|,]+/g, "-")}-QR-Code.png`
+                      `${searchAddress.replace(/[\s|,]+/g, "-")}-QR-Code.png`
                     );
                   }}
                 >
@@ -606,7 +606,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                 <h3
                   className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={() => {
-                    if (!searchContextState.placesLocation.label) {
+                    if (!searchContextState.placesLocation?.label) {
                       toastSuccess("Wird geladen ... bitte erneut klicken.");
                       return;
                     }

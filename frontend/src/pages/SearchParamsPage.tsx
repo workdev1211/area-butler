@@ -625,7 +625,7 @@ const SearchParamsPage: FunctionComponent = () => {
     <DefaultLayout
       title={
         integrationUser
-          ? `Adresse: ${searchContextState.placesLocation.label}`
+          ? `Adresse: ${searchContextState.placesLocation?.label}`
           : "Suche"
       }
       withHorizontalPadding={true}

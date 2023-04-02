@@ -371,7 +371,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             <OnePageDownload
               addressDescription={locationDescription}
               groupedEntries={filteredEntities!}
-              listingAddress={searchContextState.placesLocation.label}
+              listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
@@ -391,7 +391,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             <OnePagePngDownload
               addressDescription={locationDescription}
               groupedEntries={filteredEntities!}
-              listingAddress={searchContextState.placesLocation.label}
+              listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(

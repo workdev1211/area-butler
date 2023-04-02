@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model } from 'mongoose';
 import * as dayjs from 'dayjs';
@@ -28,6 +28,8 @@ import { intUserInitShowTour } from '../../../shared/constants/integration-user'
 
 @Injectable()
 export class IntegrationUserService {
+  private readonly logger = new Logger(IntegrationUserService.name);
+
   constructor(
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
@@ -40,7 +42,7 @@ export class IntegrationUserService {
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel
       .findOne({
-        findQuery,
+        ...findQuery,
         integrationType,
       })
       .sort({ updatedAt: -1 });
@@ -53,6 +55,7 @@ export class IntegrationUserService {
     const existingUser = await this.findOne(findQuery, integrationType);
 
     if (!existingUser) {
+      this.logger.error(findQuery, integrationType);
       throw new HttpException('Unknown user!', 400);
     }
 
@@ -67,6 +70,7 @@ export class IntegrationUserService {
     });
 
     if (!existingUser) {
+      this.logger.error(accessToken);
       throw new HttpException('Unknown user!', 400);
     }
 
@@ -145,23 +149,38 @@ export class IntegrationUserService {
     );
   }
 
-  async addProductContingent(
+  async addProductContingents(
     integrationUserDbId: string,
-    { type, quantity }: TApiIntegrationUserProduct,
+    productContingents: TApiIntegrationUserProduct[],
   ): Promise<TIntegrationUserDocument> {
-    if (!type || !quantity) {
+    if (
+      !productContingents.length ||
+      productContingents.some(({ type, quantity }) => !type || !quantity)
+    ) {
+      this.logger.error(productContingents);
       throw new HttpException('Incorrect product has been provided!', 400);
     }
+
+    const updatePushQuery = productContingents.reduce(
+      (result, { type, quantity }) => {
+        if (!result[`productContingents.${type}`]) {
+          result[`productContingents.${type}`] = { $each: [] };
+        }
+
+        result[`productContingents.${type}`].$each.push({
+          quantity,
+          expiresAt: dayjs().add(1, 'year').toDate(),
+        });
+
+        return result;
+      },
+      {},
+    );
 
     return this.integrationUserModel.findByIdAndUpdate(
       integrationUserDbId,
       {
-        $push: {
-          [`productContingents.${type}`]: {
-            quantity,
-            expiresAt: dayjs().add(1, 'year').toDate(),
-          },
-        },
+        $push: updatePushQuery,
       },
       { new: true },
     );
@@ -177,7 +196,7 @@ export class IntegrationUserService {
         (result, productContingentType) => {
           const remainingQuantity = this.getAvailProdCont(
             productContingents[productContingentType],
-            productsUsed[productContingentType],
+            productsUsed ? productsUsed[productContingentType] : 0,
           );
 
           if (remainingQuantity > 0) {

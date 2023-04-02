@@ -89,6 +89,7 @@ export const mapSnapshotToEmbeddableMap = (
     mapboxAccessToken: searchResultSnapshot.mapboxAccessToken,
     createdAt: searchResultSnapshot.createdAt,
     endsAt: searchResultSnapshot.endsAt,
+    iframeEndsAt: searchResultSnapshot.iframeEndsAt,
     updatedAt: searchResultSnapshot.updatedAt,
     isTrial,
     userPoiIcons,

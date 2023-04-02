@@ -56,7 +56,7 @@ export class LocationController extends AuthenticatedController {
     return this.locationService.searchLocation(user, searchData);
   }
 
-  @ApiOperation({ description: 'Create a new embeddable map' })
+  @ApiOperation({ description: 'Create a new map snapshot' })
   @Post('snapshot')
   async createSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
@@ -78,7 +78,7 @@ export class LocationController extends AuthenticatedController {
 
   // TODO think about merging updateSnapshot and updateSnapshotDescription
   // TODO think about using class-transformer instead of a mapper
-  @ApiOperation({ description: 'Update an existing embeddable map' })
+  @ApiOperation({ description: 'Update an existing map snapshot' })
   @Put('snapshot/:id')
   async updateSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
@@ -91,7 +91,7 @@ export class LocationController extends AuthenticatedController {
   }
 
   @ApiOperation({
-    description: 'Update an existing embeddable map description',
+    description: 'Update an existing map snapshot description',
   })
   @Put('snapshot/:id/description')
   async updateSnapshotDescription(
@@ -108,7 +108,7 @@ export class LocationController extends AuthenticatedController {
     );
   }
 
-  @ApiOperation({ description: 'Delete an existing embeddable map' })
+  @ApiOperation({ description: 'Delete an existing map snapshot' })
   @Delete('snapshot/:id')
   async deleteSnapshot(
     @InjectUser() user: UserDocument,
@@ -160,21 +160,21 @@ export class LocationController extends AuthenticatedController {
     ).map((r) => mapSnapshotToEmbeddableMap(r));
   }
 
-  @ApiOperation({ description: 'Fetch a specific embeddable map' })
+  @ApiOperation({ description: 'Fetch a specific map snapshot' })
   @Get('snapshot/:id')
   async fetchSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const map = await this.locationService.fetchSnapshotById(user, id);
+    const snapshotDoc = await this.locationService.fetchSnapshotById(user, id);
 
-    map.updatedAt = new Date();
-    await map.save();
+    snapshotDoc.updatedAt = new Date();
+    await snapshotDoc.save();
 
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(user);
 
-    return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
+    return mapSnapshotToEmbeddableMap(snapshotDoc, false, realEstateListings);
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })

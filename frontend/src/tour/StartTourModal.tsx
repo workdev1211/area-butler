@@ -4,6 +4,7 @@ import { UserActionTypes, UserContext } from "context/UserContext";
 import { toastError } from "shared/shared.functions";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { useTour } from "../hooks/tour";
+import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 
 const tourDescriptions: Record<ApiTourNamesEnum, string> = {
   [ApiTourNamesEnum.SEARCH]:
@@ -40,7 +41,8 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
     userDispatch,
   } = useContext(UserContext);
 
-  const { hideTour, hideTours } = useTour(!!integrationUser);
+  const isIntegrationUser = !!integrationUser;
+  const { hideTour, hideTours } = useTour(isIntegrationUser);
 
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 
@@ -48,10 +50,10 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
     try {
       const user = showNoMoreTips ? await hideTours() : await hideTour(tour);
 
-      if ("integrationUserId" in user) {
+      if (isIntegrationUser) {
         userDispatch({
           type: UserActionTypes.SET_INTEGRATION_USER,
-          payload: user,
+          payload: user as IApiIntegrationUser,
         });
       } else {
         userDispatch({

@@ -271,7 +271,7 @@ const EmbedContainer: FunctionComponent = () => {
         mapBoxToken={mapBoxToken}
         mapBoxMapId={searchConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse}
-        placesLocation={searchContextState.placesLocation}
+        searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={!!result?.isTrial}
         userPoiIcons={userPoiIcons}

@@ -56,8 +56,8 @@ const MapPage: FunctionComponent = () => {
     }
 
     const getSnapshot = async () => {
-      const snapshotResponse = await fetchSnapshot(snapshotId);
-      const config = snapshotResponse.config!;
+      const snapshotResponseData = await fetchSnapshot(snapshotId);
+      const config = snapshotResponseData.config!;
 
       if (config && !("showAddress" in config)) {
         config["showAddress"] = true;
@@ -67,9 +67,9 @@ const MapPage: FunctionComponent = () => {
         config["showStreetViewLink"] = true;
       }
 
-      setSnapshotResponse(snapshotResponse);
+      setSnapshotResponse(snapshotResponseData);
       setSnapshotConfig(config);
-      setMapBoxToken(snapshotResponse.mapboxAccessToken);
+      setMapBoxToken(snapshotResponseData.mapboxAccessToken);
     };
 
     void getSnapshot();
@@ -172,6 +172,11 @@ const MapPage: FunctionComponent = () => {
       ),
     });
 
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
+      payload: snapshotResponse.iframeEndsAt,
+    });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotResponse, snapshotConfig]);
 
@@ -197,7 +202,7 @@ const MapPage: FunctionComponent = () => {
         mapBoxToken={mapBoxToken}
         mapBoxMapId={snapshotConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse!}
-        placesLocation={searchContextState.placesLocation}
+        searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={false}
         mapDisplayMode={MapDisplayModesEnum.INTEGRATION}

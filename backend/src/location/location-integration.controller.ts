@@ -25,17 +25,21 @@ import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-des
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { LocationIntegrationService } from './location-integration.service';
+import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 
+// TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
 @Controller('api/location-integration')
 export class LocationIntegrationController {
   constructor(
     private readonly locationService: LocationService,
+    private readonly locationIntegrationService: LocationIntegrationService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
-  @ApiOperation({ description: 'Fetch a specific embeddable map' })
+  @ApiOperation({ description: 'Fetch a specific map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('snapshot/:id')
   async fetchSnapshot(
@@ -72,17 +76,20 @@ export class LocationIntegrationController {
     return this.locationService.searchLocation(integrationUser, searchData);
   }
 
-  @ApiOperation({ description: 'Create a new embeddable map' })
+  @ApiOperation({ description: 'Create a new map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('snapshot')
   async createSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSnapshot(integrationUser, snapshot);
+    return this.locationIntegrationService.createSnapshot(
+      integrationUser,
+      snapshot,
+    );
   }
 
-  @ApiOperation({ description: 'Update an existing embeddable map' })
+  @ApiOperation({ description: 'Update an existing map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Put('snapshot/:id')
   async updateSnapshot(
@@ -147,5 +154,35 @@ export class LocationIntegrationController {
     );
 
     return locRealEstDesc;
+  }
+
+  @ApiOperation({
+    description:
+      'Unlock iFrame (interactive map) for 1 year for a specific snapshot',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('unlock-iframe/:id')
+  async unlockIframe(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('id') id: string,
+  ): Promise<Date> {
+    // TODO move to the interceptor
+    this.integrationUserService.checkProdContAvailability(
+      integrationUser,
+      OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+    );
+
+    const { iframeEndsAt } =
+      await this.locationIntegrationService.setIframeDuration(
+        integrationUser,
+        id,
+      );
+
+    await this.integrationUserService.incrementProductUsage(
+      integrationUser,
+      OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+    );
+
+    return iframeEndsAt;
   }
 }

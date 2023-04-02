@@ -169,7 +169,7 @@ export const timeToHumanReadable = (timeInMinutes: number): string => {
 export const toastSuccess = (message: string) => {
   toast.success(message, {
     position: "top-right",
-    autoClose: 3000,
+    autoClose: 10000,
     hideProgressBar: false,
     closeOnClick: true,
     pauseOnHover: true,
@@ -180,8 +180,8 @@ export const toastSuccess = (message: string) => {
 
 export const toastError = (
   message: string,
-  closeTimeMs: number | false = 3000,
-  onClose = () => {}
+  onClose = () => {},
+  closeTimeMs: number | false = 10000,
 ) => {
   toast.error(message, {
     onClose,
