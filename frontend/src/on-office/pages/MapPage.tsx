@@ -22,7 +22,6 @@ import {
 } from "../../context/RealEstateContext";
 import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
-  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   MapDisplayModesEnum,
@@ -46,8 +45,6 @@ const MapPage: FunctionComponent = () => {
 
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
-  const [snapshotConfig, setSnapshotConfig] =
-    useState<ApiSearchResultSnapshotConfig>();
   const [mapBoxToken, setMapBoxToken] = useState("");
 
   useEffect(() => {
@@ -68,7 +65,6 @@ const MapPage: FunctionComponent = () => {
       }
 
       setSnapshotResponse(snapshotResponseData);
-      setSnapshotConfig(config);
       setMapBoxToken(snapshotResponseData.mapboxAccessToken);
     };
 
@@ -78,27 +74,30 @@ const MapPage: FunctionComponent = () => {
   }, [snapshotId]);
 
   useEffect(() => {
-    if (!snapshotResponse || !snapshotConfig) {
+    if (!snapshotResponse || !snapshotResponse.config) {
       return;
     }
 
     const {
-      searchResponse,
-      transportationParams,
-      localityParams,
-      location,
-      placesLocation,
-      preferredLocations = [],
-      routes = [],
-      transitRoutes = [],
-      realEstateListings = [],
-    } = snapshotResponse.snapshot;
+      snapshot: {
+        searchResponse,
+        transportationParams,
+        localityParams,
+        location,
+        placesLocation,
+        preferredLocations = [],
+        routes = [],
+        transitRoutes = [],
+        realEstateListings = [],
+      },
+      config,
+    } = snapshotResponse;
 
-    const filteredRealEstateListings = snapshotConfig.realEstateStatus
+    const filteredRealEstateListings = config.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            snapshotConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
-            status === snapshotConfig.realEstateStatus
+            config.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            status === config.realEstateStatus
         )
       : realEstateListings;
 
@@ -129,7 +128,7 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
-      payload: snapshotConfig.zoomLevel || defaultMapZoom,
+      payload: config.zoomLevel || defaultMapZoom,
     });
 
     searchContextDispatch({
@@ -154,7 +153,7 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-      payload: { ...snapshotConfig },
+      payload: { ...config },
     });
 
     searchContextDispatch({
@@ -166,7 +165,7 @@ const MapPage: FunctionComponent = () => {
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups(
         searchResponse,
-        snapshotConfig,
+        config,
         filteredRealEstateListings,
         preferredLocations
       ),
@@ -178,7 +177,7 @@ const MapPage: FunctionComponent = () => {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshotResponse, snapshotConfig]);
+  }, [snapshotResponse]);
 
   useEffect(() => {
     if (
@@ -200,7 +199,7 @@ const MapPage: FunctionComponent = () => {
       <TourStarter tour={ApiTourNamesEnum.INT_MAP} />
       <SearchResultContainer
         mapBoxToken={mapBoxToken}
-        mapBoxMapId={snapshotConfig?.mapBoxMapId}
+        mapBoxMapId={snapshotResponse?.config?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse!}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

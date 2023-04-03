@@ -1,6 +1,6 @@
 import { RealEstateListingDocument } from '../schema/real-estate-listing.schema';
-import { randomizeCoordinates } from '../../shared/shared.functions';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   realEstateListing: RealEstateListingDocument,

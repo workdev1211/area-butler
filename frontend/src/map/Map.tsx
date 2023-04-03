@@ -27,6 +27,7 @@ import { IGotoMapCenter } from "context/SearchContext";
 import {
   getCombinedOsmEntityTypes,
   groupBy,
+  randomizeCoordinates,
 } from "../../../shared/functions/shared.functions";
 import {
   ApiRoute,
@@ -639,15 +640,11 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
     // draw my location (map) icon
     useEffect(() => {
-      if (!currentMap) {
+      if (!currentMap || !config?.showLocation) {
         return;
       }
 
       const drawMapIcon = async () => {
-        if (!config?.showLocation) {
-          return;
-        }
-
         const mapIconImage = new Image();
         mapIconImage.src =
           config?.mapIcon ??
@@ -693,7 +690,9 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
         });
 
-        const { lat, lng } = searchResponse.centerOfInterest.coordinates;
+        const { lat, lng } = config.showAddress
+          ? searchResponse.centerOfInterest.coordinates
+          : randomizeCoordinates(searchResponse.centerOfInterest.coordinates);
 
         const myLocationMarker = L.marker([lat, lng], {
           icon: myLocationLeafletIcon,

@@ -158,9 +158,9 @@ export const useLocationData = (isIntegrationUser = false) => {
   const updateSnapshot = async (
     snapshotId: string,
     updateSnapshotData: ApiUpdateSearchResultSnapshot
-  ): Promise<ApiUpdateSearchResultSnapshot> => {
+  ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
-      await put<ApiUpdateSearchResultSnapshot>(
+      await put<ApiSearchResultSnapshotResponse>(
         isIntegrationUser
           ? `/api/location-integration/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`,
@@ -173,7 +173,7 @@ export const useLocationData = (isIntegrationUser = false) => {
     mapRef: RefObject<ICurrentMapRef>,
     snapshotId: string,
     snapshot: ApiSearchResultSnapshot
-  ): Promise<void> => {
+  ): Promise<ApiSearchResultSnapshotResponse | undefined> => {
     if (!mapRef.current || !searchContextState.responseConfig) {
       return;
     }
@@ -207,12 +207,14 @@ export const useLocationData = (isIntegrationUser = false) => {
     });
 
     try {
-      await updateSnapshot(snapshotId, {
+      const snapshotResponse = await updateSnapshot(snapshotId, {
         snapshot,
         config: config as ApiSearchResultSnapshotConfig,
       });
 
       toastSuccess("Einstellungen gespeichert!");
+
+      return snapshotResponse;
     } catch (e) {
       toastError("Fehler beim Speichern der Einstellungen!");
     }

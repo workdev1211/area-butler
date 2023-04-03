@@ -1,7 +1,6 @@
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
-import { randomizeCoordinates } from '../../shared/shared.functions';
 import ApiSearchResultSnapshotResponseDto from '../../dto/api-search-result-snapshot-response.dto';
 import ApiSearchResultSnapshotDto from '../../dto/api-search-result-snapshot.dto';
 import ApiSearchResultSnapshotConfigDto from '../../dto/api-search-result-snapshot-config.dto';
@@ -9,6 +8,7 @@ import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
 import ApiSearchResponseDto from '../../dto/api-search-response.dto';
 import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
 import { IApiUserPoiIcons } from '@area-butler-types/types';
+import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
 
 export const mapSnapshotToEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
@@ -101,7 +101,7 @@ const mapSnapshot = (
   config: ApiSearchResultSnapshotConfigDto,
   embed: boolean,
 ): ApiSearchResultSnapshotDto => {
-  if (!embed || !config || config.showAddress !== false) {
+  if (!embed || config.showAddress) {
     return snapshot;
   }
 
