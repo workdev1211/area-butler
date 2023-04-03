@@ -162,7 +162,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       )}
 
       {((isShownAddress && isEditorMode) || !isEditorMode) && (
-        <div className="map-menu-header">
+        <div className="map-menu-header" data-tour="reset-position">
           <button
             type="button"
             className="btn btn-link flex gap-3"
@@ -171,7 +171,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
                 resetPosition();
               }
             }}
-            data-tour="reset-position"
           >
             <img
               className="w-[20px] h-[20px]"

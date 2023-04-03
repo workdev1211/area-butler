@@ -5,6 +5,7 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
 import {
+  createCodeSnippet,
   setBackgroundColor,
   toastError,
   toastSuccess,
@@ -127,13 +128,15 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
         onClick={() => {
           setIsInteractiveMapOpen(!isInteractiveMapOpen);
         }}
+        data-tour="publish-iframe"
       >
         <div className="collapse-title-container">
           <img src={mapIcon} alt="map-screenshots-icon" />
           <div className="collapse-title-text">
             <div className="collapse-title-text-1">Interaktive Karte</div>
             <div className="collapse-title-text-2">
-              Für die Integration auf Ihrer Seite
+              Für Ihre Webseite, print Medien, interaktive Exposés oder für die
+              direktere Kundenbetreuung
             </div>
           </div>
         </div>
@@ -158,16 +161,17 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
               }
             }}
           >
-            Freischalten
+            Veröffentlichen
           </button>
 
           {integrationIframeEndsAt && (
             <div className="text-justify">
-              Die interaktive Kartenfunktion ist ab dem{" "}
+              Die interaktive Karte wird bis zum "
               {dayjs(integrationIframeEndsAt)
                 .tz("Europe/Berlin")
                 .format("DD-MM-YYYY HH:mm")}{" "}
-              gültig.
+              (purchase + 6 months)" für Sie online gehosted. Verlängerung ist
+              möglich, sprechen Sie uns gerne an.
             </div>
           )}
 
@@ -188,6 +192,18 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
               <div>
                 <h3
                   className="flex max-w-fit items-center cursor-pointer gap-2"
+                  onClick={() => {
+                    copyToClipboard(createCodeSnippet(responseToken));
+                  }}
+                >
+                  <img className="w-6 h-6" src={copyIcon} alt="copy" />
+                  iFrame / Widget kopieren
+                </h3>
+              </div>
+
+              <div>
+                <h3
+                  className="flex max-w-fit items-center cursor-pointer gap-2"
                   onClick={async () => {
                     const qrCodeLabel = searchAddress || "AreaButler";
 
@@ -202,7 +218,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
                     src={downloadIcon}
                     alt="download-qr-code"
                   />
-                  QR Code Download
+                  QR-Code herunterladen
                 </h3>
               </div>
             </>

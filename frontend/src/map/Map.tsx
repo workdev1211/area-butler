@@ -46,6 +46,7 @@ import {
 } from "../../../shared/types/types";
 import googleIcon from "../assets/icons/google.svg";
 import myLocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
+import integrationMyLocationIcon from "../assets/icons/kudiba.svg";
 import busStopIcon from "../assets/icons/pois/bus_stop.svg";
 import stationIcon from "../assets/icons/pois/station.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -648,7 +649,9 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         }
 
         const mapIconImage = new Image();
-        mapIconImage.src = config?.mapIcon ?? myLocationIcon;
+        mapIconImage.src =
+          config?.mapIcon ??
+          (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon);
         await mapIconImage.decode();
         const mapIconImageRatio =
           Math.round((mapIconImage.width / mapIconImage.height) * 10) / 10;
@@ -674,7 +677,9 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
         const myLocationLeafletIcon = L.divIcon({
-          iconUrl: config?.mapIcon ?? myLocationIcon,
+          iconUrl:
+            config?.mapIcon ??
+            (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon),
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
           iconSize: new L.Point(
@@ -683,7 +688,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           ),
           className: "my-location-icon-wrapper",
           html: `<img src="${
-            config?.mapIcon ?? myLocationIcon
+            config?.mapIcon ??
+            (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon)
           }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
         });
 

@@ -31,10 +31,17 @@ const Steps: Step[] = [
   },
   {
     content:
+      "Wenn Sie die interaktive Karte veröffentlichen, stellen wir die von Ihnen erstellte Karte online. Die Karte ist dann 6 Monate unter diesem Link, dem QR-Code und dem iFrame erreichbar. Sollten Sie eine längere online Zeit wünschen, sprechen Sie uns gerne an.",
+    locale: defaultLocale,
+    placement: "left",
+    target: 'div[data-tour="publish-iframe"]',
+  },
+  {
+    content:
       "Über einen Klick auf die Adresse können Sie jederzeit bequem zurück zum Start auf der Karte navigieren",
     locale: defaultLocale,
     placement: "left",
-    target: 'button[data-tour="reset-position"]',
+    target: 'div[data-tour="reset-position"]',
   },
   {
     content:
