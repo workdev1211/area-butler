@@ -26,5 +26,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
     characteristics: realEstateListing.characteristics,
     status: realEstateListing.status,
     belongsToParent: realEstateListing.userId !== userId,
+    openAiRequestQuantity:
+      realEstateListing.integrationParams?.openAiRequestQuantity,
   };
 };

@@ -339,11 +339,9 @@ export class RealEstateListingService {
       filter,
       isIntegrationUser
         ? {
-            integrationParams: {
-              integrationId,
-              integrationUserId: user.integrationUserId,
-              integrationType: user.integrationType,
-            },
+            ['integrationParams.integrationId']: integrationId,
+            ['integrationParams.integrationUserId']: user.integrationUserId,
+            ['integrationParams.integrationType']: user.integrationType,
           }
         : { userId: user.id },
     );

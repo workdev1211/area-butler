@@ -12,6 +12,7 @@ export interface IApiIntegrationParams {
 
 export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   integrationId: string;
+  openAiRequestQuantity?: number;
 }
 
 export type TIntegrationActionTypes = TOnOfficeIntActTypes;

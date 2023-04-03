@@ -46,13 +46,13 @@ export class LocationIntegrationController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const map = await this.locationService.fetchSnapshotById(
+    const snapshotDoc = await this.locationService.fetchSnapshotById(
       integrationUser,
       id,
     );
 
-    map.updatedAt = dayjs().toDate();
-    await map.save();
+    snapshotDoc.updatedAt = dayjs().toDate();
+    await snapshotDoc.save();
 
     // TODO doesn't work
     const realEstateListings =
@@ -60,7 +60,7 @@ export class LocationIntegrationController {
         integrationUser,
       );
 
-    return mapSnapshotToEmbeddableMap(map, false, realEstateListings);
+    return mapSnapshotToEmbeddableMap(snapshotDoc, false, realEstateListings);
   }
 
   @ApiOperation({
@@ -109,10 +109,21 @@ export class LocationIntegrationController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
   ): Promise<string> {
-    this.integrationUserService.checkProdContAvailability(
-      integrationUser,
-      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-    );
+    const realEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        integrationUser,
+        locationDescriptionQuery.realEstateListingId,
+        locationDescriptionQuery.integrationId,
+      );
+
+    const { openAiRequestQuantity } = realEstateListing.integrationParams;
+
+    if (!openAiRequestQuantity) {
+      this.integrationUserService.checkProdContAvailability(
+        integrationUser,
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      );
+    }
 
     const locationDescription =
       await this.locationService.fetchOpenAiLocationDescription(
@@ -120,10 +131,17 @@ export class LocationIntegrationController {
         locationDescriptionQuery,
       );
 
-    await this.integrationUserService.incrementProductUsage(
-      integrationUser,
-      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-    );
+    if (!openAiRequestQuantity) {
+      realEstateListing.integrationParams.openAiRequestQuantity = 100;
+
+      await this.integrationUserService.incrementProductUsage(
+        integrationUser,
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      );
+    }
+
+    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
+    await realEstateListing.save();
 
     return locationDescription;
   }
@@ -138,20 +156,38 @@ export class LocationIntegrationController {
     @Body()
     locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    this.integrationUserService.checkProdContAvailability(
-      integrationUser,
-      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-    );
+    const realEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        integrationUser,
+        locationRealEstateDescriptionQuery.realEstateListingId,
+        locationRealEstateDescriptionQuery.integrationId,
+      );
+
+    const { openAiRequestQuantity } = realEstateListing.integrationParams;
+
+    if (!openAiRequestQuantity) {
+      this.integrationUserService.checkProdContAvailability(
+        integrationUser,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+      );
+    }
 
     const locRealEstDesc = await this.locationService.fetchOpenAiLocRealEstDesc(
       integrationUser,
       locationRealEstateDescriptionQuery,
     );
 
-    await this.integrationUserService.incrementProductUsage(
-      integrationUser,
-      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-    );
+    if (!openAiRequestQuantity) {
+      realEstateListing.integrationParams.openAiRequestQuantity = 100;
+
+      await this.integrationUserService.incrementProductUsage(
+        integrationUser,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+      );
+    }
+
+    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
+    await realEstateListing.save();
 
     return locRealEstDesc;
   }

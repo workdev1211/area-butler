@@ -7,7 +7,7 @@ import {
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
+import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -17,11 +17,19 @@ export class RealEstateListingIntService {
   ) {}
 
   async upsertByIntegrationParams(
-    integrationParams: IApiIntegrationParams,
+    {
+      integrationId,
+      integrationUserId,
+      integrationType,
+    }: IApiRealEstateIntegrationParams,
     realEstateListing: IApiRealEstateListingSchema,
   ): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
-      { integrationParams },
+      {
+        ['integrationParams.integrationId']: integrationId,
+        ['integrationParams.integrationUserId']: integrationUserId,
+        ['integrationParams.integrationType']: integrationType,
+      },
     );
 
     if (existingRealEstateListing) {
@@ -32,11 +40,17 @@ export class RealEstateListingIntService {
     return new this.realEstateListingModel(realEstateListing).save();
   }
 
-  async findOneOrFailByIntParams(
-    integrationParams: IApiIntegrationParams,
-  ): Promise<RealEstateListingDocument> {
+  async findOneOrFailByIntParams({
+    integrationId,
+    integrationUserId,
+    integrationType,
+  }: IApiRealEstateIntegrationParams): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
-      { integrationParams },
+      {
+        ['integrationParams.integrationId']: integrationId,
+        ['integrationParams.integrationUserId']: integrationUserId,
+        ['integrationParams.integrationType']: integrationType,
+      },
     );
 
     if (!existingRealEstateListing) {

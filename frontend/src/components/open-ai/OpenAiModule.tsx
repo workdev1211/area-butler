@@ -140,7 +140,10 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           }
         }
       } catch (e) {
-        toastError("Fehler beim Senden der KI-Anfrage!");
+        if (!integrationUser) {
+          toastError("Fehler beim Senden der KI-Anfrage!");
+        }
+
         requestStatus = RequestStatusTypesEnum.FAILURE;
       }
 

@@ -8,6 +8,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-integration')
@@ -15,6 +16,7 @@ export class OpenAiIntegrationController {
   constructor(
     private readonly openAiService: OpenAiService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   @ApiOperation({ description: 'Fetch Open AI response' })
@@ -22,11 +24,38 @@ export class OpenAiIntegrationController {
   @Post('query')
   async fetchResponse(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() { text, isFormalToInformal }: ApiOpenAiQueryDto,
+    @Body()
+    {
+      text,
+      isFormalToInformal,
+      realEstateListingId,
+      integrationId,
+    }: ApiOpenAiQueryDto,
   ): Promise<string> {
     const actionType = isFormalToInformal
       ? OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL
       : OpenAiQueryTypeEnum.GENERAL_QUESTION;
+
+    const realEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        integrationUser,
+        realEstateListingId,
+        integrationId,
+      );
+
+    const { openAiRequestQuantity } = realEstateListing.integrationParams;
+
+    if (!openAiRequestQuantity) {
+      realEstateListing.integrationParams.openAiRequestQuantity = 100;
+
+      await this.integrationUserService.incrementProductUsage(
+        integrationUser,
+        actionType,
+      );
+    }
+
+    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
+    await realEstateListing.save();
 
     this.integrationUserService.checkProdContAvailability(
       integrationUser,

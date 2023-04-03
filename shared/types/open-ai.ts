@@ -20,22 +20,26 @@ export enum OpenAiCustomTextEnum {
 export interface IOpenAiLocationDescriptionFormValues {
   meanOfTransportation: MeansOfTransportation;
   tonality: OpenAiTonalityEnum;
-  customText?: ISelectTextValue | undefined;
+  customText?: ISelectTextValue;
 }
 
 export interface IApiOpenAiLocationDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues {
   searchResultSnapshotId: string;
+  realEstateListingId?: string;
+  integrationId?: string;
 }
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
-  realEstateListingId: string | undefined;
+  realEstateListingId: string | undefined; // Formik, solve later
   integrationId?: string;
 }
 
 export interface IApiOpenAiLocationRealEstateDescriptionQuery
-  extends IApiOpenAiLocationDescriptionQuery,
-    IApiOpenAiRealEstateDescriptionQuery {}
+  extends IOpenAiLocationDescriptionFormValues,
+    IApiOpenAiRealEstateDescriptionQuery {
+  searchResultSnapshotId: string;
+}
 
 export enum OpenAiQueryTypeEnum {
   "LOCATION_DESCRIPTION" = "LOCATION_DESCRIPTION",
@@ -67,4 +71,6 @@ export enum OpenAiOsmQueryNameEnum {
 export interface IApiOpenAiQuery {
   text: string | undefined;
   isFormalToInformal?: boolean;
+  realEstateListingId?: string;
+  integrationId?: string;
 }

@@ -10,6 +10,15 @@ class ApiOpenAiQueryDto implements IApiOpenAiQuery {
   @IsOptional()
   @IsBoolean()
   isFormalToInformal?: boolean;
+
+  // in case of the integration
+  @IsOptional()
+  @IsString()
+  realEstateListingId?: string;
+
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
 }
 
 export default ApiOpenAiQueryDto;

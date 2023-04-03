@@ -38,6 +38,15 @@ class ApiOpenAiLocationDescriptionQueryDto
   @ValidateNested()
   @Type(() => ApiSelectTextValueDto)
   customText?: ISelectTextValue;
+
+  // in case of the integration
+  @IsOptional()
+  @IsString()
+  realEstateListingId?: string;
+
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
 }
 
 export default ApiOpenAiLocationDescriptionQueryDto;

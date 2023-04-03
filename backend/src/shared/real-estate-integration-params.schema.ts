@@ -17,6 +17,9 @@ export class RealEstateIntegrationParams
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
   integrationType: IntegrationTypesEnum;
+
+  @Prop({ type: Number, default: 0 })
+  openAiRequestQuantity: number;
 }
 
 export const RealEstateIntegrationParamsSchema = SchemaFactory.createForClass(
