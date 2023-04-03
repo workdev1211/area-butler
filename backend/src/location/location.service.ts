@@ -557,7 +557,7 @@ export class LocationService {
   private checkLocationExpiration(
     location: LocationSearchDocument | SearchResultSnapshotDocument,
   ): void {
-    const isLocationExpired = location.endsAt
+    const isLocationExpired = location?.endsAt
       ? dayjs().isAfter(location.endsAt)
       : false;
 
@@ -569,7 +569,7 @@ export class LocationService {
   private checkSnapshotIframeExpiration(
     snapshotDoc: SearchResultSnapshotDocument,
   ): void {
-    const isSnapshotIframeExpired = snapshotDoc.iframeEndsAt
+    const isSnapshotIframeExpired = snapshotDoc?.iframeEndsAt
       ? dayjs().isAfter(snapshotDoc.iframeEndsAt)
       : true;
 

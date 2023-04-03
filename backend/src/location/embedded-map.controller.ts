@@ -1,4 +1,4 @@
-import { Controller, Get, HttpException, Param } from '@nestjs/common';
+import { Controller, Get, HttpException, Logger, Param } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { LocationService } from './location.service';
@@ -14,6 +14,8 @@ import { IntegrationUserService } from '../user/integration-user.service';
 @ApiTags('embedded-map')
 @Controller('api/location/snapshot/iframe')
 export class EmbeddedMapController {
+  private readonly logger = new Logger(EmbeddedMapController.name);
+
   constructor(
     private readonly locationService: LocationService,
     private readonly userService: UserService,
@@ -38,13 +40,14 @@ export class EmbeddedMapController {
       user = await this.userService.fetchByIdWithAssets(userId);
 
       const userSubscription =
-        await this.subscriptionService.findActiveByUserId(userId);
-
-      isTrial = userSubscription.type === ApiSubscriptionPlanType.TRIAL;
+        await this.subscriptionService.findActiveByUserId(user.id);
 
       if (!userSubscription) {
+        this.logger.error(user.id, user.email);
         throw new HttpException(subscriptionExpiredMessage, 402);
       }
+
+      isTrial = userSubscription.type === ApiSubscriptionPlanType.TRIAL;
     }
 
     if (isIntegrationSnapshot) {

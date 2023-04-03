@@ -190,7 +190,7 @@ export class IntegrationUserService {
     productContingents,
     productsUsed,
   }: TIntegrationUserDocument): TApiIntUserAvailProdContingents {
-    return (
+    const availProdContingents =
       productContingents &&
       Object.keys(productContingents).reduce(
         (result, productContingentType) => {
@@ -206,8 +206,11 @@ export class IntegrationUserService {
           return result;
         },
         {} as TApiIntUserAvailProdContingents,
-      )
-    );
+      );
+
+    return availProdContingents && Object.keys(availProdContingents).length
+      ? availProdContingents
+      : undefined;
   }
 
   async incrementUsageStatsParam(

@@ -12,13 +12,13 @@ export const mapSnapshotOnOfficeProduct: IOnOfficeProduct = {
 export const openAiOnOfficeProduct: IOnOfficeProduct = {
   name: "KI-Assistent",
   type: OnOfficeProductTypesEnum.OPEN_AI,
-  price: 2.99,
+  price: 0.99,
 };
 
 export const openAi50OnOfficeProduct: IOnOfficeProduct = {
   name: "KI-Assistent x50",
   type: OnOfficeProductTypesEnum.OPEN_AI_50,
-  price: 98.09,
+  price: 32.48,
 };
 
 export const mapIframeOnOfficeProduct: IOnOfficeProduct = {

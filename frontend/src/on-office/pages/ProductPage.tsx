@@ -74,34 +74,43 @@ export const ProductPage: FunctionComponent = () => {
     >
       <div className="flex flex-col gap-10 mt-10">
         {availProdContingents && (
-          <ul>
-            <li className="flex gap-2 font-bold">
-              <div className="w-[15rem]">Name</div>
-              <div>Menge</div>
-            </li>
-            {Object.keys(availProdContingents).map((prodContType) => {
-              return (
-                <li key={prodContType} className="flex gap-2">
-                  <div className="w-[15rem]">
-                    {getProductNameByType(
-                      prodContType as ApiIntUserOnOfficeProdContTypesEnum
-                    )}
-                  </div>
-                  <div>
-                    {
-                      availProdContingents[
+          <>
+            <h1 className="font-bold text-xl text-justify">
+              Ihr bereits erworbenes Kontingent:
+            </h1>
+            <ul>
+              <li className="flex gap-2 font-bold">
+                <div className="w-[15rem]">Produkt</div>
+                <div>Menge</div>
+              </li>
+              {Object.keys(availProdContingents).map((prodContType) => {
+                return (
+                  <li key={prodContType} className="flex gap-2">
+                    <div className="w-[15rem]">
+                      {getProductNameByType(
                         prodContType as ApiIntUserOnOfficeProdContTypesEnum
-                      ]
-                    }
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+                      )}
+                    </div>
+                    <div>
+                      {
+                        availProdContingents[
+                          prodContType as ApiIntUserOnOfficeProdContTypesEnum
+                        ]
+                      }
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+            <div className="my-0 border-t-2 border-b-0 " />
+          </>
         )}
         <h1 className="font-bold text-xl text-justify">
-          Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
-          Abonnement, bitte wählen Sie das Passende für sich aus:
+          Hier können Sie weitere Produkte bestellen. Die Anzahl der Produkte
+          bezieht sich immer auf eine Adresse in Deutschland. Beispiel: bei
+          Anzahl 1 können Sie das jeweilige Produkt für eine Immobilie nutzen.
+          Bei Anzahl 50 können Sie es für 50 beliebige Objekte nutzen usw. Viel
+          Spaß mit dem AreaButler und viel Erfolg in der Vermarktung:
         </h1>
         <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
           <div className="xl:row-start-1 xl:row-end-4 xl:p-3">

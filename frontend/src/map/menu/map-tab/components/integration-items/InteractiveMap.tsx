@@ -166,12 +166,12 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
 
           {integrationIframeEndsAt && (
             <div className="text-justify">
-              Die interaktive Karte wird bis zum "
+              Die interaktive Karte wird bis zum{" "}
               {dayjs(integrationIframeEndsAt)
                 .tz("Europe/Berlin")
                 .format("DD-MM-YYYY HH:mm")}{" "}
-              (purchase + 6 months)" für Sie online gehosted. Verlängerung ist
-              möglich, sprechen Sie uns gerne an.
+              für Sie online gehosted. Verlängerung ist möglich, sprechen Sie
+              uns gerne an.
             </div>
           )}
 
