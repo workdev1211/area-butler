@@ -5,6 +5,7 @@ import { convertPriceToHuman } from "../../../../shared/functions/shared.functio
 import { getProductDescription } from "./ProductDescription";
 
 interface IProductCardProps {
+  name: string;
   type: OnOfficeProductTypesEnum;
   price: number;
   products: any;
@@ -13,6 +14,7 @@ interface IProductCardProps {
 }
 
 const ProductCard: FunctionComponent<IProductCardProps> = ({
+  name,
   type,
   price,
   products,
@@ -31,7 +33,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
   return (
     <div className="card shadow-lg bg-gray-50">
       <div className="card-body items-center text-center">
-        {getProductDescription(type)}
+        {getProductDescription(name, type)}
         <div className="card-actions items-center justify-between w-full">
           <div className="flex items-center gap-2">
             {price !== 0 && (

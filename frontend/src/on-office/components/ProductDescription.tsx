@@ -1,39 +1,36 @@
 import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
 
-export const getProductDescription = (type: OnOfficeProductTypesEnum) => {
+export const getProductDescription = (
+  name: string,
+  type: OnOfficeProductTypesEnum
+) => {
   switch (type) {
-    case OnOfficeProductTypesEnum.OPEN_AI: {
-      return OpenAiDescription();
-    }
+    case OnOfficeProductTypesEnum.OPEN_AI:
     case OnOfficeProductTypesEnum.OPEN_AI_50: {
-      return OpenAiDescription("KI-Assistent x50");
+      return OpenAiDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.MAP_IFRAME: {
-      return MapIframeDescription();
-    }
+    case OnOfficeProductTypesEnum.MAP_IFRAME:
     case OnOfficeProductTypesEnum.MAP_IFRAME_50: {
-      return MapIframeDescription("Interaktive Karten Paket x50");
+      return MapIframeDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.ONE_PAGE: {
-      return OnePageDescription();
-    }
+    case OnOfficeProductTypesEnum.ONE_PAGE:
     case OnOfficeProductTypesEnum.ONE_PAGE_50: {
-      return OnePageDescription("Automatisches Lage-Exposé x50");
+      return OnePageDescription(name);
     }
 
     case OnOfficeProductTypesEnum.MAP_SNAPSHOT:
     default: {
-      return MapSnapshotDescription();
+      return MapSnapshotDescription(name);
     }
   }
 };
 
-const OpenAiDescription = (title = "KI-Assistent") => {
+const OpenAiDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7">{title}</div>
+      <div className="card-title w-full mb-7">{name}</div>
 
       <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
@@ -53,10 +50,10 @@ const OpenAiDescription = (title = "KI-Assistent") => {
   );
 };
 
-const MapIframeDescription = (title = "Interaktive Karten Paket") => {
+const MapIframeDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7">{title}</div>
+      <div className="card-title w-full mb-7">{name}</div>
 
       <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
@@ -74,10 +71,10 @@ const MapIframeDescription = (title = "Interaktive Karten Paket") => {
   );
 };
 
-const OnePageDescription = (title = "Automatisches Lage-Exposé") => {
+const OnePageDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7">{title}</div>
+      <div className="card-title w-full mb-7">{name}</div>
 
       <div className="flex flex-col gap-3 min-h-[25vh]">
         <div className="text-justify">
@@ -111,10 +108,10 @@ const OnePageDescription = (title = "Automatisches Lage-Exposé") => {
   );
 };
 
-const MapSnapshotDescription = (title = "Lagepläne und Distanzen") => {
+const MapSnapshotDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7">{title}</div>
+      <div className="card-title w-full mb-7">{name}</div>
 
       <div className="text-justify min-h-[25vh]">
         Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit der

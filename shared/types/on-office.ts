@@ -20,6 +20,7 @@ export enum OnOfficeProductTypesEnum {
 }
 
 export interface IOnOfficeProduct {
+  name: string;
   type: OnOfficeProductTypesEnum;
   price: number;
   isDisabled?: boolean;

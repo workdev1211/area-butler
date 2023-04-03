@@ -97,7 +97,7 @@ export class LocationIntegrationService {
   ): Promise<SearchResultSnapshotDocument> {
     return this.searchResultSnapshotModel.findByIdAndUpdate(
       snapshotId,
-      { iframeEndsAt: dayjs().add(1, 'year').toDate() },
+      { iframeEndsAt: dayjs().add(6, 'months').toDate() },
       { new: true },
     );
   }

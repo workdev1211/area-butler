@@ -14,6 +14,9 @@ import { useHttp } from "../../hooks/http";
 import { toastError } from "../../shared/shared.functions";
 import ProductCard from "../components/ProductCard";
 import { SearchContext } from "../../context/SearchContext";
+import { UserContext } from "../../context/UserContext";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
+import { getProductNameByType } from "../../shared/integration.functions";
 
 const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
   Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
@@ -24,6 +27,9 @@ const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
 }, {} as Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>);
 
 export const ProductPage: FunctionComponent = () => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
   const { searchContextState } = useContext(SearchContext);
 
   const history = useHistory();
@@ -32,6 +38,8 @@ export const ProductPage: FunctionComponent = () => {
   const [createOrderProducts, setCreateOrderProducts] = useState(
     initialCreateOrderProducts
   );
+
+  const { availProdContingents } = integrationUser!;
 
   const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
     const foundProduct = Object.values(createOrderProducts).find(
@@ -65,6 +73,32 @@ export const ProductPage: FunctionComponent = () => {
       isOverriddenActionsTop={true}
     >
       <div className="flex flex-col gap-10 mt-10">
+        {availProdContingents && (
+          <ul>
+            <li className="flex gap-2 font-bold">
+              <div className="w-[15rem]">Name</div>
+              <div>Menge</div>
+            </li>
+            {Object.keys(availProdContingents).map((prodContType) => {
+              return (
+                <li key={prodContType} className="flex gap-2">
+                  <div className="w-[15rem]">
+                    {getProductNameByType(
+                      prodContType as ApiIntUserOnOfficeProdContTypesEnum
+                    )}
+                  </div>
+                  <div>
+                    {
+                      availProdContingents[
+                        prodContType as ApiIntUserOnOfficeProdContTypesEnum
+                      ]
+                    }
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
+        )}
         <h1 className="font-bold text-xl text-justify">
           Aktuell ist Ihr Kontingent aufgebraucht oder Sie besitzen kein aktives
           Abonnement, bitte wählen Sie das Passende für sich aus:
@@ -73,6 +107,7 @@ export const ProductPage: FunctionComponent = () => {
           <div className="xl:row-start-1 xl:row-end-4 xl:p-3">
             <div className={`flex flex-col items-center gap-10`}>
               <ProductCard
+                name={firstOnOfficeProduct!.name}
                 type={firstOnOfficeProduct!.type}
                 price={firstOnOfficeProduct!.price}
                 isDisabled={firstOnOfficeProduct!.isDisabled}
@@ -102,9 +137,10 @@ export const ProductPage: FunctionComponent = () => {
               style={{ outline: "3px #a9a9a9 solid" }}
               key={i}
             >
-              {groupedProducts.map(({ type, price, isDisabled }) => (
+              {groupedProducts.map(({ name, type, price, isDisabled }) => (
                 <ProductCard
                   key={type}
+                  name={name}
                   type={type}
                   price={price}
                   isDisabled={isDisabled}

@@ -20,6 +20,17 @@ import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 
+window.addEventListener("resize", () => {
+  calculateViewHeight();
+});
+
+const calculateViewHeight = () => {
+  const vh = window.innerHeight * 0.01;
+  document.documentElement.style.setProperty("--vh", `${vh}px`);
+};
+
+calculateViewHeight();
+
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
 
