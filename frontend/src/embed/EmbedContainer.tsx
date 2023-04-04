@@ -155,6 +155,7 @@ const EmbedContainer: FunctionComponent = () => {
       routes = [],
       transitRoutes = [],
       realEstateListings = [],
+      integrationId,
     } = result.snapshot;
 
     const filteredRealEstateListings = searchConfig.realEstateStatus
@@ -234,6 +235,14 @@ const EmbedContainer: FunctionComponent = () => {
         preferredLocations
       ),
     });
+
+    if (integrationId) {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_INTEGRATION_ID,
+        payload: integrationId,
+      });
+    }
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, searchConfig, searchContextDispatch]);
 
@@ -275,7 +284,11 @@ const EmbedContainer: FunctionComponent = () => {
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={!!result?.isTrial}
         userPoiIcons={userPoiIcons}
-        mapDisplayMode={MapDisplayModesEnum.EMBED}
+        mapDisplayMode={
+          searchContextState.integrationId
+            ? MapDisplayModesEnum.EMBED_INTEGRATION
+            : MapDisplayModesEnum.EMBED
+        }
         ref={mapRef}
       />
     </div>

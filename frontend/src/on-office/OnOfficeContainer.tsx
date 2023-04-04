@@ -19,6 +19,7 @@ import { useLogin } from "./hooks/login";
 import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
+import { SearchContext } from "../context/SearchContext";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -40,20 +41,30 @@ const MapPage = lazy(() => import("./pages/MapPage"));
 const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
 
 const OnOfficeContainer: FunctionComponent = () => {
-  const { userState } = useContext(UserContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+  const {
+    searchContextState: { integrationSnapshotId },
+  } = useContext(SearchContext);
 
   const history = useHistory();
   const { pathname } = useLocation();
   const { handleLogin } = useLogin();
 
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
+  const [actionType, setActionType] = useState<OnOfficeLoginActionTypesEnum>();
   const [errorMessage, setErrorMessage] = useState<string>();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
   useEffect(() => {
     const login = async () => {
-      const { requestStatus, actionType, message } = await handleLogin();
+      const {
+        requestStatus,
+        actionType: loginActionType,
+        message,
+      } = await handleLogin();
 
       if (requestStatus === RequestStatusTypesEnum.FAILURE) {
         setErrorMessage(message);
@@ -61,19 +72,38 @@ const OnOfficeContainer: FunctionComponent = () => {
         return;
       }
 
-      if (actionType === OnOfficeLoginActionTypesEnum.PERFORM_LOGIN) {
-        history.push("/products");
-        return;
-      }
-
-      history.push("/search");
+      setActionType(loginActionType);
     };
 
     void login();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (!userState.integrationUser || isErrorOccurred) {
+  useEffect(() => {
+    if (!integrationUser || isErrorOccurred || !actionType) {
+      return;
+    }
+
+    const pathBySnapshot = integrationSnapshotId
+      ? `/map/${integrationSnapshotId}`
+      : "/search";
+
+    if (actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER) {
+      history.push(pathBySnapshot);
+      return;
+    }
+
+    if (integrationUser?.availProdContingents) {
+      history.push(pathBySnapshot);
+      return;
+    }
+
+    history.push("/products");
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [integrationUser, integrationSnapshotId, isErrorOccurred, actionType]);
+
+  if (!integrationUser || isErrorOccurred) {
     return (
       <div className="flex items-center justify-center h-[100vh] text-lg">
         {isErrorOccurred ? (

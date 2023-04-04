@@ -26,9 +26,9 @@ export class RealEstateListingIntService {
   ): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
       {
-        ['integrationParams.integrationId']: integrationId,
-        ['integrationParams.integrationUserId']: integrationUserId,
-        ['integrationParams.integrationType']: integrationType,
+        'integrationParams.integrationId': integrationId,
+        'integrationParams.integrationUserId': integrationUserId,
+        'integrationParams.integrationType': integrationType,
       },
     );
 
@@ -47,9 +47,9 @@ export class RealEstateListingIntService {
   }: IApiRealEstateIntegrationParams): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
       {
-        ['integrationParams.integrationId']: integrationId,
-        ['integrationParams.integrationUserId']: integrationUserId,
-        ['integrationParams.integrationType']: integrationType,
+        'integrationParams.integrationId': integrationId,
+        'integrationParams.integrationUserId': integrationUserId,
+        'integrationParams.integrationType': integrationType,
       },
     );
 

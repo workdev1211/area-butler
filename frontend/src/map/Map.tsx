@@ -297,7 +297,7 @@ interface MapProps {
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   snippetToken?: string;
-  mapDisplayMode?: MapDisplayModesEnum;
+  mapDisplayMode: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   hideEntity?: (entity: ResultEntity) => void;
@@ -450,9 +450,18 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
     };
 
     const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-    const isEmbedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const isEmbedMode = [
+      MapDisplayModesEnum.EMBED,
+      MapDisplayModesEnum.EMBED_INTEGRATION,
+    ].includes(mapDisplayMode!);
     const isIntegrationMode =
       mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
+
+    const resultingMyLocationIcon =
+      isIntegrationMode ||
+      mapDisplayMode === MapDisplayModesEnum.EMBED_INTEGRATION
+        ? integrationMyLocationIcon
+        : myLocationIcon;
 
     const escFunction = useCallback(
       (e) => {
@@ -646,9 +655,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
       const drawMapIcon = async () => {
         const mapIconImage = new Image();
-        mapIconImage.src =
-          config?.mapIcon ??
-          (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon);
+        mapIconImage.src = config?.mapIcon ?? resultingMyLocationIcon;
         await mapIconImage.decode();
         const mapIconImageRatio =
           Math.round((mapIconImage.width / mapIconImage.height) * 10) / 10;
@@ -674,9 +681,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
         const myLocationLeafletIcon = L.divIcon({
-          iconUrl:
-            config?.mapIcon ??
-            (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon),
+          iconUrl: config?.mapIcon ?? resultingMyLocationIcon,
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
           iconSize: new L.Point(
@@ -685,8 +690,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           ),
           className: "my-location-icon-wrapper",
           html: `<img src="${
-            config?.mapIcon ??
-            (isIntegrationMode ? integrationMyLocationIcon : myLocationIcon)
+            config?.mapIcon ?? resultingMyLocationIcon
           }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
         });
 

@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
+import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
 
 import {
@@ -100,6 +100,20 @@ export class IntegrationUserService {
       integrationUser.id,
       updatedFields,
       { new: true },
+    );
+  }
+
+  async updateMany(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
+    updateQuery: UpdateQuery<TIntegrationUserDocument>,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<void> {
+    await this.integrationUserModel.updateMany(
+      {
+        ...findQuery,
+        integrationType,
+      },
+      updateQuery,
     );
   }
 

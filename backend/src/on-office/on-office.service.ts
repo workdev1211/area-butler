@@ -120,6 +120,12 @@ export class OnOfficeService {
       },
     });
 
+    await this.integrationUserService.updateMany(
+      { 'parameters.customerWebId': integrationUser.parameters.customerWebId },
+      { 'parameters.apiKey': apiKey, 'parameters.token': token },
+      this.integrationType,
+    );
+
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
     const timestamp = dayjs().unix();
@@ -169,13 +175,13 @@ export class OnOfficeService {
 
     // TODO refactor to a single request
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
-    let integrationUser = await this.integrationUserService.findOne(
+    let existingIntegrationUser = await this.integrationUserService.findOne(
       { integrationUserId },
       this.integrationType,
     );
 
-    if (!integrationUser) {
-      integrationUser = await this.integrationUserService.findOne(
+    if (!existingIntegrationUser) {
+      existingIntegrationUser = await this.integrationUserService.findOne(
         {
           'parameters.customerWebId': customerWebId,
           'parameters.token': { $exists: true },
@@ -185,7 +191,7 @@ export class OnOfficeService {
       );
     }
 
-    if (!integrationUser) {
+    if (!existingIntegrationUser) {
       throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
     }
 
@@ -196,10 +202,10 @@ export class OnOfficeService {
     //   extendedClaim,
     // });
 
-    integrationUser =
-      integrationUser.integrationUserId === integrationUserId
+    const integrationUser =
+      existingIntegrationUser.integrationUserId === integrationUserId
         ? await this.integrationUserService.updateParamsAndConfig(
-            integrationUser,
+            existingIntegrationUser,
             {
               accessToken: extendedClaim,
               parameters: {
@@ -221,8 +227,8 @@ export class OnOfficeService {
               customerWebId,
               userId,
               extendedClaim,
-              apiKey: integrationUser.parameters.apiKey,
-              token: integrationUser.parameters.token,
+              apiKey: existingIntegrationUser.parameters.apiKey,
+              token: existingIntegrationUser.parameters.token,
             },
             // config: {
             //   color: color ? `#${color}` : undefined,

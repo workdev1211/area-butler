@@ -484,6 +484,7 @@ export enum RequestStatusTypesEnum {
 }
 
 export enum MapDisplayModesEnum {
+  "EMBED_INTEGRATION" = "EMBED_INTEGRATION",
   "EMBED" = "EMBED",
   "EDITOR" = "EDITOR",
   "INTEGRATION" = "INTEGRATION",

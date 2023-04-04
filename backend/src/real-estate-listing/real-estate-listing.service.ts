@@ -339,9 +339,9 @@ export class RealEstateListingService {
       filter,
       isIntegrationUser
         ? {
-            ['integrationParams.integrationId']: integrationId,
-            ['integrationParams.integrationUserId']: user.integrationUserId,
-            ['integrationParams.integrationType']: user.integrationType,
+            'integrationParams.integrationId': integrationId,
+            'integrationParams.integrationUserId': user.integrationUserId,
+            'integrationParams.integrationType': user.integrationType,
           }
         : { userId: user.id },
     );
