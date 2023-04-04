@@ -24,7 +24,7 @@ import {
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
-import { intUserInitShowTour } from '../../../shared/constants/integration-user';
+import { intUserInitShowTour } from '../../../shared/constants/integration';
 
 @Injectable()
 export class IntegrationUserService {

@@ -1,4 +1,5 @@
 import { CSSProperties } from "react";
+
 import { ModalConfig } from "../components/FormModal";
 
 export const googleMapsApiOptions = {
@@ -62,3 +63,13 @@ export const feedbackModalConfig: ModalConfig = {
 export const defaultMapZoom = 16.5;
 export const defaultMyLocationIconSize = 46;
 export const defaultAmenityIconSize = 32;
+
+export const tourPaths = [
+  "profile",
+  "potential-customers",
+  "real-estates",
+  "snippet-editor",
+  "search",
+];
+
+export const integrationTourPaths = ["search", "map"];

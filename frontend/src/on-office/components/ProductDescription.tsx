@@ -1,4 +1,5 @@
 import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
+import youtubeIcon from "../../assets/icons/youtube.svg";
 
 export const getProductDescription = (
   name: string,
@@ -32,7 +33,7 @@ const OpenAiDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7">{name}</div>
 
-      <div className="flex flex-col gap-3 min-h-[25vh]">
+      <div className="flex flex-col items-start gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie Inspiration aus der magischen Feder. Mit
           Standortanalyse-Infos, den Fakten Ihren Immobilien.
@@ -45,6 +46,13 @@ const OpenAiDescription = (name: string) => {
           <li>Generelle Anfragen an KI</li>
           <li>u.v.m.</li>
         </ul>
+
+        <a target="_blank" rel="noreferrer" href="https://youtu.be/ap13eQuNK9s">
+          <div className="inline-flex items-center gap-2">
+            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
+            <div>Erklärvideo</div>
+          </div>
+        </a>
       </div>
     </>
   );
@@ -55,7 +63,7 @@ const MapIframeDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7">{name}</div>
 
-      <div className="flex flex-col gap-3 min-h-[25vh]">
+      <div className="flex flex-col items-start gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie interaktive Karten, im eigenen Design, für alle Medien.
           Passen Sie Inhalte und Aussehen auf Ihre Zielgruppe an.
@@ -66,6 +74,13 @@ const MapIframeDescription = (name: string) => {
           <li>QR Code</li>
           <li>Hyperlink</li>
         </ul>
+
+        <a target="_blank" rel="noreferrer" href="https://youtu.be/DfFqoe4WYNg">
+          <div className="inline-flex items-center gap-2">
+            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
+            <div>Erklärvideo</div>
+          </div>
+        </a>
       </div>
     </>
   );
@@ -76,7 +91,7 @@ const OnePageDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7">{name}</div>
 
-      <div className="flex flex-col gap-3 min-h-[25vh]">
+      <div className="flex flex-col items-start gap-3 min-h-[25vh]">
         <div className="text-justify">
           Erhalten Sie ein fertiges Lage-Exposé auf einer DinA4 Seite.
           Beinhaltet:
@@ -91,6 +106,11 @@ const OnePageDescription = (name: string) => {
         <div className="text-justify">
           Perfekte Vorbereitung für die Akquise. Perfekte Vermarktung der Lage
           im Vertrieb.
+        </div>
+
+        <div className="inline-flex items-center gap-2">
+          <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
+          <div>Erklärvideo</div>
         </div>
       </div>
 
@@ -113,9 +133,18 @@ const MapSnapshotDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7">{name}</div>
 
-      <div className="text-justify min-h-[25vh]">
-        Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit der
-        Erreichbarkeitslinie für alle Mobilitätsarten, POIs und Distanzen.
+      <div className="flex flex-col items-start gap-3 min-h-[25vh]">
+        <div className="text-justify">
+          Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit der
+          Erreichbarkeitslinie für alle Mobilitätsarten, POIs und Distanzen.
+        </div>
+
+        <a target="_blank" rel="noreferrer" href="https://youtu.be/mbLm2MzKgMQ">
+          <div className="inline-flex items-center gap-2">
+            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
+            <div>Erklärvideo</div>
+          </div>
+        </a>
       </div>
     </>
   );
