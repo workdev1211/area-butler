@@ -22,6 +22,7 @@ import "leaflet/dist/leaflet.css";
 import "leaflet-gesture-handling/dist/leaflet-gesture-handling.css";
 
 import "./Map.scss";
+
 import FormModal, { ModalConfig } from "components/FormModal";
 import { IGotoMapCenter } from "context/SearchContext";
 import {

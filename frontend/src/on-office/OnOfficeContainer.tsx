@@ -84,24 +84,20 @@ const OnOfficeContainer: FunctionComponent = () => {
       return;
     }
 
-    const pathBySnapshot = integrationSnapshotId
-      ? `/map/${integrationSnapshotId}`
-      : "/search";
-
-    if (actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER) {
-      history.push(pathBySnapshot);
-      return;
-    }
-
-    if (integrationUser?.availProdContingents) {
-      history.push(pathBySnapshot);
+    if (
+      actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER ||
+      integrationUser?.availProdContingents
+    ) {
+      history.push(
+        integrationSnapshotId ? `/map/${integrationSnapshotId}` : "/search"
+      );
       return;
     }
 
     history.push("/products");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationUser, integrationSnapshotId, isErrorOccurred, actionType]);
+  }, [integrationUser?.accessToken, isErrorOccurred, actionType]);
 
   if (!integrationUser || isErrorOccurred) {
     return (

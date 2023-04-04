@@ -660,31 +660,29 @@ const SearchParamsPage: FunctionComponent = () => {
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
           {!integrationUser && (
-            <h2 className="search-params-first-title">"Lage"</h2>
-          )}
-          <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
-            {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
-            {!integrationUser && (
-              <LocationAutocomplete
-                value={placesLocation}
-                setValue={() => {}}
-                afterChange={onLocationAutocompleteChange}
-              />
-            )}
-            {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
-            {!integrationUser && (
-              <div className="flex flex-wrap items-end gap-4">
-                <MyLocationButton
-                  classes="btn bg-primary-gradient w-full sm:w-auto"
-                  onComplete={onMyLocationChange}
+            <>
+              <h2 className="search-params-first-title">"Lage"</h2>
+              <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
+                {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
+                <LocationAutocomplete
+                  value={placesLocation}
+                  setValue={() => {}}
+                  afterChange={onLocationAutocompleteChange}
                 />
+                <div className="flex flex-wrap items-end gap-4">
+                  <MyLocationButton
+                    classes="btn bg-primary-gradient w-full sm:w-auto"
+                    onComplete={onMyLocationChange}
+                  />
+                </div>
               </div>
-            )}
-          </div>
-          <div className="flex flex-wrap sm:gap-4">
-            <LatestUserRequestsDropDown />
-            <RealEstateDropDown />
-          </div>
+              <div className="flex flex-wrap sm:gap-4">
+                {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
+                <LatestUserRequestsDropDown />
+                <RealEstateDropDown />
+              </div>
+            </>
+          )}
           <h2>Mobilität</h2>
           <div className="sub-content">
             <TransportationParams
@@ -696,7 +694,7 @@ const SearchParamsPage: FunctionComponent = () => {
                 });
               }}
             />
-            <PotentialCustomerDropDown />
+            {!integrationUser && <PotentialCustomerDropDown />}
           </div>
           <h2>{preferredLocationsTitle}</h2>
           <div className="sub-content">
