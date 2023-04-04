@@ -495,15 +495,14 @@ export class OnOfficeService {
       land: country,
     } = onOfficeEstate;
 
-    const location =
-      +lat && +lng
-        ? {
-            lat: +lat,
-            lng: +lng,
-          }
-        : `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
+    const locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
+    const locationCoordinates = { lat: +lat, lng: +lng };
 
-    const place = await this.googleGeocodeService.fetchPlace(location);
+    let place = await this.googleGeocodeService.fetchPlace(locationAddress);
+
+    if (!place) {
+      place = await this.googleGeocodeService.fetchPlace(locationCoordinates);
+    }
 
     if (!place) {
       this.logger.error(this.fetchAndProcessEstateData.name, location, place);
