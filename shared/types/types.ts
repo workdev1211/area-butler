@@ -336,19 +336,22 @@ export interface ApiSearchResultSnapshotConfig {
   showLocation: boolean;
   groupItems: boolean;
   showAddress?: boolean;
+  showStreetViewLink?: boolean;
+  showDetailsInOnePage?: boolean;
+  hideIsochrones?: boolean;
+  hideMeanToggles?: boolean; // 'MeansToggle' component, turns on and off the isochrones
+  hideMapMenu?: boolean;
+  hidePoiIcons?: boolean;
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
-  defaultActiveMeans?: MeansOfTransportation[];
-  defaultActiveGroups?: string[];
-  entityVisibility?: ApiSnippetEntityVisibility[];
-  primaryColor?: string;
   mapIcon?: string;
-  fixedRealEstates?: boolean;
-  showStreetViewLink?: boolean;
-  hideIsochrones?: boolean;
+  primaryColor?: string;
   zoomLevel?: number;
+  defaultActiveGroups?: string[];
+  defaultActiveMeans?: MeansOfTransportation[];
+  entityVisibility?: ApiSnippetEntityVisibility[];
+  fixedRealEstates?: boolean;
   realEstateStatus?: ApiRealEstateStatusEnum;
-  showDetailsInOnePage?: boolean;
   poiFilter?: IApiSnapshotPoiFilter;
   iconSizes?: IApiSnapshotIconSizes;
 }

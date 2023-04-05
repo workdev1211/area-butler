@@ -729,6 +729,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       mapCenter.lng,
       searchAddress,
       searchResponse.centerOfInterest.coordinates,
+      currentMap,
     ]);
 
     const meansStringified = JSON.stringify(means);
@@ -1041,6 +1042,14 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
 
           const isRealEstateListing = entity.osmName === OsmName.property;
           const isPreferredLocation = entity.osmName === OsmName.favorite;
+
+          if (
+            config?.hidePoiIcons &&
+            !isRealEstateListing &&
+            !isPreferredLocation
+          ) {
+            return true;
+          }
 
           const markerIcon: IPoiIcon = isRealEstateListing
             ? config?.mapIcon

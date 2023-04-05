@@ -9,6 +9,7 @@ import {
   IsNumber,
   NotEquals,
   IsObject,
+  IsString,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -27,6 +28,62 @@ import ApiSnapshotPoiFilterDto from './api-snapshot-poi-filter.dto';
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
+  @IsNotEmpty()
+  @IsBoolean()
+  showLocation: boolean;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  groupItems: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showAddress?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showStreetViewLink?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  showDetailsInOnePage?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  hideIsochrones?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  hideMeanToggles?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  hideMapMenu?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  hidePoiIcons?: boolean;
+
+  @IsOptional()
+  @IsString()
+  mapBoxMapId?: string;
+
+  @IsOptional()
+  @IsIn(['DEFAULT', 'KF'])
+  theme?: ApiSearchResultSnapshotConfigTheme;
+
+  @IsOptional()
+  @IsString()
+  mapIcon?: string;
+
+  @IsOptional()
+  @IsString()
+  primaryColor?: string;
+
+  @IsOptional()
+  @IsNumber()
+  zoomLevel?: number;
+
   @IsOptional()
   @IsArray()
   defaultActiveGroups?: string[];
@@ -46,47 +103,10 @@ class ApiSearchResultSnapshotConfigDto
   @IsBoolean()
   fixedRealEstates?: boolean;
 
-  @IsNotEmpty()
-  @IsBoolean()
-  groupItems: boolean;
-
-  @IsOptional()
-  mapBoxMapId?: string;
-
-  @IsOptional()
-  mapIcon?: string;
-
-  @IsOptional()
-  primaryColor?: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  showLocation: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  showAddress?: boolean;
-
-  @IsOptional()
-  @IsIn(['DEFAULT', 'KF'])
-  theme?: ApiSearchResultSnapshotConfigTheme;
-
-  @IsOptional()
-  @IsBoolean()
-  showStreetViewLink?: boolean;
-
-  @IsOptional()
-  @IsNumber()
-  zoomLevel?: number;
-
   @IsOptional()
   @IsEnum(ApiRealEstateStatusEnum)
   @NotEquals(ApiRealEstateStatusEnum.ALLE)
   realEstateStatus?: ApiRealEstateStatusEnum;
-
-  @IsOptional()
-  @IsBoolean()
-  showDetailsInOnePage?: boolean;
 
   @IsOptional()
   @IsObject()

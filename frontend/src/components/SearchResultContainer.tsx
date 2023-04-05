@@ -198,11 +198,27 @@ const SearchResultContainer = forwardRef<
     };
 
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
-    const editorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+    const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
-    const [isMapMenuOpen, setIsMapMenuOpen] = useState(
-      editorMode || (!isThemeKf && !editorMode)
-    );
+    const isEmbeddedMode = [
+      MapDisplayModesEnum.EMBED,
+      MapDisplayModesEnum.EMBED_INTEGRATION,
+    ].includes(mapDisplayMode);
+
+    const isMapMenuShown =
+      !isEmbeddedMode ||
+      (searchContextState.responseConfig?.hideMapMenu
+        ? false
+        : isEmbeddedMode && !isThemeKf);
+
+    const isMapMenuKarlaFrickeShown =
+      isThemeKf &&
+      (!isEmbeddedMode || !searchContextState.responseConfig?.hideMapMenu);
+
+    const isMeanTogglesShown =
+      !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
+
+    const [isMapMenuOpen, setIsMapMenuOpen] = useState(isMapMenuShown);
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
     >([]);
@@ -493,7 +509,7 @@ const SearchResultContainer = forwardRef<
       return (
         <button
           type="button"
-          className={`show-map-menu-btn ${!editorMode ? "embed-mode" : ""}`}
+          className={`show-map-menu-btn ${!isEditorMode ? "embed-mode" : ""}`}
           data-tour="ShowMapMenuButton"
           onMouseDown={() => {
             setIsMapMenuOpen(!isMapMenuOpen);
@@ -673,18 +689,20 @@ const SearchResultContainer = forwardRef<
               {/*    />*/}
               {/*  </div>*/}
               {/*)}*/}
-              <MeansToggle
-                transportationParams={searchContextState.transportationParams}
-                activeMeans={searchContextState.responseActiveMeans}
-                availableMeans={availableMeans}
-                onMeansChange={(newValues: MeansOfTransportation[]) => {
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-                    payload: [...newValues],
-                  });
-                }}
-                hideIsochrones={!!hideIsochrones}
-              />
+              {isMeanTogglesShown && (
+                <MeansToggle
+                  transportationParams={searchContextState.transportationParams}
+                  activeMeans={searchContextState.responseActiveMeans}
+                  availableMeans={availableMeans}
+                  onMeansChange={(newValues: MeansOfTransportation[]) => {
+                    searchContextDispatch({
+                      type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+                      payload: [...newValues],
+                    });
+                  }}
+                  hideIsochrones={!!hideIsochrones}
+                />
+              )}
             </div>
             <Map
               mapBoxAccessToken={mapBoxToken}
@@ -757,8 +775,8 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          {!(isThemeKf && !editorMode) && <ShowMapMenuButton />}
-          {isThemeKf && (
+          {isMapMenuShown && <ShowMapMenuButton />}
+          {isMapMenuKarlaFrickeShown && (
             <MapMenuKarlaFricke
               groupedEntries={(resultingGroupedEntities ?? [])
                 .filter(
@@ -772,7 +790,7 @@ const SearchResultContainer = forwardRef<
               userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
             />
           )}
-          {(!isThemeKf || (isThemeKf && editorMode)) && (
+          {isMapMenuShown && (
             <MapMenu
               isMapMenuOpen={isMapMenuOpen}
               censusData={searchContextState.censusData}
@@ -810,7 +828,7 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               mapClippings={searchContextState.mapClippings}
-              showInsights={editorMode}
+              showInsights={isEditorMode}
               config={searchContextState.responseConfig}
               mapDisplayMode={mapDisplayMode}
               editorTabProps={editorTabProps}
