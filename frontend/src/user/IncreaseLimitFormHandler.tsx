@@ -88,10 +88,6 @@ const IncreaseLimitFormHandler: FunctionComponent<
     try {
       beforeSubmit();
 
-      const selectedParams = filteredParams.find(
-        (param) => param.priceId === priceId
-      );
-
       const metadata =
         modelName && modelId ? { modelName, modelId } : undefined;
 
@@ -99,7 +95,6 @@ const IncreaseLimitFormHandler: FunctionComponent<
         (
           await post<string>("/api/billing/create-checkout-url", {
             priceId,
-            amount: selectedParams?.amount.value,
             metadata,
             mode: ApiStripeCheckoutModeEnum.Payment,
           })
