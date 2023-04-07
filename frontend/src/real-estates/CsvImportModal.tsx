@@ -7,18 +7,18 @@ import { AxiosResponse } from "axios";
 import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
-import { CsvFileFormatEnum } from "../../../shared/types/types";
+import { CsvFileFormatsEnum } from "../../../shared/types/types";
 
 interface ICsvImportModalProps {
   isShownModal: boolean;
   closeModal: () => void;
-  fileFormat?: CsvFileFormatEnum;
+  fileFormat?: CsvFileFormatsEnum;
 }
 
 const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
   isShownModal,
   closeModal,
-  fileFormat = CsvFileFormatEnum.AREA_BUTLER,
+  fileFormat = CsvFileFormatsEnum.AREA_BUTLER,
 }) => {
   const { get, post } = useHttp();
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);

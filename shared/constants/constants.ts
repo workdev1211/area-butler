@@ -354,3 +354,13 @@ export const placeholderSelectOptionKey: TPlaceholderSelectOptionKey =
 export const paymentEnvironments = ["dev", "prod"] as const;
 
 export const systemEnvironments = ["local", ...paymentEnvironments] as const;
+
+export const umlautMap = {
+  "\u00c4": "AE",
+  "\u00d6": "OE",
+  "\u00dc": "UE",
+  "\u00e4": "ae",
+  "\u00f6": "oe",
+  "\u00fc": "ue",
+  "\u00df": "ss",
+};

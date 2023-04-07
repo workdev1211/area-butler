@@ -42,7 +42,6 @@ import {
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
-import OnOfficeEstateToAreaButlerEstateDto from './dto/on-office-estate-to-areabutler-estate.dto';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
@@ -55,6 +54,7 @@ import {
   // TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
+import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 
 @Injectable()
 export class OnOfficeService {
@@ -424,7 +424,7 @@ export class OnOfficeService {
       integrationUserId,
       parameters: { token, apiKey, extendedClaim },
     }: TIntegrationUserDocument,
-  ): Promise<OnOfficeEstateToAreaButlerEstateDto> {
+  ): Promise<ApiOnOfficeToAreaButlerDto> {
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
@@ -505,7 +505,12 @@ export class OnOfficeService {
     }
 
     if (!place) {
-      this.logger.error(this.fetchAndProcessEstateData.name, location, place);
+      this.logger.error(
+        this.fetchAndProcessEstateData.name,
+        locationAddress,
+        locationCoordinates,
+      );
+
       throw new HttpException('Adresse nicht gefunden!', 400); // Address is not found
     }
 
@@ -522,11 +527,10 @@ export class OnOfficeService {
       } as GeoJsonPoint,
     });
 
-    return plainToInstance(
-      OnOfficeEstateToAreaButlerEstateDto,
-      onOfficeEstate,
-      { excludeExtraneousValues: true, exposeUnsetFields: false },
-    );
+    return plainToInstance(ApiOnOfficeToAreaButlerDto, onOfficeEstate, {
+      excludeExtraneousValues: true,
+      exposeUnsetFields: false,
+    });
   }
 
   generateSignature(

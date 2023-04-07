@@ -18,28 +18,6 @@ export const getGrossPriceValue = (price: string | number): number => {
   return Math.round(priceValue * 119) / 100;
 };
 
-export const parseCsv = async (
-  csvFile: Express.Multer.File,
-  delimiter = ',',
-  fromLine = 2, // to remove column names
-  chunkSize = 1000,
-): Promise<Array<unknown[]>> => {
-  const records: Array<unknown[]> = [[]];
-  const parser = parse(csvFile.buffer, { delimiter, fromLine });
-  let i = 0;
-
-  for await (const record of parser) {
-    if (chunkSize > 0 && records[i].length === chunkSize) {
-      i += 1;
-      records[i] = [];
-    }
-
-    records[i].push(record);
-  }
-
-  return records;
-};
-
 export const convertStringToNumber = (value: string): number => {
   const parsedValue = parseFloat(value);
 

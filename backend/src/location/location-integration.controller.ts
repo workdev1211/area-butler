@@ -54,7 +54,6 @@ export class LocationIntegrationController {
     snapshotDoc.updatedAt = dayjs().toDate();
     await snapshotDoc.save();
 
-    // TODO doesn't work
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(
         integrationUser,

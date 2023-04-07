@@ -31,6 +31,11 @@ export class EmbeddedMapController {
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     // TODO think about moving to the location service
     const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
+
+    if (!snapshotDoc) {
+      return;
+    }
+
     const { userId, integrationParams } = snapshotDoc;
     let isTrial = false;
     const isIntegrationSnapshot = !userId;

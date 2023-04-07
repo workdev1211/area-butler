@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
@@ -25,6 +25,7 @@ export interface IGoogleGeocodeResult {
 
 @Injectable()
 export class GoogleGeocodeService {
+  private readonly logger = new Logger(GoogleGeocodeService.name);
   private readonly googleServerApiKey = configService.getGoogleServerApiKey();
   private readonly baseUrl = 'https://maps.googleapis.com/maps/api/geocode';
 
@@ -39,9 +40,13 @@ export class GoogleGeocodeService {
     }&address=${encodeURIComponent(address)}&language=${language}`;
 
     const {
-      data: { results },
+      data: { results, error_message: errorMessage, status },
     } = await firstValueFrom<{
-      data: { results: IGoogleGeocodeResult[] };
+      data: {
+        results: IGoogleGeocodeResult[];
+        error_message?: string;
+        status?: string;
+      };
     }>(
       this.http.get<{ results: IGoogleGeocodeResult[] }>(url, {
         headers: {
@@ -49,6 +54,17 @@ export class GoogleGeocodeService {
         },
       }),
     );
+
+    if (errorMessage) {
+      this.logger.error(
+        this.fetchPlaceByAddress.name,
+        address,
+        errorMessage,
+        status,
+      );
+
+      throw new HttpException(errorMessage, 400);
+    }
 
     return results[0];
   }
@@ -60,9 +76,13 @@ export class GoogleGeocodeService {
     const url = `${this.baseUrl}/json?key=${this.googleServerApiKey}&latlng=${lat},${lng}&language=${language}`;
 
     const {
-      data: { results },
+      data: { results, error_message: errorMessage, status },
     } = await firstValueFrom<{
-      data: { results: IGoogleGeocodeResult[] };
+      data: {
+        results: IGoogleGeocodeResult[];
+        error_message?: string;
+        status?: string;
+      };
     }>(
       this.http.get<{ results: IGoogleGeocodeResult[] }>(url, {
         headers: {
@@ -70,6 +90,17 @@ export class GoogleGeocodeService {
         },
       }),
     );
+
+    if (errorMessage) {
+      this.logger.error(
+        this.fetchPlaceByAddress.name,
+        { lat, lng },
+        errorMessage,
+        status,
+      );
+
+      throw new HttpException(errorMessage, 400);
+    }
 
     return results[0];
   }

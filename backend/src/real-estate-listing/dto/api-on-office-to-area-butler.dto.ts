@@ -1,5 +1,4 @@
 import {
-  IsBoolean,
   IsDate,
   IsEnum,
   IsNotEmpty,
@@ -27,9 +26,7 @@ import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
 import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
 
 @Exclude()
-class OnOfficeEstateToAreaButlerEstateDto
-  implements IApiRealEstateListingSchema
-{
+class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @Expose()
   @IsOptional()
   @IsString()
@@ -62,10 +59,7 @@ class OnOfficeEstateToAreaButlerEstateDto
   @IsDate()
   createdAt?: Date;
 
-  @Expose()
-  @IsOptional()
-  @IsBoolean()
-  showInSnippet?: boolean;
+  showInSnippet = true;
 
   @Expose()
   @IsOptional()
@@ -79,7 +73,7 @@ class OnOfficeEstateToAreaButlerEstateDto
       const price = +kaufpreis;
       const coldPrice = +kaltmiete;
       const warmPrice = +warmmiete;
-      const currency = waehrung === 'EUR' ? '€' : waehrung;
+      const currency = !waehrung || waehrung === 'EUR' ? '€' : waehrung;
 
       if (price) {
         return {
@@ -175,11 +169,24 @@ class OnOfficeEstateToAreaButlerEstateDto
   @Expose()
   @IsOptional()
   @IsEnum(ApiRealEstateStatusEnum)
+  @Transform(({ obj: { vermarktungsart } }): ApiRealEstateStatusEnum => {
+    let status = ApiRealEstateStatusEnum.IN_PREPARATION;
+
+    if (vermarktungsart === 'Kauf') {
+      status = ApiRealEstateStatusEnum.FOR_SALE;
+    }
+
+    return status;
+  })
   status?: ApiRealEstateStatusEnum;
 
   @Expose()
   @IsOptional()
   @IsString()
+  @Transform(
+    ({ obj: { externe_objnr, objektnummer } }): string =>
+      externe_objnr || objektnummer,
+  )
   externalId?: string;
 
   @Expose()
@@ -191,4 +198,4 @@ class OnOfficeEstateToAreaButlerEstateDto
   integrationParams?: IApiIntegrationParams;
 }
 
-export default OnOfficeEstateToAreaButlerEstateDto;
+export default ApiOnOfficeToAreaButlerDto;

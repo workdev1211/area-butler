@@ -1,4 +1,4 @@
-import { CsvFileFormatEnum } from "./types";
+import { CsvFileFormatsEnum } from "./types";
 
 export enum ApiSubscriptionPlanType {
   TRIAL = "TRIAL",
@@ -112,7 +112,7 @@ export interface IApiSubscriptionPlanAppFeatures {
   fullyCustomizableExpose: boolean;
   htmlSnippet: boolean;
   openAi: boolean;
-  csvFileFormat: CsvFileFormatEnum;
+  csvFileFormat: CsvFileFormatsEnum;
 }
 
 export interface ApiSubscriptionPlan {

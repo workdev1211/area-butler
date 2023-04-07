@@ -103,7 +103,6 @@ export class RealEstateListingIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Query('status') status: ApiRealEstateStatusEnum,
   ): Promise<ApiRealEstateListing[]> {
-    // TODO doesn't work
     return (
       await this.realEstateListingService.fetchRealEstateListings(
         integrationUser,

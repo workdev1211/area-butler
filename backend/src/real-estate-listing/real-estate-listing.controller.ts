@@ -32,14 +32,16 @@ import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
-import { CsvFileFormatEnum } from '@area-butler-types/types';
+import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
+import { RealEstateListingImportService } from './real-estate-listing-import.service';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
 export class RealEstateListingController extends AuthenticatedController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly realEstateListingImportService: RealEstateListingImportService,
   ) {
     super();
   }
@@ -103,20 +105,20 @@ export class RealEstateListingController extends AuthenticatedController {
   @UseInterceptors(FileInterceptor('file'))
   async importCsvFile(
     @InjectUser() user: UserDocument,
-    @Param('format') fileFormat: CsvFileFormatEnum,
+    @Param('format') fileFormat: CsvFileFormatsEnum,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<number[]> {
-    return this.realEstateListingService.importRealEstateListings(
+    return this.realEstateListingImportService.importCsvFile(
       user,
       fileFormat,
-      file,
+      file.buffer,
     );
   }
 
   @ApiOperation({ description: 'Download an example csv or xls file' })
   @Get('examples/:format/:type')
   downloadExampleFile(
-    @Param('format') fileFormat: CsvFileFormatEnum,
+    @Param('format') fileFormat: CsvFileFormatsEnum,
     @Param('type') fileType: ApiExampleFileTypeEnum,
     @Res({ passthrough: true }) res: Response,
   ): StreamableFile {

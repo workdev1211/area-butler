@@ -1,4 +1,4 @@
-import { osmEntityTypes } from "../constants/constants";
+import { osmEntityTypes, umlautMap } from "../constants/constants";
 import { ApiCoordinates, ApiOsmEntity } from "../types/types";
 
 export const groupBy = (xs: any, f: any): Record<string, any> =>
@@ -178,4 +178,18 @@ export const randomizeCoordinates = ({
     lat: lat + d1,
     lng: lng + d2,
   };
+};
+
+export const replaceUmlautWithEnglish = (text: string): string => {
+  let processedText = text;
+  const umlautMapEntries = Object.entries(umlautMap);
+
+  for (let i = 0; i < umlautMapEntries.length; i++) {
+    processedText = processedText.replace(
+      umlautMapEntries[i][0],
+      umlautMapEntries[i][1]
+    );
+  }
+
+  return processedText;
 };

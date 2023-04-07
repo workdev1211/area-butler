@@ -3,7 +3,7 @@ import {
   ApiSubscriptionIntervalEnum,
   ApiSubscriptionPlanType,
 } from "../../types/subscription-plan";
-import { CsvFileFormatEnum } from "../../types/types";
+import { CsvFileFormatsEnum } from "../../types/types";
 import {
   ApiStripeCheckoutModeEnum,
   TApiStripeCheckoutMode,
@@ -64,5 +64,5 @@ export const commonAppFeatures = {
   fullyCustomizableExpose: true,
   htmlSnippet: true,
   openAi: true,
-  csvFileFormat: CsvFileFormatEnum.AREA_BUTLER,
+  csvFileFormat: CsvFileFormatsEnum.AREA_BUTLER,
 };

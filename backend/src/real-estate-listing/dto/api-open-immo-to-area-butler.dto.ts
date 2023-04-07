@@ -9,11 +9,11 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { ApiCoordinates } from '@area-butler-types/types';
-import { iso3166Alpha3CountryNames } from '../../../../../../shared/constants/iso-countries';
-import { IOpenImmoXmlVendor } from '../../../../shared/open-immo.types';
+import { iso3166Alpha3CountryNames } from '../../../../shared/constants/iso-countries';
+import { IOpenImmoXmlVendor } from '../../shared/open-immo.types';
 
 @Exclude()
-class ApiOpenImmoToRealEstate implements ApiUpsertRealEstateListing {
+class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
   @Expose()
   @Transform(
     ({
@@ -33,6 +33,7 @@ class ApiOpenImmoToRealEstate implements ApiUpsertRealEstateListing {
     }) => {
       const name = `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`;
 
+      // TODO 'name' is a required parameter
       return name || undefined;
     },
     { toClassOnly: true },
@@ -58,6 +59,7 @@ class ApiOpenImmoToRealEstate implements ApiUpsertRealEstateListing {
     }) => {
       const address = `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`;
 
+      // TODO 'address' is a required parameter
       return address || undefined;
     },
     { toClassOnly: true },
@@ -216,4 +218,4 @@ class ApiOpenImmoToRealEstate implements ApiUpsertRealEstateListing {
   showInSnippet = true;
 }
 
-export default ApiOpenImmoToRealEstate;
+export default ApiOpenImmoToAreaButlerDto;

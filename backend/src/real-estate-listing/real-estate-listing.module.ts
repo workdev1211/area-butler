@@ -12,6 +12,9 @@ import { ClientModule } from '../client/client.module';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import { RealEstateListingIntController } from './real-estate-listing-int.controller';
+import { RealEstateListingImportService } from './real-estate-listing-import.service';
+import { ApiOpenImmoService } from './api/api-open-immo.service';
+import { ApiRealEstateListingImportController } from './api/api-real-estate-listing-import.controller';
 
 @Module({
   imports: [
@@ -22,8 +25,17 @@ import { RealEstateListingIntController } from './real-estate-listing-int.contro
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
-  providers: [RealEstateListingService, RealEstateListingIntService],
-  controllers: [RealEstateListingController, RealEstateListingIntController],
+  providers: [
+    RealEstateListingService,
+    RealEstateListingIntService,
+    RealEstateListingImportService,
+    ApiOpenImmoService,
+  ],
+  controllers: [
+    RealEstateListingController,
+    RealEstateListingIntController,
+    ApiRealEstateListingImportController,
+  ],
   exports: [RealEstateListingService, RealEstateListingIntService],
 })
 export class RealEstateListingModule {}
