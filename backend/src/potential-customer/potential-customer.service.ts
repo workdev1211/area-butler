@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -32,20 +32,20 @@ import { defaultPotentialCustomers } from '../shared/potential-customers.constan
 export class PotentialCustomerService {
   constructor(
     @InjectModel(PotentialCustomer.name)
-    private potentialCustomerModel: Model<PotentialCustomerDocument>,
+    private readonly potentialCustomerModel: Model<PotentialCustomerDocument>,
     @InjectModel(QuestionnaireRequest.name)
-    private questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
-    private userService: UserService,
-    private mailSender: MailSenderService,
-    private subscriptionService: SubscriptionService,
+    private readonly questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
+    private readonly userService: UserService,
+    private readonly mailSender: MailSenderService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async fetchPotentialCustomers({
-    id,
+    id: userId,
     parentId,
   }: UserDocument): Promise<PotentialCustomerDocument[]> {
     return this.potentialCustomerModel.find({
-      userId: { $in: [id, parentId] },
+      userId: { $in: [userId, parentId] },
     });
   }
 
@@ -61,65 +61,61 @@ export class PotentialCustomerService {
         'Weitere Interessentenerstellung ist im aktuellen Plan nicht mehr möglich',
       );
 
-    const documentData: any = {
-      ...upsertData,
-    };
-
-    const document = {
+    return new this.potentialCustomerModel({
       userId: user.id,
-      ...documentData,
-    };
-
-    return new this.potentialCustomerModel(document).save();
+      ...upsertData,
+    }).save();
   }
 
-  async insertDefaultPotentialCustomers(userId: string): Promise<unknown> {
-    return this.potentialCustomerModel.bulkWrite(
+  async insertDefaultPotentialCustomers(userId: string): Promise<void> {
+    await this.potentialCustomerModel.insertMany(
       defaultPotentialCustomers.map((customer) => ({
-        insertOne: { document: { ...customer, userId } },
+        ...customer,
+        userId,
       })),
     );
   }
 
   async updatePotentialCustomer(
     user: UserDocument,
-    id: string,
+    potentialCustomerId: string,
     { ...upsertData }: Partial<ApiUpsertPotentialCustomerDto>,
   ): Promise<PotentialCustomerDocument> {
-    const potentialCustomer = await this.potentialCustomerModel.findById({
-      _id: id,
-    });
+    const potentialCustomer = await this.potentialCustomerModel.findById(
+      potentialCustomerId,
+    );
 
     if (!potentialCustomer) {
       throw 'Entity not found';
     }
 
     if (potentialCustomer.userId !== user.id) {
-      throw 'Unallowed change';
+      throw 'Invalid change';
     }
 
-    const documentData: any = {
-      ...upsertData,
-    };
-
-    await potentialCustomer.updateOne(documentData);
-
-    return this.potentialCustomerModel.findById({
-      _id: id,
-    });
+    return this.potentialCustomerModel.findByIdAndUpdate(
+      potentialCustomerId,
+      {
+        ...upsertData,
+      },
+      { new: true },
+    );
   }
 
-  async deletePotentialCustomer(user: UserDocument, id: string) {
-    const potentialCustomer = await this.potentialCustomerModel.findById({
-      _id: id,
-    });
+  async deletePotentialCustomer(
+    user: UserDocument,
+    potentialCustomerId: string,
+  ): Promise<void> {
+    const potentialCustomer = await this.potentialCustomerModel.findById(
+      potentialCustomerId,
+    );
 
     if (!potentialCustomer) {
       throw 'Entity not found';
     }
 
     if (potentialCustomer.userId !== user.id) {
-      throw 'Unallowed delete';
+      throw 'Invalid delete';
     }
 
     await potentialCustomer.deleteOne();
@@ -137,19 +133,11 @@ export class PotentialCustomerService {
       'Der Versand eines Fragebogens ist im aktuellen Plan nicht möglich',
     );
 
-    const documentData: any = {
-      ...upsertData,
-    };
-
-    const document = {
+    const questionnaire = await new this.questionnaireRequestModel({
       userId: user.id,
       token: randomBytes(60).toString('hex'),
-      ...documentData,
-    };
-
-    const questionnaire = await new this.questionnaireRequestModel(
-      document,
-    ).save();
+      ...upsertData,
+    }).save();
 
     const mailProps: IMailProps = {
       to: [{ name: questionnaire.name, email: questionnaire.email }],
@@ -174,13 +162,13 @@ export class PotentialCustomerService {
   async upsertCustomerFromQuestionnaire({
     token,
     customer,
-  }: ApiUpsertQuestionnaireDto) {
+  }: ApiUpsertQuestionnaireDto): Promise<void> {
     const questionnaireRequest = await this.questionnaireRequestModel.findOne({
       token,
     });
 
     if (!questionnaireRequest) {
-      throw new Error('Unknown token');
+      throw new HttpException('Unknown token', 400);
     }
 
     const { name, email, userId } = questionnaireRequest;

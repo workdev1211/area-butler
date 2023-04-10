@@ -1,6 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { BulkWriteResult } from 'mongodb';
 import * as dayjs from 'dayjs';
 
 import {
@@ -14,7 +15,7 @@ import {
 import {
   IApiIntegrationUserProductContingent,
   IApiIntUserCreate,
-  IApiIntUserUpdateParamsAndConfig,
+  // IApiIntUserUpdateParamsAndConfig,
   TApiIntegrationUserConfig,
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
@@ -35,87 +36,6 @@ export class IntegrationUserService {
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
     private readonly mapboxService: MapboxService,
   ) {}
-
-  async findOne(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel
-      .findOne({
-        ...findQuery,
-        integrationType,
-      })
-      .sort({ updatedAt: -1 });
-  }
-
-  async findOneOrFail(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.findOne(findQuery, integrationType);
-
-    if (!existingUser) {
-      this.logger.error(findQuery, integrationType);
-      throw new HttpException('Unknown user!', 400);
-    }
-
-    return existingUser;
-  }
-
-  async findOneByAccessTokenOrFail(
-    accessToken: string,
-  ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOne({
-      accessToken,
-    });
-
-    if (!existingUser) {
-      this.logger.error(accessToken);
-      throw new HttpException('Unknown user!', 400);
-    }
-
-    return existingUser;
-  }
-
-  async updateParamsAndConfig(
-    integrationUser: TIntegrationUserDocument,
-    { accessToken, parameters, config }: IApiIntUserUpdateParamsAndConfig,
-  ): Promise<TIntegrationUserDocument> {
-    const updatedFields: IApiIntUserUpdateParamsAndConfig = {
-      accessToken,
-      parameters:
-        typeof integrationUser.parameters === 'object'
-          ? { ...integrationUser.parameters, ...parameters }
-          : { ...parameters },
-    };
-
-    if (config) {
-      updatedFields.config =
-        typeof integrationUser.config === 'object'
-          ? { ...integrationUser.config, ...config }
-          : { ...config };
-    }
-
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUser.id,
-      updatedFields,
-      { new: true },
-    );
-  }
-
-  async updateMany(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
-    updateQuery: UpdateQuery<TIntegrationUserDocument>,
-    integrationType: IntegrationTypesEnum,
-  ): Promise<void> {
-    await this.integrationUserModel.updateMany(
-      {
-        ...findQuery,
-        integrationType,
-      },
-      updateQuery,
-    );
-  }
 
   async create({
     integrationUserId,
@@ -163,6 +83,89 @@ export class IntegrationUserService {
     );
   }
 
+  async findOne(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel
+      .findOne({
+        ...findQuery,
+        integrationType,
+      })
+      .sort({ updatedAt: -1 });
+  }
+
+  async findOneOrFail(
+    findQuery: FilterQuery<TIntegrationUserDocument>,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.findOne(findQuery, integrationType);
+
+    if (!existingUser) {
+      this.logger.error(findQuery, integrationType);
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    return existingUser;
+  }
+
+  async findOneByAccessTokenOrFail(
+    accessToken: string,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.integrationUserModel.findOne({
+      accessToken,
+    });
+
+    if (!existingUser) {
+      this.logger.error(accessToken);
+      throw new HttpException('Unknown user!', 400);
+    }
+
+    return existingUser;
+  }
+
+  async findByDbIdAndUpdate(
+    integrationUserDbId: string,
+    updateQuery: UpdateQuery<unknown>,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUserDbId,
+      updateQuery,
+      { new: true },
+    );
+  }
+
+  // Stays here for the moment just in case
+  // async updateParamsAndConfig(
+  //   integrationUser: TIntegrationUserDocument,
+  //   { accessToken, parameters, config }: IApiIntUserUpdateParamsAndConfig,
+  // ): Promise<TIntegrationUserDocument> {
+  //   const updatedFields: IApiIntUserUpdateParamsAndConfig = {
+  //     accessToken,
+  //     parameters:
+  //       typeof integrationUser.parameters === 'object'
+  //         ? { ...integrationUser.parameters, ...parameters }
+  //         : { ...parameters },
+  //   };
+  //
+  //   if (config) {
+  //     updatedFields.config =
+  //       typeof integrationUser.config === 'object'
+  //         ? { ...integrationUser.config, ...config }
+  //         : { ...config };
+  //   }
+  //
+  //   return this.integrationUserModel.findByIdAndUpdate(
+  //     integrationUser.id,
+  //     updatedFields,
+  //     { new: true },
+  //   );
+  // }
+
+  async bulkWrite(writes: any[]): Promise<BulkWriteResult> {
+    return this.integrationUserModel.bulkWrite(writes);
+  }
+
   async addProductContingents(
     integrationUserDbId: string,
     productContingents: TApiIntegrationUserProduct[],
@@ -208,7 +211,7 @@ export class IntegrationUserService {
       productContingents &&
       Object.keys(productContingents).reduce(
         (result, productContingentType) => {
-          const remainingQuantity = this.getAvailProdCont(
+          const remainingQuantity = this.getAvailProdContingent(
             productContingents[productContingentType],
             productsUsed ? productsUsed[productContingentType] : 0,
           );
@@ -227,23 +230,59 @@ export class IntegrationUserService {
       : undefined;
   }
 
-  async incrementUsageStatsParam(
-    integrationUserDbId: string,
-    paramName: TApiIntUserUsageStatsParamNames,
-  ): Promise<TIntegrationUserDocument> {
+  checkProdContAvailability(
+    integrationUser: TIntegrationUserDocument,
+    actionType: TIntegrationActionTypes,
+  ): void {
+    const productContingentType = getProdContTypeByActType(
+      integrationUser.integrationType,
+      actionType,
+    );
+
+    if (!productContingentType) {
+      return;
+    }
+
+    if (
+      !integrationUser.productContingents ||
+      !integrationUser.productContingents[productContingentType]
+    ) {
+      throw new HttpException('Please, buy a corresponding product!', 402);
+    }
+
+    const remainingQuantity = this.getAvailProdContingent(
+      integrationUser.productContingents[productContingentType],
+      (integrationUser.productsUsed &&
+        integrationUser.productsUsed[productContingentType]) ||
+        0,
+    );
+
+    if (!remainingQuantity) {
+      throw new HttpException('Please, buy a corresponding product!', 402);
+    }
+  }
+
+  private getAvailProdContingent(
+    productContingent: IApiIntegrationUserProductContingent[],
+    productUsed: number,
+  ): number {
     const currentDate = dayjs();
 
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUserDbId,
-      {
-        $inc: {
-          [`usageStatistics.${paramName}.${currentDate.year()}.${
-            currentDate.month() + 1
-          }.${currentDate.date()}`]: 1,
-        },
+    const availableQuantity = productContingent.reduce(
+      (result, { quantity, expiresAt }) => {
+        if (currentDate < dayjs(expiresAt)) {
+          result += quantity;
+        }
+
+        return result;
       },
-      { new: true },
+      0,
     );
+
+    const usedQuantity = productUsed || 0;
+    const remainingQuantity = availableQuantity - usedQuantity;
+
+    return remainingQuantity > 0 ? remainingQuantity : 0;
   }
 
   async incrementProductUsage(
@@ -270,36 +309,23 @@ export class IntegrationUserService {
     );
   }
 
-  checkProdContAvailability(
-    integrationUser: TIntegrationUserDocument,
-    actionType: TIntegrationActionTypes,
-  ): void {
-    const productContingentType = getProdContTypeByActType(
-      integrationUser.integrationType,
-      actionType,
+  async incrementUsageStatsParam(
+    integrationUserDbId: string,
+    paramName: TApiIntUserUsageStatsParamNames,
+  ): Promise<TIntegrationUserDocument> {
+    const currentDate = dayjs();
+
+    return this.integrationUserModel.findByIdAndUpdate(
+      integrationUserDbId,
+      {
+        $inc: {
+          [`usageStatistics.${paramName}.${currentDate.year()}.${
+            currentDate.month() + 1
+          }.${currentDate.date()}`]: 1,
+        },
+      },
+      { new: true },
     );
-
-    if (!productContingentType) {
-      return;
-    }
-
-    if (
-      !integrationUser.productContingents ||
-      !integrationUser.productContingents[productContingentType]
-    ) {
-      throw new HttpException('Please, buy a corresponding product!', 402);
-    }
-
-    const remainingQuantity = this.getAvailProdCont(
-      integrationUser.productContingents[productContingentType],
-      (integrationUser.productsUsed &&
-        integrationUser.productsUsed[productContingentType]) ||
-        0,
-    );
-
-    if (!remainingQuantity) {
-      throw new HttpException('Please, buy a corresponding product!', 402);
-    }
   }
 
   async createMapboxAccessToken(
@@ -343,28 +369,5 @@ export class IntegrationUserService {
       },
       { new: true },
     );
-  }
-
-  private getAvailProdCont(
-    productContingent: IApiIntegrationUserProductContingent[],
-    productUsed: number,
-  ): number {
-    const currentDate = dayjs();
-
-    const availableQuantity = productContingent.reduce(
-      (result, { quantity, expiresAt }) => {
-        if (currentDate < dayjs(expiresAt)) {
-          result += quantity;
-        }
-
-        return result;
-      },
-      0,
-    );
-
-    const usedQuantity = productUsed || 0;
-    const remainingQuantity = availableQuantity - usedQuantity;
-
-    return remainingQuantity > 0 ? remainingQuantity : 0;
   }
 }

@@ -4,6 +4,7 @@ import {
   Get,
   Logger,
   Param,
+  Patch,
   Post,
   Query,
   Render,
@@ -102,7 +103,7 @@ export class OnOfficeController {
 
   @ApiOperation({ description: 'Update an estate' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('estate/:integrationId')
+  @Patch('estate/:integrationId')
   updateEstate(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('integrationId') integrationId: string,

@@ -116,10 +116,10 @@ export class RealEstateListingController extends AuthenticatedController {
   }
 
   @ApiOperation({ description: 'Download an example csv or xls file' })
-  @Get('examples/:format/:type')
+  @Get('examples')
   downloadExampleFile(
-    @Param('format') fileFormat: CsvFileFormatsEnum,
-    @Param('type') fileType: ApiExampleFileTypeEnum,
+    @Query('format') fileFormat: CsvFileFormatsEnum,
+    @Query('type') fileType: ApiExampleFileTypeEnum,
     @Res({ passthrough: true }) res: Response,
   ): StreamableFile {
     switch (fileType) {

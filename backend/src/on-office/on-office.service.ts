@@ -47,11 +47,11 @@ import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntegrationService } from '../location/location-integration.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
-// import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
+import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
   IApiIntUserOnOfficeParams,
-  // TApiIntegrationUserConfig,
+  TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
@@ -110,21 +110,38 @@ export class OnOfficeService {
     }: IApiOnOfficeUnlockProviderReq,
     integrationUser: TIntegrationUserDocument,
   ): Promise<string> {
-    await this.integrationUserService.updateParamsAndConfig(integrationUser, {
-      accessToken: extendedClaim,
-      parameters: {
-        token,
-        apiKey,
-        extendedClaim,
-        parameterCacheId,
+    await this.integrationUserService.bulkWrite([
+      {
+        updateOne: {
+          filter: {
+            _id: integrationUser.id,
+            integrationType: this.integrationType,
+          },
+          update: {
+            accessToken: extendedClaim,
+            'parameters.token': token,
+            'parameters.apiKey': apiKey,
+            'parameters.extendedClaim': extendedClaim,
+            'parameters.parameterCacheId': parameterCacheId,
+          },
+        },
       },
-    });
-
-    await this.integrationUserService.updateMany(
-      { 'parameters.customerWebId': integrationUser.parameters.customerWebId },
-      { 'parameters.apiKey': apiKey, 'parameters.token': token },
-      this.integrationType,
-    );
+      {
+        updateMany: {
+          filter: {
+            _id: { $ne: integrationUser.id },
+            integrationType: this.integrationType,
+            'parameters.customerWebId':
+              integrationUser.parameters.customerWebId,
+          },
+          update: {
+            accessToken: extendedClaim,
+            'parameters.token': token,
+            'parameters.apiKey': apiKey,
+          },
+        },
+      },
+    ]);
 
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
@@ -173,15 +190,35 @@ export class OnOfficeService {
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
-    // TODO refactor to a single request
+    // '$or' clause doesn't have a clear ordering so two 'find' requests are used
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
-    let existingIntegrationUser = await this.integrationUserService.findOne(
+    let existingUser = await this.integrationUserService.findOne(
       { integrationUserId },
       this.integrationType,
     );
 
-    if (!existingIntegrationUser) {
-      existingIntegrationUser = await this.integrationUserService.findOne(
+    let integrationUser;
+
+    if (existingUser) {
+      const { color, logo } = await this.fetchLogoAndColor({
+        ...existingUser.parameters,
+        extendedClaim,
+      });
+
+      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
+        existingUser.id,
+        {
+          accessToken: extendedClaim,
+          'parameters.extendedClaim': extendedClaim,
+          'parameters.parameterCacheId': parameterCacheId,
+          'config.color': color ? `#${color}` : undefined,
+          'config.logo': logo ? convertBase64ContentToUri(logo) : undefined,
+        },
+      );
+    }
+
+    if (!existingUser) {
+      existingUser = await this.integrationUserService.findOne(
         {
           'parameters.customerWebId': customerWebId,
           'parameters.token': { $exists: true },
@@ -191,50 +228,35 @@ export class OnOfficeService {
       );
     }
 
-    if (!existingIntegrationUser) {
-      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+    if (existingUser) {
+      const { color, logo } = await this.fetchLogoAndColor({
+        ...existingUser.parameters,
+        extendedClaim,
+      });
+
+      integrationUser = await this.integrationUserService.create({
+        integrationUserId,
+        integrationType: this.integrationType,
+        accessToken: extendedClaim,
+        parameters: {
+          parameterCacheId,
+          customerWebId,
+          userId,
+          extendedClaim,
+          apiKey: existingUser.parameters.apiKey,
+          token: existingUser.parameters.token,
+        },
+        config: {
+          color: color ? `#${color}` : undefined,
+          logo: logo ? convertBase64ContentToUri(logo) : undefined,
+        } as TApiIntegrationUserConfig,
+      });
     }
 
-    // TODO check the error - "parameter extendedclaim is required, but missing, empty or invalid"
-    // Could be a race condition
-    // const { color, logo } = await this.fetchLogoAndColor({
-    //   ...integrationUser.parameters,
-    //   extendedClaim,
-    // });
-
-    const integrationUser =
-      existingIntegrationUser.integrationUserId === integrationUserId
-        ? await this.integrationUserService.updateParamsAndConfig(
-            existingIntegrationUser,
-            {
-              accessToken: extendedClaim,
-              parameters: {
-                extendedClaim,
-                parameterCacheId,
-              },
-              // config: {
-              //   color: color ? `#${color}` : undefined,
-              //   logo: logo ? convertBase64ContentToUri(logo) : undefined,
-              // } as TApiIntegrationUserConfig,
-            },
-          )
-        : await this.integrationUserService.create({
-            integrationUserId,
-            integrationType: this.integrationType,
-            accessToken: extendedClaim,
-            parameters: {
-              parameterCacheId,
-              customerWebId,
-              userId,
-              extendedClaim,
-              apiKey: existingIntegrationUser.parameters.apiKey,
-              token: existingIntegrationUser.parameters.token,
-            },
-            // config: {
-            //   color: color ? `#${color}` : undefined,
-            //   logo: logo ? convertBase64ContentToUri(logo) : undefined,
-            // } as TApiIntegrationUserConfig,
-          });
+    if (!integrationUser) {
+      this.logger.error(this.login, integrationUserId, customerWebId);
+      throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
+    }
 
     const availProdContingents =
       this.integrationUserService.getAvailProdContingents(integrationUser);
@@ -343,6 +365,7 @@ export class OnOfficeService {
       },
     } = confirmOrderData;
 
+    // Integration user is fetched here on purpose to skip next steps on failure
     let integrationUser = await this.integrationUserService.findOneOrFail(
       { accessToken },
       this.integrationType,
@@ -418,7 +441,120 @@ export class OnOfficeService {
     };
   }
 
-  async fetchAndProcessEstateData(
+  async updateEstate(
+    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+    integrationId: string,
+    { queryType, queryResponse }: IApiOnOfficeUpdateEstateReq,
+  ): Promise<void> {
+    const actionId = ApiOnOfficeActionIdsEnum.MODIFY;
+    const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
+    const timestamp = dayjs().unix();
+
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: integrationId,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              data: {
+                [openAiQueryTypeToOnOfficeEstateFieldMapping[queryType]]:
+                  queryResponse.slice(0, 2000),
+              },
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    if (!this.checkOnOfficeResponseSuccess(response)) {
+      this.logger.error(this.updateEstate.name, request, response);
+      throw new HttpException('Estate update failed!', 400);
+    }
+  }
+
+  verifySignature(
+    queryParams:
+      | IApiOnOfficeLoginQueryParams
+      | IApiOnOfficeConfirmOrderQueryParams,
+    url: string,
+  ): void {
+    const { signature, ...otherParams } = queryParams;
+    const sortedQueryParams = getOnOfficeSortedMapData(otherParams);
+
+    // added "products" as a skipped key because it's already encoded
+    const testQueryString = buildOnOfficeQueryString(sortedQueryParams, [
+      'products',
+      'message',
+    ]);
+
+    const testUrl = `${url}?${testQueryString}`;
+    const generatedSignature = this.generateSignature(testUrl);
+
+    if (generatedSignature === signature) {
+      return;
+    }
+
+    this.logger.error(
+      this.verifySignature.name,
+      testUrl,
+      generatedSignature,
+      signature,
+    );
+
+    throw new HttpException('Request verification failed!', 400);
+  }
+
+  private generateSignature(
+    data: string,
+    secret = this.providerSecret,
+    encoding: BufferEncoding = 'hex',
+  ): string {
+    return createHmac('sha256', secret)
+      .update(data)
+      .digest()
+      .toString(encoding);
+  }
+
+  private checkOnOfficeResponseSuccess<T>({
+    status: {
+      code: responseCode,
+      errorcode: responseErrorCode,
+      message: responseMessage,
+    },
+    response: {
+      results: [
+        {
+          status: { errorcode: actionErrorCode, message: actionMessage },
+        },
+      ],
+    },
+  }: IApiOnOfficeResponse<T>): boolean {
+    return (
+      responseCode === 200 &&
+      responseErrorCode === 0 &&
+      responseMessage === 'OK' &&
+      actionErrorCode === 0 &&
+      actionMessage === 'OK'
+    );
+  }
+
+  private async fetchAndProcessEstateData(
     estateId: string,
     {
       integrationUserId,
@@ -531,119 +667,6 @@ export class OnOfficeService {
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });
-  }
-
-  generateSignature(
-    data: string,
-    secret = this.providerSecret,
-    encoding: BufferEncoding = 'hex',
-  ): string {
-    return createHmac('sha256', secret)
-      .update(data)
-      .digest()
-      .toString(encoding);
-  }
-
-  verifySignature(
-    queryParams:
-      | IApiOnOfficeLoginQueryParams
-      | IApiOnOfficeConfirmOrderQueryParams,
-    url: string,
-  ): void {
-    const { signature, ...otherParams } = queryParams;
-    const sortedQueryParams = getOnOfficeSortedMapData(otherParams);
-
-    // added "products" as a skipped key because it's already encoded
-    const testQueryString = buildOnOfficeQueryString(sortedQueryParams, [
-      'products',
-      'message',
-    ]);
-
-    const testUrl = `${url}?${testQueryString}`;
-    const generatedSignature = this.generateSignature(testUrl);
-
-    if (generatedSignature === signature) {
-      return;
-    }
-
-    this.logger.error(
-      this.verifySignature.name,
-      testUrl,
-      generatedSignature,
-      signature,
-    );
-
-    throw new HttpException('Request verification failed!', 400);
-  }
-
-  async updateEstate(
-    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
-    integrationId: string,
-    { queryType, queryResponse }: IApiOnOfficeUpdateEstateReq,
-  ): Promise<void> {
-    const actionId = ApiOnOfficeActionIdsEnum.MODIFY;
-    const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
-    const timestamp = dayjs().unix();
-
-    const signature = this.generateSignature(
-      [timestamp, token, resourceType, actionId].join(''),
-      apiKey,
-      'base64',
-    );
-
-    const request: IApiOnOfficeRequest = {
-      token,
-      request: {
-        actions: [
-          {
-            timestamp,
-            hmac: signature,
-            hmac_version: 2,
-            actionid: actionId,
-            resourceid: integrationId,
-            identifier: '',
-            resourcetype: resourceType,
-            parameters: {
-              data: {
-                [openAiQueryTypeToOnOfficeEstateFieldMapping[queryType]]:
-                  queryResponse.slice(0, 2000),
-              },
-              extendedclaim: extendedClaim,
-            },
-          },
-        ],
-      },
-    };
-
-    const response = await this.onOfficeApiService.sendRequest(request);
-
-    if (!this.checkOnOfficeResponseSuccess(response)) {
-      this.logger.error(this.updateEstate.name, request, response);
-      throw new HttpException('Estate update failed!', 400);
-    }
-  }
-
-  private checkOnOfficeResponseSuccess<T>({
-    status: {
-      code: responseCode,
-      errorcode: responseErrorCode,
-      message: responseMessage,
-    },
-    response: {
-      results: [
-        {
-          status: { errorcode: actionErrorCode, message: actionMessage },
-        },
-      ],
-    },
-  }: IApiOnOfficeResponse<T>): boolean {
-    return (
-      responseCode === 200 &&
-      responseErrorCode === 0 &&
-      responseMessage === 'OK' &&
-      actionErrorCode === 0 &&
-      actionMessage === 'OK'
-    );
   }
 
   private async fetchLogoAndColor({

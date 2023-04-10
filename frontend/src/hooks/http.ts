@@ -1,7 +1,6 @@
 import { useContext } from "react";
-import axios from "axios";
-import { AxiosResponse } from "axios";
 import { useAuth0 } from "@auth0/auth0-react";
+import axios, { AxiosResponse } from "axios";
 
 import { UserContext } from "../context/UserContext";
 
@@ -16,6 +15,27 @@ export const useHttp = () => {
     userState: { integrationUser },
   } = useContext(UserContext);
   const baseUrl = process.env.REACT_APP_BASE_URL || "";
+
+  const post = async <T, U = unknown>(
+    url: string,
+    body?: U,
+    requestHeaders = {}
+  ): Promise<AxiosResponse<T>> => {
+    const headers: any = { ...defaultHeaders, ...requestHeaders };
+    const idToken = !isLoading && (await getIdTokenClaims());
+
+    if (idToken && !integrationUser) {
+      headers["Authorization"] = `Bearer ${idToken.__raw}`;
+    }
+
+    if (integrationUser) {
+      headers["Authorization"] = `AccessToken ${integrationUser.accessToken}`;
+    }
+
+    return axios.post(`${baseUrl}${url}`, body, {
+      headers,
+    });
+  };
 
   const get = async <T>(
     url: string,
@@ -39,12 +59,11 @@ export const useHttp = () => {
     });
   };
 
-  const post = async <T, U = unknown>(
+  const patch = async <T, U = unknown>(
     url: string,
-    body?: U,
-    requestHeaders = {}
+    body: U
   ): Promise<AxiosResponse<T>> => {
-    const headers: any = { ...defaultHeaders, ...requestHeaders };
+    const headers: any = { ...defaultHeaders };
     const idToken = !isLoading && (await getIdTokenClaims());
 
     if (idToken && !integrationUser) {
@@ -55,7 +74,7 @@ export const useHttp = () => {
       headers["Authorization"] = `AccessToken ${integrationUser.accessToken}`;
     }
 
-    return axios.post(`${baseUrl}${url}`, body, {
+    return axios.patch(`${baseUrl}${url}`, body, {
       headers,
     });
   };
@@ -97,5 +116,5 @@ export const useHttp = () => {
     });
   };
 
-  return { get, post, put, deleteRequest };
+  return { post, get, patch, put, deleteRequest };
 };

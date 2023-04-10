@@ -31,7 +31,7 @@ const OpenAiPage: FunctionComponent = () => {
   } = useContext(RealEstateContext);
 
   const history = useHistory();
-  const { post } = useHttp();
+  const { patch } = useHttp();
   const { fetchRealEstateByIntId } = useRealEstateData();
 
   const [snapshotId, setSnapshotId] = useState<string>();
@@ -149,7 +149,7 @@ const OpenAiPage: FunctionComponent = () => {
               toastSuccess("Die Daten wurden an onOffice gesendet!");
               setIsCopyTextButtonDisabled(true);
 
-              void post(
+              void patch(
                 `/api/on-office/estate/${searchContextState.integrationId}`,
                 { queryType, queryResponse }
               );
