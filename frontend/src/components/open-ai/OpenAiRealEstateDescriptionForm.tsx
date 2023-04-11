@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Form, Formik, useFormikContext } from "formik";
 import * as Yup from "yup";
 
@@ -13,6 +13,7 @@ import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { UserContext } from "../../context/UserContext";
 import { SearchContext } from "../../context/SearchContext";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 
 interface IOpenAiRealEstateDescriptionFormListenerProps {
   onValuesChange: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
@@ -45,43 +46,45 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
-  const {
-    searchContextState: { integrationId },
-  } = useContext(SearchContext);
-  const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
+  const { searchContextState } = useContext(SearchContext);
+  const { realEstateDispatch } = useContext(RealEstateContext);
 
-  const { fetchRealEstateByIntId, fetchRealEstates } = useRealEstateData();
+  const { fetchRealEstates } = useRealEstateData();
+
+  const [realEstates, setRealEstates] = useState<ApiRealEstateListing[]>([]);
 
   useEffect(() => {
+    if (integrationUser) {
+      setRealEstates([searchContextState.realEstateListing!]);
+      return;
+    }
+
     const fetchRealEstateData = async () => {
-      const realEstates =
-        integrationUser && integrationId
-          ? [await fetchRealEstateByIntId(integrationId)]
-          : await fetchRealEstates();
+      const realEstateData = await fetchRealEstates();
 
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstates,
+        payload: realEstateData,
       });
+
+      setRealEstates(realEstateData);
     };
 
     void fetchRealEstateData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationId, integrationUser, realEstateDispatch]);
+  }, [integrationUser, realEstateDispatch]);
 
   const getInitRealEstListId = (): string | undefined => {
     if (
       initialValues &&
-      realEstateState.listings.some(
-        ({ id }) => id === initialValues.realEstateListingId
-      )
+      realEstates.some(({ id }) => id === initialValues.realEstateListingId)
     ) {
       return initialValues.realEstateListingId;
     }
 
-    if (realEstateState.listings.length === 1) {
-      return realEstateState.listings[0].id;
+    if (realEstates.length === 1) {
+      return realEstates[0].id;
     }
 
     return;
@@ -114,13 +117,13 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
               label="Immobilienbeschreibung"
               placeholder="Immobilienbeschreibung"
               name="realEstateListingId"
-              disabled={realEstateState.listings.length < 2}
+              disabled={realEstates.length < 2}
               defaultValue={
                 processedInitialValues.realEstateListingId ||
                 placeholderSelectOptionKey
               }
             >
-              {realEstateState.listings.length > 1 && (
+              {realEstates.length > 1 && (
                 <option
                   value={placeholderSelectOptionKey}
                   key={placeholderSelectOptionKey}
@@ -129,7 +132,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
                   Immobilie auswählen
                 </option>
               )}
-              {realEstateState.listings.map(({ id, name, address }) => (
+              {realEstates.map(({ id, name, address }) => (
                 <option value={id} key={id}>
                   {name} ({address})
                 </option>

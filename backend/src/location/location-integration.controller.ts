@@ -39,6 +39,19 @@ export class LocationIntegrationController {
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
+  @ApiOperation({ description: 'Create a new map snapshot' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('snapshot')
+  async createSnapshot(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() snapshot: ApiSearchResultSnapshotDto,
+  ): Promise<ApiSearchResultSnapshotResponseDto> {
+    return this.locationIntegrationService.createSnapshot(
+      integrationUser,
+      snapshot,
+    );
+  }
+
   @ApiOperation({ description: 'Fetch a specific map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('snapshot/:id')
@@ -75,19 +88,6 @@ export class LocationIntegrationController {
     return this.locationService.searchLocation(integrationUser, searchData);
   }
 
-  @ApiOperation({ description: 'Create a new map snapshot' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('snapshot')
-  async createSnapshot(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() snapshot: ApiSearchResultSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationIntegrationService.createSnapshot(
-      integrationUser,
-      snapshot,
-    );
-  }
-
   @ApiOperation({ description: 'Update an existing map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Put('snapshot/:id')
@@ -112,7 +112,6 @@ export class LocationIntegrationController {
       await this.realEstateListingService.fetchRealEstateListingById(
         integrationUser,
         locationDescriptionQuery.realEstateListingId,
-        locationDescriptionQuery.integrationId,
       );
 
     const { openAiRequestQuantity } = realEstateListing.integrationParams;
@@ -159,7 +158,6 @@ export class LocationIntegrationController {
       await this.realEstateListingService.fetchRealEstateListingById(
         integrationUser,
         locationRealEstateDescriptionQuery.realEstateListingId,
-        locationRealEstateDescriptionQuery.integrationId,
       );
 
     const { openAiRequestQuantity } = realEstateListing.integrationParams;

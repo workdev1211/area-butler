@@ -362,9 +362,9 @@ export class SubscriptionService {
 
     if (subscription) {
       Object.assign(subscription, {
-        stripePriceId: priceId,
         type,
         endsAt,
+        stripePriceId: priceId,
       });
 
       this.logger.log(`Update ${type} subscription for ${userId} user`);

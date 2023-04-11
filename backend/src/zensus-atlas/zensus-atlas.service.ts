@@ -27,9 +27,7 @@ export class ZensusAtlasService {
   ) {}
 
   async create(zensusAtlasFeature: ApiGeojsonFeature): Promise<ZensusAtlas> {
-    const created = new this.zensusAtlasModel(zensusAtlasFeature);
-
-    return created.save();
+    return new this.zensusAtlasModel(zensusAtlasFeature).save();
   }
 
   async createCollection(zensusAtlasFeatures: ApiGeojsonFeature[]) {

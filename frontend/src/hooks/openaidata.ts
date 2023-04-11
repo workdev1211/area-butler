@@ -1,4 +1,4 @@
-import { useContext, useEffect } from "react";
+import { useContext } from "react";
 
 import { useHttp } from "./http";
 import {
@@ -7,43 +7,12 @@ import {
   IApiOpenAiLocationRealEstateDescriptionQuery,
   IApiOpenAiQuery,
 } from "../../../shared/types/open-ai";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "../context/RealEstateContext";
 import { SearchContext } from "../context/SearchContext";
-import { useRealEstateData } from "./realestatedata";
 
 export const useOpenAiData = (isIntegrationUser = false) => {
-  const {
-    realEstateState: { listings },
-    realEstateDispatch,
-  } = useContext(RealEstateContext);
-  const {
-    searchContextState: { integrationId },
-  } = useContext(SearchContext);
+  const { searchContextState } = useContext(SearchContext);
 
-  const { fetchRealEstateByIntId } = useRealEstateData();
   const { post } = useHttp();
-
-  useEffect(() => {
-    if (!isIntegrationUser || !integrationId) {
-      return;
-    }
-
-    const fetchRealEstateData = async () => {
-      const realEstates = [await fetchRealEstateByIntId(integrationId)];
-
-      realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstates,
-      });
-    };
-
-    void fetchRealEstateData();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isIntegrationUser, integrationId, realEstateDispatch]);
 
   const fetchLocationDescription = async (
     locationDescriptionQuery: IApiOpenAiLocationDescriptionQuery
@@ -51,10 +20,8 @@ export const useOpenAiData = (isIntegrationUser = false) => {
     const resultingQuery = { ...locationDescriptionQuery };
 
     if (isIntegrationUser) {
-      Object.assign(resultingQuery, {
-        integrationId,
-        realEstateListingId: listings[0].id,
-      });
+      resultingQuery.realEstateListingId =
+        searchContextState.realEstateListing!.id;
     }
 
     return (
@@ -97,10 +64,8 @@ export const useOpenAiData = (isIntegrationUser = false) => {
     const resultingQuery = { ...query };
 
     if (isIntegrationUser) {
-      Object.assign(resultingQuery, {
-        integrationId,
-        realEstateListingId: listings[0].id,
-      });
+      resultingQuery.realEstateListingId =
+        searchContextState.realEstateListing!.id;
     }
 
     return (

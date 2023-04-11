@@ -24,17 +24,19 @@ export class RealEstateListingIntService {
     }: IApiRealEstateIntegrationParams,
     realEstateListing: IApiRealEstateListingSchema,
   ): Promise<RealEstateListingDocument> {
-    const existingRealEstateListing = await this.realEstateListingModel.findOne(
-      {
-        'integrationParams.integrationId': integrationId,
-        'integrationParams.integrationUserId': integrationUserId,
-        'integrationParams.integrationType': integrationType,
-      },
-    );
+    const existingRealEstateListing =
+      await this.realEstateListingModel.findOneAndUpdate(
+        {
+          'integrationParams.integrationId': integrationId,
+          'integrationParams.integrationUserId': integrationUserId,
+          'integrationParams.integrationType': integrationType,
+        },
+        { ...realEstateListing },
+        { new: true },
+      );
 
     if (existingRealEstateListing) {
-      Object.assign(existingRealEstateListing, realEstateListing);
-      return existingRealEstateListing.save();
+      return existingRealEstateListing;
     }
 
     return new this.realEstateListingModel(realEstateListing).save();

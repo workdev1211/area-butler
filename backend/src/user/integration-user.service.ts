@@ -70,6 +70,7 @@ export class IntegrationUserService {
     const existingUser = await this.integrationUserModel.findOneAndUpdate(
       { integrationUserId, integrationType },
       { accessToken, parameters },
+      { new: true },
     );
 
     return (

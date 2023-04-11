@@ -228,7 +228,7 @@ export class OnOfficeService {
       );
     }
 
-    if (existingUser) {
+    if (!integrationUser && existingUser) {
       const { color, logo } = await this.fetchLogoAndColor({
         ...existingUser.parameters,
         extendedClaim,

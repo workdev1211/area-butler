@@ -12,11 +12,6 @@ import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "../../context/RealEstateContext";
-import { useRealEstateData } from "../../hooks/realestatedata";
 
 const OpenAiPage: FunctionComponent = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -25,14 +20,9 @@ const OpenAiPage: FunctionComponent = () => {
     userState: { integrationUser },
     userDispatch,
   } = useContext(UserContext);
-  const {
-    realEstateState: { listings },
-    realEstateDispatch,
-  } = useContext(RealEstateContext);
 
   const history = useHistory();
   const { patch } = useHttp();
-  const { fetchRealEstateByIntId } = useRealEstateData();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
@@ -42,27 +32,6 @@ const OpenAiPage: FunctionComponent = () => {
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [queryType, setQueryType] = useState<OpenAiQueryTypeEnum>();
   const [queryResponse, setQueryResponse] = useState<string | undefined>();
-
-  useEffect(() => {
-    if (!integrationUser || !searchContextState.integrationId) {
-      return;
-    }
-
-    const fetchRealEstateData = async () => {
-      const realEstates = [
-        await fetchRealEstateByIntId(searchContextState.integrationId!),
-      ];
-
-      realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstates,
-      });
-    };
-
-    void fetchRealEstateData();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationUser, searchContextState.integrationId, realEstateDispatch]);
 
   useEffect(() => {
     if (searchContextState.integrationSnapshotId) {
@@ -79,7 +48,7 @@ const OpenAiPage: FunctionComponent = () => {
 
     if (requestStatus === RequestStatusTypesEnum.FAILURE) {
       if (
-        !listings[0].openAiRequestQuantity &&
+        !searchContextState.realEstateListing!.openAiRequestQuantity &&
         !checkProdContAvailability(
           integrationType!,
           responseQueryType,

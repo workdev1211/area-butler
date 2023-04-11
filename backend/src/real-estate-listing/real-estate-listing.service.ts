@@ -145,7 +145,6 @@ export class RealEstateListingService {
   async fetchRealEstateListingById(
     user: UserDocument | TIntegrationUserDocument,
     realEstateListingId: string,
-    integrationId?: string,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
     const filter = { _id: realEstateListingId };
@@ -154,7 +153,6 @@ export class RealEstateListingService {
       filter,
       isIntegrationUser
         ? {
-            'integrationParams.integrationId': integrationId,
             'integrationParams.integrationUserId': user.integrationUserId,
             'integrationParams.integrationType': user.integrationType,
           }
@@ -172,10 +170,7 @@ export class RealEstateListingService {
 
   async fetchOpenAiRealEstateDesc(
     user: UserDocument | TIntegrationUserDocument,
-    {
-      realEstateListingId,
-      integrationId,
-    }: IApiOpenAiRealEstateDescriptionQuery,
+    { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
   ) {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -193,7 +188,6 @@ export class RealEstateListingService {
     const realEstateListing = await this.fetchRealEstateListingById(
       user,
       realEstateListingId,
-      integrationId,
     );
 
     const queryText =

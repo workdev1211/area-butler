@@ -27,12 +27,10 @@ export interface IApiOpenAiLocationDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
-  integrationId?: string;
 }
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
   realEstateListingId: string | undefined; // Formik, solve later
-  integrationId?: string;
 }
 
 export interface IApiOpenAiLocationRealEstateDescriptionQuery

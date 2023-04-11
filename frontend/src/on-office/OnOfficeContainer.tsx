@@ -44,9 +44,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
-  const {
-    searchContextState: { integrationSnapshotId },
-  } = useContext(SearchContext);
+  const { searchContextState } = useContext(SearchContext);
 
   const history = useHistory();
   const { pathname } = useLocation();
@@ -89,7 +87,9 @@ const OnOfficeContainer: FunctionComponent = () => {
       integrationUser?.availProdContingents
     ) {
       history.push(
-        integrationSnapshotId ? `/map/${integrationSnapshotId}` : "/search"
+        searchContextState.integrationSnapshotId
+          ? `/map/${searchContextState.integrationSnapshotId}`
+          : "/search"
       );
       return;
     }

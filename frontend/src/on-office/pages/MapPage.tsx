@@ -16,10 +16,6 @@ import {
 } from "../../context/SearchContext";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../../shared/shared.constants";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "../../context/RealEstateContext";
 import { deriveInitialEntityGroups } from "../../shared/shared.functions";
 import {
   ApiSearchResultSnapshotResponse,
@@ -37,7 +33,6 @@ import TourStarter from "../../tour/TourStarter";
 const MapPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { realEstateDispatch } = useContext(RealEstateContext);
 
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData(true);
@@ -134,11 +129,6 @@ const MapPage: FunctionComponent = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
       payload: preferredLocations,
-    });
-
-    realEstateDispatch({
-      type: RealEstateActionTypes.SET_REAL_ESTATES,
-      payload: realEstateListings,
     });
 
     searchContextDispatch({

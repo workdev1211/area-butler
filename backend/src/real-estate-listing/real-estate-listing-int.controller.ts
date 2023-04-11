@@ -43,7 +43,6 @@ export class RealEstateListingIntController {
       await this.realEstateListingService.fetchRealEstateListingById(
         integrationUser,
         realEstateDescriptionQuery.realEstateListingId,
-        realEstateDescriptionQuery.integrationId,
       );
 
     const { openAiRequestQuantity } = realEstateListing.integrationParams;
@@ -74,25 +73,6 @@ export class RealEstateListingIntController {
     await realEstateListing.save();
 
     return realEstateDesc;
-  }
-
-  @ApiOperation({
-    description: 'Fetch a real estate listing by integration params',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get()
-  async fetchByIntegrationParams(
-    @InjectUser()
-    { integrationType, integrationUserId }: TIntegrationUserDocument,
-    @Query('integration-id') integrationId: string,
-  ): Promise<ApiRealEstateListing> {
-    return mapRealEstateListingToApiRealEstateListing(
-      await this.realEstateListingIntService.findOneOrFailByIntParams({
-        integrationId,
-        integrationType,
-        integrationUserId,
-      }),
-    );
   }
 
   @ApiOperation({

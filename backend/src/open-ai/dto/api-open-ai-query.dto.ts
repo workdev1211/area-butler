@@ -15,10 +15,6 @@ class ApiOpenAiQueryDto implements IApiOpenAiQuery {
   @IsOptional()
   @IsString()
   realEstateListingId?: string;
-
-  @IsOptional()
-  @IsString()
-  integrationId?: string;
 }
 
 export default ApiOpenAiQueryDto;

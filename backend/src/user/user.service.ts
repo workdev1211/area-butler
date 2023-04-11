@@ -120,7 +120,7 @@ export class UserService {
       throw new HttpException('Unknown user!', 400);
     }
 
-    Object.assign(existingUser, { fullname });
+    existingUser.fullname = fullname;
 
     return existingUser.save();
   }
@@ -139,7 +139,10 @@ export class UserService {
     return existingUser.save();
   }
 
-  async hideTour(email: string, tour?: ApiTourNamesEnum): Promise<UserDocument> {
+  async hideTour(
+    email: string,
+    tour?: ApiTourNamesEnum,
+  ): Promise<UserDocument> {
     const user = await this.findByEmail(email);
 
     if (!user) {
@@ -397,21 +400,21 @@ export class UserService {
     );
 
     if (settings.logo) {
-      Object.assign(user, { logo: settings.logo });
+      user.logo = settings.logo;
     } else if (settings.logo === null) {
-      Object.assign(user, { logo: undefined });
+      user.logo = undefined;
     }
 
     if (settings.mapIcon) {
-      Object.assign(user, { mapIcon: settings.mapIcon });
+      user.mapIcon = settings.mapIcon;
     } else if (settings.logo === null) {
-      Object.assign(user, { mapIcon: undefined });
+      user.mapIcon = undefined;
     }
 
     if (settings.color) {
-      Object.assign(user, { color: settings.color });
+      user.color = settings.color;
     } else if (settings.color === null) {
-      Object.assign(user, { color: undefined });
+      user.color = undefined;
     }
 
     return user.save();

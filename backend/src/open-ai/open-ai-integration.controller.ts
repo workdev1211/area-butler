@@ -29,7 +29,6 @@ export class OpenAiIntegrationController {
       text,
       isFormalToInformal,
       realEstateListingId,
-      integrationId,
     }: ApiOpenAiQueryDto,
   ): Promise<string> {
     const actionType = isFormalToInformal
@@ -40,7 +39,6 @@ export class OpenAiIntegrationController {
       await this.realEstateListingService.fetchRealEstateListingById(
         integrationUser,
         realEstateListingId,
-        integrationId,
       );
 
     const { openAiRequestQuantity } = realEstateListing.integrationParams;

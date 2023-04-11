@@ -652,7 +652,6 @@ export class LocationService {
       tonality,
       customText,
       realEstateListingId,
-      integrationId,
     }: IApiOpenAiLocationRealEstateDescriptionQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -677,7 +676,6 @@ export class LocationService {
       await this.realEstateListingService.fetchRealEstateListingById(
         user,
         realEstateListingId,
-        integrationId,
       );
 
     if (!searchResultSnapshot || !realEstateListing) {

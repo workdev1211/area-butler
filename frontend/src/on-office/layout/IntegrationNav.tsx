@@ -8,12 +8,10 @@ import { SearchContext } from "../../context/SearchContext";
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 
 const IntegrationNav: FunctionComponent = () => {
-  const {
-    searchContextState: { integrationSnapshotId },
-  } = useContext(SearchContext);
+  const { searchContextState } = useContext(SearchContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  if (!integrationSnapshotId) {
+  if (!searchContextState.integrationSnapshotId) {
     return null;
   }
 
@@ -109,7 +107,7 @@ const IntegrationNav: FunctionComponent = () => {
                 Mein KI-Assistent
               </NavLink>
               <NavLink
-                to={`/map/${integrationSnapshotId}`}
+                to={`/map/${searchContextState.integrationSnapshotId}`}
                 className="nav-link"
                 aria-current="page"
               >
@@ -144,7 +142,7 @@ const IntegrationNav: FunctionComponent = () => {
             Mein KI-Assistent
           </NavLink>
           <NavLink
-            to={`/map/${integrationSnapshotId}`}
+            to={`/map/${searchContextState.integrationSnapshotId}`}
             className="nav-link"
             aria-current="page"
           >

@@ -43,10 +43,6 @@ class ApiOpenAiLocationDescriptionQueryDto
   @IsOptional()
   @IsString()
   realEstateListingId?: string;
-
-  @IsOptional()
-  @IsString()
-  integrationId?: string;
 }
 
 export default ApiOpenAiLocationDescriptionQueryDto;

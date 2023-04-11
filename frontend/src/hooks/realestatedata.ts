@@ -7,16 +7,6 @@ import {
 export const useRealEstateData = () => {
   const { get } = useHttp();
 
-  const fetchRealEstateByIntId = async (
-    integrationId: string
-  ): Promise<ApiRealEstateListing> => {
-    return (
-      await get<ApiRealEstateListing>(
-        `/api/real-estate-listing-int?integration-id=${integrationId}`
-      )
-    ).data;
-  };
-
   const fetchRealEstates = async (
     realEstateStatus?: ApiRealEstateStatusEnum
   ): Promise<ApiRealEstateListing[]> => {
@@ -29,5 +19,5 @@ export const useRealEstateData = () => {
     return (await get<ApiRealEstateListing[]>(url)).data;
   };
 
-  return { fetchRealEstateByIntId, fetchRealEstates };
+  return { fetchRealEstates };
 };

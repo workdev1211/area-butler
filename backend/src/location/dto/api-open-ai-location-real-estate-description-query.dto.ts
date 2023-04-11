@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from 'class-validator';
 
 import ApiOpenAiLocationDescriptionQueryDto from './api-open-ai-location-description-query.dto';
 import { IApiOpenAiLocationRealEstateDescriptionQuery } from '@area-butler-types/open-ai';
@@ -10,10 +10,6 @@ class ApiOpenAiLocationRealEstateDescriptionQueryDto
   @IsNotEmpty()
   @IsString()
   realEstateListingId: string;
-
-  @IsOptional()
-  @IsString()
-  integrationId?: string;
 }
 
 export default ApiOpenAiLocationRealEstateDescriptionQueryDto;

@@ -32,7 +32,6 @@ import {
   CachingContext,
 } from "../../context/CachingContext";
 import { UserContext } from "../../context/UserContext";
-import { SearchContext } from "../../context/SearchContext";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
@@ -56,9 +55,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   onQueryTypeChange,
 }) => {
   const { cachingState, cachingDispatch } = useContext(CachingContext);
-  const {
-    searchContextState: { integrationId },
-  } = useContext(SearchContext);
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
@@ -105,7 +101,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             realEstateDescriptionFormRef.current?.handleSubmit();
 
             response = await fetchRealEstateDescription({
-              integrationId,
               ...(realEstateDescriptionFormRef.current
                 ?.values as IApiOpenAiRealEstateDescriptionQuery),
             });
@@ -118,7 +113,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
             response = await fetchLocRealEstDesc({
               searchResultSnapshotId,
-              integrationId,
               ...(formRef.current
                 ?.values as IOpenAiLocationDescriptionFormValues),
               ...(realEstateDescriptionFormRef.current
@@ -159,13 +153,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
     void fetchResponse();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    isFetchResponse,
-    onResponseFetched,
-    queryType,
-    searchResultSnapshotId,
-    integrationId,
-  ]);
+  }, [isFetchResponse, onResponseFetched, queryType, searchResultSnapshotId]);
 
   useEffect(() => {
     if (queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION) {
