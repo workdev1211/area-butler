@@ -53,7 +53,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   } = useContext(SearchContext);
 
   const { post } = useHttp();
-  const { sendToProductsIfNoContingent } = useIntegrationTools();
+  const { checkProdContAvailByAction } = useIntegrationTools();
   const { createDirectLink } = useTools();
 
   const [isInteractiveMapOpen, setIsInteractiveMapOpen] = useState(false);
@@ -156,7 +156,11 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
               height: "calc(var(--btn-height) / 1.5)",
             }}
             onClick={() => {
-              if (!sendToProductsIfNoContingent()) {
+              if (
+                checkProdContAvailByAction(
+                  OnOfficeIntActTypesEnum.UNLOCK_IFRAME
+                )
+              ) {
                 setIsShownModal(true);
               }
             }}

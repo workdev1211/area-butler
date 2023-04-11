@@ -13,67 +13,21 @@ import { InjectUser } from '../user/inject-user.decorator';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IntegrationUserService } from '../user/integration-user.service';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
-import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
+import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
+import { InjectRealEstateListing } from './inject-real-estate-listing.decorator';
+import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
 export class RealEstateListingIntController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly integrationUserService: IntegrationUserService,
   ) {}
-
-  @ApiOperation({ description: 'Fetch Open AI real estate description' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('open-ai-real-estate-desc')
-  async fetchOpenAiRealEstateDescription(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
-  ): Promise<string> {
-    // TODO move to the interceptor
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        realEstateDescriptionQuery.realEstateListingId,
-      );
-
-    const { openAiRequestQuantity } = realEstateListing.integrationParams;
-
-    if (!openAiRequestQuantity) {
-      this.integrationUserService.checkProdContAvailability(
-        integrationUser,
-        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      );
-    }
-
-    const realEstateDesc =
-      await this.realEstateListingService.fetchOpenAiRealEstateDesc(
-        integrationUser,
-        realEstateDescriptionQuery,
-      );
-
-    if (!openAiRequestQuantity) {
-      realEstateListing.integrationParams.openAiRequestQuantity = 100;
-
-      await this.integrationUserService.incrementProductUsage(
-        integrationUser,
-        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      );
-    }
-
-    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
-    await realEstateListing.save();
-
-    return realEstateDesc;
-  }
 
   @ApiOperation({
     description: 'Fetch real estate listings of the current user',
@@ -89,5 +43,23 @@ export class RealEstateListingIntController {
         status,
       )
     ).map((l) => mapRealEstateListingToApiRealEstateListing(l));
+  }
+
+  @ApiOperation({ description: 'Fetch Open AI real estate description' })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
+  @Post('open-ai-real-estate-desc')
+  async fetchOpenAiRealEstateDescription(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
+    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
+  ): Promise<string> {
+    return this.realEstateListingService.fetchOpenAiRealEstateDesc(
+      integrationUser,
+      realEstateDescriptionQuery,
+      realEstateListing,
+    );
   }
 }

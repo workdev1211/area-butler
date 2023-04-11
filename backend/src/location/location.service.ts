@@ -61,6 +61,7 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
+import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 
 @Injectable()
 export class LocationService {
@@ -653,6 +654,7 @@ export class LocationService {
       customText,
       realEstateListingId,
     }: IApiOpenAiLocationRealEstateDescriptionQuery,
+    realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -672,18 +674,15 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
+    const resultingRealEstateListing =
+      realEstateListing ||
+      (await this.realEstateListingService.fetchRealEstateListingById(
         user,
         realEstateListingId,
-      );
-
-    if (!searchResultSnapshot || !realEstateListing) {
-      throw new HttpException('Unknown snapshot or real estate id', 400);
-    }
+      ));
 
     const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
-      realEstateListing,
+      realEstateListing: resultingRealEstateListing,
       snapshot: searchResultSnapshot.snapshot,
       meanOfTransportation: meanOfTransportation,
       tonality: openAiTonalities[tonality],

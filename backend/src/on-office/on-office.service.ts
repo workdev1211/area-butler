@@ -135,7 +135,6 @@ export class OnOfficeService {
               integrationUser.parameters.customerWebId,
           },
           update: {
-            accessToken: extendedClaim,
             'parameters.token': token,
             'parameters.apiKey': apiKey,
           },
@@ -268,11 +267,6 @@ export class OnOfficeService {
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       await this.realEstateListingIntService.upsertByIntegrationParams(
-        {
-          integrationId: estateId,
-          integrationUserId,
-          integrationType: this.integrationType,
-        },
         areaButlerEstate,
       ),
     );

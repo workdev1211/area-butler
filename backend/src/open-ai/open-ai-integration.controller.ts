@@ -6,71 +6,28 @@ import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import { IntegrationUserService } from '../user/integration-user.service';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 
 @ApiTags('open-ai')
 @Controller('api/open-ai-integration')
 export class OpenAiIntegrationController {
-  constructor(
-    private readonly openAiService: OpenAiService,
-    private readonly integrationUserService: IntegrationUserService,
-    private readonly realEstateListingService: RealEstateListingService,
-  ) {}
+  constructor(private readonly openAiService: OpenAiService) {}
 
   @ApiOperation({ description: 'Fetch Open AI response' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
   @Post('query')
   async fetchResponse(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
-    {
-      text,
-      isFormalToInformal,
-      realEstateListingId,
-    }: ApiOpenAiQueryDto,
+    { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
-    const actionType = isFormalToInformal
-      ? OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL
-      : OpenAiQueryTypeEnum.GENERAL_QUESTION;
-
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        realEstateListingId,
-      );
-
-    const { openAiRequestQuantity } = realEstateListing.integrationParams;
-
-    if (!openAiRequestQuantity) {
-      realEstateListing.integrationParams.openAiRequestQuantity = 100;
-
-      await this.integrationUserService.incrementProductUsage(
-        integrationUser,
-        actionType,
-      );
-    }
-
-    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
-    await realEstateListing.save();
-
-    this.integrationUserService.checkProdContAvailability(
-      integrationUser,
-      actionType,
-    );
-
     const queryText = isFormalToInformal
       ? this.openAiService.getFormalToInformalQuery(text)
       : text;
 
-    const queryResponse = await this.openAiService.fetchResponse(queryText);
-
-    await this.integrationUserService.incrementProductUsage(
-      integrationUser,
-      actionType,
-    );
-
-    return queryResponse;
+    return this.openAiService.fetchResponse(queryText);
   }
 }

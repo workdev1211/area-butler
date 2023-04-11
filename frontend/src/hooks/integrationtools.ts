@@ -4,8 +4,8 @@ import { useHistory } from "react-router-dom";
 import { ConfigContext } from "../context/ConfigContext";
 import { UserContext } from "../context/UserContext";
 import { checkProdContAvailability } from "../shared/integration.functions";
-import { OnOfficeIntActTypesEnum } from "../../../shared/types/on-office";
 import { toastError } from "../shared/shared.functions";
+import { TIntegrationActionTypes } from "../../../shared/types/integration";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -15,12 +15,17 @@ export const useIntegrationTools = () => {
 
   const history = useHistory();
 
-  // TODO think about the concept of this approach
-  const sendToProductsIfNoContingent = (): boolean => {
+  // should be handled via the true response to avoid race condition
+  const checkProdContAvailByAction = (
+    actionType: TIntegrationActionTypes,
+    additionalCondition = true
+  ): boolean => {
     if (
+      actionType &&
+      additionalCondition &&
       !checkProdContAvailability(
         integrationType!,
-        OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+        actionType,
         integrationUser!.availProdContingents
       )
     ) {
@@ -28,11 +33,11 @@ export const useIntegrationTools = () => {
         history.push("/products");
       });
 
-      return true;
+      return false;
     }
 
-    return false;
+    return true;
   };
 
-  return { sendToProductsIfNoContingent };
+  return { checkProdContAvailByAction };
 };

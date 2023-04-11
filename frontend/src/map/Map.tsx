@@ -729,7 +729,6 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       mapCenter.lng,
       searchAddress,
       searchResponse.centerOfInterest.coordinates,
-      currentMap,
     ]);
 
     const meansStringified = JSON.stringify(means);

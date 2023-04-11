@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
 
 import { configService } from '../config/config.service';
@@ -40,6 +40,8 @@ const MAX_CHARACTER_LENGTH = 700;
 
 @Injectable()
 export class OpenAiService {
+  private readonly logger = new Logger(OpenAiService.name);
+
   private readonly openAiApiKey = configService.getOpenAiApiKey();
   private readonly openAiConfig = new Configuration({
     apiKey: this.openAiApiKey,
@@ -327,7 +329,8 @@ export class OpenAiService {
   }
 
   async fetchResponse(queryText: string): Promise<string> {
-    console.log(queryText);
+    this.logger.log(queryText);
+
     const {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(

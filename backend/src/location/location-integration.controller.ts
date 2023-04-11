@@ -24,9 +24,11 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { LocationIntegrationService } from './location-integration.service';
 import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
+import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
+import { InjectRealEstateListing } from '../real-estate-listing/inject-real-estate-listing.decorator';
+import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -102,91 +104,40 @@ export class LocationIntegrationController {
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
   @Post('open-ai-loc-desc')
   async fetchOpenAiLocationDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
   ): Promise<string> {
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        locationDescriptionQuery.realEstateListingId,
-      );
-
-    const { openAiRequestQuantity } = realEstateListing.integrationParams;
-
-    if (!openAiRequestQuantity) {
-      this.integrationUserService.checkProdContAvailability(
-        integrationUser,
-        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-      );
-    }
-
-    const locationDescription =
-      await this.locationService.fetchOpenAiLocationDescription(
-        integrationUser,
-        locationDescriptionQuery,
-      );
-
-    if (!openAiRequestQuantity) {
-      realEstateListing.integrationParams.openAiRequestQuantity = 100;
-
-      await this.integrationUserService.incrementProductUsage(
-        integrationUser,
-        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-      );
-    }
-
-    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
-    await realEstateListing.save();
-
-    return locationDescription;
+    return this.locationService.fetchOpenAiLocationDescription(
+      integrationUser,
+      locationDescriptionQuery,
+    );
   }
 
   @ApiOperation({
     description: 'Fetch Open AI location and real estate description',
   })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    ProcessOpenAiIntUsageInterceptor,
+  )
   @Post('open-ai-loc-real-est-desc')
   async fetchOpenAiLocRealEstDesc(
     @InjectUser() integrationUser: TIntegrationUserDocument,
+    @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
     @Body()
     locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
   ): Promise<string> {
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        locationRealEstateDescriptionQuery.realEstateListingId,
-      );
-
-    const { openAiRequestQuantity } = realEstateListing.integrationParams;
-
-    if (!openAiRequestQuantity) {
-      this.integrationUserService.checkProdContAvailability(
-        integrationUser,
-        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-      );
-    }
-
-    const locRealEstDesc = await this.locationService.fetchOpenAiLocRealEstDesc(
+    return this.locationService.fetchOpenAiLocRealEstDesc(
       integrationUser,
       locationRealEstateDescriptionQuery,
+      realEstateListing,
     );
-
-    if (!openAiRequestQuantity) {
-      realEstateListing.integrationParams.openAiRequestQuantity = 100;
-
-      await this.integrationUserService.incrementProductUsage(
-        integrationUser,
-        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-      );
-    }
-
-    realEstateListing.integrationParams.openAiRequestQuantity -= 1;
-    await realEstateListing.save();
-
-    return locRealEstDesc;
   }
 
   @ApiOperation({

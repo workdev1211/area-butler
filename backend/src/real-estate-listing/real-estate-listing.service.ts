@@ -72,71 +72,70 @@ export class RealEstateListingService {
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       );
 
-    const documentData: any = {
+    const realEstateListingDoc: any = {
+      userId: user.id,
       ...upsertData,
     };
 
     if (coordinates) {
-      documentData['location'] = {
+      realEstateListingDoc.location = {
         type: 'Point',
         coordinates: [coordinates.lat, coordinates.lng],
       };
     }
 
-    const document = {
-      userId: user.id,
-      ...documentData,
-    };
-
-    return new this.realEstateListingModel(document).save();
+    return new this.realEstateListingModel(realEstateListingDoc).save();
   }
 
   async updateRealEstateListing(
     user: UserDocument,
-    id: string,
+    realEstateListingId: string,
     { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
-    const existingListing = await this.realEstateListingModel.findById({
-      _id: id,
-    });
+    const existingListing = await this.realEstateListingModel.findById(
+      realEstateListingId,
+    );
 
     if (!existingListing) {
-      throw 'Entity not found';
+      throw new HttpException('Entity not found', 400);
     }
 
     if (existingListing.userId !== user.id) {
-      throw 'Unallowed change';
+      throw new HttpException('Invalid change', 400);
     }
 
-    const documentData: any = {
+    const realEstateListingDoc: any = {
       ...upsertData,
     };
 
     if (coordinates) {
-      documentData['location'] = {
+      realEstateListingDoc.location = {
         type: 'Point',
         coordinates: [coordinates.lat, coordinates.lng],
       };
     }
 
-    await existingListing.updateOne(documentData);
-
-    return this.realEstateListingModel.findById({
-      _id: id,
-    });
+    return this.realEstateListingModel.findByIdAndUpdate(
+      realEstateListingId,
+      realEstateListingDoc,
+      { new: true },
+    );
   }
 
-  async deleteRealEstateListing(user: UserDocument, id: string) {
-    const existingListing = await this.realEstateListingModel.findById({
-      _id: id,
-    });
+  async deleteRealEstateListing(
+    user: UserDocument,
+    realEstateListingId: string,
+  ): Promise<void> {
+    const existingListing = await this.realEstateListingModel.findById(
+      realEstateListingId,
+    );
 
     if (!existingListing) {
       throw 'Entity not found';
     }
 
     if (existingListing.userId !== user.id) {
-      throw 'Unallowed delete';
+      throw 'Invalid delete';
     }
 
     await existingListing.deleteOne();
@@ -171,6 +170,7 @@ export class RealEstateListingService {
   async fetchOpenAiRealEstateDesc(
     user: UserDocument | TIntegrationUserDocument,
     { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
+    realEstateListing?: RealEstateListingDocument,
   ) {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -185,13 +185,13 @@ export class RealEstateListingService {
       );
     }
 
-    const realEstateListing = await this.fetchRealEstateListingById(
-      user,
-      realEstateListingId,
-    );
+    const resultingRealEstateListing =
+      realEstateListing ||
+      (await this.fetchRealEstateListingById(user, realEstateListingId));
 
-    const queryText =
-      this.openAiService.getRealEstateDescriptionQuery(realEstateListing);
+    const queryText = this.openAiService.getRealEstateDescriptionQuery(
+      resultingRealEstateListing,
+    );
 
     return this.openAiService.fetchResponse(queryText);
   }

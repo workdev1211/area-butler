@@ -1,28 +1,28 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
-import { useHistory } from "react-router-dom";
 
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../OnOfficeContainer";
-import { SearchContext } from "../../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
 import { RequestStatusTypesEnum } from "../../../../shared/types/types";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
-import { checkProdContAvailability } from "../../shared/integration.functions";
 import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
+import { useIntegrationTools } from "../../hooks/integrationtools";
 
 const OpenAiPage: FunctionComponent = () => {
   const { integrationType } = useContext(ConfigContext);
-  const { searchContextState } = useContext(SearchContext);
-  const {
-    userState: { integrationUser },
-    userDispatch,
-  } = useContext(UserContext);
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
+  const { userDispatch } = useContext(UserContext);
 
-  const history = useHistory();
   const { patch } = useHttp();
+  const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
@@ -32,6 +32,8 @@ const OpenAiPage: FunctionComponent = () => {
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [queryType, setQueryType] = useState<OpenAiQueryTypeEnum>();
   const [queryResponse, setQueryResponse] = useState<string | undefined>();
+
+  const realEstateListing = searchContextState.realEstateListing!;
 
   useEffect(() => {
     if (searchContextState.integrationSnapshotId) {
@@ -48,32 +50,38 @@ const OpenAiPage: FunctionComponent = () => {
 
     if (requestStatus === RequestStatusTypesEnum.FAILURE) {
       if (
-        !searchContextState.realEstateListing!.openAiRequestQuantity &&
-        !checkProdContAvailability(
-          integrationType!,
+        checkProdContAvailByAction(
           responseQueryType,
-          integrationUser!.availProdContingents
+          !realEstateListing.openAiRequestQuantity
         )
       ) {
-        toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
-          history.push("/products");
-        });
-
-        return;
+        toastError("Fehler beim Senden der KI-Anfrage!");
       }
 
-      toastError("Fehler beim Senden der KI-Anfrage!");
       return;
     }
 
     setQueryResponse(responseText);
     setIsCopyTextButtonDisabled(false);
+    let openAiRequestQuantity = realEstateListing.openAiRequestQuantity;
 
-    userDispatch({
-      type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+    if (!openAiRequestQuantity) {
+      openAiRequestQuantity = 100;
+
+      userDispatch({
+        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+        payload: {
+          integrationType: integrationType!,
+          actionType: responseQueryType,
+        },
+      });
+    }
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
       payload: {
-        integrationType: integrationType!,
-        actionType: responseQueryType,
+        ...realEstateListing,
+        openAiRequestQuantity: openAiRequestQuantity - 1,
       },
     });
   };
@@ -133,8 +141,16 @@ const OpenAiPage: FunctionComponent = () => {
             }`}
             form={"open-ai-location-description-form"}
             onClick={() => {
-              setIsCopyTextButtonDisabled(true);
-              setIsFetchResponse(true);
+              if (
+                queryType &&
+                checkProdContAvailByAction(
+                  queryType,
+                  !realEstateListing.openAiRequestQuantity
+                )
+              ) {
+                setIsCopyTextButtonDisabled(true);
+                setIsFetchResponse(true);
+              }
             }}
             disabled={isGenerateButtonDisabled || isFetchResponse}
           >

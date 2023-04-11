@@ -17,13 +17,13 @@ export class RealEstateListingIntService {
   ) {}
 
   async upsertByIntegrationParams(
-    {
-      integrationId,
-      integrationUserId,
-      integrationType,
-    }: IApiRealEstateIntegrationParams,
     realEstateListing: IApiRealEstateListingSchema,
   ): Promise<RealEstateListingDocument> {
+    const {
+      integrationParams: { integrationId, integrationUserId, integrationType },
+      ...realEstateListingData
+    } = realEstateListing;
+
     const existingRealEstateListing =
       await this.realEstateListingModel.findOneAndUpdate(
         {
@@ -31,7 +31,7 @@ export class RealEstateListingIntService {
           'integrationParams.integrationUserId': integrationUserId,
           'integrationParams.integrationType': integrationType,
         },
-        { ...realEstateListing },
+        realEstateListingData,
         { new: true },
       );
 
