@@ -294,6 +294,8 @@ interface MapProps {
     byBike: boolean;
     byCar: boolean;
   };
+  highlightId?: string;
+  setHighlightId: (highlightId?: string) => void;
   addMapClipping: (zoom: number, dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
@@ -336,6 +338,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   const meansEqual =
     JSON.stringify(prevProps.means) === JSON.stringify(nextProps.means);
   const mapZoomLevelEqual = prevProps.mapZoomLevel === nextProps.mapZoomLevel;
+  const highlightIdEqual = prevProps.highlightId === nextProps.highlightId;
   const routesEqual = prevProps.routes === nextProps.routes;
   const transitRoutesEqual =
     prevProps.transitRoutes === nextProps.transitRoutes;
@@ -359,6 +362,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
     entityGroupsEqual &&
     meansEqual &&
     mapZoomLevelEqual &&
+    highlightIdEqual &&
     routesEqual &&
     transitRoutesEqual &&
     configEqual &&
@@ -381,6 +385,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       mapCenter,
       mapZoomLevel = defaultMapZoom,
       leafletMapId = "mymap",
+      highlightId,
+      setHighlightId,
       routes,
       transitRoutes,
       mapDisplayMode,
@@ -1199,6 +1205,29 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       });
     }, [config?.iconSizes, mapIconMarker, mapIconRatio, poiIconSize]);
 
+    // react to the POI item clicking in the 'Localities' map menu
+    useEffect(() => {
+      if (!highlightId) {
+        return;
+      }
+
+      const poiMarkers = amenityMarkerGroup.getLayers() as IdMarker[];
+      const highlightMarker = poiMarkers.find(
+        (marker) => marker.getEntity().id === highlightId
+      );
+
+      if (highlightMarker) {
+        // 'setTimeout' is used to wait for de-spider animation of the marker groups
+        setTimeout(() => {
+          highlightMarker.createOpenPopup();
+          setHighlightId();
+        }, 1200);
+      }
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [highlightId]);
+
+    // change map zoom level and center coordinates
     useEffect(() => {
       if (!currentMap || !gotoMapCenter) {
         return;

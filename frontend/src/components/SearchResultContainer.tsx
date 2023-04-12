@@ -731,6 +731,13 @@ const SearchResultContainer = forwardRef<
                 searchContextState.mapZoomLevel ||
                 defaultMapZoom
               }
+              highlightId={searchContextState.highlightId}
+              setHighlightId={(highlightId) =>
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
+                  payload: highlightId,
+                })
+              }
               routes={searchContextState.responseRoutes}
               transitRoutes={searchContextState.responseTransitRoutes}
               mapDisplayMode={mapDisplayMode}

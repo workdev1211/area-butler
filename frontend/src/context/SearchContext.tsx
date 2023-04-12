@@ -39,6 +39,7 @@ export interface SearchContextState {
   locationIndexData?: TLocationIndexData;
   mapCenter?: ApiCoordinates;
   mapZoomLevel?: number;
+  highlightId?: string;
   printingActive: boolean;
   printingCheatsheetActive: boolean;
   printingDocxActive: boolean;
@@ -104,6 +105,7 @@ export enum SearchContextActionTypes {
   SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
   SET_MAP_CENTER_ZOOM = "SET_MAP_CENTER_ZOOM",
   GOTO_MAP_CENTER = "GOTO_MAP_CENTER",
+  SET_HIGHLIGHT_ID = "SET_HIGHLIGHT_ID",
   SET_PRINTING_ACTIVE = "SET_PRINTING_ACTIVE",
   SET_PRINTING_CHEATSHEET_ACTIVE = "SET_PRINTING_CHEATSHEET_ACTIVE",
   SET_PRINTING_DOCX_ACTIVE = "SET_PRINTING_DOCX_ACTIVE",
@@ -153,6 +155,7 @@ type SearchContextActionsPayload = {
     mapZoomLevel: number;
   };
   [SearchContextActionTypes.GOTO_MAP_CENTER]: IGotoMapCenter | undefined;
+  [SearchContextActionTypes.SET_HIGHLIGHT_ID]: string | undefined;
   [SearchContextActionTypes.SET_PRINTING_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE]: boolean;
   [SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE]: boolean;
@@ -297,6 +300,9 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.GOTO_MAP_CENTER: {
       return { ...state, gotoMapCenter: action.payload };
+    }
+    case SearchContextActionTypes.SET_HIGHLIGHT_ID: {
+      return { ...state, highlightId: action.payload };
     }
     case SearchContextActionTypes.SET_PRINTING_ACTIVE: {
       return {
