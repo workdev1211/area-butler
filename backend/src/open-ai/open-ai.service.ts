@@ -29,14 +29,17 @@ interface ILocationDescriptionQueryData {
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
   customText?: string;
+  characterLimit?: number;
 }
 
 interface ILocationRealEstateDescriptionQueryData
   extends ILocationDescriptionQueryData {
   realEstateListing: RealEstateListingDocument;
+  characterLimit?: number;
 }
 
-const MAX_CHARACTER_LENGTH = 700;
+const CHARACTER_LIMIT = 2000;
+const WORD_LIMIT = 700;
 
 @Injectable()
 export class OpenAiService {
@@ -53,6 +56,7 @@ export class OpenAiService {
     meanOfTransportation,
     tonality,
     customText,
+    characterLimit = CHARACTER_LIMIT,
   }: ILocationDescriptionQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
       snapshot.searchResponse.routingProfiles[
@@ -73,10 +77,12 @@ export class OpenAiService {
         return result;
       }, {});
 
-    const initialQueryText = `Schreibe eine Beschreibung der Lage einer Immobilie für Immobilienexposee. 
-      Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points 
-      of Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". Beende den Text 
-      mit einer Bullet-Liste der Points of Interest.\n Die Points of interest sind: ${snapshot.placesLocation.label}`;
+    const initialQueryText =
+      `Schreibe eine maximal ${characterLimit} Zeichen lange Beschreibung der Lage einer Immobilie für ` +
+      `Immobilienexposee. Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points of ` +
+      'Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". ' +
+      'Beende den Text mit einer Bullet-Liste der Points of Interest.\nDie Points of interest sind: ' +
+      `${snapshot.placesLocation.label}.\n`;
 
     const poiCountEntries = Object.entries(poiCount);
 
@@ -93,6 +99,8 @@ export class OpenAiService {
       initialQueryText,
     );
 
+    queryText += '\nBitte erwähne keine Schwimmbäder.';
+
     if (customText) {
       queryText += `\n${customText}`;
     }
@@ -102,7 +110,8 @@ export class OpenAiService {
 
   getRealEstateDescriptionQuery(
     { address, characteristics, costStructure }: RealEstateListingDocument,
-    initialQueryText = `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
+    characterLimit = CHARACTER_LIMIT,
+    initialQueryText = `Schreibe eine maximal ${characterLimit} Zeichen lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
   ): string {
     const objectType = 'Haus';
 
@@ -121,7 +130,7 @@ export class OpenAiService {
 
     switch (objectType) {
       case 'Haus': {
-        queryText += ' Das Exposee ist für ein Haus.';
+        queryText += 'Das Exposee ist für ein Haus.';
         break;
       }
 
@@ -198,7 +207,7 @@ export class OpenAiService {
       queryText += ' Das Objekt verfügt über eine Einbauküche.';
     }
 
-    return `${queryText}\n\n`;
+    return `${queryText}\nBitte erwähne keine Schwimmbäder.\n\n`;
   }
 
   getLocationRealEstateDescriptionQuery({
@@ -207,7 +216,8 @@ export class OpenAiService {
     tonality,
     customText,
     realEstateListing,
-  }: ILocationRealEstateDescriptionQueryData) {
+    characterLimit,
+  }: ILocationRealEstateDescriptionQueryData): string {
     const poiCount: Partial<Record<OpenAiOsmQueryNameEnum, number>> =
       snapshot.searchResponse.routingProfiles[
         meanOfTransportation
@@ -232,13 +242,21 @@ export class OpenAiService {
         return result;
       }, {});
 
+    const initialQueryText =
+      `Schreibe eine ${
+        characterLimit
+          ? `maximal ${characterLimit} Zeichen`
+          : `etwa ${WORD_LIMIT} Worte`
+      } lange Beschreibung der Lage einer Immobilie für Immobilienexposee. Nutze eine ${tonality} Art der ` +
+      `Formulierung. Im Fließtext erwähne die Points of Interest nicht mit Zahlen, sondern nur mit Worten "einige, ` +
+      `viele, ausreichend, ...". Im Anschluss an den Text füge dann eine Bullet-Liste mit den Zahlen der Points of ` +
+      `Interest hinzu. Verwende HTML Zeilenumbrüche.`;
+
     let queryText = this.getRealEstateDescriptionQuery(
       realEstateListing,
-      `Schreibe eine etwa ${MAX_CHARACTER_LENGTH} Worte lange Beschreibung der Lage einer Immobilie für Immobilienexposee. 
-      Nutze eine ${tonality} Art der Formulierung. Im Fließtext erwähne die Points 
-      of Interest nicht mit Zahlen, sondern nur mit Worten "einige, viele, ausreichend, ...". Im Anschluss an den
-      Text füge dann eine Bullet-Liste mit den Zahlen der Points of Interest hinzu. Verwende HTML Zeilenumbrüche.`,
-    ).replace('\n\n', '');
+      undefined,
+      initialQueryText,
+    ).replace('\n\n', '\n');
 
     if (poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]) {
       queryText += ` - ${
@@ -321,15 +339,17 @@ export class OpenAiService {
       queryText += `\n${customText}`;
     }
 
-    return queryText + '\n\n';
+    return `${queryText}\n\n`;
   }
 
-  getFormalToInformalQuery(formalText: string) {
+  getFormalToInformalQuery(formalText: string): string {
     return `Ersetze im folgenden text die formale Sie-Form durch die informale Du-Form: \n\n ${formalText}`;
   }
 
   async fetchResponse(queryText: string): Promise<string> {
-    this.logger.log(queryText);
+    this.logger.log(
+      `\n===== QUERY START =====\n${queryText}\n===== QUERY END =====\n`,
+    );
 
     const {
       data: { choices },

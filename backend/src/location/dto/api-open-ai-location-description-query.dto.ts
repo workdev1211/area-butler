@@ -1,6 +1,7 @@
 import {
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -38,6 +39,10 @@ class ApiOpenAiLocationDescriptionQueryDto
   @ValidateNested()
   @Type(() => ApiSelectTextValueDto)
   customText?: ISelectTextValue;
+
+  @IsOptional()
+  @IsNumber()
+  characterLimit?: number;
 
   // in case of the integration
   @IsOptional()

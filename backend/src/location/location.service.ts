@@ -62,6 +62,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
+import { getOpenAiCharLimitByInt } from '../../../shared/functions/integration.functions';
 
 @Injectable()
 export class LocationService {
@@ -615,7 +616,13 @@ export class LocationService {
 
   async fetchOpenAiLocationDescription(
     user: UserDocument | TIntegrationUserDocument,
-    locationDescriptionQuery: IApiOpenAiLocationDescriptionQuery,
+    {
+      searchResultSnapshotId,
+      meanOfTransportation,
+      tonality,
+      customText,
+      characterLimit,
+    }: IApiOpenAiLocationDescriptionQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -632,14 +639,15 @@ export class LocationService {
 
     const searchResultSnapshot = await this.fetchSnapshotById(
       user,
-      locationDescriptionQuery.searchResultSnapshotId,
+      searchResultSnapshotId,
     );
 
     const queryText = this.openAiService.getLocationDescriptionQuery({
+      characterLimit,
+      meanOfTransportation,
       snapshot: searchResultSnapshot.snapshot,
-      meanOfTransportation: locationDescriptionQuery.meanOfTransportation,
-      tonality: openAiTonalities[locationDescriptionQuery.tonality],
-      customText: locationDescriptionQuery.customText?.text,
+      tonality: openAiTonalities[tonality],
+      customText: customText?.text,
     });
 
     return this.openAiService.fetchResponse(queryText);
@@ -653,6 +661,7 @@ export class LocationService {
       tonality,
       customText,
       realEstateListingId,
+      characterLimit,
     }: IApiOpenAiLocationRealEstateDescriptionQuery,
     realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
@@ -674,6 +683,12 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
+    const resultingCharacterLimit =
+      characterLimit ||
+      (isIntegrationUser
+        ? getOpenAiCharLimitByInt(user.integrationType)
+        : undefined);
+
     const resultingRealEstateListing =
       realEstateListing ||
       (await this.realEstateListingService.fetchRealEstateListingById(
@@ -682,11 +697,12 @@ export class LocationService {
       ));
 
     const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
+      meanOfTransportation,
       realEstateListing: resultingRealEstateListing,
       snapshot: searchResultSnapshot.snapshot,
-      meanOfTransportation: meanOfTransportation,
       tonality: openAiTonalities[tonality],
       customText: customText?.text,
+      characterLimit: resultingCharacterLimit,
     });
 
     return this.openAiService.fetchResponse(queryText);

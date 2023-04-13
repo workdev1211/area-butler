@@ -9,6 +9,7 @@ import { getProdContTypeByActType } from "../../../shared/functions/integration.
 import {
   IApiIntegrationUser,
   IIntUserContextDecrAvailProdCont,
+  TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
 
 export interface UserState {
@@ -95,7 +96,7 @@ export const userReducer = (
       const productContingentType = getProdContTypeByActType(
         action.payload.integrationType,
         action.payload.actionType
-      );
+      ) as TApiIntUserProdContTypes;
 
       if (!integrationUser.availProdContingents![productContingentType]) {
         return state;

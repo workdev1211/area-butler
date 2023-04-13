@@ -9,7 +9,7 @@ import {
 } from "../../../shared/types/open-ai";
 import { SearchContext } from "../context/SearchContext";
 
-export const useOpenAiData = (isIntegrationUser = false) => {
+export const useOpenAi = (isIntegrationUser = false) => {
   const { searchContextState } = useContext(SearchContext);
 
   const { post } = useHttp();

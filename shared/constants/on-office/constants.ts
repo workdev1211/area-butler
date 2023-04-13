@@ -7,3 +7,5 @@ export const openAiQueryTypeToOnOfficeEstateFieldMapping: Partial<
   [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: "objektbeschreibung",
   [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "sonstige_angaben",
 };
+
+export const onOfficeOpenAiCharacterLimit = 2000;

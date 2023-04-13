@@ -364,3 +364,5 @@ export const umlautMap = {
   "\u00fc": "ue",
   "\u00df": "ss",
 };
+
+export const onePageCharacterLimit = 800;

@@ -33,7 +33,7 @@ interface IQueryFormProps {
 
 const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
   formId,
-  initialValues,
+  initialValues = { text: "" },
   onValuesChange,
   onSubmit,
   formRef,
@@ -49,7 +49,7 @@ const OpenAiQueryForm: FunctionComponent<IQueryFormProps> = ({
   return (
     <Formik
       enableReinitialize={true}
-      initialValues={initialValues || { text: undefined }}
+      initialValues={initialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {

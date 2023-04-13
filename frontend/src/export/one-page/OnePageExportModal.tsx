@@ -1,6 +1,7 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import "./OnePageExportModal.scss";
+
 import {
   MapClipping,
   SearchContext,
@@ -21,11 +22,11 @@ import { getFilteredLegend } from "../shared/shared.functions";
 import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
 import { IApiOpenAiLocationDescriptionQuery } from "../../../../shared/types/open-ai";
-import { useHttp } from "../../hooks/http";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
+import { useOpenAi } from "../../hooks/openai";
+import { onePageCharacterLimit } from "../../../../shared/constants/constants";
 
 const SCREENSHOT_LIMIT = 2;
-const CHARACTER_LIMIT = 800;
 
 export interface IQrCodeState {
   isShownQrCode: boolean;
@@ -51,19 +52,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   snapshotId,
   hasOpenAiFeature = false,
 }) => {
-  const { post } = useHttp();
-
-  const groupCopy: EntityGroup[] = groupedEntries
-    .reduce((result: EntityGroup[], group: EntityGroup) => {
-      if (group.title !== realEstateListingsTitle && group.items.length > 0) {
-        result.push(group);
-      }
-
-      return result;
-    }, [])
-    .sort((a: EntityGroup, b: EntityGroup) =>
-      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-    );
+  const { fetchLocationDescription } = useOpenAi();
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -80,6 +69,18 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     poiSelection: false,
     qrCodeMapClippings: false,
   };
+
+  const groupCopy: EntityGroup[] = groupedEntries
+    .reduce((result: EntityGroup[], group: EntityGroup) => {
+      if (group.title !== realEstateListingsTitle && group.items.length > 0) {
+        result.push(group);
+      }
+
+      return result;
+    }, [])
+    .sort((a: EntityGroup, b: EntityGroup) =>
+      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+    );
 
   const [filteredEntities, setFilteredEntities] =
     useState<EntityGroup[]>(groupCopy);
@@ -109,6 +110,25 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEntities]);
 
+  const fetchOpenAiLocationDescription = async ({
+    meanOfTransportation,
+    tonality,
+    customText,
+  }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
+    setIsOpenAiBusy(true);
+
+    const openAiLocationDescription = await fetchLocationDescription({
+      meanOfTransportation,
+      tonality,
+      customText,
+      searchResultSnapshotId: snapshotId,
+      characterLimit: onePageCharacterLimit,
+    });
+
+    setIsOpenAiBusy(false);
+    setLocationDescription(openAiLocationDescription);
+  };
+
   const onClose = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
@@ -119,28 +139,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const buttonTitle = "Lage Exposé generieren";
   const snapshotConfig = searchContextState.responseConfig!;
   const color = snapshotConfig.primaryColor || "var(--primary-gradient)";
-
-  const fetchOpenAiLocationDescription = async ({
-    meanOfTransportation,
-    tonality,
-    customText,
-  }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
-    setIsOpenAiBusy(true);
-    const openAiLocationDescription = (
-      await post<string, IApiOpenAiLocationDescriptionQuery>(
-        "/api/location/open-ai-loc-desc",
-        {
-          searchResultSnapshotId: snapshotId,
-          meanOfTransportation,
-          tonality,
-          customText,
-        }
-      )
-    ).data;
-
-    setIsOpenAiBusy(false);
-    setLocationDescription(openAiLocationDescription);
-  };
 
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
@@ -184,7 +182,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               }}
             >
               1. Lagebeschreibung ({locationDescription.length}/
-              {CHARACTER_LIMIT})
+              {onePageCharacterLimit})
             </div>
             <div className="collapse-content textarea-content">
               {snapshotConfig.showAddress && hasOpenAiFeature && (
@@ -219,7 +217,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 value={locationDescription}
                 onChange={({ target: { value } }) => {
                   if (
-                    value.length < CHARACTER_LIMIT + 1 ||
+                    value.length < onePageCharacterLimit + 1 ||
                     value.length < locationDescription.length
                   ) {
                     setLocationDescription(value);
@@ -376,7 +374,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
-                ) || locationDescription.length > CHARACTER_LIMIT
+                ) || locationDescription.length > onePageCharacterLimit
               }
               onAfterPrint={onClose}
               user={user}
@@ -396,7 +394,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
-                ) || locationDescription.length > CHARACTER_LIMIT
+                ) || locationDescription.length > onePageCharacterLimit
               }
               user={user}
               legend={legend}

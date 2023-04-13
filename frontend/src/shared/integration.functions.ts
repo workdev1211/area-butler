@@ -7,6 +7,7 @@ import {
   ApiIntUserOnOfficeProdContTypesEnum,
   TApiIntUserAvailProdContingents,
   TApiIntUserAvailProdContTypes,
+  TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
 import { allOnOfficeProducts } from "../../../shared/constants/on-office/products";
 
@@ -22,7 +23,7 @@ export const checkProdContAvailability = (
   const productContingentType = getProdContTypeByActType(
     integrationType,
     actionType
-  );
+  ) as TApiIntUserProdContTypes;
 
   return !!availProdContingents[productContingentType];
 };

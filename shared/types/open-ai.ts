@@ -27,16 +27,19 @@ export interface IApiOpenAiLocationDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
+  characterLimit?: number;
 }
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
-  realEstateListingId: string | undefined; // Formik, solve later
+  realEstateListingId: string;
+  characterLimit?: number;
 }
 
 export interface IApiOpenAiLocationRealEstateDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues,
     IApiOpenAiRealEstateDescriptionQuery {
   searchResultSnapshotId: string;
+  characterLimit?: number;
 }
 
 export enum OpenAiQueryTypeEnum {
@@ -67,7 +70,7 @@ export enum OpenAiOsmQueryNameEnum {
 }
 
 export interface IApiOpenAiQuery {
-  text: string | undefined;
+  text: string;
   isFormalToInformal?: boolean;
   realEstateListingId?: string;
   integrationId?: string;

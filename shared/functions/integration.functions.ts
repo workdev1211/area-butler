@@ -8,11 +8,12 @@ import {
 } from "../types/integration-user";
 import { OpenAiQueryTypeEnum } from "../types/open-ai";
 import { OnOfficeIntActTypesEnum } from "../types/on-office";
+import { onOfficeOpenAiCharacterLimit } from "../constants/on-office/constants";
 
 export const getProdContTypeByActType = (
   integrationType: IntegrationTypesEnum,
   actionType: TIntegrationActionTypes
-): TApiIntUserProdContTypes => {
+): TApiIntUserProdContTypes | undefined => {
   switch (integrationType) {
     case IntegrationTypesEnum.ON_OFFICE: {
       switch (actionType) {
@@ -32,6 +33,20 @@ export const getProdContTypeByActType = (
           return;
         }
       }
+    }
+
+    default: {
+      return;
+    }
+  }
+};
+
+export const getOpenAiCharLimitByInt = (
+  integrationType: IntegrationTypesEnum
+): number | undefined => {
+  switch (integrationType) {
+    case IntegrationTypesEnum.ON_OFFICE: {
+      return onOfficeOpenAiCharacterLimit;
     }
 
     default: {

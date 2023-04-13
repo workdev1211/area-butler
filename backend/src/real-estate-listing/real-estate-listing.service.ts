@@ -169,7 +169,10 @@ export class RealEstateListingService {
 
   async fetchOpenAiRealEstateDesc(
     user: UserDocument | TIntegrationUserDocument,
-    { realEstateListingId }: IApiOpenAiRealEstateDescriptionQuery,
+    {
+      realEstateListingId,
+      characterLimit,
+    }: IApiOpenAiRealEstateDescriptionQuery,
     realEstateListing?: RealEstateListingDocument,
   ) {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -191,6 +194,7 @@ export class RealEstateListingService {
 
     const queryText = this.openAiService.getRealEstateDescriptionQuery(
       resultingRealEstateListing,
+      characterLimit,
     );
 
     return this.openAiService.fetchResponse(queryText);

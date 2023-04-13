@@ -21,7 +21,7 @@ import {
   TPlaceholderSelectOptionKey,
 } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
-import { useOpenAiData } from "../../hooks/openaidata";
+import { useOpenAi } from "../../hooks/openai";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
 import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
@@ -59,7 +59,12 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
     userState: { integrationUser },
   } = useContext(UserContext);
 
-  const formRef = useRef<FormikProps<unknown>>(null);
+  const isIntegrationUser = !!integrationUser;
+
+  const formRef =
+    useRef<FormikProps<IOpenAiLocationDescriptionFormValues | IApiOpenAiQuery>>(
+      null
+    );
   const realEstateDescriptionFormRef =
     useRef<FormikProps<IApiOpenAiRealEstateDescriptionQuery>>(null);
 
@@ -68,7 +73,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
     fetchRealEstateDescription,
     fetchLocRealEstDesc,
     fetchQuery,
-  } = useOpenAiData(!!integrationUser);
+  } = useOpenAi(isIntegrationUser);
 
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
@@ -134,7 +139,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           }
         }
       } catch (e) {
-        if (!integrationUser) {
+        if (!isIntegrationUser) {
           toastError("Fehler beim Senden der KI-Anfrage!");
         }
 
