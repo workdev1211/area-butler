@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, UpdateQuery } from 'mongoose';
 import { BulkWriteResult } from 'mongodb';
 import * as dayjs from 'dayjs';
+import { EventEmitter2 } from 'eventemitter2';
 
 import {
   IntegrationUser,
@@ -26,6 +27,7 @@ import { MapboxService } from '../client/mapbox/mapbox.service';
 import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
+import { EventType } from '../event/event.types';
 
 @Injectable()
 export class IntegrationUserService {
@@ -35,6 +37,7 @@ export class IntegrationUserService {
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
     private readonly mapboxService: MapboxService,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
 
   async create({
@@ -52,13 +55,19 @@ export class IntegrationUserService {
       processedConfig.showTour = intUserInitShowTour;
     }
 
-    return this.integrationUserModel.create({
+    const integrationUser = await this.integrationUserModel.create({
       integrationUserId,
       integrationType,
       accessToken,
       parameters,
       config: processedConfig,
     });
+
+    this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
+      integrationUser,
+    });
+
+    return integrationUser;
   }
 
   async upsert(

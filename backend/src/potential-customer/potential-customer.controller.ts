@@ -26,7 +26,9 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 @ApiTags('potential-customers')
 @Controller('api/potential-customers')
 export class PotentialCustomerController extends AuthenticatedController {
-  constructor(private potentialCustomerService: PotentialCustomerService) {
+  constructor(
+    private readonly potentialCustomerService: PotentialCustomerService,
+  ) {
     super();
   }
 
@@ -40,14 +42,14 @@ export class PotentialCustomerController extends AuthenticatedController {
     ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
   }
 
-  @ApiOperation({ description: 'Add potential customers' })
+  @ApiOperation({ description: 'Create a potential customer' })
   @Post()
-  async insertPotentialCustomer(
+  async createPotentialCustomer(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
   ): Promise<ApiPotentialCustomerDto> {
     return mapPotentialCustomerToApiPotentialCustomer(
-      await this.potentialCustomerService.insertPotentialCustomer(
+      await this.potentialCustomerService.createPotentialCustomer(
         user,
         potentialCustomer,
       ),

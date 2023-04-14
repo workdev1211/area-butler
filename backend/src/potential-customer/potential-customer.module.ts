@@ -16,6 +16,7 @@ import { AuthModule } from '../auth/auth.module';
 import { ClientModule } from '../client/client.module';
 import { UserModule } from '../user/user.module';
 import { PotentialCustomerListener } from './listener/potential-customer.listener';
+import { PotentialCustomerIntController } from './potential-customer-int.controller';
 
 @Module({
   imports: [
@@ -27,7 +28,11 @@ import { PotentialCustomerListener } from './listener/potential-customer.listene
       { name: QuestionnaireRequest.name, schema: QuestionnaireRequestSchema },
     ]),
   ],
-  controllers: [PotentialCustomerController, QuestionnaireController],
+  controllers: [
+    PotentialCustomerController,
+    PotentialCustomerIntController,
+    QuestionnaireController,
+  ],
   providers: [PotentialCustomerService, PotentialCustomerListener],
 })
 export class PotentialCustomerModule {}

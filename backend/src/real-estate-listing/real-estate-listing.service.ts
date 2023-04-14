@@ -97,11 +97,11 @@ export class RealEstateListingService {
     );
 
     if (!existingListing) {
-      throw new HttpException('Entity not found', 400);
+      throw new HttpException('Real estate not found!', 400);
     }
 
     if (existingListing.userId !== user.id) {
-      throw new HttpException('Invalid change', 400);
+      throw new HttpException('Invalid change!', 400);
     }
 
     const realEstateListingDoc: any = {
@@ -131,11 +131,11 @@ export class RealEstateListingService {
     );
 
     if (!existingListing) {
-      throw 'Entity not found';
+      throw new HttpException('Real estate not found!', 400);
     }
 
     if (existingListing.userId !== user.id) {
-      throw 'Invalid delete';
+      throw new HttpException('Invalid delete!', 400);
     }
 
     await existingListing.deleteOne();

@@ -12,16 +12,16 @@ export type SearchResultSnapshotDocument = SearchResultSnapshot & Document;
 
 @Schema()
 export class SearchResultSnapshot {
-  @Prop()
+  @Prop({ type: String })
   userId: string;
 
-  @Prop()
+  @Prop({ type: String })
   token: string;
 
-  @Prop()
+  @Prop({ type: String })
   description: string;
 
-  @Prop()
+  @Prop({ type: String })
   mapboxAccessToken: string;
 
   @Prop({ type: Object })
@@ -45,13 +45,13 @@ export class SearchResultSnapshot {
   @Prop({ type: Date })
   iframeEndsAt: Date;
 
-  @Prop({ default: 0 })
+  @Prop({ type: Number, default: 0 })
   visitAmount: number;
 
   @Prop({ type: IntegrationParamsSchema })
   integrationParams: IApiIntegrationParams;
 
-  @Prop({ default: false })
+  @Prop({ type: Boolean, default: false })
   isTrial: boolean;
 }
 

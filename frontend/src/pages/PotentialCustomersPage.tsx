@@ -2,7 +2,6 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link, useHistory, useLocation } from "react-router-dom";
 
 import DefaultLayout from "../layout/defaultLayout";
-import { useHttp } from "../hooks/http";
 import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
@@ -17,16 +16,17 @@ import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import FormModal from "../components/FormModal";
-import { PotentialCustomerFormDeleteHandler } from "../potential-customer/PotentialCustomerDeleteHandler";
 import QuestionnaireRequestFormHandler from "../potential-customer/QuestionnaireRequestFormHandler";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
+import { ApiTourNamesEnum } from "../../../shared/types/types";
 import TourStarter from "tour/TourStarter";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { preferredLocationsTitle } from "../shared/shared.functions";
 import { IPotentialCustomersHistoryState } from "../shared/shared.types";
+import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
+import PotentialCustomerFormDeleteHandler from "../potential-customer/PotentialCustomerFormDeleteHandler";
 
 const deleteCustomerModalConfig = {
   modalTitle: "Interessent löschen",
@@ -57,20 +57,39 @@ const subscriptionUpgradeSendCustomerRequestMessage = (
 );
 
 const PotentialCustomersPage: FunctionComponent = () => {
-  const { get } = useHttp();
-  const history = useHistory<IPotentialCustomersHistoryState>();
-  const queryParams = new URLSearchParams(useLocation().search);
-  const customerHighlightId = queryParams.get("id");
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
   );
-
   const { searchContextDispatch } = useContext(SearchContext);
+  const { userState, userDispatch } = useContext(UserContext);
+
+  const user = userState.user!;
+  const integrationUser = userState.integrationUser!;
+  const isIntegrationUser = !!integrationUser;
+
+  const history = useHistory<IPotentialCustomersHistoryState>();
+  const { fetchPotentialCustomers } =
+    usePotentialCustomerData(isIntegrationUser);
 
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
-  const { userState, userDispatch } = useContext(UserContext);
-  const user: ApiUser = userState.user!;
-  const subscriptionPlan = user.subscription?.config;
+
+  useEffect(() => {
+    const getPotentialCustomers = async () => {
+      const potentialCustomerData = await fetchPotentialCustomers();
+
+      potentialCustomerDispatch({
+        type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
+        payload: potentialCustomerData,
+      });
+    };
+
+    void getPotentialCustomers();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const queryParams = new URLSearchParams(useLocation().search);
+  const customerHighlightId = queryParams.get("id");
+  const subscriptionPlan = user?.subscription?.config;
   const canSendCustomerRequest =
     subscriptionPlan?.appFeatures.sendCustomerQuestionnaireRequest;
 
@@ -101,21 +120,6 @@ const PotentialCustomersPage: FunctionComponent = () => {
     history.push("/search", { isFromPotentialCustomers: true });
   };
 
-  useEffect(() => {
-    const fetchCustomers = async () => {
-      const response = await get<ApiPotentialCustomer[]>(
-        "/api/potential-customers"
-      );
-
-      potentialCustomerDispatch({
-        type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data,
-      });
-    };
-
-    fetchCustomers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const ActionsTop: FunctionComponent = () => {
     return (
       <>
@@ -124,25 +128,27 @@ const PotentialCustomersPage: FunctionComponent = () => {
             <img src={plusIcon} alt="pdf-icon" /> Zielgruppe anlegen
           </Link>
         </li>
-        <li>
-          <button
-            type="button"
-            className="btn btn-link"
-            onClick={() =>
-              canSendCustomerRequest
-                ? setQuestionnaireModalOpen(true)
-                : userDispatch({
-                    type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                    payload: {
-                      open: true,
-                      message: subscriptionUpgradeSendCustomerRequestMessage,
-                    },
-                  })
-            }
-          >
-            <img src={plusIcon} alt="pdf-icon" /> Fragebogen versenden
-          </button>
-        </li>
+        {!isIntegrationUser && (
+          <li>
+            <button
+              type="button"
+              className="btn btn-link"
+              onClick={() =>
+                canSendCustomerRequest
+                  ? setQuestionnaireModalOpen(true)
+                  : userDispatch({
+                      type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                      payload: {
+                        open: true,
+                        message: subscriptionUpgradeSendCustomerRequestMessage,
+                      },
+                    })
+              }
+            >
+              <img src={plusIcon} alt="pdf-icon" /> Fragebogen versenden
+            </button>
+          </li>
+        )}
       </>
     );
   };
@@ -230,7 +236,9 @@ const PotentialCustomersPage: FunctionComponent = () => {
                         src={searchIcon}
                         alt="icon-search"
                         className="cursor-pointer"
-                        onClick={() => startSearchFromCustomer(customer)}
+                        onClick={() => {
+                          startSearchFromCustomer(customer);
+                        }}
                         data-tour={`customers-table-item-search-button-${index}`}
                       />
                       {!customer.belongsToParent && (
@@ -239,11 +247,11 @@ const PotentialCustomersPage: FunctionComponent = () => {
                             src={editIcon}
                             alt="icon-edit"
                             className="cursor-pointer"
-                            onClick={() =>
+                            onClick={() => {
                               history.push(
                                 `/potential-customers/${customer.id}`
-                              )
-                            }
+                              );
+                            }}
                             data-tour={`customers-table-item-edit-button-${index}`}
                           />
                           <FormModal

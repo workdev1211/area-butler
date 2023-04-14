@@ -5,7 +5,6 @@ import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
 } from "context/PotentialCustomerContext";
-import { useHttp } from "hooks/http";
 import {
   ApiPotentialCustomer,
   ApiPreferredLocation,
@@ -13,11 +12,13 @@ import {
 } from "../../../shared/types/potential-customer";
 import PotentialCustomerForm from "./PotentialCustomerForm";
 import { toastError, toastSuccess } from "shared/shared.functions";
+import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
+import { UserContext } from "../context/UserContext";
 
-// TODO change to "plainToInstance" from the "class-transformer" package without async
-export const mapFormToApiUpsertPotentialCustomer = async (
+// TODO change to "plainToInstance" from the "class-transformer" package
+export const mapFormToApiUpsertPotentialCustomer = (
   values: any
-): Promise<ApiUpsertPotentialCustomer> => {
+): ApiUpsertPotentialCustomer => {
   return {
     name: values.name,
     email: values.email,
@@ -31,7 +32,7 @@ export const mapFormToApiUpsertPotentialCustomer = async (
   };
 };
 
-export interface PotentialCustomerFormHandlerData {
+interface IPotentialCustomerFormHandlerProps {
   customer: Partial<ApiPotentialCustomer>;
   formId?: string;
   beforeSubmit?: () => void;
@@ -39,34 +40,26 @@ export interface PotentialCustomerFormHandlerData {
 }
 
 const PotentialCustomerFormHandler: FunctionComponent<
-  PotentialCustomerFormHandlerData
+  IPotentialCustomerFormHandlerProps
 > = ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
-  const { post, put } = useHttp();
-  const history = useHistory();
-
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
-  const onSubmit = async (values: any) => {
-    const mappedPotentialCustomer: ApiUpsertPotentialCustomer =
-      await mapFormToApiUpsertPotentialCustomer(values);
+  const history = useHistory();
+  const { createPotentialCustomer, updatePotentialCustomer } =
+    usePotentialCustomerData(!!integrationUser);
+
+  const onSubmit = async (values: any): Promise<void> => {
+    const mappedPotentialCustomer = mapFormToApiUpsertPotentialCustomer(values);
 
     try {
-      let response = null;
       beforeSubmit();
 
-      if (customer.id) {
-        response = await put(
-          `/api/potential-customers/${customer.id}`,
-          mappedPotentialCustomer
-        );
-      } else {
-        response = await post(
-          "/api/potential-customers/",
-          mappedPotentialCustomer
-        );
-      }
-
-      const storedCustomer = response.data as ApiPotentialCustomer;
+      const storedCustomer = customer.id
+        ? await updatePotentialCustomer(customer.id, mappedPotentialCustomer)
+        : await createPotentialCustomer(mappedPotentialCustomer);
 
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.PUT_POTENTIAL_CUSTOMER,
@@ -78,7 +71,7 @@ const PotentialCustomerFormHandler: FunctionComponent<
       history.push(`/potential-customers?id=${storedCustomer.id}`);
     } catch (err) {
       console.error(err);
-      toastError("Fehler beim Speichern eines Interessenten");
+      toastError("Fehler beim Speichern eines Interessenten!");
       postSubmit(false);
     }
   };

@@ -4,8 +4,10 @@ import {
   IApiSubscriptionLimitAmount,
   PaymentSystemTypeEnum,
 } from '@area-butler-types/subscription-plan';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 export enum EventType {
+  INTEGRATION_USER_CREATED_EVENT = 'INTEGRATION_USER_CREATED_EVENT',
   USER_CREATED_EVENT = 'USER_CREATED_EVENT',
   // not used for the moment
   // USER_CONSENT_EVENT = 'USER_CONSENT_EVENT',
@@ -19,6 +21,10 @@ export enum EventType {
 
 export interface IUserCreatedEvent {
   user: UserDocument;
+}
+
+export interface IIntegrationUserCreatedEvent {
+  integrationUser: TIntegrationUserDocument;
 }
 
 export interface ITrialDataRemoveEvent {

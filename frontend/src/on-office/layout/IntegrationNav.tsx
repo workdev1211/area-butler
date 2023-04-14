@@ -107,6 +107,13 @@ const IntegrationNav: FunctionComponent = () => {
                 Mein KI-Assistent
               </NavLink>
               <NavLink
+                to="/potential-customers"
+                className="nav-link"
+                aria-current="page"
+              >
+                Meine Zielgruppen
+              </NavLink>
+              <NavLink
                 to={`/map/${searchContextState.integrationSnapshotId}`}
                 className="nav-link"
                 aria-current="page"
@@ -140,6 +147,13 @@ const IntegrationNav: FunctionComponent = () => {
             aria-current="page"
           >
             Mein KI-Assistent
+          </NavLink>
+          <NavLink
+            to="/potential-customers"
+            className="nav-link"
+            aria-current="page"
+          >
+            Meine Zielgruppen
           </NavLink>
           <NavLink
             to={`/map/${searchContextState.integrationSnapshotId}`}

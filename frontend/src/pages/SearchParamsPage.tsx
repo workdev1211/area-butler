@@ -36,8 +36,6 @@ import {
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import IncreaseLimitFormHandler from "user/IncreaseLimitFormHandler";
-import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import {
   ApiDataSource,
   ApiSubscriptionLimitsEnum,
@@ -65,7 +63,6 @@ import {
   SearchContextActionTypes,
 } from "../context/SearchContext";
 import { useCensusData } from "../hooks/censusdata";
-import { useHttp } from "../hooks/http";
 import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
@@ -75,6 +72,8 @@ import {
   getUncombinedOsmEntityTypes,
 } from "../../../shared/functions/shared.functions";
 import { ISearchParamsHistoryState } from "../shared/shared.types";
+import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
+import { useRealEstateData } from "../hooks/realestatedata";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -82,21 +81,25 @@ const SearchParamsPage: FunctionComponent = () => {
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
+  const { potentialCustomerState, potentialCustomerDispatch } = useContext(
+    PotentialCustomerContext
+  );
   const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
 
   const user = userState.user!;
   const integrationUser = userState.integrationUser!;
+  const isIntegrationUser = !!integrationUser;
 
-  const { get } = useHttp();
+  const { fetchPotentialCustomers } =
+    usePotentialCustomerData(isIntegrationUser);
+  const { fetchRealEstates } = useRealEstateData();
   const { fetchNearData } = useCensusData();
   const { fetchElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot, updateSnapshot } = useLocationData(
-    !!integrationUser
-  );
+  const { createLocation, createSnapshot, updateSnapshot } =
+    useLocationData(isIntegrationUser);
 
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
@@ -145,18 +148,21 @@ const SearchParamsPage: FunctionComponent = () => {
 
   // Clears initial values
   useEffect(() => {
-    if (!state && !integrationUser) {
+    if (!state && !isIntegrationUser) {
       clearRealEstateParams();
       clearPotentialCustomerParams();
       return;
     }
 
-    if (state?.isFromRealEstates || integrationUser) {
+    if (
+      state?.isFromRealEstates ||
+      (isIntegrationUser && !state?.isFromPotentialCustomers)
+    ) {
       clearPotentialCustomerParams();
       return;
     }
 
-    if (state?.isFromPotentialCustomers) {
+    if (state?.isFromPotentialCustomers && !isIntegrationUser) {
       clearRealEstateParams();
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -195,7 +201,7 @@ const SearchParamsPage: FunctionComponent = () => {
     const requestLimitExceeded =
       user?.requestsExecuted >= totalRequestContingent;
 
-    if (!existingRequest && requestLimitExceeded && !integrationUser) {
+    if (!existingRequest && requestLimitExceeded && !isIntegrationUser) {
       if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
         history.push("/profile");
         return;
@@ -217,41 +223,33 @@ const SearchParamsPage: FunctionComponent = () => {
   ]);
 
   useEffect(() => {
-    if (integrationUser) {
-      return;
-    }
-
-    const fetchCustomers = async () => {
-      const response = await get<ApiPotentialCustomer[]>(
-        "/api/potential-customers"
-      );
+    const getPotentialCustomers = async () => {
+      const potentialCustomers = await fetchPotentialCustomers();
 
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data,
+        payload: potentialCustomers,
       });
     };
 
-    void fetchCustomers();
+    void getPotentialCustomers();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
-    if (integrationUser) {
+    if (isIntegrationUser) {
       return;
     }
 
-    const fetchRealEstates = async () => {
-      const response = await get<ApiRealEstateListing[]>(
-        "/api/real-estate-listing/listings"
-      );
+    const getRealEstates = async () => {
+      const realEstates = await fetchRealEstates();
 
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: response.data,
+        payload: realEstates,
       });
     };
 
-    void fetchRealEstates();
+    void getRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLocationAutocompleteChange = (payload: any): void => {
@@ -576,7 +574,7 @@ const SearchParamsPage: FunctionComponent = () => {
     const onFinish = ({
       id: snapshotId,
     }: ApiSearchResultSnapshotResponse): void => {
-      if (integrationUser) {
+      if (isIntegrationUser) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
           payload: snapshotId,
@@ -621,10 +619,12 @@ const SearchParamsPage: FunctionComponent = () => {
     );
   };
 
+  console.log(9, potentialCustomerState.customers);
+
   return (
     <DefaultLayout
       title={
-        integrationUser
+        isIntegrationUser
           ? `Adresse: ${searchContextState.placesLocation?.label}`
           : "Suche"
       }
@@ -644,7 +644,7 @@ const SearchParamsPage: FunctionComponent = () => {
     >
       <TourStarter
         tour={
-          integrationUser
+          isIntegrationUser
             ? ApiTourNamesEnum.INT_SEARCH
             : ApiTourNamesEnum.SEARCH
         }
@@ -659,7 +659,7 @@ const SearchParamsPage: FunctionComponent = () => {
       )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>
         <Form>
-          {!integrationUser && (
+          {!isIntegrationUser && (
             <>
               <h2 className="search-params-first-title">"Lage"</h2>
               <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -694,7 +694,7 @@ const SearchParamsPage: FunctionComponent = () => {
                 });
               }}
             />
-            {!integrationUser && <PotentialCustomerDropDown />}
+            {!isIntegrationUser && <PotentialCustomerDropDown />}
           </div>
           <h2>{preferredLocationsTitle}</h2>
           <div className="sub-content">

@@ -5,7 +5,7 @@ import ApiQuestionnaireRequestDto from '../../dto/api-questionnaire-request.dto'
 
 export const mapPotentialCustomerToApiPotentialCustomer = (
   potentialCustomer: PotentialCustomerDocument,
-  userId: string,
+  userId?: string,
 ): ApiPotentialCustomerDto => ({
   id: potentialCustomer.id,
   name: potentialCustomer.name,

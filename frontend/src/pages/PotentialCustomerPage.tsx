@@ -3,7 +3,6 @@ import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
 import DefaultLayout from "../layout/defaultLayout";
-import { useHttp } from "../hooks/http";
 import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
@@ -13,6 +12,8 @@ import PotentialCustomerFormHandler from "../potential-customer/PotentialCustome
 import BackButton from "../layout/BackButton";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
 import { SearchContextState } from "context/SearchContext";
+import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
+import { UserContext } from "../context/UserContext";
 
 export interface PotentialCustomerPageRouterProps {
   customerId: string;
@@ -25,13 +26,20 @@ const defaultCustomer: Partial<ApiPotentialCustomer> = {
 };
 
 const PotentialCustomerPage: FunctionComponent = () => {
-  const { customerId } = useParams<PotentialCustomerPageRouterProps>();
-  const isNewCustomer = customerId === "new" || customerId === "from-result";
-  let initialCustomer = { ...defaultCustomer };
-
+  const { potentialCustomerState, potentialCustomerDispatch } = useContext(
+    PotentialCustomerContext
+  );
   const searchContextFromLocalStorageString = window.localStorage.getItem(
     localStorageSearchContext
   );
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
+  const isIntegrationUser = !!integrationUser;
+  const { customerId } = useParams<PotentialCustomerPageRouterProps>();
+  const isNewCustomer = customerId === "new" || customerId === "from-result";
+  let initialCustomer = { ...defaultCustomer };
 
   if (customerId === "from-result" && searchContextFromLocalStorageString) {
     const searchContextFromLocalStorage = JSON.parse(
@@ -48,47 +56,44 @@ const PotentialCustomerPage: FunctionComponent = () => {
     };
   }
 
+  const { fetchPotentialCustomers } =
+    usePotentialCustomerData(isIntegrationUser);
+
   const [customer, setCustomer] =
     useState<Partial<ApiPotentialCustomer>>(initialCustomer);
   const [busy, setBusy] = useState(false);
 
-  const { get } = useHttp();
-  const { potentialCustomerState, potentialCustomerDispatch } = useContext(
-    PotentialCustomerContext
-  );
-
   useEffect(() => {
-    const fetchCustomers = async () => {
-      const response = await get<ApiPotentialCustomer[]>(
-        "/api/potential-customers"
-      );
+    const getPotentialCustomers = async () => {
+      const potentialCustomers = await fetchPotentialCustomers();
 
       potentialCustomerDispatch({
         type: PotentialCustomerActionTypes.SET_POTENTIAL_CUSTOMERS,
-        payload: response.data,
+        payload: potentialCustomers,
       });
     };
 
-    void fetchCustomers();
-  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+    if (!potentialCustomerState.customers) {
+      void getPotentialCustomers();
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
-    if (!isNewCustomer) {
-      setCustomer(
-        potentialCustomerState.customers.find(
-          (c: ApiPotentialCustomer) => c.id === customerId
-        ) ?? initialCustomer
-      );
-    } else {
+    if (isNewCustomer) {
       setCustomer(initialCustomer);
+      return;
     }
+
+    setCustomer(
+      potentialCustomerState.customers.find(
+        (c: ApiPotentialCustomer) => c.id === customerId
+      ) ?? initialCustomer
+    );
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    potentialCustomerState.customers,
-    isNewCustomer,
-    customerId,
-    setCustomer,
-  ]);
+  }, [potentialCustomerState.customers, isNewCustomer, customerId]);
 
   const formId = `form-${uuid()}`;
   const beforeSubmit = () => setBusy(true);
@@ -99,14 +104,15 @@ const PotentialCustomerPage: FunctionComponent = () => {
   const baseClasses = "btn bg-primary-gradient w-full sm:w-auto";
 
   const SubmitButton: FunctionComponent = () => {
-    const classes = baseClasses + " ml-auto";
+    const classes = `${baseClasses} ml-auto`;
+
     return (
       <button
         form={formId}
         key="submit"
         type="submit"
         disabled={busy}
-        className={busy ? "busy " + classes : classes}
+        className={`${busy ? "busy " : ""}${classes}`}
       >
         {customer.id ? "Speichern" : "Anlegen"}
       </button>

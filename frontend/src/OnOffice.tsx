@@ -24,6 +24,7 @@ import { ApiConfig } from "../../shared/types/types";
 import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { IntegrationTypesEnum } from "../../shared/types/integration";
+import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -46,9 +47,11 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
         <UserContextProvider>
           <SearchContextProvider>
             <RealEstateContextProvider>
-              <Router basename="/on-office">
-                <OnOfficeContainer />
-              </Router>
+              <PotentialCustomerContextProvider>
+                <Router basename="/on-office">
+                  <OnOfficeContainer />
+                </Router>
+              </PotentialCustomerContextProvider>
             </RealEstateContextProvider>
           </SearchContextProvider>
         </UserContextProvider>

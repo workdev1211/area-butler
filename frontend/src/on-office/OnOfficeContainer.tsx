@@ -35,10 +35,16 @@ calculateViewHeight();
 export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
 
-const ProductPage = lazy(() => import("./pages/ProductPage"));
-const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
+const PotentialCustomerPage = lazy(
+  () => import("../pages/PotentialCustomerPage")
+);
+const PotentialCustomersPage = lazy(
+  () => import("../pages/PotentialCustomersPage")
+);
 const MapPage = lazy(() => import("./pages/MapPage"));
 const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
+const ProductPage = lazy(() => import("./pages/ProductPage"));
+const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 
 const OnOfficeContainer: FunctionComponent = () => {
   const {
@@ -129,6 +135,12 @@ const OnOfficeContainer: FunctionComponent = () => {
         />
         {!["products", "map"].includes(currentPath) && <FeedbackModal />}
         <Switch>
+          <Route path="/potential-customers/:customerId">
+            <PotentialCustomerPage />
+          </Route>
+          <Route path="/potential-customers">
+            <PotentialCustomersPage />
+          </Route>
           <Route path="/map/:snapshotId">
             <MapPage />
           </Route>
