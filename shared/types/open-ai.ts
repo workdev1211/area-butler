@@ -27,19 +27,24 @@ export interface IApiOpenAiLocationDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
-  characterLimit?: number;
+  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
   realEstateListingId: string;
-  characterLimit?: number;
+  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 export interface IApiOpenAiLocationRealEstateDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues,
     IApiOpenAiRealEstateDescriptionQuery {
   searchResultSnapshotId: string;
-  characterLimit?: number;
+  responseLimit?: IApiOpenAiResponseLimit;
+}
+
+export interface IApiOpenAiResponseLimit {
+  quantity: number;
+  type: ApiOpenAiResponseLimitTypesEnum;
 }
 
 export enum OpenAiQueryTypeEnum {
@@ -74,4 +79,9 @@ export interface IApiOpenAiQuery {
   isFormalToInformal?: boolean;
   realEstateListingId?: string;
   integrationId?: string;
+}
+
+export enum ApiOpenAiResponseLimitTypesEnum {
+  CHARACTER = "CHARACTER",
+  WORD = "WORD",
 }

@@ -53,8 +53,10 @@ import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
+  ApiOpenAiResponseLimitTypesEnum,
   IApiOpenAiLocationDescriptionQuery,
   IApiOpenAiLocationRealEstateDescriptionQuery,
+  IApiOpenAiResponseLimit,
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
@@ -62,7 +64,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
-import { getOpenAiCharLimitByInt } from '../../../shared/functions/integration.functions';
+import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 
 @Injectable()
 export class LocationService {
@@ -621,7 +623,7 @@ export class LocationService {
       meanOfTransportation,
       tonality,
       customText,
-      characterLimit,
+      responseLimit,
     }: IApiOpenAiLocationDescriptionQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -643,7 +645,7 @@ export class LocationService {
     );
 
     const queryText = this.openAiService.getLocationDescriptionQuery({
-      characterLimit,
+      responseLimit,
       meanOfTransportation,
       snapshot: searchResultSnapshot.snapshot,
       tonality: openAiTonalities[tonality],
@@ -661,7 +663,7 @@ export class LocationService {
       tonality,
       customText,
       realEstateListingId,
-      characterLimit,
+      responseLimit,
     }: IApiOpenAiLocationRealEstateDescriptionQuery,
     realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
@@ -683,11 +685,11 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
-    const resultingCharacterLimit =
-      characterLimit ||
+    const resultingResponseLimit: IApiOpenAiResponseLimit =
+      responseLimit ||
       (isIntegrationUser
-        ? getOpenAiCharLimitByInt(user.integrationType)
-        : undefined);
+        ? getOpenAiRespLimitByInt(user.integrationType)
+        : { quantity: 700, type: ApiOpenAiResponseLimitTypesEnum.WORD });
 
     const resultingRealEstateListing =
       realEstateListing ||
@@ -702,7 +704,7 @@ export class LocationService {
       snapshot: searchResultSnapshot.snapshot,
       tonality: openAiTonalities[tonality],
       customText: customText?.text,
-      characterLimit: resultingCharacterLimit,
+      responseLimit: resultingResponseLimit,
     });
 
     return this.openAiService.fetchResponse(queryText);

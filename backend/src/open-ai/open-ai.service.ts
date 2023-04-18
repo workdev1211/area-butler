@@ -17,7 +17,11 @@ import {
   ApiFurnishing,
   ApiRealEstateCostType,
 } from '@area-butler-types/real-estate';
-import { OpenAiOsmQueryNameEnum } from '@area-butler-types/open-ai';
+import {
+  ApiOpenAiResponseLimitTypesEnum,
+  IApiOpenAiResponseLimit,
+  OpenAiOsmQueryNameEnum,
+} from '@area-butler-types/open-ai';
 
 // Left just in case in order to be able to calculate the number of tokens
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,17 +33,16 @@ interface ILocationDescriptionQueryData {
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
   customText?: string;
-  characterLimit?: number;
+  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 interface ILocationRealEstateDescriptionQueryData
   extends ILocationDescriptionQueryData {
   realEstateListing: RealEstateListingDocument;
-  characterLimit?: number;
+  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 const CHARACTER_LIMIT = 2000;
-const WORD_LIMIT = 700;
 
 @Injectable()
 export class OpenAiService {
@@ -56,7 +59,7 @@ export class OpenAiService {
     meanOfTransportation,
     tonality,
     customText,
-    characterLimit = CHARACTER_LIMIT,
+    responseLimit,
   }: ILocationDescriptionQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
       snapshot.searchResponse.routingProfiles[
@@ -78,7 +81,9 @@ export class OpenAiService {
       }, {});
 
     const initialQueryText =
-      `Schreibe eine maximal ${characterLimit} Zeichen lange Beschreibung der Lage einer Immobilie für ` +
+      `Schreibe eine ${this.getResponseLimitText(
+        responseLimit,
+      )} lange Beschreibung der Lage einer Immobilie für ` +
       `Immobilienexposee. Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points of ` +
       'Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". ' +
       'Beende den Text mit einer Bullet-Liste der Points of Interest.\nDie Points of interest sind: ' +
@@ -110,8 +115,10 @@ export class OpenAiService {
 
   getRealEstateDescriptionQuery(
     { address, characteristics, costStructure }: RealEstateListingDocument,
-    characterLimit = CHARACTER_LIMIT,
-    initialQueryText = `Schreibe eine maximal ${characterLimit} Zeichen lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
+    responseLimit: IApiOpenAiResponseLimit,
+    initialQueryText = `Schreibe eine ${this.getResponseLimitText(
+      responseLimit,
+    )} lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
   ): string {
     const objectType = 'Haus';
 
@@ -216,7 +223,7 @@ export class OpenAiService {
     tonality,
     customText,
     realEstateListing,
-    characterLimit,
+    responseLimit,
   }: ILocationRealEstateDescriptionQueryData): string {
     const poiCount: Partial<Record<OpenAiOsmQueryNameEnum, number>> =
       snapshot.searchResponse.routingProfiles[
@@ -243,14 +250,12 @@ export class OpenAiService {
       }, {});
 
     const initialQueryText =
-      `Schreibe eine ${
-        characterLimit
-          ? `maximal ${characterLimit} Zeichen`
-          : `etwa ${WORD_LIMIT} Worte`
-      } lange Beschreibung der Lage einer Immobilie für Immobilienexposee. Nutze eine ${tonality} Art der ` +
-      `Formulierung. Im Fließtext erwähne die Points of Interest nicht mit Zahlen, sondern nur mit Worten "einige, ` +
-      `viele, ausreichend, ...". Im Anschluss an den Text füge dann eine Bullet-Liste mit den Zahlen der Points of ` +
-      `Interest hinzu. Verwende HTML Zeilenumbrüche.`;
+      `Schreibe eine ${this.getResponseLimitText(
+        responseLimit,
+      )} lange Beschreibung der Lage einer Immobilie für Immobilienexposee. Nutze eine ${tonality} Art der ` +
+      `Formulierung. Im Fließtext erwähne die Points of Interest nicht mit Zahlen, sondern nur mit Worten ` +
+      `"einige, viele, ausreichend, ...". Im Anschluss an den Text füge dann eine Bullet-Liste mit den ` +
+      `Zahlen der Points of Interest hinzu. Verwende HTML Zeilenumbrüche.`;
 
     let queryText = this.getRealEstateDescriptionQuery(
       realEstateListing,
@@ -374,5 +379,19 @@ export class OpenAiService {
     );
 
     return choices[0]['message']['content'].replace(/^(\n)*(.*)/g, '$2');
+  }
+
+  private getResponseLimitText(
+    responseLimit?: IApiOpenAiResponseLimit,
+  ): string {
+    if (!responseLimit) {
+      return `maximal ${CHARACTER_LIMIT} Zeichen`;
+    }
+
+    const { quantity, type } = responseLimit;
+
+    return type === ApiOpenAiResponseLimitTypesEnum.CHARACTER
+      ? `maximal ${quantity} Zeichen`
+      : `etwa ${quantity} Worte`;
   }
 }

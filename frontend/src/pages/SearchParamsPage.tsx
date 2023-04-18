@@ -619,8 +619,6 @@ const SearchParamsPage: FunctionComponent = () => {
     );
   };
 
-  console.log(9, potentialCustomerState.customers);
-
   return (
     <DefaultLayout
       title={
@@ -694,7 +692,7 @@ const SearchParamsPage: FunctionComponent = () => {
                 });
               }}
             />
-            {!isIntegrationUser && <PotentialCustomerDropDown />}
+            <PotentialCustomerDropDown />
           </div>
           <h2>{preferredLocationsTitle}</h2>
           <div className="sub-content">

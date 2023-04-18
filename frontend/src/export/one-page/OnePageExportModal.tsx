@@ -21,10 +21,16 @@ import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
 import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
-import { IApiOpenAiLocationDescriptionQuery } from "../../../../shared/types/open-ai";
+import {
+  ApiOpenAiResponseLimitTypesEnum,
+  IApiOpenAiLocationDescriptionQuery,
+} from "../../../../shared/types/open-ai";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 import { useOpenAi } from "../../hooks/openai";
-import { onePageCharacterLimit } from "../../../../shared/constants/constants";
+import {
+  onePageCharacterLimit,
+  onePageOpenAiWordLimit,
+} from "../../../../shared/constants/constants";
 
 const SCREENSHOT_LIMIT = 2;
 
@@ -122,7 +128,10 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
       tonality,
       customText,
       searchResultSnapshotId: snapshotId,
-      characterLimit: onePageCharacterLimit,
+      responseLimit: {
+        quantity: onePageOpenAiWordLimit,
+        type: ApiOpenAiResponseLimitTypesEnum.WORD,
+      },
     });
 
     setIsOpenAiBusy(false);

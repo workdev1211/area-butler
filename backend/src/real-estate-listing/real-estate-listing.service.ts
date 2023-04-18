@@ -171,7 +171,7 @@ export class RealEstateListingService {
     user: UserDocument | TIntegrationUserDocument,
     {
       realEstateListingId,
-      characterLimit,
+      responseLimit,
     }: IApiOpenAiRealEstateDescriptionQuery,
     realEstateListing?: RealEstateListingDocument,
   ) {
@@ -194,7 +194,7 @@ export class RealEstateListingService {
 
     const queryText = this.openAiService.getRealEstateDescriptionQuery(
       resultingRealEstateListing,
-      characterLimit,
+      responseLimit,
     );
 
     return this.openAiService.fetchResponse(queryText);

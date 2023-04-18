@@ -1,6 +1,17 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import { Type } from 'class-transformer';
 
-import { IApiOpenAiRealEstateDescriptionQuery } from '@area-butler-types/open-ai';
+import {
+  IApiOpenAiRealEstateDescriptionQuery,
+  IApiOpenAiResponseLimit,
+} from '@area-butler-types/open-ai';
+import ApiOpenAiResponseLimitDto from '../../open-ai/dto/api-open-ai-response-limit.dto';
 
 class ApiOpenAiRealEstateDescriptionQueryDto
   implements IApiOpenAiRealEstateDescriptionQuery
@@ -10,8 +21,10 @@ class ApiOpenAiRealEstateDescriptionQueryDto
   realEstateListingId: string;
 
   @IsOptional()
-  @IsNumber()
-  characterLimit?: number;
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiOpenAiResponseLimitDto)
+  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 export default ApiOpenAiRealEstateDescriptionQueryDto;

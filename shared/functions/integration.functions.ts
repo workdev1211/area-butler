@@ -6,7 +6,11 @@ import {
   ApiIntUserOnOfficeProdContTypesEnum,
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
-import { OpenAiQueryTypeEnum } from "../types/open-ai";
+import {
+  ApiOpenAiResponseLimitTypesEnum,
+  IApiOpenAiResponseLimit,
+  OpenAiQueryTypeEnum,
+} from "../types/open-ai";
 import { OnOfficeIntActTypesEnum } from "../types/on-office";
 import { onOfficeOpenAiCharacterLimit } from "../constants/on-office/constants";
 
@@ -41,16 +45,16 @@ export const getProdContTypeByActType = (
   }
 };
 
-export const getOpenAiCharLimitByInt = (
+export const getOpenAiRespLimitByInt = (
   integrationType: IntegrationTypesEnum
-): number | undefined => {
+): IApiOpenAiResponseLimit => {
   switch (integrationType) {
-    case IntegrationTypesEnum.ON_OFFICE: {
-      return onOfficeOpenAiCharacterLimit;
-    }
-
+    case IntegrationTypesEnum.ON_OFFICE:
     default: {
-      return;
+      return {
+        quantity: onOfficeOpenAiCharacterLimit,
+        type: ApiOpenAiResponseLimitTypesEnum.CHARACTER,
+      };
     }
   }
 };

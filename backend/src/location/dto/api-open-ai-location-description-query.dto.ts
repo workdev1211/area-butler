@@ -15,9 +15,11 @@ import {
 } from '@area-butler-types/types';
 import {
   IApiOpenAiLocationDescriptionQuery,
+  IApiOpenAiResponseLimit,
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 import ApiSelectTextValueDto from '../../dto/api-select-text-value.dto';
+import ApiOpenAiResponseLimitDto from '../../open-ai/dto/api-open-ai-response-limit.dto';
 
 class ApiOpenAiLocationDescriptionQueryDto
   implements IApiOpenAiLocationDescriptionQuery
@@ -43,6 +45,12 @@ class ApiOpenAiLocationDescriptionQueryDto
   @IsOptional()
   @IsNumber()
   characterLimit?: number;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiOpenAiResponseLimitDto)
+  responseLimit?: IApiOpenAiResponseLimit;
 
   // in case of the integration
   @IsOptional()
