@@ -1,6 +1,7 @@
 #one-page-expose-modal {
   & > .modal-box {
-    max-width: calc(448px + 21px);
+    max-width: 470px;
+    height: 80vh;
     @apply pl-0;
 
     & > div > .collapse {
@@ -33,6 +34,14 @@
       .collapse-content {
         margin-left: 24px !important;
       }
+    }
+  }
+}
+
+@media (min-width: 768px) {
+  #one-page-expose-modal {
+    & > .modal-box {
+      max-width: max(470px, 45vw);
     }
   }
 }

@@ -366,4 +366,4 @@ export const umlautMap = {
 };
 
 export const onePageCharacterLimit = 800;
-export const onePageOpenAiWordLimit = 50;
+export const onePageOpenAiWordLimit = 60;

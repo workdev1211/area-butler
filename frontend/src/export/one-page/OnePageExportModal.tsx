@@ -151,7 +151,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
-      <div className="modal-box">
+      <div className="modal-box flex flex-col justify-between">
         <div className="flex flex-col gap-3 pb-[5px]">
           <h1 className="text-xl text-bold flex items-center gap-2 pl-[24px]">
             <span>{buttonTitle}</span>
@@ -168,7 +168,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           </div>
         </div>
 
-        <div className="flex flex-col h-[35rem] overflow-y-auto">
+        <div className="flex flex-col flex-1 h-[35rem] overflow-y-auto">
           <div
             className={`collapse collapse-arrow view-option ${
               isOpen.addressDescription ? "collapse-open" : "collapse-closed"
@@ -232,7 +232,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                     setLocationDescription(value);
                   }
                 }}
-                rows={5}
+                rows={7}
               />
             </div>
           </div>
