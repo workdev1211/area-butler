@@ -21,12 +21,18 @@ import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate
 import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from './inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
+import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
+import { IntegrationUserService } from '../user/integration-user.service';
+import { RealEstateListingIntService } from './real-estate-listing-int.service';
+import { InjectRealEstateListingInterceptor } from './interceptor/inject-real-estate-listing.interceptor';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
 export class RealEstateListingIntController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
+    private readonly integrationUserService: IntegrationUserService,
   ) {}
 
   @ApiOperation({
@@ -60,6 +66,38 @@ export class RealEstateListingIntController {
       integrationUser,
       realEstateDescriptionQuery,
       realEstateListing,
+    );
+  }
+
+  @ApiOperation({
+    description: 'Unlock OnePage export for a real estate',
+  })
+  @UseInterceptors(
+    InjectIntegrationUserInterceptor,
+    InjectRealEstateListingInterceptor,
+  )
+  @Post('unlock-one-page-export/:id')
+  async unlockOnePageExport(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
+  ): Promise<void> {
+    if (realEstateListing.integrationParams.isOnePageExportActive) {
+      return;
+    }
+
+    this.integrationUserService.checkProdContAvailability(
+      integrationUser,
+      OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+    );
+
+    await this.realEstateListingIntService.unlockOnePageExport(
+      integrationUser,
+      realEstateListing,
+    );
+
+    await this.integrationUserService.incrementProductUsage(
+      integrationUser,
+      OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
     );
   }
 }

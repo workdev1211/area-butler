@@ -29,6 +29,7 @@ export interface ApiRealEstateListing {
   status: ApiRealEstateStatusEnum;
   belongsToParent: boolean;
   openAiRequestQuantity?: number;
+  isOnePageExportActive?: boolean;
 }
 
 export interface ApiUpsertRealEstateListing {

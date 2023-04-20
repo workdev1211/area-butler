@@ -20,6 +20,9 @@ export class RealEstateIntegrationParams
 
   @Prop({ type: Number, default: 0 })
   openAiRequestQuantity: number;
+
+  @Prop({ type: Boolean, default: false })
+  isOnePageExportActive: boolean;
 }
 
 export const RealEstateIntegrationParamsSchema = SchemaFactory.createForClass(

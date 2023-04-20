@@ -8,6 +8,7 @@ import {
 } from './schema/real-estate-listing.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -60,5 +61,13 @@ export class RealEstateListingIntService {
     }
 
     return existingRealEstateListing;
+  }
+
+  async unlockOnePageExport(
+    integrationUser: TIntegrationUserDocument,
+    realEstateListing: RealEstateListingDocument,
+  ): Promise<void> {
+    realEstateListing.integrationParams.isOnePageExportActive = true;
+    await realEstateListing.save();
   }
 }

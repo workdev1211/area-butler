@@ -254,6 +254,7 @@ export interface IOnOfficeHandleLogin {
 
 export enum OnOfficeIntActTypesEnum {
   "UNLOCK_IFRAME" = "UNLOCK_IFRAME",
+  "UNLOCK_ONE_PAGE" = "UNLOCK_ONE_PAGE",
 }
 
 export type TOnOfficeIntActTypes =

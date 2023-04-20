@@ -33,6 +33,10 @@ export const getProdContTypeByActType = (
           return ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME;
         }
 
+        case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+          return ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE;
+        }
+
         default: {
           return;
         }

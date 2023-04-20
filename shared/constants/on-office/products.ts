@@ -37,14 +37,12 @@ export const onePageOnOfficeProduct: IOnOfficeProduct = {
   name: "Automatisches Lage-Exposé",
   type: OnOfficeProductTypesEnum.ONE_PAGE,
   price: 9.99,
-  isDisabled: true,
 };
 
 export const onePage50OnOfficeProduct: IOnOfficeProduct = {
   name: "Automatisches Lage-Exposé x50",
   type: OnOfficeProductTypesEnum.ONE_PAGE_50,
   price: 327.72,
-  isDisabled: true,
 };
 
 export const allOnOfficeProducts: Record<

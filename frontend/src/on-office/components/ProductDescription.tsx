@@ -113,17 +113,6 @@ const OnePageDescription = (name: string) => {
           <div>Erklärvideo</div>
         </div>
       </div>
-
-      <div
-        className="absolute font-bold text-4xl top-1/2 left-1/2"
-        style={{
-          transform: "translate(-50%, -50%) rotate(-45deg)",
-          letterSpacing: "1rem",
-          opacity: 0.4,
-        }}
-      >
-        Coming soon
-      </div>
     </>
   );
 };
@@ -149,3 +138,18 @@ const MapSnapshotDescription = (name: string) => {
     </>
   );
 };
+
+/* Coming soon template
+
+      <div
+        className="absolute font-bold text-4xl top-1/2 left-1/2"
+        style={{
+          transform: "translate(-50%, -50%) rotate(-45deg)",
+          letterSpacing: "1rem",
+          opacity: 0.4,
+        }}
+      >
+        Coming soon
+      </div>
+
+ */

@@ -1,6 +1,10 @@
 import { CSSProperties, FunctionComponent, useContext, useState } from "react";
 
-import { setBackgroundColor } from "../../../../../shared/shared.functions";
+import {
+  setBackgroundColor,
+  toastError,
+  toastSuccess,
+} from "../../../../../shared/shared.functions";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -9,6 +13,15 @@ import reportsIcon from "../../../../../assets/icons/map-menu/09-reporte.svg";
 import pdfIcon from "../../../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import { EntityGroup } from "../../../../../components/SearchResultContainer";
 import OnePageExportModal from "../../../../../export/one-page/OnePageExportModal";
+import { OnOfficeIntActTypesEnum } from "../../../../../../../shared/types/on-office";
+import ConfirmationModal from "../../../../../components/ConfirmationModal";
+import {
+  UserActionTypes,
+  UserContext,
+} from "../../../../../context/UserContext";
+import { useIntegrationTools } from "../../../../../hooks/integrationtools";
+import { useHttp } from "../../../../../hooks/http";
+import { ConfigContext } from "../../../../../context/ConfigContext";
 
 interface IMapExportProps {
   groupedEntries: EntityGroup[];
@@ -17,10 +30,50 @@ interface IMapExportProps {
 const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
 const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
+  const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
+  const { userDispatch } = useContext(UserContext);
+
+  const { post } = useHttp();
+  const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [isMapExportOpen, setIsMapExportOpen] = useState(false);
+  const [isShownModal, setIsShownModal] = useState(false);
+
+  const realEstateListing = searchContextState.realEstateListing!;
+
+  const handleUnlockOnePageExport = async () => {
+    try {
+      await post<void>(
+        `/api/real-estate-listing-int/unlock-one-page-export/${realEstateListing.id}`
+      );
+
+      toastSuccess("Das Produkt wurde erfolgreich gekauft!");
+      setIsShownModal(false);
+
+      userDispatch({
+        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+        payload: {
+          integrationType: integrationType!,
+          actionType: OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+        },
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: { ...realEstateListing, isOnePageExportActive: true },
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
+        payload: true,
+      });
+    } catch (e) {
+      toastError("Der Fehler ist aufgetreten!");
+      console.error(e);
+    }
+  };
 
   const backgroundColor =
     searchContextState.responseConfig?.primaryColor ||
@@ -33,6 +86,16 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
         (isMapExportOpen ? " collapse-open" : " collapse-closed")
       }
     >
+      {isShownModal && (
+        <ConfirmationModal
+          closeModal={() => {
+            setIsShownModal(false);
+          }}
+          onConfirm={handleUnlockOnePageExport}
+          text="Automatisches Lage-Exposé freischalten?"
+        />
+      )}
+
       <div
         className="collapse-title"
         ref={(node) => {
@@ -67,10 +130,22 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
           <h3
             className="flex max-w-fit items-center cursor-pointer gap-2"
             onClick={() => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
-                payload: true,
-              });
+              if (realEstateListing.isOnePageExportActive) {
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
+                  payload: true,
+                });
+
+                return;
+              }
+
+              if (
+                checkProdContAvailByAction(
+                  OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
+                )
+              ) {
+                setIsShownModal(true);
+              }
             }}
           >
             <img
