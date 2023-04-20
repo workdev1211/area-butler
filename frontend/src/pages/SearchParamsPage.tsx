@@ -81,9 +81,7 @@ const SearchParamsPage: FunctionComponent = () => {
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { potentialCustomerState, potentialCustomerDispatch } = useContext(
-    PotentialCustomerContext
-  );
+  const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
 
   const user = userState.user!;
@@ -631,13 +629,13 @@ const SearchParamsPage: FunctionComponent = () => {
       actionsBottom={
         limitType
           ? [
-              <div key={"dummy"} />,
+              <div key="dummy" />,
               <IncreaseLimitModal
                 key="search-button"
                 modalConfig={increaseRequestLimitSearchModalConfig}
               />,
             ]
-          : [<div key={"dummy"} />, <SearchButton key="search-button" />]
+          : [<div key="dummy" />, <SearchButton key="search-button" />]
       }
     >
       <TourStarter

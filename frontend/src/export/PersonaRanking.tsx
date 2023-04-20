@@ -1,10 +1,11 @@
-import React from "react";
+import { FunctionComponent } from "react";
 import { Radar } from "react-chartjs-2";
-import { allPersonas } from "../../../shared/constants/persona";
-import { ApiPersonaType } from "../../../shared/types/persona";
 import type * as Chart from "chart.js";
 
-export interface PersonaRankingProps {
+import { allPersonas } from "../../../shared/constants/persona";
+import { ApiPersonaType } from "../../../shared/types/persona";
+
+interface IPersonaRankingProps {
   rankings: Record<ApiPersonaType, number>;
 }
 
@@ -16,7 +17,7 @@ const starRankings: Record<number, string> = {
   5: "★★★★★",
 };
 
-const PersonaRanking: React.FunctionComponent<PersonaRankingProps> = ({
+const PersonaRanking: FunctionComponent<IPersonaRankingProps> = ({
   rankings,
 }) => {
   const radarChartData = {
@@ -81,7 +82,7 @@ const PersonaRanking: React.FunctionComponent<PersonaRankingProps> = ({
                   rankings[r1 as ApiPersonaType]
               )
               .map((ranking: string) => (
-                <tr key={"persona-" + ranking}>
+                <tr key={`persona-${ranking}`}>
                   <td>
                     {allPersonas.find((persona) => persona.type === ranking)
                       ?.label || "Unbekannt"}

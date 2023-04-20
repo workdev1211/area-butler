@@ -66,7 +66,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
         <ul tabIndex={0} className={dropDownListStyle}>
           {potentialCustomerState.customers.map(
             (customer: ApiPotentialCustomer) => (
-              <li key={"customer-drop-down-" + customer.id}>
+              <li key={`customer-drop-down-${customer.id}`}>
                 <button
                   type="button"
                   onClick={() => {
@@ -74,7 +74,7 @@ export const PotentialCustomerDropDown: FunctionComponent<
                     setMenuOpen(false);
                   }}
                   className="btn btn-link whitespace-nowrap"
-                  key={"customer-drop-down-a-" + customer.id}
+                  key={`customer-drop-down-a-${customer.id}`}
                 >
                   <div className="flex flex-col items-start">
                     <span className="font-bold">

@@ -16,7 +16,7 @@ export const checkProdContAvailability = (
   actionType: TIntegrationActionTypes,
   availProdContingents?: TApiIntUserAvailProdContingents
 ) => {
-  if (!availProdContingents) {
+  if (!integrationType || !availProdContingents) {
     return false;
   }
 

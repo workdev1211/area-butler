@@ -24,6 +24,7 @@ import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocati
 import {
   ApiOpenAiResponseLimitTypesEnum,
   IApiOpenAiLocationDescriptionQuery,
+  OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 import { useOpenAi } from "../../hooks/openai";
@@ -58,13 +59,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   snapshotId,
   hasOpenAiFeature = false,
 }) => {
-  const { fetchLocationDescription } = useOpenAi();
-
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
 
   const user = userState.user as ApiUser;
+
+  const { fetchOpenAiResponse } = useOpenAi();
 
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
@@ -123,19 +124,25 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
     setIsOpenAiBusy(true);
 
-    const openAiLocationDescription = await fetchLocationDescription({
-      meanOfTransportation,
-      tonality,
-      customText,
-      searchResultSnapshotId: snapshotId,
-      responseLimit: {
-        quantity: onePageOpenAiWordLimit,
-        type: ApiOpenAiResponseLimitTypesEnum.WORD,
-      },
-    });
+    const openAiLocationDescription = await fetchOpenAiResponse(
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      {
+        meanOfTransportation,
+        tonality,
+        customText,
+        searchResultSnapshotId: snapshotId,
+        responseLimit: {
+          quantity: onePageOpenAiWordLimit,
+          type: ApiOpenAiResponseLimitTypesEnum.WORD,
+        },
+      }
+    );
 
     setIsOpenAiBusy(false);
-    setLocationDescription(openAiLocationDescription);
+
+    if (openAiLocationDescription) {
+      setLocationDescription(openAiLocationDescription);
+    }
   };
 
   const onClose = () => {
@@ -198,14 +205,14 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiLocationDescriptionForm
-                      formId={"open-ai-location-description-form"}
+                      formId="open-ai-location-description-form"
                       onSubmit={fetchOpenAiLocationDescription}
                     />
                     <button
                       className={`btn bg-primary-gradient max-w-fit self-end ${
                         isOpenAiBusy ? "loading" : ""
                       }`}
-                      form={"open-ai-location-description-form"}
+                      form="open-ai-location-description-form"
                       key="submit"
                       type="submit"
                       onClick={(e) => {

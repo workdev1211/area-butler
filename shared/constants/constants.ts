@@ -365,5 +365,5 @@ export const umlautMap = {
   "\u00df": "ss",
 };
 
-export const onePageCharacterLimit = 800;
-export const onePageOpenAiWordLimit = 60;
+export const onePageCharacterLimit = 600;
+export const onePageOpenAiWordLimit = 40;

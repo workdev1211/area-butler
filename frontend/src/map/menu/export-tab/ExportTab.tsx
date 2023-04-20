@@ -345,7 +345,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     alt="pdf"
                   />
                   <span>Lage Exposé generieren</span>{" "}
-                  <span className={"badge badge-primary"}>NEU</span>
+                  <span className="badge badge-primary">NEU</span>
                 </h3>
               </li>
               <li>
@@ -504,7 +504,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                         alt="ai"
                       />
                       <span>{sidebarLabel}</span>{" "}
-                      <span className={"badge badge-primary"}>NEU</span>
+                      <span className="badge badge-primary">NEU</span>
                     </h3>
                   </li>
                 ))}

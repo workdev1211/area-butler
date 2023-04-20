@@ -51,7 +51,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
             className={`btn bg-primary-gradient max-w-fit self-end ${
               isFetchResponse ? "loading" : ""
             }`}
-            form={"open-ai-location-description-form"}
+            form="open-ai-location-description-form"
             onClick={() => {
               setIsFetchResponse(true);
             }}

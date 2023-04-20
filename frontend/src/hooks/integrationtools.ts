@@ -21,6 +21,7 @@ export const useIntegrationTools = () => {
     additionalCondition = true
   ): boolean => {
     if (
+      integrationType &&
       actionType &&
       additionalCondition &&
       !checkProdContAvailability(

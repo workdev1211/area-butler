@@ -42,6 +42,16 @@ const MapPage: FunctionComponent = () => {
     useState<ApiSearchResultSnapshotResponse>();
   const [mapBoxToken, setMapBoxToken] = useState("");
 
+  // initialization
+  useEffect(() => {
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
+      payload: false,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!snapshotId) {
       return;

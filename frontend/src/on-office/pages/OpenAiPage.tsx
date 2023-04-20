@@ -2,27 +2,16 @@ import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../OnOfficeContainer";
-import {
-  SearchContext,
-  SearchContextActionTypes,
-} from "../../context/SearchContext";
+import { SearchContext } from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
-import { RequestStatusTypesEnum } from "../../../../shared/types/types";
-import { UserActionTypes, UserContext } from "../../context/UserContext";
-import { ConfigContext } from "../../context/ConfigContext";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
 import { useHttp } from "../../hooks/http";
-import { toastError, toastSuccess } from "../../shared/shared.functions";
-import { useIntegrationTools } from "../../hooks/integrationtools";
+import { toastSuccess } from "../../shared/shared.functions";
 
 const OpenAiPage: FunctionComponent = () => {
-  const { integrationType } = useContext(ConfigContext);
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-  const { userDispatch } = useContext(UserContext);
+  const { searchContextState } = useContext(SearchContext);
 
   const { patch } = useHttp();
-  const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
@@ -33,57 +22,16 @@ const OpenAiPage: FunctionComponent = () => {
   const [queryType, setQueryType] = useState<OpenAiQueryTypeEnum>();
   const [queryResponse, setQueryResponse] = useState<string | undefined>();
 
-  const realEstateListing = searchContextState.realEstateListing!;
-
   useEffect(() => {
     if (searchContextState.integrationSnapshotId) {
       setSnapshotId(searchContextState.integrationSnapshotId);
     }
   }, [searchContextState.integrationSnapshotId]);
 
-  const handleResponseFetched = (
-    responseQueryType: OpenAiQueryTypeEnum,
-    requestStatus: RequestStatusTypesEnum,
-    responseText?: string
-  ) => {
+  const handleResponseFetched = (responseText?: string): void => {
     setIsFetchResponse(false);
-
-    if (requestStatus === RequestStatusTypesEnum.FAILURE) {
-      if (
-        checkProdContAvailByAction(
-          responseQueryType,
-          !realEstateListing.openAiRequestQuantity
-        )
-      ) {
-        toastError("Fehler beim Senden der KI-Anfrage!");
-      }
-
-      return;
-    }
-
     setQueryResponse(responseText);
     setIsCopyTextButtonDisabled(false);
-    let openAiRequestQuantity = realEstateListing.openAiRequestQuantity;
-
-    if (!openAiRequestQuantity) {
-      openAiRequestQuantity = 100;
-
-      userDispatch({
-        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
-        payload: {
-          integrationType: integrationType!,
-          actionType: responseQueryType,
-        },
-      });
-    }
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: {
-        ...realEstateListing,
-        openAiRequestQuantity: openAiRequestQuantity - 1,
-      },
-    });
   };
 
   if (!snapshotId) {
@@ -139,15 +87,9 @@ const OpenAiPage: FunctionComponent = () => {
             className={`btn bg-primary-gradient max-w-fit self-end ${
               isFetchResponse ? "loading" : ""
             }`}
-            form={"open-ai-location-description-form"}
+            form="open-ai-location-description-form"
             onClick={() => {
-              if (
-                queryType &&
-                checkProdContAvailByAction(
-                  queryType,
-                  !realEstateListing.openAiRequestQuantity
-                )
-              ) {
+              if (queryType) {
                 setIsCopyTextButtonDisabled(true);
                 setIsFetchResponse(true);
               }

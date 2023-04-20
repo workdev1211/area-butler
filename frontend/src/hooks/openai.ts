@@ -3,85 +3,125 @@ import { useContext } from "react";
 import { useHttp } from "./http";
 import {
   IApiOpenAiLocationDescriptionQuery,
-  IApiOpenAiRealEstateDescriptionQuery,
   IApiOpenAiLocationRealEstateDescriptionQuery,
   IApiOpenAiQuery,
+  IApiOpenAiRealEstateDescriptionQuery,
+  OpenAiQueryTypeEnum,
 } from "../../../shared/types/open-ai";
-import { SearchContext } from "../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
+import { toastError } from "../shared/shared.functions";
+import { UserActionTypes, UserContext } from "../context/UserContext";
+import { useIntegrationTools } from "./integrationtools";
+import { ConfigContext } from "../context/ConfigContext";
 
-export const useOpenAi = (isIntegrationUser = false) => {
-  const { searchContextState } = useContext(SearchContext);
+type TOpenAiQuery =
+  | IApiOpenAiLocationDescriptionQuery
+  | IApiOpenAiRealEstateDescriptionQuery
+  | IApiOpenAiLocationRealEstateDescriptionQuery
+  | IApiOpenAiQuery;
+
+export const useOpenAi = () => {
+  const { integrationType } = useContext(ConfigContext);
+  const { userDispatch } = useContext(UserContext);
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
 
   const { post } = useHttp();
+  const { checkProdContAvailByAction } = useIntegrationTools();
 
-  const fetchLocationDescription = async (
-    locationDescriptionQuery: IApiOpenAiLocationDescriptionQuery
+  const isIntegration = !!integrationType;
+  const realEstateListing = searchContextState.realEstateListing!;
+
+  const fetchOpenAiResponse = async (
+    openAiQueryType: OpenAiQueryTypeEnum,
+    openAiQuery: TOpenAiQuery
   ): Promise<string> => {
-    const resultingQuery = { ...locationDescriptionQuery };
+    let queryResponse;
+    let url;
 
-    if (isIntegrationUser) {
-      resultingQuery.realEstateListingId =
-        searchContextState.realEstateListing!.id;
-    }
-
-    return (
-      await post<string, IApiOpenAiLocationDescriptionQuery>(
-        isIntegrationUser
+    switch (openAiQueryType) {
+      case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
+        url = isIntegration
           ? "/api/location-integration/open-ai-loc-desc"
-          : "/api/location/open-ai-loc-desc",
-        resultingQuery
-      )
-    ).data;
-  };
+          : "/api/location/open-ai-loc-desc";
+        break;
+      }
 
-  const fetchRealEstateDescription = async (
-    realEstateDescriptionQuery: IApiOpenAiRealEstateDescriptionQuery
-  ): Promise<string> => {
-    return (
-      await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        isIntegrationUser
+      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+        url = isIntegration
           ? "/api/real-estate-listing-int/open-ai-real-estate-desc"
-          : "/api/real-estate-listing/open-ai-real-estate-desc",
-        realEstateDescriptionQuery
-      )
-    ).data;
-  };
+          : "/api/real-estate-listing/open-ai-real-estate-desc";
+        break;
+      }
 
-  const fetchLocRealEstDesc = async (
-    locationRealEstateDescriptionQuery: IApiOpenAiLocationRealEstateDescriptionQuery
-  ): Promise<string> => {
-    return (
-      await post<string, IApiOpenAiRealEstateDescriptionQuery>(
-        isIntegrationUser
+      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
+        url = isIntegration
           ? "/api/location-integration/open-ai-loc-real-est-desc"
-          : "/api/location/open-ai-loc-real-est-desc",
-        locationRealEstateDescriptionQuery
-      )
-    ).data;
-  };
+          : "/api/location/open-ai-loc-real-est-desc";
+        break;
+      }
 
-  const fetchQuery = async (query: IApiOpenAiQuery): Promise<string> => {
-    const resultingQuery = { ...query };
-
-    if (isIntegrationUser) {
-      resultingQuery.realEstateListingId =
-        searchContextState.realEstateListing!.id;
+      case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
+      case OpenAiQueryTypeEnum.GENERAL_QUESTION:
+      default: {
+        url = isIntegration
+          ? "/api/open-ai-integration/query"
+          : "/api/open-ai/query";
+      }
     }
 
-    return (
-      await post<string, IApiOpenAiQuery>(
-        isIntegrationUser
-          ? "/api/open-ai-integration/query"
-          : "/api/open-ai/query",
-        resultingQuery
+    if (
+      isIntegration &&
+      !checkProdContAvailByAction(
+        openAiQueryType,
+        !realEstateListing.openAiRequestQuantity
       )
-    ).data;
+    ) {
+      return "";
+    }
+
+    if (isIntegration && !openAiQuery.realEstateListingId) {
+      openAiQuery.realEstateListingId = realEstateListing.id;
+    }
+
+    try {
+      queryResponse = (await post<string>(url, openAiQuery)).data;
+    } catch (e) {
+      toastError("Fehler beim Senden der KI-Anfrage!");
+      return "";
+    }
+
+    if (!isIntegration) {
+      return queryResponse;
+    }
+
+    let openAiRequestQuantity = realEstateListing.openAiRequestQuantity;
+
+    if (!openAiRequestQuantity) {
+      openAiRequestQuantity = 100;
+
+      userDispatch({
+        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+        payload: {
+          integrationType: integrationType!,
+          actionType: openAiQueryType,
+        },
+      });
+    }
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+      payload: {
+        ...realEstateListing,
+        openAiRequestQuantity: openAiRequestQuantity! - 1,
+      },
+    });
+
+    return queryResponse;
   };
 
-  return {
-    fetchLocationDescription,
-    fetchRealEstateDescription,
-    fetchLocRealEstDesc,
-    fetchQuery,
-  };
+  return { fetchOpenAiResponse };
 };

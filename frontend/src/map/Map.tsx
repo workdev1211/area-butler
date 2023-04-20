@@ -1380,7 +1380,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             />
           </FormModal>
         )}
-        <div className={"leaflet-bottom leaflet-left mb-20 cursor-pointer"}>
+        <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
           <div
             data-tour="zoom-to-bounds"
             className="leaflet-control-zoom leaflet-bar leaflet-control"

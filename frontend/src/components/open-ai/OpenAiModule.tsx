@@ -16,13 +16,10 @@ import {
 } from "../../../../shared/types/open-ai";
 import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
-import {
-  RequestStatusTypesEnum,
-  TPlaceholderSelectOptionKey,
-} from "../../../../shared/types/types";
+import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
 import { useOpenAi } from "../../hooks/openai";
-import { toastError, toastSuccess } from "../../shared/shared.functions";
+import { toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
 import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
@@ -31,17 +28,12 @@ import {
   CachingActionTypesEnum,
   CachingContext,
 } from "../../context/CachingContext";
-import { UserContext } from "../../context/UserContext";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
-  onResponseFetched: (
-    queryType: OpenAiQueryTypeEnum,
-    requestStatus: RequestStatusTypesEnum,
-    responseText?: string
-  ) => void;
+  onResponseFetched: (responseText?: string) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
 }
@@ -55,11 +47,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   onQueryTypeChange,
 }) => {
   const { cachingState, cachingDispatch } = useContext(CachingContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
-  const isIntegrationUser = !!integrationUser;
 
   const formRef =
     useRef<FormikProps<IOpenAiLocationDescriptionFormValues | IApiOpenAiQuery>>(
@@ -68,12 +55,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   const realEstateDescriptionFormRef =
     useRef<FormikProps<IApiOpenAiRealEstateDescriptionQuery>>(null);
 
-  const {
-    fetchLocationDescription,
-    fetchRealEstateDescription,
-    fetchLocRealEstDesc,
-    fetchQuery,
-  } = useOpenAi(isIntegrationUser);
+  const { fetchOpenAiResponse } = useOpenAi();
 
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
@@ -87,84 +69,76 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
     const fetchResponse = async (): Promise<void> => {
       let response;
-      let requestStatus = RequestStatusTypesEnum.SUCCESS;
 
-      try {
-        switch (queryType) {
-          case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
-            formRef.current?.handleSubmit();
+      switch (queryType) {
+        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
+          formRef.current?.handleSubmit();
 
-            response = await fetchLocationDescription({
-              searchResultSnapshotId,
-              ...(formRef.current
-                ?.values as IOpenAiLocationDescriptionFormValues),
-            });
-            break;
-          }
+          response = await fetchOpenAiResponse(queryType, {
+            searchResultSnapshotId,
+            ...(formRef.current
+              ?.values as IOpenAiLocationDescriptionFormValues),
+          });
 
-          case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
-            realEstateDescriptionFormRef.current?.handleSubmit();
-
-            response = await fetchRealEstateDescription({
-              ...(realEstateDescriptionFormRef.current
-                ?.values as IApiOpenAiRealEstateDescriptionQuery),
-            });
-            break;
-          }
-
-          case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
-            formRef.current?.handleSubmit();
-            realEstateDescriptionFormRef.current?.handleSubmit();
-
-            response = await fetchLocRealEstDesc({
-              searchResultSnapshotId,
-              ...(formRef.current
-                ?.values as IOpenAiLocationDescriptionFormValues),
-              ...(realEstateDescriptionFormRef.current
-                ?.values as IApiOpenAiRealEstateDescriptionQuery),
-            });
-            break;
-          }
-
-          case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
-          case OpenAiQueryTypeEnum.GENERAL_QUESTION: {
-            formRef.current?.handleSubmit();
-
-            response = await fetchQuery({
-              ...(formRef.current?.values as IApiOpenAiQuery),
-              isFormalToInformal:
-                queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
-            });
-            break;
-          }
-        }
-      } catch (e) {
-        if (!isIntegrationUser) {
-          toastError("Fehler beim Senden der KI-Anfrage!");
+          break;
         }
 
-        requestStatus = RequestStatusTypesEnum.FAILURE;
+        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+          realEstateDescriptionFormRef.current?.handleSubmit();
+
+          response = await fetchOpenAiResponse(queryType, {
+            ...(realEstateDescriptionFormRef.current
+              ?.values as IApiOpenAiRealEstateDescriptionQuery),
+          });
+
+          break;
+        }
+
+        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
+          formRef.current?.handleSubmit();
+          realEstateDescriptionFormRef.current?.handleSubmit();
+
+          response = await fetchOpenAiResponse(queryType, {
+            searchResultSnapshotId,
+            ...(formRef.current
+              ?.values as IOpenAiLocationDescriptionFormValues),
+            ...(realEstateDescriptionFormRef.current
+              ?.values as IApiOpenAiRealEstateDescriptionQuery),
+          });
+
+          break;
+        }
+
+        case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
+        case OpenAiQueryTypeEnum.GENERAL_QUESTION: {
+          formRef.current?.handleSubmit();
+
+          response = await fetchOpenAiResponse(queryType, {
+            ...(formRef.current?.values as IApiOpenAiQuery),
+            isFormalToInformal:
+              queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+          });
+
+          break;
+        }
       }
 
-      onResponseFetched(
-        queryType as OpenAiQueryTypeEnum,
-        requestStatus,
-        response
-      );
-
+      onResponseFetched(response);
       setFetchedResponse(response);
     };
 
     void fetchResponse();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isFetchResponse, onResponseFetched, queryType, searchResultSnapshotId]);
+  }, [isFetchResponse, queryType, searchResultSnapshotId]);
 
   useEffect(() => {
     if (queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION) {
       onModuleStatusChange(true);
     }
-  }, [onModuleStatusChange, queryType]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [queryType]);
 
   return (
     <div>
@@ -201,7 +175,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
         {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
           <OpenAiLocationDescriptionForm
-            formId={"open-ai-location-description-form"}
+            formId="open-ai-location-description-form"
             initialValues={cachingState.openAi.locationDescription}
             onValuesChange={(values) => {
               cachingDispatch({
@@ -217,7 +191,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
         {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
           <OpenAiRealEstateDescriptionForm
-            formId={"open-ai-real-estate-description-form"}
+            formId="open-ai-real-estate-description-form"
             initialValues={cachingState.openAi.realEstateDescription}
             onValuesChange={(values) => {
               onModuleStatusChange(
@@ -238,7 +212,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         {queryType === OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION && (
           <>
             <OpenAiLocationDescriptionForm
-              formId={"open-ai-location-description-form"}
+              formId="open-ai-location-description-form"
               initialValues={cachingState.openAi.locationDescription}
               onValuesChange={(values) => {
                 cachingDispatch({
@@ -251,7 +225,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               }
             />
             <OpenAiRealEstateDescriptionForm
-              formId={"open-ai-real-estate-description-form"}
+              formId="open-ai-real-estate-description-form"
               initialValues={cachingState.openAi.realEstateDescription}
               onValuesChange={(values) => {
                 onModuleStatusChange(
@@ -272,7 +246,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
         {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
           <OpenAiQueryForm
-            formId={"open-ai-formal-to-informal-form"}
+            formId="open-ai-formal-to-informal-form"
             initialValues={cachingState.openAi.query}
             onValuesChange={(values) => {
               onModuleStatusChange(!!queryType && !!values.text);
@@ -288,7 +262,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
         {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
           <OpenAiQueryForm
-            formId={"open-ai-general-question-form"}
+            formId="open-ai-general-question-form"
             initialValues={cachingState.openAi.query}
             onValuesChange={(values) => {
               onModuleStatusChange(!!queryType && !!values.text);

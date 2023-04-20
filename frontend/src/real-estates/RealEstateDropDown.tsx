@@ -57,10 +57,10 @@ const RealEstateDropDown: FunctionComponent<RealEstateMenuListProps> = ({
         <ul className="p-2 shadow menu menu-open dropdown-content bg-base-100 rounded-box overflow-y-scroll h-48">
           {realEstateState.listings.map(
             (realEstateListing: ApiRealEstateListing) => (
-              <li key={"real-estate-listing-item-" + realEstateListing.id}>
+              <li key={`real-estate-listing-item-${realEstateListing.id}`}>
                 <button
                   type="button"
-                  key={"real-estate-listing-item-a-" + realEstateListing.id}
+                  key={`real-estate-listing-item-a-${realEstateListing.id}`}
                   onClick={() => {
                     fillAddressFromListing(realEstateListing);
                     setShowMenu(false);
