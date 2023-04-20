@@ -97,7 +97,7 @@ export const convertOnOfficeProdToIntUserProd = ({
           type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
         },
         {
-          quantity,
+          quantity: resultingQuantity,
           type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
         },
       );

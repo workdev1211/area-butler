@@ -43,7 +43,7 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
 
   const realEstateListing = searchContextState.realEstateListing!;
 
-  const handleUnlockOnePageExport = async () => {
+  const unlockOnePageExport = async () => {
     try {
       await post<void>(
         `/api/real-estate-listing-int/unlock-one-page-export/${realEstateListing.id}`
@@ -91,7 +91,7 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
           closeModal={() => {
             setIsShownModal(false);
           }}
-          onConfirm={handleUnlockOnePageExport}
+          onConfirm={unlockOnePageExport}
           text="Automatisches Lage-Exposé freischalten?"
         />
       )}

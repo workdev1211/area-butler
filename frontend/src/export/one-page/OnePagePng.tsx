@@ -2,15 +2,11 @@ import { FunctionComponent } from "react";
 
 import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import {
-  ApiSearchResultSnapshotConfig,
-  ApiUser,
-} from "../../../../shared/types/types";
+import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem } from "../Legend";
-import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { IPoiIcon } from "../../shared/shared.types";
 import { distanceToHumanReadable } from "../../shared/shared.functions";
 import { ISelectableMapClipping } from "../MapClippingSelection";
@@ -22,22 +18,20 @@ interface IOnePageProps {
   filteredGroups: Array<EntityGroup & { icon?: IPoiIcon }>;
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
-  user: ApiUser | null;
+  color: string;
+  logo: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCodeImage?: string;
   isTransparentBackground: boolean;
   style: string;
   snapshotConfig: ApiSearchResultSnapshotConfig;
+  isTrial: boolean;
 }
 
 export const OnePagePng: FunctionComponent<IOnePageProps> = (
   props: IOnePageProps
 ) => {
-  const user = props.user;
-  const color = props.snapshotConfig.primaryColor || user?.color || "#aa0c54";
-  const logo = user?.logo || areaButlerLogo;
-
   return (
     <div
       id="one-page-png"
@@ -61,7 +55,7 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
     >
       <style>{props.style}</style>
       {/* TODO move to a separate component */}
-      {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
+      {props.isTrial && (
         <img
           src={areaButlerLogo}
           alt="watermark"
@@ -96,7 +90,7 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
         >
           <img
             style={{ height: "3.5rem", alignSelf: "flex-start" }}
-            src={logo}
+            src={props.logo}
             alt="Logo"
           />
 
@@ -318,7 +312,7 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
                       borderRadius: "0.375rem",
                       bottom: "1.5%",
                       right: "16%",
-                      background: color,
+                      background: props.color,
                       boxShadow: "0 0 5px #201c1e",
                     }}
                   >

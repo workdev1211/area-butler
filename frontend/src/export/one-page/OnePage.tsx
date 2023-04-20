@@ -2,17 +2,13 @@ import { forwardRef, useEffect, useState } from "react";
 
 import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import {
-  ApiSearchResultSnapshotConfig,
-  ApiUser,
-} from "../../../../shared/types/types";
+import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem } from "../Legend";
 import { getQrCodeBase64 } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
-import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import PdfOnePage from "./PdfOnePage";
 import { IPoiIcon } from "../../shared/shared.types";
 import {
@@ -29,11 +25,13 @@ interface IOnePageProps {
   groupedEntries: EntityGroup[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
-  user: ApiUser | null;
+  color: string;
+  logo: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCode: IQrCodeState;
   snapshotConfig: ApiSearchResultSnapshotConfig;
+  isTrial: boolean;
 }
 
 export const OnePage = forwardRef((props: IOnePageProps, ref) => {
@@ -98,17 +96,13 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
     return result;
   }, []);
 
-  const user = props.user;
-  const color = props.snapshotConfig.primaryColor || user?.color || "#aa0c54";
-  const logo = user?.logo || areaButlerLogo;
-
   return (
     <div
       className="overflow-hidden w-0 h-0 print:overflow-visible print:w-full print:h-full print:block"
       ref={ref as any}
     >
       {/* TODO move to a separate component */}
-      {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
+      {props.isTrial && (
         <img
           className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"
           src={areaButlerLogo}
@@ -126,7 +120,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
         {/* TODO move to a separate component? */}
         <div className="flex flex-col gap-3">
           <div className="flex flex-col gap-1.5">
-            <img className="self-start h-14" src={logo} alt="Logo" />
+            <img className="self-start h-14" src={props.logo} alt="Logo" />
             <div>
               {props.snapshotConfig.showAddress && !props.realEstateListing && (
                 <div className="text-2xl font-bold">{props.listingAddress}</div>
@@ -257,7 +251,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
                       style={{
                         bottom: "1.5%",
                         right: "16%",
-                        background: color,
+                        background: props.color,
                         boxShadow: "0 0 5px var(--base-anthracite)",
                       }}
                     >

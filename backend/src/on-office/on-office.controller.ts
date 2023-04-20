@@ -17,9 +17,10 @@ import { activateUserPath } from './shared/on-office.constants';
 import ApiOnOfficeUnlockProviderReqDto from './dto/api-on-office-unlock-provider-req.dto';
 import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
-  IApiOnOfficeLoginRes,
+  ApiOnOfficeArtTypesEnum,
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
+  IApiOnOfficeLoginRes,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
@@ -124,6 +125,10 @@ export class OnOfficeController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() uploadFileData: ApiOnOfficeUploadFileReqDto,
   ): Promise<void> {
+    if (uploadFileData.artType === ApiOnOfficeArtTypesEnum.LINK) {
+      return this.onOfficeService.uploadLink(integrationUser, uploadFileData);
+    }
+
     return this.onOfficeService.uploadFile(integrationUser, uploadFileData);
   }
 }

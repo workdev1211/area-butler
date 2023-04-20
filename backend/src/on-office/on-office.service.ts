@@ -487,12 +487,13 @@ export class OnOfficeService {
   async uploadFile(
     { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
     {
+      fileTitle,
+      base64Content,
+      artType,
       integrationId,
       filename,
-      base64Content,
-      fileTitle,
     }: IApiOnOfficeUploadFileReq,
-  ) {
+  ): Promise<void> {
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
@@ -548,8 +549,8 @@ export class OnOfficeService {
             hmac_version: 2,
             actionid: actionId,
             resourceid: null,
-            identifier: '',
             resourcetype: resourceType,
+            identifier: '',
             parameters: {
               extendedclaim: extendedClaim,
               module: 'estate',
@@ -558,7 +559,7 @@ export class OnOfficeService {
                   .tmpUploadId,
               file: filename,
               title: fileTitle,
-              Art: ApiOnOfficeArtTypesEnum.FOTO,
+              Art: artType,
               setDefaultPublicationRights: true,
               relatedRecordId: integrationId,
             },
@@ -571,9 +572,56 @@ export class OnOfficeService {
       finalRequest,
     );
 
-    if (!this.checkOnOfficeResponseSuccess(initialResponse)) {
+    if (!this.checkOnOfficeResponseSuccess(finalResponse)) {
       this.logger.error(this.updateEstate.name, finalRequest, finalResponse);
       throw new HttpException('File upload failed on the 2nd step!', 400);
+    }
+  }
+
+  async uploadLink(
+    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+    { fileTitle, url, artType, integrationId }: IApiOnOfficeUploadFileReq,
+  ): Promise<void> {
+    const actionId = ApiOnOfficeActionIdsEnum.DO;
+    const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
+
+    const timestamp = dayjs().unix();
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: null,
+            resourcetype: resourceType,
+            identifier: '',
+            parameters: {
+              url,
+              extendedclaim: extendedClaim,
+              module: 'estate',
+              title: fileTitle,
+              Art: artType,
+              relatedRecordId: integrationId,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    if (!this.checkOnOfficeResponseSuccess(response)) {
+      this.logger.error(this.updateEstate.name, request, response);
+      throw new HttpException('Link upload failed!', 400);
     }
   }
 

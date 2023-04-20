@@ -2,7 +2,7 @@ import { NestFactory } from '@nestjs/core';
 import { ValidationPipe } from '@nestjs/common';
 import { NestExpressApplication } from '@nestjs/platform-express';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { json } from 'body-parser';
+import { json, urlencoded } from 'body-parser';
 import { resolve } from 'path';
 import * as Sentry from '@sentry/node';
 
@@ -23,9 +23,9 @@ async function bootstrap() {
 
   app.enableCors({ exposedHeaders: ['Content-Disposition'] });
 
-  app.use(
+  app.use([
     json({
-      limit: '10mb',
+      limit: '20mb',
       verify: (req: any, res, buf, encoding) => {
         if (req.headers['stripe-signature'] && Buffer.isBuffer(buf)) {
           req.rawBody = cloneBuffer(buf);
@@ -34,7 +34,8 @@ async function bootstrap() {
         return true;
       },
     }),
-  );
+    urlencoded({ limit: '20mb' }),
+  ]);
 
   if (process.env.NODE_ENV !== 'production') {
     const config = new DocumentBuilder()

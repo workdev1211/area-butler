@@ -24,6 +24,8 @@ export const useHttp = () => {
 
   const { isLoading, getIdTokenClaims } = useAuth0();
 
+  const defaultConfig = { maxContentLength: 20971520, maxBodyLength: 20971520 };
+
   const getRequestHeaders = async (
     additionalHeaders: { [key: string]: string } = {}
   ): Promise<IRequestHeaders> => {
@@ -57,6 +59,7 @@ export const useHttp = () => {
     const headers = await getRequestHeaders(additionalHeaders);
 
     return axios.post(`${baseUrl}${url}`, body, {
+      ...defaultConfig,
       ...axiosRequestConfig,
       headers,
     });
@@ -70,6 +73,7 @@ export const useHttp = () => {
     const headers = await getRequestHeaders(additionalHeaders);
 
     return axios.get<T>(`${baseUrl}${url}`, {
+      ...defaultConfig,
       ...axiosRequestConfig,
       headers,
     });
@@ -84,6 +88,7 @@ export const useHttp = () => {
     const headers = await getRequestHeaders(additionalHeaders);
 
     return axios.put(`${baseUrl}${url}`, body, {
+      ...defaultConfig,
       ...axiosRequestConfig,
       headers,
     });
@@ -98,6 +103,7 @@ export const useHttp = () => {
     const headers = await getRequestHeaders(additionalHeaders);
 
     return axios.patch(`${baseUrl}${url}`, body, {
+      ...defaultConfig,
       ...axiosRequestConfig,
       headers,
     });

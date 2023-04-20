@@ -93,6 +93,7 @@ interface IApiOnOfficeRequestActionParameters {
   Art?: ApiOnOfficeArtTypesEnum;
   documentAttribute?: string; // enum
   setDefaultPublicationRights?: boolean;
+  url?: string; // only for links
   relatedRecordId?: string; // real estate id
   // file upload end
 }
@@ -235,10 +236,12 @@ export interface IApiOnOfficeUpdateEstateReq {
 }
 
 export interface IApiOnOfficeUploadFileReq {
-  integrationId: string;
-  filename: string;
-  base64Content: string;
+  filename?: string;
+  base64Content?: string;
   fileTitle: string;
+  url?: string;
+  artType: ApiOnOfficeArtTypesEnum;
+  integrationId?: string;
 }
 
 export interface IApiOnOfficeConfirmOrderErrorRes {

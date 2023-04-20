@@ -22,10 +22,14 @@ import {
 } from "../../../../../context/UserContext";
 import { ConfigContext } from "../../../../../context/ConfigContext";
 import { useHttp } from "../../../../../hooks/http";
-import { OnOfficeIntActTypesEnum } from "../../../../../../../shared/types/on-office";
+import {
+  ApiOnOfficeArtTypesEnum,
+  OnOfficeIntActTypesEnum,
+} from "../../../../../../../shared/types/on-office";
 import { useIntegrationTools } from "../../../../../hooks/integrationtools";
 import { useTools } from "../../../../../hooks/tools";
 import copyIcon from "../../../../../assets/icons/copy.svg";
+import sendToOnOfficeIcon from "../../../../../assets/icons/entrance-alt1.svg";
 import { saveAs } from "file-saver";
 import { getQrCodeBase64 } from "../../../../../export/QrCode";
 import downloadIcon from "../../../../../assets/icons/download.svg";
@@ -53,7 +57,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   } = useContext(SearchContext);
 
   const { post } = useHttp();
-  const { checkProdContAvailByAction } = useIntegrationTools();
+  const { checkProdContAvailByAction, sendToOnOffice } = useIntegrationTools();
   const { createDirectLink } = useTools();
 
   const [isInteractiveMapOpen, setIsInteractiveMapOpen] = useState(false);
@@ -72,7 +76,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
     }
   };
 
-  const handleUnlockIframe = async () => {
+  const unlockIframe = async (): Promise<void> => {
     try {
       const iframeEndsAt = (
         await post<Date>(
@@ -103,6 +107,10 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
+  const qrCodeLabel = searchAddress
+    ? searchAddress.replace(",", "-").replace(/\s/g, "")
+    : "AreaButler";
+
   return (
     <div
       className={
@@ -115,7 +123,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
           closeModal={() => {
             setIsShownModal(false);
           }}
-          onConfirm={handleUnlockIframe}
+          onConfirm={unlockIframe}
           text="Interaktive Karte freischalten?"
         />
       )}
@@ -181,36 +189,55 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
 
           {!isIntegrationIframeExpired && (
             <>
-              <div>
-                <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+              <div className="flex flex-col gap-2">
+                <div className="font-bold">Direktlink</div>
+                <div
+                  className="flex items-center cursor-pointer gap-2 max-w-fit"
                   onClick={() => {
                     copyToClipboard(directLink);
                   }}
                 >
                   <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                  Direktlink kopieren
-                </h3>
-              </div>
-
-              <div>
-                <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
-                  onClick={() => {
-                    copyToClipboard(createCodeSnippet(responseToken));
+                  <span>Kopieren</span>
+                </div>
+                <div
+                  className="flex items-center cursor-pointer gap-2 max-w-fit"
+                  onClick={async () => {
+                    await sendToOnOffice({
+                      fileTitle: "iFrame Direktlink",
+                      url: directLink,
+                      artType: ApiOnOfficeArtTypesEnum.LINK,
+                    });
                   }}
                 >
-                  <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                  iFrame / Widget kopieren
-                </h3>
+                  <img
+                    className="w-6 h-6"
+                    src={sendToOnOfficeIcon}
+                    alt="send-to-on-office"
+                  />
+                  <span>An onOffice senden</span>
+                </div>
               </div>
 
-              <div>
-                <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
-                  onClick={async () => {
-                    const qrCodeLabel = searchAddress || "AreaButler";
+              <div className="border-b-2 border-black" />
 
+              <div
+                className="flex max-w-fit items-center cursor-pointer gap-2"
+                onClick={() => {
+                  copyToClipboard(createCodeSnippet(responseToken));
+                }}
+              >
+                <img className="w-6 h-6" src={copyIcon} alt="copy" />
+                <span>iFrame / Widget kopieren</span>
+              </div>
+
+              <div className="border-b-2 border-black" />
+
+              <div className="flex flex-col gap-2">
+                <div className="font-bold">QR-Code</div>
+                <div
+                  className="flex items-center cursor-pointer gap-2 max-w-fit"
+                  onClick={async () => {
                     saveAs(
                       await getQrCodeBase64(directLink),
                       `${qrCodeLabel.replace(/[\s|,]+/g, "-")}-QR-Code.png`
@@ -222,8 +249,31 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
                     src={downloadIcon}
                     alt="download-qr-code"
                   />
-                  QR-Code herunterladen
-                </h3>
+                  <span>Herunterladen</span>
+                </div>
+                <div
+                  className="flex items-center cursor-pointer gap-2 max-w-fit"
+                  onClick={async () => {
+                    await sendToOnOffice({
+                      filename: `${qrCodeLabel.replace(
+                        /[\s|,]+/g,
+                        "-"
+                      )}-QR-Code.png`,
+                      base64Content: (
+                        await getQrCodeBase64(directLink)
+                      ).replace(/^data:.*;base64,/, ""),
+                      fileTitle: "QR-Code",
+                      artType: ApiOnOfficeArtTypesEnum["QR-CODE"],
+                    });
+                  }}
+                >
+                  <img
+                    className="w-6 h-6"
+                    src={sendToOnOfficeIcon}
+                    alt="send-to-on-office"
+                  />
+                  <span>An onOffice senden</span>
+                </div>
               </div>
             </>
           )}

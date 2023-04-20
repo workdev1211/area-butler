@@ -30,6 +30,7 @@ export class OnOfficeApiService {
     }>(
       this.http.post<IApiOnOfficeResponse>(this.apiUrl, requestBody, {
         headers: resultingHeaders,
+        maxBodyLength: 20971520,
       }),
     );
 

@@ -1,23 +1,35 @@
-import { IsNotEmpty, IsString } from 'class-validator';
+import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 
-import { IApiOnOfficeUploadFileReq } from '@area-butler-types/on-office';
+import {
+  ApiOnOfficeArtTypesEnum,
+  IApiOnOfficeUploadFileReq,
+} from '@area-butler-types/on-office';
 
 class ApiOnOfficeUploadFileReqDto implements IApiOnOfficeUploadFileReq {
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  integrationId: string;
+  filename?: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  filename: string;
-
-  @IsNotEmpty()
-  @IsString()
-  base64Content: string;
+  base64Content?: string;
 
   @IsNotEmpty()
   @IsString()
   fileTitle: string;
+
+  @IsOptional()
+  @IsString()
+  url?: string;
+
+  @IsNotEmpty()
+  @IsEnum(ApiOnOfficeArtTypesEnum)
+  artType: ApiOnOfficeArtTypesEnum;
+
+  // TODO check TS Exclude utility
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
 }
 
 export default ApiOnOfficeUploadFileReqDto;

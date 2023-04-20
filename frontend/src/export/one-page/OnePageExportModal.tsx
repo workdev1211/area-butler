@@ -1,4 +1,5 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
+import dayjs from "dayjs";
 
 import "./OnePageExportModal.scss";
 
@@ -32,6 +33,9 @@ import {
   onePageCharacterLimit,
   onePageOpenAiWordLimit,
 } from "../../../../shared/constants/constants";
+import { IApiIntegrationUser } from "../../../../shared/types/integration-user";
+import areaButlerLogo from "../../assets/img/logo.svg";
+import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 
 const SCREENSHOT_LIMIT = 2;
 
@@ -63,9 +67,15 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
 
-  const user = userState.user as ApiUser;
-
   const { fetchOpenAiResponse } = useOpenAi();
+
+  const user = userState.user as ApiUser;
+  const integrationUser = userState.integrationUser as IApiIntegrationUser;
+
+  const isQrCodeAllowed =
+    !integrationUser ||
+    (integrationUser &&
+      !dayjs().isAfter(searchContextState.integrationIframeEndsAt));
 
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
@@ -99,7 +109,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   >(initialSelectableMapClippings);
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>({
     snapshotToken,
-    isShownQrCode: true,
+    isShownQrCode: isQrCodeAllowed,
   });
   const [locationDescription, setLocationDescription] = useState<string>("");
   const [isOpen, setIsOpen] = useState<IExportFlowState>({
@@ -152,9 +162,18 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     });
   };
 
+  const userColor = integrationUser
+    ? integrationUser.config.color
+    : user?.color;
+  const userLogo = integrationUser ? integrationUser.config.logo : user?.logo;
+  const isTrial = user?.subscription?.type === ApiSubscriptionPlanType.TRIAL;
+
   const buttonTitle = "Lage Exposé generieren";
   const snapshotConfig = searchContextState.responseConfig!;
-  const color = snapshotConfig.primaryColor || "var(--primary-gradient)";
+  const color =
+    snapshotConfig.primaryColor || userColor || "var(--primary-gradient)";
+  const logo = userLogo || areaButlerLogo;
+  const exportFonts = user?.exportFonts;
 
   return (
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
@@ -344,27 +363,31 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
                 <div className="divider m-0" />
 
-                <label className="cursor-pointer label justify-start gap-3 p-0">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectableMapClippings.length > 0 &&
-                      qrCodeState.isShownQrCode
-                    }
-                    className="checkbox checkbox-primary"
-                    onChange={() => {
-                      setQrCodeState(
-                        qrCodeState.isShownQrCode
-                          ? { isShownQrCode: false }
-                          : { snapshotToken, isShownQrCode: true }
-                      );
-                    }}
-                    disabled={selectableMapClippings.length === 0}
-                  />
-                  <span className="label-text">QR-Code</span>
-                </label>
+                {isQrCodeAllowed && (
+                  <>
+                    <label className="cursor-pointer label justify-start gap-3 p-0">
+                      <input
+                        type="checkbox"
+                        checked={
+                          selectableMapClippings.length > 0 &&
+                          qrCodeState.isShownQrCode
+                        }
+                        className="checkbox checkbox-primary"
+                        onChange={() => {
+                          setQrCodeState(
+                            qrCodeState.isShownQrCode
+                              ? { isShownQrCode: false }
+                              : { snapshotToken, isShownQrCode: true }
+                          );
+                        }}
+                        disabled={selectableMapClippings.length === 0}
+                      />
+                      <span className="label-text">QR-Code</span>
+                    </label>
 
-                <div className="divider m-0" />
+                    <div className="divider m-0" />
+                  </>
+                )}
 
                 <OnePageMapClippingSelection
                   selectableMapClippings={selectableMapClippings}
@@ -393,11 +416,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                 ) || locationDescription.length > onePageCharacterLimit
               }
               onAfterPrint={onClose}
-              user={user}
+              color={color}
+              logo={logo}
               legend={legend}
               mapClippings={selectableMapClippings}
               qrCode={qrCodeState}
               snapshotConfig={snapshotConfig}
+              isTrial={isTrial}
             />
           )}
 
@@ -412,12 +437,15 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                   (key) => exportFlow[key as keyof IExportFlowState]
                 ) || locationDescription.length > onePageCharacterLimit
               }
-              user={user}
+              color={color}
+              logo={logo}
               legend={legend}
               mapClippings={selectableMapClippings}
               qrCode={qrCodeState}
               isTransparentBackground={isTransparentBackground}
               snapshotConfig={snapshotConfig}
+              isTrial={isTrial}
+              exportFonts={exportFonts}
             />
           )}
         </div>

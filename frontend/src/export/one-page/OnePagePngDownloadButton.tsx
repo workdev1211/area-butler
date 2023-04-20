@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { renderToStaticMarkup } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { toPng } from "html-to-image";
@@ -6,7 +6,7 @@ import { toPng } from "html-to-image";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiSearchResultSnapshotConfig,
-  ApiUser,
+  IApiUserExportFont,
 } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
@@ -19,6 +19,10 @@ import {
 } from "../../shared/shared.functions";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { IPoiIcon } from "../../shared/shared.types";
+import { ConfigContext } from "../../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../../shared/types/integration";
+import { useIntegrationTools } from "../../hooks/integrationtools";
+import { ApiOnOfficeArtTypesEnum } from "../../../../shared/types/on-office";
 
 interface IOnePageDownloadProps {
   addressDescription: string;
@@ -26,12 +30,15 @@ interface IOnePageDownloadProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
-  user: ApiUser | null;
+  color: string;
+  logo: string;
   legend: ILegendItem[];
   mapClippings: ISelectableMapClipping[];
   qrCode: IQrCodeState;
   isTransparentBackground: boolean;
   snapshotConfig: ApiSearchResultSnapshotConfig;
+  isTrial: boolean;
+  exportFonts?: IApiUserExportFont[];
 }
 
 export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
@@ -40,13 +47,20 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
   listingAddress,
   realEstateListing,
   downloadButtonDisabled,
-  user,
+  color,
+  logo,
   legend,
   mapClippings,
   qrCode,
   isTransparentBackground,
   snapshotConfig,
+  isTrial,
+  exportFonts,
 }) => {
+  const { integrationType } = useContext(ConfigContext);
+
+  const { sendToOnOffice } = useIntegrationTools();
+
   const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectedMapClippings, setSelectedMapClippings] = useState<
     ISelectableMapClipping[]
@@ -119,8 +133,8 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
   let fontFamily = "archia";
   let onePagePngStyle: string;
 
-  if (user?.exportFonts?.length) {
-    const exportFont = user.exportFonts[0];
+  if (exportFonts?.length) {
+    const exportFont = exportFonts[0];
     fontFamily = exportFont.fontFamily;
 
     onePagePngStyle = `#one-page-png { font-family: ${fontFamily}; } ${exportFont.fontFaces.join(
@@ -130,45 +144,73 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     onePagePngStyle = `#one-page-png { font-family: ${fontFamily}; }`;
   }
 
+  const getRenderedPngImage = async (): Promise<string> => {
+    const renderedOnePagePng = renderToStaticMarkup(
+      <OnePagePng
+        addressDescription={addressDescription}
+        filteredGroups={filteredGroups}
+        listingAddress={listingAddress}
+        realEstateListing={realEstateListing}
+        color={color}
+        logo={logo}
+        legend={legend}
+        mapClippings={selectedMapClippings}
+        qrCodeImage={qrCodeImage}
+        isTransparentBackground={isTransparentBackground}
+        style={onePagePngStyle}
+        snapshotConfig={snapshotConfig}
+        isTrial={isTrial}
+      />
+    );
+
+    const onePagePngElement = document.createElement("div");
+    onePagePngElement.innerHTML = renderedOnePagePng;
+
+    const pngIcon = await toPng(onePagePngElement, {
+      pixelRatio: 6,
+      width: 827, // 2480 / 3
+      height: 1169, // 3508 / 3
+    });
+
+    onePagePngElement.remove();
+
+    return pngIcon;
+  };
+
   return (
-    <div>
+    <>
+      {integrationType === IntegrationTypesEnum.ON_OFFICE && (
+        <button
+          className="btn btn-primary btn-sm"
+          disabled={downloadButtonDisabled}
+          onClick={async () => {
+            await sendToOnOffice({
+              filename: `${documentTitle}.png`,
+              base64Content: (
+                await getRenderedPngImage()
+              ).replace(/^data:.*;base64,/, ""),
+              fileTitle: documentTitle,
+              artType: ApiOnOfficeArtTypesEnum.FOTO,
+              // TODO ask Michael how to use FOTO_GROSS instead of FOTO
+              // "filesize": 8364316,
+              // artType: ApiOnOfficeArtTypesEnum.FOTO_GROSS,
+            });
+          }}
+        >
+          An onOffice senden
+        </button>
+      )}
+
       <button
         className="btn btn-primary btn-sm"
         disabled={downloadButtonDisabled}
         onClick={async () => {
-          const renderedOnePagePng = renderToStaticMarkup(
-            <OnePagePng
-              addressDescription={addressDescription}
-              filteredGroups={filteredGroups}
-              listingAddress={listingAddress}
-              realEstateListing={realEstateListing}
-              user={user}
-              legend={legend}
-              mapClippings={selectedMapClippings}
-              qrCodeImage={qrCodeImage}
-              isTransparentBackground={isTransparentBackground}
-              style={onePagePngStyle}
-              snapshotConfig={snapshotConfig}
-            />
-          );
-
-          const onePagePngElement = document.createElement("div");
-          onePagePngElement.innerHTML = renderedOnePagePng;
-
-          const pngIcon = await toPng(onePagePngElement, {
-            pixelRatio: 6,
-            width: 827, // 2480 / 3
-            height: 1169, // 3508 / 3
-          });
-
-          saveAs(pngIcon, `${documentTitle}.png`);
-
-          onePagePngElement.remove();
+          saveAs(await getRenderedPngImage(), `${documentTitle}.png`);
         }}
       >
         Exportieren
       </button>
-    </div>
+    </>
   );
 };
 
