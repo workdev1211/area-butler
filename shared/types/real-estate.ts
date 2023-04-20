@@ -28,6 +28,7 @@ export interface ApiRealEstateListing {
   coordinates: ApiCoordinates;
   status: ApiRealEstateStatusEnum;
   belongsToParent: boolean;
+  integrationId?: string;
   openAiRequestQuantity?: number;
   isOnePageExportActive?: boolean;
 }

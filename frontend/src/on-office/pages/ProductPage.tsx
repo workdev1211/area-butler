@@ -181,7 +181,8 @@ export const ProductPage: FunctionComponent = () => {
                   IApiOnOfficeCreateOrderReq
                 >("/api/on-office/create-order", {
                   products,
-                  integrationId: searchContextState.integrationId!,
+                  integrationId:
+                    searchContextState.realEstateListing!.integrationId!,
                 })
               ).data;
 

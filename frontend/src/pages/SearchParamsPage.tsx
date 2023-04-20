@@ -372,7 +372,7 @@ const SearchParamsPage: FunctionComponent = () => {
       preferredAmenities: getUncombinedOsmEntityTypes(
         searchContextState.localityParams
       ).map((l: ApiOsmEntity) => l.name),
-      integrationId: searchContextState.integrationId,
+      integrationId: searchContextState.realEstateListing?.integrationId,
     };
 
     const searchResponse = await createLocation(search);

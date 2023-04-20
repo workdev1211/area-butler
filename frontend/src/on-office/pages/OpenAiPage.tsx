@@ -75,7 +75,7 @@ const OpenAiPage: FunctionComponent = () => {
               setIsCopyTextButtonDisabled(true);
 
               void patch(
-                `/api/on-office/estate/${searchContextState.integrationId}`,
+                `/api/on-office/estate/${searchContextState.realEstateListing?.integrationId}`,
                 { queryType, queryResponse }
               );
             }}

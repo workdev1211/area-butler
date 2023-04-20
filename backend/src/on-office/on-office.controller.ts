@@ -30,6 +30,7 @@ import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import ApiOnOfficeUpdateEstateReqDto from './dto/api-on-office-update-estate-req.dto';
+import ApiOnOfficeUploadFileReqDto from './dto/api-on-office-upload-file-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -114,5 +115,15 @@ export class OnOfficeController {
       integrationId,
       updateEstateData,
     );
+  }
+
+  @ApiOperation({ description: 'Upload a file' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('upload-file')
+  uploadFile(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() uploadFileData: ApiOnOfficeUploadFileReqDto,
+  ): Promise<void> {
+    return this.onOfficeService.uploadFile(integrationUser, uploadFileData);
   }
 }

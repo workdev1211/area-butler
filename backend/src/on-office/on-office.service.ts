@@ -29,6 +29,8 @@ import {
   IApiOnOfficeCreateOrderProduct,
   TApiOnOfficeConfirmOrderRes,
   IApiOnOfficeUpdateEstateReq,
+  IApiOnOfficeUploadFileReq,
+  ApiOnOfficeArtTypesEnum,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -165,8 +167,8 @@ export class OnOfficeService {
             identifier: '',
             resourcetype: resourceType,
             parameters: {
-              parameterCacheId: parameterCacheId,
               extendedclaim: extendedClaim,
+              parameterCacheId: parameterCacheId,
             },
           },
         ],
@@ -463,11 +465,11 @@ export class OnOfficeService {
             identifier: '',
             resourcetype: resourceType,
             parameters: {
+              extendedclaim: extendedClaim,
               data: {
                 [openAiQueryTypeToOnOfficeEstateFieldMapping[queryType]]:
                   queryResponse.slice(0, 2000),
               },
-              extendedclaim: extendedClaim,
             },
           },
         ],
@@ -479,6 +481,99 @@ export class OnOfficeService {
     if (!this.checkOnOfficeResponseSuccess(response)) {
       this.logger.error(this.updateEstate.name, request, response);
       throw new HttpException('Estate update failed!', 400);
+    }
+  }
+
+  async uploadFile(
+    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+    {
+      integrationId,
+      filename,
+      base64Content,
+      fileTitle,
+    }: IApiOnOfficeUploadFileReq,
+  ) {
+    const actionId = ApiOnOfficeActionIdsEnum.DO;
+    const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
+
+    const timestamp = dayjs().unix();
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const initialRequest: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: null,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              extendedclaim: extendedClaim,
+              data: base64Content,
+            },
+          },
+        ],
+      },
+    };
+
+    const initialResponse = await this.onOfficeApiService.sendRequest(
+      initialRequest,
+    );
+
+    if (!this.checkOnOfficeResponseSuccess(initialResponse)) {
+      this.logger.error(
+        this.updateEstate.name,
+        initialRequest,
+        initialResponse,
+      );
+
+      throw new HttpException('File upload failed on the 1st step!', 400);
+    }
+
+    const finalRequest: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: null,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              extendedclaim: extendedClaim,
+              module: 'estate',
+              tmpUploadId:
+                initialResponse.response.results[0].data.records[0].elements
+                  .tmpUploadId,
+              file: filename,
+              title: fileTitle,
+              Art: ApiOnOfficeArtTypesEnum.FOTO,
+              setDefaultPublicationRights: true,
+              relatedRecordId: integrationId,
+            },
+          },
+        ],
+      },
+    };
+
+    const finalResponse = await this.onOfficeApiService.sendRequest(
+      finalRequest,
+    );
+
+    if (!this.checkOnOfficeResponseSuccess(initialResponse)) {
+      this.logger.error(this.updateEstate.name, finalRequest, finalResponse);
+      throw new HttpException('File upload failed on the 2nd step!', 400);
     }
   }
 

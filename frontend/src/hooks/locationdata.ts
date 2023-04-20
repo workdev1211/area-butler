@@ -149,7 +149,7 @@ export const useLocationData = (isIntegrationUser = false) => {
           ),
           searchResponse: searchResponse,
           realEstateListings: realEstateState.listings,
-          integrationId: searchContextState.integrationId,
+          integrationId: searchContextState.realEstateListing?.integrationId,
         }
       )
     ).data;

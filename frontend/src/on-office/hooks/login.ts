@@ -178,11 +178,6 @@ export const useLogin = () => {
     });
 
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_INTEGRATION_ID,
-      payload: integrationId,
-    });
-
-    searchContextDispatch({
       type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
       payload: realEstate,
     });

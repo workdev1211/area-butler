@@ -59,6 +59,7 @@ const EmbedContainer: FunctionComponent = () => {
   const [searchConfig, setSearchConfig] =
     useState<ApiSearchResultSnapshotConfig>();
   const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcons>();
+  const [mapDisplayMode, setMapDisplayMode] = useState<MapDisplayModesEnum>();
 
   const getQueryVariable = (variable: string) => {
     const query = window.location.search.substring(1);
@@ -236,12 +237,11 @@ const EmbedContainer: FunctionComponent = () => {
       ),
     });
 
-    if (integrationId) {
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_INTEGRATION_ID,
-        payload: integrationId,
-      });
-    }
+    setMapDisplayMode(
+      integrationId
+        ? MapDisplayModesEnum.EMBED_INTEGRATION
+        : MapDisplayModesEnum.EMBED
+    );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [result, searchConfig, searchContextDispatch]);
@@ -266,7 +266,7 @@ const EmbedContainer: FunctionComponent = () => {
     }
   };
 
-  if (!searchContextState.searchResponse) {
+  if (!searchContextState.searchResponse || !mapDisplayMode) {
     return isAddressExpired ? (
       <div>{`Ihre Adresse ist abgelaufen. Bitte besuchen Sie die ${process.env.REACT_APP_BASE_URL} und verlängern Sie sie.`}</div>
     ) : (
@@ -284,11 +284,7 @@ const EmbedContainer: FunctionComponent = () => {
         location={searchContextState.mapCenter ?? searchContextState.location!}
         isTrial={!!result?.isTrial}
         userPoiIcons={userPoiIcons}
-        mapDisplayMode={
-          searchContextState.integrationId
-            ? MapDisplayModesEnum.EMBED_INTEGRATION
-            : MapDisplayModesEnum.EMBED
-        }
+        mapDisplayMode={mapDisplayMode}
         ref={mapRef}
       />
     </div>

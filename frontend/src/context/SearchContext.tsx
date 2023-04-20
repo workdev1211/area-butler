@@ -54,7 +54,6 @@ export interface SearchContextState {
   responseTransitRoutes: EntityTransitRoute[];
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
-  integrationId?: string;
   integrationSnapshotId?: string;
   integrationIframeEndsAt?: Date;
 }
@@ -117,7 +116,6 @@ export enum SearchContextActionTypes {
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
-  SET_INTEGRATION_ID = "SET_INTEGRATION_ID",
   SET_INTEGRATION_SNAPSHOT_ID = "SET_INTEGRATION_SNAPSHOT_ID",
   SET_INTEGRATION_IFRAME_ENDS_AT = "SET_INTEGRATION_IFRAME_ENDS_AT",
 }
@@ -170,7 +168,6 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   // TODO on further expansion move to a new integration context
-  [SearchContextActionTypes.SET_INTEGRATION_ID]: string;
   [SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID]: string;
   [SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT]: Date | undefined;
 };
@@ -377,9 +374,6 @@ export const searchContextReducer = (
       );
 
       return { ...state, searchResponse };
-    }
-    case SearchContextActionTypes.SET_INTEGRATION_ID: {
-      return { ...state, integrationId: action.payload };
     }
     case SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID: {
       return { ...state, integrationSnapshotId: action.payload };

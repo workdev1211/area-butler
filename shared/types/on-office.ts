@@ -65,6 +65,7 @@ export enum ApiOnOfficeResourceTypesEnum {
   "ESTATE" = "estate",
   "FIELDS" = "fields", // field description - get all info about entity fields ("address", "estate", etc)
   "BASIC_SETTINGS" = "basicsettings",
+  "UPLOAD_FILE" = "uploadfile",
 }
 
 interface IApiOnOfficeRequestAction {
@@ -83,6 +84,42 @@ interface IApiOnOfficeRequestActionParameters {
   extendedclaim: string;
   isRegularCustomer?: number;
   data?: any;
+  // file upload start
+  module?: "estate"; // enum
+  freetext?: string; // file description
+  tmpUploadId?: string;
+  file?: string; // filename
+  title?: string; // file title
+  Art?: ApiOnOfficeArtTypesEnum;
+  documentAttribute?: string; // enum
+  setDefaultPublicationRights?: boolean;
+  relatedRecordId?: string; // real estate id
+  // file upload end
+}
+
+export enum ApiOnOfficeArtTypesEnum {
+  FOTO = "Foto",
+  GRUNDRISS = "Grundriss",
+  LAGEPLAN = "Lageplan",
+  TITELBILD = "Titelbild",
+  LOGO = "LOGO",
+  EXPOSE = "Expose",
+  AUSHANG = "Aushang",
+  MIETAUFSTELLUNG = "Mietaufstellung",
+  DOKUMENT = "Dokument",
+  FOTO_GROSS = "Foto_gross",
+  LINK = "Link",
+  PANORAMA = "Panorama",
+  BANNER = "Banner",
+  STADTPLAN = "Stadtplan",
+  "FILM-LINK" = "Film-Link",
+  "QR-CODE" = "QR-Code",
+  ENERGIEAUSWEIS = "Energieausweis",
+  EPASS_SKALA = "Epass_Skala",
+  "OGULO-LINK" = "Ogulo-Link",
+  "OBJEKT-LINK" = "Objekt-Link",
+  ANZEIGEN = "Anzeigen",
+  FINANZIERUNGSBEISPIEL = "Finanzierungsbeispiel",
 }
 
 // TODO make it the right way - without anys
@@ -195,6 +232,13 @@ export interface IApiOnOfficeConfirmOrderReq {
 export interface IApiOnOfficeUpdateEstateReq {
   queryType: OpenAiQueryTypeEnum;
   queryResponse: string;
+}
+
+export interface IApiOnOfficeUploadFileReq {
+  integrationId: string;
+  filename: string;
+  base64Content: string;
+  fileTitle: string;
 }
 
 export interface IApiOnOfficeConfirmOrderErrorRes {

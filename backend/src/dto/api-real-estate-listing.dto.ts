@@ -2,6 +2,7 @@ import {
   IsBoolean,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
   NotEquals,
@@ -18,9 +19,30 @@ import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.d
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 
 class ApiRealEstateListingDto implements ApiRealEstateListing {
+  @IsNotEmpty()
+  @IsString()
+  id: string;
+
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
   // could be an empty string when showAddress is false
   @IsString()
   address: string;
+
+  @IsOptional()
+  @IsString()
+  externalUrl?: string;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  showInSnippet: boolean;
+
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => ApiRealEstateCostDto)
+  costStructure?: ApiRealEstateCostDto;
 
   @IsOptional()
   @ValidateNested()
@@ -32,27 +54,6 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   @Type(() => ApiCoordinatesDto)
   coordinates: ApiCoordinatesDto;
 
-  @IsOptional()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCostDto;
-
-  @IsOptional()
-  @IsString()
-  externalUrl?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  id: string;
-
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @IsNotEmpty()
-  @IsBoolean()
-  showInSnippet: boolean;
-
   @IsNotEmpty()
   @IsEnum(ApiRealEstateStatusEnum)
   @NotEquals(ApiRealEstateStatusEnum.ALLE)
@@ -61,6 +62,18 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   @IsNotEmpty()
   @IsBoolean()
   belongsToParent: boolean;
+
+  @IsOptional()
+  @IsString()
+  integrationId?: string;
+
+  @IsOptional()
+  @IsNumber()
+  openAiRequestQuantity?: number;
+
+  @IsOptional()
+  @IsBoolean()
+  isOnePageExportActive?: boolean;
 }
 
 export default ApiRealEstateListingDto;
