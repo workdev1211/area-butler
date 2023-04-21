@@ -41,6 +41,10 @@ import { localStorageSearchContext } from "../../../../../shared/constants/const
 import OpenAiModal from "../../../components/OpenAiModal";
 import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
+import {
+  CachingActionTypesEnum,
+  CachingContext,
+} from "../../../context/CachingContext";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -56,6 +60,10 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState, userDispatch } = useContext(UserContext);
+  const {
+    cachingState: { onePage: cachedOnePageState },
+    cachingDispatch,
+  } = useContext(CachingContext);
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
@@ -111,14 +119,25 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
     searchContextState.printingOnePageActive,
   ]);
 
+  useEffect(() => {
+    if (cachedOnePageState.snapshotId !== snapshotId) {
+      cachingDispatch({
+        type: CachingActionTypesEnum.SET_ONE_PAGE,
+        payload: { snapshotId },
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   const clippings = searchContextState.mapClippings;
 
-  const groupedEntities = deriveEntityGroupsByActiveMeans(
+  const entityGroups = deriveEntityGroupsByActiveMeans(
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans
   );
 
-  const resultingEntities = groupedEntities.map((g) => g.items).flat();
+  const resultingGroups = entityGroups.map((g) => g.items).flat();
 
   const user = userState.user;
   const hasOpenAiFeature = !!user?.subscription?.config.appFeatures.openAi;
@@ -631,8 +650,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
       {exportType && exportType !== ExportTypeEnum.ONE_PAGE && (
         <ExportModal
           activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingEntities}
-          groupedEntries={groupedEntities}
+          entities={resultingGroups}
+          groupedEntries={entityGroups}
           censusData={searchContextState.censusData!}
           snapshotToken={searchContextState.responseToken}
           exportType={exportType}
@@ -641,7 +660,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
       {exportType === ExportTypeEnum.ONE_PAGE && (
         <OnePageExportModal
-          groupedEntries={groupedEntities}
+          entityGroups={entityGroups}
           snapshotToken={searchContextState.responseToken}
           snapshotId={snapshotId}
           hasOpenAiFeature={hasOpenAiFeature}

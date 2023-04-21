@@ -14,6 +14,7 @@ import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import {
   realEstateListingsTitle,
+  preferredLocationsTitle,
   setBackgroundColor,
 } from "../../shared/shared.functions";
 import { ILegendItem } from "../Legend";
@@ -36,29 +37,47 @@ import {
 import { IApiIntegrationUser } from "../../../../shared/types/integration-user";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
+import {
+  CachingActionTypesEnum,
+  CachingContext,
+} from "../../context/CachingContext";
+import { IPoiIcon } from "../../shared/shared.types";
 
 const SCREENSHOT_LIMIT = 2;
+export const ENTITY_GROUP_LIMIT = 8;
+const GROUP_ITEM_LIMIT = 3;
 
 export interface IQrCodeState {
   isShownQrCode: boolean;
   snapshotToken?: string;
 }
 
-interface IExportFlowState {
+export interface IExportFlowState {
   addressDescription: boolean;
   poiSelection: boolean;
   qrCodeMapClippings: boolean;
 }
 
+export interface ISortableEntityGroup extends EntityGroup {
+  id: string;
+  icon?: IPoiIcon;
+}
+
 interface IOnePageExportModalProps {
-  groupedEntries: any;
+  entityGroups: EntityGroup[];
   snapshotToken: string;
   snapshotId: string;
   hasOpenAiFeature?: boolean;
 }
 
+export const initialExportFlowState: IExportFlowState = {
+  addressDescription: false,
+  poiSelection: false,
+  qrCodeMapClippings: false,
+};
+
 const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
-  groupedEntries,
+  entityGroups,
   snapshotToken,
   snapshotId,
   hasOpenAiFeature = false,
@@ -66,6 +85,10 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
+  const {
+    cachingState: { onePage: cachedOnePageState },
+    cachingDispatch,
+  } = useContext(CachingContext);
 
   const { fetchOpenAiResponse } = useOpenAi();
 
@@ -81,51 +104,74 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     searchContextState.mapClippings || []
   ).map((c: MapClipping, i) => ({ ...c, selected: i < SCREENSHOT_LIMIT }));
 
-  const initialExportFlowState: IExportFlowState = {
-    addressDescription: false,
-    poiSelection: false,
-    qrCodeMapClippings: false,
-  };
+  let activeGroupNumber = 0;
 
-  const groupCopy: EntityGroup[] = groupedEntries
-    .reduce((result: EntityGroup[], group: EntityGroup) => {
-      if (group.title !== realEstateListingsTitle && group.items.length > 0) {
-        result.push(group);
-      }
+  const sortableGroups =
+    cachedOnePageState.filteredGroups ||
+    entityGroups
+      .sort((a: EntityGroup, b: EntityGroup) =>
+        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+      )
+      .reduce<ISortableEntityGroup[]>((result, group) => {
+        if (
+          [realEstateListingsTitle, preferredLocationsTitle].includes(
+            group.title
+          )
+        ) {
+          return result;
+        }
 
-      return result;
-    }, [])
-    .sort((a: EntityGroup, b: EntityGroup) =>
-      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-    );
+        const sortableGroup = {
+          ...group,
+          active: activeGroupNumber < ENTITY_GROUP_LIMIT,
+          id: group.title,
+        };
 
-  const [filteredEntities, setFilteredEntities] =
-    useState<EntityGroup[]>(groupCopy);
-  const [legend, setLegend] = useState<ILegendItem[]>(() =>
-    getFilteredLegend(groupCopy)
+        sortableGroup.items = sortableGroup.items.map((item, i) => {
+          item.distanceInMeters = Math.round(item.distanceInMeters);
+          item.selected = i < GROUP_ITEM_LIMIT;
+
+          return item;
+        });
+
+        sortableGroup.items.sort(
+          (a, b) => a.distanceInMeters - b.distanceInMeters
+        );
+
+        result.push(sortableGroup);
+        activeGroupNumber += 1;
+
+        return result;
+      }, []);
+
+  const [isOpen, setIsOpen] = useState<IExportFlowState>(
+    cachedOnePageState.exportFlowState || initialExportFlowState
+  );
+  const [exportFlow, setExportFlow] = useState<IExportFlowState>(
+    cachedOnePageState.exportFlowState || initialExportFlowState
+  );
+  const [locationDescription, setLocationDescription] = useState<string>(
+    cachedOnePageState.locationDescription || ""
+  );
+  const [filteredGroups, setFilteredGroups] =
+    useState<ISortableEntityGroup[]>(sortableGroups);
+  const [isPng, setIsPng] = useState(cachedOnePageState.isPng || false);
+  const [isTransparentBackground, setIsTransparentBackground] = useState(
+    cachedOnePageState.isTransparentBackground || false
+  );
+  const [qrCodeState, setQrCodeState] = useState<IQrCodeState>(
+    cachedOnePageState.qrCodeState || {
+      snapshotToken,
+      isShownQrCode: isQrCodeAllowed,
+    }
   );
   const [selectableMapClippings, setSelectableMapClippings] = useState<
     ISelectableMapClipping[]
-  >(initialSelectableMapClippings);
-  const [qrCodeState, setQrCodeState] = useState<IQrCodeState>({
-    snapshotToken,
-    isShownQrCode: isQrCodeAllowed,
-  });
-  const [locationDescription, setLocationDescription] = useState<string>("");
-  const [isOpen, setIsOpen] = useState<IExportFlowState>({
-    ...initialExportFlowState,
-  });
-  const [exportFlow, setExportFlow] = useState<IExportFlowState>({
-    ...initialExportFlowState,
-  });
+  >(cachedOnePageState.selectableMapClippings || initialSelectableMapClippings);
+  const [legend, setLegend] = useState<ILegendItem[]>(() =>
+    getFilteredLegend(sortableGroups)
+  );
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
-  const [isPng, setIsPng] = useState(false);
-  const [isTransparentBackground, setIsTransparentBackground] = useState(false);
-
-  useEffect(() => {
-    setLegend(getFilteredLegend(filteredEntities));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filteredEntities]);
 
   const fetchOpenAiLocationDescription = async ({
     meanOfTransportation,
@@ -170,8 +216,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
   const buttonTitle = "Lage Exposé generieren";
   const snapshotConfig = searchContextState.responseConfig!;
+  // 'var(--primary-gradient)' is not extracted in the 'OnePagePng' component
   const color =
-    snapshotConfig.primaryColor || userColor || "var(--primary-gradient)";
+    snapshotConfig.primaryColor ||
+    userColor ||
+    "linear-gradient(to right, #aa0c54, #cd1543 40%)";
   const logo = userLogo || areaButlerLogo;
   const exportFonts = user?.exportFonts;
 
@@ -180,8 +229,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
       <div className="modal-box flex flex-col justify-between">
         <div className="flex flex-col gap-3 pb-[5px]">
           <h1 className="text-xl text-bold flex items-center gap-2 pl-[24px]">
-            <span>{buttonTitle}</span>
-            <span className="badge badge-primary">BETA</span>
+            {buttonTitle}
           </h1>
 
           <div
@@ -210,9 +258,20 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                   ...isOpen,
                   addressDescription: !isOpen.addressDescription,
                 });
+
                 setExportFlow({
                   ...exportFlow,
                   addressDescription: true,
+                });
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_ONE_PAGE,
+                  payload: {
+                    exportFlowState: {
+                      ...exportFlow,
+                      addressDescription: true,
+                    },
+                  },
                 });
               }}
             >
@@ -226,6 +285,16 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                     <OpenAiLocationDescriptionForm
                       formId="open-ai-location-description-form"
                       onSubmit={fetchOpenAiLocationDescription}
+                      initialValues={
+                        cachedOnePageState.locationDescriptionParams
+                      }
+                      onValuesChange={(values) => {
+                        // triggers on initial render
+                        cachingDispatch({
+                          type: CachingActionTypesEnum.SET_ONE_PAGE,
+                          payload: { locationDescriptionParams: { ...values } },
+                        });
+                      }}
                     />
                     <button
                       className={`btn bg-primary-gradient max-w-fit self-end ${
@@ -256,6 +325,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                     value.length < locationDescription.length
                   ) {
                     setLocationDescription(value);
+
+                    cachingDispatch({
+                      type: CachingActionTypesEnum.SET_ONE_PAGE,
+                      payload: { locationDescription: value },
+                    });
                   }
                 }}
                 rows={7}
@@ -269,14 +343,31 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             }`}
           >
             <OnePageEntitySelection
-              groupedEntries={filteredEntities}
-              setGroupedEntries={setFilteredEntities}
+              entityGroups={filteredGroups}
+              setEntityGroups={(groups) => {
+                // triggers on initial render
+                setFilteredGroups(groups);
+                setLegend(getFilteredLegend(groups));
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_ONE_PAGE,
+                  payload: { filteredGroups: [...groups] },
+                });
+              }}
               closeCollapsable={() => {
                 setIsOpen({
                   ...isOpen,
                   poiSelection: !isOpen.poiSelection,
                 });
-                setExportFlow({ ...exportFlow, poiSelection: true });
+
+                const exportFlowState = { ...exportFlow, poiSelection: true };
+
+                setExportFlow(exportFlowState);
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_ONE_PAGE,
+                  payload: { exportFlowState: { ...exportFlowState } },
+                });
               }}
               color={color}
             />
@@ -297,9 +388,20 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                   ...isOpen,
                   qrCodeMapClippings: !isOpen.qrCodeMapClippings,
                 });
+
                 setExportFlow({
                   ...exportFlow,
                   qrCodeMapClippings: true,
+                });
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_ONE_PAGE,
+                  payload: {
+                    exportFlowState: {
+                      ...exportFlow,
+                      qrCodeMapClippings: true,
+                    },
+                  },
                 });
               }}
             >
@@ -313,6 +415,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       className="flex items-center gap-2"
                       onClick={() => {
                         setIsPng(false);
+
+                        cachingDispatch({
+                          type: CachingActionTypesEnum.SET_ONE_PAGE,
+                          payload: { isPng: false },
+                        });
                       }}
                     >
                       <input
@@ -328,6 +435,11 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       className="flex items-center gap-2"
                       onClick={() => {
                         setIsPng(true);
+
+                        cachingDispatch({
+                          type: CachingActionTypesEnum.SET_ONE_PAGE,
+                          payload: { isPng: true },
+                        });
                       }}
                     >
                       <input
@@ -346,6 +458,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       className="flex cursor-pointer items-center gap-2 p-0"
                       onClick={() => {
                         setIsTransparentBackground(!isTransparentBackground);
+
+                        cachingDispatch({
+                          type: CachingActionTypesEnum.SET_ONE_PAGE,
+                          payload: {
+                            isTransparentBackground: !isTransparentBackground,
+                          },
+                        });
                       }}
                     >
                       <input
@@ -374,11 +493,16 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                         }
                         className="checkbox checkbox-primary"
                         onChange={() => {
-                          setQrCodeState(
-                            qrCodeState.isShownQrCode
-                              ? { isShownQrCode: false }
-                              : { snapshotToken, isShownQrCode: true }
-                          );
+                          const resultingQrCodeState = qrCodeState.isShownQrCode
+                            ? { isShownQrCode: false }
+                            : { snapshotToken, isShownQrCode: true };
+
+                          setQrCodeState(resultingQrCodeState);
+
+                          cachingDispatch({
+                            type: CachingActionTypesEnum.SET_ONE_PAGE,
+                            payload: { qrCodeState: resultingQrCodeState },
+                          });
                         }}
                         disabled={selectableMapClippings.length === 0}
                       />
@@ -391,7 +515,14 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
                 <OnePageMapClippingSelection
                   selectableMapClippings={selectableMapClippings}
-                  setSelectableMapClippings={setSelectableMapClippings}
+                  setSelectableMapClippings={(selectedMapClippings) => {
+                    setSelectableMapClippings(selectedMapClippings);
+
+                    cachingDispatch({
+                      type: CachingActionTypesEnum.SET_ONE_PAGE,
+                      payload: { selectableMapClippings: selectedMapClippings },
+                    });
+                  }}
                   limit={SCREENSHOT_LIMIT}
                 />
               </div>
@@ -407,7 +538,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           {!isPng && (
             <OnePageDownload
               addressDescription={locationDescription}
-              groupedEntries={filteredEntities!}
+              entityGroups={filteredGroups!}
               listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={
@@ -429,7 +560,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           {isPng && (
             <OnePagePngDownload
               addressDescription={locationDescription}
-              groupedEntries={filteredEntities!}
+              entityGroups={filteredGroups!}
               listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
               downloadButtonDisabled={

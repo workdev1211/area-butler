@@ -4,18 +4,17 @@ import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem } from "../Legend";
-import { IPoiIcon } from "../../shared/shared.types";
 import { distanceToHumanReadable } from "../../shared/shared.functions";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import OnePageLegendIcon from "./OnePageLegendIcon";
+import { ISortableEntityGroup } from "./OnePageExportModal";
 
 interface IOnePageProps {
   addressDescription: string;
-  filteredGroups: Array<EntityGroup & { icon?: IPoiIcon }>;
+  entityGroups: ISortableEntityGroup[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   color: string;
@@ -180,7 +179,7 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
             Überblick
           </div>
           <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem" }}>
-            {props.filteredGroups.map((group) => {
+            {props.entityGroups.map((group) => {
               return (
                 <div
                   key={`one-page-group-${group.title}`}

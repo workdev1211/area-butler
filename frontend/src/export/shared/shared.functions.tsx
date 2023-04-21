@@ -5,23 +5,28 @@ import { IApiUserPoiIcon } from "../../../../shared/types/types";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 
 export const getFilteredLegend = (
-  groupedEntities: EntityGroup[],
+  entityGroups: EntityGroup[],
   poiIcons?: IApiUserPoiIcon[]
 ): ILegendItem[] => {
-  return groupedEntities
-    .reduce<ILegendItem[]>((result, { title, active }) => {
-      const foundOsmEntityType =
-        active &&
-        getCombinedOsmEntityTypes().find(({ label }) => title === label);
+  return (
+    entityGroups
+      .reduce<ILegendItem[]>((result, { title, active }) => {
+        const foundOsmEntityType =
+          active &&
+          getCombinedOsmEntityTypes().find(({ label }) => title === label);
 
-      if (foundOsmEntityType) {
-        result.push({
-          title,
-          icon: deriveIconForOsmName(foundOsmEntityType.name, poiIcons),
-        });
-      }
+        if (foundOsmEntityType) {
+          result.push({
+            title,
+            icon: deriveIconForOsmName(foundOsmEntityType.name, poiIcons),
+          });
+        }
 
-      return result;
-    }, [])
-    .sort((a, b) => a.title.toLowerCase().localeCompare(b.title.toLowerCase()));
+        return result;
+      }, [])
+      // TODO remove sort after ExportModal refactoring
+      .sort((a, b) =>
+        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+      )
+  );
 };

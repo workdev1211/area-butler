@@ -4,13 +4,11 @@ import { allRealEstateCostTypes } from "../../../../shared/constants/real-estate
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem } from "../Legend";
 import { getQrCodeBase64 } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
 import PdfOnePage from "./PdfOnePage";
-import { IPoiIcon } from "../../shared/shared.types";
 import {
   createDirectLink,
   distanceToHumanReadable,
@@ -19,10 +17,11 @@ import {
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import OnePageLegendIcon from "./OnePageLegendIcon";
+import { ISortableEntityGroup } from "./OnePageExportModal";
 
 interface IOnePageProps {
   addressDescription: string;
-  groupedEntries: EntityGroup[];
+  entityGroups: ISortableEntityGroup[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   color: string;
@@ -76,25 +75,26 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
     setSelectedMapClippings(selected);
   }, [props.mapClippings]);
 
-  const filteredGroups = props.groupedEntries.reduce<
-    (EntityGroup & { icon?: IPoiIcon })[]
-  >((result, group) => {
-    if (
-      group.title !== preferredLocationsTitle &&
-      group.active &&
-      group.items.length > 0
-    ) {
-      const groupIcon = props.legend.find(
-        ({ title }) => title === group.title
-      )?.icon;
+  const filteredGroups = props.entityGroups.reduce<ISortableEntityGroup[]>(
+    (result, group) => {
+      if (
+        group.title !== preferredLocationsTitle &&
+        group.active &&
+        group.items.length > 0
+      ) {
+        const groupIcon = props.legend.find(
+          ({ title }) => title === group.title
+        )?.icon;
 
-      const items = [...group.items].slice(0, 3);
+        const items = [...group.items].slice(0, 3);
 
-      result.push({ ...group, items, icon: groupIcon });
-    }
+        result.push({ ...group, items, icon: groupIcon });
+      }
 
-    return result;
-  }, []);
+      return result;
+    },
+    []
+  );
 
   return (
     <div

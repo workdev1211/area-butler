@@ -7,10 +7,11 @@ import OnePage from "./OnePage";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
+import { ISortableEntityGroup } from "./OnePageExportModal";
 
 interface IOnePageDownloadProps {
   addressDescription: string;
-  groupedEntries: any;
+  entityGroups: ISortableEntityGroup[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
@@ -26,7 +27,7 @@ interface IOnePageDownloadProps {
 
 export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
   addressDescription,
-  groupedEntries,
+  entityGroups,
   listingAddress,
   realEstateListing,
   downloadButtonDisabled,
@@ -86,7 +87,7 @@ export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
       <OnePage
         ref={componentRef}
         addressDescription={addressDescription}
-        groupedEntries={groupedEntries}
+        entityGroups={entityGroups}
         listingAddress={listingAddress}
         realEstateListing={realEstateListing}
         color={color}

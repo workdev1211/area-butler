@@ -17,16 +17,16 @@ import {
   createDirectLink,
   preferredLocationsTitle,
 } from "../../shared/shared.functions";
-import { EntityGroup } from "../../components/SearchResultContainer";
 import { IPoiIcon } from "../../shared/shared.types";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integrationtools";
 import { ApiOnOfficeArtTypesEnum } from "../../../../shared/types/on-office";
+import { ISortableEntityGroup } from "./OnePageExportModal";
 
 interface IOnePageDownloadProps {
   addressDescription: string;
-  groupedEntries: EntityGroup[];
+  entityGroups: ISortableEntityGroup[];
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   downloadButtonDisabled: boolean;
@@ -43,7 +43,7 @@ interface IOnePageDownloadProps {
 
 export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
   addressDescription,
-  groupedEntries,
+  entityGroups,
   listingAddress,
   realEstateListing,
   downloadButtonDisabled,
@@ -102,8 +102,8 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [qrCode.isShownQrCode]);
 
-  const filteredGroups = groupedEntries.reduce<
-    (EntityGroup & { icon?: IPoiIcon })[]
+  const filteredGroups = entityGroups.reduce<
+    (ISortableEntityGroup & { icon?: IPoiIcon })[]
   >((result, group) => {
     if (
       group.title !== preferredLocationsTitle &&
@@ -148,7 +148,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     const renderedOnePagePng = renderToStaticMarkup(
       <OnePagePng
         addressDescription={addressDescription}
-        filteredGroups={filteredGroups}
+        entityGroups={filteredGroups}
         listingAddress={listingAddress}
         realEstateListing={realEstateListing}
         color={color}

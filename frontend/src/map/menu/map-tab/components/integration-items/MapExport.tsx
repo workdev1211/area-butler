@@ -1,4 +1,10 @@
-import { CSSProperties, FunctionComponent, useContext, useState } from "react";
+import {
+  CSSProperties,
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 
 import {
   setBackgroundColor,
@@ -22,6 +28,10 @@ import {
 import { useIntegrationTools } from "../../../../../hooks/integrationtools";
 import { useHttp } from "../../../../../hooks/http";
 import { ConfigContext } from "../../../../../context/ConfigContext";
+import {
+  CachingActionTypesEnum,
+  CachingContext,
+} from "../../../../../context/CachingContext";
 
 interface IMapExportProps {
   groupedEntries: EntityGroup[];
@@ -34,12 +44,29 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userDispatch } = useContext(UserContext);
+  const {
+    cachingState: { onePage: cachedOnePageState },
+    cachingDispatch,
+  } = useContext(CachingContext);
 
   const { post } = useHttp();
   const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [isMapExportOpen, setIsMapExportOpen] = useState(false);
   const [isShownModal, setIsShownModal] = useState(false);
+
+  const snapshotId = searchContextState.integrationSnapshotId!;
+
+  useEffect(() => {
+    if (cachedOnePageState.snapshotId !== snapshotId) {
+      cachingDispatch({
+        type: CachingActionTypesEnum.SET_ONE_PAGE,
+        payload: { snapshotId },
+      });
+    }
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const realEstateListing = searchContextState.realEstateListing!;
 
@@ -160,7 +187,7 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
 
         {searchContextState.printingOnePageActive && (
           <OnePageExportModal
-            groupedEntries={groupedEntries}
+            entityGroups={groupedEntries}
             snapshotToken={searchContextState.responseToken}
             snapshotId={searchContextState.integrationSnapshotId!}
             hasOpenAiFeature={true}

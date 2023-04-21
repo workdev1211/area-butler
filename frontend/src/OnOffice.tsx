@@ -25,6 +25,7 @@ import OnOfficeContainer from "./on-office/OnOfficeContainer";
 import { RealEstateContextProvider } from "./context/RealEstateContext";
 import { IntegrationTypesEnum } from "../../shared/types/integration";
 import { PotentialCustomerContextProvider } from "./context/PotentialCustomerContext";
+import { CachingContextProvider } from "./context/CachingContext";
 
 const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
@@ -48,9 +49,11 @@ fetch(`${baseUrl}/api/config`).then(async (result) => {
           <SearchContextProvider>
             <RealEstateContextProvider>
               <PotentialCustomerContextProvider>
-                <Router basename="/on-office">
-                  <OnOfficeContainer />
-                </Router>
+                <CachingContextProvider>
+                  <Router basename="/on-office">
+                    <OnOfficeContainer />
+                  </Router>
+                </CachingContextProvider>
               </PotentialCustomerContextProvider>
             </RealEstateContextProvider>
           </SearchContextProvider>

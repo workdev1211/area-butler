@@ -126,7 +126,7 @@ export class RealEstateListingImportService {
       }),
     );
 
-    const a = await Promise.allSettled(
+    await Promise.allSettled(
       processedChunks.map(async (processedChunk) => {
         if (processedChunk.status !== 'fulfilled') {
           return;
