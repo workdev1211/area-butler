@@ -28,6 +28,13 @@ const OpenAiPage: FunctionComponent = () => {
     }
   }, [searchContextState.integrationSnapshotId]);
 
+  const isShownOnOfficeButton =
+    queryType &&
+    ![
+      OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+      OpenAiQueryTypeEnum.GENERAL_QUESTION,
+    ].includes(queryType);
+
   const handleResponseFetched = (responseText?: string): void => {
     setIsFetchResponse(false);
     setQueryResponse(responseText);
@@ -67,22 +74,28 @@ const OpenAiPage: FunctionComponent = () => {
             setQueryType(changedQueryType);
           }}
         />
-        <div className="flex justify-between">
-          <button
-            className="btn bg-primary-gradient max-w-fit self-end"
-            onClick={() => {
-              toastSuccess("Die Daten wurden an onOffice gesendet!");
-              setIsCopyTextButtonDisabled(true);
+        <div
+          className={`flex ${
+            isShownOnOfficeButton ? "justify-between" : "justify-end"
+          }`}
+        >
+          {isShownOnOfficeButton && (
+            <button
+              className="btn bg-primary-gradient max-w-fit self-end"
+              onClick={() => {
+                toastSuccess("Die Daten wurden an onOffice gesendet!");
+                setIsCopyTextButtonDisabled(true);
 
-              void patch(
-                `/api/on-office/estate/${searchContextState.realEstateListing?.integrationId}`,
-                { queryType, queryResponse }
-              );
-            }}
-            disabled={isCopyTextButtonDisabled}
-          >
-            An onOffice senden
-          </button>
+                void patch(
+                  `/api/on-office/estate/${searchContextState.realEstateListing?.integrationId}`,
+                  { queryType, queryResponse }
+                );
+              }}
+              disabled={isCopyTextButtonDisabled}
+            >
+              An onOffice senden
+            </button>
+          )}
           <button
             className={`btn bg-primary-gradient max-w-fit self-end ${
               isFetchResponse ? "loading" : ""

@@ -40,11 +40,11 @@ const OpenAiDescription = (name: string) => {
         </div>
 
         <ul className="list-disc pl-5 text-left ">
+          <li>Lagepläne und Distanzen</li>
           <li>Lagetexte</li>
           <li>Immobilienbeschreibungen</li>
           <li>Exposé Texte</li>
           <li>Generelle Anfragen an KI</li>
-          <li>u.v.m.</li>
         </ul>
 
         <a target="_blank" rel="noreferrer" href="https://youtu.be/ap13eQuNK9s">
@@ -70,9 +70,18 @@ const MapIframeDescription = (name: string) => {
         </div>
 
         <ul className="list-disc pl-5 text-left ">
-          <li>iFrame</li>
-          <li>QR Code</li>
-          <li>Hyperlink</li>
+          <li>
+            alles aus <b>"KI-Assistent"</b>
+          </li>
+          <li>
+            <b>iFrame</b> für Ihre Website
+          </li>
+          <li>
+            <b>QR-Code</b> zur interaktiven Karte
+          </li>
+          <li>
+            <b>Hyperlink</b> zu interaktiven Karte
+          </li>
         </ul>
 
         <a target="_blank" rel="noreferrer" href="https://youtu.be/DfFqoe4WYNg">
@@ -98,6 +107,7 @@ const OnePageDescription = (name: string) => {
         </div>
 
         <ul className="list-disc pl-5 text-left ">
+          <li>alles aus "Interaktive Karten Paket"</li>
           <li>KI-Lagetext & vollen Assistent</li>
           <li>POI Tabelle mit 8 POIs und Designten Icons</li>
           <li>Bild der Mikro-, Makro-Lage und QR-Code</li>
