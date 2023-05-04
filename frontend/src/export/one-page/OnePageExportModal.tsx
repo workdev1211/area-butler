@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import dayjs from "dayjs";
 
 import "./OnePageExportModal.scss";
@@ -106,43 +106,45 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
   let activeGroupNumber = 0;
 
-  const sortableGroups =
-    cachedOnePageState.filteredGroups ||
-    entityGroups
-      .sort((a: EntityGroup, b: EntityGroup) =>
-        a.title.toLowerCase().localeCompare(b.title.toLowerCase())
-      )
-      .reduce<ISortableEntityGroup[]>((result, group) => {
-        if (
-          [realEstateListingsTitle, preferredLocationsTitle].includes(
-            group.title
-          )
-        ) {
-          return result;
-        }
-
-        const sortableGroup = {
-          ...group,
-          active: activeGroupNumber < ENTITY_GROUP_LIMIT,
-          id: group.title,
-        };
-
-        sortableGroup.items = sortableGroup.items.map((item, i) => {
-          item.distanceInMeters = Math.round(item.distanceInMeters);
-          item.selected = i < GROUP_ITEM_LIMIT;
-
-          return item;
-        });
-
-        sortableGroup.items.sort(
-          (a, b) => a.distanceInMeters - b.distanceInMeters
-        );
-
-        result.push(sortableGroup);
-        activeGroupNumber += 1;
-
+  const sortableGroups = entityGroups
+    .sort((a: EntityGroup, b: EntityGroup) =>
+      a.title.toLowerCase().localeCompare(b.title.toLowerCase())
+    )
+    .reduce<ISortableEntityGroup[]>((result, group) => {
+      if (
+        [realEstateListingsTitle, preferredLocationsTitle].includes(group.title)
+      ) {
         return result;
-      }, []);
+      }
+
+      const isGroupActive = cachedOnePageState.filteredGroups
+        ? cachedOnePageState.filteredGroups!.some(
+            ({ id, active }) => id === group.title && active
+          )
+        : activeGroupNumber < ENTITY_GROUP_LIMIT;
+
+      const sortableGroup = {
+        ...group,
+        active: isGroupActive,
+        id: group.title,
+      };
+
+      sortableGroup.items = sortableGroup.items.map((item, i) => {
+        item.distanceInMeters = Math.round(item.distanceInMeters);
+        item.selected = i < GROUP_ITEM_LIMIT;
+
+        return item;
+      });
+
+      sortableGroup.items.sort(
+        (a, b) => a.distanceInMeters - b.distanceInMeters
+      );
+
+      result.push(sortableGroup);
+      activeGroupNumber += 1;
+
+      return result;
+    }, []);
 
   const [isOpen, setIsOpen] = useState<IExportFlowState>(
     cachedOnePageState.exportFlowState || initialExportFlowState

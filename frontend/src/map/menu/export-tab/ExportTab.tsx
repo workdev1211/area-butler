@@ -41,10 +41,6 @@ import { localStorageSearchContext } from "../../../../../shared/constants/const
 import OpenAiModal from "../../../components/OpenAiModal";
 import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
-import {
-  CachingActionTypesEnum,
-  CachingContext,
-} from "../../../context/CachingContext";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -60,10 +56,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { userState, userDispatch } = useContext(UserContext);
-  const {
-    cachingState: { onePage: cachedOnePageState },
-    cachingDispatch,
-  } = useContext(CachingContext);
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
@@ -118,17 +110,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
     searchContextState.printingZipActive,
     searchContextState.printingOnePageActive,
   ]);
-
-  useEffect(() => {
-    if (cachedOnePageState.snapshotId !== snapshotId) {
-      cachingDispatch({
-        type: CachingActionTypesEnum.SET_ONE_PAGE,
-        payload: { snapshotId },
-      });
-    }
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const clippings = searchContextState.mapClippings;
 

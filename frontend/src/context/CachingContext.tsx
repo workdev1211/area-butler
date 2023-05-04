@@ -67,11 +67,7 @@ const cachingReducer = (
     case CachingActionTypesEnum.SET_ONE_PAGE: {
       return {
         ...state,
-        onePage:
-          action.payload.snapshotId &&
-          action.payload.snapshotId !== state.onePage.snapshotId
-            ? { ...action.payload }
-            : { ...state.onePage, ...action.payload },
+        onePage: { ...state.onePage, ...action.payload },
       };
     }
 
