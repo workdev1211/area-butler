@@ -32,11 +32,14 @@ export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
+  customerName?: string;
   customerWebId?: string; // OnOffice account id
   userId?: string; // OnOffice account user id
+  userName?: string;
   extendedClaim: string; // used by us as access token
   apiKey?: string; // client secret
   token?: string; // client access token
+  email?: string;
 }
 
 export enum ApiIntUserOnOfficeProdContTypesEnum {

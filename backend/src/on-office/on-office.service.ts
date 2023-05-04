@@ -30,7 +30,6 @@ import {
   TApiOnOfficeConfirmOrderRes,
   IApiOnOfficeUpdateEstateReq,
   IApiOnOfficeUploadFileReq,
-  ApiOnOfficeArtTypesEnum,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -177,11 +176,23 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    return this.checkOnOfficeResponseSuccess(response) ? 'active' : 'error';
+    try {
+      this.checkResponseIsSuccess(
+        this.login.name,
+        'User login failed!',
+        request,
+        response,
+      );
+
+      return 'active';
+    } catch (e) {
+      return 'error';
+    }
   }
 
   async login({
     onOfficeQueryParams: {
+      customerName,
       customerWebId,
       userId,
       estateId,
@@ -201,6 +212,11 @@ export class OnOfficeService {
     let integrationUser;
 
     if (existingUser) {
+      const { userName, email } = await this.fetchUserData({
+        ...existingUser.parameters,
+        extendedClaim,
+      });
+
       const { color, logo } = await this.fetchLogoAndColor({
         ...existingUser.parameters,
         extendedClaim,
@@ -212,6 +228,9 @@ export class OnOfficeService {
           accessToken: extendedClaim,
           'parameters.extendedClaim': extendedClaim,
           'parameters.parameterCacheId': parameterCacheId,
+          'parameters.customerName': customerName,
+          'parameters.userName': userName,
+          'parameters.email': email,
           'config.color': color ? `#${color}` : undefined,
           'config.logo': logo ? convertBase64ContentToUri(logo) : undefined,
         },
@@ -230,6 +249,11 @@ export class OnOfficeService {
     }
 
     if (!integrationUser && existingUser) {
+      const { userName, email } = await this.fetchUserData({
+        ...existingUser.parameters,
+        extendedClaim,
+      });
+
       const { color, logo } = await this.fetchLogoAndColor({
         ...existingUser.parameters,
         extendedClaim,
@@ -241,8 +265,11 @@ export class OnOfficeService {
         accessToken: extendedClaim,
         parameters: {
           parameterCacheId,
+          customerName,
           customerWebId,
           userId,
+          userName,
+          email,
           extendedClaim,
           apiKey: existingUser.parameters.apiKey,
           token: existingUser.parameters.token,
@@ -478,10 +505,12 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    if (!this.checkOnOfficeResponseSuccess(response)) {
-      this.logger.error(this.updateEstate.name, request, response);
-      throw new HttpException('Estate update failed!', 400);
-    }
+    this.checkResponseIsSuccess(
+      this.updateEstate.name,
+      'Estate update failed!',
+      request,
+      response,
+    );
   }
 
   async uploadFile(
@@ -529,15 +558,12 @@ export class OnOfficeService {
       initialRequest,
     );
 
-    if (!this.checkOnOfficeResponseSuccess(initialResponse)) {
-      this.logger.error(
-        this.updateEstate.name,
-        initialRequest,
-        initialResponse,
-      );
-
-      throw new HttpException('File upload failed on the 1st step!', 400);
-    }
+    this.checkResponseIsSuccess(
+      this.uploadFile.name,
+      'File upload failed on the 1st step!',
+      initialRequest,
+      initialResponse,
+    );
 
     const finalRequest: IApiOnOfficeRequest = {
       token,
@@ -572,10 +598,12 @@ export class OnOfficeService {
       finalRequest,
     );
 
-    if (!this.checkOnOfficeResponseSuccess(finalResponse)) {
-      this.logger.error(this.updateEstate.name, finalRequest, finalResponse);
-      throw new HttpException('File upload failed on the 2nd step!', 400);
-    }
+    this.checkResponseIsSuccess(
+      this.uploadFile.name,
+      'File upload failed on the 2nd step!',
+      finalRequest,
+      finalResponse,
+    );
   }
 
   async uploadLink(
@@ -619,10 +647,12 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    if (!this.checkOnOfficeResponseSuccess(response)) {
-      this.logger.error(this.updateEstate.name, request, response);
-      throw new HttpException('Link upload failed!', 400);
-    }
+    this.checkResponseIsSuccess(
+      this.uploadLink.name,
+      'Link upload failed!',
+      request,
+      response,
+    );
   }
 
   verifySignature(
@@ -666,29 +696,6 @@ export class OnOfficeService {
       .update(data)
       .digest()
       .toString(encoding);
-  }
-
-  private checkOnOfficeResponseSuccess<T>({
-    status: {
-      code: responseCode,
-      errorcode: responseErrorCode,
-      message: responseMessage,
-    },
-    response: {
-      results: [
-        {
-          status: { errorcode: actionErrorCode, message: actionMessage },
-        },
-      ],
-    },
-  }: IApiOnOfficeResponse<T>): boolean {
-    return (
-      responseCode === 200 &&
-      responseErrorCode === 0 &&
-      responseMessage === 'OK' &&
-      actionErrorCode === 0 &&
-      actionMessage === 'OK'
-    );
   }
 
   private async fetchAndProcessEstateData(
@@ -750,10 +757,12 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    if (!this.checkOnOfficeResponseSuccess(response)) {
-      this.logger.error(this.fetchAndProcessEstateData.name, request, response);
-      throw new HttpException('The estate entity has not been retrieved!', 400);
-    }
+    this.checkResponseIsSuccess(
+      this.fetchAndProcessEstateData.name,
+      'The estate entity has not been retrieved!',
+      request,
+      response,
+    );
 
     const onOfficeEstate =
       response.response.results[0].data.records[0].elements;
@@ -852,16 +861,100 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    if (!this.checkOnOfficeResponseSuccess(response)) {
-      this.logger.error(this.fetchLogoAndColor.name, request, response);
-
-      throw new HttpException(
-        "User color and logo haven't been retrieved!",
-        400,
-      );
-    }
+    this.checkResponseIsSuccess(
+      this.fetchLogoAndColor.name,
+      "User color and logo haven't been retrieved!",
+      request,
+      response,
+    );
 
     return response.response.results[0].data.records[0].elements.basicData
       .characteristicsCi;
+  }
+
+  private async fetchUserData({
+    token,
+    apiKey,
+    extendedClaim,
+    userId,
+  }: IApiIntUserOnOfficeParams): Promise<{ userName: string; email: string }> {
+    const actionId = ApiOnOfficeActionIdsEnum.READ;
+    const resourceType = ApiOnOfficeResourceTypesEnum.USER;
+    const timestamp = dayjs().unix();
+
+    const signature = this.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: userId,
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              data: ['Name', 'email'],
+              extendedclaim: extendedClaim,
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    this.checkResponseIsSuccess(
+      this.fetchUserData.name,
+      "User data hasn't been retrieved!",
+      request,
+      response,
+    );
+
+    const { Name: userName, email } =
+      response.response.results[0].data.records[0].elements;
+
+    return { userName, email };
+  }
+
+  private checkResponseIsSuccess(
+    methodName: string,
+    errorMessage: string,
+    request: IApiOnOfficeRequest,
+    response: IApiOnOfficeResponse,
+  ): void {
+    const {
+      status: {
+        code: responseCode,
+        errorcode: responseErrorCode,
+        message: responseMessage,
+      },
+      response: {
+        results: [
+          {
+            status: { errorcode: actionErrorCode, message: actionMessage },
+          },
+        ],
+      },
+    } = response;
+
+    const responseIsSuccess =
+      responseCode === 200 &&
+      responseErrorCode === 0 &&
+      responseMessage === 'OK' &&
+      actionErrorCode === 0 &&
+      actionMessage === 'OK';
+
+    if (!responseIsSuccess) {
+      this.logger.error(methodName, request, response);
+      throw new HttpException(errorMessage, 400);
+    }
   }
 }
