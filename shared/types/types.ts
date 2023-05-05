@@ -170,7 +170,8 @@ export interface ApiOsmEntity {
   category: ApiOsmEntityCategory;
   uniqueRadius?: number;
   uniqueThreshold?: number;
-  access?: string;
+  replacementQuery?: string; // Used in a hack which prevents the addition the third Osm parameter
+  additionalQuery?: string;
 }
 
 export interface ApiAddress {

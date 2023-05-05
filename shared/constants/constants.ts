@@ -214,6 +214,8 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueThreshold: 0.5,
+    // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
+    replacementQuery: `["${OsmType.leisure}"="${OsmName.sports_centre}"]["sport"="swimming"]`,
   },
   {
     type: OsmType.leisure,
@@ -222,6 +224,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     category: ApiOsmEntityCategory.SPORT,
     uniqueRadius: 100,
     uniqueThreshold: 0.5,
+    additionalQuery: '["sport"!="swimming"]',
   },
   {
     type: OsmType.leisure,
@@ -294,7 +297,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     category: ApiOsmEntityCategory.INFRASTRUCTURE,
     uniqueRadius: 100,
     uniqueThreshold: 0.5,
-    access: '!="private"',
+    additionalQuery: '["access"!="private"]',
   },
   {
     type: OsmType["generator:method"],

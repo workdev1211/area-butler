@@ -104,8 +104,6 @@ export class OpenAiService {
       initialQueryText,
     );
 
-    queryText += '\nBitte erwähne keine Schwimmbäder.';
-
     if (customText) {
       queryText += `\n${customText}`;
     }
@@ -214,7 +212,7 @@ export class OpenAiService {
       queryText += ' Das Objekt verfügt über eine Einbauküche.';
     }
 
-    return `${queryText}\nBitte erwähne keine Schwimmbäder.\n\n`;
+    return `${queryText}\n\n`;
   }
 
   getLocationRealEstateDescriptionQuery({

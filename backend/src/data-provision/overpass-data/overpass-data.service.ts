@@ -27,9 +27,8 @@ export class OverpassDataService {
   @Cron('0 0 2 * * *')
   async loadOverpassData() {
     const tempCollectionName = `${this.overpassDataModel.collection.name}_tmp`;
-    this.logger.log(`Loading overpass data into database`);
+    this.logger.log(`Loading overpass data into database.`);
     const collection = this.connection.db.collection(tempCollectionName);
-    this.logger.log(`creating new ${tempCollectionName} collection`);
 
     const chunksize = 1000;
     const createChunks = (a, size) =>
@@ -38,39 +37,39 @@ export class OverpassDataService {
       );
 
     try {
-      this.logger.debug('Dropping existing collection');
+      this.logger.log(`Dropping existing ${tempCollectionName} collection.`);
       await collection.drop();
     } catch (e) {}
 
-    this.logger.debug('fetchOverpassData called');
+    this.logger.log('Fetching the Overpass data.');
 
     for (const et of osmEntityTypes) {
       try {
         const feats = await this.overpassService.fetchForEntityType(et);
         const chunks = createChunks(feats, chunksize);
 
-        this.logger.debug(`about to bulkWrite ${et.name}[${feats.length}]`);
+        this.logger.log(`Starting the bulkWrite ${et.name}[${feats.length}].`);
         if (feats.length) {
           for (const chunk of chunks) {
             await collection.insertMany(chunk);
           }
         }
-        this.logger.debug(`bulkWrite ${et.name} done`);
+        this.logger.log(`The bulkWrite of ${et.name} finished.`);
       } catch (e) {
         console.error(e);
       }
     }
 
-    this.logger.log(`Overpass data loaded`);
-    this.logger.log(`Building overpass data index`);
+    this.logger.log('Overpass data loaded.');
+    this.logger.log('Building overpass data index.');
     await collection.createIndex({
       geometry: '2dsphere',
     });
-    this.logger.log(`Overpass index created`);
-    this.logger.log('Switching collection');
+    this.logger.log('Overpass index created.');
+    this.logger.log('Switching collections.');
     await this.overpassDataModel.collection.drop();
     await collection.rename(this.overpassDataModel.collection.collectionName);
-    this.logger.log('new overpass data active');
+    this.logger.log('New Overpass data is active.');
   }
 
   async findForCenterAndDistance(

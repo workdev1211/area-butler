@@ -10,10 +10,9 @@ import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
 import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
-import { ApiOsmEntity, OsmName } from '@area-butler-types/types';
+import { ApiOsmEntity, OsmName, OsmType } from '@area-butler-types/types';
 import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
 import ApiAddressDto from '../../dto/api-address.dto';
-import ApiOsmEntityDto from '../../dto/api-osm-entity.dto';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
@@ -68,9 +67,18 @@ export class OverpassService {
       (result, element) => {
         const elementTags: Record<string, any> = element.tags;
 
-        const entityTypes = osmEntityTypes.filter(
-          (entityType) => elementTags[entityType.type] === entityType.name,
-        );
+        const isSwimmingPool =
+          elementTags[OsmType.leisure] === OsmName.sports_centre &&
+          elementTags['sport'] === 'swimming';
+
+        const entityTypes = osmEntityTypes.filter((entityType) => {
+          // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
+          if (isSwimmingPool) {
+            return entityType.name === OsmName.swimming_pool;
+          }
+
+          return elementTags[entityType.type] === entityType.name;
+        });
 
         const coordinates = !!element.center
           ? {
@@ -111,16 +119,18 @@ export class OverpassService {
               return result;
             }
 
+            // Adds the highway number to its title
+            const processedTitle =
+              entity.name === OsmName.motorway_link &&
+              elementTags['destination:ref']
+                ? `${entity.label} ${elementTags['destination:ref']}`
+                : elementTags.name;
+
             result.push({
               entity: {
                 id: `${element.id}-${entity.name}`,
                 label: entity.label,
-                // Adds the highway number to its title
-                title:
-                  entity.name === OsmName.motorway_link &&
-                  elementTags['destination:ref']
-                    ? `${entity.label} ${elementTags['destination:ref']}`
-                    : elementTags.name,
+                title: processedTitle,
                 type: entity.type,
                 name: entity.name,
               } as ApiOsmEntity,
@@ -226,22 +236,18 @@ export class OverpassService {
         (e) => e.name === preferredAmenity,
       );
 
-      queryParts.push(
-        `node["${entityType.type}"="${entityType.name}"]${
-          entityType.access ? `["access"${entityType.access}]` : ''
-        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
-      );
+      const entityQuery =
+        entityType.replacementQuery ||
+        `["${entityType.type}"="${entityType.name}"]${
+          entityType.additionalQuery || ''
+        }`;
+
+      const completeQuery = `${entityQuery}(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`;
 
       queryParts.push(
-        `way["${entityType.type}"="${entityType.name}"]${
-          entityType.access ? `["access"${entityType.access}]` : ''
-        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
-      );
-
-      queryParts.push(
-        `relation["${entityType.type}"="${entityType.name}"]${
-          entityType.access ? `["access"${entityType.access}]` : ''
-        }(around:${distanceInMeters}, ${coordinates.lat},${coordinates.lng});`,
+        `node${completeQuery}`,
+        `way${completeQuery}`,
+        `relation${completeQuery}`,
       );
     }
 
@@ -250,9 +256,7 @@ export class OverpassService {
     return queryParts.join('');
   }
 
-  async fetchForEntityType(
-    entityType: ApiOsmEntityDto,
-  ): Promise<OverpassData[]> {
+  async fetchForEntityType(entityType: ApiOsmEntity): Promise<OverpassData[]> {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
     const hasCoordinates = (e) => e.center || (e.lat && e.lon);
 
