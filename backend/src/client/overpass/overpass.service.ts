@@ -258,26 +258,43 @@ export class OverpassService {
 
   async fetchForEntityType(entityType: ApiOsmEntity): Promise<OverpassData[]> {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
-    const hasCoordinates = (e) => e.center || (e.lat && e.lon);
 
     try {
-      this.logger.debug(`fetching ${entityType.name}`);
+      this.logger.log(`Fetching ${entityType.name}`);
 
       const response = await firstValueFrom(
         this.http.get(this.baseUrl, { params: { data: query } }),
       );
 
-      this.logger.debug(`${entityType.name} fetched.`);
+      this.logger.log(`${entityType.name} fetched.`);
 
-      return response?.data?.elements.filter(hasCoordinates).map((e) => ({
-        ...e,
-        geometry: {
-          type: 'Point',
-          coordinates: e.center ? [e.center.lon, e.center.lat] : [e.lon, e.lat],
-        },
-        overpassId: e.id,
-        entityType: entityType.name,
-      }));
+      return response?.data?.elements.reduce((result, el) => {
+        const coordinates = el.center
+          ? [el.center.lon, el.center.lat]
+          : [el.lon, el.lat];
+
+        const isValidCoordinates =
+          typeof coordinates[0] === 'number' &&
+          coordinates[0] >= -180 &&
+          coordinates[0] <= 180 &&
+          typeof coordinates[1] === 'number' &&
+          coordinates[1] >= -90 &&
+          coordinates[1] <= 90;
+
+        if (isValidCoordinates) {
+          result.push({
+            ...el,
+            geometry: {
+              type: 'Point',
+              coordinates,
+            },
+            overpassId: el.id,
+            entityType: entityType.name,
+          });
+        }
+
+        return result;
+      }, []);
     } catch (e) {
       console.error('Error while fetching data from overpass', e);
       throw e;

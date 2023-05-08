@@ -30,7 +30,7 @@ export class OverpassDataService {
     this.logger.log(`Loading overpass data into database.`);
     const collection = this.connection.db.collection(tempCollectionName);
 
-    const chunksize = 1000;
+    const chunkSize = 1000;
     const createChunks = (a, size) =>
       Array.from(new Array(Math.ceil(a.length / size)), (_, i) =>
         a.slice(i * size, i * size + size),
@@ -46,7 +46,7 @@ export class OverpassDataService {
     for (const et of osmEntityTypes) {
       try {
         const feats = await this.overpassService.fetchForEntityType(et);
-        const chunks = createChunks(feats, chunksize);
+        const chunks = createChunks(feats, chunkSize);
 
         this.logger.log(`Starting the bulkWrite ${et.name}[${feats.length}].`);
         if (feats.length) {

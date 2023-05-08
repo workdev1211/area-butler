@@ -1,4 +1,4 @@
-import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import * as mongoose from 'mongoose';
 
 export type OverpassDataDocument = OverpassData & Document;
@@ -7,9 +7,9 @@ export type OverpassDataDocument = OverpassData & Document;
 export class OverpassData {
   @Prop({ type: mongoose.Schema.Types.Mixed })
   geometry: {
-    type: string; //Point
+    type: string; // Point
     coordinates: any[]; //
-  }; //GeoJSON
+  }; // GeoJSON
 
   @Prop()
   overpassId: string;
