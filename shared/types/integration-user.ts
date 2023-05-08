@@ -96,6 +96,7 @@ export type TApiIntegrationUserConfig = {
   hideProductPage?: boolean;
   color?: string;
   logo?: string;
+  mapIcon?: string;
   showTour: ApiShowTour;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<

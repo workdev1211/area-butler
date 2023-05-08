@@ -517,6 +517,7 @@ const SearchParamsPage: FunctionComponent = () => {
       snapshotConfig!.mapIcon =
         snapshotConfig!.mapIcon ||
         user?.mapIcon ||
+        integrationUser?.config?.mapIcon ||
         integrationUser?.config?.logo;
 
       const updatedSnapshotResponse = await updateSnapshot(
