@@ -14,16 +14,20 @@ export class PotentialCustomerListener {
     private readonly potentialCustomerService: PotentialCustomerService,
   ) {}
 
-  @OnEvent(
-    [EventType.USER_CREATED_EVENT, EventType.INTEGRATION_USER_CREATED_EVENT],
-    { async: true },
-  )
+  // Array doesn't work as expected for the 'OnEvent' decorator
+  @OnEvent(EventType.USER_CREATED_EVENT, { async: true })
   private async handleUserCreatedEvent({
     user,
+  }: IUserCreatedEvent): Promise<void> {
+    await this.potentialCustomerService.createDefaultPotentialCustomers(user);
+  }
+
+  @OnEvent(EventType.INTEGRATION_USER_CREATED_EVENT, { async: true })
+  private async handleIntegrationUserCreatedEvent({
     integrationUser,
-  }: IUserCreatedEvent & IIntegrationUserCreatedEvent): Promise<void> {
+  }: IIntegrationUserCreatedEvent): Promise<void> {
     await this.potentialCustomerService.createDefaultPotentialCustomers(
-      user || integrationUser,
+      integrationUser,
     );
   }
 }
