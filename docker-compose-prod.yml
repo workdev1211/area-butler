@@ -17,7 +17,7 @@ services:
       - "traefik.enable=false"
 
   area-butler-prod:
-    image: "${PROJECT_NAME}-${CI_BUILD_REF_SLUG}:${CI_COMMIT_SHORT_SHA}"
+    image: "${PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHORT_SHA}"
     container_name: area-butler-app-prod
     restart: always
     networks:
@@ -61,9 +61,9 @@ services:
       - PAYPAL_WEBHOOK_ID
       - ON_OFFICE_PROVIDER_SECRET
       - SENTRY_DSN
-      - SENTRY_ENV=${CI_BUILD_REF_SLUG}
+      - SENTRY_ENV=${CI_COMMIT_REF_SLUG}
       - REACT_APP_SENTRY_DSN
-      - REACT_APP_SENTRY_ENV=${CI_BUILD_REF_SLUG}
+      - REACT_APP_SENTRY_ENV=${CI_COMMIT_REF_SLUG}
     labels:
       - "traefik.docker.network=web"
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
