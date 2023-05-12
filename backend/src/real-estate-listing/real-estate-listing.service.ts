@@ -62,7 +62,7 @@ export class RealEstateListingService {
 
   async insertRealEstateListing(
     user: UserDocument,
-    { coordinates, ...upsertData }: ApiUpsertRealEstateListing,
+    upsertData: ApiUpsertRealEstateListing,
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
     subscriptionCheck &&
@@ -72,17 +72,10 @@ export class RealEstateListingService {
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       );
 
-    const realEstateListingDoc: any = {
+    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
       userId: user.id,
       ...upsertData,
     };
-
-    if (coordinates) {
-      realEstateListingDoc.location = {
-        type: 'Point',
-        coordinates: [coordinates.lat, coordinates.lng],
-      };
-    }
 
     return new this.realEstateListingModel(realEstateListingDoc).save();
   }
@@ -90,7 +83,7 @@ export class RealEstateListingService {
   async updateRealEstateListing(
     user: UserDocument,
     realEstateListingId: string,
-    { coordinates, ...upsertData }: Partial<ApiUpsertRealEstateListing>,
+    upsertData: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
     const existingListing = await this.realEstateListingModel.findById(
       realEstateListingId,
@@ -104,16 +97,9 @@ export class RealEstateListingService {
       throw new HttpException('Invalid change!', 400);
     }
 
-    const realEstateListingDoc: any = {
+    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
       ...upsertData,
     };
-
-    if (coordinates) {
-      realEstateListingDoc.location = {
-        type: 'Point',
-        coordinates: [coordinates.lat, coordinates.lng],
-      };
-    }
 
     return this.realEstateListingModel.findByIdAndUpdate(
       realEstateListingId,

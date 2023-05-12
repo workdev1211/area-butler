@@ -36,9 +36,9 @@ const mapFormToApiUpsertRealEstateListing = async (
     name: values.name,
     address: values.address,
     externalUrl: values.externalUrl,
-    coordinates: {
-      lat,
-      lng,
+    location: {
+      type: "Point",
+      coordinates: [lat, lng],
     },
     showInSnippet: values.showInSnippet,
     costStructure: {

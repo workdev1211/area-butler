@@ -249,17 +249,20 @@ export class RealEstateListingImportService {
       parseAttributeValue: true,
       allowBooleanAttributes: true,
     };
+
     const parser = new XMLParser(options);
     const parsedData: IOpenImmoXmlData = parser.parse(file);
-    const realEstateListing = plainToInstance(
+
+    const realEstate = plainToInstance(
       ApiOpenImmoToAreaButlerDto,
       parsedData.openimmo.anbieter,
     );
-    await this.setAddressAndCoordinates(realEstateListing);
+
+    await this.setAddressAndCoordinates(realEstate);
 
     await this.realEstateListingService.insertRealEstateListing(
       user,
-      realEstateListing,
+      realEstate,
     );
   }
 
@@ -494,27 +497,30 @@ export class RealEstateListingImportService {
   }
 
   private async setAddressAndCoordinates(
-    realEstateListing: ApiUpsertRealEstateListing,
+    realEstate: ApiUpsertRealEstateListing,
   ): Promise<void> {
-    if (realEstateListing.coordinates) {
-      const { formatted_address: resultingAddress } =
-        await this.googleGeocodeService.fetchPlaceByCoordinates(
-          realEstateListing.coordinates,
-        );
+    if (realEstate.address) {
+      const {
+        geometry: {
+          location: { lat, lng },
+        },
+      } = await this.googleGeocodeService.fetchPlaceByAddress(
+        realEstate.address,
+      );
 
-      realEstateListing.address = resultingAddress;
-      realEstateListing.name = resultingAddress;
+      realEstate.location = { type: 'Point', coordinates: [lat, lng] };
       return;
     }
 
-    if (realEstateListing.address) {
-      const {
-        geometry: { location },
-      } = await this.googleGeocodeService.fetchPlaceByAddress(
-        realEstateListing.address,
-      );
+    if (realEstate.location) {
+      const { formatted_address: resultingAddress } =
+        await this.googleGeocodeService.fetchPlaceByCoordinates({
+          lat: realEstate.location.coordinates[0],
+          lng: realEstate.location.coordinates[1],
+        });
 
-      realEstateListing.coordinates = location;
+      realEstate.address = resultingAddress;
+      realEstate.name = resultingAddress;
       return;
     }
 

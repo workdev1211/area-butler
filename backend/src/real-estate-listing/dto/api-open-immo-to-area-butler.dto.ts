@@ -8,9 +8,9 @@ import {
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
-import { ApiCoordinates } from '@area-butler-types/types';
 import { iso3166Alpha3CountryNames } from '../../../../shared/constants/iso-countries';
 import { IOpenImmoXmlVendor } from '../../shared/open-immo.types';
+import { GeoJsonPoint } from '../../shared/geo-json.types';
 
 @Exclude()
 class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
@@ -30,12 +30,8 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
       },
     }: {
       obj: IOpenImmoXmlVendor;
-    }) => {
-      const name = `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`;
-
-      // TODO 'name' is a required parameter
-      return name || undefined;
-    },
+    }): string =>
+      `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`,
     { toClassOnly: true },
   )
   name: string;
@@ -56,12 +52,8 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
       },
     }: {
       obj: IOpenImmoXmlVendor;
-    }) => {
-      const address = `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`;
-
-      // TODO 'address' is a required parameter
-      return address || undefined;
-    },
+    }): string =>
+      `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`,
     { toClassOnly: true },
   )
   address: string;
@@ -78,13 +70,13 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
       },
     }: {
       obj: IOpenImmoXmlVendor;
-    }) => ({
-      lat,
-      lng,
+    }): GeoJsonPoint => ({
+      type: 'Point',
+      coordinates: [lat, lng],
     }),
     { toClassOnly: true },
   )
-  coordinates?: ApiCoordinates;
+  location: GeoJsonPoint;
 
   @Expose()
   @Transform(

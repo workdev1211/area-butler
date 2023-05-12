@@ -6,6 +6,7 @@ import {
   IsEnum,
   IsString,
   NotEquals,
+  IsObject,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
@@ -14,8 +15,9 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
-import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
+import { GeoJsonPoint } from '../shared/geo-json.types';
+import ApiGeoJsonPointDto from './api-geo-json-point.dto';
 
 class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
   @IsNotEmpty()
@@ -23,16 +25,19 @@ class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
   address: string;
 
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristicsDto;
 
   @IsOptional()
+  @IsObject()
   @ValidateNested()
-  @Type(() => ApiCoordinatesDto)
-  coordinates?: ApiCoordinatesDto;
+  @Type(() => ApiGeoJsonPointDto)
+  location: GeoJsonPoint;
 
   @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiRealEstateCostDto)
   costStructure?: ApiRealEstateCostDto;

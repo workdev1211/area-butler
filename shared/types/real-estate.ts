@@ -36,7 +36,7 @@ export interface ApiRealEstateListing {
 export interface ApiUpsertRealEstateListing {
   name: string;
   address: string;
-  coordinates?: ApiCoordinates;
+  location: GeoJsonPoint;
   externalUrl?: string;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
