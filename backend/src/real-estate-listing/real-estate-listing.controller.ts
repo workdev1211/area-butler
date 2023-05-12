@@ -29,6 +29,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import FileUploadDto from '../dto/file-upload.dto';
 import {
   ApiExampleFileTypeEnum,
+  ApiRealEstateExtSourcesEnum,
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
@@ -49,8 +50,8 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Get real estate listings for current user' })
   @Get('listings')
   async fetchRealEstateListings(
-    @InjectUser() user: UserDocument,
     @Query('status') status: ApiRealEstateStatusEnum,
+    @InjectUser() user: UserDocument,
   ): Promise<ApiRealEstateListing[]> {
     return (
       await this.realEstateListingService.fetchRealEstateListings(user, status)
@@ -104,8 +105,8 @@ export class RealEstateListingController extends AuthenticatedController {
   @Post('upload/:format')
   @UseInterceptors(FileInterceptor('file'))
   async importCsvFile(
-    @InjectUser() user: UserDocument,
     @Param('format') fileFormat: CsvFileFormatsEnum,
+    @InjectUser() user: UserDocument,
     @UploadedFile() file: Express.Multer.File,
   ): Promise<number[]> {
     return this.realEstateListingImportService.importCsvFile(
@@ -164,5 +165,14 @@ export class RealEstateListingController extends AuthenticatedController {
       user,
       realEstateDescriptionQuery,
     );
+  }
+
+  @ApiOperation({ description: 'Import real estates from a specified CRM' })
+  @Get('crm-import/:type')
+  async importFromCrm(
+    @Param('type') type: ApiRealEstateExtSourcesEnum,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+  ): Promise<number[]> {
+    return this.realEstateListingImportService.importFromCrm(user, type);
   }
 }

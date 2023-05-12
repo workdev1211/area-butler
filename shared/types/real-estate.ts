@@ -28,9 +28,11 @@ export interface ApiRealEstateListing {
   coordinates: ApiCoordinates;
   status: ApiRealEstateStatusEnum;
   belongsToParent: boolean;
-  integrationId?: string;
+  integrationId?: string; // only for integration users
   openAiRequestQuantity?: number;
   isOnePageExportActive?: boolean;
+  externalSource?: ApiRealEstateExtSourcesEnum; // if it was exported from a CRM
+  externalId?: string; // if it was exported from a CRM
 }
 
 export interface ApiUpsertRealEstateListing {
@@ -42,6 +44,8 @@ export interface ApiUpsertRealEstateListing {
   characteristics?: ApiRealEstateCharacteristics;
   status: ApiRealEstateStatusEnum;
   showInSnippet: boolean;
+  externalSource?: ApiRealEstateExtSourcesEnum;
+  externalId?: string;
 }
 
 // should be present either minPrice or maxPrice, or both
@@ -61,8 +65,8 @@ export enum ApiRealEstateCostType {
 export interface ApiRealEstateCharacteristics {
   startingAt?: boolean;
   numberOfRooms?: number;
-  realEstateSizeInSquareMeters?: number;
-  propertySizeInSquareMeters?: number;
+  realEstateSizeInSquareMeters?: number; // living area
+  propertySizeInSquareMeters?: number; // whole area
   energyEfficiency?: ApiEnergyEfficiency;
   furnishing: ApiFurnishing[];
 }
@@ -105,4 +109,12 @@ export interface IApiRealEstateStatus {
 export enum ApiExampleFileTypeEnum {
   CSV = "csv",
   XLS = "xls",
+}
+
+export enum ApiRealEstateExtSourcesEnum {
+  PROPSTACK = "PROPSTACK",
+}
+
+export interface IApiRealEstatePropstackExtCon {
+  apiKey: string;
 }

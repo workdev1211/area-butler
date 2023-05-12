@@ -69,16 +69,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
       return;
     }
 
-    const getRealEstates = async () => {
-      const realEstateData = await fetchRealEstates();
-
-      realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstateData,
-      });
-    };
-
-    void getRealEstates();
+    void fetchRealEstates();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationUser]);

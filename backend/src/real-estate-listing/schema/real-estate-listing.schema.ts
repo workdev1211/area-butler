@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
+  ApiRealEstateExtSourcesEnum,
   ApiRealEstateStatusEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
@@ -42,8 +43,18 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
   @Prop({ type: Object, required: true })
   location: GeoJsonPoint;
 
-  @Prop({ default: ApiRealEstateStatusEnum.IN_PREPARATION })
+  @Prop({
+    type: String,
+    enum: ApiRealEstateStatusEnum,
+    default: ApiRealEstateStatusEnum.IN_PREPARATION,
+  })
   status: ApiRealEstateStatusEnum;
+
+  @Prop({
+    type: String,
+    enum: ApiRealEstateExtSourcesEnum,
+  })
+  externalSource: ApiRealEstateExtSourcesEnum;
 
   @Prop({ type: String })
   externalId: string;

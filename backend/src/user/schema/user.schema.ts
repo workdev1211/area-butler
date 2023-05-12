@@ -7,6 +7,7 @@ import {
   IApiUserExportFont,
   IApiUserPoiIcons,
   IApiUserUsageStatistics,
+  TApiUserApiConnections,
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
@@ -20,10 +21,10 @@ export type UserDocument = User &
 
 @Schema()
 export class User {
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   fullname: string;
 
-  @Prop({ required: true, unique: true, index: true })
+  @Prop({ type: String, required: true, unique: true, index: true })
   email: string;
 
   @Prop({ type: Date, default: Date.now })
@@ -41,28 +42,28 @@ export class User {
   @Prop({ type: Object })
   usageStatistics: IApiUserUsageStatistics;
 
-  @Prop()
+  @Prop({ type: String })
   stripeCustomerId: string;
 
-  @Prop()
+  @Prop({ type: String })
   paypalCustomerId: string;
 
   @Prop({ type: Object, default: { ...initialShowTour } })
   showTour: ApiShowTour;
 
-  @Prop()
+  @Prop({ type: String })
   logo: string;
 
-  @Prop()
+  @Prop({ type: String })
   mapIcon: string;
 
-  @Prop()
+  @Prop({ type: String })
   color: string;
 
   @Prop({ type: Array })
   exportFonts: IApiUserExportFont[];
 
-  @Prop()
+  @Prop({ type: String })
   mapboxAccessToken: string;
 
   @Prop({ type: Array, default: [] })
@@ -71,7 +72,10 @@ export class User {
   @Prop({ type: Array, default: [] })
   additionalMapBoxStyles: { key: string; label: string }[];
 
-  @Prop()
+  @Prop({ type: Object })
+  apiConnections: TApiUserApiConnections;
+
+  @Prop({ type: String })
   parentId: string;
 }
 

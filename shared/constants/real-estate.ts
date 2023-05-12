@@ -1,6 +1,7 @@
 import {
   ApiFurnishing,
   ApiRealEstateCostType,
+  ApiRealEstateExtSourcesEnum,
   ApiRealEstateStatusEnum,
   IApiRealEstateStatus,
 } from "../types/real-estate";
@@ -28,5 +29,15 @@ export const allRealEstateStatuses: IApiRealEstateStatus[] = [
   { label: "Miete", status: ApiRealEstateStatusEnum.FOR_RENT },
   { label: "Kauf", status: ApiRealEstateStatusEnum.FOR_SALE },
   { label: "Neubau", status: ApiRealEstateStatusEnum.NEW_CONSTRUCTION },
-  { label: "Vermietet / Verkauft", status: ApiRealEstateStatusEnum.RENTED_SOLD },
+  {
+    label: "Vermietet / Verkauft",
+    status: ApiRealEstateStatusEnum.RENTED_SOLD,
+  },
 ];
+
+export const apiConnectionTypeNames: Record<
+  ApiRealEstateExtSourcesEnum,
+  string
+> = {
+  [ApiRealEstateExtSourcesEnum.PROPSTACK]: "Propstack",
+};

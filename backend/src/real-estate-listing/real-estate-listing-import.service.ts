@@ -18,6 +18,7 @@ import {
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
+  ApiRealEstateExtSourcesEnum,
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
@@ -25,11 +26,20 @@ import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { ApiCoordinates, CsvFileFormatsEnum } from '@area-butler-types/types';
 import { IOpenImmoXmlData } from '../shared/open-immo.types';
 import { RealEstateListingService } from './real-estate-listing.service';
-import { replaceUmlautWithEnglish } from '../../../shared/functions/shared.functions';
+import {
+  createChunks,
+  replaceUmlautWithEnglish,
+} from '../../../shared/functions/shared.functions';
 import ApiOpenImmoToAreaButlerDto from './dto/api-open-immo-to-area-butler.dto';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
+import {
+  PropstackApiService,
+  REAL_ESTATES_PER_PAGE,
+} from '../client/propstack/propstack-api.service';
+import ApiPropstackToAreaButlerDto from './dto/api-propstack-to-area-butler.dto';
+import { apiConnectionTypeNames } from '../../../shared/constants/real-estate';
 
 interface IListingData {
   listing: unknown;
@@ -71,6 +81,7 @@ export class RealEstateListingImportService {
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly propstackApiService: PropstackApiService,
   ) {}
 
   async importCsvFile(
@@ -264,6 +275,106 @@ export class RealEstateListingImportService {
       user,
       realEstate,
     );
+  }
+
+  async importFromCrm(
+    user: UserDocument,
+    connectionType: ApiRealEstateExtSourcesEnum,
+  ): Promise<number[]> {
+    this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) => !subscriptionPlan,
+      'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
+    );
+
+    const apiConnection = user.apiConnections[connectionType];
+
+    if (!apiConnection) {
+      throw new HttpException('Unknown connection type is provided!', 400);
+    }
+
+    const errorIds = [];
+
+    switch (connectionType) {
+      case ApiRealEstateExtSourcesEnum.PROPSTACK: {
+        const {
+          data,
+          meta: { total_count: totalCount },
+        } = await this.propstackApiService.fetchRealEstates(
+          apiConnection.apiKey,
+          1,
+        );
+
+        const realEstates = [...data];
+
+        if (totalCount > REAL_ESTATES_PER_PAGE) {
+          const numberOfPages = Math.ceil(totalCount / REAL_ESTATES_PER_PAGE);
+
+          for (let i = 2; i < numberOfPages + 1; i++) {
+            const { data } = await this.propstackApiService.fetchRealEstates(
+              apiConnection.apiKey,
+              i,
+            );
+
+            realEstates.push(...data);
+          }
+        }
+
+        const chunks = createChunks(realEstates, 100);
+
+        for (const chunk of chunks) {
+          const bulkOperations = [];
+
+          for (const realEstate of chunk) {
+            const place = await this.googleGeocodeService.fetchPlaceByAddress(
+              realEstate.address,
+            );
+
+            if (!place) {
+              errorIds.push(realEstate.id);
+              continue;
+            }
+
+            realEstate.lat = place.geometry.location.lat;
+            realEstate.lng = place.geometry.location.lng;
+
+            const areaButlerRealEstate = plainToInstance(
+              ApiPropstackToAreaButlerDto,
+              realEstate,
+              { exposeUnsetFields: false },
+            );
+
+            bulkOperations.push({
+              updateOne: {
+                filter: {
+                  userId: user.id,
+                  externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
+                  externalId: realEstate.id,
+                },
+                update: areaButlerRealEstate,
+                upsert: true,
+              },
+            });
+          }
+
+          await this.realEstateListingModel.bulkWrite(bulkOperations);
+        }
+
+        break;
+      }
+    }
+
+    if (errorIds.length) {
+      this.logger.debug(
+        `The following ${
+          apiConnectionTypeNames[connectionType]
+        } ids ${errorIds.join(', ')} has not been imported for the user ${
+          user.email
+        }.`,
+      );
+    }
+
+    return errorIds;
   }
 
   private async processCsv(

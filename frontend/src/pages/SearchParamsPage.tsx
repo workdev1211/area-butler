@@ -16,10 +16,7 @@ import {
   PotentialCustomerActionTypes,
   PotentialCustomerContext,
 } from "context/PotentialCustomerContext";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "context/RealEstateContext";
+import { RealEstateContext } from "context/RealEstateContext";
 import { UserContext } from "context/UserContext";
 import { useFederalElectionData } from "hooks/federalelectiondata";
 import { useParticlePollutionData } from "hooks/particlepollutiondata";
@@ -82,7 +79,7 @@ const SearchParamsPage: FunctionComponent = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
-  const { realEstateDispatch, realEstateState } = useContext(RealEstateContext);
+  const { realEstateState } = useContext(RealEstateContext);
 
   const user = userState.user!;
   const integrationUser = userState.integrationUser!;
@@ -238,16 +235,7 @@ const SearchParamsPage: FunctionComponent = () => {
       return;
     }
 
-    const getRealEstates = async () => {
-      const realEstates = await fetchRealEstates();
-
-      realEstateDispatch({
-        type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: realEstates,
-      });
-    };
-
-    void getRealEstates();
+    void fetchRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onLocationAutocompleteChange = (payload: any): void => {

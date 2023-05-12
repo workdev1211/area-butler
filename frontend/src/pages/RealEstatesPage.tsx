@@ -24,10 +24,7 @@ import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
 import locationIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
 import FormModal from "../components/FormModal";
-import {
-  RealEstateActionTypes,
-  RealEstateContext,
-} from "../context/RealEstateContext";
+import { RealEstateContext } from "../context/RealEstateContext";
 import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
@@ -49,6 +46,7 @@ import { ConfigContext } from "../context/ConfigContext";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
 import { useRealEstateData } from "../hooks/realestatedata";
+import CmrImportModal from "../real-estates/CmrImportModal";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -56,7 +54,7 @@ const deleteRealEstateModalConfig = {
 };
 
 const RealEstatesPage: FunctionComponent = () => {
-  const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
+  const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { googleApiKey } = useContext(ConfigContext);
@@ -75,11 +73,13 @@ const RealEstatesPage: FunctionComponent = () => {
   >([]);
   const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
+  const [isShownCmrImportModal, setIsShownCmrImportModal] = useState(false);
 
   const user = userState.user!;
   const hasSubscription = !!user?.subscription;
   const hasHtmlSnippet =
     hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet;
+  const hasApiConnections = !!user?.apiConnections;
 
   useEffect(() => {
     const googleMapsApiLoader = new Loader({
@@ -149,17 +149,8 @@ const RealEstatesPage: FunctionComponent = () => {
     history.push("/search", { isFromRealEstates: true });
   };
 
-  const fetchRealEstateData = async () => {
-    const realEstateData = await fetchRealEstates(selectedRealEstateStatus);
-
-    realEstateDispatch({
-      type: RealEstateActionTypes.SET_REAL_ESTATES,
-      payload: realEstateData,
-    });
-  };
-
   useEffect(() => {
-    void fetchRealEstateData();
+    void fetchRealEstates(selectedRealEstateStatus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRealEstateStatus]);
 
@@ -170,6 +161,8 @@ const RealEstatesPage: FunctionComponent = () => {
           <Link to="/real-estates/new" className="btn btn-link">
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
+        </li>
+        <li>
           <button
             className="btn btn-link"
             onClick={() => {
@@ -186,6 +179,25 @@ const RealEstatesPage: FunctionComponent = () => {
             </label>
           </button>
         </li>
+        {hasApiConnections && (
+          <li>
+            <button
+              className="btn btn-link"
+              onClick={() => {
+                setIsShownCmrImportModal(true);
+              }}
+            >
+              <img
+                src={uploadIcon}
+                alt="upload-icon"
+                style={{ filter: "invert(100%)" }}
+              />
+              <label htmlFor="file" style={{ cursor: "pointer" }}>
+                CMR synchronisieren
+              </label>
+            </button>
+          </li>
+        )}
       </>
     );
   };
@@ -243,11 +255,19 @@ const RealEstatesPage: FunctionComponent = () => {
       <CsvImportModal
         isShownModal={isShownCsvImportModal}
         closeModal={async () => {
-          await fetchRealEstateData();
+          await fetchRealEstates(selectedRealEstateStatus);
           setIsShownCsvImportModal(false);
         }}
         fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
       />
+      {isShownCmrImportModal && (
+        <CmrImportModal
+          apiConnections={user.apiConnections!}
+          closeModal={() => {
+            setIsShownCmrImportModal(false);
+          }}
+        />
+      )}
       <div
         className="w-1/2 sm:w-1/6 flex items-center gap-2"
         style={{ padding: "5px 5px 5px 5px" }}

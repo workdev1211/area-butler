@@ -31,5 +31,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
       realEstateListing.integrationParams?.openAiRequestQuantity,
     isOnePageExportActive:
       realEstateListing.integrationParams?.isOnePageExportActive,
+    externalSource: realEstateListing.externalSource,
+    externalId: realEstateListing.externalId,
   };
 };

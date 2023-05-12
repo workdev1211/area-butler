@@ -15,6 +15,7 @@ import {
   ApiUser,
   IApiUserExportFont,
   IApiUserPoiIcons,
+  TApiUserApiConnections,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
@@ -146,6 +147,11 @@ class ApiUserDto implements ApiUser {
   @ValidateNested({ each: true })
   @Type(() => ApiUserExportFontDto)
   exportFonts?: IApiUserExportFont[];
+
+  @Expose()
+  @IsOptional()
+  @IsObject()
+  apiConnections?: TApiUserApiConnections;
 }
 
 export default ApiUserDto;

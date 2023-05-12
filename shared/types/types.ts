@@ -1,7 +1,12 @@
 import { ApiPreferredLocation } from "./potential-customer";
 import { EntityRoute, EntityTransitRoute } from "./routing";
 import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
-import { ApiRealEstateListing, ApiRealEstateStatusEnum } from "./real-estate";
+import {
+  ApiRealEstateExtSourcesEnum,
+  ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+  IApiRealEstatePropstackExtCon,
+} from "./real-estate";
 import { ILimitIncreaseMetadata } from "./billing";
 import {
   paymentEnvironments,
@@ -61,7 +66,13 @@ export interface ApiUser {
   parentSettings?: IApiUserParentSettings;
   poiIcons?: IApiUserPoiIcons;
   exportFonts?: IApiUserExportFont[];
+  apiConnections?: TApiUserApiConnections;
 }
+
+export type TApiUserApiConnections = Record<
+  ApiRealEstateExtSourcesEnum,
+  Partial<IApiRealEstatePropstackExtCon>
+>;
 
 export interface IApiUserParentSettings {
   logo?: string;

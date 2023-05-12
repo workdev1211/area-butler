@@ -11,6 +11,7 @@ import { PaypalService } from './paypal/paypal.service';
 import { GoogleGeocodeService } from './google/google-geocode.service';
 import { HereGeocodeService } from './here/here-geocode.service';
 import { OnOfficeApiService } from './on-office/on-office-api.service';
+import { PropstackApiService } from './propstack/propstack-api.service';
 
 @Module({
   providers: [
@@ -24,6 +25,7 @@ import { OnOfficeApiService } from './on-office/on-office-api.service';
     GoogleGeocodeService,
     HereGeocodeService,
     OnOfficeApiService,
+    PropstackApiService,
   ],
   imports: [HttpModule],
   exports: [
@@ -37,6 +39,7 @@ import { OnOfficeApiService } from './on-office/on-office-api.service';
     GoogleGeocodeService,
     HereGeocodeService,
     OnOfficeApiService,
+    PropstackApiService,
   ],
 })
 export class ClientModule {}
