@@ -36,6 +36,7 @@ import {
 import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
+import ApiUserApiConnectionSettingsDto from '../dto/api-user-api-connection-settings.dto';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
@@ -174,5 +175,18 @@ export class RealEstateListingController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
   ): Promise<number[]> {
     return this.realEstateListingImportService.importFromCrm(user, type);
+  }
+
+  @ApiOperation({ description: 'Test a specified CRM connection' })
+  @Post('crm-test')
+  async testApiConnection(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body()
+    connectionSettings: ApiUserApiConnectionSettingsDto,
+  ): Promise<void> {
+    await this.realEstateListingImportService.testApiConnection(
+      user,
+      connectionSettings,
+    );
   }
 }

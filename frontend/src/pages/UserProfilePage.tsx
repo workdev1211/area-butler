@@ -12,6 +12,7 @@ import SubscriptionPlanSelection from "user/SubscriptionPlanSelection";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import UserExportSettings from "../user/UserExportSettings";
 import { deriveTotalRequestContingent } from "../shared/shared.functions";
+import UserCrmSettings from "../user/UserCrmSettings";
 
 const UserProfilePage: FunctionComponent = () => {
   const [busy, setBusy] = useState(false);
@@ -94,6 +95,7 @@ const UserProfilePage: FunctionComponent = () => {
         />
       </div>
       {canCustomizeExport && <UserExportSettings />}
+      <UserCrmSettings />
       <SubscriptionLimitsOrSelection />
     </DefaultLayout>
   );

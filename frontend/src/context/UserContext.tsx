@@ -4,6 +4,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
+  IApiUserApiConnectionSettingsReq,
 } from "../../../shared/types/types";
 import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
 import {
@@ -49,6 +50,7 @@ export enum UserActionTypes {
   SET_LOGO = "SET_LOGO",
   SET_MAP_ICON = "SET_MAP_ICON",
   SET_COLOR = "SET_COLOR",
+  SET_API_CONNECTION = "SET_API_CONNECTION",
 }
 
 type UserActionsPayload = {
@@ -70,6 +72,7 @@ type UserActionsPayload = {
   [UserActionTypes.SET_LOGO]: string | undefined;
   [UserActionTypes.SET_MAP_ICON]: string | undefined;
   [UserActionTypes.SET_COLOR]: string | undefined;
+  [UserActionTypes.SET_API_CONNECTION]: IApiUserApiConnectionSettingsReq;
 };
 
 export type UserActions =
@@ -146,6 +149,19 @@ export const userReducer = (
     }
     case UserActionTypes.SET_COLOR: {
       return { ...state, user: { ...state.user!, color: action.payload } };
+    }
+    case UserActionTypes.SET_API_CONNECTION: {
+      const { connectionType, ...connectionSettings } = action.payload;
+
+      const user = {
+        ...state.user!,
+        apiConnections: {
+          ...(state.user!.apiConnections || {}),
+          [action.payload.connectionType]: { ...connectionSettings },
+        },
+      };
+
+      return { ...state, user };
     }
     default:
       return state;

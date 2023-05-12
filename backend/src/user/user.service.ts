@@ -27,6 +27,7 @@ import {
 import {
   ApiTourNamesEnum,
   IApiAddressesInRangeRequestStatus,
+  IApiUserApiConnectionSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
 } from '@area-butler-types/types';
@@ -123,6 +124,17 @@ export class UserService {
     existingUser.fullname = fullname;
 
     return existingUser.save();
+  }
+
+  async updateApiConnections(
+    userId: string,
+    { connectionType, ...connectionSettings }: IApiUserApiConnectionSettingsReq,
+  ): Promise<UserDocument> {
+    return this.userModel.findByIdAndUpdate(
+      userId,
+      { $set: { [`apiConnections.${connectionType}`]: connectionSettings } },
+      { new: true },
+    );
   }
 
   async giveConsent(email: string): Promise<UserDocument> {

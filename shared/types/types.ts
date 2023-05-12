@@ -5,7 +5,7 @@ import {
   ApiRealEstateExtSourcesEnum,
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
-  IApiRealEstatePropstackExtCon,
+  IApiPropstackConSettings,
 } from "./real-estate";
 import { ILimitIncreaseMetadata } from "./billing";
 import {
@@ -69,9 +69,16 @@ export interface ApiUser {
   apiConnections?: TApiUserApiConnections;
 }
 
+export type TApiUserApiConnectionSettings = Partial<IApiPropstackConSettings>;
+
+export interface IApiUserApiConnectionSettingsReq
+  extends TApiUserApiConnectionSettings {
+  connectionType: ApiRealEstateExtSourcesEnum;
+}
+
 export type TApiUserApiConnections = Record<
   ApiRealEstateExtSourcesEnum,
-  Partial<IApiRealEstatePropstackExtCon>
+  TApiUserApiConnectionSettings
 >;
 
 export interface IApiUserParentSettings {

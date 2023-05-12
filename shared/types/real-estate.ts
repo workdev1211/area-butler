@@ -115,6 +115,6 @@ export enum ApiRealEstateExtSourcesEnum {
   PROPSTACK = "PROPSTACK",
 }
 
-export interface IApiRealEstatePropstackExtCon {
+export interface IApiPropstackConSettings {
   apiKey: string;
 }

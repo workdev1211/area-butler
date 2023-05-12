@@ -23,7 +23,11 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import { ApiCoordinates, CsvFileFormatsEnum } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  CsvFileFormatsEnum,
+  IApiUserApiConnectionSettingsReq,
+} from '@area-butler-types/types';
 import { IOpenImmoXmlData } from '../shared/open-immo.types';
 import { RealEstateListingService } from './real-estate-listing.service';
 import {
@@ -40,6 +44,7 @@ import {
 } from '../client/propstack/propstack-api.service';
 import ApiPropstackToAreaButlerDto from './dto/api-propstack-to-area-butler.dto';
 import { apiConnectionTypeNames } from '../../../shared/constants/real-estate';
+import { UserService } from '../user/user.service';
 
 interface IListingData {
   listing: unknown;
@@ -82,6 +87,7 @@ export class RealEstateListingImportService {
     private readonly subscriptionService: SubscriptionService,
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly propstackApiService: PropstackApiService,
+    private readonly userService: UserService,
   ) {}
 
   async importCsvFile(
@@ -287,9 +293,9 @@ export class RealEstateListingImportService {
       'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
     );
 
-    const apiConnection = user.apiConnections[connectionType];
+    const connectionSettings = user.apiConnections[connectionType];
 
-    if (!apiConnection) {
+    if (!connectionSettings) {
       throw new HttpException('Unknown connection type is provided!', 400);
     }
 
@@ -301,7 +307,7 @@ export class RealEstateListingImportService {
           data,
           meta: { total_count: totalCount },
         } = await this.propstackApiService.fetchRealEstates(
-          apiConnection.apiKey,
+          connectionSettings.apiKey,
           1,
         );
 
@@ -312,7 +318,7 @@ export class RealEstateListingImportService {
 
           for (let i = 2; i < numberOfPages + 1; i++) {
             const { data } = await this.propstackApiService.fetchRealEstates(
-              apiConnection.apiKey,
+              connectionSettings.apiKey,
               i,
             );
 
@@ -375,6 +381,37 @@ export class RealEstateListingImportService {
     }
 
     return errorIds;
+  }
+
+  async testApiConnection(
+    user: UserDocument,
+    { connectionType, ...connectionSettings }: IApiUserApiConnectionSettingsReq,
+  ): Promise<void> {
+    this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) => !subscriptionPlan,
+      'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
+    );
+
+    try {
+      switch (connectionType) {
+        case ApiRealEstateExtSourcesEnum.PROPSTACK: {
+          await this.propstackApiService.fetchRealEstateById(
+            connectionSettings.apiKey,
+            1,
+          );
+        }
+      }
+    } catch (e) {
+      if (e.response.status === 401) {
+        throw e;
+      }
+    }
+
+    await this.userService.updateApiConnections(user.id, {
+      connectionType,
+      ...connectionSettings,
+    });
   }
 
   private async processCsv(
