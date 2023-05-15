@@ -337,6 +337,11 @@ export class RealEstateListingImportService {
           const bulkOperations = [];
 
           for (const realEstate of chunk) {
+            if (!realEstate.address) {
+              errorIds.push(realEstate.id);
+              continue;
+            }
+
             const place = await this.googleGeocodeService.fetchPlaceByAddress(
               realEstate.address,
             );
