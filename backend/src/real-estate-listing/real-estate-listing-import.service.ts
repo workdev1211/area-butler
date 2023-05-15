@@ -90,18 +90,22 @@ export class RealEstateListingImportService {
     private readonly userService: UserService,
   ) {}
 
+  // TODO should be refactored and simplified
   async importCsvFile(
     user: UserDocument,
     fileFormat: CsvFileFormatsEnum,
     file: Buffer,
-    fromLine = 2, // to skip the column names
+    fromLine?: number, // 2 to skip the column names
   ): Promise<number[]> {
     const delimiter = fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? ',' : ';';
     const chunkSize = 1000;
+    const resultingFromLine =
+      fromLine || fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? 2 : 1;
+
     const realEstateListingChunks = await this.processCsv(
       file,
       delimiter,
-      fromLine,
+      resultingFromLine,
       chunkSize,
     );
 
@@ -116,13 +120,14 @@ export class RealEstateListingImportService {
               listingIndex,
               chunkSize,
               listingChunkIndex,
-              fromLine,
               errorLineNumbers,
               fileFormat,
-              userId: '62bdb038db1f498fd8a64a6b',
+              fromLine: resultingFromLine,
+              userId: user.id,
             };
 
-            return fileFormat === CsvFileFormatsEnum.PADERBORN
+            return resultingFromLine === 1 &&
+              fileFormat === CsvFileFormatsEnum.PADERBORN
               ? this.processObjectListingData(listingData)
               : this.processArrayListingData(listingData);
           }),
