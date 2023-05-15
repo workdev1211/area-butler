@@ -21,7 +21,7 @@ export class CustomExceptionFilter extends BaseExceptionFilter {
     super();
   }
 
-  catch(exception: any, host: ArgumentsHost) {
+  catch(exception: any, host: ArgumentsHost): void {
     const httpContext = host.switchToHttp();
     const req = httpContext.getRequest();
     // const res = httpContext.getResponse();

@@ -10,43 +10,53 @@ import {
   SlackChannel,
   SlackSenderService,
 } from '../client/slack/slack-sender.service';
+import { configService } from '../config/config.service';
 
 @Injectable()
 export class FeedbackService {
   constructor(
-    private slackSender: SlackSenderService,
+    private readonly slackSenderService: SlackSenderService,
     @InjectModel(Feedback.name)
-    private feedbackModel: Model<FeedbackDocument>,
+    private readonly feedbackModel: Model<FeedbackDocument>,
   ) {}
 
-  public async postFeedback(
-    user: UserDocument,
+  async postFeedback(
+    { id: userId, email: userEmail }: UserDocument,
     { description, type }: ApiInsertFeedbackDto,
-  ) {
+  ): Promise<void> {
     const newFeedbackDocument = await new this.feedbackModel({
-      userId: user.id,
+      userId,
       description,
       type,
     }).save();
 
-    await this.sendFeedbackToSlack(newFeedbackDocument);
+    await this.sendFeedbackToSlack(newFeedbackDocument, userEmail);
   }
 
-  private async sendFeedbackToSlack(feedbackDocument: FeedbackDocument) {
+  private sendFeedbackToSlack(
+    feedbackDocument: FeedbackDocument,
+    userEmail: string,
+  ): void {
+    const environmentName = configService.getStripeEnv();
+
     const textBlocks = [
-      'Area-Butler Feedback',
+      'AreaButler Feedback',
+      `*Environment:* ${environmentName.toUpperCase()} ${
+        environmentName === 'prod' ? ':red_circle:' : ':large_green_circle:'
+      }`,
+      `*User email:* ${userEmail}`,
       `*Art:* ${FeedbackService.deriveType(feedbackDocument.type)}\n*ID:* ${
         feedbackDocument.id
       }`,
       `*Beschreibung:*\n ${feedbackDocument.description}`,
     ];
 
-    this.slackSender.sendNotification(SlackChannel.FEEDBACK, {
+    void this.slackSenderService.sendNotification(SlackChannel.FEEDBACK, {
       textBlocks,
     });
   }
 
-  private static deriveType(type: FeedbackType) {
+  private static deriveType(type: FeedbackType): string {
     switch (type) {
       case 'ERROR':
         return 'Fehler';
