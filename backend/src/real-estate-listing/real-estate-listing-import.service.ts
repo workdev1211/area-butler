@@ -45,6 +45,7 @@ import {
 import ApiPropstackToAreaButlerDto from './dto/api-propstack-to-area-butler.dto';
 import { apiConnectionTypeNames } from '../../../shared/constants/real-estate';
 import { UserService } from '../user/user.service';
+import { ApiOnOfficeEstateMarketTypesEnum } from '@area-butler-types/on-office';
 
 interface IListingData {
   listing: unknown;
@@ -70,11 +71,6 @@ type TListingDocumentData = [
   externalId: string,
   coordinates: ApiCoordinates,
 ];
-
-enum OnOfficeListingStatusEnum {
-  MIETE = 'MIETE',
-  KAUF = 'KAUF',
-}
 
 @Injectable()
 export class RealEstateListingImportService {
@@ -440,7 +436,7 @@ export class RealEstateListingImportService {
         ((columnNames) =>
           columnNames.map((columnName) =>
             replaceUmlautWithEnglish(
-              columnName.toLowerCase().replace(' ', '_'),
+              columnName.toLowerCase().replace(/ /g, '_'),
             ),
           )),
     });
@@ -459,6 +455,7 @@ export class RealEstateListingImportService {
     return records;
   }
 
+  // TODO completely remove after refactoring
   private async processArrayListingData({
     listing,
     listingIndex,
@@ -642,13 +639,14 @@ export class RealEstateListingImportService {
     });
   }
 
+  // TODO remove after refactoring
   private convertRealEstateStatus(status: string): ApiRealEstateStatusEnum {
     switch (status.toUpperCase()) {
-      case OnOfficeListingStatusEnum.MIETE: {
+      case ApiOnOfficeEstateMarketTypesEnum.MIETE: {
         return ApiRealEstateStatusEnum.FOR_RENT;
       }
 
-      case OnOfficeListingStatusEnum.KAUF: {
+      case ApiOnOfficeEstateMarketTypesEnum.KAUF: {
         return ApiRealEstateStatusEnum.FOR_SALE;
       }
     }

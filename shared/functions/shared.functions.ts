@@ -193,3 +193,6 @@ export const replaceUmlautWithEnglish = (text: string): string => {
 
   return processedText;
 };
+
+export const parseCommaFloat = (value: string): number =>
+  value && parseFloat(value.replace(",", "."));

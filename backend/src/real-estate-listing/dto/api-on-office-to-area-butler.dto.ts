@@ -24,6 +24,22 @@ import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
 import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-characteristics.dto';
 import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
 import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
+import { parseCommaFloat } from '../../../../shared/functions/shared.functions';
+import {
+  ApiOnOfficeEstateBasementEnum,
+  ApiOnOfficeEstateMarketTypesEnum,
+  IApiOnOfficeRealEstate,
+} from '@area-butler-types/on-office';
+
+interface IApiOnOfficeRealEstateDto extends IApiOnOfficeRealEstate {
+  address: string; // 'address' field comes from our side after the geocoding
+  integrationParams?: IApiIntegrationParams;
+  // LABELS - we need them for the csv import
+  datensatznr: string; // the label for 'Id' field
+  grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
+  energieeffizienzklasse: string; // the label for 'energyClass' field
+  immonr: string; // the label for 'objektnr_extern' field
+}
 
 @Exclude()
 class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
@@ -36,7 +52,11 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsNotEmpty()
   @IsString()
   @Transform(
-    ({ obj: { objekttitel, address } }): string => objekttitel || address,
+    ({
+      obj: { objekttitel, address },
+    }: {
+      obj: IApiOnOfficeRealEstateDto;
+    }): string => objekttitel || address,
     {
       toClassOnly: true,
     },
@@ -46,7 +66,6 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @Expose()
   @IsNotEmpty()
   @IsString()
-  @Transform(({ value }): string => value, { toClassOnly: true })
   address: string;
 
   @Expose()
@@ -69,11 +88,14 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @Transform(
     ({
       obj: { kaufpreis, waehrung, kaltmiete, warmmiete },
+    }: {
+      obj: IApiOnOfficeRealEstateDto;
     }): ApiRealEstateCost => {
-      const price = +kaufpreis;
-      const coldPrice = +kaltmiete;
-      const warmPrice = +warmmiete;
-      const currency = !waehrung || waehrung === 'EUR' ? '€' : waehrung;
+      const price = parseCommaFloat(kaufpreis);
+      const coldPrice = parseCommaFloat(kaltmiete);
+      const warmPrice = parseCommaFloat(warmmiete);
+      const currency =
+        !waehrung || waehrung.toUpperCase() === 'EUR' ? '€' : waehrung;
 
       if (price) {
         return {
@@ -82,17 +104,17 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
         };
       }
 
-      if (coldPrice) {
-        return {
-          price: { amount: price, currency },
-          type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
-        };
-      }
-
       if (warmPrice) {
         return {
           price: { amount: price, currency },
           type: ApiRealEstateCostType.RENT_MONTHLY_WARM,
+        };
+      }
+
+      if (coldPrice) {
+        return {
+          price: { amount: price, currency },
+          type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
         };
       }
 
@@ -109,43 +131,68 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @Type(() => ApiRealEstateCharacteristicsDto)
   @Transform(
     ({
-      obj: {
+      obj,
+    }: {
+      obj: IApiOnOfficeRealEstateDto;
+    }): ApiRealEstateCharacteristics => {
+      const {
         anzahl_zimmer,
         wohnflaeche,
         grundstuecksflaeche,
+        grundstuecksgroesse,
         energyClass,
+        energieeffizienzklasse,
+        balkon,
         anzahl_balkone,
         unterkellert,
-      },
-    }): ApiRealEstateCharacteristics => {
+      } = obj;
+
+      const resultingEnergyClass = energyClass || energieeffizienzklasse;
+      const numberOfRooms = parseCommaFloat(anzahl_zimmer);
+      const realEstateSizeInSquareMeters = parseCommaFloat(wohnflaeche);
+
+      const propertySizeInSquareMeters = parseCommaFloat(
+        grundstuecksflaeche || grundstuecksgroesse,
+      );
+
       const characteristics = {
         furnishing: [],
       } as ApiRealEstateCharacteristics;
 
-      if (+anzahl_zimmer) {
-        characteristics.numberOfRooms = +anzahl_zimmer;
+      if (numberOfRooms) {
+        characteristics.numberOfRooms = numberOfRooms;
       }
 
-      if (+wohnflaeche) {
-        characteristics.realEstateSizeInSquareMeters = +wohnflaeche;
+      if (realEstateSizeInSquareMeters) {
+        characteristics.realEstateSizeInSquareMeters =
+          realEstateSizeInSquareMeters;
       }
 
-      if (+grundstuecksflaeche) {
-        characteristics.propertySizeInSquareMeters = +grundstuecksflaeche;
+      if (propertySizeInSquareMeters) {
+        characteristics.propertySizeInSquareMeters = propertySizeInSquareMeters;
       }
 
       if (
-        energyClass &&
-        Object.values(ApiEnergyEfficiency).includes(energyClass)
+        resultingEnergyClass &&
+        Object.values(ApiEnergyEfficiency).includes(
+          resultingEnergyClass.toUpperCase() as ApiEnergyEfficiency,
+        )
       ) {
-        characteristics.energyEfficiency = energyClass;
+        characteristics.energyEfficiency =
+          resultingEnergyClass.toUpperCase() as ApiEnergyEfficiency;
       }
 
-      if (anzahl_balkone) {
+      if (anzahl_balkone || +balkon) {
         characteristics.furnishing.push(ApiFurnishing.BALCONY);
       }
 
-      if (unterkellert) {
+      if (
+        [
+          ApiOnOfficeEstateBasementEnum.JA,
+          ApiOnOfficeEstateBasementEnum.TEIL,
+          ApiOnOfficeEstateBasementEnum.TEILWEISE,
+        ].includes(unterkellert.toUpperCase() as ApiOnOfficeEstateBasementEnum)
+      ) {
         characteristics.furnishing.push(ApiFurnishing.BASEMENT);
       }
 
@@ -163,29 +210,48 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiGeoJsonPointDto)
-  @Transform(({ value }): GeoJsonPoint => value, { toClassOnly: true })
   location: GeoJsonPoint;
 
   @Expose()
   @IsOptional()
   @IsEnum(ApiRealEstateStatusEnum)
-  @Transform(({ obj: { vermarktungsart } }): ApiRealEstateStatusEnum => {
-    let status = ApiRealEstateStatusEnum.IN_PREPARATION;
+  @Transform(
+    ({
+      obj: { vermarktungsart, kaufpreis, warmmiete, kaltmiete },
+    }: {
+      obj: IApiOnOfficeRealEstateDto;
+    }): ApiRealEstateStatusEnum => {
+      if (
+        vermarktungsart.toUpperCase() ===
+          ApiOnOfficeEstateMarketTypesEnum.KAUF ||
+        parseCommaFloat(kaufpreis)
+      ) {
+        return ApiRealEstateStatusEnum.FOR_SALE;
+      }
 
-    if (vermarktungsart === 'Kauf') {
-      status = ApiRealEstateStatusEnum.FOR_SALE;
-    }
+      if (
+        vermarktungsart.toUpperCase() ===
+          ApiOnOfficeEstateMarketTypesEnum.MIETE ||
+        parseCommaFloat(warmmiete) ||
+        parseCommaFloat(kaltmiete)
+      ) {
+        return ApiRealEstateStatusEnum.FOR_RENT;
+      }
 
-    return status;
-  })
+      return ApiRealEstateStatusEnum.IN_PREPARATION;
+    },
+  )
   status?: ApiRealEstateStatusEnum;
 
   @Expose()
   @IsOptional()
   @IsString()
   @Transform(
-    ({ obj: { externe_objnr, objektnummer } }): string =>
-      externe_objnr || objektnummer,
+    ({
+      obj: { objektnr_extern, immonr, Id, datensatznr },
+    }: {
+      obj: IApiOnOfficeRealEstateDto;
+    }): string => objektnr_extern || immonr || Id || datensatznr,
   )
   externalId?: string;
 
@@ -194,7 +260,6 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiIntegrationParamsDto)
-  @Transform(({ value }): IApiIntegrationParams => value, { toClassOnly: true })
   integrationParams?: IApiIntegrationParams;
 }
 

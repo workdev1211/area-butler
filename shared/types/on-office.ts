@@ -82,9 +82,14 @@ interface IApiOnOfficeRequestAction {
 
 interface IApiOnOfficeRequestActionParameters {
   parameterCacheId?: string;
-  extendedclaim: string;
+  extendedclaim?: string;
   isRegularCustomer?: number;
   data?: any;
+  labels?: boolean;
+  language?: string; // enum
+  modules?: string[]; // enum[]
+  listlimit?: number; // 20 by default
+  listoffset?: number;
   // file upload start
   module?: "estate"; // enum
   freetext?: string; // file description
@@ -160,25 +165,46 @@ interface IApiOnOfficeResponseResultRecord<T> {
   elements: T;
 }
 
-export interface IApiOnOfficeResponseEstateElement {
-  objekttitel: string;
-  strasse: string;
-  hausnummer: string;
-  plz: string;
-  ort: string;
-  land: string;
-  breitengrad: string;
-  laengengrad: string;
-  anzahl_zimmer: string;
-  wohnflaeche: string;
-  grundstuecksflaeche: string;
-  energyClass: string;
-  kaufpreis: string;
-  waehrung: string;
-  kaltmiete: string;
-  warmmiete: string;
-  anzahl_balkone: string;
-  unterkellert: string;
+// TODO refactor in regard that some onOffice parameters have different labels for export csvs
+export interface IApiOnOfficeRealEstate {
+  Id: string; // the label is "Datensatznr"
+  objekttitel: string; // estate title
+  strasse: string; // street name
+  hausnummer: string; // building no
+  plz: string; // zip code
+  ort: string; // location - city, etc
+  land: string; // country
+  breitengrad: string; // latitude
+  laengengrad: string; // longitude
+  anzahl_zimmer: string; // number of rooms
+  wohnflaeche: string; // nutzflaeche - realEstateSizeInSquareMeters
+  grundstuecksflaeche: string; // gesamtflaeche - propertySizeInSquareMeters // the label is "Grundstücksgröße"
+  energyClass: string; // the label is "Energieeffizienzklasse"
+  kaufpreis: string; // selling price
+  waehrung: string; // currency
+  kaltmiete: string; // cold rent
+  // nettokaltmiete: string; // net cold rent
+  warmmiete: string; // warm rent - the most common
+  balkon: string; // is a balcony present - 0 or 1 - boolean
+  anzahl_balkone: string; // number of balconies
+  unterkellert: ApiOnOfficeEstateBasementEnum; // basement
+  vermarktungsart: ApiOnOfficeEstateMarketTypesEnum; // marketing type - sell, rent, etc
+  objektnr_extern: string; // the label is "ImmoNr"
+  lage: string; // description
+}
+
+export enum ApiOnOfficeEstateMarketTypesEnum {
+  MIETE = "MIETE",
+  KAUF = "KAUF",
+  PACHT = "PACHT",
+  ERBPACHT = "ERBPACHT",
+}
+
+export enum ApiOnOfficeEstateBasementEnum {
+  JA = "JA",
+  NEIN = "NEIN",
+  TEIL = "TEIL", // the same with 'TEILWEISE'
+  TEILWEISE = "TEILWEISE", // the label for 'TEIL'
 }
 
 export interface IApiOnOfficeLoginQueryParams {

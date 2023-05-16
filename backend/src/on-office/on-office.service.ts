@@ -30,11 +30,13 @@ import {
   TApiOnOfficeConfirmOrderRes,
   IApiOnOfficeUpdateEstateReq,
   IApiOnOfficeUploadFileReq,
+  IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
+  parseCommaFloat,
 } from '../../../shared/functions/shared.functions';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
@@ -747,6 +749,7 @@ export class OnOfficeService {
                 'warmmiete',
                 'anzahl_balkone',
                 'unterkellert',
+                'vermarktungsart',
               ],
               extendedclaim: extendedClaim,
             },
@@ -755,7 +758,8 @@ export class OnOfficeService {
       },
     };
 
-    const response = await this.onOfficeApiService.sendRequest(request);
+    const response: IApiOnOfficeResponse<IApiOnOfficeRealEstate> =
+      await this.onOfficeApiService.sendRequest(request);
 
     this.checkResponseIsSuccess(
       this.fetchAndProcessEstateData.name,
@@ -778,7 +782,11 @@ export class OnOfficeService {
     } = onOfficeEstate;
 
     const locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
-    const locationCoordinates = { lat: +lat, lng: +lng };
+
+    const locationCoordinates = {
+      lat: parseCommaFloat(lat),
+      lng: parseCommaFloat(lng),
+    };
 
     let place = await this.googleGeocodeService.fetchPlace(locationAddress);
 
