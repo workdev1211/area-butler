@@ -24,14 +24,18 @@ export const allRealEstateCostTypes = [
 ];
 
 export const allRealEstateStatuses: IApiRealEstateStatus[] = [
-  { label: "Alle", status: ApiRealEstateStatusEnum.ALLE },
+  { label: "Alle", status: ApiRealEstateStatusEnum.ALL },
   { label: "In Vorbereitung", status: ApiRealEstateStatusEnum.IN_PREPARATION },
   { label: "Miete", status: ApiRealEstateStatusEnum.FOR_RENT },
   { label: "Kauf", status: ApiRealEstateStatusEnum.FOR_SALE },
+  { label: "Vermietet", status: ApiRealEstateStatusEnum.RENTED },
+  { label: "Verkauft", status: ApiRealEstateStatusEnum.SOLD },
   { label: "Neubau", status: ApiRealEstateStatusEnum.NEW_CONSTRUCTION },
+  { label: "Archiviert", status: ApiRealEstateStatusEnum.ARCHIVED },
+  { label: "Reserviert", status: ApiRealEstateStatusEnum.RESERVED },
   {
-    label: "Vermietet / Verkauft",
-    status: ApiRealEstateStatusEnum.RENTED_SOLD,
+    label: "Marktbeobachtung",
+    status: ApiRealEstateStatusEnum.MARKET_OBSERVATION,
   },
 ];
 

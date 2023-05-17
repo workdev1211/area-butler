@@ -66,7 +66,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const realEstateHighlightId = queryParams.get("id");
 
   const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState(
-    ApiRealEstateStatusEnum.ALLE
+    ApiRealEstateStatusEnum.ALL
   );
   const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
     ApiSearchResultSnapshotResponse[]
@@ -277,7 +277,7 @@ const RealEstatesPage: FunctionComponent = () => {
           options={allRealEstateStatuses}
           isSearchable={false}
           defaultValue={allRealEstateStatuses.find(
-            ({ status }) => status === ApiRealEstateStatusEnum.ALLE
+            ({ status }) => status === ApiRealEstateStatusEnum.ALL
           )}
           placeholder="Wählen Sie einen Typ..."
           onChange={async (option, action) => {

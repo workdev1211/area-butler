@@ -171,7 +171,7 @@ const SnippetEditorPage: FunctionComponent = () => {
         ? realEstateListings.filter(
             ({ status }) =>
               snapshotConfig.realEstateStatus ===
-                ApiRealEstateStatusEnum.ALLE ||
+                ApiRealEstateStatusEnum.ALL ||
               status === snapshotConfig.realEstateStatus
           )
         : realEstateListings;
@@ -310,7 +310,7 @@ const SnippetEditorPage: FunctionComponent = () => {
     const filteredRealEstateListings = configRealEstateStatus
       ? snapshot.realEstateListings.filter(
           ({ status }) =>
-            configRealEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            configRealEstateStatus === ApiRealEstateStatusEnum.ALL ||
             status === configRealEstateStatus
         )
       : snapshot.realEstateListings;

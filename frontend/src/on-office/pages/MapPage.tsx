@@ -101,7 +101,7 @@ const MapPage: FunctionComponent = () => {
     const filteredRealEstateListings = config.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            config.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            config.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
             status === config.realEstateStatus
         )
       : realEstateListings;

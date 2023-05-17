@@ -29,7 +29,7 @@ export class RealEstateListingService {
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    status = ApiRealEstateStatusEnum.ALLE,
+    status = ApiRealEstateStatusEnum.ALL,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     let filter;
@@ -53,7 +53,7 @@ export class RealEstateListingService {
       };
     }
 
-    if (status !== ApiRealEstateStatusEnum.ALLE) {
+    if (status !== ApiRealEstateStatusEnum.ALL) {
       filter.status = status;
     }
 

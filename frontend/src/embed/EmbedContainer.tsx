@@ -162,7 +162,7 @@ const EmbedContainer: FunctionComponent = () => {
     const filteredRealEstateListings = searchConfig.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALLE ||
+            searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
             status === searchConfig.realEstateStatus
         )
       : realEstateListings;

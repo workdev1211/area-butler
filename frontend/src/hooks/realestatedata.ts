@@ -15,7 +15,7 @@ export const useRealEstateData = () => {
   const { get } = useHttp();
 
   const fetchRealEstates = async (
-    realEstateStatus = ApiRealEstateStatusEnum.ALLE
+    realEstateStatus = ApiRealEstateStatusEnum.ALL
   ): Promise<void> => {
     let url = "/api/real-estate-listing/listings";
 

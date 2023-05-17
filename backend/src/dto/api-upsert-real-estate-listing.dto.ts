@@ -56,7 +56,7 @@ class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
 
   @IsNotEmpty()
   @IsEnum(ApiRealEstateStatusEnum)
-  @NotEquals(ApiRealEstateStatusEnum.ALLE)
+  @NotEquals(ApiRealEstateStatusEnum.ALL)
   status: ApiRealEstateStatusEnum;
 }
 

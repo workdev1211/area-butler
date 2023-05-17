@@ -93,12 +93,16 @@ export enum ApiEnergyEfficiency {
 }
 
 export enum ApiRealEstateStatusEnum {
-  ALLE = "ALLE",
+  ALL = "ALL",
   IN_PREPARATION = "IN_PREPARATION",
   FOR_RENT = "FOR_RENT", // Miete
   FOR_SALE = "FOR_SALE", // Kauf
-  RENTED_SOLD = "RENTED_SOLD",
+  RENTED = "RENTED",
+  SOLD = "SOLD",
   NEW_CONSTRUCTION = "NEW_CONSTRUCTION",
+  ARCHIVED = "ARCHIVED",
+  RESERVED = "RESERVED",
+  MARKET_OBSERVATION = "MARKET_OBSERVATION",
 }
 
 export interface IApiRealEstateStatus {

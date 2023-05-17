@@ -136,7 +136,7 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
               <Select label="Typ" name="status" placeholder="Typ">
                 {allRealEstateStatuses.reduce(
                   (result: ReactNode[], { label, status }) => {
-                    if (status !== ApiRealEstateStatusEnum.ALLE) {
+                    if (status !== ApiRealEstateStatusEnum.ALL) {
                       result.push(
                         <option value={status} key={status}>
                           {label}

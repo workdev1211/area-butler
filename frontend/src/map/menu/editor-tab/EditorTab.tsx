@@ -266,7 +266,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({
       ...config,
       realEstateStatus:
-        value !== ApiRealEstateStatusEnum.ALLE
+        value !== ApiRealEstateStatusEnum.ALL
           ? (value as ApiRealEstateStatusEnum)
           : undefined,
     });

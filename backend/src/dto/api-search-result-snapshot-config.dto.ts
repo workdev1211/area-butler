@@ -105,7 +105,7 @@ class ApiSearchResultSnapshotConfigDto
 
   @IsOptional()
   @IsEnum(ApiRealEstateStatusEnum)
-  @NotEquals(ApiRealEstateStatusEnum.ALLE)
+  @NotEquals(ApiRealEstateStatusEnum.ALL)
   realEstateStatus?: ApiRealEstateStatusEnum;
 
   @IsOptional()
