@@ -39,6 +39,18 @@ export const allRealEstateStatuses: IApiRealEstateStatus[] = [
   },
 ];
 
+export const areaButlerEstateStatusMapping = new Map([
+  ["IN VORBEREITUNG", ApiRealEstateStatusEnum.IN_PREPARATION],
+  ["MIETE", ApiRealEstateStatusEnum.FOR_RENT],
+  ["KAUF", ApiRealEstateStatusEnum.FOR_SALE],
+  ["VERMIETET", ApiRealEstateStatusEnum.RENTED],
+  ["VERKAUFT", ApiRealEstateStatusEnum.SOLD],
+  ["NEUBAU", ApiRealEstateStatusEnum.NEW_CONSTRUCTION],
+  ["ARCHIVIERT", ApiRealEstateStatusEnum.ARCHIVED],
+  ["RESERVIERT", ApiRealEstateStatusEnum.RESERVED],
+  ["MARKTBEOBACHTUNG", ApiRealEstateStatusEnum.MARKET_OBSERVATION],
+]);
+
 export const apiConnectionTypeNames: Record<
   ApiRealEstateExtSourcesEnum,
   string

@@ -30,12 +30,14 @@ import {
   ApiOnOfficeEstateMarketTypesEnum,
   IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
+import { areaButlerEstateStatusMapping } from '../../../../shared/constants/real-estate';
 
 interface IApiOnOfficeRealEstateDto extends IApiOnOfficeRealEstate {
   address: string; // 'address' field comes from our side after the geocoding
   integrationParams?: IApiIntegrationParams;
   // LABELS - we need them for the csv import
   datensatznr: string; // the label for 'Id' field
+  status: string; // the label for 'status2' field
   grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
   energieeffizienzklasse: string; // the label for 'energyClass' field
   immonr: string; // the label for 'objektnr_extern' field
@@ -106,14 +108,14 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
 
       if (warmPrice) {
         return {
-          price: { amount: price, currency },
+          price: { amount: warmPrice, currency },
           type: ApiRealEstateCostType.RENT_MONTHLY_WARM,
         };
       }
 
       if (coldPrice) {
         return {
-          price: { amount: price, currency },
+          price: { amount: coldPrice, currency },
           type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
         };
       }
@@ -173,7 +175,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       }
 
       if (
-        resultingEnergyClass &&
+        typeof resultingEnergyClass === 'string' &&
         Object.values(ApiEnergyEfficiency).includes(
           resultingEnergyClass.toUpperCase() as ApiEnergyEfficiency,
         )
@@ -187,6 +189,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       }
 
       if (
+        typeof unterkellert === 'string' &&
         [
           ApiOnOfficeEstateBasementEnum.JA,
           ApiOnOfficeEstateBasementEnum.TEIL,
@@ -217,21 +220,42 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsEnum(ApiRealEstateStatusEnum)
   @Transform(
     ({
-      obj: { vermarktungsart, kaufpreis, warmmiete, kaltmiete },
+      obj: {
+        vermarktungsart,
+        kaufpreis,
+        warmmiete,
+        kaltmiete,
+        status2,
+        status,
+      },
     }: {
       obj: IApiOnOfficeRealEstateDto;
     }): ApiRealEstateStatusEnum => {
+      const resultingOnOfficeStatus = status2 || status;
+
+      if (typeof resultingOnOfficeStatus === 'string') {
+        const resultingStatus = areaButlerEstateStatusMapping.get(
+          resultingOnOfficeStatus.toUpperCase(),
+        );
+
+        if (resultingStatus) {
+          return resultingStatus;
+        }
+      }
+
       if (
-        vermarktungsart.toUpperCase() ===
-          ApiOnOfficeEstateMarketTypesEnum.KAUF ||
+        (typeof vermarktungsart === 'string' &&
+          vermarktungsart.toUpperCase() ===
+            ApiOnOfficeEstateMarketTypesEnum.KAUF) ||
         parseCommaFloat(kaufpreis)
       ) {
         return ApiRealEstateStatusEnum.FOR_SALE;
       }
 
       if (
-        vermarktungsart.toUpperCase() ===
-          ApiOnOfficeEstateMarketTypesEnum.MIETE ||
+        (typeof vermarktungsart === 'string' &&
+          vermarktungsart.toUpperCase() ===
+            ApiOnOfficeEstateMarketTypesEnum.MIETE) ||
         parseCommaFloat(warmmiete) ||
         parseCommaFloat(kaltmiete)
       ) {

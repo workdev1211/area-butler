@@ -168,6 +168,7 @@ interface IApiOnOfficeResponseResultRecord<T> {
 // TODO refactor in regard that some onOffice parameters have different labels for export csvs
 export interface IApiOnOfficeRealEstate {
   Id: string; // the label is "Datensatznr"
+  status2: ApiOnOfficeEstateStatusesEnum; // the label is "Status"
   objekttitel: string; // estate title
   strasse: string; // street name
   hausnummer: string; // building no
@@ -203,8 +204,14 @@ export enum ApiOnOfficeEstateMarketTypesEnum {
 export enum ApiOnOfficeEstateBasementEnum {
   JA = "JA",
   NEIN = "NEIN",
-  TEIL = "TEIL", // the same with 'TEILWEISE'
-  TEILWEISE = "TEILWEISE", // the label for 'TEIL'
+  TEIL = "TEIL", // the label is "Teilweise"
+  TEILWEISE = "TEILWEISE", // the label for 'TEIL' option
+}
+
+export enum ApiOnOfficeEstateStatusesEnum {
+  INAKTIV = "INAKTIV",
+  AKTIV = "AKTIV",
+  ARCHIVIERT = "ARCHIVIERT",
 }
 
 export interface IApiOnOfficeLoginQueryParams {
