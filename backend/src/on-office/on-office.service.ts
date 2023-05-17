@@ -2,7 +2,6 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
-import { createHmac } from 'crypto';
 import { plainToInstance } from 'class-transformer';
 
 import { configService } from '../config/config.service';
@@ -63,7 +62,6 @@ import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office
 export class OnOfficeService {
   private readonly apiUrl = configService.getBaseApiUrl();
   private readonly appUrl = configService.getBaseAppUrl();
-  private readonly providerSecret = configService.getOnOfficeProviderSecret();
   private readonly integrationType = IntegrationTypesEnum.ON_OFFICE;
   private readonly logger = new Logger(OnOfficeService.name);
 
@@ -149,7 +147,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UNLOCK_PROVIDER;
     const timestamp = dayjs().unix();
 
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -179,7 +177,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     try {
-      this.checkResponseIsSuccess(
+      this.onOfficeApiService.checkResponseIsSuccess(
         this.login.name,
         'User login failed!',
         request,
@@ -370,7 +368,8 @@ export class OnOfficeService {
 
     const sortedOrderData = getOnOfficeSortedMapData(onOfficeOrderData);
     const orderQueryString = buildOnOfficeQueryString(sortedOrderData);
-    onOfficeOrderData.signature = this.generateSignature(orderQueryString);
+    onOfficeOrderData.signature =
+      this.onOfficeApiService.generateSignature(orderQueryString);
 
     return { onOfficeOrderData };
   }
@@ -475,7 +474,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
 
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -507,7 +506,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.updateEstate.name,
       'Estate update failed!',
       request,
@@ -529,7 +528,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
     const timestamp = dayjs().unix();
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -560,7 +559,7 @@ export class OnOfficeService {
       initialRequest,
     );
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.uploadFile.name,
       'File upload failed on the 1st step!',
       initialRequest,
@@ -600,7 +599,7 @@ export class OnOfficeService {
       finalRequest,
     );
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.uploadFile.name,
       'File upload failed on the 2nd step!',
       finalRequest,
@@ -616,7 +615,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
     const timestamp = dayjs().unix();
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -649,7 +648,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.uploadLink.name,
       'Link upload failed!',
       request,
@@ -673,7 +672,8 @@ export class OnOfficeService {
     ]);
 
     const testUrl = `${url}?${testQueryString}`;
-    const generatedSignature = this.generateSignature(testUrl);
+    const generatedSignature =
+      this.onOfficeApiService.generateSignature(testUrl);
 
     if (generatedSignature === signature) {
       return;
@@ -689,17 +689,6 @@ export class OnOfficeService {
     throw new HttpException('Request verification failed!', 400);
   }
 
-  private generateSignature(
-    data: string,
-    secret = this.providerSecret,
-    encoding: BufferEncoding = 'hex',
-  ): string {
-    return createHmac('sha256', secret)
-      .update(data)
-      .digest()
-      .toString(encoding);
-  }
-
   private async fetchAndProcessEstateData(
     estateId: string,
     {
@@ -711,7 +700,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
 
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -740,8 +729,8 @@ export class OnOfficeService {
                 'breitengrad',
                 'laengengrad',
                 'anzahl_zimmer',
-                'wohnflaeche', // nutzflaeche - realEstateSizeInSquareMeters
-                'grundstuecksflaeche', // gesamtflaeche - propertySizeInSquareMeters
+                'wohnflaeche',
+                'grundstuecksflaeche',
                 'energyClass',
                 'kaufpreis',
                 'waehrung',
@@ -761,7 +750,7 @@ export class OnOfficeService {
     const response: IApiOnOfficeResponse<IApiOnOfficeRealEstate> =
       await this.onOfficeApiService.sendRequest(request);
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.fetchAndProcessEstateData.name,
       'The estate entity has not been retrieved!',
       request,
@@ -832,7 +821,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.BASIC_SETTINGS;
     const timestamp = dayjs().unix();
 
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -869,7 +858,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.fetchLogoAndColor.name,
       "User color and logo haven't been retrieved!",
       request,
@@ -890,7 +879,7 @@ export class OnOfficeService {
     const resourceType = ApiOnOfficeResourceTypesEnum.USER;
     const timestamp = dayjs().unix();
 
-    const signature = this.generateSignature(
+    const signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
       apiKey,
       'base64',
@@ -919,7 +908,7 @@ export class OnOfficeService {
 
     const response = await this.onOfficeApiService.sendRequest(request);
 
-    this.checkResponseIsSuccess(
+    this.onOfficeApiService.checkResponseIsSuccess(
       this.fetchUserData.name,
       "User data hasn't been retrieved!",
       request,
@@ -930,39 +919,5 @@ export class OnOfficeService {
       response.response.results[0].data.records[0].elements;
 
     return { userName, email };
-  }
-
-  private checkResponseIsSuccess(
-    methodName: string,
-    errorMessage: string,
-    request: IApiOnOfficeRequest,
-    response: IApiOnOfficeResponse,
-  ): void {
-    const {
-      status: {
-        code: responseCode,
-        errorcode: responseErrorCode,
-        message: responseMessage,
-      },
-      response: {
-        results: [
-          {
-            status: { errorcode: actionErrorCode, message: actionMessage },
-          },
-        ],
-      },
-    } = response;
-
-    const responseIsSuccess =
-      responseCode === 200 &&
-      responseErrorCode === 0 &&
-      responseMessage === 'OK' &&
-      actionErrorCode === 0 &&
-      actionMessage === 'OK';
-
-    if (!responseIsSuccess) {
-      this.logger.error(methodName, request, response);
-      throw new HttpException(errorMessage, 400);
-    }
   }
 }

@@ -14,7 +14,7 @@ interface ICmrImportModalProps {
   closeModal: () => void;
 }
 
-const CmrImportModal: FunctionComponent<ICmrImportModalProps> = ({
+const CrmImportModal: FunctionComponent<ICmrImportModalProps> = ({
   apiConnections,
   closeModal,
 }) => {
@@ -110,4 +110,4 @@ const CmrImportModal: FunctionComponent<ICmrImportModalProps> = ({
   );
 };
 
-export default CmrImportModal;
+export default CrmImportModal;

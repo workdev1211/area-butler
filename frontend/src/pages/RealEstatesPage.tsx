@@ -46,7 +46,7 @@ import { ConfigContext } from "../context/ConfigContext";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
 import { useRealEstateData } from "../hooks/realestatedata";
-import CmrImportModal from "../real-estates/CmrImportModal";
+import CrmImportModal from "../real-estates/CrmImportModal";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -261,7 +261,7 @@ const RealEstatesPage: FunctionComponent = () => {
         fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
       />
       {isShownCmrImportModal && (
-        <CmrImportModal
+        <CrmImportModal
           apiConnections={user.apiConnections!}
           closeModal={() => {
             setIsShownCmrImportModal(false);
