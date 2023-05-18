@@ -19,8 +19,14 @@ const UserCrmSettings: FunctionComponent = () => {
   const apiConnections =
     userState.user?.apiConnections || ({} as TApiUserApiConnections);
 
-  const [apiKey, setApiKey] = useState<string | undefined>(
-    apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey
+  const [propstackApiKey, setPropstackApiKey] = useState<string>(
+    apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey || ""
+  );
+  const [onOfficeToken, setOnOfficeToken] = useState<string>(
+    apiConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE]?.token || ""
+  );
+  const [onOfficeSecret, setOnOfficeSecret] = useState<string>(
+    apiConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE]?.secret || ""
   );
 
   return (
@@ -32,58 +38,124 @@ const UserCrmSettings: FunctionComponent = () => {
         usw.
       </div>
       <div className="api-connections-grid grid items-center gap-5">
-        {Object.values(ApiRealEstateExtSourcesEnum).map((connectionType) => (
-          <Fragment key={connectionType}>
-            <div className="font-bold pt-4">
-              {apiConnectionTypeNames[connectionType]}
-            </div>
-            <div className="form-control">
-              <label className="label">
-                <span className="label-text">API Key</span>
-              </label>
-              <input
-                type="text"
-                placeholder="API Key"
-                className="input input-bordered"
-                value={apiKey}
-                onChange={({ target: { value } }) => {
-                  setApiKey(value);
-                }}
-              />
-            </div>
-            <div className="pt-4">
-              <button
-                className="btn btn-primary"
-                onClick={async () => {
-                  if (!apiKey?.length) {
-                    return;
-                  }
+        {/* PROPSTACK */}
+        <div className="font-bold pt-4">
+          {apiConnectionTypeNames[ApiRealEstateExtSourcesEnum.PROPSTACK]}
+        </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">API Key</span>
+          </label>
+          <input
+            type="text"
+            placeholder="API Key"
+            className="input input-bordered"
+            value={propstackApiKey}
+            onChange={({ target: { value } }) => {
+              setPropstackApiKey(value);
+            }}
+          />
+        </div>
+        <div className="pt-4">
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
+              if (!propstackApiKey?.length) {
+                return;
+              }
 
-                  try {
-                    const connectionSettings = { connectionType, apiKey };
+              try {
+                const connectionSettings = {
+                  connectionType: ApiRealEstateExtSourcesEnum.PROPSTACK,
+                  apiKey: propstackApiKey,
+                };
 
-                    await post<void, IApiUserApiConnectionSettingsReq>(
-                      "/api/real-estate-listing/crm-test",
-                      connectionSettings
-                    );
+                await post<void, IApiUserApiConnectionSettingsReq>(
+                  "/api/real-estate-listing/crm-test",
+                  connectionSettings
+                );
 
-                    toastSuccess("Die Verbindung wurde erfolgreich getestet.");
+                toastSuccess("Die Verbindung wurde erfolgreich getestet.");
 
-                    userDispatch({
-                      type: UserActionTypes.SET_API_CONNECTION,
-                      payload: connectionSettings,
-                    });
-                  } catch (e) {
-                    toastError("Der Fehler ist aufgetreten!");
-                    setApiKey(undefined);
-                  }
-                }}
-              >
-                Testen und speichern
-              </button>
-            </div>
-          </Fragment>
-        ))}
+                userDispatch({
+                  type: UserActionTypes.SET_API_CONNECTION,
+                  payload: connectionSettings,
+                });
+              } catch (e) {
+                toastError("Der Fehler ist aufgetreten!");
+                setPropstackApiKey("");
+              }
+            }}
+          >
+            Testen und speichern
+          </button>
+        </div>
+        {/* ON_OFFICE */}
+        <div className="font-bold pt-4">
+          {apiConnectionTypeNames[ApiRealEstateExtSourcesEnum.ON_OFFICE]}
+        </div>
+        <div className="form-control">
+          <label className="label">
+            <span className="label-text">Token</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Token"
+            className="input input-bordered"
+            value={onOfficeToken}
+            onChange={({ target: { value } }) => {
+              setOnOfficeToken(value);
+            }}
+          />
+          <label className="label">
+            <span className="label-text">Secret</span>
+          </label>
+          <input
+            type="text"
+            placeholder="Secret"
+            className="input input-bordered"
+            value={onOfficeSecret}
+            onChange={({ target: { value } }) => {
+              setOnOfficeSecret(value);
+            }}
+          />
+        </div>
+        <div className="pt-4">
+          <button
+            className="btn btn-primary"
+            onClick={async () => {
+              if (!onOfficeToken?.length || !onOfficeSecret?.length) {
+                return;
+              }
+
+              try {
+                const connectionSettings = {
+                  connectionType: ApiRealEstateExtSourcesEnum.ON_OFFICE,
+                  token: onOfficeToken,
+                  secret: onOfficeSecret,
+                };
+
+                await post<void, IApiUserApiConnectionSettingsReq>(
+                  "/api/real-estate-listing/crm-test",
+                  connectionSettings
+                );
+
+                toastSuccess("Die Verbindung wurde erfolgreich getestet.");
+
+                userDispatch({
+                  type: UserActionTypes.SET_API_CONNECTION,
+                  payload: connectionSettings,
+                });
+              } catch (e) {
+                toastError("Der Fehler ist aufgetreten!");
+                setOnOfficeToken("");
+                setOnOfficeSecret("");
+              }
+            }}
+          >
+            Testen und speichern
+          </button>
+        </div>
       </div>
     </div>
   );

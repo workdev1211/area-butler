@@ -7,7 +7,7 @@ import {
   IPropstackRealEstate,
 } from '../../shared/propstack.types';
 
-export const REAL_ESTATES_PER_PAGE = 20;
+export const PROPSTACK_ESTATES_PER_PAGE = 20;
 
 @Injectable()
 export class PropstackApiService {
@@ -28,7 +28,7 @@ export class PropstackApiService {
       data: IPropstackApiFetchEstatesRes;
     }>(
       this.http.get<IPropstackApiFetchEstatesRes>(
-        `${this.apiUrl}/units?with_meta=1&page=${pageNumber}&per=${REAL_ESTATES_PER_PAGE}`,
+        `${this.apiUrl}/units?with_meta=1&page=${pageNumber}&per=${PROPSTACK_ESTATES_PER_PAGE}`,
         { headers },
       ),
     );

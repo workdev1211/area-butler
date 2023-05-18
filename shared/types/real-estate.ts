@@ -117,8 +117,14 @@ export enum ApiExampleFileTypeEnum {
 
 export enum ApiRealEstateExtSourcesEnum {
   PROPSTACK = "PROPSTACK",
+  ON_OFFICE = "ON_OFFICE",
 }
 
 export interface IApiPropstackConSettings {
   apiKey: string;
+}
+
+export interface IApiOnOfficeConSettings {
+  token: string;
+  secret: string;
 }

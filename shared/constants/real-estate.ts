@@ -56,4 +56,5 @@ export const apiConnectionTypeNames: Record<
   string
 > = {
   [ApiRealEstateExtSourcesEnum.PROPSTACK]: "Propstack",
+  [ApiRealEstateExtSourcesEnum.ON_OFFICE]: "onOffice",
 };

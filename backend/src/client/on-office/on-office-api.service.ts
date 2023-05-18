@@ -9,6 +9,8 @@ import {
 } from '@area-butler-types/on-office';
 import { configService } from '../../config/config.service';
 
+export const ON_OFFICE_ESTATES_PER_PAGE = 20;
+
 @Injectable()
 export class OnOfficeApiService {
   private readonly providerSecret = configService.getOnOfficeProviderSecret();

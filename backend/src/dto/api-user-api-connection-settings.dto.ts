@@ -17,6 +17,16 @@ class ApiUserApiConnectionSettingsReqDto
   @IsOptional()
   @IsString()
   apiKey?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  token?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  secret?: string;
 }
 
 export default ApiUserApiConnectionSettingsReqDto;
