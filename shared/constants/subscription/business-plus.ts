@@ -84,7 +84,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
               name: "Abfrage Kontingent",
               price: "390",
               description:
-                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 390,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
             },
           ],
         },
@@ -114,7 +114,7 @@ export const businessPlusV2Subscription: ApiSubscriptionPlan = {
               name: "Abfrage Kontingent",
               price: "325",
               description:
-                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 125,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
+                "Ihr Aktuelles Abfrage Kontingent lässt keine weiteren Abfragen zu. Bitte kaufen Sie ein weiteres Kontingent für 325,00 € (zzgl. MwSt.) oder wechseln Sie auf einen höheren Plan",
             },
           ],
         },
