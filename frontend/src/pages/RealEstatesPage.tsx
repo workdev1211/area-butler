@@ -73,7 +73,7 @@ const RealEstatesPage: FunctionComponent = () => {
   >([]);
   const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
-  const [isShownCmrImportModal, setIsShownCmrImportModal] = useState(false);
+  const [isShownCrmImportModal, setIsShownCrmImportModal] = useState(false);
 
   const user = userState.user!;
   const hasSubscription = !!user?.subscription;
@@ -184,7 +184,7 @@ const RealEstatesPage: FunctionComponent = () => {
             <button
               className="btn btn-link"
               onClick={() => {
-                setIsShownCmrImportModal(true);
+                setIsShownCrmImportModal(true);
               }}
             >
               <img
@@ -193,7 +193,7 @@ const RealEstatesPage: FunctionComponent = () => {
                 style={{ filter: "invert(100%)" }}
               />
               <label htmlFor="file" style={{ cursor: "pointer" }}>
-                CMR synchronisieren
+                CRM synchronisieren
               </label>
             </button>
           </li>
@@ -260,11 +260,11 @@ const RealEstatesPage: FunctionComponent = () => {
         }}
         fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
       />
-      {isShownCmrImportModal && (
+      {isShownCrmImportModal && (
         <CrmImportModal
           apiConnections={user.apiConnections!}
           closeModal={() => {
-            setIsShownCmrImportModal(false);
+            setIsShownCrmImportModal(false);
           }}
         />
       )}

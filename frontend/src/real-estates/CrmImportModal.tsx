@@ -9,12 +9,12 @@ import { TApiUserApiConnections } from "../../../shared/types/types";
 import { apiConnectionTypeNames } from "../../../shared/constants/real-estate";
 import { useRealEstateData } from "../hooks/realestatedata";
 
-interface ICmrImportModalProps {
+interface ICrmImportModalProps {
   apiConnections: TApiUserApiConnections;
   closeModal: () => void;
 }
 
-const CrmImportModal: FunctionComponent<ICmrImportModalProps> = ({
+const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
   apiConnections,
   closeModal,
 }) => {
