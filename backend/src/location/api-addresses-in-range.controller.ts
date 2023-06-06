@@ -65,13 +65,30 @@ export class ApiAddressesInRangeController {
     };
 
     try {
-      // "await" is required in order to catch an error
-      return await this.addressesInRangeService.getAddressesInRange(
+      const {
+        sourceAddress,
+        returnedAddressesNumber,
+        returnedAddresses,
+        requestType,
+        requestsNumber,
+      } = await this.addressesInRangeService.getAddressesInRange(
         address || { lat, lng },
         radius,
         language,
         apiName,
       );
+
+      Object.assign(requestStatus, {
+        sourceAddress,
+        returnedAddressesNumber,
+        requestType,
+        requestsNumber,
+      });
+
+      return {
+        address_count: returnedAddressesNumber,
+        addresses: returnedAddresses,
+      };
     } catch (e) {
       requestStatus.status = IApiAddressesInRangeRequestStatusEnum.ERROR;
       requestStatus.message = e.message;

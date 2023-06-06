@@ -491,6 +491,10 @@ export interface IApiAddressesInRangeRequestStatus {
   status: IApiAddressesInRangeRequestStatusEnum;
   queryParams: string;
   message?: string;
+  sourceAddress?: string;
+  returnedAddressesNumber?: number;
+  requestType?: ApiAddressesInRangeApiNameEnum;
+  requestsNumber?: number;
 }
 
 export type TPlaceholderSelectOptionKey = "placeholder";

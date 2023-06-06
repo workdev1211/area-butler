@@ -3,7 +3,6 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import {
   ApiAddressesInRangeApiNameEnum,
   ApiCoordinates,
-  IApiAddressesInRangeResponse,
   IApiAddressInRange,
 } from '@area-butler-types/types';
 import {
@@ -19,6 +18,22 @@ import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
+interface IFetchedAddresses {
+  addresses: IApiAddressInRange[];
+  requestsNumber: number;
+}
+
+interface IFetchedAddressesResponse {
+  sourceAddress: string;
+  returnedAddressesNumber: number;
+  returnedAddresses: IApiAddressInRange[];
+  requestType: ApiAddressesInRangeApiNameEnum;
+  requestsNumber: number;
+}
+
+const MAXIMUM_RADIUS = 400;
+const MINIMUM_ADDRESSES_NUMBER = 200;
+
 @Injectable()
 export class ApiAddressesInRangeService {
   private readonly logger = new Logger(ApiAddressesInRangeService.name);
@@ -33,7 +48,7 @@ export class ApiAddressesInRangeService {
     radius = 150, // meters
     language?: string,
     apiName = ApiAddressesInRangeApiNameEnum.HERE,
-  ): Promise<IApiAddressesInRangeResponse> {
+  ): Promise<IFetchedAddressesResponse> {
     let resultingLanguage = language;
 
     const place =
@@ -68,7 +83,7 @@ export class ApiAddressesInRangeService {
           ?.short_name || ApiGoogleLanguageEnum.DE;
     }
 
-    let addresses;
+    let fetchedAddresses;
 
     switch (apiName) {
       case ApiAddressesInRangeApiNameEnum.HERE: {
@@ -78,7 +93,7 @@ export class ApiAddressesInRangeService {
           ? resultingLanguage
           : ApiHereLanguageEnum.DE;
 
-        addresses = await this.fetchAddressesByHere(
+        fetchedAddresses = await this.fetchAddressesByHere(
           place,
           radius,
           resultingLanguage as ApiHereLanguageEnum,
@@ -93,7 +108,7 @@ export class ApiAddressesInRangeService {
           ? resultingLanguage
           : ApiGoogleLanguageEnum.DE;
 
-        addresses = await this.fetchAddressesByGoogle(
+        fetchedAddresses = await this.fetchAddressesByGoogle(
           place,
           radius,
           resultingLanguage as ApiGoogleLanguageEnum,
@@ -102,27 +117,47 @@ export class ApiAddressesInRangeService {
       }
     }
 
-    const filteredAddresses = addresses
-      .filter(
-        (currentAddress, i) =>
-          currentAddress &&
-          !(currentAddress.distance_in_meters > radius) &&
+    const sortedAddresses = fetchedAddresses.addresses.sort(
+      (
+        { distance_in_meters: firstDistance },
+        { distance_in_meters: secondDistance },
+      ) => firstDistance - secondDistance,
+    );
+
+    const filteredAddresses = sortedAddresses.reduce(
+      (result, currentAddress, i) => {
+        if (!currentAddress) {
+          return result;
+        }
+
+        const isNotDuplicate =
           i ===
-            addresses.findIndex(
-              (otherAddress) =>
-                currentAddress?.full_address === otherAddress?.full_address,
-            ),
-      )
-      .sort(
-        (
-          { distance_in_meters: firstDistance },
-          { distance_in_meters: secondDistance },
-        ) => firstDistance - secondDistance,
-      );
+          sortedAddresses.findIndex(
+            (otherAddress) =>
+              currentAddress?.full_address === otherAddress?.full_address,
+          );
+
+        const isAcceptable =
+          true ||
+          (currentAddress.distance_in_meters <= MAXIMUM_RADIUS &&
+            (currentAddress.distance_in_meters <= radius ||
+              result.length <= MINIMUM_ADDRESSES_NUMBER));
+
+        if (isNotDuplicate && isAcceptable) {
+          result.push(currentAddress);
+        }
+
+        return result;
+      },
+      [],
+    );
 
     return {
-      address_count: filteredAddresses.length,
-      addresses: filteredAddresses,
+      sourceAddress: place.formatted_address,
+      returnedAddressesNumber: filteredAddresses.length,
+      returnedAddresses: filteredAddresses,
+      requestType: apiName,
+      requestsNumber: fetchedAddresses.requestsNumber,
     };
   }
 
@@ -167,10 +202,10 @@ export class ApiAddressesInRangeService {
     { geometry: { location } }: IGoogleGeocodeResult,
     radius: number,
     language: ApiGoogleLanguageEnum,
-  ): Promise<IApiAddressInRange[]> {
+  ): Promise<IFetchedAddresses> {
     const coordinateGrid = this.generateCoordinateGrid(location, radius, 20);
 
-    return Promise.all(
+    const addresses = await Promise.all(
       coordinateGrid.map(async (coordinates) => {
         const currentPlace =
           await this.googleGeocodeService.fetchPlaceByCoordinates(
@@ -212,16 +247,19 @@ export class ApiAddressesInRangeService {
         };
       }),
     );
+
+    return { addresses, requestsNumber: coordinateGrid.length };
   }
 
   private async fetchAddressesByHere(
     { geometry: { location } }: IGoogleGeocodeResult,
     radius: number,
     language: ApiHereLanguageEnum,
-  ): Promise<IApiAddressInRange[]> {
+  ): Promise<IFetchedAddresses> {
     const coordinateGrid = this.generateCoordinateGrid(location, radius, 50);
     const addresses: IApiAddressInRange[] = [];
 
+    // Uncomment in case of HERE API rate limits issue
     for await (const coordinates of coordinateGrid) {
       const places = await this.hereGeocodeService.fetchAddressesInRange(
         coordinates,
@@ -247,7 +285,8 @@ export class ApiAddressesInRangeService {
       });
     }
 
-    // Commented because we have been facing the HERE API rate limits
+    // Was commented because of the HERE API rate limits issue
+    // Chunk approach
     // const chunks = createChunks(coordinateGrid, 15);
     //
     // for await (const chunk of chunks) {
@@ -255,7 +294,7 @@ export class ApiAddressesInRangeService {
     //     chunk.map(async (coordinates) => {
     //       const places = await this.hereGeocodeService.fetchAddressesInRange(
     //         coordinates,
-    //         radius,
+    //         distanceStep,
     //         language,
     //       );
     //
@@ -282,6 +321,38 @@ export class ApiAddressesInRangeService {
     //   );
     // }
 
-    return addresses;
+    // Was commented because of the HERE API rate limits issue
+    // Full speed ahead
+    // await Promise.all(
+    //   coordinateGrid.map(async (coordinates) => {
+    //     const places = await this.hereGeocodeService.fetchAddressesInRange(
+    //       coordinates,
+    //       distanceStep,
+    //       language,
+    //     );
+    //
+    //     if (!places.length) {
+    //       return;
+    //     }
+    //
+    //     places.forEach((currentPlace) => {
+    //       addresses.push({
+    //         full_address: currentPlace.title,
+    //         street_name: currentPlace.address.street,
+    //         street_number: currentPlace.address.houseNumber,
+    //         postal_code: currentPlace.address.postalCode,
+    //         locality: currentPlace.address.city,
+    //         country: currentPlace.address.countryName,
+    //         location: currentPlace.position,
+    //         distance_in_meters: distanceInMeters(
+    //           location,
+    //           currentPlace.position,
+    //         ),
+    //       });
+    //     });
+    //   }),
+    // );
+
+    return { addresses, requestsNumber: coordinateGrid.length };
   }
 }
