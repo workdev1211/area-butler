@@ -81,7 +81,7 @@ const MapPage: FunctionComponent = () => {
 
     const getSnapshot = async () => {
       const snapshotResponseData = await fetchSnapshot(snapshotId);
-      const config = snapshotResponseData.config!;
+      const config = snapshotResponseData.config;
 
       if (config && !("showAddress" in config)) {
         config["showAddress"] = true;
@@ -101,109 +101,175 @@ const MapPage: FunctionComponent = () => {
   }, [snapshotId]);
 
   useEffect(() => {
-    const prepareSnapshotData = async () => {
-      if (!snapshotResponse || !snapshotResponse.config) {
-        return;
-      }
+    if (!snapshotResponse || !snapshotResponse.config) {
+      return;
+    }
 
-      const {
-        snapshot: {
-          searchResponse,
-          transportationParams,
-          localityParams,
-          location,
-          placesLocation,
-          preferredLocations = [],
-          routes = [],
-          transitRoutes = [],
-          realEstateListings = [],
-        },
+    const {
+      snapshot: {
+        searchResponse,
+        transportationParams,
+        localityParams,
+        location,
+        placesLocation,
+        preferredLocations = [],
+        routes = [],
+        transitRoutes = [],
+        realEstateListings = [],
+      },
+      config,
+    } = snapshotResponse;
+
+    const filteredRealEstateListings = config.realEstateStatus
+      ? realEstateListings.filter(
+          ({ status }) =>
+            config.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
+            status === config.realEstateStatus
+        )
+      : realEstateListings;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
+      payload: searchResponse,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
+      payload: transportationParams,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+      payload: getCombinedOsmEntityTypes(localityParams),
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PLACES_LOCATION,
+      payload: placesLocation,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCATION,
+      payload: location,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
+      payload: config.zoomLevel || defaultMapZoom,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
+      payload: preferredLocations,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
+      payload: routes,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
+      payload: transitRoutes,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+      payload: { ...config },
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
+      payload: snapshotResponse.token,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: deriveInitialEntityGroups(
+        searchResponse,
         config,
-      } = snapshotResponse;
+        filteredRealEstateListings,
+        preferredLocations
+      ),
+    });
 
-      const filteredRealEstateListings = config.realEstateStatus
-        ? realEstateListings.filter(
-            ({ status }) =>
-              config.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
-              status === config.realEstateStatus
-          )
-        : realEstateListings;
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
+      payload: snapshotResponse.iframeEndsAt,
+    });
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
-        payload: searchResponse,
-      });
+    const enhancedConfig = {
+      ...config,
+      fixedRealEstates: config.fixedRealEstates ?? true,
+      defaultActiveMeans: config.defaultActiveMeans?.length
+        ? config.defaultActiveMeans
+        : deriveAvailableMeansFromResponse(searchResponse),
+    };
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-        payload: transportationParams,
-      });
+    const editorGroups = deriveInitialEntityGroups(
+      searchResponse,
+      enhancedConfig,
+      filteredRealEstateListings,
+      preferredLocations,
+      true
+    );
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-        payload: getCombinedOsmEntityTypes(localityParams),
-      });
+    setEditorTabProps({
+      config: enhancedConfig,
+      availableMeans: deriveAvailableMeansFromResponse(searchResponse),
+      groupedEntries: editorGroups,
+      onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
+        if (
+          searchContextState.responseConfig?.mapBoxMapId !==
+            config.mapBoxMapId ||
+          searchContextState.responseConfig?.showLocation !==
+            config.showLocation ||
+          searchContextState.responseConfig?.showAddress !== config.showAddress
+        ) {
+          const mapCenter =
+            mapRef.current?.getCenter() || searchContextState.mapCenter;
+          const mapZoomLevel =
+            mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_PLACES_LOCATION,
-        payload: placesLocation,
-      });
+          if (mapCenter && mapZoomLevel) {
+            searchContextDispatch({
+              type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+              payload: { mapCenter, mapZoomLevel },
+            });
+          }
+        }
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_LOCATION,
-        payload: location,
-      });
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: { ...config },
+        });
+      },
+      snapshotId,
+      // TODO implement for the integration user
+      // additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
+      additionalMapBoxStyles: [],
+      isNewSnapshot: !!state?.isNewSnapshot,
+    });
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
-        payload: config.zoomLevel || defaultMapZoom,
-      });
+    setExportTabProps({
+      snapshotId,
+      directLink: createDirectLink(snapshotResponse.token),
+      codeSnippet: createCodeSnippet(snapshotResponse.token),
+      searchAddress: placesLocation.label,
+    });
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_PREFERRED_LOCATIONS,
-        payload: preferredLocations,
-      });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshotResponse]);
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
-        payload: routes,
-      });
+  useEffect(() => {
+    if (!snapshotResponse) {
+      return;
+    }
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES,
-        payload: transitRoutes,
-      });
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...config },
-      });
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-        payload: snapshotResponse.token,
-      });
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-        payload: deriveInitialEntityGroups(
-          searchResponse,
-          config,
-          filteredRealEstateListings,
-          preferredLocations
-        ),
-      });
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
-        payload: snapshotResponse.iframeEndsAt,
-      });
-
+    const fetchAreaStats = async () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_CENSUS_DATA,
-        payload: await fetchCensusData(
-          snapshotResponse.snapshot.location
-        ),
+        payload: await fetchCensusData(snapshotResponse.snapshot.location),
       });
 
       searchContextDispatch({
@@ -226,69 +292,9 @@ const MapPage: FunctionComponent = () => {
           snapshotResponse.snapshot.location
         ),
       });
-
-      const enhancedConfig = {
-        ...config,
-        fixedRealEstates: config.fixedRealEstates ?? true,
-        defaultActiveMeans: config.defaultActiveMeans?.length
-          ? config.defaultActiveMeans
-          : deriveAvailableMeansFromResponse(searchResponse),
-      };
-
-      const editorGroups = deriveInitialEntityGroups(
-        searchResponse,
-        enhancedConfig,
-        filteredRealEstateListings,
-        preferredLocations,
-        true
-      );
-
-      setEditorTabProps({
-        availableMeans: deriveAvailableMeansFromResponse(searchResponse),
-        groupedEntries: editorGroups,
-        config: searchContextState.responseConfig!,
-        onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
-          if (
-            searchContextState.responseConfig?.mapBoxMapId !==
-              config.mapBoxMapId ||
-            searchContextState.responseConfig?.showLocation !==
-              config.showLocation ||
-            searchContextState.responseConfig?.showAddress !==
-              config.showAddress
-          ) {
-            const mapCenter =
-              mapRef.current?.getCenter() || searchContextState.mapCenter;
-            const mapZoomLevel =
-              mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-            if (mapCenter && mapZoomLevel) {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-                payload: { mapCenter, mapZoomLevel },
-              });
-            }
-          }
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-            payload: { ...config },
-          });
-        },
-        snapshotId,
-        // additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
-        additionalMapBoxStyles: [],
-        isNewSnapshot: !!state?.isNewSnapshot,
-      });
-
-      setExportTabProps({
-        snapshotId,
-        codeSnippet: createCodeSnippet(snapshotResponse.token),
-        directLink: createDirectLink(snapshotResponse.token),
-        searchAddress: placesLocation.label,
-      });
     };
 
-    void prepareSnapshotData();
+    void fetchAreaStats();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotResponse]);
@@ -304,7 +310,12 @@ const MapPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
-  if (!searchContextState.searchResponse || !mapBoxToken) {
+  if (
+    !searchContextState.searchResponse ||
+    !mapBoxToken ||
+    !editorTabProps ||
+    !exportTabProps
+  ) {
     return <LoadingMessage />;
   }
 
@@ -315,7 +326,7 @@ const MapPage: FunctionComponent = () => {
         ref={mapRef}
         mapBoxToken={mapBoxToken}
         mapBoxMapId={snapshotResponse?.config?.mapBoxMapId}
-        searchResponse={searchContextState.searchResponse!}
+        searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
         editorTabProps={editorTabProps}

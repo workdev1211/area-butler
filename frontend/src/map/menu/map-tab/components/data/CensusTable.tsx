@@ -5,6 +5,7 @@ import {
   ApiDataProvisionEnum,
   DataProvisionEnum,
 } from "../../../../../../../shared/types/types";
+import Loading from "../../../components/Loading";
 
 export const averageCensus = {
   "Ø Alter": 44.6,
@@ -29,7 +30,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
       (provisionKey) => censusData[provisionKey as ApiDataProvisionEnum].length
     )
   ) {
-    return null;
+    return <Loading />;
   }
 
   const processCensusValue = (value: unknown): string =>

@@ -20,7 +20,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
   particlePollutionData,
 }) => {
   const {
-    userState: { user },
+    userState: { user, integrationUser },
   } = useContext(UserContext);
   const {
     searchContextState: { responseConfig: config },
@@ -29,6 +29,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
 
   const hasPollutionData =
+    !!integrationUser ||
     user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     )!;
@@ -72,7 +73,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
               }}
             >
               <ParticlePollutionTable
-                particlePollutionData={particlePollutionData!}
+                particlePollutionData={particlePollutionData}
               />
             </MapMenuCollapsable>
           </li>

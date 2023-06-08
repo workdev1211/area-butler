@@ -56,7 +56,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
   federalElectionData,
 }) => {
   const {
-    userState: { user },
+    userState: { user, integrationUser },
   } = useContext(UserContext);
   const {
     searchContextState: { responseConfig: config },
@@ -65,12 +65,16 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
 
+  const isIntegrationUser = !!integrationUser;
+
   const hasCensusData =
+    isIntegrationUser ||
     user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
     )!;
 
   const hasElectionData =
+    isIntegrationUser ||
     user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     )!;
@@ -132,9 +136,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
                   );
               }}
             >
-              <FederalElectionTable
-                federalElectionData={federalElectionData!}
-              />
+              <FederalElectionTable federalElectionData={federalElectionData} />
             </MapMenuCollapsable>
           </li>
         </ul>

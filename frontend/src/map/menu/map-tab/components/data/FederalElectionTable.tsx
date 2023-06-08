@@ -4,16 +4,17 @@ import {
   FederalElectionDistrict,
   FederalElectionResult,
 } from "hooks/federalelectiondata";
+import Loading from "../../../components/Loading";
 
 interface IFederalElectionTableProps {
-  federalElectionData: FederalElectionDistrict;
+  federalElectionData?: FederalElectionDistrict;
 }
 
 const FederalElectionTable: FunctionComponent<IFederalElectionTableProps> = ({
   federalElectionData,
 }) => {
   if (!federalElectionData || !Object.keys(federalElectionData).length) {
-    return null;
+    return <Loading />;
   }
 
   return (

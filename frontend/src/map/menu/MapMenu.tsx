@@ -116,7 +116,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}
       data-tour="side-menu"
     >
-      {isEditorMode && editorTabProps && (
+      {isEditorMode && (
         <div className="tab-bar bg-primary-gradient">
           <div className="tab-container" data-tour="tab-icons">
             <div

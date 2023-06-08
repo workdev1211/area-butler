@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { ApiGeojsonFeature } from "../../../../../../../shared/types/types";
+import Loading from "../../../components/Loading";
 
 export interface PollutionData {
   mean: number;
@@ -13,14 +14,14 @@ export const averageParticlePollution: PollutionData = {
 };
 
 interface IParticlePollutionTableProps {
-  particlePollutionData: ApiGeojsonFeature[];
+  particlePollutionData?: ApiGeojsonFeature[];
 }
 
 const ParticlePollutionTable: FunctionComponent<
   IParticlePollutionTableProps
 > = ({ particlePollutionData }) => {
   if (!particlePollutionData?.length) {
-    return null;
+    return <Loading />;
   }
 
   const properties = particlePollutionData[0].properties as any;
