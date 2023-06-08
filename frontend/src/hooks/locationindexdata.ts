@@ -1,3 +1,5 @@
+import { useContext } from "react";
+
 import { ApiCoordinates } from "../../../shared/types/types";
 import { useHttp } from "./http";
 import {
@@ -6,6 +8,7 @@ import {
   LocationIndicesEnum,
 } from "../../../shared/types/location-index";
 import { locationIndexNames } from "../../../shared/constants/location";
+import { UserContext } from "../context/UserContext";
 
 export type TLocationIndexData = Record<
   LocationIndicesEnum,
@@ -17,18 +20,26 @@ export type TLocationIndexData = Record<
 >;
 
 export const useLocationIndexData = () => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
   const { post } = useHttp();
+
+  const isIntegrationUser = !!integrationUser;
 
   const fetchLocationIndexData = async (
     coordinates: ApiCoordinates
-  ): Promise<TLocationIndexData> => {
+  ): Promise<TLocationIndexData | undefined> => {
     const { data } = await post<IApiLocationIndexFeature[]>(
-      "/api/location-index/query",
+      isIntegrationUser
+        ? "/api/location-index-int/query"
+        : "/api/location-index/query",
       { type: "Point", coordinates: [coordinates.lng, coordinates.lat] }
     );
 
-    if (!data.length || !data[0].properties) {
-      return {} as TLocationIndexData;
+    if (!data?.length || !data[0].properties) {
+      return;
     }
 
     return Object.keys(data[0].properties).reduce<TLocationIndexData>(

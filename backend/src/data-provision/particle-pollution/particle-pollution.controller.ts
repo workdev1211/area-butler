@@ -17,11 +17,14 @@ import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
+import { ParticlePollutionDocument } from '../schemas/particle-pollution.schema';
 
 @ApiTags('particle-pollution')
 @Controller('api/particle-pollution')
 export class ParticlePollutionController extends AuthenticatedController {
-  constructor(private particlePollutionService: ParticlePollutionService) {
+  constructor(
+    private readonly particlePollutionService: ParticlePollutionService,
+  ) {
     super();
   }
 
@@ -47,7 +50,7 @@ export class ParticlePollutionController extends AuthenticatedController {
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() query: ApiGeometryDto,
-  ) {
-    return this.particlePollutionService.findIntersecting(query, user);
+  ): Promise<ParticlePollutionDocument[]> {
+    return this.particlePollutionService.findIntersecting(user, query);
   }
 }

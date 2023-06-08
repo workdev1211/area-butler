@@ -17,14 +17,14 @@ export interface IPotentialCustomersHistoryState {
   isFromPotentialCustomers?: boolean;
 }
 
-export interface ISnippetEditorHistoryState {
+export interface IMapPageHistoryState {
   isNewSnapshot?: boolean;
 }
 
 export interface ISearchParamsHistoryState
   extends IRealEstatesHistoryState,
     IPotentialCustomersHistoryState,
-    ISnippetEditorHistoryState {}
+    IMapPageHistoryState {}
 
 export interface IQueryParamsAndUrl<T> {
   queryParams: T;

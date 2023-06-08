@@ -31,7 +31,6 @@ import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
 import { MapClipping } from "../../context/SearchContext";
-import IntegrationMapTab from "./map-tab/IntegrationMapTab";
 
 enum TabsEnum {
   Map = "Map",
@@ -95,7 +94,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   const isExportTab = activeTab === TabsEnum.Export;
   const isShownAddress = !!config?.showAddress || !config;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-  const isIntegrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
   let mapMenuContentHeight;
 
@@ -104,12 +102,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
       mapMenuContentHeight = `calc(100% - calc(var(--menu-item-h) * ${
         isShownAddress ? 3 : 2
       }) - var(--menu-footer-h))`;
-      break;
-    }
-
-    case MapDisplayModesEnum.INTEGRATION: {
-      mapMenuContentHeight =
-        "calc(100% - var(--menu-item-h) - var(--menu-footer-h))";
       break;
     }
 
@@ -193,7 +185,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         }}
         data-tour="map-menu-contents"
       >
-        {isMapTab && !isIntegrationMode && (
+        {isMapTab && (
           <MapTab
             groupedEntries={groupedEntries}
             toggleAllLocalities={toggleAllLocalities}
@@ -212,19 +204,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
           />
         )}
 
-        {isMapTab && isIntegrationMode && (
-          <IntegrationMapTab
-            groupedEntries={groupedEntries}
-            toggleAllLocalities={toggleAllLocalities}
-            toggleRoute={toggleRoute}
-            routes={routes}
-            toggleTransitRoute={toggleTransitRoute}
-            transitRoutes={transitRoutes}
-            mapClippings={mapClippings}
-            searchAddress={searchAddress}
-          />
-        )}
-
         {isEditorTab && isEditorMode && editorTabProps && (
           <EditorTab {...editorTabProps} />
         )}
@@ -234,7 +213,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         )}
       </div>
 
-      {(isEditorMode || isIntegrationMode) && (
+      {isEditorMode && (
         <MapMenuFooter
           mapDisplayMode={mapDisplayMode}
           saveConfig={saveConfig}

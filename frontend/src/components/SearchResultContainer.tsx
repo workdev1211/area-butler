@@ -7,14 +7,6 @@ import {
   useRef,
   useState,
 } from "react";
-// TODO move later to the MapTab of the MapMenu component
-// import Select, {
-//   ActionMeta,
-//   ControlProps,
-//   CSSObjectWithLabel,
-//   GroupBase,
-//   SingleValue,
-// } from "react-select";
 
 import {
   IGotoMapCenter,
@@ -95,12 +87,6 @@ export interface EntityGroup {
   active: boolean;
   items: ResultEntity[];
 }
-
-// TODO move later to the MapTab of the MapMenu component
-// interface IPoiSearchOption {
-//   label: string;
-//   value: number | string;
-// }
 
 export const poiSearchContainerId = "poi-search-container";
 
@@ -222,17 +208,9 @@ const SearchResultContainer = forwardRef<
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
     >([]);
-    // TODO move later to the MapTab of the MapMenu component
-    // const [filteredGroupedEntities, setFilteredGroupedEntities] = useState<
-    //   EntityGroup[]
-    // >([]);
     const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
       EntityGroup[]
     >([]);
-    // TODO move later to the MapTab of the MapMenu component
-    // const [poiSearchOptions, setPoiSearchOptions] = useState<
-    //   IPoiSearchOption[]
-    // >([]);
     const [hideIsochrones, setHideIsochrones] = useState(
       searchContextState.responseConfig?.hideIsochrones
     );
@@ -311,69 +289,13 @@ const SearchResultContainer = forwardRef<
       );
 
       setPreferredLocationsGroup(foundPreferredLocationsGroup);
-
-      // TODO move later to the MapTab of the MapMenu component
-      // const poiSearchOptions = groupsFilteredByActiveMeans.reduce<
-      //   IPoiSearchOption[]
-      // >((result, group) => {
-      //   result.push({ label: `${group.title} Kategorie`, value: group.title });
-      //
-      //   if (group.items[0]?.label === preferredLocationsTitle) {
-      //     setPreferredLocationsGroup(group);
-      //   }
-      //
-      //   group.items.forEach(({ id, label, name }) => {
-      //     result.push({ label: name || label, value: id });
-      //   });
-      //
-      //   return result;
-      // }, []);
-
       setResultingGroupedEntities(groupsFilteredByActiveMeans);
-      // TODO move later to the MapTab of the MapMenu component
-      // setPoiSearchOptions(poiSearchOptions);
-      // setFilteredGroupedEntities(groupsFilteredByActiveMeans);
     }, [
       searchContextState.responseGroupedEntities,
       searchContextState.responseActiveMeans,
       setResultingGroupedEntities,
       setPreferredLocationsGroup,
     ]);
-
-    // TODO move later to the MapTab of the MapMenu component
-    // const onPoiSearchSelect = (
-    //   option: SingleValue<IPoiSearchOption>,
-    //   action: ActionMeta<IPoiSearchOption>
-    // ) => {
-    //   if (action.action === "clear") {
-    //     setResultingGroupedEntities(filteredGroupedEntities);
-    //     return;
-    //   }
-    //
-    //   const processedGroupedEntities = filteredGroupedEntities.reduce<
-    //     EntityGroup[]
-    //   >((result, entityGroup) => {
-    //     const resultingEntityGroup = { ...entityGroup, active: true };
-    //
-    //     if (option?.value === resultingEntityGroup.title) {
-    //       result.push(resultingEntityGroup);
-    //       return result;
-    //     }
-    //
-    //     const foundItem = entityGroup.items.find(
-    //       (item) => item.id === option?.value
-    //     );
-    //
-    //     if (foundItem) {
-    //       Object.assign(resultingEntityGroup, { items: [foundItem] });
-    //       result.push(resultingEntityGroup);
-    //     }
-    //
-    //     return result;
-    //   }, []);
-    //
-    //   setResultingGroupedEntities(processedGroupedEntities);
-    // };
 
     const toggleRoutesToEntity = async (
       origin: ApiCoordinates,
@@ -618,40 +540,6 @@ const SearchResultContainer = forwardRef<
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
     const mapWithLegendId = "map-with-legend";
 
-    // TODO move later to the MapTab of the MapMenu component
-    // const poiSearchStyles = {
-    //   control: (
-    //     provided: CSSObjectWithLabel,
-    //     state: ControlProps<
-    //       IPoiSearchOption,
-    //       false,
-    //       GroupBase<IPoiSearchOption>
-    //     >
-    //   ) => ({
-    //     ...provided,
-    //     "&:hover": state.isFocused
-    //       ? {
-    //           borderColor: "var(--primary)",
-    //         }
-    //       : provided["&:hover"],
-    //     boxShadow: undefined,
-    //     borderRadius: "16px!important",
-    //     minHeight: "32px",
-    //     height: "32px",
-    //     borderWidth: "2px",
-    //     borderColor: state.isFocused ? "var(--primary)" : provided.borderColor,
-    //   }),
-    //   input: (provided: CSSObjectWithLabel) => ({
-    //     ...provided,
-    //     paddingBottom: undefined,
-    //     paddingTop: undefined,
-    //   }),
-    //   clearIndicator: (provided: CSSObjectWithLabel) => ({
-    //     ...provided,
-    //     padding: "0px 8px 0px 0px",
-    //   }),
-    // };
-
     if (!mapBoxToken) {
       return null;
     }
@@ -669,26 +557,6 @@ const SearchResultContainer = forwardRef<
                 isMapMenuOpen ? "map-menu-open" : ""
               }`}
             >
-              {/* TODO move later to the MapTab of the MapMenu component */}
-              {/*{!isThemeKf && (*/}
-              {/*  <div id={poiSearchContainerId} className="opacity-90">*/}
-              {/*    <Select*/}
-              {/*      styles={poiSearchStyles}*/}
-              {/*      options={poiSearchOptions}*/}
-              {/*      placeholder="Suchen..."*/}
-              {/*      components={{*/}
-              {/*        DropdownIndicator: () => null,*/}
-              {/*        IndicatorSeparator: () => null,*/}
-              {/*      }}*/}
-              {/*      openMenuOnClick={false}*/}
-              {/*      openMenuOnFocus={false}*/}
-              {/*      isClearable={true}*/}
-              {/*      onChange={(option, action) =>*/}
-              {/*        onPoiSearchSelect(option, action)*/}
-              {/*      }*/}
-              {/*    />*/}
-              {/*  </div>*/}
-              {/*)}*/}
               {isMeanTogglesShown && (
                 <MeansToggle
                   transportationParams={searchContextState.transportationParams}

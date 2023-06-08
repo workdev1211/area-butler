@@ -11,6 +11,7 @@ import { ApiGeojsonFeature } from '@area-butler-types/types';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { SubscriptionService } from '../../user/subscription.service';
 import { UserDocument } from '../../user/schema/user.schema';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 
 @Injectable()
 export class ParticlePollutionService {
@@ -18,9 +19,9 @@ export class ParticlePollutionService {
 
   constructor(
     @InjectModel(ParticlePollution.name)
-    private particlePollutionModel: Model<ParticlePollutionDocument>,
+    private readonly particlePollutionModel: Model<ParticlePollutionDocument>,
     @InjectConnection() private connection: Connection,
-    private subscriptionService: SubscriptionService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async createCollection(particlePollutionFeatures: ApiGeojsonFeature[]) {
@@ -58,18 +59,25 @@ export class ParticlePollutionService {
     return;
   }
 
-  async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.dataSources?.includes(
-          ApiDataSource.PARTICLE_POLLUTION,
-        ) &&
-        !subscriptionPlan?.appFeatures.dataSources.includes(
-          ApiDataSource.PARTICLE_POLLUTION,
-        ),
-      'Feinstaubdaten sind im aktuellem Abonnement nicht verfügbar',
-    );
+  async findIntersecting(
+    user: UserDocument | TIntegrationUserDocument,
+    query: ApiGeometryDto,
+  ): Promise<ParticlePollutionDocument[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.dataSources?.includes(
+            ApiDataSource.PARTICLE_POLLUTION,
+          ) &&
+          !subscriptionPlan?.appFeatures.dataSources.includes(
+            ApiDataSource.PARTICLE_POLLUTION,
+          ),
+        'Feinstaubdaten sind im aktuellem Abonnement nicht verfügbar',
+      );
+    }
 
     return this.particlePollutionModel.find({
       geometry: {

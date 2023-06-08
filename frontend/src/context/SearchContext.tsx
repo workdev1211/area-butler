@@ -96,9 +96,9 @@ export enum SearchContextActionTypes {
   TOGGLE_SINGLE_RESPONSE_GROUP = "TOGGLE_SINGLE_RESPONSE_GROUP",
   TOGGLE_RESPONSE_GROUP = "TOGGLE_RESPONSE_GROUP",
   SET_RESPONSE_CONFIG = "SET_RESPONSE_CONFIG",
-  SET_ZENSUS_DATA = "SET_ZENSUS_DATA",
+  SET_CENSUS_DATA = "SET_CENSUS_DATA",
   SET_FEDERAL_ELECTION_DATA = "SET_FEDERAL_ELECTION_DATA",
-  SET_PARTICLE_POLLUTION_ELECTION_DATA = "SET_PARTICLE_POLLUTION_ELECTION_DATA",
+  SET_PARTICLE_POLLUTION_DATA = "SET_PARTICLE_POLLUTION_DATA",
   SET_LOCATION_INDEX_DATA = "SET_LOCATION_INDEX_DATA",
   SET_MAP_CENTER = "SET_MAP_CENTER",
   SET_MAP_ZOOM_LEVEL = "SET_MAP_ZOOM_LEVEL",
@@ -140,9 +140,13 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_RESPONSE_ROUTES]: EntityRoute[];
   [SearchContextActionTypes.SET_RESPONSE_TOKEN]: string;
   [SearchContextActionTypes.SET_RESPONSE_TRANSIT_ROUTES]: EntityTransitRoute[];
-  [SearchContextActionTypes.SET_ZENSUS_DATA]: TCensusData;
-  [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]: FederalElectionDistrict;
-  [SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA]: ApiGeojsonFeature[];
+  [SearchContextActionTypes.SET_CENSUS_DATA]: TCensusData | undefined;
+  [SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA]:
+    | FederalElectionDistrict
+    | undefined;
+  [SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA]:
+    | ApiGeojsonFeature[]
+    | undefined;
   [SearchContextActionTypes.SET_LOCATION_INDEX_DATA]:
     | TLocationIndexData
     | undefined;
@@ -267,14 +271,23 @@ export const searchContextReducer = (
         ),
       };
     }
-    case SearchContextActionTypes.SET_ZENSUS_DATA: {
-      return { ...state, censusData: { ...action.payload } };
+    case SearchContextActionTypes.SET_CENSUS_DATA: {
+      return {
+        ...state,
+        censusData: action.payload ? { ...action.payload } : undefined,
+      };
     }
     case SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA: {
-      return { ...state, federalElectionData: { ...action.payload } };
+      return {
+        ...state,
+        federalElectionData: action.payload ? { ...action.payload } : undefined,
+      };
     }
-    case SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA: {
-      return { ...state, particlePollutionData: [...action.payload] };
+    case SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA: {
+      return {
+        ...state,
+        particlePollutionData: action.payload ? [...action.payload] : undefined,
+      };
     }
     case SearchContextActionTypes.SET_LOCATION_INDEX_DATA: {
       return {

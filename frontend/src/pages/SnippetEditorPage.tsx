@@ -50,7 +50,7 @@ import {
 } from "../shared/shared.constants";
 import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
-import { ISnippetEditorHistoryState } from "../shared/shared.types";
+import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
 
 export interface SnippetEditorRouterProps {
@@ -65,13 +65,13 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
 
-  const history = useHistory<ISnippetEditorHistoryState>();
-  const { state } = useLocation<ISnippetEditorHistoryState>();
+  const history = useHistory<IMapPageHistoryState>();
+  const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
-  const { fetchNearData } = useCensusData();
-  const { fetchElectionData } = useFederalElectionData();
+  const { fetchCensusData } = useCensusData();
+  const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const { fetchLocationIndexData } = useLocationIndexData();
 
@@ -170,8 +170,7 @@ const SnippetEditorPage: FunctionComponent = () => {
       const filteredRealEstateListings = snapshotConfig.realEstateStatus
         ? realEstateListings.filter(
             ({ status }) =>
-              snapshotConfig.realEstateStatus ===
-                ApiRealEstateStatusEnum.ALL ||
+              snapshotConfig.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
               status === snapshotConfig.realEstateStatus
           )
         : realEstateListings;
@@ -222,12 +221,12 @@ const SnippetEditorPage: FunctionComponent = () => {
           ApiDataSource.CENSUS
         )
       ) {
-        const censusData = await fetchNearData(
+        const censusData = await fetchCensusData(
           snapshotResponse.snapshot.location
         );
 
         searchContextDispatch({
-          type: SearchContextActionTypes.SET_ZENSUS_DATA,
+          type: SearchContextActionTypes.SET_CENSUS_DATA,
           payload: censusData,
         });
       }
@@ -237,7 +236,7 @@ const SnippetEditorPage: FunctionComponent = () => {
           ApiDataSource.FEDERAL_ELECTION
         )
       ) {
-        const federalElectionData = await fetchElectionData(
+        const federalElectionData = await fetchFederalElectionData(
           snapshotResponse.snapshot.location!
         );
 
@@ -257,7 +256,7 @@ const SnippetEditorPage: FunctionComponent = () => {
         );
 
         searchContextDispatch({
-          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
           payload: particlePollutionData,
         });
       }

@@ -12,6 +12,7 @@ import {
   ZipLevelData,
   ZipLevelDataDocument,
 } from '../data-provision/schemas/zip-level-data.schema';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 @Injectable()
 export class ZensusAtlasService {
@@ -70,20 +71,24 @@ export class ZensusAtlasService {
   }
 
   async findIntersecting(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     query: ApiGeometryDto,
   ): Promise<TApiDataProvision> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.dataSources?.includes(
-          ApiDataSource.CENSUS,
-        ) &&
-        !subscriptionPlan?.appFeatures.dataSources.includes(
-          ApiDataSource.CENSUS,
-        ),
-      'Der Zensus Atlas ist im aktuellem Abonnement nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.dataSources?.includes(
+            ApiDataSource.CENSUS,
+          ) &&
+          !subscriptionPlan?.appFeatures.dataSources.includes(
+            ApiDataSource.CENSUS,
+          ),
+        'Der Zensus Atlas ist im aktuellem Abonnement nicht verfügbar',
+      );
+    }
 
     const addressData = (
       await this.zensusAtlasModel.find({

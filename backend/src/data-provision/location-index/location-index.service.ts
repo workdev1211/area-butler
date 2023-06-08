@@ -11,6 +11,7 @@ import {
   LocationIndexDocument,
 } from '../schemas/location-index.schema';
 import { IApiLocationIndexFeature } from '@area-butler-types/location-index';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 
 @Injectable()
 export class LocationIndexService {
@@ -50,18 +51,25 @@ export class LocationIndexService {
     return;
   }
 
-  async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.dataSources?.includes(
-          ApiDataSource.LOCATION_INDICES,
-        ) &&
-        !subscriptionPlan?.appFeatures.dataSources.includes(
-          ApiDataSource.LOCATION_INDICES,
-        ),
-      'Lageindizes sind im aktuellem Abonnement nicht verfügbar',
-    );
+  async findIntersecting(
+    user: UserDocument | TIntegrationUserDocument,
+    query: ApiGeometryDto,
+  ): Promise<LocationIndexDocument[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.dataSources?.includes(
+            ApiDataSource.LOCATION_INDICES,
+          ) &&
+          !subscriptionPlan?.appFeatures.dataSources.includes(
+            ApiDataSource.LOCATION_INDICES,
+          ),
+        'Lageindizes sind im aktuellem Abonnement nicht verfügbar',
+      );
+    }
 
     return this.locationIndexModel.find({
       geometry: {

@@ -20,6 +20,7 @@ import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
+import { FederalElectionDocument } from '../schemas/federal-election.schema';
 
 @ApiTags('federal-election')
 @Controller('api/federal-election')
@@ -40,7 +41,7 @@ export class FederalElectionController extends AuthenticatedController {
       file.buffer.toString(),
     );
 
-    //TODO: Validate Data
+    // TODO: Validate Data
     await this.federalElectionService.createCollection(data.features);
 
     return 'done';
@@ -51,7 +52,7 @@ export class FederalElectionController extends AuthenticatedController {
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() query: ApiGeometryDto,
-  ) {
-    return this.federalElectionService.findIntersecting(query, user);
+  ): Promise<FederalElectionDocument[]> {
+    return this.federalElectionService.findIntersecting(user, query);
   }
 }

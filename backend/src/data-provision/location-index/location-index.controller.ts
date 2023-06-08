@@ -20,6 +20,7 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { IApiLocationIndexFeature } from '@area-butler-types/location-index';
+import { LocationIndexDocument } from '../schemas/location-index.schema';
 
 @ApiTags('location-index')
 @Controller('api/location-index')
@@ -51,7 +52,7 @@ export class LocationIndexController extends AuthenticatedController {
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() query: ApiGeometryDto,
-  ) {
-    return this.locationIndexService.findIntersecting(query, user);
+  ): Promise<LocationIndexDocument[]> {
+    return this.locationIndexService.findIntersecting(user, query);
   }
 }

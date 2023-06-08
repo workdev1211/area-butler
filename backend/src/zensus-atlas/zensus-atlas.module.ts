@@ -9,9 +9,10 @@ import {
   ZipLevelData,
   ZipLevelDataSchema,
 } from '../data-provision/schemas/zip-level-data.schema';
+import { ZensusAtlasIntController } from './zensus-atlas-int.controller';
 
 @Module({
-  controllers: [ZensusAtlasController],
+  controllers: [ZensusAtlasController, ZensusAtlasIntController],
   providers: [ZensusAtlasService],
   imports: [
     UserModule,

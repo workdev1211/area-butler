@@ -28,6 +28,9 @@ import {
   LocationIndexSchema,
 } from './schemas/location-index.schema';
 import { LocationIndexController } from './location-index/location-index.controller';
+import { FederalElectionIntController } from './federal-election/federal-election-int.controller';
+import { ParticlePollutionIntController } from './particle-pollution/particle-pollution-int.controller';
+import { LocationIndexIntController } from './location-index/location-index-int.controller';
 
 @Module({
   providers: [
@@ -37,10 +40,13 @@ import { LocationIndexController } from './location-index/location-index.control
     LocationIndexService,
   ],
   controllers: [
-    FederalElectionController,
     DataProvisionController,
+    FederalElectionController,
     ParticlePollutionController,
     LocationIndexController,
+    FederalElectionIntController,
+    ParticlePollutionIntController,
+    LocationIndexIntController,
   ],
   imports: [
     MongooseModule.forFeature([

@@ -1,3 +1,4 @@
+import { useContext } from "react";
 import { Feature, Polygon, Properties } from "@turf/helpers";
 import circle from "@turf/circle";
 
@@ -9,6 +10,7 @@ import {
   ApiGeometry,
   TApiDataProvision,
 } from "../../../shared/types/types";
+import { UserContext } from "../context/UserContext";
 
 export interface ICensusData {
   geometry: ApiGeometry;
@@ -103,18 +105,33 @@ const cleanProperties = (completeData: TApiDataProvision): TCensusData => {
 };
 
 export const useCensusData = () => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
   const { post } = useHttp();
 
-  const fetchNearData = async (
+  const isIntegrationUser = !!integrationUser;
+
+  const fetchCensusData = async (
     coords: ApiCoordinates
-  ): Promise<TCensusData> => {
+  ): Promise<TCensusData | undefined> => {
     const relevantArea = calculateRelevantArea(coords);
     const geo: ApiGeometry = relevantArea.geometry;
-    const result = (await post("/api/zensus-atlas/query", geo))
-      .data as TApiDataProvision;
 
-    return cleanProperties(result);
+    const { data } = await post<TApiDataProvision>(
+      isIntegrationUser
+        ? "/api/zensus-atlas-int/query"
+        : "/api/zensus-atlas/query",
+      geo
+    );
+
+    if (!data) {
+      return;
+    }
+
+    return cleanProperties(data);
   };
 
-  return { fetchNearData };
+  return { fetchCensusData };
 };

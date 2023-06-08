@@ -88,8 +88,8 @@ const SearchParamsPage: FunctionComponent = () => {
   const { fetchPotentialCustomers } =
     usePotentialCustomerData(isIntegrationUser);
   const { fetchRealEstates } = useRealEstateData();
-  const { fetchNearData } = useCensusData();
-  const { fetchElectionData } = useFederalElectionData();
+  const { fetchCensusData } = useCensusData();
+  const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
@@ -376,7 +376,7 @@ const SearchParamsPage: FunctionComponent = () => {
       });
       setBusyModalItems([...items]);
 
-      const federalElectionData = await fetchElectionData(
+      const federalElectionData = await fetchFederalElectionData(
         searchContextState.location!
       );
 
@@ -397,7 +397,7 @@ const SearchParamsPage: FunctionComponent = () => {
       );
 
       searchContextDispatch({
-        type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_ELECTION_DATA,
+        type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
         payload: particlePollutionData,
       });
     }
@@ -408,11 +408,11 @@ const SearchParamsPage: FunctionComponent = () => {
       });
       setBusyModalItems([...items]);
 
-      const zensusData = await fetchNearData(searchContextState.location!);
+      const censusData = await fetchCensusData(searchContextState.location!);
 
       searchContextDispatch({
-        type: SearchContextActionTypes.SET_ZENSUS_DATA,
-        payload: zensusData!,
+        type: SearchContextActionTypes.SET_CENSUS_DATA,
+        payload: censusData,
       });
     }
 
@@ -567,7 +567,7 @@ const SearchParamsPage: FunctionComponent = () => {
           payload: snapshotId,
         });
 
-        history.push(`map/${snapshotId}`);
+        history.push(`map/${snapshotId}`, { isNewSnapshot: true });
       } else {
         history.push(`snippet-editor/${snapshotId}`, {
           isNewSnapshot: true,

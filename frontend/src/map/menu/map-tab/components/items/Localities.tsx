@@ -59,11 +59,8 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
   const resultingPoiIcons = userMenuPoiIcons || user?.poiIcons?.menuPoiIcons;
 
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-  const isIntegrationMode = mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
-  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(
-    isIntegrationMode ? false : !isEditorMode
-  );
+  const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!isEditorMode);
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 

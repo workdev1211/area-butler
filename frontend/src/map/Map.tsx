@@ -461,11 +461,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       MapDisplayModesEnum.EMBED,
       MapDisplayModesEnum.EMBED_INTEGRATION,
     ].includes(mapDisplayMode!);
-    const isIntegrationMode =
-      mapDisplayMode === MapDisplayModesEnum.INTEGRATION;
 
     const resultingMyLocationIcon =
-      isIntegrationMode ||
       mapDisplayMode === MapDisplayModesEnum.EMBED_INTEGRATION
         ? integrationMyLocationIcon
         : myLocationIcon;
@@ -1501,7 +1498,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             >
               <img src={satelliteIcon} alt="" />
             </a>
-            {(!isEmbedMode || isEditorMode || isIntegrationMode) && (
+            {(!isEmbedMode || isEditorMode) && (
               <a
                 href="/"
                 data-tour="take-map-picture"
@@ -1512,7 +1509,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                   takePicture();
                 }}
                 style={{
-                  backgroundColor: isIntegrationMode ? "#15d40f" : "white",
+                  backgroundColor: "white",
                 }}
               >
                 📷

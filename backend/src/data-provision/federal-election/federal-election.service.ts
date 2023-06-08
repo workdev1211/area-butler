@@ -11,6 +11,7 @@ import {
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { UserDocument } from '../../user/schema/user.schema';
 import { SubscriptionService } from '../../user/subscription.service';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 
 export const distinctValues = (value: any, index: any, self: any) =>
   self.map((i: any) => JSON.stringify(i)).indexOf(JSON.stringify(value)) ===
@@ -22,9 +23,9 @@ export class FederalElectionService {
 
   constructor(
     @InjectModel(FederalElection.name)
-    private federalElectionModel: Model<FederalElectionDocument>,
+    private readonly federalElectionModel: Model<FederalElectionDocument>,
     @InjectConnection() private connection: Connection,
-    private subscriptionService: SubscriptionService,
+    private readonly subscriptionService: SubscriptionService,
   ) {}
 
   async createCollection(federalElectionFeatures: ApiFederalElectionFeature[]) {
@@ -63,18 +64,25 @@ export class FederalElectionService {
     return;
   }
 
-  async findIntersecting(query: ApiGeometryDto, user: UserDocument) {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.dataSources?.includes(
-          ApiDataSource.FEDERAL_ELECTION,
-        ) &&
-        !subscriptionPlan?.appFeatures.dataSources.includes(
-          ApiDataSource.FEDERAL_ELECTION,
-        ),
-      'Bundestagswahldaten sind im aktuellem Abonnement nicht verfügbar',
-    );
+  async findIntersecting(
+    user: UserDocument | TIntegrationUserDocument,
+    query: ApiGeometryDto,
+  ): Promise<FederalElectionDocument[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.dataSources?.includes(
+            ApiDataSource.FEDERAL_ELECTION,
+          ) &&
+          !subscriptionPlan?.appFeatures.dataSources.includes(
+            ApiDataSource.FEDERAL_ELECTION,
+          ),
+        'Bundestagswahldaten sind im aktuellem Abonnement nicht verfügbar',
+      );
+    }
 
     return this.federalElectionModel.find({
       geometry: {

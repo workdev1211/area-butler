@@ -1,14 +1,17 @@
+import { useContext } from "react";
+
 import {
   ApiFeatureElectionFeatureResultGroup,
   ApiFeatureElectionParty,
-  ApiFederalElectionFeature
+  ApiFederalElectionFeature,
 } from "../../../shared/types/federal-election";
 import {
   ApiCoordinates,
   ApiGeojsonType,
-  ApiGeometry
+  ApiGeometry,
 } from "../../../shared/types/types";
 import { useHttp } from "./http";
+import { UserContext } from "../context/UserContext";
 
 export interface FederalElectionDistrict {
   type: ApiGeojsonType;
@@ -24,61 +27,73 @@ export interface FederalElectionResult {
 }
 
 export const useFederalElectionData = () => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
   const { post } = useHttp();
 
-  const fetchElectionData = async (
+  const isIntegrationUser = !!integrationUser;
+
+  const fetchFederalElectionData = async (
     point: ApiCoordinates
   ): Promise<FederalElectionDistrict | undefined> => {
     const geo: ApiGeometry = {
       type: "Point",
-      coordinates: [point.lng, point.lat]
+      coordinates: [point.lng, point.lat],
     };
-    const result = (
-      await post<ApiFederalElectionFeature[]>(
-        "/api/federal-election/query",
-        geo
-      )
-    ).data;
 
-    if (!result || result.length === 0) {
-      return undefined;
-    }
-
-    const electionResultData = result[0];
-
-    const partiesWithFivePercent = electionResultData.properties.ERGEBNIS.filter(
-      data =>
-        data.Gruppenart === ApiFeatureElectionFeatureResultGroup.PARTY &&
-        data.Stimme === 2 &&
-        !!data.Prozent &&
-        !!data.VorpProzent &&
-        data.Prozent > 5
+    const { data: federalElectionData } = await post<
+      ApiFederalElectionFeature[]
+    >(
+      isIntegrationUser
+        ? "/api/federal-election-int/query"
+        : "/api/federal-election/query",
+      geo
     );
 
+    if (!federalElectionData?.length) {
+      return;
+    }
+
+    const electionResultData = federalElectionData[0];
+
+    const partiesWithFivePercent =
+      electionResultData.properties.ERGEBNIS.filter(
+        (data) =>
+          data.Gruppenart === ApiFeatureElectionFeatureResultGroup.PARTY &&
+          data.Stimme === 2 &&
+          !!data.Prozent &&
+          !!data.VorpProzent &&
+          data.Prozent > 5
+      );
+
+    // TODO refactor to reduce and sort
     const results: FederalElectionResult[] = partiesWithFivePercent
       .filter(
-        party =>
+        (party) =>
           party.Anzahl ===
           Math.max.apply(
             Math,
             partiesWithFivePercent
-              .filter(p => p.Gruppenname === party.Gruppenname)
-              .map(p => p.Anzahl)
+              .filter((p) => p.Gruppenname === party.Gruppenname)
+              .map((p) => p.Anzahl)
           )
       )
       .sort((r1, r2) => r2.Prozent - r1.Prozent)
-      .map(data => ({
+      .map((data) => ({
         party: data.Gruppenname,
         percentage: Math.round(data.Prozent * 100) / 100,
-        lastElectionPercentage: Math.round(data.VorpProzent * 100) / 100
+        lastElectionPercentage: Math.round(data.VorpProzent * 100) / 100,
       }));
 
     return {
       name: electionResultData.properties.WKR_NAME,
       type: electionResultData.type,
       geometry: electionResultData.geometry,
-      results
+      results,
     };
   };
-  return { fetchElectionData };
+
+  return { fetchFederalElectionData };
 };
