@@ -53,8 +53,9 @@ export interface DocxExposeProps {
   listingAddress: string;
   realEstateListing: ApiRealEstateListing;
   mapClippings: ISelectableMapClipping[];
-  user: ApiUser | null;
-  color?: string;
+  color: string;
+  logo: string;
+  isTrial: boolean;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
 }
@@ -67,17 +68,17 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   particlePollutionData,
   transportationParams,
   activeMeans,
-  user,
   realEstateListing,
   listingAddress,
   color,
+  logo,
+  isTrial,
   legend,
   qrCode,
 }) => {
   const { createDirectLink } = useTools();
 
-  const colorPalette = deriveColorPalette(color || user?.color || "#AA0C54");
-
+  const colorPalette = deriveColorPalette(color);
   let documentTitle = "MeinStandort_AreaButler";
 
   if (realEstateListing?.name) {
@@ -91,9 +92,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   }
 
   const generate = async (): Promise<void> => {
-    const watermark = await createWatermark(
-      user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
-    );
+    const watermark = await createWatermark(isTrial);
 
     const gridSummary = createTable(
       {
@@ -211,12 +210,12 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
 
     // docx supports jpeg, jpg, bmp, gif and png
 
-    const metadata = user?.logo
-      ? user?.logo.match(base64PrefixRegex)![0]
+    const metadata = logo
+      ? logo.match(base64PrefixRegex)![0]
       : "data:image/png;base64,";
 
-    const imageBase64Data = user?.logo
-      ? user?.logo!.replace(base64PrefixRegex, "")!
+    const imageBase64Data = logo
+      ? logo.replace(base64PrefixRegex, "")
       : btoa(
           String.fromCharCode(
             // TODO check the compiler settings

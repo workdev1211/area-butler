@@ -41,6 +41,7 @@ import { localStorageSearchContext } from "../../../../../shared/constants/const
 import OpenAiModal from "../../../components/OpenAiModal";
 import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
+import { useTools } from "../../../hooks/tools";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -55,7 +56,11 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 }) => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
+
+  const { getActualUser } = useTools();
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
 
   const [exportType, setExportType] = useState<ExportTypeEnum | undefined>();
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
@@ -120,9 +125,11 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const resultingGroups = entityGroups.map((g) => g.items).flat();
 
-  const user = userState.user;
-  const hasOpenAiFeature = !!user?.subscription?.config.appFeatures.openAi;
+  // TODO change it
+  const hasOpenAiFeature =
+    isIntegrationUser || !!user?.subscription?.config.appFeatures.openAi;
   const hasFullyCustomizableExpose =
+    isIntegrationUser ||
     !!user?.subscription?.config.appFeatures.fullyCustomizableExpose;
 
   const copyCodeToClipBoard = (codeSnippet: string) => {

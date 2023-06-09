@@ -13,7 +13,6 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
-  ApiUser,
   TransportationParam,
 } from "../../../../shared/types/types";
 import { CensusSummary } from "../CensusSummary";
@@ -28,7 +27,6 @@ import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
-import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { TCensusData } from "../../hooks/censusdata";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
 
@@ -44,8 +42,9 @@ interface ICheatsheetProps {
   realEstateListing: ApiRealEstateListing;
   activePrinting: boolean;
   mapClippings: ISelectableMapClipping[];
-  user: ApiUser | null;
-  color?: string;
+  color: string;
+  logo: string;
+  isTrial: boolean;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
   style: string;
@@ -87,9 +86,6 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
   const mapClippings = props.mapClippings;
   const censusData = props.censusData;
   const federalElectionData = props.federalElectionData;
-  const user = props.user;
-  const color = props.color || user?.color || "#aa0c54";
-  const logo = user?.logo || areaButlerLogo;
   const particlePollutionData = props.particlePollutionData;
 
   let page = 0;
@@ -105,7 +101,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       ref={ref as any}
     >
       <style>{props.style}</style>
-      {user?.subscription?.type === ApiSubscriptionPlanType.TRIAL && (
+      {props.isTrial && (
         <img
           className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"
           src={areaButlerLogo}
@@ -119,7 +115,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       )}
       <PdfPage
         title="Zusammenfassung"
-        logo={logo}
+        logo={props.logo}
         nextPageNumber={nextPageNumber}
         leftHeaderElement={qrCodeElement}
       >
@@ -175,7 +171,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                 <EntityList
                   entityGroup={group}
                   limit={3}
-                  primaryColor={color}
+                  primaryColor={props.color}
                 />
               </div>
             ))
@@ -187,7 +183,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
         chunkedGroupes.slice(1).map((chunk, i) => (
           <PdfPage
             title="Zusammenfassung"
-            logo={logo}
+            logo={props.logo}
             nextPageNumber={nextPageNumber}
             leftHeaderElement={qrCodeElement}
             key={`entity-group-chunk-${i}`}
@@ -199,7 +195,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                     <EntityList
                       entityGroup={group}
                       limit={3}
-                      primaryColor={color}
+                      primaryColor={props.color}
                     />
                   </div>
                 );
@@ -211,7 +207,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {mapClippings.length > 0 && (
         <MapClippings
           mapClippings={mapClippings}
-          logo={logo}
+          logo={props.logo}
           nextPageNumber={nextPageNumber}
           qrCode={props.qrCode}
         />
@@ -220,7 +216,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {mapClippings.length > 0 && props.legend.length > 0 && (
         <PdfPage
           nextPageNumber={nextPageNumber}
-          logo={logo}
+          logo={props.logo}
           title="Kartenlegende"
           leftHeaderElement={qrCodeElement}
         >
@@ -233,7 +229,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       {(censusData || federalElectionData || particlePollutionData) && (
         <PdfPage
           title="Einblicke"
-          logo={logo}
+          logo={props.logo}
           nextPageNumber={nextPageNumber}
           leftHeaderElement={qrCodeElement}
         >
@@ -242,7 +238,10 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               <h4 className="mx-10 mt-5 text-xl w-56 font-bold">
                 Nachbarschaftsdemographie
               </h4>
-              <CensusSummary primaryColor={color} censusData={censusData} />
+              <CensusSummary
+                primaryColor={props.color}
+                censusData={censusData}
+              />
             </>
           )}
 
@@ -252,7 +251,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                 Bundestagswahl 2021
               </h4>
               <FederalElectionSummary
-                primaryColor={color}
+                primaryColor={props.color}
                 federalElectionDistrict={federalElectionData}
               />
             </>
@@ -264,7 +263,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                 Feinstaubbelastung
               </h4>
               <ParticlePollutionSummary
-                primaryColor={color}
+                primaryColor={props.color}
                 particlePollutionData={particlePollutionData}
               />
             </>

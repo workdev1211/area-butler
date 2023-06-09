@@ -8,7 +8,10 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import { UserContext } from "context/UserContext";
-import { ApiDataSource } from "../../../shared/types/subscription-plan";
+import {
+  ApiDataSource,
+  ApiSubscriptionPlanType,
+} from "../../../shared/types/subscription-plan";
 import { ApiUser, MeansOfTransportation } from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
@@ -27,6 +30,8 @@ import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
 import { TCensusData } from "../hooks/censusdata";
+import areaButlerLogo from "../assets/img/logo.svg";
+import { useTools } from "../hooks/tools";
 
 export enum ExportTypeEnum {
   ARCHIVE = "ARCHIVE",
@@ -67,21 +72,29 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { userState } = useContext(UserContext);
 
-  const user = userState.user as ApiUser;
-  const subscriptionPlan = user.subscription?.config;
+  const { getActualUser } = useTools();
+
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
+  const subscriptionPlan = isIntegrationUser
+    ? undefined
+    : user.subscription?.config;
 
   const hasFederalElectionInSubscription =
+    isIntegrationUser ||
     !!subscriptionPlan?.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     );
   const hasCensusElectionInSubscription =
+    isIntegrationUser ||
     !!subscriptionPlan?.appFeatures.dataSources.includes(ApiDataSource.CENSUS);
   const hasParticlePollutionElectionInSubscription =
+    isIntegrationUser ||
     !!subscriptionPlan?.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     );
+
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
   ).map((c: MapClipping) => ({ ...c, selected: true }));
@@ -161,6 +174,15 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
     exportType !== ExportTypeEnum.CHEATSHEET
       ? "Umgebungsanalyse exportieren"
       : "Spickzettel exportieren";
+
+  const resultingColor =
+    searchContextState.responseConfig?.primaryColor ||
+    (!isIntegrationUser && user?.color) ||
+    "#aa0c54";
+  const resultingLogo = (!isIntegrationUser && user?.logo) || areaButlerLogo;
+  const isTrial = !isIntegrationUser
+    ? user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
+    : false;
 
   if (searchContextState.printingZipActive) {
     return null;
@@ -259,8 +281,9 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                       : undefined
                   }
                   onAfterPrint={onClose}
-                  user={user}
-                  color={searchContextState.responseConfig?.primaryColor}
+                  color={resultingColor}
+                  logo={resultingLogo}
+                  isTrial={isTrial}
                   legend={legend}
                   qrCode={qrCodeState}
                 />
@@ -288,8 +311,9 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                       : undefined
                   }
                   onAfterPrint={onClose}
-                  user={user}
-                  color={searchContextState.responseConfig?.primaryColor}
+                  color={resultingColor}
+                  logo={resultingLogo}
+                  isTrial={isTrial}
                   legend={legend}
                   qrCode={qrCodeState}
                 />
@@ -314,8 +338,9 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
                       ? searchContextState.particlePollutionData
                       : undefined
                   }
-                  user={user}
-                  color={searchContextState.responseConfig?.primaryColor}
+                  color={resultingColor}
+                  logo={resultingLogo}
+                  isTrial={isTrial}
                   legend={legend}
                   qrCode={qrCodeState}
                 />

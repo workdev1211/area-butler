@@ -15,6 +15,7 @@ import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import { TCensusData } from "../../hooks/censusdata";
+import { useTools } from "../../hooks/tools";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];
@@ -28,9 +29,10 @@ export interface ExposeDownloadProps {
   censusData?: TCensusData;
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;
-  user: ApiUser | null;
   onAfterPrint: () => void;
-  color?: string;
+  color: string;
+  logo: string;
+  isTrial: boolean;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
 }
@@ -47,14 +49,19 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
-  user,
   onAfterPrint,
   color,
+  logo,
+  isTrial,
   legend,
   qrCode,
 }) => {
   const componentRef = useRef<HTMLDivElement>(null);
   const [activePrinting, setActivePrinting] = useState(false);
+
+  const { getActualUser } = useTools();
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
 
   let documentTitle = "MeinStandort_AreaButler";
 
@@ -71,7 +78,7 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
   let fontFamily = "archia";
   let exposeStyle: string;
 
-  if (user?.exportFonts?.length) {
+  if (!isIntegrationUser && user?.exportFonts?.length) {
     const exportFont = user.exportFonts[0];
     fontFamily = exportFont.fontFamily;
 
@@ -116,8 +123,9 @@ export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
         federalElectionData={federalElectionData}
         particlePollutionData={particlePollutionData}
         activePrinting={activePrinting}
-        user={user}
         color={color}
+        logo={logo}
+        isTrial={isTrial}
         legend={legend}
         qrCode={qrCode}
         style={exposeStyle}

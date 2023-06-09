@@ -5,7 +5,6 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
   ApiSearchResponse,
-  ApiUser,
   TransportationParam,
 } from "../../../../shared/types/types";
 import Cheatsheet from "./Cheatsheet";
@@ -15,6 +14,7 @@ import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import { TCensusData } from "../../hooks/censusdata";
+import { useTools } from "../../hooks/tools";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];
@@ -29,8 +29,9 @@ export interface CheatsheetDownloadProps {
   particlePollutionData?: ApiGeojsonFeature[];
   federalElectionData?: FederalElectionDistrict;
   onAfterPrint: () => void;
-  user: ApiUser | null;
-  color?: string;
+  color: string;
+  logo: string;
+  isTrial: boolean;
   legend: ILegendItem[];
   qrCode: IQrCodeState;
 }
@@ -47,15 +48,19 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
   censusData,
   federalElectionData,
   particlePollutionData,
-  user,
   onAfterPrint,
   color,
+  logo,
+  isTrial,
   legend,
   qrCode,
 }) => {
   const componentRef = useRef();
-
   const [activePrinting, setActivePrinting] = useState(false);
+
+  const { getActualUser } = useTools();
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
 
   let documentTitle = "MeinStandort_AreaButler";
 
@@ -73,7 +78,7 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
   let fontFamily = "archia";
   let cheatSheetStyle: string;
 
-  if (user?.exportFonts?.length) {
+  if (!isIntegrationUser && user?.exportFonts?.length) {
     const exportFont = user.exportFonts[0];
     fontFamily = exportFont.fontFamily;
 
@@ -119,8 +124,9 @@ export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
         censusData={censusData}
         federalElectionData={federalElectionData!}
         particlePollutionData={particlePollutionData!}
-        user={user}
         color={color}
+        logo={logo}
+        isTrial={isTrial}
         legend={legend}
         qrCode={qrCode}
         style={cheatSheetStyle}
