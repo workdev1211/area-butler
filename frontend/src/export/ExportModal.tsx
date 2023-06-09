@@ -7,12 +7,11 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "context/SearchContext";
-import { UserContext } from "context/UserContext";
 import {
   ApiDataSource,
   ApiSubscriptionPlanType,
 } from "../../../shared/types/subscription-plan";
-import { ApiUser, MeansOfTransportation } from "../../../shared/types/types";
+import { MeansOfTransportation } from "../../../shared/types/types";
 import CheatsheetDownload from "./cheatsheet/CheatsheetDownloadButton";
 import DocxExpose from "./docx/DocxExpose";
 import EntitySelection from "./EntitySelection";

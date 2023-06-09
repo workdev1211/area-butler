@@ -13,7 +13,6 @@ import BackButton from "../layout/BackButton";
 import { localStorageSearchContext } from "../../../shared/constants/constants";
 import { SearchContextState } from "context/SearchContext";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
-import { UserContext } from "../context/UserContext";
 
 export interface PotentialCustomerPageRouterProps {
   customerId: string;
@@ -32,11 +31,7 @@ const PotentialCustomerPage: FunctionComponent = () => {
   const searchContextFromLocalStorageString = window.localStorage.getItem(
     localStorageSearchContext
   );
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
-  const isIntegrationUser = !!integrationUser;
   const { customerId } = useParams<PotentialCustomerPageRouterProps>();
   const isNewCustomer = customerId === "new" || customerId === "from-result";
   let initialCustomer = { ...defaultCustomer };
@@ -56,8 +51,7 @@ const PotentialCustomerPage: FunctionComponent = () => {
     };
   }
 
-  const { fetchPotentialCustomers } =
-    usePotentialCustomerData(isIntegrationUser);
+  const { fetchPotentialCustomers } = usePotentialCustomerData();
 
   const [customer, setCustomer] =
     useState<Partial<ApiPotentialCustomer>>(initialCustomer);

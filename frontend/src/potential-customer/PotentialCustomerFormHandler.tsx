@@ -13,7 +13,6 @@ import {
 import PotentialCustomerForm from "./PotentialCustomerForm";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
-import { UserContext } from "../context/UserContext";
 
 // TODO change to "plainToInstance" from the "class-transformer" package
 export const mapFormToApiUpsertPotentialCustomer = (
@@ -43,13 +42,10 @@ const PotentialCustomerFormHandler: FunctionComponent<
   IPotentialCustomerFormHandlerProps
 > = ({ formId, beforeSubmit = () => {}, postSubmit = () => {}, customer }) => {
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const history = useHistory();
   const { createPotentialCustomer, updatePotentialCustomer } =
-    usePotentialCustomerData(!!integrationUser);
+    usePotentialCustomerData();
 
   const onSubmit = async (values: any): Promise<void> => {
     const mappedPotentialCustomer = mapFormToApiUpsertPotentialCustomer(values);

@@ -5,6 +5,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
@@ -29,6 +30,9 @@ import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from '../real-estate-listing/inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
+import { MongoParamPipe } from '../pipe/mongo-param.pipe';
+import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
+import { IApiMongoParams } from '@area-butler-types/types';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -52,6 +56,42 @@ export class LocationIntegrationController {
       integrationUser,
       snapshot,
     );
+  }
+
+  @ApiOperation({
+    description: 'Fetch the embeddable maps for the current user',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('snapshots')
+  async fetchSnapshots(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Query('skip', MongoParamPipe) skip: number,
+    @Query('limit', MongoParamPipe) limit: number,
+    @Query('sort', MongoSortParamPipe)
+    sort: IApiMongoParams = { 'snapshot.placesLocation.label': 1 },
+  ): Promise<ApiSearchResultSnapshotResponseDto[]> {
+    const includedFields = {
+      token: 1,
+      description: 1,
+      config: 1,
+      createdAt: 1,
+      endsAt: 1,
+      lastAccess: 1,
+      visitAmount: 1,
+      'snapshot.location': 1,
+      'snapshot.description': 1,
+      'snapshot.placesLocation.label': 1,
+    };
+
+    return (
+      await this.locationService.fetchSnapshots(
+        integrationUser,
+        skip,
+        limit,
+        includedFields,
+        sort,
+      )
+    ).map((r) => mapSnapshotToEmbeddableMap(r));
   }
 
   @ApiOperation({ description: 'Fetch a specific map snapshot' })

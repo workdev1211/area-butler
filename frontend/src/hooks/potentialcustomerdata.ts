@@ -1,11 +1,21 @@
+import { useContext } from "react";
+
 import { useHttp } from "./http";
 import {
   ApiPotentialCustomer,
   ApiUpsertPotentialCustomer,
 } from "../../../shared/types/potential-customer";
+import { UserContext } from "../context/UserContext";
 
-export const usePotentialCustomerData = (isIntegrationUser = false) => {
+export const usePotentialCustomerData = () => {
+  // TODO refactor to the useTools hook
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
   const { post, get, put, deleteRequest } = useHttp();
+
+  const isIntegrationUser = !!integrationUser;
 
   const createPotentialCustomer = async (
     potentialCustomer: ApiUpsertPotentialCustomer

@@ -8,7 +8,6 @@ import {
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import { toastSuccess } from "../shared/shared.functions";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
-import { UserContext } from "../context/UserContext";
 
 interface IPotentialCustomerFormDeleteHandlerProps extends FormModalData {
   potentialCustomer: Partial<ApiPotentialCustomer>;
@@ -23,13 +22,7 @@ export const PotentialCustomerFormDeleteHandler: FunctionComponent<
   potentialCustomer,
 }) => {
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
-  const { deletePotentialCustomer } = usePotentialCustomerData(
-    !!integrationUser
-  );
+  const { deletePotentialCustomer } = usePotentialCustomerData();
 
   const onSubmit = async (e: any) => {
     e.preventDefault();

@@ -22,14 +22,21 @@ import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { ICurrentMapRef } from "../components/SearchResultContainer";
 import { toastError, toastSuccess } from "../shared/shared.functions";
+import { UserContext } from "../context/UserContext";
 
-export const useLocationData = (isIntegrationUser = false) => {
+export const useLocationData = () => {
+  // TODO refactor to use the useTools hook
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
 
   const { get, post, put } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
+
+  const isIntegrationUser = !!integrationUser;
 
   const createLocation = async (
     search: ApiSearch
@@ -54,6 +61,20 @@ export const useLocationData = (isIntegrationUser = false) => {
           : `/api/location/snapshot/${snapshotId}`
       )
     ).data;
+  };
+
+  const fetchSnapshots = async (
+    queryParams?: string
+  ): Promise<ApiSearchResultSnapshotResponse[]> => {
+    let url = isIntegrationUser
+      ? "/api/location-integration/snapshots"
+      : "/api/location/snapshots";
+
+    if (queryParams) {
+      url += `?${queryParams}`;
+    }
+
+    return (await get<ApiSearchResultSnapshotResponse[]>(url)).data;
   };
 
   const createSnapshot = async (
@@ -223,6 +244,7 @@ export const useLocationData = (isIntegrationUser = false) => {
   return {
     createLocation,
     fetchSnapshot,
+    fetchSnapshots,
     createSnapshot,
     updateSnapshot,
     saveSnapshotConfig,

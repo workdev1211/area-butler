@@ -1,9 +1,19 @@
+import { useContext } from "react";
+
 import { useHttp } from "./http";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
+import { UserContext } from "../context/UserContext";
 
-export const useTour = (isIntegrationUser: boolean) => {
+export const useTour = () => {
+  // TODO refactor to the useTools hook
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+
   const { post } = useHttp();
+
+  const isIntegrationUser = !!integrationUser;
 
   const hideTour = async (
     tour: ApiTourNamesEnum

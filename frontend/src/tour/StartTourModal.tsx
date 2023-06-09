@@ -42,7 +42,7 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   } = useContext(UserContext);
 
   const isIntegrationUser = !!integrationUser;
-  const { hideTour, hideTours } = useTour(isIntegrationUser);
+  const { hideTour, hideTours } = useTour();
 
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 

@@ -16,7 +16,6 @@ import { deriveColorPalette } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
-  ApiUser,
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../shared/types/types";
@@ -39,7 +38,6 @@ import { EntityGroup } from "../../components/SearchResultContainer";
 import { base64PrefixRegex } from "../../shared/shared.constants";
 import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
-import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
 

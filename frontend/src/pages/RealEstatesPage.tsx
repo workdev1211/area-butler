@@ -11,7 +11,6 @@ import Select, {
 import { Loader } from "@googlemaps/js-api-loader";
 
 import DefaultLayout from "../layout/defaultLayout";
-import { useHttp } from "../hooks/http";
 import {
   allFurnishing,
   allRealEstateCostTypes,
@@ -47,6 +46,7 @@ import { googleMapsApiOptions } from "../shared/shared.constants";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
 import { useRealEstateData } from "../hooks/realestatedata";
 import CrmImportModal from "../real-estates/CrmImportModal";
+import { useLocationData } from "../hooks/locationdata";
 
 const deleteRealEstateModalConfig = {
   modalTitle: "Objekt löschen",
@@ -59,7 +59,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const { searchContextDispatch } = useContext(SearchContext);
   const { googleApiKey } = useContext(ConfigContext);
 
-  const { get } = useHttp();
+  const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
   const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
@@ -97,9 +97,7 @@ const RealEstatesPage: FunctionComponent = () => {
     }
 
     const fetchEmbeddableMaps = async () => {
-      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-        await get<ApiSearchResultSnapshotResponse[]>("/api/location/snapshots")
-      ).data;
+      const embeddableMaps = await fetchSnapshots();
 
       userDispatch({
         type: UserActionTypes.SET_EMBEDDABLE_MAPS,

@@ -56,7 +56,7 @@ const MapPage: FunctionComponent = () => {
     useContext(SearchContext);
 
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { fetchSnapshot, saveSnapshotConfig } = useLocationData(true);
+  const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const [snapshotResponse, setSnapshotResponse] =

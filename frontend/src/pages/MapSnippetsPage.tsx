@@ -1,15 +1,14 @@
 import { FunctionComponent, useContext, useEffect } from "react";
 
 import DefaultLayout from "../layout/defaultLayout";
-import { useHttp } from "../hooks/http";
 // TODO implement a tour
 // import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import EmbeddableMapsTable from "../map-snippets/EmbeddableMapsTable";
+import { useLocationData } from "../hooks/locationdata";
 
 const MapSnippetsPage: FunctionComponent = () => {
-  const { get } = useHttp();
+  const { fetchSnapshots } = useLocationData();
   const { userState, userDispatch } = useContext(UserContext);
 
   const user = userState.user!;
@@ -25,9 +24,7 @@ const MapSnippetsPage: FunctionComponent = () => {
     }
 
     const fetchEmbeddableMaps = async () => {
-      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-        await get<ApiSearchResultSnapshotResponse[]>("/api/location/snapshots")
-      ).data;
+      const embeddableMaps = await fetchSnapshots();
 
       userDispatch({
         type: UserActionTypes.SET_EMBEDDABLE_MAPS,

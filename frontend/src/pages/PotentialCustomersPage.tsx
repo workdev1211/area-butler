@@ -68,8 +68,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
   const isIntegrationUser = !!integrationUser;
 
   const history = useHistory<IPotentialCustomersHistoryState>();
-  const { fetchPotentialCustomers } =
-    usePotentialCustomerData(isIntegrationUser);
+  const { fetchPotentialCustomers } = usePotentialCustomerData();
 
   const [questionnaireModalOpen, setQuestionnaireModalOpen] = useState(false);
 

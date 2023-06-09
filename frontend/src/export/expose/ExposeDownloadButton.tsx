@@ -6,7 +6,6 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   ApiGeojsonFeature,
-  ApiUser,
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../shared/types/types";

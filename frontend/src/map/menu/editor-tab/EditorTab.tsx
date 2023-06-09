@@ -9,7 +9,6 @@ import {
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
-  ApiSearchResultSnapshotResponse,
   ApiSnippetEntityVisibility,
   IApiSnapshotPoiFilter,
   IApiSnapshotIconSizes,
@@ -25,7 +24,6 @@ import {
   setBackgroundColor,
   toggleEntityVisibility,
 } from "../../../shared/shared.functions";
-import { useHttp } from "../../../hooks/http";
 import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
 import { allRealEstateStatuses } from "../../../../../shared/constants/real-estate";
 import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
@@ -37,6 +35,7 @@ import {
 } from "../../../shared/shared.constants";
 import PoiFilter from "./PoiFilter";
 import IconSizes from "./IconSize";
+import { useLocationData } from "../../../hooks/locationdata";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -55,7 +54,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   additionalMapBoxStyles = [],
   isNewSnapshot = false,
 }) => {
-  const { get } = useHttp();
+  const { fetchSnapshots } = useLocationData();
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
@@ -84,13 +83,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     const fetchEmbeddableMaps = async () => {
       const limit = isNewSnapshot ? 6 : 5;
 
-      const embeddableMaps: ApiSearchResultSnapshotResponse[] = (
-        await get<ApiSearchResultSnapshotResponse[]>(
-          `/api/location/snapshots?limit=${limit}&sort=${JSON.stringify({
-            updatedAt: -1,
-          })}`
-        )
-      ).data;
+      const embeddableMaps = await fetchSnapshots(
+        `limit=${limit}&sort=${JSON.stringify({
+          updatedAt: -1,
+        })}`
+      );
 
       const snippetConfigs = embeddableMaps.reduce<IRecentSnippetConfig[]>(
         (

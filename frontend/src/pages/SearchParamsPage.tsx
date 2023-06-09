@@ -85,16 +85,14 @@ const SearchParamsPage: FunctionComponent = () => {
   const integrationUser = userState.integrationUser!;
   const isIntegrationUser = !!integrationUser;
 
-  const { fetchPotentialCustomers } =
-    usePotentialCustomerData(isIntegrationUser);
+  const { fetchPotentialCustomers } = usePotentialCustomerData();
   const { fetchRealEstates } = useRealEstateData();
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot, updateSnapshot } =
-    useLocationData(isIntegrationUser);
+  const { createLocation, createSnapshot, updateSnapshot } = useLocationData();
 
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
