@@ -181,7 +181,7 @@ export const toastSuccess = (message: string) => {
 export const toastError = (
   message: string,
   onClose = () => {},
-  closeTimeMs: number | false = 10000,
+  closeTimeMs: number | false = 10000
 ) => {
   toast.error(message, {
     onClose,
@@ -585,21 +585,21 @@ export const toggleEntityVisibility = (
   ];
 };
 
-export const createDirectLink = (token: string) => {
-  return `${window.location.origin}/embed?token=${token}`;
-};
+// IMPORTANT - please, use the appropriate methods from the 'useTools' hook
+// export const createDirectLink = (token: string): string =>
+//   `${window.location.origin}/embed?token=${token}`;
 
-export const createCodeSnippet = (token: string) => {
-  return `  
-<iframe
-  style="border: none"
-  width="100%"
-  height="100%"
-  src="${createDirectLink(token)}"
-  title="AreaButler Map Snippet"
-></iframe>
-  `;
-};
+// export const createCodeSnippet = (token: string) => {
+//   return `
+// <iframe
+//   style="border: none"
+//   width="100%"
+//   height="100%"
+//   src="${createDirectLink(token)}"
+//   title="AreaButler Map Snippet"
+// ></iframe>
+//   `;
+// };
 
 export const deriveEntityGroupsByActiveMeans = (
   entityGroups: EntityGroup[] = [],

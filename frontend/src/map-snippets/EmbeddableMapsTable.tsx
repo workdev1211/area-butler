@@ -7,11 +7,7 @@ import "./EmbeddableMapsTable.scss";
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
-import {
-  createCodeSnippet,
-  toastError,
-  toastSuccess,
-} from "shared/shared.functions";
+import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
@@ -28,7 +24,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
 }) => {
   const history = useHistory();
   const { deleteRequest } = useHttp();
-  const { createDirectLink } = useTools();
+  const { createDirectLink, createCodeSnippet } = useTools();
   const { userDispatch } = useContext(UserContext);
 
   const [isShownModal, setIsShownModal] = useState(false);

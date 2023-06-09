@@ -15,5 +15,17 @@ export const useTools = () => {
     }/embed?token=${token}`;
   };
 
-  return { createDirectLink };
+  const createCodeSnippet = (token: string): string => {
+    return `  
+      <iframe
+        style="border: none"
+        width="100%"
+        height="100%"
+        src="${createDirectLink(token)}"
+        title="AreaButler Map Snippet"
+      ></iframe>
+    `;
+  };
+
+  return { createDirectLink, createCodeSnippet };
 };

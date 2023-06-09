@@ -9,8 +9,6 @@ import "./ExpressAnalysisModal.scss";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import {
-  createCodeSnippet,
-  createDirectLink,
   deriveEntityGroupsByActiveMeans,
   toastError,
   toastSuccess,
@@ -34,6 +32,7 @@ import { getQrCodeBase64 } from "../export/QrCode";
 import downloadIcon from "../assets/icons/download.svg";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 import OpenAiLocationDescriptionModal from "./OpenAiLocationDescriptionModal";
+import { useTools } from "../hooks/tools";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
@@ -44,8 +43,9 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
   snapshotResponse,
   closeModal,
 }) => {
-  const { put } = useHttp();
   const history = useHistory();
+  const { put } = useHttp();
+  const { createDirectLink, createCodeSnippet } = useTools();
 
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);

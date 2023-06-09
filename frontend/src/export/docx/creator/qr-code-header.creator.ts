@@ -13,11 +13,10 @@ import {
 } from "docx";
 import { toDataURL } from "qrcode";
 
-import { createDirectLink } from "../../../shared/shared.functions";
 import { base64PrefixRegex } from "../../../shared/shared.constants";
 
 export const createQrCodeHeader = async (
-  snapshotToken: string,
+  directLink: string,
   imageData: string,
   imageRatio = 1
 ): Promise<{ default: Header }> => {
@@ -96,15 +95,10 @@ export const createQrCodeHeader = async (
                                           data: Uint8Array.from(
                                             atob(
                                               (
-                                                await toDataURL(
-                                                  createDirectLink(
-                                                    snapshotToken
-                                                  ),
-                                                  {
-                                                    type: "image/png",
-                                                    margin: 0,
-                                                  }
-                                                )
+                                                await toDataURL(directLink, {
+                                                  type: "image/png",
+                                                  margin: 0,
+                                                })
                                               ).replace(base64PrefixRegex, "")
                                             ),
                                             (c) => c.charCodeAt(0)

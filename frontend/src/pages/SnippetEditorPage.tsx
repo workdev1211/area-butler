@@ -21,8 +21,6 @@ import { UserContext } from "context/UserContext";
 import DefaultLayout from "layout/defaultLayout";
 import {
   buildEntityData,
-  createCodeSnippet,
-  createDirectLink,
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
   toastError,
@@ -52,6 +50,7 @@ import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
+import { useTools } from "../hooks/tools";
 
 export interface SnippetEditorRouterProps {
   snapshotId: string;
@@ -74,6 +73,7 @@ const SnippetEditorPage: FunctionComponent = () => {
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const { fetchLocationIndexData } = useLocationIndexData();
+  const { createDirectLink, createCodeSnippet } = useTools();
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");

@@ -41,6 +41,7 @@ import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
 import { TCensusData } from "../../hooks/censusdata";
+import { useTools } from "../../hooks/tools";
 
 export interface DocxExposeProps {
   censusData?: TCensusData;
@@ -73,6 +74,8 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
   legend,
   qrCode,
 }) => {
+  const { createDirectLink } = useTools();
+
   const colorPalette = deriveColorPalette(color || user?.color || "#AA0C54");
 
   let documentTitle = "MeinStandort_AreaButler";
@@ -267,7 +270,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
         headers: {
           ...(qrCode.isShownQrCode
             ? await createQrCodeHeader(
-                qrCode.snapshotToken!,
+                createDirectLink(qrCode.snapshotToken!),
                 imageBase64Data,
                 logoRatio
               )

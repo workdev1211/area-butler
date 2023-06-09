@@ -13,16 +13,14 @@ import { ILegendItem } from "../Legend";
 import { IQrCodeState } from "../ExportModal";
 import OnePagePng from "./OnePagePng";
 import { getQrCodeBase64 } from "../QrCode";
-import {
-  createDirectLink,
-  preferredLocationsTitle,
-} from "../../shared/shared.functions";
+import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IPoiIcon } from "../../shared/shared.types";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integrationtools";
 import { ApiOnOfficeArtTypesEnum } from "../../../../shared/types/on-office";
 import { ISortableEntityGroup } from "./OnePageExportModal";
+import { useTools } from "../../hooks/tools";
 
 interface IOnePageDownloadProps {
   addressDescription: string;
@@ -60,6 +58,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
   const { integrationType } = useContext(ConfigContext);
 
   const { sendToOnOffice } = useIntegrationTools();
+  const { createDirectLink } = useTools();
 
   const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectedMapClippings, setSelectedMapClippings] = useState<

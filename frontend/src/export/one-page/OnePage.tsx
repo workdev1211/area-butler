@@ -10,7 +10,6 @@ import { getQrCodeBase64 } from "../QrCode";
 import { IQrCodeState } from "../ExportModal";
 import PdfOnePage from "./PdfOnePage";
 import {
-  createDirectLink,
   distanceToHumanReadable,
   preferredLocationsTitle,
 } from "../../shared/shared.functions";
@@ -18,6 +17,7 @@ import { ISelectableMapClipping } from "../MapClippingSelection";
 import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import OnePageLegendIcon from "./OnePageLegendIcon";
 import { ISortableEntityGroup } from "./OnePageExportModal";
+import { useTools } from "../../hooks/tools";
 
 interface IOnePageProps {
   addressDescription: string;
@@ -34,6 +34,8 @@ interface IOnePageProps {
 }
 
 export const OnePage = forwardRef((props: IOnePageProps, ref) => {
+  const { createDirectLink } = useTools();
+
   const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectedMapClippings, setSelectedMapClippings] = useState<
     ISelectableMapClipping[]

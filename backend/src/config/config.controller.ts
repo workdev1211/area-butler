@@ -1,6 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
-import { configService } from './config.service';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { configService } from './config.service';
 import { ApiConfigDto } from '../dto/api-config.dto';
 
 @ApiTags('config')
@@ -8,7 +9,7 @@ import { ApiConfigDto } from '../dto/api-config.dto';
 export class ConfigController {
   @ApiOperation({ description: 'Get the client configuration' })
   @Get()
-  public fetchConfig(): ApiConfigDto {
+  fetchConfig(): ApiConfigDto {
     return configService.getFrontendConfig();
   }
 }

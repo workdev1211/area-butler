@@ -5,7 +5,6 @@ import utc from "dayjs/plugin/utc";
 import timezone from "dayjs/plugin/timezone";
 
 import {
-  createCodeSnippet,
   setBackgroundColor,
   toastError,
   toastSuccess,
@@ -58,7 +57,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
 
   const { post } = useHttp();
   const { checkProdContAvailByAction, sendToOnOffice } = useIntegrationTools();
-  const { createDirectLink } = useTools();
+  const { createDirectLink, createCodeSnippet } = useTools();
 
   const [isInteractiveMapOpen, setIsInteractiveMapOpen] = useState(false);
   const [isShownModal, setIsShownModal] = useState(false);

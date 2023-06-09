@@ -1,7 +1,7 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
 import { toDataURL } from "qrcode";
-import { createDirectLink } from "../shared/shared.functions";
+import { useTools } from "../hooks/tools";
 
 export interface QrCodeProps {
   snapshotToken?: string;
@@ -20,6 +20,8 @@ export const QrCode: FunctionComponent<QrCodeProps> = ({
   containerClasses = "",
   imageClasses = "h-20",
 }) => {
+  const { createDirectLink } = useTools();
+
   const [qrCode, setQrCode] = useState<string>();
 
   useEffect(() => {

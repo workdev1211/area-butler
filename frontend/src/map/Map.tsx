@@ -64,7 +64,6 @@ import {
   ResultEntity,
 } from "../components/SearchResultContainer";
 import {
-  createDirectLink,
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
   deriveMinutesFromMeters,
@@ -85,6 +84,7 @@ import {
   defaultMyLocationIconSize,
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
+import { useTools } from "../hooks/tools";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -434,6 +434,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         },
       },
     }));
+
+    const { createDirectLink } = useTools();
 
     const [addPoiModalOpen, setAddPoiModalOpen] = useState(false);
     const [addPoiCoordinates, setAddPoiCoordinates] = useState<

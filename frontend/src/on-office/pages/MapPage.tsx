@@ -17,8 +17,6 @@ import {
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../../shared/shared.constants";
 import {
-  createCodeSnippet,
-  createDirectLink,
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
 } from "../../shared/shared.functions";
@@ -42,6 +40,7 @@ import { useCensusData } from "../../hooks/censusdata";
 import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
+import { useTools } from "../../hooks/tools";
 
 const MapPage: FunctionComponent = () => {
   const { state } = useLocation<IMapPageHistoryState>();
@@ -50,6 +49,8 @@ const MapPage: FunctionComponent = () => {
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchLocationIndexData } = useLocationIndexData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
+
+  const { createDirectLink, createCodeSnippet } = useTools();
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);

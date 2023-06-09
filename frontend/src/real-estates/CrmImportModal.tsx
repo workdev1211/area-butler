@@ -84,7 +84,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                     }-IDs: ${errorIds.join(", ")}.`;
 
                     toastSuccess(errorIdsText);
-                    console.log(errorIdsText);
+                    console.error(errorIdsText);
                   } else {
                     toastSuccess("Die Daten wurden importiert.");
                   }
