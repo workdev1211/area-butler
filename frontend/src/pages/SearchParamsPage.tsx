@@ -282,6 +282,10 @@ const SearchParamsPage: FunctionComponent = () => {
       ({ coordinates }) => !coordinates
     );
 
+  const searchButtonTitle = isNewRequest
+    ? "Analyse & Karte erstellen "
+    : "Analyse & Karte aktualisieren ";
+
   const increaseLimitSearchButton: ReactNode = (
     <button
       type="button"
@@ -289,7 +293,7 @@ const SearchParamsPage: FunctionComponent = () => {
       data-tour="start-search"
       className="btn bg-primary-gradient w-full sm:w-auto"
     >
-      {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
+      {searchButtonTitle}
       <img className="ml-1 -mt-0.5" src={nextIcon} alt="icon-next" />
     </button>
   );
@@ -583,47 +587,37 @@ const SearchParamsPage: FunctionComponent = () => {
     await handleAnalysis(onFinish, onFinally);
   };
 
-  const SearchButton: FunctionComponent<{ classes?: string }> = ({
-    classes = "btn bg-primary-gradient w-full sm:w-auto",
-  }) => {
-    return (
-      <button
-        data-tour="start-search"
-        type="button"
-        disabled={searchButtonDisabled}
-        onClick={performAnalysis}
-        className={
-          searchContextState.searchBusy ? `${classes} loading` : classes
-        }
-      >
-        <span className="-mt-1">
-          {isNewRequest ? "Analyse Starten " : "Analyse aktualisieren "}
-        </span>
-        <img className="ml-1 -mt-1" src={nextIcon} alt="icon-next" />
-      </button>
-    );
-  };
+  const searchButtonClasses = "btn bg-primary-gradient w-full sm:w-auto";
+
+  const SearchButton: ReactNode = limitType ? (
+    <IncreaseLimitModal modalConfig={increaseRequestLimitSearchModalConfig} />
+  ) : (
+    <button
+      data-tour="start-search"
+      type="button"
+      disabled={searchButtonDisabled}
+      onClick={performAnalysis}
+      className={
+        searchContextState.searchBusy
+          ? `${searchButtonClasses} loading`
+          : searchButtonClasses
+      }
+    >
+      <span className="-mt-1">{searchButtonTitle}</span>
+      <img className="ml-1 -mt-1" src={nextIcon} alt="icon-next" />
+    </button>
+  );
 
   return (
     <DefaultLayout
       title={
         isIntegrationUser
           ? `Adresse: ${searchContextState.placesLocation?.label}`
-          : "Suche"
+          : "Umfeldanalyse"
       }
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
-      actionsBottom={
-        limitType
-          ? [
-              <div key="dummy" />,
-              <IncreaseLimitModal
-                key="search-button"
-                modalConfig={increaseRequestLimitSearchModalConfig}
-              />,
-            ]
-          : [<div key="dummy" />, <SearchButton key="search-button" />]
-      }
+      actionsBottom={[<div key="dummy" />, SearchButton]}
     >
       <TourStarter
         tour={
@@ -644,7 +638,12 @@ const SearchParamsPage: FunctionComponent = () => {
         <Form>
           {!isIntegrationUser && (
             <>
-              <h2 className="search-params-first-title">"Lage"</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="search-params-first-title">
+                  Adresse der Immobilie
+                </h2>
+                <h2 className="search-params-first-title">{SearchButton}</h2>
+              </div>
               <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
                 {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
                 <LocationAutocomplete
@@ -666,7 +665,24 @@ const SearchParamsPage: FunctionComponent = () => {
               </div>
             </>
           )}
-          <h2>Mobilität</h2>
+          <div className="flex items-center justify-between">
+            <h2
+              className={
+                isIntegrationUser ? "search-params-first-title" : undefined
+              }
+            >
+              Mobilitäten für Erreichbarkeitslinien in der Karte
+            </h2>
+            {isIntegrationUser && (
+              <h2
+                className={
+                  isIntegrationUser ? "search-params-first-title" : undefined
+                }
+              >
+                {SearchButton}
+              </h2>
+            )}
+          </div>
           <div className="sub-content">
             <TransportationParams
               values={searchContextState.transportationParams}
@@ -679,7 +695,17 @@ const SearchParamsPage: FunctionComponent = () => {
             />
             <PotentialCustomerDropDown />
           </div>
-          <h2>{preferredLocationsTitle}</h2>
+          <h2>Lokalitäten: Points-of-Interesse (POIs) in der Karte</h2>
+          <LocalityParams
+            values={searchContextState.localityParams}
+            onChange={(newValues) => {
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
+                payload: newValues,
+              });
+            }}
+          />
+          <h2>Wichtige Adressen: für Tür-zu-Tür Routen in der Karte</h2>
           <div className="sub-content">
             <ImportantAddresses
               inputValues={searchContextState.preferredLocations}
@@ -691,16 +717,6 @@ const SearchParamsPage: FunctionComponent = () => {
               }}
             />
           </div>
-          <h2>Lokalitäten</h2>
-          <LocalityParams
-            values={searchContextState.localityParams}
-            onChange={(newValues) => {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-                payload: newValues,
-              });
-            }}
-          />
         </Form>
       </Formik>
     </DefaultLayout>

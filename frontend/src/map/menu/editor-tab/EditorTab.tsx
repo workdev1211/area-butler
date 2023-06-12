@@ -776,7 +776,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="hideIsochrones"
-                    checked={config?.hideIsochrones}
+                    checked={!!config?.hideIsochrones}
                     onChange={() => {
                       changeHideIsochrones();
                     }}
@@ -792,7 +792,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="hideIsochrones"
-                    checked={config?.showDetailsInOnePage}
+                    checked={!!config?.showDetailsInOnePage}
                     onChange={() => {
                       changeShowDetailsInOnePage();
                     }}

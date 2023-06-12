@@ -107,11 +107,10 @@ const ImportantAddresses: FunctionComponent<IImportantAddressesProps> = ({
         </button>
       )}
       <datalist id="suggestedTitles">
-        <option value="Arbeitsort" />
-        <option value="Eltern" />
-        <option value="Kita" />
-        <option value="Schule" />
-        <option value="Schwiegereltern" />
+        <option value="Flughafen" />
+        <option value="Bahnhof" />
+        <option value="Pendelstrecke" />
+        <option value="Highlight der Region" />
         <option value="Eigene Bezeichnung" />
       </datalist>
     </div>

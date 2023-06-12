@@ -246,7 +246,7 @@ const MapPage: FunctionComponent = () => {
       config: searchContextState.responseConfig,
       availableMeans: deriveAvailableMeansFromResponse(searchResponse),
       groupedEntries: editorGroups,
-      onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
+      onConfigChange: (config: ApiSearchResultSnapshotConfig): void => {
         if (
           searchContextState.responseConfig?.mapBoxMapId !==
             config.mapBoxMapId ||
@@ -367,6 +367,7 @@ const MapPage: FunctionComponent = () => {
 
   if (
     !searchContextState.searchResponse ||
+    !searchContextState.responseConfig ||
     !mapBoxToken ||
     !editorTabProps ||
     !exportTabProps
@@ -380,7 +381,7 @@ const MapPage: FunctionComponent = () => {
       <SearchResultContainer
         ref={mapRef}
         mapBoxToken={mapBoxToken}
-        mapBoxMapId={snapshotResponse?.config?.mapBoxMapId}
+        mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
