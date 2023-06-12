@@ -512,7 +512,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         </div>
         <div className="collapse-content">
           <ul className="editor-configuration-list">
-            {recentSnippetConfigs.length && (
+            {recentSnippetConfigs.length > 0 && (
               <li>
                 <div className="flex items-center gap-6 py-1 w-full">
                   <h4 className="w-[6.5rem] font-bold">Vorlagen</h4>
@@ -520,7 +520,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     className="select select-bordered select-sm flex-1"
                     value={selectedSnippetConfigId}
                     disabled={recentSnippetConfigs.length === 1}
-                    onChange={(e) => {
+                    onChange={(e): void => {
                       const changedSnippetConfigId = e.target.value;
                       setSelectedSnippetConfigId(changedSnippetConfigId);
 

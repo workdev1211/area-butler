@@ -9,7 +9,10 @@ import { useLocation, useParams } from "react-router-dom";
 
 import "./MapPage.scss";
 
-import { ApiRealEstateStatusEnum } from "../../../../shared/types/real-estate";
+import {
+  ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+} from "../../../../shared/types/real-estate";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -43,25 +46,28 @@ import { useLocationIndexData } from "../../hooks/locationindexdata";
 import { useTools } from "../../hooks/tools";
 
 const MapPage: FunctionComponent = () => {
+  const mapRef = useRef<ICurrentMapRef | null>(null);
+
   const { state } = useLocation<IMapPageHistoryState>();
+  const { snapshotId } = useParams<SnippetEditorRouterProps>();
 
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchLocationIndexData } = useLocationIndexData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
 
+  const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { createDirectLink, createCodeSnippet } = useTools();
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
-  const { snapshotId } = useParams<SnippetEditorRouterProps>();
-  const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
-  const mapRef = useRef<ICurrentMapRef | null>(null);
-
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
   const [mapBoxToken, setMapBoxToken] = useState("");
+  const [processedRealEstates, setProcessedRealEstates] = useState<
+    ApiRealEstateListing[]
+  >([]);
   const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
   const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
 
@@ -121,13 +127,28 @@ const MapPage: FunctionComponent = () => {
       config,
     } = snapshotResponse;
 
-    const filteredRealEstateListings = config.realEstateStatus
+    const filteredRealEstates = config.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
             config.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
             status === config.realEstateStatus
         )
       : realEstateListings;
+
+    setProcessedRealEstates(filteredRealEstates);
+
+    const enhancedConfig = {
+      ...config,
+      fixedRealEstates: config.fixedRealEstates ?? true,
+      defaultActiveMeans: config.defaultActiveMeans?.length
+        ? config.defaultActiveMeans
+        : deriveAvailableMeansFromResponse(searchResponse),
+    };
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+      payload: { ...enhancedConfig },
+    });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
@@ -175,11 +196,6 @@ const MapPage: FunctionComponent = () => {
     });
 
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-      payload: { ...config },
-    });
-
-    searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
       payload: snapshotResponse.token,
     });
@@ -189,7 +205,7 @@ const MapPage: FunctionComponent = () => {
       payload: deriveInitialEntityGroups(
         searchResponse,
         config,
-        filteredRealEstateListings,
+        filteredRealEstates,
         preferredLocations
       ),
     });
@@ -199,24 +215,35 @@ const MapPage: FunctionComponent = () => {
       payload: snapshotResponse.iframeEndsAt,
     });
 
-    const enhancedConfig = {
-      ...config,
-      fixedRealEstates: config.fixedRealEstates ?? true,
-      defaultActiveMeans: config.defaultActiveMeans?.length
-        ? config.defaultActiveMeans
-        : deriveAvailableMeansFromResponse(searchResponse),
-    };
+    setExportTabProps({
+      snapshotId,
+      directLink: createDirectLink(snapshotResponse.token),
+      codeSnippet: createCodeSnippet(snapshotResponse.token),
+      searchAddress: placesLocation.label,
+    });
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshotId, snapshotResponse]);
+
+  useEffect(() => {
+    if (!snapshotResponse || !searchContextState.responseConfig) {
+      return;
+    }
+
+    const {
+      snapshot: { searchResponse, preferredLocations = [] },
+    } = snapshotResponse;
 
     const editorGroups = deriveInitialEntityGroups(
       searchResponse,
-      enhancedConfig,
-      filteredRealEstateListings,
+      searchContextState.responseConfig,
+      processedRealEstates,
       preferredLocations,
       true
     );
 
     setEditorTabProps({
-      config: enhancedConfig,
+      config: searchContextState.responseConfig,
       availableMeans: deriveAvailableMeansFromResponse(searchResponse),
       groupedEntries: editorGroups,
       onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
@@ -252,15 +279,42 @@ const MapPage: FunctionComponent = () => {
       isNewSnapshot: !!state?.isNewSnapshot,
     });
 
-    setExportTabProps({
-      snapshotId,
-      directLink: createDirectLink(snapshotResponse.token),
-      codeSnippet: createCodeSnippet(snapshotResponse.token),
-      searchAddress: placesLocation.label,
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    processedRealEstates,
+    searchContextState.mapCenter,
+    searchContextState.mapZoomLevel,
+    searchContextState.responseConfig,
+    snapshotId,
+    snapshotResponse,
+    state?.isNewSnapshot,
+  ]);
+
+  // react to changes
+  useEffect(() => {
+    if (!snapshotResponse) {
+      return;
+    }
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: deriveInitialEntityGroups(
+        snapshotResponse.snapshot.searchResponse,
+        searchContextState.responseConfig,
+        processedRealEstates,
+        snapshotResponse?.snapshot.preferredLocations
+      ),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshotResponse]);
+  }, [
+    searchContextState.responseConfig?.defaultActiveGroups,
+    searchContextState.responseConfig?.entityVisibility,
+    searchContextState.responseConfig?.realEstateStatus,
+    searchContextState.responseConfig?.poiFilter,
+    snapshotResponse,
+    processedRealEstates,
+  ]);
 
   useEffect(() => {
     if (!snapshotResponse) {

@@ -290,11 +290,11 @@ const SearchResultContainer = forwardRef<
 
       setPreferredLocationsGroup(foundPreferredLocationsGroup);
       setResultingGroupedEntities(groupsFilteredByActiveMeans);
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       searchContextState.responseGroupedEntities,
       searchContextState.responseActiveMeans,
-      setResultingGroupedEntities,
-      setPreferredLocationsGroup,
     ]);
 
     const toggleRoutesToEntity = async (

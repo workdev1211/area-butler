@@ -37,7 +37,7 @@ const FeedbackFormHandler: FunctionComponent<FormModalData> = ({
 
     const externalScript = document.createElement("script");
     // externalScript.onload = () => {
-    //   console.log("The chat has been loaded!");
+    //   console.debug("The chat has been loaded!");
     // };
     externalScript.onerror = () => {
       console.error("The error has occurred while using the chat!");
