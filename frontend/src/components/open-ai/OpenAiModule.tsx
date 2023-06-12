@@ -19,7 +19,7 @@ import { placeholderSelectOptionKey } from "../../../../shared/constants/constan
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
 import { useOpenAi } from "../../hooks/openai";
-import { toastSuccess } from "../../shared/shared.functions";
+import { toastError, toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
 import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
@@ -33,7 +33,7 @@ interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
-  onResponseFetched: (responseText?: string) => void;
+  onResponseFetched: (responseText: string) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
 }
@@ -120,6 +120,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           });
 
           break;
+        }
+
+        default: {
+          toastError("Der Fehler ist aufgetreten!");
+          return;
         }
       }
 
@@ -281,8 +286,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
             <div className="text-justify">{fetchedResponse}</div>
             <div
-              className="mt-3 inline-flex gap-2 cursor-pointer items-center mt-3"
-              onClick={() => {
+              className="inline-flex gap-2 cursor-pointer items-center mt-3"
+              onClick={(): void => {
                 const success = copy(fetchedResponse);
 
                 if (success) {

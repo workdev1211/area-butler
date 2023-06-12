@@ -1,7 +1,11 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
+import { toastSuccess } from "../shared/shared.functions";
+import { SearchContext } from "../context/SearchContext";
+import { UserContext } from "../context/UserContext";
+import { useHttp } from "../hooks/http";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -14,9 +18,23 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   searchResultSnapshotId,
   queryType,
 }) => {
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
+
+  const { patch } = useHttp();
+
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
   const [isFetchResponse, setIsFetchResponse] = useState(false);
+  const [isCopyTextButtonDisabled, setIsCopyTextButtonDisabled] =
+    useState(true);
+  const [queryResponse, setQueryResponse] = useState("");
+
+  const isIntegrationUser = !!integrationUser;
 
   return (
     <div className="modal modal-open z-2000">
@@ -35,30 +53,55 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
         <OpenAiModule
           initialQueryType={queryType}
           searchResultSnapshotId={searchResultSnapshotId}
-          onModuleStatusChange={(isReady) => {
+          onModuleStatusChange={(isReady): void => {
             setIsGenerateButtonDisabled(!isReady);
           }}
           isFetchResponse={isFetchResponse}
-          onResponseFetched={() => {
+          onResponseFetched={(responseText): void => {
+            setIsCopyTextButtonDisabled(false);
+            setQueryResponse(responseText);
             setIsFetchResponse(false);
           }}
         />
-        <div className="modal-action">
-          <button type="button" className="btn btn-sm" onClick={closeModal}>
-            Schließen
-          </button>
-          <button
-            className={`btn bg-primary-gradient max-w-fit self-end ${
-              isFetchResponse ? "loading" : ""
-            }`}
-            form="open-ai-location-description-form"
-            onClick={() => {
-              setIsFetchResponse(true);
-            }}
-            disabled={isGenerateButtonDisabled || isFetchResponse}
-          >
-            Generieren
-          </button>
+        <div
+          className={`modal-action ${
+            isIntegrationUser ? "justify-between" : ""
+          }`}
+        >
+          {isIntegrationUser && (
+            <button
+              className="btn bg-primary-gradient max-w-fit self-end"
+              onClick={(): void => {
+                toastSuccess("Die Daten wurden an onOffice gesendet!");
+                setIsCopyTextButtonDisabled(true);
+
+                void patch(
+                  `/api/on-office/estate/${realEstateListing?.integrationId}`,
+                  { queryType, queryResponse }
+                );
+              }}
+              disabled={isCopyTextButtonDisabled}
+            >
+              An onOffice senden
+            </button>
+          )}
+          <div className="flex gap-2">
+            <button type="button" className="btn btn-sm" onClick={closeModal}>
+              Schließen
+            </button>
+            <button
+              className={`btn bg-primary-gradient max-w-fit self-end ${
+                isFetchResponse ? "loading" : ""
+              }`}
+              form="open-ai-location-description-form"
+              onClick={() => {
+                setIsFetchResponse(true);
+              }}
+              disabled={isGenerateButtonDisabled || isFetchResponse}
+            >
+              Generieren
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -6,13 +6,13 @@
   @apply h-full flex flex-col relative bg-white;
 
   .collapse-content > ul > li {
-    height: 56px;
+    height: 60px;
 
     h3 {
       color: var(--base-anthracite);
       padding: 0 calc(var(--menu-image-w-h) + 0.75rem) 0
         calc(var(--menu-image-w-h) + 0.75rem);
-      @apply text-base;
+      @apply text-base flex gap-2;
     }
   }
 }

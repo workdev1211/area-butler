@@ -31,7 +31,7 @@ import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
 import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.svg";
 // TODO start - waits for the customer
-import webLinkIcon from "../../../assets/icons/link.svg";
+// import webLinkIcon from "../../../assets/icons/link.svg";
 import fileIcon from "../../../assets/icons/file.svg";
 // TODO end
 import { UserActionTypes, UserContext } from "../../../context/UserContext";
@@ -42,6 +42,9 @@ import OpenAiModal from "../../../components/OpenAiModal";
 import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
 import { useTools } from "../../../hooks/tools";
+import { ApiOnOfficeArtTypesEnum } from "../../../../../shared/types/on-office";
+import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
+import { useIntegrationTools } from "../../../hooks/integrationtools";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -58,6 +61,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
     useContext(SearchContext);
   const { userDispatch } = useContext(UserContext);
 
+  const { sendToOnOffice } = useIntegrationTools();
   const { getActualUser } = useTools();
   const user = getActualUser();
   const isIntegrationUser = "accessToken" in user;
@@ -70,7 +74,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   const [isReportsOpen, setIsReportsOpen] = useState(false);
   const [isAiDescriptionOpen, setIsAiDescriptionOpen] = useState(false);
   // TODO waits for the customer
-  const [isCustomerLinksOpen, setIsCustomerLinksOpen] = useState(false);
+  // const [isCustomerLinksOpen, setIsCustomerLinksOpen] = useState(false);
   const [isCustomerDataOpen, setIsCustomerDataOpen] = useState(false);
 
   useEffect(() => {
@@ -231,34 +235,94 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
           <div className="collapse-content">
             <ul>
               <li>
-                <h3
-                  // TODO move to the ExportTab.scss file
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
-                  onClick={() => {
-                    copyCodeToClipBoard(directLink);
-                  }}
-                >
-                  <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                  Hyperlink zur Vollbild-Karte URL
+                <h3 className="flex-col w-full">
+                  <div className="font-bold">Direktlink</div>
+                  <div className="flex justify-between">
+                    <div
+                      className="flex items-center cursor-pointer gap-2 max-w-fit"
+                      onClick={() => {
+                        copyCodeToClipBoard(directLink);
+                      }}
+                    >
+                      <img className="w-6 h-6" src={copyIcon} alt="copy" />
+                      <span>Kopieren</span>
+                    </div>
+                    {isIntegrationUser && (
+                      <div
+                        className="flex items-center cursor-pointer gap-2 max-w-fit"
+                        onClick={async () => {
+                          await sendToOnOffice({
+                            fileTitle: "iFrame Direktlink",
+                            url: directLink,
+                            artType: ApiOnOfficeArtTypesEnum.LINK,
+                          });
+                        }}
+                      >
+                        <img
+                          className="w-6 h-6"
+                          src={sendToOnOfficeIcon}
+                          alt="send-to-on-office"
+                        />
+                        <span>An onOffice senden</span>
+                      </div>
+                    )}
+                  </div>
+                </h3>
+              </li>
+              <li>
+                <h3 className="flex-col w-full">
+                  <div className="font-bold">QR-Code</div>
+                  <div className="flex justify-between">
+                    <div
+                      className="flex items-center cursor-pointer gap-2 max-w-fit"
+                      onClick={async () => {
+                        saveAs(
+                          await getQrCodeBase64(directLink),
+                          `${searchAddress.replace(
+                            /[\s|,]+/g,
+                            "-"
+                          )}-QR-Code.png`
+                        );
+                      }}
+                    >
+                      <img
+                        className="w-6 h-6"
+                        src={downloadIcon}
+                        alt="download-qr-code"
+                      />
+                      <span>Herunterladen</span>
+                    </div>
+                    {isIntegrationUser && (
+                      <div
+                        className="flex items-center cursor-pointer gap-2 max-w-fit"
+                        onClick={async () => {
+                          await sendToOnOffice({
+                            filename: `${searchAddress.replace(
+                              /[\s|,]+/g,
+                              "-"
+                            )}-QR-Code.png`,
+                            base64Content: (
+                              await getQrCodeBase64(directLink)
+                            ).replace(/^data:.*;base64,/, ""),
+                            fileTitle: "QR-Code",
+                            artType: ApiOnOfficeArtTypesEnum["QR-CODE"],
+                          });
+                        }}
+                      >
+                        <img
+                          className="w-6 h-6"
+                          src={sendToOnOfficeIcon}
+                          alt="send-to-on-office"
+                        />
+                        <span>An onOffice senden</span>
+                      </div>
+                    )}
+                  </div>
                 </h3>
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
-                  onClick={async () => {
-                    saveAs(
-                      await getQrCodeBase64(directLink),
-                      `${searchAddress.replace(/[\s|,]+/g, "-")}-QR-Code.png`
-                    );
-                  }}
-                >
-                  <img className="w-6 h-6" src={downloadIcon} alt="download" />
-                  QR Code
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     searchContextDispatch({
                       type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
@@ -266,23 +330,27 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                     });
                   }}
                 >
-                  <img
-                    className="w-6 h-6 invert"
-                    src={pdfIcon}
-                    alt="download"
-                  />
-                  Export Kartenlegende ZIP
+                  <div className="flex gap-2 cursor-pointer">
+                    <img
+                      className="w-6 h-6 invert"
+                      src={pdfIcon}
+                      alt="download"
+                    />
+                    <span>Export Kartenlegende ZIP</span>
+                  </div>
                 </h3>
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     copyCodeToClipBoard(codeSnippet);
                   }}
                 >
-                  <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                  Snippet (iFrame) HTML
+                  <div className="flex gap-2 cursor-pointer">
+                    <img className="w-6 h-6" src={copyIcon} alt="copy" />
+                    <span>Snippet (iFrame) HTML</span>
+                  </div>
                 </h3>
               </li>
             </ul>
@@ -329,7 +397,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             <ul>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     hasFullyCustomizableExpose
                       ? searchContextDispatch({
@@ -357,7 +425,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     hasFullyCustomizableExpose
                       ? searchContextDispatch({
@@ -384,7 +452,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     hasFullyCustomizableExpose
                       ? searchContextDispatch({
@@ -411,7 +479,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     hasFullyCustomizableExpose
                       ? searchContextDispatch({
@@ -480,7 +548,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                 {/* Could be needed in future */}
                 {/*<li>*/}
                 {/*  <h3*/}
-                {/*    className="flex max-w-fit items-center cursor-pointer gap-2"*/}
+                {/*    className="max-w-fit items-center cursor-pointer"*/}
                 {/*    onClick={() => {*/}
                 {/*      setOpenAiQueryType(undefined);*/}
                 {/*      setIsShownOpenAiModal(true);*/}
@@ -498,7 +566,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                 {openAiQueryTypes.map(({ type, sidebarLabel }) => (
                   <li key={type}>
                     <h3
-                      className="flex max-w-fit items-center cursor-pointer gap-2"
+                      className="max-w-fit items-center cursor-pointer"
                       onClick={() => {
                         setOpenAiQueryType(type);
                         setIsShownOpenAiModal(true);
@@ -590,7 +658,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             <ul>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     if (!searchContextState.localityParams.length) {
                       toastSuccess("Wird geladen ... bitte erneut klicken.");
@@ -611,7 +679,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               </li>
               <li>
                 <h3
-                  className="flex max-w-fit items-center cursor-pointer gap-2"
+                  className="max-w-fit items-center cursor-pointer"
                   onClick={() => {
                     if (!searchContextState.placesLocation?.label) {
                       toastSuccess("Wird geladen ... bitte erneut klicken.");

@@ -150,6 +150,11 @@ html {
   filter: brightness(0.7);
 }
 
+.bg-white-primary {
+  color: var(--primary);
+  background: white;
+}
+
 .form-control.min-flex {
   flex-grow: 1;
   flex-shrink: 0;

@@ -281,7 +281,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               {onePageCharacterLimit})
             </div>
             <div className="collapse-content textarea-content">
-              {snapshotConfig.showAddress && hasOpenAiFeature && (
+              {hasOpenAiFeature && (
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
                     <OpenAiLocationDescriptionForm
