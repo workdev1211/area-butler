@@ -1,3 +1,5 @@
+// TODO REMOVE IN FUTURE
+
 import { FunctionComponent, useContext, useState } from "react";
 
 import { setBackgroundColor } from "../../../../../shared/shared.functions";

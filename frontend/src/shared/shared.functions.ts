@@ -7,6 +7,7 @@ import {
 import harversine from "haversine";
 import { toast } from "react-toastify";
 import { v4 } from "uuid";
+import copy from "copy-to-clipboard";
 
 import {
   ApiCoordinates,
@@ -758,4 +759,12 @@ export const getQueryParamsAndUrl = <T>():
     }, {} as T),
     url: parsedUrl[1],
   };
+};
+
+export const copyTextToClipboard = (text: string): void => {
+  const isCopied = copy(text);
+
+  if (isCopied) {
+    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+  }
 };

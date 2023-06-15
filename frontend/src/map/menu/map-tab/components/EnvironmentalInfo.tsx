@@ -1,14 +1,14 @@
 import { FunctionComponent, ReactNode, useContext, useState } from "react";
 
-import { ApiGeojsonFeature } from "../../../../../../../shared/types/types";
-import { setBackgroundColor } from "../../../../../shared/shared.functions";
-import { ApiDataSource } from "../../../../../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "../menu-collapsable/MapMenuCollapsable";
-import ParticlePollutionTable from "../data/ParticlePollutionTable";
-import environmentalInfoIcon from "../../../../../assets/icons/map-menu/03-umweltinformationen.svg";
-import particlePollutionIcon from "../../../../../assets/icons/particle-pollution.svg";
-import { SearchContext } from "../../../../../context/SearchContext";
-import { UserContext } from "../../../../../context/UserContext";
+import { ApiGeojsonFeature } from "../../../../../../shared/types/types";
+import { setBackgroundColor } from "../../../../shared/shared.functions";
+import { ApiDataSource } from "../../../../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
+import ParticlePollutionTable from "./data/ParticlePollutionTable";
+import environmentalInfoIcon from "../../../../assets/icons/map-menu/03-umweltinformationen.svg";
+import particlePollutionIcon from "../../../../assets/icons/particle-pollution.svg";
+import { SearchContext } from "../../../../context/SearchContext";
+import { UserContext } from "../../../../context/UserContext";
 
 interface IEnvironmentalInfoProps {
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;

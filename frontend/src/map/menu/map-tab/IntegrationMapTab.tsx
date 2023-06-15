@@ -1,3 +1,5 @@
+// TODO REMOVE IN FUTURE
+
 import { FunctionComponent } from "react";
 
 import {
@@ -13,7 +15,7 @@ import {
   EntityTransitRoute,
 } from "../../../../../shared/types/routing";
 import { MapClipping } from "../../../context/SearchContext";
-import Localities from "./components/items/Localities";
+import Localities from "./components/Localities";
 import MapSettings from "./components/integration-items/MapSettings";
 import MapScreenshots from "./components/integration-items/MapScreenshots";
 import InteractiveMap from "./components/integration-items/InteractiveMap";

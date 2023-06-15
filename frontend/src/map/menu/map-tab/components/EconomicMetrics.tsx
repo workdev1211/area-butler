@@ -1,8 +1,8 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { setBackgroundColor } from "../../../../../shared/shared.functions";
-import economicMetricsIcon from "../../../../../assets/icons/map-menu/12-wirtschaftliche-kennzahlen.svg";
-import { SearchContext } from "../../../../../context/SearchContext";
+import { setBackgroundColor } from "../../../../shared/shared.functions";
+import economicMetricsIcon from "../../../../assets/icons/map-menu/12-wirtschaftliche-kennzahlen.svg";
+import { SearchContext } from "../../../../context/SearchContext";
 
 const EconomicMetrics: FunctionComponent = () => {
   const {

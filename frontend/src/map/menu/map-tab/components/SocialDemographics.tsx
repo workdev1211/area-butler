@@ -1,17 +1,17 @@
 import { FunctionComponent, ReactNode, useContext, useState } from "react";
 
-import { setBackgroundColor } from "../../../../../shared/shared.functions";
-import { ApiDataSource } from "../../../../../../../shared/types/subscription-plan";
-import MapMenuCollapsable from "../menu-collapsable/MapMenuCollapsable";
-import CensusTable from "../data/CensusTable";
+import { setBackgroundColor } from "../../../../shared/shared.functions";
+import { ApiDataSource } from "../../../../../../shared/types/subscription-plan";
+import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
+import CensusTable from "./data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import FederalElectionTable from "../data/FederalElectionTable";
+import FederalElectionTable from "./data/FederalElectionTable";
 import { TCensusData } from "hooks/censusdata";
-import socialDemographicsIcon from "../../../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
-import censusDataIcon from "../../../../../assets/icons/census-data.svg";
-import federalElectionIcon from "../../../../../assets/icons/federal-election.svg";
-import { SearchContext } from "../../../../../context/SearchContext";
-import { UserContext } from "../../../../../context/UserContext";
+import socialDemographicsIcon from "../../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
+import censusDataIcon from "../../../../assets/icons/census-data.svg";
+import federalElectionIcon from "../../../../assets/icons/federal-election.svg";
+import { SearchContext } from "../../../../context/SearchContext";
+import { UserContext } from "../../../../context/UserContext";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>

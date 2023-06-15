@@ -28,7 +28,6 @@ import {
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
   deriveTotalRequestContingent,
-  preferredLocationsTitle,
   toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";

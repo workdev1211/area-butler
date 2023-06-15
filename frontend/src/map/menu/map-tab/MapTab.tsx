@@ -17,11 +17,11 @@ import {
   EntityTransitRoute,
 } from "../../../../../shared/types/routing";
 import { TLocationIndexData } from "../../../hooks/locationindexdata";
-import Localities from "./components/items/Localities";
-import LocationIndices from "./components/items/LocationIndices";
-import SocialDemographics from "./components/items/SocialDemographics";
-import EnvironmentalInfo from "./components/items/EnvironmentalInfo";
-import EconomicMetrics from "./components/items/EconomicMetrics";
+import Localities from "./components/Localities";
+import LocationIndices from "./components/LocationIndices";
+import SocialDemographics from "./components/SocialDemographics";
+import EnvironmentalInfo from "./components/EnvironmentalInfo";
+import EconomicMetrics from "./components/EconomicMetrics";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];

@@ -1,10 +1,10 @@
 import { FunctionComponent, useContext, useState } from "react";
 
-import { setBackgroundColor } from "../../../../../shared/shared.functions";
-import locationIndicesIcon from "../../../../../assets/icons/map-menu/11-lageindizes.svg";
-import { TLocationIndexData } from "../../../../../hooks/locationindexdata";
-import LocationIndexTable from "../data/LocationIndexTable";
-import { SearchContext } from "../../../../../context/SearchContext";
+import { setBackgroundColor } from "../../../../shared/shared.functions";
+import locationIndicesIcon from "../../../../assets/icons/map-menu/11-lageindizes.svg";
+import { TLocationIndexData } from "../../../../hooks/locationindexdata";
+import LocationIndexTable from "./data/LocationIndexTable";
+import { SearchContext } from "../../../../context/SearchContext";
 
 interface ILocationIndicesProps {
   locationIndexData?: TLocationIndexData;

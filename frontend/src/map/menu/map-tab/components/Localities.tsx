@@ -3,13 +3,13 @@ import { FunctionComponent, useContext, useState } from "react";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../../../components/SearchResultContainer";
+} from "../../../../components/SearchResultContainer";
 import {
   ApiOsmEntityCategory,
   IApiUserPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
-} from "../../../../../../../shared/types/types";
+} from "../../../../../../shared/types/types";
 import {
   deriveIconForOsmName,
   getPreferredLocationsIcon,
@@ -17,17 +17,17 @@ import {
   preferredLocationsTitle,
   realEstateListingsTitle,
   setBackgroundColor,
-} from "../../../../../shared/shared.functions";
+} from "../../../../shared/shared.functions";
 import {
   EntityRoute,
   EntityTransitRoute,
-} from "../../../../../../../shared/types/routing";
-import MapMenuListItem from "../../../components/menu-item/MapMenuListItem";
-import { IPoiIcon } from "../../../../../shared/shared.types";
-import localitiesIcon from "../../../../../assets/icons/map-menu/01-lokalitäten.svg";
-import { getCombinedOsmEntityTypes } from "../../../../../../../shared/functions/shared.functions";
-import { SearchContext } from "../../../../../context/SearchContext";
-import { UserContext } from "../../../../../context/UserContext";
+} from "../../../../../../shared/types/routing";
+import MapMenuListItem from "../../components/menu-item/MapMenuListItem";
+import { IPoiIcon } from "../../../../shared/shared.types";
+import localitiesIcon from "../../../../assets/icons/map-menu/01-lokalitäten.svg";
+import { getCombinedOsmEntityTypes } from "../../../../../../shared/functions/shared.functions";
+import { SearchContext } from "../../../../context/SearchContext";
+import { UserContext } from "../../../../context/UserContext";
 
 interface ILocalitiesProps {
   groupedEntries: EntityGroup[];

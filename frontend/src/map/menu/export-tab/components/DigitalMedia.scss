@@ -1,0 +1,31 @@
+.export-tab .digital-media > div {
+  grid-template-columns: 1fr 1fr 0.75fr;
+  height: 56px;
+  padding: 4px;
+  border-bottom: 1px solid var(--base-bright-silver);
+  @apply grid items-center gap-2;
+
+  & > div:first-child {
+    border-right: 1px solid var(--base-bright-silver);
+    @apply flex items-center h-full gap-1;
+
+    img {
+      @apply w-8;
+    }
+  }
+
+  & > div:not(:first-child) {
+    @apply flex max-w-fit cursor-pointer gap-2;
+
+    img {
+      @apply w-6 h-6;
+    }
+  }
+}
+
+@media (min-width: 1024px) {
+  .export-tab .digital-media > div {
+    grid-template-columns: 1.5fr 1fr 0.75fr;
+    padding: 4px var(--menu-item-pl) 4px calc(var(--menu-item-pl) + 0.75rem);
+  }
+}

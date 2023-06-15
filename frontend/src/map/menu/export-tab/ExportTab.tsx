@@ -1,31 +1,17 @@
-import {
-  CSSProperties,
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
-import copy from "copy-to-clipboard";
-import { saveAs } from "file-saver";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 
 import "./ExportTab.scss";
+
 import { IExportTabProps } from "components/SearchResultContainer";
 import {
   deriveEntityGroupsByActiveMeans,
   setBackgroundColor,
   toastSuccess,
 } from "../../../shared/shared.functions";
-import {
-  SearchContext,
-  SearchContextActionTypes,
-} from "../../../context/SearchContext";
-import { getQrCodeBase64 } from "../../../export/QrCode";
+import { SearchContext } from "../../../context/SearchContext";
 import MapClippingsCollapsable from "../components/MapClippingsCollapsable";
 import aiIcon from "../../../assets/icons/ai-big.svg";
-import pdfIcon from "../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import editIcon from "../../../assets/icons/icons-16-x-16-outline-ic-edit.svg";
-import copyIcon from "../../../assets/icons/copy.svg";
-import downloadIcon from "../../../assets/icons/download.svg";
 import mapScreenshotsIcon from "../../../assets/icons/map-menu/07-kartenausschnitte.svg";
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
@@ -34,22 +20,16 @@ import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.sv
 // import webLinkIcon from "../../../assets/icons/link.svg";
 import fileIcon from "../../../assets/icons/file.svg";
 // TODO end
-import { UserActionTypes, UserContext } from "../../../context/UserContext";
 import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
 import { localStorageSearchContext } from "../../../../../shared/constants/constants";
 import OpenAiModal from "../../../components/OpenAiModal";
 import { openAiQueryTypes } from "../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../shared/types/open-ai";
+import { invertFilter } from "../../../shared/shared.constants";
 import { useTools } from "../../../hooks/tools";
-import { ApiOnOfficeArtTypesEnum } from "../../../../../shared/types/on-office";
-import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
-import { useIntegrationTools } from "../../../hooks/integrationtools";
-
-const subscriptionUpgradeFullyCustomizableExpose =
-  "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
-
-const invertFilter: CSSProperties = { filter: "invert(100%)" };
+import DigitalMedia from "./components/DigitalMedia";
+import LocationExport from "./components/LocationExport";
 
 const ExportTab: FunctionComponent<IExportTabProps> = ({
   codeSnippet,
@@ -57,11 +37,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   searchAddress,
   snapshotId,
 }) => {
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-  const { userDispatch } = useContext(UserContext);
+  const { searchContextState } = useContext(SearchContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
   const { getActualUser } = useTools();
   const user = getActualUser();
   const isIntegrationUser = "accessToken" in user;
@@ -132,17 +109,6 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
   // TODO change it
   const hasOpenAiFeature =
     isIntegrationUser || !!user?.subscription?.config.appFeatures.openAi;
-  const hasFullyCustomizableExpose =
-    isIntegrationUser ||
-    !!user?.subscription?.config.appFeatures.fullyCustomizableExpose;
-
-  const copyCodeToClipBoard = (codeSnippet: string) => {
-    const success = copy(codeSnippet);
-
-    if (success) {
-      toastSuccess("Erfolgreich in Zwischenablage kopiert!");
-    }
-  };
 
   const backgroundColor =
     searchContextState.responseConfig?.primaryColor ||
@@ -233,127 +199,11 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             </div>
           </div>
           <div className="collapse-content">
-            <ul>
-              <li>
-                <h3 className="flex-col w-full">
-                  <div className="font-bold">Direktlink</div>
-                  <div className="flex justify-between">
-                    <div
-                      className="flex items-center cursor-pointer gap-2 max-w-fit"
-                      onClick={() => {
-                        copyCodeToClipBoard(directLink);
-                      }}
-                    >
-                      <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                      <span>Kopieren</span>
-                    </div>
-                    {isIntegrationUser && (
-                      <div
-                        className="flex items-center cursor-pointer gap-2 max-w-fit"
-                        onClick={async () => {
-                          await sendToOnOffice({
-                            fileTitle: "iFrame Direktlink",
-                            url: directLink,
-                            artType: ApiOnOfficeArtTypesEnum.LINK,
-                          });
-                        }}
-                      >
-                        <img
-                          className="w-6 h-6"
-                          src={sendToOnOfficeIcon}
-                          alt="send-to-on-office"
-                        />
-                        <span>An onOffice senden</span>
-                      </div>
-                    )}
-                  </div>
-                </h3>
-              </li>
-              <li>
-                <h3 className="flex-col w-full">
-                  <div className="font-bold">QR-Code</div>
-                  <div className="flex justify-between">
-                    <div
-                      className="flex items-center cursor-pointer gap-2 max-w-fit"
-                      onClick={async () => {
-                        saveAs(
-                          await getQrCodeBase64(directLink),
-                          `${searchAddress.replace(
-                            /[\s|,]+/g,
-                            "-"
-                          )}-QR-Code.png`
-                        );
-                      }}
-                    >
-                      <img
-                        className="w-6 h-6"
-                        src={downloadIcon}
-                        alt="download-qr-code"
-                      />
-                      <span>Herunterladen</span>
-                    </div>
-                    {isIntegrationUser && (
-                      <div
-                        className="flex items-center cursor-pointer gap-2 max-w-fit"
-                        onClick={async () => {
-                          await sendToOnOffice({
-                            filename: `${searchAddress.replace(
-                              /[\s|,]+/g,
-                              "-"
-                            )}-QR-Code.png`,
-                            base64Content: (
-                              await getQrCodeBase64(directLink)
-                            ).replace(/^data:.*;base64,/, ""),
-                            fileTitle: "QR-Code",
-                            artType: ApiOnOfficeArtTypesEnum["QR-CODE"],
-                          });
-                        }}
-                      >
-                        <img
-                          className="w-6 h-6"
-                          src={sendToOnOfficeIcon}
-                          alt="send-to-on-office"
-                        />
-                        <span>An onOffice senden</span>
-                      </div>
-                    )}
-                  </div>
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    searchContextDispatch({
-                      type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
-                      payload: true,
-                    });
-                  }}
-                >
-                  <div className="flex gap-2 cursor-pointer">
-                    <img
-                      className="w-6 h-6 invert"
-                      src={pdfIcon}
-                      alt="download"
-                    />
-                    <span>Export Kartenlegende ZIP</span>
-                  </div>
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    copyCodeToClipBoard(codeSnippet);
-                  }}
-                >
-                  <div className="flex gap-2 cursor-pointer">
-                    <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                    <span>Snippet (iFrame) HTML</span>
-                  </div>
-                </h3>
-              </li>
-            </ul>
+            <DigitalMedia
+              codeSnippet={codeSnippet}
+              directLink={directLink}
+              searchAddress={searchAddress}
+            />
           </div>
         </div>
 
@@ -376,15 +226,15 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <img src={reportsIcon} alt="reports-icon" />
               <div className="collapse-title-text">
                 <div className="collapse-title-text-1">
-                  <div className="collapse-title-text-1 flex gap-2">
-                    <span>Reporte und Lage Exposé</span>{" "}
-                    <span
-                      className={`badge ${
-                        isReportsOpen ? "badge-accent" : "badge-primary"
-                      }`}
-                    >
-                      NEU
-                    </span>
+                  <div className="collapse-title-text-1">
+                    Reporte und Lage Exposé
+                    {/*<span*/}
+                    {/*  className={`badge ${*/}
+                    {/*    isReportsOpen ? "badge-accent" : "badge-primary"*/}
+                    {/*  }`}*/}
+                    {/*>*/}
+                    {/*  NEU*/}
+                    {/*</span>*/}
                   </div>
                 </div>
                 <div className="collapse-title-text-2">
@@ -394,117 +244,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
             </div>
           </div>
           <div className="collapse-content">
-            <ul>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    hasFullyCustomizableExpose
-                      ? searchContextDispatch({
-                          type: SearchContextActionTypes.SET_PRINTING_ONE_PAGE_ACTIVE,
-                          payload: true,
-                        })
-                      : userDispatch({
-                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                          payload: {
-                            open: true,
-                            message: subscriptionUpgradeFullyCustomizableExpose,
-                          },
-                        });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    style={invertFilter}
-                    src={pdfIcon}
-                    alt="pdf"
-                  />
-                  <span>Lage Exposé generieren</span>{" "}
-                  <span className="badge badge-primary">NEU</span>
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    hasFullyCustomizableExpose
-                      ? searchContextDispatch({
-                          type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
-                          payload: true,
-                        })
-                      : userDispatch({
-                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                          payload: {
-                            open: true,
-                            message: subscriptionUpgradeFullyCustomizableExpose,
-                          },
-                        });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    style={invertFilter}
-                    src={pdfIcon}
-                    alt="pdf"
-                  />
-                  Umfeldanalyse PDF
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    hasFullyCustomizableExpose
-                      ? searchContextDispatch({
-                          type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
-                          payload: true,
-                        })
-                      : userDispatch({
-                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                          payload: {
-                            open: true,
-                            message: subscriptionUpgradeFullyCustomizableExpose,
-                          },
-                        });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    style={invertFilter}
-                    src={pdfIcon}
-                    alt="pdf"
-                  />
-                  Umfeldanalyse DOC
-                </h3>
-              </li>
-              <li>
-                <h3
-                  className="max-w-fit items-center cursor-pointer"
-                  onClick={() => {
-                    hasFullyCustomizableExpose
-                      ? searchContextDispatch({
-                          type: SearchContextActionTypes.SET_PRINTING_CHEATSHEET_ACTIVE,
-                          payload: true,
-                        })
-                      : userDispatch({
-                          type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                          payload: {
-                            open: true,
-                            message: subscriptionUpgradeFullyCustomizableExpose,
-                          },
-                        });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    style={invertFilter}
-                    src={pdfIcon}
-                    alt="pdf"
-                  />
-                  Überblick PDF
-                </h3>
-              </li>
-            </ul>
+            <LocationExport />
           </div>
         </div>
 
@@ -527,15 +267,8 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
               <div className="collapse-title-container">
                 <img src={aiDescriptionIcon} alt="ai-description-icon" />
                 <div className="collapse-title-text">
-                  <div className="collapse-title-text-1 flex gap-2">
-                    <span>Automatische Texte (KI)</span>{" "}
-                    <span
-                      className={`badge ${
-                        isAiDescriptionOpen ? "badge-accent" : "badge-primary"
-                      }`}
-                    >
-                      NEU
-                    </span>
+                  <div className="collapse-title-text-1">
+                    Automatische Texte (KI)
                   </div>
                   <div className="collapse-title-text-2">
                     Für Inspiration aus der magischen Feder
@@ -578,8 +311,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
                         src={aiIcon}
                         alt="ai"
                       />
-                      <span>{sidebarLabel}</span>{" "}
-                      <span className="badge badge-primary">NEU</span>
+                      <span>{sidebarLabel}</span>
                     </h3>
                   </li>
                 ))}
