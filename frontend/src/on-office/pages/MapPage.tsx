@@ -18,18 +18,25 @@ import {
   SearchContextActionTypes,
 } from "../../context/SearchContext";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
-import { defaultMapZoom } from "../../shared/shared.constants";
 import {
+  defaultMapZoom,
+  googleMapsApiOptions,
+} from "../../shared/shared.constants";
+import {
+  buildEntityData,
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
 } from "../../shared/shared.functions";
 import {
+  ApiOsmLocation,
+  ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   MapDisplayModesEnum,
 } from "../../../../shared/types/types";
 import SearchResultContainer, {
+  EntityGroup,
   ICurrentMapRef,
   IEditorTabProps,
   IExportTabProps,
@@ -44,9 +51,15 @@ import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
 import { useTools } from "../../hooks/tools";
+import GooglePlacesAutocomplete from "react-google-places-autocomplete";
+import { ConfigContext } from "../../context/ConfigContext";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
+
+  const { googleApiKey } = useContext(ConfigContext);
+  const { searchContextState, searchContextDispatch } =
+    useContext(SearchContext);
 
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnippetEditorRouterProps>();
@@ -59,15 +72,13 @@ const MapPage: FunctionComponent = () => {
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { createDirectLink, createCodeSnippet } = useTools();
 
-  const { searchContextState, searchContextDispatch } =
-    useContext(SearchContext);
-
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
   const [mapBoxToken, setMapBoxToken] = useState("");
   const [processedRealEstates, setProcessedRealEstates] = useState<
     ApiRealEstateListing[]
   >([]);
+  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
   const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
   const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
 
@@ -210,6 +221,16 @@ const MapPage: FunctionComponent = () => {
       ),
     });
 
+    setEditorGroups(
+      deriveInitialEntityGroups(
+        searchResponse,
+        searchContextState.responseConfig,
+        processedRealEstates,
+        preferredLocations,
+        true
+      )
+    );
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
       payload: snapshotResponse.iframeEndsAt,
@@ -231,16 +252,8 @@ const MapPage: FunctionComponent = () => {
     }
 
     const {
-      snapshot: { searchResponse, preferredLocations = [] },
+      snapshot: { searchResponse },
     } = snapshotResponse;
-
-    const editorGroups = deriveInitialEntityGroups(
-      searchResponse,
-      searchContextState.responseConfig,
-      processedRealEstates,
-      preferredLocations,
-      true
-    );
 
     setEditorTabProps({
       config: searchContextState.responseConfig,
@@ -288,6 +301,7 @@ const MapPage: FunctionComponent = () => {
     snapshotId,
     snapshotResponse,
     state?.isNewSnapshot,
+    editorGroups,
   ]);
 
   // react to changes
@@ -365,6 +379,52 @@ const MapPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
+  const onPoiAdd = (poi: ApiOsmLocation): void => {
+    if (!snapshotResponse) {
+      return;
+    }
+
+    const copiedSearchResponse: ApiSearchResponse = JSON.parse(
+      JSON.stringify(snapshotResponse.snapshot.searchResponse)
+    );
+
+    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
+      poi as any as ApiOsmLocation
+    );
+
+    const newEntity = buildEntityData(
+      copiedSearchResponse,
+      searchContextState.responseConfig
+    )?.find((e) => e.id === poi.entity.id)!;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
+      payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
+        ge.title !== poi.entity.label
+          ? ge
+          : {
+              ...ge,
+              items: [...ge.items, newEntity],
+            }
+      ),
+    });
+
+    // update dedicated entity groups for editor
+    setEditorGroups(
+      editorGroups.map((ge) =>
+        ge.title !== poi.entity.label
+          ? ge
+          : { ...ge, items: [...ge.items, newEntity] }
+      )
+    );
+  };
+
   if (
     !searchContextState.searchResponse ||
     !searchContextState.responseConfig ||
@@ -378,6 +438,19 @@ const MapPage: FunctionComponent = () => {
   return (
     <>
       <TourStarter tour={ApiTourNamesEnum.INT_MAP} />
+      <div className="hidden">
+        <GooglePlacesAutocomplete
+          apiOptions={googleMapsApiOptions}
+          autocompletionRequest={{
+            componentRestrictions: {
+              country: ["de"],
+            },
+          }}
+          minLengthAutocomplete={5}
+          selectProps={{}}
+          apiKey={googleApiKey}
+        />
+      </div>
       <SearchResultContainer
         ref={mapRef}
         mapBoxToken={mapBoxToken}
@@ -388,6 +461,7 @@ const MapPage: FunctionComponent = () => {
         editorTabProps={editorTabProps}
         exportTabProps={exportTabProps}
         mapDisplayMode={MapDisplayModesEnum.EDITOR}
+        onPoiAdd={onPoiAdd}
         saveConfig={async () => {
           await saveSnapshotConfig(
             mapRef,

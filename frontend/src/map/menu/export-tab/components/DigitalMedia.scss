@@ -7,7 +7,7 @@
 
   & > div:first-child {
     border-right: 1px solid var(--base-bright-silver);
-    @apply flex items-center h-full gap-1;
+    @apply flex items-center gap-1;
 
     img {
       @apply w-8;
@@ -15,10 +15,21 @@
   }
 
   & > div:not(:first-child) {
+    color: darkgray;
     @apply flex max-w-fit cursor-pointer gap-2;
 
     img {
+      filter: invert(79%) sepia(0%) saturate(0%) hue-rotate(166deg)
+        brightness(86%) contrast(90%);
       @apply w-6 h-6;
+    }
+  }
+
+  & > div:not(:first-child):hover {
+    color: var(--primary);
+
+    img {
+      filter: unset;
     }
   }
 }

@@ -81,7 +81,7 @@ export const deriveGeocodeByAddress = async (address: string) => {
 
 export const deriveGeocodeByPlaceId = async (placeId: string) => {
   const latlngResults = await geocodeByPlaceId(placeId);
-  return await getLatLng(latlngResults[0]);
+  return getLatLng(latlngResults[0]);
 };
 
 export const deriveAddressFromCoordinates = async (
@@ -89,18 +89,18 @@ export const deriveAddressFromCoordinates = async (
 ): Promise<{ label: string; value: { place_id: string } } | null> => {
   const places = await geocodeByLatLng(coordinates);
 
-  if (places && places.length > 0) {
-    const { formatted_address, place_id } = places[0];
-
-    return {
-      label: formatted_address,
-      value: {
-        place_id,
-      },
-    };
-  } else {
+  if (!(places && places.length > 0)) {
     return null;
   }
+
+  const { formatted_address, place_id } = places[0];
+
+  return {
+    label: formatted_address,
+    value: {
+      place_id,
+    },
+  };
 };
 
 export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
@@ -414,9 +414,9 @@ export const buildEntityData = (
   locationSearchResult: ApiSearchResponse,
   config?: ApiSearchResultSnapshotConfig,
   ignoreVisibility?: boolean
-): ResultEntity[] | null => {
+): ResultEntity[] | undefined => {
   if (!locationSearchResult) {
-    return null;
+    return;
   }
 
   const allLocations = Object.values(

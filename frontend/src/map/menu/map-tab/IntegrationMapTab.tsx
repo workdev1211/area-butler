@@ -51,7 +51,9 @@ const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
         routes={routes}
         toggleTransitRoute={toggleTransitRoute}
         transitRoutes={transitRoutes}
-        mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
+        // the correct option
+        // mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
+        mapDisplayMode={MapDisplayModesEnum.EMBED_INTEGRATION}
       />
 
       <MapSettings />

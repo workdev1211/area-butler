@@ -211,7 +211,7 @@ export const useLocationData = () => {
         []
       );
 
-    const config = {
+    const config: ApiSearchResultSnapshotConfig = {
       ...searchContextState.responseConfig,
       defaultActiveGroups,
     };

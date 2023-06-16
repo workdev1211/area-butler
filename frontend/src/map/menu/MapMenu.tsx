@@ -30,7 +30,6 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
-import { MapClipping } from "../../context/SearchContext";
 
 enum TabsEnum {
   Map = "Map",
@@ -48,7 +47,6 @@ interface IMapMenuProps {
   searchAddress: string;
   isMapMenuOpen: boolean;
   resetPosition: () => void;
-  mapClippings: MapClipping[];
   mapDisplayMode: MapDisplayModesEnum;
   config?: ApiSearchResultSnapshotConfig;
   saveConfig?: () => Promise<void>;
@@ -73,7 +71,6 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   searchAddress,
   isMapMenuOpen,
   resetPosition,
-  mapClippings,
   mapDisplayMode,
   config,
   saveConfig,

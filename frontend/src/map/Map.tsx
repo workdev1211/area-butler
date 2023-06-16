@@ -449,7 +449,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       config?.iconSizes?.poiIconSize
     );
 
-    let addPoiModalOpenConfig: ModalConfig = {
+    const addPoiModalOpenConfig: ModalConfig = {
       modalTitle: "Neuen Ort hinzufügen",
       submitButtonTitle: "Hinzufügen",
       modalOpen: addPoiModalOpen,
@@ -566,7 +566,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       });
 
       if (onPoiAdd) {
-        localMap.on("contextmenu", async (e: any) => {
+        localMap.on("contextmenu", async (e: any): Promise<void> => {
           const coordinates: ApiCoordinates = e.latlng;
 
           const place = (await deriveAddressFromCoordinates(coordinates)) || {

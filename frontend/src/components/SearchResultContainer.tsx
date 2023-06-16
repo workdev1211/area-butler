@@ -702,7 +702,6 @@ const SearchResultContainer = forwardRef<
                   payload: { open: true, message },
                 });
               }}
-              mapClippings={searchContextState.mapClippings}
               showInsights={isEditorMode}
               config={searchContextState.responseConfig}
               mapDisplayMode={mapDisplayMode}

@@ -513,8 +513,9 @@ export enum RequestStatusTypesEnum {
 }
 
 export enum MapDisplayModesEnum {
-  "EMBED_INTEGRATION" = "EMBED_INTEGRATION",
+  // TODO remove in future
+  // "INTEGRATION" = "INTEGRATION",
+  "EMBED_INTEGRATION" = "EMBED_INTEGRATION", // left only because of the default map icon
   "EMBED" = "EMBED",
   "EDITOR" = "EDITOR",
-  "INTEGRATION" = "INTEGRATION",
 }

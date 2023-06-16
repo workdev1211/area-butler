@@ -146,12 +146,13 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
           <img src={copyIcon} alt="copy-iframe" />
           <span>Kopieren</span>
         </div>
-        {isIntegration && (
-          <div onClick={async () => {}}>
-            <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
-            <span>onOffice</span>
-          </div>
-        )}
+        {/* TODO will be added in future */}
+        {/*{isIntegration && (*/}
+        {/*  <div onClick={async () => {}}>*/}
+        {/*    <img src={sendToOnOfficeIcon} alt="send-to-on-office" />*/}
+        {/*    <span>onOffice</span>*/}
+        {/*  </div>*/}
+        {/*)}*/}
       </div>
     </div>
   );
