@@ -1,10 +1,10 @@
 import { FunctionComponent, useState } from "react";
 
-import { IApiSnapshotIconSizes } from "../../../../../shared/types/types";
+import { IApiSnapshotIconSizes } from "../../../../../../shared/types/types";
 import {
   defaultAmenityIconSize,
   defaultMyLocationIconSize,
-} from "../../../shared/shared.constants";
+} from "../../../../shared/shared.constants";
 
 interface IIconSizeProps {
   iconSizes?: IApiSnapshotIconSizes;

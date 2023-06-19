@@ -20,7 +20,7 @@ import aiDescriptionIcon from "../../../assets/icons/map-menu/10-ki-lagetexte.sv
 // import webLinkIcon from "../../../assets/icons/link.svg";
 import fileIcon from "../../../assets/icons/file.svg";
 // TODO end
-import ExportModal, { ExportTypeEnum } from "../../../export/ExportModal";
+import ExportModal from "../../../export/ExportModal";
 import OnePageExportModal from "../../../export/one-page/OnePageExportModal";
 import { localStorageSearchContext } from "../../../../../shared/constants/constants";
 import OpenAiModal from "../../../components/OpenAiModal";
@@ -30,6 +30,7 @@ import { invertFilter } from "../../../shared/shared.constants";
 import { useTools } from "../../../hooks/tools";
 import DigitalMedia from "./components/DigitalMedia";
 import LocationExport from "./components/LocationExport";
+import { ExportTypeEnum } from "../../../../../shared/types/export";
 
 const ExportTab: FunctionComponent<IExportTabProps> = ({
   codeSnippet,

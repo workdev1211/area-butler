@@ -10,7 +10,6 @@ import {
 } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import OnePagePng from "./OnePagePng";
 import { getQrCodeBase64 } from "../QrCode";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
@@ -21,6 +20,7 @@ import { useIntegrationTools } from "../../hooks/integrationtools";
 import { ApiOnOfficeArtTypesEnum } from "../../../../shared/types/on-office";
 import { ISortableEntityGroup } from "./OnePageExportModal";
 import { useTools } from "../../hooks/tools";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 interface IOnePageDownloadProps {
   addressDescription: string;

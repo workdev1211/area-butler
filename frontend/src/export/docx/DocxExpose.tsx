@@ -37,9 +37,9 @@ import areaButlerIcon from "../../assets/icons/ab.png";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { base64PrefixRegex } from "../../shared/shared.constants";
 import { ILegendItem } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 export interface DocxExposeProps {
   censusData?: TCensusData;

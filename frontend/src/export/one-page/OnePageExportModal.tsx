@@ -42,15 +42,11 @@ import {
   CachingContext,
 } from "../../context/CachingContext";
 import { IPoiIcon } from "../../shared/shared.types";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
 const GROUP_ITEM_LIMIT = 3;
-
-export interface IQrCodeState {
-  isShownQrCode: boolean;
-  snapshotToken?: string;
-}
 
 export interface IExportFlowState {
   addressDescription: boolean;

@@ -3,8 +3,8 @@ import { FunctionComponent, useState } from "react";
 import {
   IApiSnapshotPoiFilter,
   PoiFilterTypesEnum,
-} from "../../../../../shared/types/types";
-import { toastError } from "../../../shared/shared.functions";
+} from "../../../../../../shared/types/types";
+import { toastError } from "../../../../shared/shared.functions";
 
 interface IPoiFilterProps {
   poiFilter?: IApiSnapshotPoiFilter;

@@ -19,7 +19,7 @@ import "./ExposeSummary.scss";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { QrCode } from "../QrCode";
-import { IQrCodeState } from "../ExportModal";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 export interface ExposeSummaryProps {
   groupedEntries: EntityGroup[];

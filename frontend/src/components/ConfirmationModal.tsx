@@ -1,12 +1,12 @@
 import { FunctionComponent, useEffect } from "react";
 
-export interface ConfirmationModalProps {
+interface IConfirmationModalProps {
   closeModal: () => void;
   onConfirm: () => void;
   text: string;
 }
 
-const ConfirmationModal: FunctionComponent<ConfirmationModalProps> = ({
+const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
   closeModal,
   onConfirm,
   text,
@@ -33,17 +33,16 @@ const ConfirmationModal: FunctionComponent<ConfirmationModalProps> = ({
         <div className="modal-action">
           <button
             type="button"
-            onClick={() => {
-              closeModal();
-            }}
+            onClick={closeModal}
             className="btn btn-sm"
             style={{ flexBasis: "25%" }} // class basis-1/4 doesn't work for some reason
           >
             Nein
           </button>
           <button
-            onClick={() => {
-              onConfirm();
+            onClick={async () => {
+              await onConfirm();
+              closeModal();
             }}
             className="btn btn-sm btn-primary"
             style={{ flexBasis: "25%" }}

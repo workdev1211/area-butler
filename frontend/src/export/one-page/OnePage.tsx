@@ -7,7 +7,6 @@ import areaButlerLogo from "../../assets/img/logo.svg";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem } from "../Legend";
 import { getQrCodeBase64 } from "../QrCode";
-import { IQrCodeState } from "../ExportModal";
 import PdfOnePage from "./PdfOnePage";
 import {
   distanceToHumanReadable,
@@ -18,6 +17,7 @@ import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg
 import OnePageLegendIcon from "./OnePageLegendIcon";
 import { ISortableEntityGroup } from "./OnePageExportModal";
 import { useTools } from "../../hooks/tools";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 interface IOnePageProps {
   addressDescription: string;

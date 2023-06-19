@@ -2,7 +2,6 @@ import { Dispatch, createContext, useReducer, FunctionComponent } from "react";
 
 import {
   IExportFlowState,
-  IQrCodeState,
   ISortableEntityGroup,
 } from "../export/one-page/OnePageExportModal";
 import {
@@ -12,6 +11,7 @@ import {
   IOpenAiLocationDescriptionFormValues,
 } from "../../../shared/types/open-ai";
 import { ISelectableMapClipping } from "../export/MapClippingSelection";
+import { IQrCodeState } from "../../../shared/types/export";
 
 interface IOpenAiCachingState {
   locationDescription?: IOpenAiLocationDescriptionFormValues;

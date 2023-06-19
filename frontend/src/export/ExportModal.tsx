@@ -31,19 +31,7 @@ import { getFilteredLegend } from "./shared/shared.functions";
 import { TCensusData } from "../hooks/censusdata";
 import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
-
-export enum ExportTypeEnum {
-  ARCHIVE = "ARCHIVE",
-  CHEATSHEET = "CHEATSHEET",
-  EXPOSE = "EXPOSE",
-  EXPOSE_DOCX = "EXPOSE_DOCX",
-  ONE_PAGE = "ONE_PAGE",
-}
-
-export interface IQrCodeState {
-  isShownQrCode: boolean;
-  snapshotToken?: string;
-}
+import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 
 interface IExportModalProps {
   entities: ResultEntity[];
@@ -98,7 +86,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
     searchContextState.mapClippings || []
   ).map((c: MapClipping) => ({ ...c, selected: true }));
 
-  const onClose = () => {
+  const onClose = (): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PRINTING_ACTIVE,
       payload: false,
@@ -258,6 +246,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
               <button type="button" onClick={onClose} className="btn btn-sm">
                 Schließen
               </button>
+
               {exportType === ExportTypeEnum.EXPOSE && (
                 <ExposeDownload
                   entities={entities}

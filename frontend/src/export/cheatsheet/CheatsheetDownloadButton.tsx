@@ -12,9 +12,9 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 export interface CheatsheetDownloadProps {
   entities: ResultEntity[];

@@ -33,8 +33,8 @@ import {
   defaultMapboxStyles,
   TMapboxStyleLabels,
 } from "../../../shared/shared.constants";
-import PoiFilter from "./PoiFilter";
-import IconSizes from "./IconSize";
+import PoiFilter from "./components/PoiFilter";
+import IconSizes from "./components/IconSizes";
 import { useLocationData } from "../../../hooks/locationdata";
 
 interface IRecentSnippetConfig {

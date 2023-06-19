@@ -17,7 +17,7 @@ import {
   ApiSearchResultSnapshotResponse,
   MapDisplayModesEnum,
 } from "../../../shared/types/types";
-import ExportModal, { ExportTypeEnum } from "../export/ExportModal";
+import ExportModal from "../export/ExportModal";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -33,6 +33,7 @@ import downloadIcon from "../assets/icons/download.svg";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";
 import OpenAiLocationDescriptionModal from "./OpenAiLocationDescriptionModal";
 import { useTools } from "../hooks/tools";
+import { ExportTypeEnum } from "../../../shared/types/export";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;

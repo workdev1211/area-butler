@@ -17,10 +17,10 @@ import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem, Legend } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { TCensusData } from "../../hooks/censusdata";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 interface IExposeProps {
   groupedEntries: EntityGroup[];

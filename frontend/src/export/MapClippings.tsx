@@ -3,7 +3,7 @@ import { FunctionComponent } from "react";
 import { ISelectableMapClipping } from "./MapClippingSelection";
 import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
-import { IQrCodeState } from "./ExportModal";
+import { IQrCodeState } from "../../../shared/types/export";
 
 export interface MapClippingsProps {
   mapClippings: ISelectableMapClipping[];

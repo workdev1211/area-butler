@@ -6,8 +6,8 @@ import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import OnePage from "./OnePage";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ILegendItem } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import { ISortableEntityGroup } from "./OnePageExportModal";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 interface IOnePageDownloadProps {
   addressDescription: string;

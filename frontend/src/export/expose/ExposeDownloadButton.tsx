@@ -12,9 +12,9 @@ import {
 import Expose from "./Expose";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
-import { IQrCodeState } from "../ExportModal";
 import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
+import { IQrCodeState } from "../../../../shared/types/export";
 
 export interface ExposeDownloadProps {
   entities: ResultEntity[];
