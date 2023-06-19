@@ -2,21 +2,30 @@ import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import { ConfigContext } from "../context/ConfigContext";
-import { UserContext } from "../context/UserContext";
+import { UserActionTypes, UserContext } from "../context/UserContext";
 import { checkProdContAvailability } from "../shared/integration.functions";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { TIntegrationActionTypes } from "../../../shared/types/integration";
-import { IApiOnOfficeUploadFileReq } from "../../../shared/types/on-office";
+import {
+  IApiOnOfficeUploadFileReq,
+  OnOfficeIntActTypesEnum,
+} from "../../../shared/types/on-office";
 import { useHttp } from "./http";
-import { SearchContext } from "../context/SearchContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
+    userDispatch,
   } = useContext(UserContext);
   const {
     searchContextState: { realEstateListing },
+    searchContextDispatch,
   } = useContext(SearchContext);
 
   const history = useHistory();
@@ -66,5 +75,33 @@ export const useIntegrationTools = () => {
     }
   };
 
-  return { checkProdContAvailByAction, sendToOnOffice };
+  const unlockLocationExport = async (
+    realEstateListing: ApiRealEstateListing
+  ): Promise<void> => {
+    try {
+      await post<void>(
+        `/api/real-estate-listing-int/unlock-one-page-export/${realEstateListing.id}`
+      );
+
+      userDispatch({
+        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+        payload: {
+          integrationType: integrationType!,
+          actionType: OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+        },
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: { ...realEstateListing, isOnePageExportActive: true },
+      });
+
+      toastSuccess("Das Produkt wurde erfolgreich gekauft!");
+    } catch (e) {
+      toastError("Der Fehler ist aufgetreten!");
+      console.error(e);
+    }
+  };
+
+  return { checkProdContAvailByAction, sendToOnOffice, unlockLocationExport };
 };
