@@ -15,6 +15,7 @@ import { OnOfficeIntActTypesEnum } from "../../../../../../shared/types/on-offic
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
 import { ExportTypeEnum } from "../../../../../../shared/types/export";
+import { statsExportUnlockText } from "../../../../../../shared/constants/on-office/products";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -36,11 +37,15 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
     userDispatch,
   } = useContext(UserContext);
 
-  const { checkProdContAvailByAction, unlockLocationExport } =
-    useIntegrationTools();
+  const { checkProdContAvailByAction, unlockProduct } = useIntegrationTools();
 
-  const [isShownConfirmModal, setIsShownConfirmModal] = useState(false);
+  const [unlockParams, setUnlockParams] = useState<{
+    isShownConfirmModal: boolean;
+    confirmModalText?: string;
+    actionType?: any;
+  }>({ isShownConfirmModal: false });
   const [exportType, setExportType] = useState<ExportTypeEnum>();
+  const [isExportAvailable, setIsExportAvailable] = useState(false);
 
   const isIntegration = !!integrationType;
   const realEstateListing = searchContextState.realEstateListing;
@@ -83,6 +88,8 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         break;
       }
     }
+
+    setIsExportAvailable(true);
   };
 
   useEffect(() => {
@@ -90,20 +97,36 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
       return;
     }
 
-    if (
-      isIntegration
+    const isOnePageExport = exportType === ExportTypeEnum.ONE_PAGE;
+
+    const isExportAvailForIntUser =
+      isIntegration &&
+      (isOnePageExport
         ? realEstateListing?.isOnePageExportActive
-        : !!user?.subscription?.config.appFeatures.fullyCustomizableExpose
+        : realEstateListing?.isStatsFullExportActive);
+
+    if (
+      isExportAvailForIntUser ||
+      !!user?.subscription?.config.appFeatures.fullyCustomizableExpose
     ) {
       performExport();
       return;
     }
 
-    if (
-      isIntegration &&
-      checkProdContAvailByAction(OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE)
-    ) {
-      setIsShownConfirmModal(true);
+    if (isIntegration) {
+      const actionType = isOnePageExport
+        ? OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
+        : OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT;
+
+      if (checkProdContAvailByAction(actionType)) {
+        setUnlockParams({
+          actionType,
+          isShownConfirmModal: true,
+          confirmModalText: isOnePageExport
+            ? "Lage-Exposé freischalten?"
+            : statsExportUnlockText,
+        });
+      }
     }
 
     if (!isIntegration) {
@@ -127,6 +150,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
       !searchContextState.printingOnePageActive
     ) {
       setExportType(undefined);
+      setIsExportAvailable(false);
     }
   }, [
     searchContextState.printingActive,
@@ -144,16 +168,16 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
 
   return (
     <>
-      {isShownConfirmModal && (
+      {unlockParams.isShownConfirmModal && (
         <ConfirmationModal
           closeModal={() => {
-            setIsShownConfirmModal(false);
+            setUnlockParams({ isShownConfirmModal: false });
           }}
           onConfirm={async () => {
-            await unlockLocationExport(realEstateListing!);
+            await unlockProduct(unlockParams.actionType);
             performExport();
           }}
-          text="Automatisches Lage-Exposé freischalten?"
+          text={unlockParams.confirmModalText!}
         />
       )}
 
@@ -225,18 +249,20 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         </li>
       </ul>
 
-      {exportType && exportType !== ExportTypeEnum.ONE_PAGE && (
-        <ExportModal
-          activeMeans={searchContextState.responseActiveMeans}
-          entities={resultingGroups}
-          groupedEntries={entityGroups}
-          censusData={searchContextState.censusData!}
-          snapshotToken={searchContextState.responseToken}
-          exportType={exportType}
-        />
-      )}
+      {isExportAvailable &&
+        exportType &&
+        exportType !== ExportTypeEnum.ONE_PAGE && (
+          <ExportModal
+            activeMeans={searchContextState.responseActiveMeans}
+            entities={resultingGroups}
+            groupedEntries={entityGroups}
+            censusData={searchContextState.censusData!}
+            snapshotToken={searchContextState.responseToken}
+            exportType={exportType}
+          />
+        )}
 
-      {exportType === ExportTypeEnum.ONE_PAGE && (
+      {isExportAvailable && exportType === ExportTypeEnum.ONE_PAGE && (
         <OnePageExportModal
           entityGroups={entityGroups}
           snapshotToken={searchContextState.responseToken}

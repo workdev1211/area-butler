@@ -5,6 +5,11 @@ import {
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
 
+// TODO Requires a refactoring. All integration specific fields should be moved under the productFeatures field
+//  and extracted based on the integration type.
+
+// TODO iframeEndsAt field should be present here because of several snapshots can exist per address.
+
 @Schema({ _id: false })
 export class RealEstateIntegrationParams
   implements IApiRealEstateIntegrationParams
@@ -21,8 +26,15 @@ export class RealEstateIntegrationParams
   @Prop({ type: Number, default: 0 })
   openAiRequestQuantity: number;
 
+  // TODO a blank for future
+  @Prop({ type: Date })
+  iframeEndsAt: Date;
+
   @Prop({ type: Boolean, default: false })
   isOnePageExportActive: boolean;
+
+  @Prop({ type: Boolean, default: false })
+  isStatsFullExportActive: boolean;
 }
 
 export const RealEstateIntegrationParamsSchema = SchemaFactory.createForClass(

@@ -11,6 +11,7 @@ import { tap, Observable } from 'rxjs';
 import { RealEstateListingService } from '../real-estate-listing.service';
 import { IntegrationUserService } from '../../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { initOpenAiReqQuantity } from '../../../../shared/constants/on-office/products';
 
 @Injectable()
 export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
@@ -76,7 +77,9 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
       );
 
       // in case of the errors on the following steps
-      realEstateListing.integrationParams.openAiRequestQuantity = 100;
+      realEstateListing.integrationParams.openAiRequestQuantity =
+        initOpenAiReqQuantity;
+
       await realEstateListing.save();
 
       await this.integrationUserService.incrementProductUsage(

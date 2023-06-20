@@ -1,5 +1,6 @@
 import {
   IsBoolean,
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -72,8 +73,16 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   openAiRequestQuantity?: number;
 
   @IsOptional()
+  @IsDate()
+  iframeEndsAt?: Date;
+
+  @IsOptional()
   @IsBoolean()
   isOnePageExportActive?: boolean;
+
+  @IsOptional()
+  @IsBoolean()
+  isStatsFullExportActive?: boolean;
 }
 
 export default ApiRealEstateListingDto;

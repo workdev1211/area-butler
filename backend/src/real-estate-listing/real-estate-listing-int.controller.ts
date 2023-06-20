@@ -21,10 +21,9 @@ import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate
 import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from './inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
-import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
-import { InjectRealEstateListingInterceptor } from './interceptor/inject-real-estate-listing.interceptor';
+import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
@@ -70,34 +69,28 @@ export class RealEstateListingIntController {
   }
 
   @ApiOperation({
-    description: 'Unlock OnePage export for a real estate',
+    description: 'Unlock specified product for the real estate',
   })
-  @UseInterceptors(
-    InjectIntegrationUserInterceptor,
-    InjectRealEstateListingInterceptor,
-  )
-  @Post('unlock-one-page-export/:id')
-  async unlockOnePageExport(
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('unlock-product')
+  async unlockProduct(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
+    @Body() { realEstateListingId, actionType }: ApiUnlockIntProductReqDto,
   ): Promise<void> {
-    if (realEstateListing.integrationParams.isOnePageExportActive) {
-      return;
-    }
-
     this.integrationUserService.checkProdContAvailability(
       integrationUser,
-      OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+      actionType,
     );
 
-    await this.realEstateListingIntService.unlockOnePageExport(
+    await this.realEstateListingIntService.unlockProduct(
       integrationUser,
-      realEstateListing,
+      realEstateListingId,
+      actionType,
     );
 
     await this.integrationUserService.incrementProductUsage(
       integrationUser,
-      OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+      actionType,
     );
   }
 }

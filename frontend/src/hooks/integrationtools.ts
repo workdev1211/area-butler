@@ -1,14 +1,19 @@
 import { useContext } from "react";
 import { useHistory } from "react-router-dom";
+import dayjs from "dayjs";
 
 import { ConfigContext } from "../context/ConfigContext";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import { checkProdContAvailability } from "../shared/integration.functions";
 import { toastError, toastSuccess } from "../shared/shared.functions";
-import { TIntegrationActionTypes } from "../../../shared/types/integration";
+import {
+  IApiUnlockIntProductReq,
+  TIntegrationActionTypes,
+} from "../../../shared/types/integration";
 import {
   IApiOnOfficeUploadFileReq,
   OnOfficeIntActTypesEnum,
+  TOnOfficeIntActTypes,
 } from "../../../shared/types/on-office";
 import { useHttp } from "./http";
 import {
@@ -75,33 +80,82 @@ export const useIntegrationTools = () => {
     }
   };
 
-  const unlockLocationExport = async (
-    realEstateListing: ApiRealEstateListing
+  const unlockProduct = async (
+    actionType: TOnOfficeIntActTypes
   ): Promise<void> => {
+    if (!realEstateListing) {
+      return;
+    }
+
+    const errorMessage = "Das Produkt wurde nicht freigeschaltet!";
+
     try {
-      await post<void>(
-        `/api/real-estate-listing-int/unlock-one-page-export/${realEstateListing.id}`
+      await post<void, IApiUnlockIntProductReq>(
+        "/api/real-estate-listing-int/unlock-product",
+        { realEstateListingId: realEstateListing.id, actionType }
       );
+
+      // TODO not exact expiration date but it's not relevant for the moment
+      const iframeEndsAt = dayjs().add(6, "months").toDate();
+      let updatedRealEstateListing: ApiRealEstateListing;
+
+      switch (actionType) {
+        // TODO a blank for future
+        case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+          updatedRealEstateListing = {
+            ...realEstateListing,
+            iframeEndsAt,
+          };
+          break;
+        }
+
+        case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+          updatedRealEstateListing = {
+            ...realEstateListing,
+            iframeEndsAt,
+            isOnePageExportActive: true,
+          };
+          break;
+        }
+
+        case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+          updatedRealEstateListing = {
+            ...realEstateListing,
+            iframeEndsAt,
+            isOnePageExportActive: true,
+            isStatsFullExportActive: true,
+          };
+          break;
+        }
+
+        default: {
+          throw new Error(errorMessage);
+        }
+      }
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: updatedRealEstateListing,
+      });
 
       userDispatch({
         type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
         payload: {
           integrationType: integrationType!,
-          actionType: OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+          actionType: actionType,
         },
-      });
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-        payload: { ...realEstateListing, isOnePageExportActive: true },
       });
 
       toastSuccess("Das Produkt wurde erfolgreich gekauft!");
     } catch (e) {
-      toastError("Der Fehler ist aufgetreten!");
+      toastError(errorMessage);
       console.error(e);
     }
   };
 
-  return { checkProdContAvailByAction, sendToOnOffice, unlockLocationExport };
+  return {
+    checkProdContAvailByAction,
+    sendToOnOffice,
+    unlockProduct,
+  };
 };

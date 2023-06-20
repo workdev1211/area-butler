@@ -45,6 +45,18 @@ export const onePage50OnOfficeProduct: IOnOfficeProduct = {
   price: 327.72,
 };
 
+export const statsExportOnOfficeProduct: IOnOfficeProduct = {
+  name: "Top Tier",
+  type: OnOfficeProductTypesEnum.STATS_EXPORT,
+  price: 19.99,
+};
+
+export const statsExport50OnOfficeProduct: IOnOfficeProduct = {
+  name: "Top Tier x50",
+  type: OnOfficeProductTypesEnum.STATS_EXPORT_50,
+  price: 527.72,
+};
+
 export const allOnOfficeProducts: Record<
   OnOfficeProductTypesEnum,
   IOnOfficeProduct
@@ -56,4 +68,11 @@ export const allOnOfficeProducts: Record<
   [OnOfficeProductTypesEnum.MAP_IFRAME_50]: mapIframe50OnOfficeProduct,
   [OnOfficeProductTypesEnum.ONE_PAGE]: onePageOnOfficeProduct,
   [OnOfficeProductTypesEnum.ONE_PAGE_50]: onePage50OnOfficeProduct,
+  [OnOfficeProductTypesEnum.STATS_EXPORT]: statsExportOnOfficeProduct,
+  [OnOfficeProductTypesEnum.STATS_EXPORT_50]: statsExport50OnOfficeProduct,
 };
+
+export const statsExportUnlockText =
+  "Alle Funktionen freischalten?";
+
+export const initOpenAiReqQuantity = 100;

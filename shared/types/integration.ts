@@ -13,7 +13,14 @@ export interface IApiIntegrationParams {
 export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   integrationId: string;
   openAiRequestQuantity?: number;
+  iframeEndsAt?: Date;
   isOnePageExportActive?: boolean;
+  isStatsFullExportActive?: boolean;
 }
 
 export type TIntegrationActionTypes = TOnOfficeIntActTypes;
+
+export interface IApiUnlockIntProductReq {
+  realEstateListingId: string;
+  actionType: TOnOfficeIntActTypes;
+}

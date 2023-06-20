@@ -37,6 +37,10 @@ export const getProdContTypeByActType = (
           return ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE;
         }
 
+        case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+          return ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT;
+        }
+
         default: {
           return;
         }

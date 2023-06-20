@@ -9,13 +9,18 @@ import environmentalInfoIcon from "../../../../assets/icons/map-menu/03-umweltin
 import particlePollutionIcon from "../../../../assets/icons/particle-pollution.svg";
 import { SearchContext } from "../../../../context/SearchContext";
 import { UserContext } from "../../../../context/UserContext";
+import UnlockProduct from "../../components/UnlockProduct";
 
 interface IEnvironmentalInfoProps {
+  isStatsExportActive: boolean;
+  performUnlock: () => void;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   particlePollutionData?: ApiGeojsonFeature[];
 }
 
 const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
+  isStatsExportActive,
+  performUnlock,
   openUpgradeSubscriptionModal,
   particlePollutionData,
 }) => {
@@ -61,23 +66,27 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        <ul>
-          <li className="locality-option-li" key="list-item-zensus-feinstaub">
-            <MapMenuCollapsable
-              title="Feinstaubbelastung"
-              icon={particlePollutionIcon}
-              subscriptionCheck={() => hasPollutionData}
-              openUpgradeSubscriptionModal={() => {
-                openUpgradeSubscriptionModal &&
-                  openUpgradeSubscriptionModal(hasPollutionData);
-              }}
-            >
-              <ParticlePollutionTable
-                particlePollutionData={particlePollutionData}
-              />
-            </MapMenuCollapsable>
-          </li>
-        </ul>
+        {isStatsExportActive ? (
+          <ul>
+            <li className="locality-option-li" key="list-item-zensus-feinstaub">
+              <MapMenuCollapsable
+                title="Feinstaubbelastung"
+                icon={particlePollutionIcon}
+                subscriptionCheck={() => hasPollutionData}
+                openUpgradeSubscriptionModal={() => {
+                  openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(hasPollutionData);
+                }}
+              >
+                <ParticlePollutionTable
+                  particlePollutionData={particlePollutionData}
+                />
+              </MapMenuCollapsable>
+            </li>
+          </ul>
+        ) : (
+          <UnlockProduct performUnlock={performUnlock} />
+        )}
       </div>
     </div>
   );

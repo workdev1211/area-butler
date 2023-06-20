@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import * as dayjs from 'dayjs';
 
 import {
   RealEstateListing,
@@ -9,6 +10,11 @@ import {
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import {
+  OnOfficeIntActTypesEnum,
+  TOnOfficeIntActTypes,
+} from '@area-butler-types/on-office';
+import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -63,11 +69,48 @@ export class RealEstateListingIntService {
     return existingRealEstateListing;
   }
 
-  async unlockOnePageExport(
+  async unlockProduct(
     integrationUser: TIntegrationUserDocument,
-    realEstateListing: RealEstateListingDocument,
+    realEstateListingId: string,
+    actionType: TOnOfficeIntActTypes,
   ): Promise<void> {
-    realEstateListing.integrationParams.isOnePageExportActive = true;
+    const realEstateListing = await this.realEstateListingModel.findById(
+      realEstateListingId,
+    );
+
+    const iframeEndsAt = dayjs().add(6, 'months').toDate();
+
+    // TODO think about moving the OpenAI unlocker here
+    switch (actionType) {
+      // TODO a blank for future
+      case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+        realEstateListing.integrationParams.openAiRequestQuantity =
+          initOpenAiReqQuantity;
+
+        realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
+        break;
+      }
+
+      case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+        realEstateListing.integrationParams.openAiRequestQuantity =
+          initOpenAiReqQuantity;
+
+        realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
+        realEstateListing.integrationParams.isOnePageExportActive = true;
+        break;
+      }
+
+      case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+        realEstateListing.integrationParams.openAiRequestQuantity =
+          initOpenAiReqQuantity;
+
+        realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
+        realEstateListing.integrationParams.isOnePageExportActive = true;
+        realEstateListing.integrationParams.isStatsFullExportActive = true;
+        break;
+      }
+    }
+
     await realEstateListing.save();
   }
 }

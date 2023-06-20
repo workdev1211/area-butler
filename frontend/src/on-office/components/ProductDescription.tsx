@@ -21,6 +21,11 @@ export const getProductDescription = (
       return OnePageDescription(name);
     }
 
+    case OnOfficeProductTypesEnum.STATS_EXPORT:
+    case OnOfficeProductTypesEnum.STATS_EXPORT_50: {
+      return StatsExportDescription(name);
+    }
+
     case OnOfficeProductTypesEnum.MAP_SNAPSHOT:
     default: {
       return MapSnapshotDescription(name);
@@ -117,6 +122,31 @@ const OnePageDescription = (name: string) => {
           Perfekte Vorbereitung für die Akquise. Perfekte Vermarktung der Lage
           im Vertrieb.
         </div>
+
+        <div className="inline-flex items-center gap-2">
+          <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
+          <div>Erklärvideo</div>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const StatsExportDescription = (name: string) => {
+  return (
+    <>
+      <div className="card-title w-full mb-7">{name}</div>
+
+      <div className="flex flex-col items-start gap-3 min-h-[25vh]">
+        <div className="text-justify">Alles inklusive</div>
+
+        <ul className="list-disc pl-5 text-left ">
+          <li>Alles inklusive</li>
+          <li>Alles inklusive</li>
+          <li>Alles inklusive</li>
+        </ul>
+
+        <div className="text-justify">Alles inklusive</div>
 
         <div className="inline-flex items-center gap-2">
           <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}

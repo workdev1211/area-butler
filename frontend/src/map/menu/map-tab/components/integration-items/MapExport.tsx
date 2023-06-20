@@ -94,7 +94,7 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
             setIsShownModal(false);
           }}
           onConfirm={unlockOnePageExport}
-          text="Automatisches Lage-Exposé freischalten?"
+          text="Lage-Exposé freischalten?"
         />
       )}
 

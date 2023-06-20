@@ -12,6 +12,7 @@ import censusDataIcon from "../../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../../assets/icons/federal-election.svg";
 import { SearchContext } from "../../../../context/SearchContext";
 import { UserContext } from "../../../../context/UserContext";
+import UnlockProduct from "../../components/UnlockProduct";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -45,12 +46,16 @@ const federalElectionNotInSubscriptionPlanMessage = (
 );
 
 interface ISocialDemographicsProps {
+  isStatsExportActive: boolean;
+  performUnlock: () => void;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
 }
 
 const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
+  isStatsExportActive,
+  performUnlock,
   openUpgradeSubscriptionModal,
   censusData,
   federalElectionData,
@@ -108,38 +113,44 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        <ul>
-          <li className="locality-option-li" key="list-item-zensus">
-            <MapMenuCollapsable
-              title="Zensus Daten"
-              icon={censusDataIcon}
-              subscriptionCheck={() => hasCensusData}
-              openUpgradeSubscriptionModal={() => {
-                openUpgradeSubscriptionModal &&
-                  openUpgradeSubscriptionModal(
-                    censusNotInSubscriptionPlanMessage
-                  );
-              }}
-            >
-              <CensusTable censusData={censusData} />
-            </MapMenuCollapsable>
-          </li>
-          <li className="locality-option-li" key="list-item-btw">
-            <MapMenuCollapsable
-              title="Bundestagswahlen"
-              icon={federalElectionIcon}
-              subscriptionCheck={() => hasElectionData}
-              openUpgradeSubscriptionModal={() => {
-                openUpgradeSubscriptionModal &&
-                  openUpgradeSubscriptionModal(
-                    federalElectionNotInSubscriptionPlanMessage
-                  );
-              }}
-            >
-              <FederalElectionTable federalElectionData={federalElectionData} />
-            </MapMenuCollapsable>
-          </li>
-        </ul>
+        {isStatsExportActive ? (
+          <ul>
+            <li className="locality-option-li" key="list-item-zensus">
+              <MapMenuCollapsable
+                title="Zensus Daten"
+                icon={censusDataIcon}
+                subscriptionCheck={() => hasCensusData}
+                openUpgradeSubscriptionModal={() => {
+                  openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(
+                      censusNotInSubscriptionPlanMessage
+                    );
+                }}
+              >
+                <CensusTable censusData={censusData} />
+              </MapMenuCollapsable>
+            </li>
+            <li className="locality-option-li" key="list-item-btw">
+              <MapMenuCollapsable
+                title="Bundestagswahlen"
+                icon={federalElectionIcon}
+                subscriptionCheck={() => hasElectionData}
+                openUpgradeSubscriptionModal={() => {
+                  openUpgradeSubscriptionModal &&
+                    openUpgradeSubscriptionModal(
+                      federalElectionNotInSubscriptionPlanMessage
+                    );
+                }}
+              >
+                <FederalElectionTable
+                  federalElectionData={federalElectionData}
+                />
+              </MapMenuCollapsable>
+            </li>
+          </ul>
+        ) : (
+          <UnlockProduct performUnlock={performUnlock} />
+        )}
       </div>
     </div>
   );

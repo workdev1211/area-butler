@@ -17,6 +17,8 @@ export enum OnOfficeProductTypesEnum {
   MAP_IFRAME_50 = "MAP_IFRAME_50",
   ONE_PAGE = "ONE_PAGE",
   ONE_PAGE_50 = "ONE_PAGE_50",
+  STATS_EXPORT = "STATS_EXPORT",
+  STATS_EXPORT_50 = "STATS_EXPORT_50",
 }
 
 export interface IOnOfficeProduct {
@@ -336,6 +338,7 @@ export interface IOnOfficeHandleLogin {
 export enum OnOfficeIntActTypesEnum {
   "UNLOCK_IFRAME" = "UNLOCK_IFRAME",
   "UNLOCK_ONE_PAGE" = "UNLOCK_ONE_PAGE",
+  "UNLOCK_STATS_EXPORT" = "UNLOCK_STATS_EXPORT",
 }
 
 export type TOnOfficeIntActTypes =

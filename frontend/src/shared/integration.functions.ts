@@ -47,6 +47,12 @@ export const getProductNameByType = (
         .name;
     }
 
+    case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
+      return allOnOfficeProducts[
+        ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT
+      ].name;
+    }
+
     case ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT:
     default: {
       return allOnOfficeProducts[

@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode } from "react";
+import { FunctionComponent, ReactNode, useContext, useState } from "react";
 
 import {
   EntityGroup,
@@ -22,6 +22,15 @@ import LocationIndices from "./components/LocationIndices";
 import SocialDemographics from "./components/SocialDemographics";
 import EnvironmentalInfo from "./components/EnvironmentalInfo";
 import EconomicMetrics from "./components/EconomicMetrics";
+import ConfirmationModal from "../../../components/ConfirmationModal";
+import { statsExportUnlockText } from "../../../../../shared/constants/on-office/products";
+import {
+  OnOfficeIntActTypesEnum,
+  TOnOfficeIntActTypes,
+} from "../../../../../shared/types/on-office";
+import { SearchContext } from "../../../context/SearchContext";
+import { useIntegrationTools } from "../../../hooks/integrationtools";
+import { ConfigContext } from "../../../context/ConfigContext";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];
@@ -56,10 +65,37 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   locationIndexData,
   userMenuPoiIcons,
 }) => {
+  const { integrationType } = useContext(ConfigContext);
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
+
+  const { unlockProduct } = useIntegrationTools();
+
+  const [unlockParams, setUnlockParams] = useState<{
+    isShownModal: boolean;
+    actionType?: TOnOfficeIntActTypes;
+  }>({ isShownModal: false });
+
+  const isStatsExportActive = !!(integrationType
+    ? realEstateListing?.isStatsFullExportActive
+    : false);
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   return (
     <div className="map-tab z-9000">
+      {unlockParams.isShownModal && (
+        <ConfirmationModal
+          closeModal={() => {
+            setUnlockParams({ isShownModal: false });
+          }}
+          onConfirm={async () => {
+            await unlockProduct(unlockParams.actionType!);
+          }}
+          text={statsExportUnlockText}
+        />
+      )}
+
       <Localities
         groupedEntries={groupedEntries}
         toggleAllLocalities={toggleAllLocalities}
@@ -72,7 +108,16 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
       />
 
       {isEditorMode && (
-        <LocationIndices locationIndexData={locationIndexData} />
+        <LocationIndices
+          locationIndexData={locationIndexData}
+          isStatsExportActive={isStatsExportActive}
+          performUnlock={() => {
+            setUnlockParams({
+              isShownModal: true,
+              actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
+            });
+          }}
+        />
       )}
 
       {showInsights && isEditorMode && (
@@ -80,6 +125,13 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
           openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
           censusData={censusData}
           federalElectionData={federalElectionData}
+          isStatsExportActive={isStatsExportActive}
+          performUnlock={() => {
+            setUnlockParams({
+              isShownModal: true,
+              actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
+            });
+          }}
         />
       )}
 
@@ -88,6 +140,13 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
           <EnvironmentalInfo
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             particlePollutionData={particlePollutionData}
+            isStatsExportActive={isStatsExportActive}
+            performUnlock={() => {
+              setUnlockParams({
+                isShownModal: true,
+                actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
+              });
+            }}
           />
           <EconomicMetrics />
         </>

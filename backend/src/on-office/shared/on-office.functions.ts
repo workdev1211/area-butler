@@ -104,6 +104,54 @@ export const convertOnOfficeProdToIntUserProd = ({
 
       break;
     }
+
+    case OnOfficeProductTypesEnum.STATS_EXPORT: {
+      integrationUserProducts.push(
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
+        },
+      );
+
+      break;
+    }
+
+    case OnOfficeProductTypesEnum.STATS_EXPORT_50: {
+      const resultingQuantity = quantity * 50;
+
+      integrationUserProducts.push(
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+        },
+        {
+          quantity: resultingQuantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
+        },
+        {
+          quantity,
+          type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
+        },
+      );
+
+      break;
+    }
   }
 
   return integrationUserProducts;

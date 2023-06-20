@@ -5,12 +5,17 @@ import locationIndicesIcon from "../../../../assets/icons/map-menu/11-lageindize
 import { TLocationIndexData } from "../../../../hooks/locationindexdata";
 import LocationIndexTable from "./data/LocationIndexTable";
 import { SearchContext } from "../../../../context/SearchContext";
+import UnlockProduct from "../../components/UnlockProduct";
 
 interface ILocationIndicesProps {
+  isStatsExportActive: boolean;
+  performUnlock: () => void;
   locationIndexData?: TLocationIndexData;
 }
 
 const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
+  isStatsExportActive,
+  performUnlock,
   locationIndexData,
 }) => {
   const {
@@ -23,10 +28,9 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
 
   return (
     <div
-      className={
-        "collapse collapse-arrow view-option" +
-        (isLocationIndicesOpen ? " collapse-open" : " collapse-closed")
-      }
+      className={`collapse collapse-arrow view-option${
+        isLocationIndicesOpen ? " collapse-open" : " collapse-closed"
+      }`}
     >
       <div
         className="collapse-title"
@@ -57,18 +61,22 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {locationIndexData && !Object.keys(locationIndexData).length ? (
-          <div
-            className="text-justify"
-            style={{
-              padding:
-                "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
-            }}
-          >
-            Lageindizes sind nicht verfügbar.
-          </div>
+        {isStatsExportActive ? (
+          locationIndexData && !Object.keys(locationIndexData).length ? (
+            <div
+              className="text-justify"
+              style={{
+                padding:
+                  "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
+              }}
+            >
+              Lageindizes sind nicht verfügbar.
+            </div>
+          ) : (
+            <LocationIndexTable locationIndexData={locationIndexData} />
+          )
         ) : (
-          <LocationIndexTable locationIndexData={locationIndexData} />
+          <UnlockProduct performUnlock={performUnlock} />
         )}
       </div>
     </div>

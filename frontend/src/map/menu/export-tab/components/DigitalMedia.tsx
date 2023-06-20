@@ -1,5 +1,6 @@
-import { FunctionComponent, useContext } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import { saveAs } from "file-saver";
+import dayjs from "dayjs";
 
 import "./DigitalMedia.scss";
 
@@ -7,7 +8,10 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../../context/SearchContext";
-import { ApiOnOfficeArtTypesEnum } from "../../../../../../shared/types/on-office";
+import {
+  ApiOnOfficeArtTypesEnum,
+  OnOfficeIntActTypesEnum,
+} from "../../../../../../shared/types/on-office";
 import sendToOnOfficeIcon from "../../../../assets/icons/entrance-alt1.svg";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import copyIcon from "../../../../assets/icons/copy.svg";
@@ -19,6 +23,8 @@ import iframeIcon from "../../../../assets/icons/map-menu/editor-tab/iframe.svg"
 import { copyTextToClipboard } from "../../../../shared/shared.functions";
 import { ConfigContext } from "../../../../context/ConfigContext";
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
+import ConfirmationModal from "../../../../components/ConfirmationModal";
+import UnlockProduct from "../../components/UnlockProduct";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -32,11 +38,45 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   searchAddress,
 }) => {
   const { integrationType } = useContext(ConfigContext);
-  const { searchContextDispatch } = useContext(SearchContext);
+  const {
+    searchContextState: { realEstateListing },
+    searchContextDispatch,
+  } = useContext(SearchContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
+  const { sendToOnOffice, unlockProduct } = useIntegrationTools();
 
-  const isIntegration = !!integrationType;
+  const [isShownConfirmModal, setIsShownConfirmModal] = useState(false);
+
+  const isIntegrationIframeExpired = integrationType
+    ? !!(
+        realEstateListing?.iframeEndsAt &&
+        dayjs().isAfter(realEstateListing.iframeEndsAt)
+      )
+    : false;
+
+  if (isIntegrationIframeExpired) {
+    return (
+      <>
+        {isShownConfirmModal && (
+          <ConfirmationModal
+            closeModal={() => {
+              setIsShownConfirmModal(false);
+            }}
+            onConfirm={async () => {
+              await unlockProduct(OnOfficeIntActTypesEnum.UNLOCK_IFRAME);
+            }}
+            text="Interaktive Karte freischalten?"
+          />
+        )}
+
+        <UnlockProduct
+          performUnlock={() => {
+            setIsShownConfirmModal(true);
+          }}
+        />
+      </>
+    );
+  }
 
   return (
     <div className="digital-media">
@@ -55,7 +95,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
           <img src={copyIcon} alt="copy" />
           <span>Kopieren</span>
         </div>
-        {isIntegration && (
+        {integrationType && (
           <div
             onClick={async (): Promise<void> => {
               await sendToOnOffice({
@@ -89,7 +129,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
           <img src={downloadIcon} alt="download-qr-code" />
           <span>Herunterladen</span>
         </div>
-        {isIntegration && (
+        {integrationType && (
           <div
             onClick={async () => {
               await sendToOnOffice({
