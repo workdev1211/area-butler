@@ -1,30 +1,26 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useState } from "react";
 
 import { setBackgroundColor } from "../../../../shared/shared.functions";
 import locationIndicesIcon from "../../../../assets/icons/map-menu/11-lageindizes.svg";
 import { TLocationIndexData } from "../../../../hooks/locationindexdata";
 import LocationIndexTable from "./data/LocationIndexTable";
-import { SearchContext } from "../../../../context/SearchContext";
 import UnlockProduct from "../../components/UnlockProduct";
+import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 
 interface ILocationIndicesProps {
   isStatsExportActive: boolean;
-  performUnlock: () => void;
+  performUnlock: TUnlockIntProduct;
+  backgroundColor: string;
   locationIndexData?: TLocationIndexData;
 }
 
 const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
   isStatsExportActive,
   performUnlock,
+  backgroundColor,
   locationIndexData,
 }) => {
-  const {
-    searchContextState: { responseConfig: config },
-  } = useContext(SearchContext);
-
   const [isLocationIndicesOpen, setIsLocationIndicesOpen] = useState(false);
-
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div

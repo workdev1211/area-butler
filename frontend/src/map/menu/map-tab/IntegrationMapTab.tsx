@@ -54,6 +54,7 @@ const IntegrationMapTab: FunctionComponent<IIntegrationMapTabProps> = ({
         // the correct option
         // mapDisplayMode={MapDisplayModesEnum.INTEGRATION}
         mapDisplayMode={MapDisplayModesEnum.EMBED_INTEGRATION}
+        backgroundColor={''}
       />
 
       <MapSettings />

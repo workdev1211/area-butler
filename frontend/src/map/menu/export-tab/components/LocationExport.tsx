@@ -10,12 +10,16 @@ import { invertFilter } from "../../../../shared/shared.constants";
 import pdfIcon from "../../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import ExportModal from "../../../../export/ExportModal";
 import OnePageExportModal from "../../../../export/one-page/OnePageExportModal";
-import { deriveEntityGroupsByActiveMeans } from "../../../../shared/shared.functions";
+import {
+  deriveEntityGroupsByActiveMeans,
+  setBackgroundColor,
+} from "../../../../shared/shared.functions";
 import { OnOfficeIntActTypesEnum } from "../../../../../../shared/types/on-office";
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
-import ConfirmationModal from "../../../../components/ConfirmationModal";
 import { ExportTypeEnum } from "../../../../../../shared/types/export";
 import { statsExportUnlockText } from "../../../../../../shared/constants/on-office/products";
+import reportsIcon from "../../../../assets/icons/map-menu/09-reporte.svg";
+import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -23,11 +27,15 @@ const subscriptionUpgradeFullyCustomizableExpose =
 interface ILocationExportProps {
   snapshotId: string;
   hasOpenAiFeature: boolean;
+  backgroundColor: string;
+  performUnlock: TUnlockIntProduct;
 }
 
 const LocationExport: FunctionComponent<ILocationExportProps> = ({
   snapshotId,
   hasOpenAiFeature,
+  backgroundColor,
+  performUnlock,
 }) => {
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
@@ -37,15 +45,11 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
     userDispatch,
   } = useContext(UserContext);
 
-  const { checkProdContAvailByAction, unlockProduct } = useIntegrationTools();
+  const { checkProdContAvailByAction } = useIntegrationTools();
 
-  const [unlockParams, setUnlockParams] = useState<{
-    isShownConfirmModal: boolean;
-    confirmModalText?: string;
-    actionType?: any;
-  }>({ isShownConfirmModal: false });
-  const [exportType, setExportType] = useState<ExportTypeEnum>();
   const [isExportAvailable, setIsExportAvailable] = useState(false);
+  const [exportType, setExportType] = useState<ExportTypeEnum>();
+  const [isReportsOpen, setIsReportsOpen] = useState(false);
 
   const isIntegration = !!integrationType;
   const realEstateListing = searchContextState.realEstateListing;
@@ -119,13 +123,10 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         : OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT;
 
       if (checkProdContAvailByAction(actionType)) {
-        setUnlockParams({
-          actionType,
-          isShownConfirmModal: true,
-          confirmModalText: isOnePageExport
-            ? "Lage-Exposé freischalten?"
-            : statsExportUnlockText,
-        });
+        performUnlock(
+          isOnePageExport ? "Lage-Exposé freischalten?" : statsExportUnlockText,
+          actionType
+        );
       }
     }
 
@@ -167,110 +168,135 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
   const resultingGroups = entityGroups.map((g) => g.items).flat();
 
   return (
-    <>
-      {unlockParams.isShownConfirmModal && (
-        <ConfirmationModal
-          closeModal={() => {
-            setUnlockParams({ isShownConfirmModal: false });
-          }}
-          onConfirm={async () => {
-            await unlockProduct(unlockParams.actionType);
-            performExport();
-          }}
-          text={unlockParams.confirmModalText!}
-        />
-      )}
+    <div
+      className={
+        "collapse collapse-arrow view-option" +
+        (isReportsOpen ? " collapse-open" : " collapse-closed")
+      }
+    >
+      <div
+        className="collapse-title"
+        ref={(node) => {
+          setBackgroundColor(node, backgroundColor);
+        }}
+        onClick={() => {
+          setIsReportsOpen(!isReportsOpen);
+        }}
+      >
+        <div className="collapse-title-container">
+          <img src={reportsIcon} alt="reports-icon" />
+          <div className="collapse-title-text">
+            <div className="collapse-title-text-1">
+              <div className="collapse-title-text-1">
+                Reporte und Lage Exposé
+                {/*<span*/}
+                {/*  className={`badge ${*/}
+                {/*    isReportsOpen ? "badge-accent" : "badge-primary"*/}
+                {/*  }`}*/}
+                {/*>*/}
+                {/*  NEU*/}
+                {/*</span>*/}
+              </div>
+            </div>
+            <div className="collapse-title-text-2">
+              Für Zahlen, Daten & Fakten zur Lage
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <ul>
-        <li>
-          <h3
-            className="max-w-fit items-center cursor-pointer"
-            onClick={() => {
-              setExportType(ExportTypeEnum.ONE_PAGE);
-            }}
-          >
-            <img
-              className="w-6 h-6"
-              style={invertFilter}
-              src={pdfIcon}
-              alt="pdf"
-            />
-            <span>Lage Exposé generieren</span>
-            {/*<span className="badge badge-primary">NEU</span>*/}
-          </h3>
-        </li>
-        <li>
-          <h3
-            className="max-w-fit items-center cursor-pointer"
-            onClick={() => {
-              setExportType(ExportTypeEnum.EXPOSE);
-            }}
-          >
-            <img
-              className="w-6 h-6"
-              style={invertFilter}
-              src={pdfIcon}
-              alt="pdf"
-            />
-            Umfeldanalyse PDF
-          </h3>
-        </li>
-        <li>
-          <h3
-            className="max-w-fit items-center cursor-pointer"
-            onClick={() => {
-              setExportType(ExportTypeEnum.EXPOSE_DOCX);
-            }}
-          >
-            <img
-              className="w-6 h-6"
-              style={invertFilter}
-              src={pdfIcon}
-              alt="pdf"
-            />
-            Umfeldanalyse DOC
-          </h3>
-        </li>
-        <li>
-          <h3
-            className="max-w-fit items-center cursor-pointer"
-            onClick={() => {
-              setExportType(ExportTypeEnum.CHEATSHEET);
-            }}
-          >
-            <img
-              className="w-6 h-6"
-              style={invertFilter}
-              src={pdfIcon}
-              alt="pdf"
-            />
-            Überblick PDF
-          </h3>
-        </li>
-      </ul>
+      <div className="collapse-content">
+        <ul>
+          <li>
+            <h3
+              className="max-w-fit items-center cursor-pointer"
+              onClick={() => {
+                setExportType(ExportTypeEnum.ONE_PAGE);
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={invertFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              <span>Lage Exposé generieren</span>
+              {/*<span className="badge badge-primary">NEU</span>*/}
+            </h3>
+          </li>
+          <li>
+            <h3
+              className="max-w-fit items-center cursor-pointer"
+              onClick={() => {
+                setExportType(ExportTypeEnum.EXPOSE);
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={invertFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Umfeldanalyse PDF
+            </h3>
+          </li>
+          <li>
+            <h3
+              className="max-w-fit items-center cursor-pointer"
+              onClick={() => {
+                setExportType(ExportTypeEnum.EXPOSE_DOCX);
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={invertFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Umfeldanalyse DOC
+            </h3>
+          </li>
+          <li>
+            <h3
+              className="max-w-fit items-center cursor-pointer"
+              onClick={() => {
+                setExportType(ExportTypeEnum.CHEATSHEET);
+              }}
+            >
+              <img
+                className="w-6 h-6"
+                style={invertFilter}
+                src={pdfIcon}
+                alt="pdf"
+              />
+              Überblick PDF
+            </h3>
+          </li>
+        </ul>
 
-      {isExportAvailable &&
-        exportType &&
-        exportType !== ExportTypeEnum.ONE_PAGE && (
-          <ExportModal
-            activeMeans={searchContextState.responseActiveMeans}
-            entities={resultingGroups}
-            groupedEntries={entityGroups}
-            censusData={searchContextState.censusData!}
+        {isExportAvailable &&
+          exportType &&
+          exportType !== ExportTypeEnum.ONE_PAGE && (
+            <ExportModal
+              activeMeans={searchContextState.responseActiveMeans}
+              entities={resultingGroups}
+              groupedEntries={entityGroups}
+              censusData={searchContextState.censusData!}
+              snapshotToken={searchContextState.responseToken}
+              exportType={exportType}
+            />
+          )}
+
+        {isExportAvailable && exportType === ExportTypeEnum.ONE_PAGE && (
+          <OnePageExportModal
+            entityGroups={entityGroups}
             snapshotToken={searchContextState.responseToken}
-            exportType={exportType}
+            snapshotId={snapshotId}
+            hasOpenAiFeature={hasOpenAiFeature}
           />
         )}
-
-      {isExportAvailable && exportType === ExportTypeEnum.ONE_PAGE && (
-        <OnePageExportModal
-          entityGroups={entityGroups}
-          snapshotToken={searchContextState.responseToken}
-          snapshotId={snapshotId}
-          hasOpenAiFeature={hasOpenAiFeature}
-        />
-      )}
-    </>
+      </div>
+    </div>
   );
 };
 

@@ -37,6 +37,7 @@ interface ILocalitiesProps {
   toggleTransitRoute: (item: ResultEntity) => void;
   transitRoutes: EntityTransitRoute[];
   mapDisplayMode: MapDisplayModesEnum;
+  backgroundColor: string;
   userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
@@ -48,6 +49,7 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
   toggleTransitRoute,
   transitRoutes,
   mapDisplayMode,
+  backgroundColor,
   userMenuPoiIcons,
 }) => {
   const {
@@ -56,13 +58,11 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
   const {
     searchContextState: { responseConfig: config },
   } = useContext(SearchContext);
-  const resultingPoiIcons = userMenuPoiIcons || user?.poiIcons?.menuPoiIcons;
 
+  const resultingPoiIcons = userMenuPoiIcons || user?.poiIcons?.menuPoiIcons;
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
   const [isLocalitiesOpen, setIsLocalitiesOpen] = useState(!isEditorMode);
-
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div

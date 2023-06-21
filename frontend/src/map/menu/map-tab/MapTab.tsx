@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, useContext } from "react";
 
 import {
   EntityGroup,
@@ -22,15 +22,9 @@ import LocationIndices from "./components/LocationIndices";
 import SocialDemographics from "./components/SocialDemographics";
 import EnvironmentalInfo from "./components/EnvironmentalInfo";
 import EconomicMetrics from "./components/EconomicMetrics";
-import ConfirmationModal from "../../../components/ConfirmationModal";
-import { statsExportUnlockText } from "../../../../../shared/constants/on-office/products";
-import {
-  OnOfficeIntActTypesEnum,
-  TOnOfficeIntActTypes,
-} from "../../../../../shared/types/on-office";
 import { SearchContext } from "../../../context/SearchContext";
-import { useIntegrationTools } from "../../../hooks/integrationtools";
 import { ConfigContext } from "../../../context/ConfigContext";
+import { TUnlockIntProduct } from "../../../../../shared/types/integration";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];
@@ -40,6 +34,7 @@ interface IMapTabProps {
   toggleTransitRoute: (item: ResultEntity) => void;
   transitRoutes: EntityTransitRoute[];
   mapDisplayMode: MapDisplayModesEnum;
+  performUnlock: TUnlockIntProduct;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   showInsights?: boolean;
   censusData?: TCensusData;
@@ -64,38 +59,22 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   particlePollutionData,
   locationIndexData,
   userMenuPoiIcons,
+  performUnlock,
 }) => {
   const { integrationType } = useContext(ConfigContext);
   const {
-    searchContextState: { realEstateListing },
+    searchContextState: { realEstateListing, responseConfig },
   } = useContext(SearchContext);
-
-  const { unlockProduct } = useIntegrationTools();
-
-  const [unlockParams, setUnlockParams] = useState<{
-    isShownModal: boolean;
-    actionType?: TOnOfficeIntActTypes;
-  }>({ isShownModal: false });
 
   const isStatsExportActive = !!(integrationType
     ? realEstateListing?.isStatsFullExportActive
     : false);
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+  const backgroundColor =
+    responseConfig?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div className="map-tab z-9000">
-      {unlockParams.isShownModal && (
-        <ConfirmationModal
-          closeModal={() => {
-            setUnlockParams({ isShownModal: false });
-          }}
-          onConfirm={async () => {
-            await unlockProduct(unlockParams.actionType!);
-          }}
-          text={statsExportUnlockText}
-        />
-      )}
-
       <Localities
         groupedEntries={groupedEntries}
         toggleAllLocalities={toggleAllLocalities}
@@ -104,49 +83,38 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
         toggleTransitRoute={toggleTransitRoute}
         transitRoutes={transitRoutes}
         mapDisplayMode={mapDisplayMode}
+        backgroundColor={backgroundColor}
         userMenuPoiIcons={userMenuPoiIcons}
       />
 
       {isEditorMode && (
         <LocationIndices
-          locationIndexData={locationIndexData}
           isStatsExportActive={isStatsExportActive}
-          performUnlock={() => {
-            setUnlockParams({
-              isShownModal: true,
-              actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
-            });
-          }}
+          performUnlock={performUnlock}
+          backgroundColor={backgroundColor}
+          locationIndexData={locationIndexData}
         />
       )}
 
       {showInsights && isEditorMode && (
         <SocialDemographics
+          isStatsExportActive={isStatsExportActive}
+          performUnlock={performUnlock}
+          backgroundColor={backgroundColor}
           openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
           censusData={censusData}
           federalElectionData={federalElectionData}
-          isStatsExportActive={isStatsExportActive}
-          performUnlock={() => {
-            setUnlockParams({
-              isShownModal: true,
-              actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
-            });
-          }}
         />
       )}
 
       {isEditorMode && (
         <>
           <EnvironmentalInfo
+            isStatsExportActive={isStatsExportActive}
+            performUnlock={performUnlock}
+            backgroundColor={backgroundColor}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
             particlePollutionData={particlePollutionData}
-            isStatsExportActive={isStatsExportActive}
-            performUnlock={() => {
-              setUnlockParams({
-                isShownModal: true,
-                actionType: OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT,
-              });
-            }}
           />
           <EconomicMetrics />
         </>

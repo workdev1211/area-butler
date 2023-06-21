@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import { ApiGeojsonFeature } from "../../../../../../shared/types/types";
 import { setBackgroundColor } from "../../../../shared/shared.functions";
@@ -7,13 +7,14 @@ import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
 import ParticlePollutionTable from "./data/ParticlePollutionTable";
 import environmentalInfoIcon from "../../../../assets/icons/map-menu/03-umweltinformationen.svg";
 import particlePollutionIcon from "../../../../assets/icons/particle-pollution.svg";
-import { SearchContext } from "../../../../context/SearchContext";
-import { UserContext } from "../../../../context/UserContext";
 import UnlockProduct from "../../components/UnlockProduct";
+import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
+import { useTools } from "../../../../hooks/tools";
 
 interface IEnvironmentalInfoProps {
   isStatsExportActive: boolean;
-  performUnlock: () => void;
+  performUnlock: TUnlockIntProduct;
+  backgroundColor: string;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   particlePollutionData?: ApiGeojsonFeature[];
 }
@@ -21,25 +22,21 @@ interface IEnvironmentalInfoProps {
 const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
   isStatsExportActive,
   performUnlock,
+  backgroundColor,
   openUpgradeSubscriptionModal,
   particlePollutionData,
 }) => {
-  const {
-    userState: { user, integrationUser },
-  } = useContext(UserContext);
-  const {
-    searchContextState: { responseConfig: config },
-  } = useContext(SearchContext);
+  const { getActualUser } = useTools();
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
 
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
 
   const hasPollutionData =
-    !!integrationUser ||
+    isIntegrationUser ||
     user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.PARTICLE_POLLUTION
     )!;
-
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div

@@ -73,7 +73,7 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   openAiRequestQuantity?: number;
 
   @IsOptional()
-  @IsDate()
+  @IsString()
   iframeEndsAt?: Date;
 
   @IsOptional()

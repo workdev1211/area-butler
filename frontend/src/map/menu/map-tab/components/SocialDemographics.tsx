@@ -1,4 +1,4 @@
-import { FunctionComponent, ReactNode, useContext, useState } from "react";
+import { FunctionComponent, ReactNode, useState } from "react";
 
 import { setBackgroundColor } from "../../../../shared/shared.functions";
 import { ApiDataSource } from "../../../../../../shared/types/subscription-plan";
@@ -10,9 +10,9 @@ import { TCensusData } from "hooks/censusdata";
 import socialDemographicsIcon from "../../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
 import censusDataIcon from "../../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../../assets/icons/federal-election.svg";
-import { SearchContext } from "../../../../context/SearchContext";
-import { UserContext } from "../../../../context/UserContext";
 import UnlockProduct from "../../components/UnlockProduct";
+import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
+import { useTools } from "../../../../hooks/tools";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -47,7 +47,8 @@ const federalElectionNotInSubscriptionPlanMessage = (
 
 interface ISocialDemographicsProps {
   isStatsExportActive: boolean;
-  performUnlock: () => void;
+  performUnlock: TUnlockIntProduct;
+  backgroundColor: string;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
@@ -56,21 +57,17 @@ interface ISocialDemographicsProps {
 const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
   isStatsExportActive,
   performUnlock,
+  backgroundColor,
   openUpgradeSubscriptionModal,
   censusData,
   federalElectionData,
 }) => {
-  const {
-    userState: { user, integrationUser },
-  } = useContext(UserContext);
-  const {
-    searchContextState: { responseConfig: config },
-  } = useContext(SearchContext);
+  const { getActualUser } = useTools();
+  const user = getActualUser();
+  const isIntegrationUser = "accessToken" in user;
 
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
-
-  const isIntegrationUser = !!integrationUser;
 
   const hasCensusData =
     isIntegrationUser ||
@@ -83,8 +80,6 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
     user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
     )!;
-
-  const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div

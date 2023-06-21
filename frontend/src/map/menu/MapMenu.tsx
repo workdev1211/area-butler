@@ -30,6 +30,14 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
 import { TLocationIndexData } from "../../hooks/locationindexdata";
+import ConfirmationModal from "../../components/ConfirmationModal";
+import { statsExportUnlockText } from "../../../../shared/constants/on-office/products";
+import { useIntegrationTools } from "../../hooks/integrationtools";
+import {
+  OnOfficeIntActTypesEnum,
+  TOnOfficeIntActTypes,
+} from "../../../../shared/types/on-office";
+import { TUnlockIntProduct } from "../../../../shared/types/integration";
 
 enum TabsEnum {
   Map = "Map",
@@ -84,7 +92,14 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   exportTabProps,
   userMenuPoiIcons,
 }) => {
+  const { unlockProduct } = useIntegrationTools();
+
   const [activeTab, setActiveTab] = useState(TabsEnum.Map);
+  const [unlockParams, setUnlockParams] = useState<{
+    isShownModal: boolean;
+    modalMessage?: string;
+    actionType?: TOnOfficeIntActTypes;
+  }>({ isShownModal: false });
 
   const isMapTab = activeTab === TabsEnum.Map;
   const isEditorTab = activeTab === TabsEnum.Editor;
@@ -108,11 +123,34 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
     }
   }
 
+  const performUnlock: TUnlockIntProduct = (
+    modalMessage = statsExportUnlockText,
+    actionType = OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT
+  ): void => {
+    setUnlockParams({
+      modalMessage,
+      actionType,
+      isShownModal: true,
+    });
+  };
+
   return (
     <div
       className={`map-menu ${isMapMenuOpen ? "map-menu-open" : ""}`}
       data-tour="side-menu"
     >
+      {isEditorMode && unlockParams.isShownModal && (
+        <ConfirmationModal
+          closeModal={() => {
+            setUnlockParams({ isShownModal: false });
+          }}
+          onConfirm={async () => {
+            await unlockProduct(unlockParams.actionType!);
+          }}
+          text={unlockParams.modalMessage!}
+        />
+      )}
+
       {isEditorMode && (
         <div className="tab-bar bg-primary-gradient">
           <div className="tab-container" data-tour="tab-icons">
@@ -198,6 +236,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
             locationIndexData={locationIndexData}
             mapDisplayMode={mapDisplayMode}
             userMenuPoiIcons={userMenuPoiIcons}
+            performUnlock={performUnlock}
           />
         )}
 
@@ -206,7 +245,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         )}
 
         {isExportTab && isEditorMode && exportTabProps && (
-          <ExportTab {...exportTabProps} />
+          <ExportTab {...{ ...exportTabProps, performUnlock }} />
         )}
       </div>
 

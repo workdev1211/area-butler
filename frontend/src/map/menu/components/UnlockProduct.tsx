@@ -1,7 +1,9 @@
 import { FunctionComponent } from "react";
 
+import { TUnlockIntProduct } from "../../../../../shared/types/integration";
+
 interface IUnlockProductProps {
-  performUnlock: () => void;
+  performUnlock: TUnlockIntProduct;
 }
 
 const UnlockProduct: FunctionComponent<IUnlockProductProps> = ({
@@ -21,7 +23,9 @@ const UnlockProduct: FunctionComponent<IUnlockProductProps> = ({
           padding: "0.25rem",
           height: "calc(var(--btn-height) / 1.5)",
         }}
-        onClick={performUnlock}
+        onClick={() => {
+          performUnlock();
+        }}
       >
         Freischalten
       </button>

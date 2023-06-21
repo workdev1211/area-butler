@@ -52,6 +52,7 @@ import {
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
+import { TUnlockIntProduct } from "../../../shared/types/integration";
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -105,6 +106,7 @@ export interface IExportTabProps {
   directLink: string;
   searchAddress: string;
   snapshotId: string;
+  performUnlock?: TUnlockIntProduct;
 }
 
 interface ISearchResultContainerProps {

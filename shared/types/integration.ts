@@ -24,3 +24,8 @@ export interface IApiUnlockIntProductReq {
   realEstateListingId: string;
   actionType: TOnOfficeIntActTypes;
 }
+
+export type TUnlockIntProduct = (
+  modalMessage?: string,
+  actionType?: TOnOfficeIntActTypes
+) => void;
