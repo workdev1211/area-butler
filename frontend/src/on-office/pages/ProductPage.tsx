@@ -1,61 +1,25 @@
-import { FunctionComponent, useContext, useState } from "react";
-import { useHistory } from "react-router-dom";
+import { FunctionComponent, useContext } from "react";
 
 import DefaultLayout from "../../layout/defaultLayout";
 import { allOnOfficeProducts } from "../../../../shared/constants/on-office/products";
-import {
-  IApiOnOfficeCreateOrderProduct,
-  IApiOnOfficeCreateOrderReq,
-  IApiOnOfficeCreateOrderRes,
-  IOnOfficeProduct,
-  OnOfficeProductTypesEnum,
-} from "../../../../shared/types/on-office";
-import { useHttp } from "../../hooks/http";
-import { toastError } from "../../shared/shared.functions";
+import { IOnOfficeProduct } from "../../../../shared/types/on-office";
 import ProductCard from "../components/ProductCard";
-import { SearchContext } from "../../context/SearchContext";
 import { UserContext } from "../../context/UserContext";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 import { getProductNameByType } from "../../shared/integration.functions";
-
-const initialCreateOrderProducts = Object.keys(allOnOfficeProducts).reduce<
-  Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>
->((result, type) => {
-  Object.assign(result, { [type]: { type, quantity: 0 } });
-
-  return result;
-}, {} as Record<OnOfficeProductTypesEnum, IApiOnOfficeCreateOrderProduct>);
 
 export const ProductPage: FunctionComponent = () => {
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
-  const { searchContextState } = useContext(SearchContext);
-
-  const history = useHistory();
-  const { post } = useHttp();
-
-  const [createOrderProducts, setCreateOrderProducts] = useState(
-    initialCreateOrderProducts
-  );
 
   const { availProdContingents } = integrationUser!;
-
-  const getProducts = (): [IApiOnOfficeCreateOrderProduct] | undefined => {
-    const foundProduct = Object.values(createOrderProducts).find(
-      ({ quantity }) => quantity > 0
-    );
-
-    return foundProduct ? [foundProduct] : undefined;
-  };
-
-  let firstOnOfficeProduct: IOnOfficeProduct;
 
   const onOfficeProducts = Object.values(allOnOfficeProducts).reduce<
     Array<IOnOfficeProduct[]>
   >((result, product, i, products) => {
     if (i === 0) {
-      firstOnOfficeProduct = product;
+      result.push([products[0]]);
       return result;
     }
 
@@ -73,8 +37,10 @@ export const ProductPage: FunctionComponent = () => {
       isOverriddenActionsTop={true}
     >
       <div className="flex flex-col gap-10 mt-10">
+        {/* Available products */}
+
         {availProdContingents && (
-          <>
+          <div className="flex items-center gap-20">
             <h1 className="font-bold text-xl text-justify">
               Ihr bereits erworbenes Kontingent:
             </h1>
@@ -102,100 +68,34 @@ export const ProductPage: FunctionComponent = () => {
                 );
               })}
             </ul>
-            <div className="my-0 border-t-2 border-b-0 " />
-          </>
-        )}
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-10">
-          <div className="xl:row-start-1 xl:row-end-4 xl:p-3">
-            <div className={`flex flex-col items-center gap-10`}>
-              <ProductCard
-                name={firstOnOfficeProduct!.name}
-                type={firstOnOfficeProduct!.type}
-                price={firstOnOfficeProduct!.price}
-                isDisabled={firstOnOfficeProduct!.isDisabled}
-                products={createOrderProducts}
-                onChangeProducts={setCreateOrderProducts}
-              />
-              <button
-                className="btn w-48"
-                onClick={() => {
-                  history.push("/search");
-                }}
-                style={{
-                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
-                }}
-              >
-                Karte gratis erstellen
-              </button>
-            </div>
+            <div className="my-0 border-t-2 border-b-0" />
           </div>
+        )}
+
+        {/* Product list */}
+
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
           {onOfficeProducts.map((groupedProducts, i) => (
-            <div
-              className={`grid xl:col-start-2 xl:col-end-4 grid-cols-1 xl:grid-cols-2 gap-10 p-3 rounded-3xl ${
-                groupedProducts.some(({ isDisabled }) => isDisabled)
-                  ? "opacity-50"
-                  : ""
-              }`}
-              style={{ outline: "3px #a9a9a9 solid" }}
-              key={i}
-            >
-              {groupedProducts.map(({ name, type, price, isDisabled }) => (
-                <ProductCard
-                  key={type}
-                  name={name}
-                  type={type}
-                  price={price}
-                  isDisabled={isDisabled}
-                  products={createOrderProducts}
-                  onChangeProducts={setCreateOrderProducts}
-                />
-              ))}
-            </div>
+            <ProductCard
+              key={groupedProducts[0].type}
+              products={groupedProducts}
+            />
           ))}
         </div>
+
+        {/* A description */}
+
         <div className="flex flex-col gap-5 mx-10">
-          <div className="my-0 border-t-2 border-b-0 " />
+          <div className="my-0 border-t-2 border-b-0" />
           <div className="font-bold text-xl text-justify">
             In unserem onOffice Marketplace Shop können Sie weitere Produkte
             bestellen. Die Anzahl der Produkte bezieht sich immer auf eine
             Adresse in Deutschland. Beispiel: bei Anzahl 1 können Sie das
-            jeweilige Produkt für eine Immobilie nutzen. Bei Anzahl 50 können
-            Sie es für 50 beliebige Objekte nutzen usw. Viel Spaß mit dem
+            jeweilige Produkt für eine Immobilie nutzen. Bei Anzahl 10 können
+            Sie es für 10 beliebige Objekte nutzen usw. Viel Spaß mit dem
             AreaButler und viel Erfolg in der Vermarktung.
           </div>
-          <div className="my-0 border-t-2 border-b-0 " />
-        </div>
-        <div style={{ minHeight: "calc(var(--btn-height))" }} />
-        <div
-          className="flex justify-end gap-5 fixed bottom-[2.5vh]"
-          style={{ right: "var(--content-padding-x)" }}
-        >
-          <button
-            className="btn bg-primary-gradient w-48"
-            onClick={async () => {
-              const products = getProducts();
-
-              if (!products) {
-                toastError("Bitte geben Sie die Menge eines der Produkte an.");
-                return;
-              }
-
-              const { onOfficeOrderData } = (
-                await post<
-                  IApiOnOfficeCreateOrderRes,
-                  IApiOnOfficeCreateOrderReq
-                >("/api/on-office/create-order", {
-                  products,
-                  integrationId:
-                    searchContextState.realEstateListing!.integrationId!,
-                })
-              ).data;
-
-              window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
-            }}
-          >
-            Bestellen
-          </button>
+          <div className="my-0 border-t-2 border-b-0" />
         </div>
       </div>
     </DefaultLayout>

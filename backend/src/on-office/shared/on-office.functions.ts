@@ -24,9 +24,9 @@ export const convertOnOfficeProdToIntUserProd = ({
       break;
     }
 
-    case OnOfficeProductTypesEnum.OPEN_AI_50: {
+    case OnOfficeProductTypesEnum.OPEN_AI_10: {
       integrationUserProducts.push({
-        quantity: quantity * 50,
+        quantity: quantity * 10,
         type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
       });
 
@@ -48,8 +48,8 @@ export const convertOnOfficeProdToIntUserProd = ({
       break;
     }
 
-    case OnOfficeProductTypesEnum.MAP_IFRAME_50: {
-      const resultingQuantity = quantity * 50;
+    case OnOfficeProductTypesEnum.MAP_IFRAME_10: {
+      const resultingQuantity = quantity * 10;
 
       integrationUserProducts.push(
         {
@@ -84,8 +84,8 @@ export const convertOnOfficeProdToIntUserProd = ({
       break;
     }
 
-    case OnOfficeProductTypesEnum.ONE_PAGE_50: {
-      const resultingQuantity = quantity * 50;
+    case OnOfficeProductTypesEnum.ONE_PAGE_10: {
+      const resultingQuantity = quantity * 10;
 
       integrationUserProducts.push(
         {
@@ -128,8 +128,8 @@ export const convertOnOfficeProdToIntUserProd = ({
       break;
     }
 
-    case OnOfficeProductTypesEnum.STATS_EXPORT_50: {
-      const resultingQuantity = quantity * 50;
+    case OnOfficeProductTypesEnum.STATS_EXPORT_10: {
+      const resultingQuantity = quantity * 10;
 
       integrationUserProducts.push(
         {

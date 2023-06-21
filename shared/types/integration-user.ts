@@ -48,6 +48,7 @@ export enum ApiIntUserOnOfficeProdContTypesEnum {
   MAP_IFRAME = "MAP_IFRAME",
   ONE_PAGE = "ONE_PAGE",
   STATS_EXPORT = "STATS_EXPORT",
+  SUBSCRIPTION = "SUBSCRIPTION",
 }
 
 export type TApiIntUserOnOfficeUsageStatsParamNames =

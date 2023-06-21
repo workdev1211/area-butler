@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useState,
+  Fragment,
 } from "react";
 import { Form, Formik } from "formik";
 import dayjs from "dayjs";
@@ -593,31 +594,37 @@ const SearchParamsPage: FunctionComponent = () => {
       modalButton: increaseLimitSearchButton,
     };
 
-    return limitType ? (
-      <IncreaseLimitModal modalConfig={increaseRequestLimitSearchModalConfig} />
-    ) : (
-      <button
-        data-tour="start-search"
-        type="button"
-        disabled={isSearchButtonDisabled}
-        onClick={performAnalysis}
-        className={
-          searchContextState.searchBusy
-            ? `${resultingClasses} loading`
-            : resultingClasses
-        }
-      >
-        <span className="-mt-1">{searchButtonTitle}</span>
-        <img
-          className="ml-1 -mt-1"
-          style={{
-            filter:
-              "invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg) brightness(95%) contrast(92%)",
-          }}
-          src={nextIcon}
-          alt="icon-next"
-        />
-      </button>
+    return (
+      <Fragment key="search-button">
+        {limitType ? (
+          <IncreaseLimitModal
+            modalConfig={increaseRequestLimitSearchModalConfig}
+          />
+        ) : (
+          <button
+            data-tour="start-search"
+            type="button"
+            disabled={isSearchButtonDisabled}
+            onClick={performAnalysis}
+            className={
+              searchContextState.searchBusy
+                ? `${resultingClasses} loading`
+                : resultingClasses
+            }
+          >
+            <span className="-mt-1">{searchButtonTitle}</span>
+            <img
+              className="ml-1 -mt-1"
+              style={{
+                filter:
+                  "invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg) brightness(95%) contrast(92%)",
+              }}
+              src={nextIcon}
+              alt="icon-next"
+            />
+          </button>
+        )}
+      </Fragment>
     );
   };
 

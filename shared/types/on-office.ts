@@ -9,22 +9,25 @@ import {
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 
+// TODO remove _10 products in future
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
   OPEN_AI = "OPEN_AI",
-  OPEN_AI_50 = "OPEN_AI_50",
+  OPEN_AI_10 = "OPEN_AI_10",
   MAP_IFRAME = "MAP_IFRAME",
-  MAP_IFRAME_50 = "MAP_IFRAME_50",
+  MAP_IFRAME_10 = "MAP_IFRAME_10",
   ONE_PAGE = "ONE_PAGE",
-  ONE_PAGE_50 = "ONE_PAGE_50",
+  ONE_PAGE_10 = "ONE_PAGE_10",
   STATS_EXPORT = "STATS_EXPORT",
-  STATS_EXPORT_50 = "STATS_EXPORT_50",
+  STATS_EXPORT_10 = "STATS_EXPORT_10",
+  SUBSCRIPTION = "SUBSCRIPTION",
 }
 
 export interface IOnOfficeProduct {
   name: string;
   type: OnOfficeProductTypesEnum;
   price: number;
+  image?: string;
   isDisabled?: boolean;
 }
 

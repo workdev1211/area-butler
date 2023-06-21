@@ -1,67 +1,184 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext, useState } from "react";
+import { useHistory } from "react-router-dom";
 
-import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
+import {
+  IApiOnOfficeCreateOrderProduct,
+  IApiOnOfficeCreateOrderReq,
+  IApiOnOfficeCreateOrderRes,
+  IOnOfficeProduct,
+  OnOfficeProductTypesEnum,
+} from "../../../../shared/types/on-office";
 import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
 import { getProductDescription } from "./ProductDescription";
+import { toastError } from "../../shared/shared.functions";
+import { useHttp } from "../../hooks/http";
+import { getOnOfficeProductImage } from "../../shared/on-office.functions";
+import { SearchContext } from "../../context/SearchContext";
 
 interface IProductCardProps {
-  name: string;
-  type: OnOfficeProductTypesEnum;
-  price: number;
-  products: any;
-  onChangeProducts: (products: any) => void;
-  isDisabled?: boolean;
+  products: IOnOfficeProduct[];
 }
 
-const ProductCard: FunctionComponent<IProductCardProps> = ({
-  name,
-  type,
-  price,
-  products,
-  onChangeProducts,
-  isDisabled = false,
-}) => {
-  const isCardDisabled =
-    isDisabled ||
-    (products &&
-      Object.keys(products).some(
-        (productType) =>
-          products[productType as OnOfficeProductTypesEnum].quantity > 0
-      ) &&
-      !(products[type].quantity > 0));
+const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
+
+  const { push: pushHistory } = useHistory();
+  const { post } = useHttp();
+
+  const [productQuantity, setProductQuantity] = useState({
+    ordinary: 0,
+    tenfold: 0,
+  });
+
+  const [mainProduct, tenfoldProduct] = products;
+  const { name, type, price } = mainProduct;
+
+  const isCardDisabled = products.some(({ isDisabled }) => isDisabled);
 
   return (
     <div className="card shadow-lg bg-gray-50">
-      <div className="card-body items-center text-center">
-        {getProductDescription(name, type)}
-        <div className="card-actions items-center justify-between w-full">
-          <div className="flex items-center gap-2">
-            {price !== 0 && (
+      <div className="card-body p-0 gap-2 items-center justify-between">
+        {/* TODO return to the "getOnOfficeProductImage" method and move the image function there */}
+        <img
+          className="w-[256px] h-[256px] rounded-3xl mt-5"
+          src={getOnOfficeProductImage(type)}
+          alt={type}
+          style={{ filter: "drop-shadow(0 0 0.5rem var(--primary))" }}
+        />
+        <div className="flex flex-col gap-2 p-5 h-full justify-between">
+          {getProductDescription(name, type)}
+          <div className="card-actions flex flex-col items-center gap-2">
+            {price !== 0 ? (
               <>
-                <div>Anz.</div>
-                <input
-                  className="input input-bordered h-auto"
-                  type="text"
-                  placeholder="XX"
-                  size={4}
-                  maxLength={5}
-                  disabled={isCardDisabled}
-                  value={products[type].quantity}
-                  onChange={({ target: { value } }) => {
-                    if (!+value && value !== "") {
+                <div className="grid grid-cols-3 items-center gap-2">
+                  <div className="text-left">Einzeladressen:</div>
+                  <input
+                    className="input input-bordered h-auto"
+                    type="text"
+                    placeholder="XX"
+                    size={4}
+                    maxLength={5}
+                    disabled={isCardDisabled}
+                    value={productQuantity.ordinary}
+                    onChange={({ target: { value } }) => {
+                      if (!+value && value !== "") {
+                        return;
+                      }
+
+                      setProductQuantity({ ordinary: +value, tenfold: 0 });
+                    }}
+                  />
+                  <div className="font-bold text-xl">
+                    x {convertPriceToHuman(price)}
+                  </div>
+                  <span className="text-left">10er Karten:</span>
+                  <input
+                    className="input input-bordered h-auto"
+                    type="text"
+                    placeholder="XX"
+                    size={4}
+                    maxLength={5}
+                    disabled={isCardDisabled}
+                    value={productQuantity.tenfold}
+                    onChange={({ target: { value } }) => {
+                      if (!+value && value !== "") {
+                        return;
+                      }
+
+                      setProductQuantity({ ordinary: 0, tenfold: +value });
+                    }}
+                  />
+                  <div className="font-bold text-xl">
+                    x {convertPriceToHuman(tenfoldProduct.price)}
+                  </div>
+                </div>
+                <button
+                  className="btn btn-primary w-48"
+                  onClick={async () => {
+                    const {
+                      ordinary: ordinaryQuantity,
+                      tenfold: tenfoldQuantity,
+                    } = productQuantity;
+
+                    if (!ordinaryQuantity && !tenfoldQuantity) {
+                      toastError(
+                        "Bitte geben Sie die Menge eines der Produkte an."
+                      );
                       return;
                     }
 
-                    onChangeProducts({
-                      ...products,
-                      [type]: { type, quantity: +value },
-                    });
+                    const resultingProducts: IApiOnOfficeCreateOrderProduct[] =
+                      [];
+
+                    // #1 An important note - onOffice ONLY excepts a SINGLE product stored in an array
+                    // #2 else if is used here just in case
+                    if (ordinaryQuantity) {
+                      resultingProducts.push({
+                        type,
+                        quantity: ordinaryQuantity,
+                      });
+                    } else if (tenfoldQuantity) {
+                      resultingProducts.push({
+                        type: tenfoldProduct.type,
+                        quantity: tenfoldQuantity,
+                      });
+                    }
+
+                    const { onOfficeOrderData } = (
+                      await post<
+                        IApiOnOfficeCreateOrderRes,
+                        IApiOnOfficeCreateOrderReq
+                      >("/api/on-office/create-order", {
+                        integrationId: realEstateListing!.integrationId!,
+                        products: resultingProducts,
+                      })
+                    ).data;
+
+                    window.parent.postMessage(
+                      JSON.stringify(onOfficeOrderData),
+                      "*"
+                    );
                   }}
-                />
+                  style={{
+                    padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+                  }}
+                >
+                  Bestellen
+                </button>
               </>
+            ) : type === OnOfficeProductTypesEnum.SUBSCRIPTION ? (
+              <a
+                className="btn w-48"
+                href="mailto:info@areabutler.de"
+                style={{
+                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+                  backgroundColor:
+                    type === OnOfficeProductTypesEnum.SUBSCRIPTION
+                      ? "white"
+                      : "lightgreen",
+                  pointerEvents: isCardDisabled ? "none" : "auto",
+                }}
+              >
+                E-Mail schreiben
+              </a>
+            ) : (
+              <button
+                className="btn w-48"
+                onClick={() => {
+                  pushHistory("/search");
+                }}
+                style={{
+                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+                  backgroundColor: "lightgreen",
+                }}
+                disabled={isCardDisabled}
+              >
+                Karte gratis erstellen
+              </button>
             )}
           </div>
-          <div className="font-bold text-xl">{convertPriceToHuman(price)}</div>
         </div>
       </div>
     </div>
