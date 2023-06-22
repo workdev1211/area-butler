@@ -65,6 +65,7 @@ import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
 @Injectable()
 export class LocationService {
@@ -81,6 +82,7 @@ export class LocationService {
     private readonly overpassDataService: OverpassDataService,
     private readonly openAiService: OpenAiService,
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
   async searchLocation(
@@ -392,7 +394,7 @@ export class LocationService {
     const isIntegrationSnapshot = !snapshotDoc.userId;
 
     if (isIntegrationSnapshot) {
-      this.checkSnapshotIframeExpiration(snapshotDoc);
+      await this.checkIntSnapshotIframeExp(snapshotDoc);
     } else {
       this.checkLocationExpiration(snapshotDoc);
     }
@@ -571,11 +573,21 @@ export class LocationService {
     }
   }
 
-  private checkSnapshotIframeExpiration(
+  private async checkIntSnapshotIframeExp(
     snapshotDoc: SearchResultSnapshotDocument,
-  ): void {
-    const isSnapshotIframeExpired = snapshotDoc?.iframeEndsAt
-      ? dayjs().isAfter(snapshotDoc.iframeEndsAt)
+  ): Promise<void> {
+    let iframeEndsAt = snapshotDoc?.iframeEndsAt;
+
+    if (!iframeEndsAt) {
+      iframeEndsAt = (
+        await this.realEstateListingIntService.findOneOrFailByIntParams(
+          snapshotDoc.integrationParams,
+        )
+      ).integrationParams.iframeEndsAt;
+    }
+
+    const isSnapshotIframeExpired = iframeEndsAt
+      ? dayjs().isAfter(iframeEndsAt)
       : true;
 
     if (isSnapshotIframeExpired) {

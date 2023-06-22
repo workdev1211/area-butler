@@ -5,11 +5,11 @@ import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import { UserService } from '../user/user.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
 import { SubscriptionService } from '../user/subscription.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 
 @ApiTags('embedded-map')
 @Controller('api/location/snapshot/iframe')
@@ -28,7 +28,7 @@ export class EmbeddedMapController {
   @Get(':token')
   async fetchEmbeddedMap(
     @Param('token') token: string,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
+  ): Promise<ApiSearchResultSnapshotResponse> {
     // TODO think about moving to the location service
     const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
 

@@ -231,11 +231,6 @@ const MapPage: FunctionComponent = () => {
       )
     );
 
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
-      payload: snapshotResponse.iframeEndsAt,
-    });
-
     setExportTabProps({
       snapshotId,
       directLink: createDirectLink(snapshotResponse.token),

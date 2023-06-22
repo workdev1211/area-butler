@@ -1,5 +1,4 @@
 import { FunctionComponent, useContext, useState } from "react";
-import dayjs from "dayjs";
 
 import "./OnePageExportModal.scss";
 
@@ -91,11 +90,6 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const user = userState.user as ApiUser;
   const integrationUser = userState.integrationUser as IApiIntegrationUser;
 
-  const isQrCodeAllowed =
-    !integrationUser ||
-    (integrationUser &&
-      !dayjs().isAfter(searchContextState.integrationIframeEndsAt));
-
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
   ).map((c: MapClipping, i) => ({ ...c, selected: i < SCREENSHOT_LIMIT }));
@@ -160,7 +154,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>(
     cachedOnePageState.qrCodeState || {
       snapshotToken,
-      isShownQrCode: isQrCodeAllowed,
+      isShownQrCode: true,
     }
   );
   const [selectableMapClippings, setSelectableMapClippings] = useState<
@@ -480,36 +474,32 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
                 <div className="divider m-0" />
 
-                {isQrCodeAllowed && (
-                  <>
-                    <label className="cursor-pointer label justify-start gap-3 p-0">
-                      <input
-                        type="checkbox"
-                        checked={
-                          selectableMapClippings.length > 0 &&
-                          qrCodeState.isShownQrCode
-                        }
-                        className="checkbox checkbox-primary"
-                        onChange={() => {
-                          const resultingQrCodeState = qrCodeState.isShownQrCode
-                            ? { isShownQrCode: false }
-                            : { snapshotToken, isShownQrCode: true };
+                <label className="cursor-pointer label justify-start gap-3 p-0">
+                  <input
+                    type="checkbox"
+                    checked={
+                      selectableMapClippings.length > 0 &&
+                      qrCodeState.isShownQrCode
+                    }
+                    className="checkbox checkbox-primary"
+                    onChange={() => {
+                      const resultingQrCodeState = qrCodeState.isShownQrCode
+                        ? { isShownQrCode: false }
+                        : { snapshotToken, isShownQrCode: true };
 
-                          setQrCodeState(resultingQrCodeState);
+                      setQrCodeState(resultingQrCodeState);
 
-                          cachingDispatch({
-                            type: CachingActionTypesEnum.SET_ONE_PAGE,
-                            payload: { qrCodeState: resultingQrCodeState },
-                          });
-                        }}
-                        disabled={selectableMapClippings.length === 0}
-                      />
-                      <span className="label-text">QR-Code</span>
-                    </label>
+                      cachingDispatch({
+                        type: CachingActionTypesEnum.SET_ONE_PAGE,
+                        payload: { qrCodeState: resultingQrCodeState },
+                      });
+                    }}
+                    disabled={selectableMapClippings.length === 0}
+                  />
+                  <span className="label-text">QR-Code</span>
+                </label>
 
-                    <div className="divider m-0" />
-                  </>
-                )}
+                <div className="divider m-0" />
 
                 <OnePageMapClippingSelection
                   selectableMapClippings={selectableMapClippings}

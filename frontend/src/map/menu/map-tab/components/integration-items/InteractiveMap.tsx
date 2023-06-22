@@ -50,7 +50,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   const {
     searchContextState: {
       integrationSnapshotId,
-      integrationIframeEndsAt,
+      // integrationIframeEndsAt,
       responseToken,
       responseConfig: config,
     },
@@ -65,9 +65,9 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   const [isShownModal, setIsShownModal] = useState(false);
 
   const directLink = createDirectLink(responseToken);
-  const isIntegrationIframeExpired = integrationIframeEndsAt
-    ? dayjs().isAfter(integrationIframeEndsAt)
-    : true;
+  // const isIntegrationIframeExpired = integrationIframeEndsAt
+  //   ? dayjs().isAfter(integrationIframeEndsAt)
+  //   : true;
 
   const copyToClipboard = (text: string) => {
     const success = copy(text);
@@ -93,10 +93,10 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
         },
       });
 
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
-        payload: iframeEndsAt,
-      });
+      // searchContextDispatch({
+      //   type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
+      //   payload: iframeEndsAt,
+      // });
 
       toastSuccess("Das Produkt wurde erfolgreich gekauft!");
       setIsShownModal(false);
@@ -177,107 +177,107 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
             Veröffentlichen
           </button>
 
-          {integrationIframeEndsAt && (
-            <div className="text-justify">
-              Die interaktive Karte wird bis zum{" "}
-              {dayjs(integrationIframeEndsAt)
-                .tz("Europe/Berlin")
-                .format("DD-MM-YYYY HH:mm")}{" "}
-              für Sie online gehosted. Verlängerung ist möglich, sprechen Sie
-              uns gerne an.
-            </div>
-          )}
+          {/*{integrationIframeEndsAt && (*/}
+          {/*  <div className="text-justify">*/}
+          {/*    Die interaktive Karte wird bis zum{" "}*/}
+          {/*    {dayjs(integrationIframeEndsAt)*/}
+          {/*      .tz("Europe/Berlin")*/}
+          {/*      .format("DD-MM-YYYY HH:mm")}{" "}*/}
+          {/*    für Sie online gehosted. Verlängerung ist möglich, sprechen Sie*/}
+          {/*    uns gerne an.*/}
+          {/*  </div>*/}
+          {/*)}*/}
 
-          {!isIntegrationIframeExpired && (
-            <>
-              <div className="flex flex-col gap-2">
-                <div className="font-bold">Direktlink</div>
-                <div
-                  className="flex items-center cursor-pointer gap-2 max-w-fit"
-                  onClick={() => {
-                    copyToClipboard(directLink);
-                  }}
-                >
-                  <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                  <span>Kopieren</span>
-                </div>
-                <div
-                  className="flex items-center cursor-pointer gap-2 max-w-fit"
-                  onClick={async () => {
-                    await sendToOnOffice({
-                      fileTitle: "iFrame Direktlink",
-                      url: directLink,
-                      artType: ApiOnOfficeArtTypesEnum.LINK,
-                    });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    src={sendToOnOfficeIcon}
-                    alt="send-to-on-office"
-                  />
-                  <span>An onOffice senden</span>
-                </div>
-              </div>
+          {/*{!isIntegrationIframeExpired && (*/}
+          {/*  <>*/}
+          {/*    <div className="flex flex-col gap-2">*/}
+          {/*      <div className="font-bold">Direktlink</div>*/}
+          {/*      <div*/}
+          {/*        className="flex items-center cursor-pointer gap-2 max-w-fit"*/}
+          {/*        onClick={() => {*/}
+          {/*          copyToClipboard(directLink);*/}
+          {/*        }}*/}
+          {/*      >*/}
+          {/*        <img className="w-6 h-6" src={copyIcon} alt="copy" />*/}
+          {/*        <span>Kopieren</span>*/}
+          {/*      </div>*/}
+          {/*      <div*/}
+          {/*        className="flex items-center cursor-pointer gap-2 max-w-fit"*/}
+          {/*        onClick={async () => {*/}
+          {/*          await sendToOnOffice({*/}
+          {/*            fileTitle: "iFrame Direktlink",*/}
+          {/*            url: directLink,*/}
+          {/*            artType: ApiOnOfficeArtTypesEnum.LINK,*/}
+          {/*          });*/}
+          {/*        }}*/}
+          {/*      >*/}
+          {/*        <img*/}
+          {/*          className="w-6 h-6"*/}
+          {/*          src={sendToOnOfficeIcon}*/}
+          {/*          alt="send-to-on-office"*/}
+          {/*        />*/}
+          {/*        <span>An onOffice senden</span>*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
 
-              <div className="border-b-2 border-black" />
+          {/*    <div className="border-b-2 border-black" />*/}
 
-              <div
-                className="flex max-w-fit items-center cursor-pointer gap-2"
-                onClick={() => {
-                  copyToClipboard(createCodeSnippet(responseToken));
-                }}
-              >
-                <img className="w-6 h-6" src={copyIcon} alt="copy" />
-                <span>iFrame / Widget kopieren</span>
-              </div>
+          {/*    <div*/}
+          {/*      className="flex max-w-fit items-center cursor-pointer gap-2"*/}
+          {/*      onClick={() => {*/}
+          {/*        copyToClipboard(createCodeSnippet(responseToken));*/}
+          {/*      }}*/}
+          {/*    >*/}
+          {/*      <img className="w-6 h-6" src={copyIcon} alt="copy" />*/}
+          {/*      <span>iFrame / Widget kopieren</span>*/}
+          {/*    </div>*/}
 
-              <div className="border-b-2 border-black" />
+          {/*    <div className="border-b-2 border-black" />*/}
 
-              <div className="flex flex-col gap-2">
-                <div className="font-bold">QR-Code</div>
-                <div
-                  className="flex items-center cursor-pointer gap-2 max-w-fit"
-                  onClick={async () => {
-                    saveAs(
-                      await getQrCodeBase64(directLink),
-                      `${qrCodeLabel.replace(/[\s|,]+/g, "-")}-QR-Code.png`
-                    );
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    src={downloadIcon}
-                    alt="download-qr-code"
-                  />
-                  <span>Herunterladen</span>
-                </div>
-                <div
-                  className="flex items-center cursor-pointer gap-2 max-w-fit"
-                  onClick={async () => {
-                    await sendToOnOffice({
-                      filename: `${qrCodeLabel.replace(
-                        /[\s|,]+/g,
-                        "-"
-                      )}-QR-Code.png`,
-                      base64Content: (
-                        await getQrCodeBase64(directLink)
-                      ).replace(/^data:.*;base64,/, ""),
-                      fileTitle: "QR-Code",
-                      artType: ApiOnOfficeArtTypesEnum["QR-CODE"],
-                    });
-                  }}
-                >
-                  <img
-                    className="w-6 h-6"
-                    src={sendToOnOfficeIcon}
-                    alt="send-to-on-office"
-                  />
-                  <span>An onOffice senden</span>
-                </div>
-              </div>
-            </>
-          )}
+          {/*    <div className="flex flex-col gap-2">*/}
+          {/*      <div className="font-bold">QR-Code</div>*/}
+          {/*      <div*/}
+          {/*        className="flex items-center cursor-pointer gap-2 max-w-fit"*/}
+          {/*        onClick={async () => {*/}
+          {/*          saveAs(*/}
+          {/*            await getQrCodeBase64(directLink),*/}
+          {/*            `${qrCodeLabel.replace(/[\s|,]+/g, "-")}-QR-Code.png`*/}
+          {/*          );*/}
+          {/*        }}*/}
+          {/*      >*/}
+          {/*        <img*/}
+          {/*          className="w-6 h-6"*/}
+          {/*          src={downloadIcon}*/}
+          {/*          alt="download-qr-code"*/}
+          {/*        />*/}
+          {/*        <span>Herunterladen</span>*/}
+          {/*      </div>*/}
+          {/*      <div*/}
+          {/*        className="flex items-center cursor-pointer gap-2 max-w-fit"*/}
+          {/*        onClick={async () => {*/}
+          {/*          await sendToOnOffice({*/}
+          {/*            filename: `${qrCodeLabel.replace(*/}
+          {/*              /[\s|,]+/g,*/}
+          {/*              "-"*/}
+          {/*            )}-QR-Code.png`,*/}
+          {/*            base64Content: (*/}
+          {/*              await getQrCodeBase64(directLink)*/}
+          {/*            ).replace(/^data:.*;base64,/, ""),*/}
+          {/*            fileTitle: "QR-Code",*/}
+          {/*            artType: ApiOnOfficeArtTypesEnum["QR-CODE"],*/}
+          {/*          });*/}
+          {/*        }}*/}
+          {/*      >*/}
+          {/*        <img*/}
+          {/*          className="w-6 h-6"*/}
+          {/*          src={sendToOnOfficeIcon}*/}
+          {/*          alt="send-to-on-office"*/}
+          {/*        />*/}
+          {/*        <span>An onOffice senden</span>*/}
+          {/*      </div>*/}
+          {/*    </div>*/}
+          {/*  </>*/}
+          {/*)}*/}
         </div>
       </div>
     </div>

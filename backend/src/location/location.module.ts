@@ -35,6 +35,7 @@ import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntegrationController } from './location-integration.controller';
 import { LocationIntegrationService } from './location-integration.service';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
 @Module({
   imports: [
@@ -63,6 +64,7 @@ import { LocationIntegrationService } from './location-integration.service';
     LocationListener,
     RoutingService,
     RealEstateListingService,
+    RealEstateListingIntService,
     ApiSnapshotService,
     ApiGuard,
     MongoParamPipe,

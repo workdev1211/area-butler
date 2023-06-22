@@ -55,7 +55,6 @@ export interface SearchContextState {
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
   integrationSnapshotId?: string;
-  integrationIframeEndsAt?: Date;
 }
 
 export interface IGotoMapCenter {
@@ -117,7 +116,6 @@ export enum SearchContextActionTypes {
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_INTEGRATION_SNAPSHOT_ID = "SET_INTEGRATION_SNAPSHOT_ID",
-  SET_INTEGRATION_IFRAME_ENDS_AT = "SET_INTEGRATION_IFRAME_ENDS_AT",
 }
 
 type SearchContextActionsPayload = {
@@ -173,7 +171,6 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   // TODO on further expansion move to a new integration context
   [SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID]: string;
-  [SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT]: Date | undefined;
 };
 
 export type SearchContextActions =
@@ -390,9 +387,6 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID: {
       return { ...state, integrationSnapshotId: action.payload };
-    }
-    case SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT: {
-      return { ...state, integrationIframeEndsAt: action.payload };
     }
     default:
       return state;

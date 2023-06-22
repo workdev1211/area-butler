@@ -26,7 +26,7 @@ import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-des
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { LocationIntegrationService } from './location-integration.service';
-import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
+// import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from '../real-estate-listing/inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
@@ -180,33 +180,34 @@ export class LocationIntegrationController {
     );
   }
 
-  @ApiOperation({
-    description:
-      'Unlock iFrame (interactive map) for 1 year for a specific snapshot',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('unlock-iframe/:id')
-  async unlockIframe(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('id') id: string,
-  ): Promise<Date> {
-    // TODO move to the interceptor
-    this.integrationUserService.checkProdContAvailability(
-      integrationUser,
-      OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
-    );
-
-    const { iframeEndsAt } =
-      await this.locationIntegrationService.setIframeDuration(
-        integrationUser,
-        id,
-      );
-
-    await this.integrationUserService.incrementProductUsage(
-      integrationUser,
-      OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
-    );
-
-    return iframeEndsAt;
-  }
+  // TODO remove in future
+  // @ApiOperation({
+  //   description:
+  //     'Unlock iFrame (interactive map) for 1 year for a specific snapshot',
+  // })
+  // @UseInterceptors(InjectIntegrationUserInterceptor)
+  // @Post('unlock-iframe/:id')
+  // async unlockIframe(
+  //   @InjectUser() integrationUser: TIntegrationUserDocument,
+  //   @Param('id') id: string,
+  // ): Promise<Date> {
+  //   // TODO move to the interceptor
+  //   this.integrationUserService.checkProdContAvailability(
+  //     integrationUser,
+  //     OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+  //   );
+  //
+  //   const { iframeEndsAt } =
+  //     await this.locationIntegrationService.setIframeDuration(
+  //       integrationUser,
+  //       id,
+  //     );
+  //
+  //   await this.integrationUserService.incrementProductUsage(
+  //     integrationUser,
+  //     OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+  //   );
+  //
+  //   return iframeEndsAt;
+  // }
 }

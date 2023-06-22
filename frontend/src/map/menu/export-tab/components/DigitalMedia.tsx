@@ -55,10 +55,9 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
   const isIntegrationIframeExpired = integrationType
-    ? !!(
-        realEstateListing?.iframeEndsAt &&
-        dayjs().isAfter(realEstateListing.iframeEndsAt)
-      )
+    ? realEstateListing?.iframeEndsAt
+      ? dayjs().isAfter(realEstateListing.iframeEndsAt)
+      : true
     : false;
 
   const handleUnlock = (): void => {

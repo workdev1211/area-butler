@@ -95,8 +95,8 @@ export const useIntegrationTools = () => {
         { realEstateListingId: realEstateListing.id, actionType }
       );
 
-      // TODO not exact expiration date but it's not relevant for the moment
-      const iframeEndsAt = dayjs().add(6, "months").toDate();
+      // TODO it's not an exact expiration date but it's not relevant at the moment
+      const iframeEndsAt = dayjs().add(6, "months").toJSON();
       let updatedRealEstateListing: ApiRealEstateListing;
 
       switch (actionType) {

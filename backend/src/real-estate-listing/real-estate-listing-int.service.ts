@@ -8,7 +8,7 @@ import {
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
-import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   OnOfficeIntActTypesEnum,
@@ -53,7 +53,7 @@ export class RealEstateListingIntService {
     integrationId,
     integrationUserId,
     integrationType,
-  }: IApiRealEstateIntegrationParams): Promise<RealEstateListingDocument> {
+  }: IApiIntegrationParams): Promise<RealEstateListingDocument> {
     const existingRealEstateListing = await this.realEstateListingModel.findOne(
       {
         'integrationParams.integrationId': integrationId,

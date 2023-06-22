@@ -20,7 +20,6 @@ import { join as joinPath } from 'path';
 
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import { RealEstateListingService } from './real-estate-listing.service';
-import ApiRealEstateListingDto from '../dto/api-real-estate-listing.dto';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserDocument } from '../user/schema/user.schema';
@@ -64,7 +63,7 @@ export class RealEstateListingController extends AuthenticatedController {
   async insertRealEstateListing(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() realEstateListing: ApiUpsertRealEstateListingDto,
-  ): Promise<ApiRealEstateListingDto> {
+  ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
       await this.realEstateListingService.insertRealEstateListing(
         user,
@@ -80,7 +79,7 @@ export class RealEstateListingController extends AuthenticatedController {
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
     @Body() realEstateListing: Partial<ApiUpsertRealEstateListingDto>,
-  ): Promise<ApiRealEstateListingDto> {
+  ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
       await this.realEstateListingService.updateRealEstateListing(
         user,

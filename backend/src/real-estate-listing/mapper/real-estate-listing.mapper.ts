@@ -29,7 +29,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
     integrationId: realEstateListing.integrationParams?.integrationId,
     openAiRequestQuantity:
       realEstateListing.integrationParams?.openAiRequestQuantity,
-    iframeEndsAt: realEstateListing.integrationParams?.iframeEndsAt,
+    iframeEndsAt: realEstateListing.integrationParams?.iframeEndsAt?.toJSON(),
     isOnePageExportActive:
       realEstateListing.integrationParams?.isOnePageExportActive,
     isStatsFullExportActive:

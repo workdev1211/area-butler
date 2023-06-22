@@ -91,14 +91,15 @@ export class LocationIntegrationService {
     };
   }
 
-  async setIframeDuration(
-    integrationUser: TIntegrationUserDocument,
-    snapshotId: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    return this.searchResultSnapshotModel.findByIdAndUpdate(
-      snapshotId,
-      { iframeEndsAt: dayjs().add(6, 'months').toDate() },
-      { new: true },
-    );
-  }
+  // TODO remove in future
+  // async setIframeDuration(
+  //   integrationUser: TIntegrationUserDocument,
+  //   snapshotId: string,
+  // ): Promise<SearchResultSnapshotDocument> {
+  //   return this.searchResultSnapshotModel.findByIdAndUpdate(
+  //     snapshotId,
+  //     { iframeEndsAt: dayjs().add(6, 'months').toDate() },
+  //     { new: true },
+  //   );
+  // }
 }

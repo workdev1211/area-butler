@@ -30,7 +30,7 @@ export interface ApiRealEstateListing {
   belongsToParent: boolean;
   integrationId?: string; // only for integration users
   openAiRequestQuantity?: number;
-  iframeEndsAt?: Date;
+  iframeEndsAt?: string;
   isOnePageExportActive?: boolean;
   isStatsFullExportActive?: boolean;
   externalSource?: ApiRealEstateExtSourcesEnum; // if it was exported from a CRM
