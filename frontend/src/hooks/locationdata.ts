@@ -214,6 +214,7 @@ export const useLocationData = () => {
     const config: ApiSearchResultSnapshotConfig = {
       ...searchContextState.responseConfig,
       defaultActiveGroups,
+      defaultActiveMeans: searchContextState.responseActiveMeans,
     };
 
     const mapZoomLevel = mapRef.current.getZoom();
