@@ -151,7 +151,7 @@ export const useLogin = () => {
   };
 
   const dispatchContextData = ({
-    integrationId,
+    integrationUserId,
     realEstate,
     accessToken,
     config,
@@ -161,6 +161,7 @@ export const useLogin = () => {
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {
+        integrationUserId,
         accessToken,
         availProdContingents,
         config,

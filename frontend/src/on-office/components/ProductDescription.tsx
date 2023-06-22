@@ -33,18 +33,64 @@ export const getProductDescription = (
   }
 };
 
+const MapSnapshotDescription = (name: string) => {
+  return (
+    <>
+      <div className="card-title w-full mb-7 text-center">{name}</div>
+
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://youtu.be/HkLPsfmJdk4"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/page/lageplan"
+          >
+            Mehr Informationen...
+          </a>
+        </div>
+
+        <div className="text-justify">
+          Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit
+          allen Mobilitätsarten, POIs und Distanzen.
+        </div>
+      </div>
+    </>
+  );
+};
+
 const OpenAiDescription = (name: string) => {
   return (
     <>
       <div className="card-title w-full mb-7 text-center">{name}</div>
 
-      <div className="flex flex-col items-start gap-3 h-full">
-        <a target="_blank" rel="noreferrer" href="https://youtu.be/ap13eQuNK9s">
-          <div className="inline-flex items-center gap-2">
-            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-            <div>Mehr Informationen...</div>
-          </div>
-        </a>
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://youtu.be/SF-h7-Z-JVs"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/page/der-turbo-fuer-ihre-immobilienbeschreibungen"
+          >
+            Mehr Informationen...
+          </a>
+        </div>
 
         <div className="flex flex-col text-justify">
           <div>Alles aus P1, plus:</div>
@@ -71,13 +117,25 @@ const MapIframeDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7 text-center">{name}</div>
 
-      <div className="flex flex-col items-start gap-3 h-full">
-        <a target="_blank" rel="noreferrer" href="https://youtu.be/DfFqoe4WYNg">
-          <div className="inline-flex items-center gap-2">
-            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-            <div>Mehr Informationen...</div>
-          </div>
-        </a>
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://youtu.be/CEU2Yp4YMSw"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/page/interaktive-karten"
+          >
+            Mehr Informationen...
+          </a>
+        </div>
 
         <div className="flex flex-col text-justify">
           <div>Alles aus P2, plus:</div>
@@ -102,10 +160,24 @@ const OnePageDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7 text-center">{name}</div>
 
-      <div className="flex flex-col items-start gap-3 h-full">
-        <div className="inline-flex items-center gap-2">
-          <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-          <div>Mehr Informationen...</div>
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://youtu.be/7CwLQvT_KAg"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/page/ki-lage-expose"
+          >
+            Mehr Informationen...
+          </a>
         </div>
 
         <div className="flex flex-col text-justify">
@@ -133,10 +205,24 @@ const StatsExportDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7 text-center">{name}</div>
 
-      <div className="flex flex-col items-start gap-3 h-full">
-        <div className="inline-flex items-center gap-2">
-          <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-          <div>Mehr Informationen...</div>
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://youtu.be/ISHmBL0rbbA"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/page/alle-features"
+          >
+            Mehr Informationen...
+          </a>
         </div>
 
         <div className="flex flex-col text-justify">
@@ -162,41 +248,31 @@ const SubscriptionDescription = (name: string) => {
     <>
       <div className="card-title w-full mb-7 text-center">{name}</div>
 
-      <div className="flex flex-col items-start gap-3 h-full">
-        <a target="_blank" rel="noreferrer" href="https://youtu.be/mbLm2MzKgMQ">
-          <div className="inline-flex items-center gap-2">
-            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-            <div>Mehr Informationen...</div>
-          </div>
-        </a>
+      <div className="flex flex-col items-start gap-5 h-full">
+        <div className="flex justify-center items-center gap-5 w-full">
+          <a
+            target="_blank"
+            rel="noreferrer"
+            href="https://areabutler.de/#pricing"
+          >
+            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
+          </a>
+
+          <a
+            className="link link-hover"
+            target="_blank"
+            rel="noreferrer"
+            href="https://calendly.com/areabutler/30-minuten-area-butler"
+          >
+            Mehr Informationen...
+          </a>
+        </div>
 
         <div className="text-justify">
           In naher Zukunft werden wir auch in onOffice ein flexibles Abo-Modell
           ermöglichen. So werden wir in der Lage sein, einen noch niedrigeren
           Stückpreis anzubieten. Sie haben generelle Fragen oder bereits jetzt
           Interesse an einem Abo? Sprechen Sie uns gerne an:
-        </div>
-      </div>
-    </>
-  );
-};
-
-const MapSnapshotDescription = (name: string) => {
-  return (
-    <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
-
-      <div className="flex flex-col items-start gap-3 h-full">
-        <a target="_blank" rel="noreferrer" href="https://youtu.be/mbLm2MzKgMQ">
-          <div className="inline-flex items-center gap-2">
-            <img className="w-8" src={youtubeIcon} alt="youtube-icon" />{" "}
-            <div>Mehr Informationen...</div>
-          </div>
-        </a>
-
-        <div className="text-justify">
-          Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit
-          allen Mobilitätsarten, POIs und Distanzen.
         </div>
       </div>
     </>

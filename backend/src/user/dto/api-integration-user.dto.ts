@@ -12,6 +12,11 @@ class ApiIntegrationUserDto implements IApiIntegrationUser {
   @Expose()
   @IsNotEmpty()
   @IsString()
+  integrationUserId: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsString()
   accessToken: string;
 
   @Expose()

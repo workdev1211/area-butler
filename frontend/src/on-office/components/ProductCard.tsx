@@ -40,7 +40,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
   return (
     <div className="card shadow-lg bg-gray-50">
       <div className="card-body p-0 gap-2 items-center justify-between">
-        {/* TODO return to the "getOnOfficeProductImage" method and move the image function there */}
+        {/* TODO move the images to the "getProductDescription" method with its ("getOnOfficeProductImage") function */}
         <img
           className="w-[256px] h-[256px] rounded-3xl mt-5"
           src={getOnOfficeProductImage(type)}
@@ -151,7 +151,9 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
             ) : type === OnOfficeProductTypesEnum.SUBSCRIPTION ? (
               <a
                 className="btn w-48"
-                href="mailto:info@areabutler.de"
+                target="_blank"
+                rel="noreferrer"
+                href="https://calendly.com/areabutler/30-minuten-area-butler"
                 style={{
                   padding: "0 var(--btn-padding) 0 var(--btn-padding)",
                   backgroundColor:
@@ -161,7 +163,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
                   pointerEvents: isCardDisabled ? "none" : "auto",
                 }}
               >
-                E-Mail schreiben
+                Demo vereinbaren
               </a>
             ) : (
               <button

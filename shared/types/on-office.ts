@@ -238,7 +238,7 @@ export interface IApiOnOfficeLoginReq {
 }
 
 export interface IApiOnOfficeLoginRes {
-  integrationId: string;
+  integrationUserId: string;
   realEstate: ApiRealEstateListing;
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   accessToken: string;

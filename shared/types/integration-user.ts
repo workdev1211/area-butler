@@ -14,6 +14,7 @@ export interface IApiIntegrationUserSchema {
 }
 
 export interface IApiIntegrationUser {
+  integrationUserId: string;
   accessToken: string;
   config: TApiIntegrationUserConfig;
   availProdContingents?: TApiIntUserAvailProdContingents;

@@ -7,6 +7,7 @@ import ProductCard from "../components/ProductCard";
 import { UserContext } from "../../context/UserContext";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 import { getProductNameByType } from "../../shared/integration.functions";
+import { SearchContext } from "../../context/SearchContext";
 
 export const ProductPage: FunctionComponent = () => {
   const {
@@ -36,11 +37,11 @@ export const ProductPage: FunctionComponent = () => {
       withHorizontalPadding={true}
       isOverriddenActionsTop={true}
     >
-      <div className="flex flex-col gap-10 mt-10">
+      <div className="flex flex-col gap-10 mt-10 items-center lg:items-start">
         {/* Available products */}
 
-        {availProdContingents && (
-          <div className="flex items-center gap-20">
+        {availProdContingents ? (
+          <div className="flex flex-col lg:flex-row items-center gap-5 lg:gap-20">
             <h1 className="font-bold text-xl text-justify">
               Ihr bereits erworbenes Kontingent:
             </h1>
@@ -69,7 +70,14 @@ export const ProductPage: FunctionComponent = () => {
               })}
             </ul>
             <div className="my-0 border-t-2 border-b-0" />
+            <h1 className="font-bold text-xl text-justify">
+              onOffice-Benutzer-ID: {integrationUser?.integrationUserId}
+            </h1>
           </div>
+        ) : (
+          <h1 className="font-bold text-xl text-justify">
+            onOffice-Benutzer-ID: {integrationUser?.integrationUserId}
+          </h1>
         )}
 
         {/* Product list */}

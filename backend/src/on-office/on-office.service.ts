@@ -308,9 +308,9 @@ export class OnOfficeService {
       );
 
     return {
+      integrationUserId,
       availProdContingents,
       realEstate,
-      integrationId: estateId,
       accessToken: extendedClaim,
       config: integrationUser.config,
       latestSnapshot: snapshot
@@ -445,6 +445,7 @@ export class OnOfficeService {
       );
 
     return {
+      integrationUserId: integrationUser.integrationUserId,
       config: integrationUser.config,
       availProdContingents:
         await this.integrationUserService.getAvailProdContingents(
@@ -457,7 +458,6 @@ export class OnOfficeService {
           integrationType: this.integrationType,
         }),
       ),
-      integrationId,
       accessToken,
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(snapshot)
