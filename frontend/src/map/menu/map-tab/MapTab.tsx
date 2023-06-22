@@ -68,7 +68,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
 
   const isStatsExportActive = !!(integrationType
     ? realEstateListing?.isStatsFullExportActive
-    : false);
+    : true);
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
   const backgroundColor =
     responseConfig?.primaryColor || "var(--primary-gradient)";
