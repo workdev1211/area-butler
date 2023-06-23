@@ -1,5 +1,7 @@
 import { FunctionComponent } from "react";
 
+import "./LocalityItem.scss";
+
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -17,9 +19,8 @@ import {
   EntityGroup,
   ResultEntity,
 } from "../../../../../components/SearchResultContainer";
-import "./LocalityItem.scss";
 
-export interface LocalityItemProps {
+interface ILocalityItemProps {
   item: ResultEntity;
   group: EntityGroup;
   onClickTitle: (item: ResultEntity) => void;
@@ -29,7 +30,7 @@ export interface LocalityItemProps {
   transitRoute?: EntityTransitRoute;
 }
 
-const LocalityItem: FunctionComponent<LocalityItemProps> = ({
+const LocalityItem: FunctionComponent<ILocalityItemProps> = ({
   item,
   group,
   onClickTitle,
@@ -97,123 +98,103 @@ export const PreferredLocationItemContent: FunctionComponent<{
   return (
     <>
       <div className="locality-item-content">
-        <div className="flex flex-col gap-2">
-          <div className="font-bold">Routen & Zeiten</div>
-          <div className="flex flex-wrap gap-2 items-center">
-            <label
-              className="cursor-pointer label justify-start gap-2 items-center"
-              key="foot-checkbox-selection"
-            >
-              <input
-                type="checkbox"
-                checked={
-                  route?.show.includes(MeansOfTransportation.WALK) || false
-                }
-                onChange={(event) =>
-                  onToggleRoute(item, MeansOfTransportation.WALK)
-                }
-                className="checkbox checkbox-primary checkbox-xs"
-              />{" "}
-              <span className="label-text">Zu Fuß</span>
-            </label>
-            <label
-              className="cursor-pointer label justify-start gap-2 items-center"
-              key="bike-checkbox-selection"
-            >
-              <input
-                type="checkbox"
-                checked={
-                  route?.show.includes(MeansOfTransportation.BICYCLE) || false
-                }
-                onChange={(event) =>
-                  onToggleRoute(item, MeansOfTransportation.BICYCLE)
-                }
-                className="checkbox checkbox-accent checkbox-xs"
-              />{" "}
-              <span className="label-text">Fahrrad</span>
-            </label>
-            <label
-              className="cursor-pointer label justify-start gap-2 items-center"
-              key="car-checkbox-selection"
-            >
-              <input
-                type="checkbox"
-                checked={
-                  route?.show.includes(MeansOfTransportation.CAR) || false
-                }
-                onChange={(event) =>
-                  onToggleRoute(item, MeansOfTransportation.CAR)
-                }
-                className="checkbox checkbox-xs"
-              />{" "}
-              <span className="label-text">Auto</span>
-            </label>
-            <label
-              className="cursor-pointer label justify-start gap-2 items-center"
-              key="census-data-checkbox-selection"
-            >
-              <input
-                type="checkbox"
-                checked={transitRoute?.show || false}
-                onChange={(event) => onToggleTransitRoute(item)}
-                className="checkbox checkbox-secondary checkbox-xs"
-              />{" "}
-              <span className="label-text">ÖPNV</span>
-            </label>
-          </div>
-        </div>
+        <div className="col-span-full font-bold pl-2 pb-2">Routen & Zeiten</div>
+        <label key="foot-checkbox-selection">
+          <input
+            type="checkbox"
+            checked={route?.show.includes(MeansOfTransportation.WALK) || false}
+            onChange={(event) =>
+              onToggleRoute(item, MeansOfTransportation.WALK)
+            }
+            className="checkbox checkbox-primary checkbox-xs"
+          />{" "}
+          <span className="label-text">Zu Fuß</span>
+        </label>
+        <label key="bike-checkbox-selection">
+          <input
+            type="checkbox"
+            checked={
+              route?.show.includes(MeansOfTransportation.BICYCLE) || false
+            }
+            onChange={(event) =>
+              onToggleRoute(item, MeansOfTransportation.BICYCLE)
+            }
+            className="checkbox checkbox-accent checkbox-xs"
+          />{" "}
+          <span className="label-text">Fahrrad</span>
+        </label>
+        <label key="car-checkbox-selection">
+          <input
+            type="checkbox"
+            checked={route?.show.includes(MeansOfTransportation.CAR) || false}
+            onChange={(event) => onToggleRoute(item, MeansOfTransportation.CAR)}
+            className="checkbox checkbox-xs"
+          />{" "}
+          <span className="label-text">Auto</span>
+        </label>
+        <label key="census-data-checkbox-selection">
+          <input
+            type="checkbox"
+            checked={transitRoute?.show || false}
+            onChange={(event) => onToggleTransitRoute(item)}
+            className="checkbox checkbox-secondary checkbox-xs"
+          />{" "}
+          <span className="label-text">ÖPNV</span>
+        </label>
       </div>
 
-      <div className="locality-item-content">
-        {(route?.show.length || []) > 0 && (
-          <>
+      {(route?.show.length || []) > 0 && transitRoute?.show && (
+        <div className="locality-item-content">
+          {(route?.show.length || []) > 0 && (
+            <>
+              <div className="locality-item-cell">
+                <span className="locality-item-cell-label">Luftlinie</span>
+                <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
+              </div>
+              {route?.show.includes(MeansOfTransportation.WALK) && (
+                <div className="locality-item-cell">
+                  <span className="locality-item-cell-label">Fußweg</span>
+                  <span>
+                    {Number.isNaN(Number(byFootDuration))
+                      ? byFootDuration
+                      : timeToHumanReadable(byFootDuration as number)}
+                  </span>
+                </div>
+              )}
+              {route?.show.includes(MeansOfTransportation.BICYCLE) && (
+                <div className="locality-item-cell">
+                  <span className="locality-item-cell-label">Fahrrad</span>
+                  <span>
+                    {Number.isNaN(Number(byBicycleDuration))
+                      ? byBicycleDuration
+                      : timeToHumanReadable(byBicycleDuration as number)}
+                  </span>
+                </div>
+              )}
+              {route?.show.includes(MeansOfTransportation.CAR) && (
+                <div className="locality-item-cell">
+                  <span className="locality-item-cell-label">Auto</span>
+                  <span>
+                    {Number.isNaN(Number(byCarDuration))
+                      ? byCarDuration
+                      : timeToHumanReadable(byCarDuration as number)}
+                  </span>
+                </div>
+              )}
+            </>
+          )}
+          {transitRoute?.show && (
             <div className="locality-item-cell">
-              <span className="locality-item-cell-label">Luftlinie</span>
-              <span>{distanceToHumanReadable(item.distanceInMeters)}</span>
+              <span className="locality-item-cell-label">ÖPNV</span>
+              <span>
+                {Number.isNaN(Number(transitDuration))
+                  ? transitDuration
+                  : timeToHumanReadable(transitDuration as number)}
+              </span>
             </div>
-            {route?.show.includes(MeansOfTransportation.WALK) && (
-              <div className="locality-item-cell">
-                <span className="locality-item-cell-label">Fußweg</span>
-                <span>
-                  {Number.isNaN(Number(byFootDuration))
-                    ? byFootDuration
-                    : timeToHumanReadable(byFootDuration as number)}
-                </span>
-              </div>
-            )}
-            {route?.show.includes(MeansOfTransportation.BICYCLE) && (
-              <div className="locality-item-cell">
-                <span className="locality-item-cell-label">Fahrrad</span>
-                <span>
-                  {Number.isNaN(Number(byBicycleDuration))
-                    ? byBicycleDuration
-                    : timeToHumanReadable(byBicycleDuration as number)}
-                </span>
-              </div>
-            )}
-            {route?.show.includes(MeansOfTransportation.CAR) && (
-              <div className="locality-item-cell">
-                <span className="locality-item-cell-label">Auto</span>
-                <span>
-                  {Number.isNaN(Number(byCarDuration))
-                    ? byCarDuration
-                    : timeToHumanReadable(byCarDuration as number)}
-                </span>
-              </div>
-            )}
-          </>
-        )}
-        {transitRoute?.show && (
-          <div className="locality-item-cell">
-            <span className="locality-item-cell-label">ÖPNV</span>
-            <span>
-              {Number.isNaN(Number(transitDuration))
-                ? transitDuration
-                : timeToHumanReadable(transitDuration as number)}
-            </span>
-          </div>
-        )}
-      </div>
+          )}
+        </div>
+      )}
     </>
   );
 };

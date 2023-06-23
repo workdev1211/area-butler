@@ -1,5 +1,7 @@
 import { FunctionComponent, useContext, useState } from "react";
 
+import "./CategoryContent.scss";
+
 import distanceIcon from "../../../../assets/icons/icons-32-x-32-illustrated-ic-distance.svg";
 import walkIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bicycleIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -19,7 +21,7 @@ import {
   SearchContextActionTypes,
 } from "../../../../context/SearchContext";
 
-export interface CategoryContentProps {
+interface ICategoryContentProps {
   entityGroup: EntityGroup;
   routes: EntityRoute[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
@@ -28,7 +30,7 @@ export interface CategoryContentProps {
   isListOpen?: boolean;
 }
 
-const CategoryContent: FunctionComponent<CategoryContentProps> = ({
+const CategoryContent: FunctionComponent<ICategoryContentProps> = ({
   entityGroup,
   routes,
   toggleRoute,
@@ -59,27 +61,27 @@ const CategoryContent: FunctionComponent<CategoryContentProps> = ({
   return (
     <div className="collapse-content">
       <div className="mean-items">
-        <div className="item">
+        <div>
           <img src={distanceIcon} alt="icon-distance" />
           Luftlinie
         </div>
-        <div className="item">
+        <div>
           <img src={walkIcon} alt="icon-walk" />
           Fußweg
         </div>
-        <div className="item">
+        <div>
           <img src={bicycleIcon} alt="icon-bicycle" />
           Fahrrad
         </div>
-        <div className="item">
+        <div>
           <img src={carIcon} alt="icon-car" />
           Auto
         </div>
       </div>
       {isListOpen &&
-        entityGroup.items.slice(0, localityPagination).map((item, index) => (
+        entityGroup.items.slice(0, localityPagination).map((item, i) => (
           <LocalityItem
-            key={`${entityGroup.title}-${index}`}
+            key={`${entityGroup.title}-${i}`}
             item={item}
             group={entityGroup}
             onClickTitle={(item) => {

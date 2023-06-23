@@ -1,0 +1,17 @@
+.mean-items {
+  border-bottom: 2px solid var(--base-bright-silver);
+  padding: var(--locality-py) var(--locality-pr) var(--locality-py)
+    var(--locality-pl) !important;
+  grid-template-columns: repeat(4, 1fr);
+  @apply grid items-center;
+
+  div {
+    border-right: 1px solid var(--base-bright-silver);
+    @apply flex text-tiny font-medium gap-2 pl-2;
+
+    img {
+      width: 20px;
+      height: 20px;
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { FunctionComponent } from "react";
 
 import "./PreferredLocationsModal.scss";
+
 import {
   EntityGroup,
   ResultEntity,
@@ -14,7 +15,7 @@ import CloseCross from "../../../assets/icons/cross.svg";
 import CategoryContent from "../components/menu-item/CategoryContent";
 import { preferredLocationsTitle } from "../../../shared/shared.functions";
 
-export interface PreferredLocationsModalProps {
+interface IPreferredLocationsModalProps {
   entityGroup: EntityGroup;
   routes: EntityRoute[];
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
@@ -24,7 +25,7 @@ export interface PreferredLocationsModalProps {
 }
 
 const PreferredLocationsModal: FunctionComponent<
-  PreferredLocationsModalProps
+  IPreferredLocationsModalProps
 > = ({
   entityGroup,
   routes,

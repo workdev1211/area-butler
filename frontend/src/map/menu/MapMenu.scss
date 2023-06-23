@@ -13,6 +13,9 @@
   --menu-item-h: 56px;
   --menu-footer-h: 88px;
   --menu-image-w-h: 36px;
+  --locality-py: 10px;
+  --locality-pr: 60px;
+  --locality-pl: 24px;
   @apply absolute;
 
   &.map-menu-open {
@@ -237,27 +240,6 @@
       &.collapse-child-open .collapse-content {
         background: white !important;
         padding: 0;
-      }
-
-      .mean-items {
-        border-bottom: 2px solid var(--base-bright-silver);
-        padding: 10px var(--menu-item-pr) 10px var(--menu-item-pl) !important;
-        @apply flex;
-
-        .item {
-          width: 120px;
-          border-right: 1px solid var(--base-bright-silver);
-          @apply flex items-center gap-2 text-tiny font-medium pl-6;
-          &:first-of-type {
-            @apply pl-0;
-          }
-
-          img {
-            height: 20px;
-            width: 20px;
-            @apply pr-1;
-          }
-        }
       }
     }
 
