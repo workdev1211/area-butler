@@ -11,8 +11,7 @@ import {
   RealEstateContext,
 } from "../context/RealEstateContext";
 import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
-import { localStorageSearchContext } from "../../../shared/constants/constants";
-import { SearchContextState } from "context/SearchContext";
+import { SearchContext } from "context/SearchContext";
 
 export interface RealEstatePageRouterProps {
   realEstateId: string;
@@ -23,7 +22,11 @@ const defaultRealEstate: Partial<ApiRealEstateListing> = {
 };
 
 const RealEstatePage: FunctionComponent = () => {
+  const {
+    searchContextState: { storedContextState },
+  } = useContext(SearchContext);
   const { realEstateState, realEstateDispatch } = useContext(RealEstateContext);
+
   const { get } = useHttp();
   const { realEstateId } = useParams<RealEstatePageRouterProps>();
 
@@ -36,18 +39,10 @@ const RealEstatePage: FunctionComponent = () => {
     useState<Partial<ApiRealEstateListing>>(initialRealEstate);
   const [busy, setBusy] = useState(false);
 
-  const searchContextFromLocalStorageString = window.localStorage.getItem(
-    localStorageSearchContext
-  );
-
-  if (realEstateId === "from-result" && searchContextFromLocalStorageString) {
-    const searchContextFromLocalStorage = JSON.parse(
-      searchContextFromLocalStorageString!
-    ) as SearchContextState;
-
+  if (realEstateId === "from-result" && storedContextState) {
     initialRealEstate = {
       ...initialRealEstate,
-      address: searchContextFromLocalStorage.placesLocation?.label,
+      address: storedContextState.address,
     };
   }
 

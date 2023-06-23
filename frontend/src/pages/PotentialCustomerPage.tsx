@@ -10,8 +10,7 @@ import {
 import { ApiPotentialCustomer } from "../../../shared/types/potential-customer";
 import PotentialCustomerFormHandler from "../potential-customer/PotentialCustomerFormHandler";
 import BackButton from "../layout/BackButton";
-import { localStorageSearchContext } from "../../../shared/constants/constants";
-import { SearchContextState } from "context/SearchContext";
+import { SearchContext } from "context/SearchContext";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 
 export interface PotentialCustomerPageRouterProps {
@@ -25,29 +24,23 @@ const defaultCustomer: Partial<ApiPotentialCustomer> = {
 };
 
 const PotentialCustomerPage: FunctionComponent = () => {
+  const {
+    searchContextState: { storedContextState },
+  } = useContext(SearchContext);
   const { potentialCustomerState, potentialCustomerDispatch } = useContext(
     PotentialCustomerContext
-  );
-  const searchContextFromLocalStorageString = window.localStorage.getItem(
-    localStorageSearchContext
   );
 
   const { customerId } = useParams<PotentialCustomerPageRouterProps>();
   const isNewCustomer = customerId === "new" || customerId === "from-result";
   let initialCustomer = { ...defaultCustomer };
 
-  if (customerId === "from-result" && searchContextFromLocalStorageString) {
-    const searchContextFromLocalStorage = JSON.parse(
-      searchContextFromLocalStorageString!
-    ) as SearchContextState;
-
+  if (customerId === "from-result" && storedContextState) {
     initialCustomer = {
       ...initialCustomer,
-      preferredLocations: searchContextFromLocalStorage.preferredLocations,
-      routingProfiles: searchContextFromLocalStorage.transportationParams,
-      preferredAmenities: searchContextFromLocalStorage.localityParams.map(
-        (l) => l.name
-      ),
+      preferredLocations: storedContextState.preferredLocations,
+      routingProfiles: storedContextState.routingProfiles,
+      preferredAmenities: storedContextState.preferredAmenities,
     };
   }
 

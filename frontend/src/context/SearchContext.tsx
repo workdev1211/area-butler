@@ -10,6 +10,7 @@ import {
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
+  OsmName,
   TransportationParam,
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
@@ -23,6 +24,13 @@ import { TLocationIndexData } from "../hooks/locationindexdata";
 export interface MapClipping {
   zoomLevel: number;
   mapClippingDataUrl: string;
+}
+
+interface IStoredContextState {
+  preferredLocations?: ApiPreferredLocation[];
+  routingProfiles?: TransportationParam[];
+  preferredAmenities?: OsmName[];
+  address?: string;
 }
 
 export interface SearchContextState {
@@ -55,6 +63,7 @@ export interface SearchContextState {
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
   integrationSnapshotId?: string;
+  storedContextState?: IStoredContextState;
 }
 
 export interface IGotoMapCenter {
@@ -116,6 +125,7 @@ export enum SearchContextActionTypes {
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_INTEGRATION_SNAPSHOT_ID = "SET_INTEGRATION_SNAPSHOT_ID",
+  SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
 }
 
 type SearchContextActionsPayload = {
@@ -171,6 +181,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   // TODO on further expansion move to a new integration context
   [SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID]: string;
+  [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
 };
 
 export type SearchContextActions =
@@ -387,6 +398,9 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID: {
       return { ...state, integrationSnapshotId: action.payload };
+    }
+    case SearchContextActionTypes.SET_STORED_CONTEXT_STATE: {
+      return { ...state, storedContextState: action.payload };
     }
     default:
       return state;

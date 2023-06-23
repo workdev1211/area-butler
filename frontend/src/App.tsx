@@ -33,12 +33,12 @@ import FeedbackModal from "./components/FeedbackModal";
 // import MaintenanceModal from "./components/MaintenanceModal";
 
 Sentry.init({
-    dsn: process.env.REACT_APP_SENTRY_DSN,
-    environment: process.env.REACT_APP_SENTRY_ENV,
-    tracesSampleRate: 1.0,
-    debug: true,
-    attachStacktrace: true,
-    autoSessionTracking: false
+  dsn: process.env.REACT_APP_SENTRY_DSN,
+  environment: process.env.REACT_APP_SENTRY_ENV,
+  tracesSampleRate: 1.0,
+  debug: true,
+  attachStacktrace: true,
+  autoSessionTracking: false,
 });
 
 const LoadingMessage = () => <div>Seite wird geladen...</div>;
