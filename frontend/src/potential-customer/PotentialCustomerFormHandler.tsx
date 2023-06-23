@@ -23,7 +23,7 @@ export const mapFormToApiUpsertPotentialCustomer = (
     email: values.email,
     preferredAmenities: values.preferredAmenities,
     routingProfiles: values.routingProfiles,
-    preferredLocations: values.preferredLocations.filter(
+    preferredLocations: values.preferredLocations?.filter(
       (pl: ApiPreferredLocation) => !!pl.title && !!pl.address
     ),
     realEstateCharacteristics: values.realEstateCharacteristics,

@@ -50,7 +50,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {!questionnaire && (
               <Input
-                label="Name des Interessenten"
+                label="Name der Zielgruppe"
                 name="name"
                 type="text"
                 onChange={(newValue) => {
@@ -63,21 +63,21 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
                 className="input input-bordered w-full"
               />
             )}
-            {!questionnaire && (
-              <Input
-                label="Email-Adresse des Interessenten"
-                name="email"
-                type="text"
-                onChange={(newValue) => {
-                  setCustomer({
-                    ...customer,
-                    email: newValue.target.value,
-                  });
-                }}
-                placeholder="Email"
-                className="input input-bordered w-full"
-              />
-            )}
+            {/*{!questionnaire && (*/}
+            {/*  <Input*/}
+            {/*    label="Email-Adresse des Interessenten"*/}
+            {/*    name="email"*/}
+            {/*    type="text"*/}
+            {/*    onChange={(newValue) => {*/}
+            {/*      setCustomer({*/}
+            {/*        ...customer,*/}
+            {/*        email: newValue.target.value,*/}
+            {/*      });*/}
+            {/*    }}*/}
+            {/*    placeholder="Email"*/}
+            {/*    className="input input-bordered w-full"*/}
+            {/*  />*/}
+            {/*)}*/}
           </div>
           <div className="my-6 flex flex-col gap-6">
             <strong>

@@ -19,7 +19,7 @@ export interface PotentialCustomerPageRouterProps {
 }
 
 const defaultCustomer: Partial<ApiPotentialCustomer> = {
-  name: "Neuer Interessent",
+  name: "Neue Zielgruppe",
   preferredLocations: [],
   routingProfiles: [],
 };
