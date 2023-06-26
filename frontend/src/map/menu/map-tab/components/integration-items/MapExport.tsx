@@ -21,7 +21,7 @@ import {
   UserActionTypes,
   UserContext,
 } from "../../../../../context/UserContext";
-import { useIntegrationTools } from "../../../../../hooks/integrationtools";
+// import { useIntegrationTools } from "../../../../../hooks/integrationtools";
 import { useHttp } from "../../../../../hooks/http";
 import { ConfigContext } from "../../../../../context/ConfigContext";
 
@@ -38,7 +38,7 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
   const { userDispatch } = useContext(UserContext);
 
   const { post } = useHttp();
-  const { checkProdContAvailByAction } = useIntegrationTools();
+  // const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [isMapExportOpen, setIsMapExportOpen] = useState(false);
   const [isShownModal, setIsShownModal] = useState(false);
@@ -54,13 +54,13 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
       toastSuccess("Das Produkt wurde erfolgreich gekauft!");
       setIsShownModal(false);
 
-      userDispatch({
-        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
-        payload: {
-          integrationType: integrationType!,
-          actionType: OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
-        },
-      });
+      // userDispatch({
+      //   type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+      //   payload: {
+      //     integrationType: integrationType!,
+      //     actionType: OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE,
+      //   },
+      // });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
@@ -141,13 +141,13 @@ const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
                 return;
               }
 
-              if (
-                checkProdContAvailByAction(
-                  OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
-                )
-              ) {
-                setIsShownModal(true);
-              }
+              // if (
+              //   checkProdContAvailByAction(
+              //     OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
+              //   )
+              // ) {
+              //   setIsShownModal(true);
+              // }
             }}
           >
             <img

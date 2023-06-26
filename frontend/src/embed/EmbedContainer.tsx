@@ -133,13 +133,8 @@ const EmbedContainer: FunctionComponent = () => {
     };
 
     void fetchData();
-  }, [
-    setMapBoxToken,
-    setResult,
-    setSearchConfig,
-    setUserPoiIcons,
-    searchContextDispatch,
-  ]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   useEffect(() => {
     if (!result || !searchConfig) {
@@ -244,7 +239,7 @@ const EmbedContainer: FunctionComponent = () => {
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, searchConfig, searchContextDispatch]);
+  }, [result, searchConfig]);
 
   const handleClick = () => {
     if (

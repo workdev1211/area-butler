@@ -4,7 +4,6 @@ import dayjs from "dayjs";
 
 import { ConfigContext } from "../context/ConfigContext";
 import { UserActionTypes, UserContext } from "../context/UserContext";
-import { checkProdContAvailability } from "../shared/integration.functions";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import {
   IApiUnlockIntProductReq,
@@ -12,7 +11,6 @@ import {
 } from "../../../shared/types/integration";
 import {
   IApiOnOfficeUploadFileReq,
-  OnOfficeIntActTypesEnum,
   TOnOfficeIntActTypes,
 } from "../../../shared/types/on-office";
 import { useHttp } from "./http";
@@ -21,6 +19,9 @@ import {
   SearchContextActionTypes,
 } from "../context/SearchContext";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
+import { getAvailProdContType } from "../../../shared/functions/integration.functions";
+import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -36,29 +37,22 @@ export const useIntegrationTools = () => {
   const history = useHistory();
   const { post } = useHttp();
 
-  // should be handled via the true response to avoid race condition
-  const checkProdContAvailByAction = (
-    actionType: TIntegrationActionTypes,
-    additionalCondition = true
-  ): boolean => {
-    if (
-      integrationType &&
-      actionType &&
-      additionalCondition &&
-      !checkProdContAvailability(
-        integrationType!,
-        actionType,
-        integrationUser!.availProdContingents
-      )
-    ) {
-      toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
-        history.push("/products");
-      });
+  const getAvailProdContTypeOrFail = (
+    actionType: TIntegrationActionTypes
+  ): ApiIntUserOnOfficeProdContTypesEnum | undefined => {
+    const availProdContType = getAvailProdContType(
+      integrationType!,
+      actionType,
+      integrationUser?.availProdContingents
+    );
 
-      return false;
+    if (availProdContType) {
+      return availProdContType;
     }
 
-    return true;
+    toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
+      history.push("/products");
+    });
   };
 
   const sendToOnOffice = async (
@@ -87,6 +81,12 @@ export const useIntegrationTools = () => {
       return;
     }
 
+    const availProdContType = getAvailProdContTypeOrFail(actionType);
+
+    if (!availProdContType) {
+      return;
+    }
+
     const errorMessage = "Das Produkt wurde nicht freigeschaltet!";
 
     try {
@@ -95,35 +95,45 @@ export const useIntegrationTools = () => {
         { realEstateListingId: realEstateListing.id, actionType }
       );
 
-      // TODO it's not an exact expiration date but it's not relevant at the moment
+      // it's not an exact expiration date, but it's not relevant for the moment
       const iframeEndsAt = dayjs().add(6, "months").toJSON();
       let updatedRealEstateListing: ApiRealEstateListing;
 
-      switch (actionType) {
-        // TODO a blank for future
-        case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+      switch (availProdContType) {
+        case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {
           updatedRealEstateListing = {
             ...realEstateListing,
-            iframeEndsAt,
+            openAiRequestQuantity: initOpenAiReqQuantity,
           };
           break;
         }
 
-        case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+        case ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME: {
+          updatedRealEstateListing = {
+            ...realEstateListing,
+            iframeEndsAt,
+            openAiRequestQuantity: initOpenAiReqQuantity,
+          };
+          break;
+        }
+
+        case ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE: {
           updatedRealEstateListing = {
             ...realEstateListing,
             iframeEndsAt,
             isOnePageExportActive: true,
+            openAiRequestQuantity: initOpenAiReqQuantity,
           };
           break;
         }
 
-        case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+        case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
           updatedRealEstateListing = {
             ...realEstateListing,
             iframeEndsAt,
             isOnePageExportActive: true,
             isStatsFullExportActive: true,
+            openAiRequestQuantity: initOpenAiReqQuantity,
           };
           break;
         }
@@ -140,10 +150,7 @@ export const useIntegrationTools = () => {
 
       userDispatch({
         type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
-        payload: {
-          integrationType: integrationType!,
-          actionType: actionType,
-        },
+        payload: availProdContType,
       });
 
       toastSuccess("Das Produkt wurde erfolgreich gekauft!");
@@ -154,8 +161,8 @@ export const useIntegrationTools = () => {
   };
 
   return {
-    checkProdContAvailByAction,
     sendToOnOffice,
+    getAvailProdContTypeOrFail,
     unlockProduct,
   };
 };

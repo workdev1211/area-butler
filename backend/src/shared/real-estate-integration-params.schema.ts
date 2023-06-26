@@ -26,7 +26,7 @@ export class RealEstateIntegrationParams
   @Prop({ type: Number, default: 0 })
   openAiRequestQuantity: number;
 
-  // TODO a blank for future
+  // TODO a blank for the future
   @Prop({ type: Date })
   iframeEndsAt: Date;
 

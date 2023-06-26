@@ -6,11 +6,9 @@ import {
   ApiUserRequests,
   IApiUserApiConnectionSettingsReq,
 } from "../../../shared/types/types";
-import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
 import {
+  ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUser,
-  IIntUserContextDecrAvailProdCont,
-  TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
 
 export interface UserState {
@@ -56,7 +54,7 @@ export enum UserActionTypes {
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
   [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser;
-  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: IIntUserContextDecrAvailProdCont;
+  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: ApiIntUserOnOfficeProdContTypesEnum;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {
@@ -96,16 +94,11 @@ export const userReducer = (
 
       const integrationUser = { ...state.integrationUser };
 
-      const productContingentType = getProdContTypeByActType(
-        action.payload.integrationType,
-        action.payload.actionType
-      ) as TApiIntUserProdContTypes;
-
-      if (!integrationUser.availProdContingents![productContingentType]) {
+      if (!integrationUser.availProdContingents![action.payload]) {
         return state;
       }
 
-      integrationUser.availProdContingents![productContingentType]! -= 1;
+      integrationUser.availProdContingents![action.payload]! -= 1;
 
       return { ...state, integrationUser };
     }

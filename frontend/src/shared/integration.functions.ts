@@ -1,35 +1,12 @@
 import {
-  IntegrationTypesEnum,
-  TIntegrationActionTypes,
-} from "../../../shared/types/integration";
-import { getProdContTypeByActType } from "../../../shared/functions/integration.functions";
-import {
   ApiIntUserOnOfficeProdContTypesEnum,
-  TApiIntUserAvailProdContingents,
-  TApiIntUserAvailProdContTypes,
   TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
 import { allOnOfficeProducts } from "../../../shared/constants/on-office/products";
 
-export const checkProdContAvailability = (
-  integrationType: IntegrationTypesEnum,
-  actionType: TIntegrationActionTypes,
-  availProdContingents?: TApiIntUserAvailProdContingents
-) => {
-  if (!integrationType || !availProdContingents) {
-    return false;
-  }
-
-  const productContingentType = getProdContTypeByActType(
-    integrationType,
-    actionType
-  ) as TApiIntUserProdContTypes;
-
-  return !!availProdContingents[productContingentType];
-};
-
+// TODO think about moving to the product description component
 export const getProductNameByType = (
-  productType: TApiIntUserAvailProdContTypes
+  productType: TApiIntUserProdContTypes
 ): string => {
   switch (productType) {
     case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {

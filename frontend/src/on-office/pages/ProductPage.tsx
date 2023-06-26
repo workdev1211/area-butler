@@ -7,7 +7,8 @@ import ProductCard from "../components/ProductCard";
 import { UserContext } from "../../context/UserContext";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 import { getProductNameByType } from "../../shared/integration.functions";
-import { SearchContext } from "../../context/SearchContext";
+import { copyTextToClipboard } from "../../shared/shared.functions";
+import copyIcon from "../../assets/icons/copy.svg";
 
 export const ProductPage: FunctionComponent = () => {
   const {
@@ -40,45 +41,54 @@ export const ProductPage: FunctionComponent = () => {
       <div className="flex flex-col gap-10 mt-10 items-center lg:items-start">
         {/* Available products */}
 
-        {availProdContingents ? (
-          <div className="flex flex-col lg:flex-row items-center gap-5 lg:gap-20">
-            <h1 className="font-bold text-xl text-justify">
-              Ihr bereits erworbenes Kontingent:
-            </h1>
-            <ul>
-              <li className="flex gap-2 font-bold">
-                <div className="w-[15rem]">Produkt</div>
-                <div>Menge</div>
-              </li>
-              {Object.keys(availProdContingents).map((prodContType) => {
-                return (
-                  <li key={prodContType} className="flex gap-2">
-                    <div className="w-[15rem]">
-                      {getProductNameByType(
-                        prodContType as ApiIntUserOnOfficeProdContTypesEnum
-                      )}
-                    </div>
-                    <div>
-                      {
-                        availProdContingents[
+        <div className="flex flex-col lg:flex-row items-center gap-5 lg:gap-20">
+          {availProdContingents && (
+            <>
+              <h1 className="font-bold text-xl text-justify">
+                Ihr bereits erworbenes Kontingent:
+              </h1>
+              <ul>
+                <li className="flex gap-2 font-bold">
+                  <div className="w-[15rem]">Produkt</div>
+                  <div>Menge</div>
+                </li>
+                {Object.keys(availProdContingents).map((prodContType) => {
+                  return (
+                    <li key={prodContType} className="flex gap-2">
+                      <div className="w-[15rem]">
+                        {getProductNameByType(
                           prodContType as ApiIntUserOnOfficeProdContTypesEnum
-                        ]
-                      }
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-            <div className="my-0 border-t-2 border-b-0" />
-            <h1 className="font-bold text-xl text-justify">
+                        )}
+                      </div>
+                      <div>
+                        {
+                          availProdContingents[
+                            prodContType as ApiIntUserOnOfficeProdContTypesEnum
+                          ]
+                        }
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+              <div className="my-0 border-t-2 border-b-0" />
+            </>
+          )}
+
+          <h1 className="flex font-bold text-xl text-justify gap-2 items-center">
+            <div>
               onOffice-Benutzer-ID: {integrationUser?.integrationUserId}
-            </h1>
-          </div>
-        ) : (
-          <h1 className="font-bold text-xl text-justify">
-            onOffice-Benutzer-ID: {integrationUser?.integrationUserId}
+            </div>
+            <img
+              className="w-6 h-6 cursor-pointer"
+              src={copyIcon}
+              alt="copy-to-clipboard"
+              onClick={() => {
+                copyTextToClipboard(integrationUser?.integrationUserId);
+              }}
+            />
           </h1>
-        )}
+        </div>
 
         {/* Product list */}
 

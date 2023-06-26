@@ -761,7 +761,11 @@ export const getQueryParamsAndUrl = <T>():
   };
 };
 
-export const copyTextToClipboard = (text: string): void => {
+export const copyTextToClipboard = (text?: string): void => {
+  if (!text) {
+    return;
+  }
+
   const isCopied = copy(text);
 
   if (isCopied) {

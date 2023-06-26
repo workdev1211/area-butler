@@ -20,16 +20,9 @@ export interface IApiIntegrationUser {
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 
-export interface IIntUserContextDecrAvailProdCont {
-  integrationType: IntegrationTypesEnum;
-  actionType: TIntegrationActionTypes;
-}
-
 export type TApiIntUserAvailProdContingents = Partial<
-  Record<TApiIntUserAvailProdContTypes, number>
+  Record<TApiIntUserProdContTypes, number>
 >;
-
-export type TApiIntUserAvailProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
@@ -43,6 +36,9 @@ export interface IApiIntUserOnOfficeParams {
   email?: string;
 }
 
+// IMPORTANT
+// The products are arranged in a certain order representing their hierarchy.
+// Please, check the 'getProdContTypeByActType' method for better understanding.
 export enum ApiIntUserOnOfficeProdContTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
   OPEN_AI = "OPEN_AI",

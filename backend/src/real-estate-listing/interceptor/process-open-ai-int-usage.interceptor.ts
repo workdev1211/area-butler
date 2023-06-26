@@ -11,7 +11,7 @@ import { tap, Observable } from 'rxjs';
 import { RealEstateListingService } from '../real-estate-listing.service';
 import { IntegrationUserService } from '../../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
-import { initOpenAiReqQuantity } from '../../../../shared/constants/on-office/products';
+import { RealEstateListingIntService } from '../real-estate-listing-int.service';
 
 @Injectable()
 export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
@@ -19,6 +19,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
 
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
@@ -71,29 +72,36 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
     const { openAiRequestQuantity } = realEstateListing.integrationParams;
 
     if (!openAiRequestQuantity) {
-      this.integrationUserService.checkProdContAvailability(
+      const availProdContType =
+        this.integrationUserService.getAvailProdContTypeOrFail(
+          integrationUser,
+          actionType,
+        );
+
+      await this.realEstateListingIntService.unlockProduct(
         integrationUser,
-        actionType,
+        availProdContType,
+        realEstateListingId,
       );
-
-      // in case of the errors on the following steps
-      realEstateListing.integrationParams.openAiRequestQuantity =
-        initOpenAiReqQuantity;
-
-      await realEstateListing.save();
 
       await this.integrationUserService.incrementProductUsage(
         integrationUser,
-        actionType,
+        availProdContType,
       );
     }
 
-    req.realEstateListing = realEstateListing;
+    const updatedRealEstateListing =
+      await this.realEstateListingService.fetchRealEstateListingById(
+        integrationUser,
+        realEstateListingId,
+      );
+
+    req.realEstateListing = updatedRealEstateListing;
 
     return next.handle().pipe(
       tap(async () => {
-        realEstateListing.integrationParams.openAiRequestQuantity -= 1;
-        await realEstateListing.save();
+        updatedRealEstateListing.integrationParams.openAiRequestQuantity -= 1;
+        await updatedRealEstateListing.save();
       }),
     );
   }

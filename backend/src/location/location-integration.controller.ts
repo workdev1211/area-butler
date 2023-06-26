@@ -180,7 +180,7 @@ export class LocationIntegrationController {
     );
   }
 
-  // TODO remove in future
+  // TODO remove in the future
   // @ApiOperation({
   //   description:
   //     'Unlock iFrame (interactive map) for 1 year for a specific snapshot',

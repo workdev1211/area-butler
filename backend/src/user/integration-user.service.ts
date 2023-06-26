@@ -14,6 +14,7 @@ import {
   TIntegrationActionTypes,
 } from '@area-butler-types/integration';
 import {
+  ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUserProductContingent,
   IApiIntUserCreate,
   // IApiIntUserUpdateParamsAndConfig,
@@ -24,7 +25,7 @@ import {
   TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
-import { getProdContTypeByActType } from '../../../shared/functions/integration.functions';
+import { getAvailProdContType } from '../../../shared/functions/integration.functions';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
@@ -221,7 +222,7 @@ export class IntegrationUserService {
       productContingents &&
       Object.keys(productContingents).reduce(
         (result, productContingentType) => {
-          const remainingQuantity = this.getAvailProdContingent(
+          const remainingQuantity = this.getAvailProdContQuantity(
             productContingents[productContingentType],
             productsUsed ? productsUsed[productContingentType] : 0,
           );
@@ -240,39 +241,26 @@ export class IntegrationUserService {
       : undefined;
   }
 
-  checkProdContAvailability(
+  getAvailProdContTypeOrFail(
     integrationUser: TIntegrationUserDocument,
     actionType: TIntegrationActionTypes,
-  ): void {
-    const productContingentType = getProdContTypeByActType(
+  ): ApiIntUserOnOfficeProdContTypesEnum {
+    const availProdContingents = this.getAvailProdContingents(integrationUser);
+
+    const availProdContType = getAvailProdContType(
       integrationUser.integrationType,
       actionType,
+      availProdContingents,
     );
 
-    if (!productContingentType) {
-      return;
-    }
-
-    if (
-      !integrationUser.productContingents ||
-      !integrationUser.productContingents[productContingentType]
-    ) {
+    if (!availProdContType) {
       throw new HttpException('Please, buy a corresponding product!', 402);
     }
 
-    const remainingQuantity = this.getAvailProdContingent(
-      integrationUser.productContingents[productContingentType],
-      (integrationUser.productsUsed &&
-        integrationUser.productsUsed[productContingentType]) ||
-        0,
-    );
-
-    if (!remainingQuantity) {
-      throw new HttpException('Please, buy a corresponding product!', 402);
-    }
+    return availProdContType;
   }
 
-  private getAvailProdContingent(
+  private getAvailProdContQuantity(
     productContingent: IApiIntegrationUserProductContingent[],
     productUsed: number,
   ): number {
@@ -297,22 +285,13 @@ export class IntegrationUserService {
 
   async incrementProductUsage(
     integrationUser: TIntegrationUserDocument,
-    actionType: TIntegrationActionTypes,
+    prodContType: ApiIntUserOnOfficeProdContTypesEnum,
   ): Promise<TIntegrationUserDocument> {
-    const productContingentType = getProdContTypeByActType(
-      integrationUser.integrationType,
-      actionType,
-    );
-
-    if (!productContingentType) {
-      return integrationUser;
-    }
-
     return this.integrationUserModel.findByIdAndUpdate(
       integrationUser.id,
       {
         $inc: {
-          [`productsUsed.${productContingentType}`]: 1,
+          [`productsUsed.${prodContType}`]: 1,
         },
       },
       { new: true },

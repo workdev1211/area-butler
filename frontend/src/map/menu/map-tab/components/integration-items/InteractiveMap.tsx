@@ -58,7 +58,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   } = useContext(SearchContext);
 
   const { post } = useHttp();
-  const { checkProdContAvailByAction, sendToOnOffice } = useIntegrationTools();
+  // const { checkProdContAvailByAction, sendToOnOffice } = useIntegrationTools();
   const { createDirectLink, createCodeSnippet } = useTools();
 
   const [isInteractiveMapOpen, setIsInteractiveMapOpen] = useState(false);
@@ -85,13 +85,13 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
         )
       ).data;
 
-      userDispatch({
-        type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
-        payload: {
-          integrationType: integrationType!,
-          actionType: OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
-        },
-      });
+      // userDispatch({
+      //   type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
+      //   payload: {
+      //     integrationType: integrationType!,
+      //     actionType: OnOfficeIntActTypesEnum.UNLOCK_IFRAME,
+      //   },
+      // });
 
       // searchContextDispatch({
       //   type: SearchContextActionTypes.SET_INTEGRATION_IFRAME_ENDS_AT,
@@ -165,13 +165,13 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
               height: "calc(var(--btn-height) / 1.5)",
             }}
             onClick={() => {
-              if (
-                checkProdContAvailByAction(
-                  OnOfficeIntActTypesEnum.UNLOCK_IFRAME
-                )
-              ) {
-                setIsShownModal(true);
-              }
+              // if (
+              //   checkProdContAvailByAction(
+              //     OnOfficeIntActTypesEnum.UNLOCK_IFRAME
+              //   )
+              // ) {
+              //   setIsShownModal(true);
+              // }
             }}
           >
             Veröffentlichen

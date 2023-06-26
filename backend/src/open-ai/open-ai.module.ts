@@ -12,6 +12,7 @@ import {
   RealEstateListing,
   RealEstateListingSchema,
 } from '../real-estate-listing/schema/real-estate-listing.schema';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
 @Module({
   imports: [
@@ -22,7 +23,11 @@ import {
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
-  providers: [OpenAiService, RealEstateListingService],
+  providers: [
+    OpenAiService,
+    RealEstateListingService,
+    RealEstateListingIntService,
+  ],
   controllers: [OpenAiController, OpenAiIntegrationController],
   exports: [OpenAiService],
 })

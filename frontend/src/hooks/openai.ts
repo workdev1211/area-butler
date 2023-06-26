@@ -14,8 +14,10 @@ import {
 } from "../context/SearchContext";
 import { toastError } from "../shared/shared.functions";
 import { UserActionTypes, UserContext } from "../context/UserContext";
-import { useIntegrationTools } from "./integrationtools";
 import { ConfigContext } from "../context/ConfigContext";
+import { useIntegrationTools } from "./integrationtools";
+import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
 
 type TOpenAiQuery =
   | IApiOpenAiLocationDescriptionQuery
@@ -29,8 +31,8 @@ export const useOpenAi = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
+  const { getAvailProdContTypeOrFail } = useIntegrationTools();
   const { post } = useHttp();
-  const { checkProdContAvailByAction } = useIntegrationTools();
 
   const isIntegration = !!integrationType;
   const realEstateListing = searchContextState.realEstateListing!;
@@ -73,14 +75,14 @@ export const useOpenAi = () => {
       }
     }
 
-    if (
-      isIntegration &&
-      !checkProdContAvailByAction(
-        openAiQueryType,
-        !realEstateListing.openAiRequestQuantity
-      )
-    ) {
-      return "";
+    let availProdContType: ApiIntUserOnOfficeProdContTypesEnum | undefined;
+
+    if (isIntegration && !realEstateListing.openAiRequestQuantity) {
+      availProdContType = getAvailProdContTypeOrFail(openAiQueryType);
+
+      if (!availProdContType) {
+        return "";
+      }
     }
 
     if (isIntegration && !openAiQuery.realEstateListingId) {
@@ -101,14 +103,11 @@ export const useOpenAi = () => {
     let openAiRequestQuantity = realEstateListing.openAiRequestQuantity;
 
     if (!openAiRequestQuantity) {
-      openAiRequestQuantity = 100;
+      openAiRequestQuantity = initOpenAiReqQuantity;
 
       userDispatch({
         type: UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT,
-        payload: {
-          integrationType: integrationType!,
-          actionType: openAiQueryType,
-        },
+        payload: availProdContType!,
       });
     }
 

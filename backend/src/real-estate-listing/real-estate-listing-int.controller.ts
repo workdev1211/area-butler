@@ -77,20 +77,21 @@ export class RealEstateListingIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() { realEstateListingId, actionType }: ApiUnlockIntProductReqDto,
   ): Promise<void> {
-    this.integrationUserService.checkProdContAvailability(
-      integrationUser,
-      actionType,
-    );
+    const availProdContType =
+      this.integrationUserService.getAvailProdContTypeOrFail(
+        integrationUser,
+        actionType,
+      );
 
     await this.realEstateListingIntService.unlockProduct(
       integrationUser,
+      availProdContType,
       realEstateListingId,
-      actionType,
     );
 
     await this.integrationUserService.incrementProductUsage(
       integrationUser,
-      actionType,
+      availProdContType,
     );
   }
 }

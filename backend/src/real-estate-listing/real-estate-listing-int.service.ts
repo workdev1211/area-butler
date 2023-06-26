@@ -10,11 +10,8 @@ import {
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import {
-  OnOfficeIntActTypesEnum,
-  TOnOfficeIntActTypes,
-} from '@area-butler-types/on-office';
 import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
+import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -71,8 +68,8 @@ export class RealEstateListingIntService {
 
   async unlockProduct(
     integrationUser: TIntegrationUserDocument,
+    availProdContType: ApiIntUserOnOfficeProdContTypesEnum,
     realEstateListingId: string,
-    actionType: TOnOfficeIntActTypes,
   ): Promise<void> {
     const realEstateListing = await this.realEstateListingModel.findById(
       realEstateListingId,
@@ -80,30 +77,31 @@ export class RealEstateListingIntService {
 
     const iframeEndsAt = dayjs().add(6, 'months').toDate();
 
-    // TODO think about moving the OpenAI unlocker here
-    switch (actionType) {
-      // TODO a blank for future
-      case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+    switch (availProdContType) {
+      case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {
         realEstateListing.integrationParams.openAiRequestQuantity =
           initOpenAiReqQuantity;
+        break;
+      }
 
+      case ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME: {
+        realEstateListing.integrationParams.openAiRequestQuantity =
+          initOpenAiReqQuantity;
         realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
         break;
       }
 
-      case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+      case ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE: {
         realEstateListing.integrationParams.openAiRequestQuantity =
           initOpenAiReqQuantity;
-
         realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
         realEstateListing.integrationParams.isOnePageExportActive = true;
         break;
       }
 
-      case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+      case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
         realEstateListing.integrationParams.openAiRequestQuantity =
           initOpenAiReqQuantity;
-
         realEstateListing.integrationParams.iframeEndsAt = iframeEndsAt;
         realEstateListing.integrationParams.isOnePageExportActive = true;
         realEstateListing.integrationParams.isStatsFullExportActive = true;

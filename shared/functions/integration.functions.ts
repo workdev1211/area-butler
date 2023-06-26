@@ -4,6 +4,7 @@ import {
 } from "../types/integration";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
+  TApiIntUserAvailProdContingents,
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
 import {
@@ -51,6 +52,39 @@ export const getProdContTypeByActType = (
       return;
     }
   }
+};
+
+export const getAvailProdContType = (
+  integrationType: IntegrationTypesEnum,
+  actionType: TIntegrationActionTypes,
+  availProdContingents?: TApiIntUserAvailProdContingents,
+): ApiIntUserOnOfficeProdContTypesEnum | undefined => {
+  const prodContType = getProdContTypeByActType(integrationType, actionType);
+
+  if (
+    !availProdContingents ||
+    !prodContType ||
+    prodContType === ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT
+  ) {
+    return;
+  }
+
+  if (availProdContingents[prodContType]) {
+    return prodContType;
+  }
+
+  const onOfficeProdContTypes = Object.values(
+    ApiIntUserOnOfficeProdContTypesEnum
+  );
+
+  const requiredProductPosition = onOfficeProdContTypes.indexOf(prodContType);
+
+  return Object.keys(availProdContingents).find(
+    (key) =>
+      onOfficeProdContTypes.indexOf(
+        key as ApiIntUserOnOfficeProdContTypesEnum
+      ) > requiredProductPosition
+  ) as ApiIntUserOnOfficeProdContTypesEnum;
 };
 
 export const getOpenAiRespLimitByInt = (

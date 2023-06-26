@@ -15,7 +15,6 @@ import {
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
 import { OnOfficeIntActTypesEnum } from "../../../../../../shared/types/on-office";
-import { useIntegrationTools } from "../../../../hooks/integrationtools";
 import { ExportTypeEnum } from "../../../../../../shared/types/export";
 import { statsExportUnlockText } from "../../../../../../shared/constants/on-office/products";
 import reportsIcon from "../../../../assets/icons/map-menu/09-reporte.svg";
@@ -44,8 +43,6 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
     userState: { user },
     userDispatch,
   } = useContext(UserContext);
-
-  const { checkProdContAvailByAction } = useIntegrationTools();
 
   const [isExportAvailable, setIsExportAvailable] = useState(false);
   const [exportType, setExportType] = useState<ExportTypeEnum>();
@@ -122,12 +119,10 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         ? OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
         : OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT;
 
-      if (checkProdContAvailByAction(actionType)) {
-        performUnlock(
-          isOnePageExport ? "Lage-Exposé freischalten?" : statsExportUnlockText,
-          actionType
-        );
-      }
+      performUnlock(
+        isOnePageExport ? "Lage-Exposé freischalten?" : statsExportUnlockText,
+        actionType
+      );
     }
 
     if (!isIntegration) {
@@ -139,6 +134,8 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
         },
       });
     }
+
+    setExportType(undefined);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [exportType]);
