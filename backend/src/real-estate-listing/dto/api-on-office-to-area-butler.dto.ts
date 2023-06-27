@@ -32,7 +32,7 @@ import {
 } from '@area-butler-types/on-office';
 import { areaButlerEstateStatusMapping } from '../../../../shared/constants/real-estate';
 
-interface IApiOnOfficeRealEstateDto extends IApiOnOfficeRealEstate {
+export interface IApiOnOfficeProcessedRealEstate extends IApiOnOfficeRealEstate {
   address: string; // 'address' field comes from our side after the geocoding
   integrationParams?: IApiIntegrationParams;
   // LABELS - we need them for the csv import
@@ -41,6 +41,7 @@ interface IApiOnOfficeRealEstateDto extends IApiOnOfficeRealEstate {
   grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
   energieeffizienzklasse: string; // the label for 'energyClass' field
   immonr: string; // the label for 'objektnr_extern' field
+  areaButlerStatus?: ApiRealEstateStatusEnum; // this field comes from our side
 }
 
 @Exclude()
@@ -57,7 +58,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     ({
       obj: { objekttitel, address },
     }: {
-      obj: IApiOnOfficeRealEstateDto;
+      obj: IApiOnOfficeProcessedRealEstate;
     }): string => objekttitel || address,
     {
       toClassOnly: true,
@@ -91,7 +92,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     ({
       obj: { kaufpreis, waehrung, kaltmiete, warmmiete },
     }: {
-      obj: IApiOnOfficeRealEstateDto;
+      obj: IApiOnOfficeProcessedRealEstate;
     }): ApiRealEstateCost => {
       const price = parseCommaFloat(kaufpreis);
       const coldPrice = parseCommaFloat(kaltmiete);
@@ -135,7 +136,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     ({
       obj,
     }: {
-      obj: IApiOnOfficeRealEstateDto;
+      obj: IApiOnOfficeProcessedRealEstate;
     }): ApiRealEstateCharacteristics => {
       const {
         anzahl_zimmer,
@@ -227,10 +228,15 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
         kaltmiete,
         status2,
         status,
+        areaButlerStatus,
       },
     }: {
-      obj: IApiOnOfficeRealEstateDto;
+      obj: IApiOnOfficeProcessedRealEstate;
     }): ApiRealEstateStatusEnum => {
+      if (areaButlerStatus) {
+        return areaButlerStatus;
+      }
+
       const resultingOnOfficeStatus = status2 || status;
 
       if (typeof resultingOnOfficeStatus === 'string') {
@@ -274,7 +280,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     ({
       obj: { objektnr_extern, immonr, Id, datensatznr },
     }: {
-      obj: IApiOnOfficeRealEstateDto;
+      obj: IApiOnOfficeProcessedRealEstate;
     }): string => objektnr_extern || immonr || Id || datensatznr,
   )
   externalId?: string;

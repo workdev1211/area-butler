@@ -24,7 +24,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
 
   useEffect(() => {
-    const handleEscape = async (e: KeyboardEvent) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
         closeModal();
       }

@@ -173,7 +173,8 @@ interface IApiOnOfficeResponseResultRecord<T> {
 // TODO refactor in regard that some onOffice parameters have different labels for export csvs
 export interface IApiOnOfficeRealEstate {
   Id: string; // the label is "Datensatznr"
-  status2: ApiOnOfficeEstateStatusesEnum; // the label is "Status"
+  // status2: ApiOnOfficeEstateStatusesEnum; // the old definition
+  status2: string; // the label is "Status"
   objekttitel: string; // estate title
   strasse: string; // street name
   hausnummer: string; // building no

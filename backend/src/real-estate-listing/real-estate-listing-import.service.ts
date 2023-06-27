@@ -57,6 +57,10 @@ import {
   ON_OFFICE_ESTATES_PER_PAGE,
   OnOfficeApiService,
 } from '../client/on-office/on-office-api.service';
+import {
+  ApiOnOfficeRealEstStatusByUserEmailsEnum,
+  setRealEstateStatusByUserEmail,
+} from './mapper/real-estate-listing-import.mapper';
 
 interface IListingData {
   listing: unknown;
@@ -402,6 +406,42 @@ export class RealEstateListingImportService {
           'base64',
         );
 
+        // LEFT FOR DEBUGGING PURPOSES
+        // RETURNS THE LIST OF AVAILABLE FIELDS FOR ONOFFICE REAL ESTATE ENTITY
+        // const fieldDescResType = ApiOnOfficeResourceTypesEnum.FIELDS;
+        // const fieldDescActionId = ApiOnOfficeActionIdsEnum.GET;
+        // const fieldDescSignature = this.onOfficeApiService.generateSignature(
+        //   [timestamp, token, fieldDescResType, fieldDescActionId].join(''),
+        //   secret,
+        //   'base64',
+        // );
+        //
+        // const fieldDescRequest: IApiOnOfficeRequest = {
+        //   token,
+        //   request: {
+        //     actions: [
+        //       {
+        //         timestamp,
+        //         hmac: fieldDescSignature,
+        //         hmac_version: 2,
+        //         actionid: fieldDescActionId,
+        //         resourceid: '',
+        //         identifier: '',
+        //         resourcetype: fieldDescResType,
+        //         parameters: {
+        //           labels: true,
+        //           language: 'ENG',
+        //           modules: ['estate'],
+        //         },
+        //       },
+        //     ],
+        //   },
+        // };
+        //
+        // const fieldDescResponse = await this.onOfficeApiService.sendRequest(
+        //   fieldDescRequest,
+        // );
+
         const request: IApiOnOfficeRequest = {
           token,
           request: {
@@ -438,6 +478,7 @@ export class RealEstateListingImportService {
                     'anzahl_balkone',
                     'unterkellert',
                     'vermarktungsart',
+                    'status2',
                   ],
                 },
               },
@@ -532,6 +573,16 @@ export class RealEstateListingImportService {
             if (!place) {
               errorIds.push(realEstate.Id);
               continue;
+            }
+
+            const userEmail = user.email.toLowerCase();
+
+            if (
+              Object.values<string>(
+                ApiOnOfficeRealEstStatusByUserEmailsEnum,
+              ).includes(userEmail)
+            ) {
+              setRealEstateStatusByUserEmail(userEmail, realEstate);
             }
 
             Object.assign(realEstate, {
