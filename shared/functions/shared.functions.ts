@@ -196,3 +196,8 @@ export const replaceUmlautWithEnglish = (text: string): string => {
 
 export const parseCommaFloat = (value: string): number =>
   value && parseFloat(value.replace(",", "."));
+
+export const truncateText = (text: string, limit: number): string =>
+  limit < 4 || text.length <= limit
+    ? text
+    : `${text.substring(0, limit - 3)}...`;

@@ -75,3 +75,5 @@ export const tourPaths = [
 export const integrationTourPaths = ["search", "map"];
 
 export const invertFilter: CSSProperties = { filter: "invert(100%)" };
+
+export const poiNameMaxLength = 40;

@@ -11,6 +11,8 @@ import { ISelectableMapClipping } from "../MapClippingSelection";
 import downArrowIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import OnePageLegendIcon from "./OnePageLegendIcon";
 import { ISortableEntityGroup } from "./OnePageExportModal";
+import { truncateText } from "../../../../shared/functions/shared.functions";
+import { poiNameMaxLength } from "../../shared/shared.constants";
 
 interface IOnePageProps {
   addressDescription: string;
@@ -228,9 +230,10 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
                             item.name || group.title
                           }`}
                         >
-                          {`${i + 1}. ${
-                            item.name || group.title
-                          } (${distanceToHumanReadable(
+                          {`${i + 1}. ${truncateText(
+                            item.name || group.title,
+                            poiNameMaxLength
+                          )} (${distanceToHumanReadable(
                             item.distanceInMeters
                           )})`}
                         </div>

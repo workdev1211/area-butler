@@ -18,6 +18,8 @@ import OnePageLegendIcon from "./OnePageLegendIcon";
 import { ISortableEntityGroup } from "./OnePageExportModal";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { truncateText } from "../../../../shared/functions/shared.functions";
+import { poiNameMaxLength } from "../../shared/shared.constants";
 
 interface IOnePageProps {
   addressDescription: string;
@@ -195,9 +197,10 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
                               item.name || group.title
                             }`}
                           >
-                            {`${i + 1}. ${
-                              item.name || group.title
-                            } (${distanceToHumanReadable(
+                            {`${i + 1}. ${truncateText(
+                              item.name || group.title,
+                              poiNameMaxLength
+                            )} (${distanceToHumanReadable(
                               item.distanceInMeters
                             )})`}
                           </div>

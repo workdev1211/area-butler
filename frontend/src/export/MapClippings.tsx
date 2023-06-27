@@ -5,25 +5,19 @@ import { PdfPage } from "./PdfPage";
 import { QrCode } from "./QrCode";
 import { IQrCodeState } from "../../../shared/types/export";
 
-export interface MapClippingsProps {
+interface IMapClippingsProps {
   mapClippings: ISelectableMapClipping[];
   logo?: string;
   nextPageNumber?: () => string;
   qrCode: IQrCodeState;
 }
 
-export const MapClippings: FunctionComponent<MapClippingsProps> = ({
+export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
   mapClippings,
   logo,
   nextPageNumber = () => "01",
   qrCode,
 }) => {
-  const imageSize = {
-    width: "auto",
-    height: "400px",
-  };
-
-  // TODO change to reduce only
   const mapClippingPairs: ISelectableMapClipping[][] = mapClippings
     .filter((c) => c.selected)
     .reduce(
@@ -33,7 +27,10 @@ export const MapClippings: FunctionComponent<MapClippingsProps> = ({
         index,
         array: ISelectableMapClipping[]
       ) => {
-        if (index % 2 === 0) result.push(array.slice(index, index + 2));
+        if (index % 2 === 0) {
+          result.push(array.slice(index, index + 2));
+        }
+
         return result;
       },
       []
@@ -41,7 +38,7 @@ export const MapClippings: FunctionComponent<MapClippingsProps> = ({
 
   return (
     <>
-      {mapClippingPairs.map((pairs, pairIndex) => (
+      {mapClippingPairs.map((pair, pairIndex) => (
         <PdfPage
           nextPageNumber={nextPageNumber}
           logo={logo}
@@ -53,21 +50,14 @@ export const MapClippings: FunctionComponent<MapClippingsProps> = ({
             )
           }
         >
-          <div className="m-10 flex flex-col gap-12" id="expose-map-clippings">
-            {pairs.map((clipping, clippingIndex) => (
-              <div className="flex-1" key={clippingIndex}>
-                <div className="mt-5" style={imageSize}>
-                  <img
-                    style={{
-                      objectFit: "cover",
-                      height: "100%",
-                      width: "100%",
-                    }}
-                    src={clipping.mapClippingDataUrl}
-                    alt="img-clipping"
-                  />
-                </div>
-              </div>
+          <div id="expose-map-clippings" className="m-10 flex flex-col gap-10">
+            {pair.map((clipping, clippingIndex) => (
+              <img
+                key={clippingIndex}
+                style={{ objectFit: "cover", width: "auto", height: "400px" }}
+                src={clipping.mapClippingDataUrl}
+                alt="img-clipping"
+              />
             ))}
           </div>
         </PdfPage>

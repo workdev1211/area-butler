@@ -77,7 +77,7 @@ const EmbedContainer: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    const handleEscape = async (e: KeyboardEvent) => {
+    const handleEscape = (e: KeyboardEvent) => {
       if (
         e.key === "Escape" &&
         mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()

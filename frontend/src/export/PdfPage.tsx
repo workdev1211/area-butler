@@ -2,41 +2,44 @@ import { FunctionComponent, CSSProperties, ReactNode } from "react";
 
 import areaButlerLogo from "../assets/img/logo.svg";
 
-export interface PdfPageProps {
+interface IPdfPageProps {
   nextPageNumber?: () => string;
   logo?: any;
   title?: string;
   leftHeaderElement?: ReactNode;
 }
 
-export const PdfPage: FunctionComponent<PdfPageProps> = ({
+export const PdfPage: FunctionComponent<IPdfPageProps> = ({
   nextPageNumber = () => "01",
   title,
   children,
   logo = areaButlerLogo,
   leftHeaderElement = <div />,
 }) => {
-  const style = {
+  const style: CSSProperties = {
     pageBreakAfter: "always",
     minHeight: "29.6cm",
-  } as CSSProperties;
-
-  const pageNumber = nextPageNumber();
+  };
 
   return (
     <div className="flex flex-col justify-between" style={style}>
+      {/* HEADER */}
       <div className="flex justify-between items-center py-5 px-10 border-b-2">
         {leftHeaderElement}
         <img className="h-14 w-auto" src={logo} alt="Logo" />
       </div>
+
+      {/* CONTENT */}
       <div className="page flex-1">{children}</div>
+
+      {/* FOOTER */}
       <div className="flex border-t-2 justify-between items-center">
         <div className="py-5 px-10 border-r-2">
           <img className="h-12 w-auto" src={logo} alt="Logo" />
         </div>
         {title && <div className="flex-1 py-5 px-10 text-2xl">{title}</div>}
         <div className="py-5 px-10 text-2xl border-l-2">
-          Seite - {pageNumber}
+          Seite - {nextPageNumber()}
         </div>
       </div>
     </div>

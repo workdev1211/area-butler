@@ -127,6 +127,19 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   );
 
   useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        onClose();
+      }
+    };
+
+    document.addEventListener("keydown", handleEscape);
+
+    return () => document.removeEventListener("keydown", handleEscape);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
     setLegend(getFilteredLegend(filteredEntities));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEntities]);
