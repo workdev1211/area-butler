@@ -8,10 +8,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../../context/SearchContext";
-import {
-  ApiOnOfficeArtTypesEnum,
-  OnOfficeIntActTypesEnum,
-} from "../../../../../../shared/types/on-office";
+import { OnOfficeIntActTypesEnum } from "../../../../../../shared/types/on-office";
 import sendToOnOfficeIcon from "../../../../assets/icons/entrance-alt1.svg";
 import { getQrCodeBase64 } from "../../../../export/QrCode";
 import copyIcon from "../../../../assets/icons/copy.svg";
@@ -24,11 +21,12 @@ import {
   copyTextToClipboard,
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
-import { ConfigContext } from "../../../../context/ConfigContext";
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
 import UnlockProduct from "../../components/UnlockProduct";
 import digitalMediaIcon from "../../../../assets/icons/map-menu/08-digitale-medien.svg";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
+import { AreaButlerExportTypesEnum } from "../../../../../../shared/types/integration-user";
+import { UserContext } from "../../../../context/UserContext";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -45,16 +43,18 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
-  const { integrationType } = useContext(ConfigContext);
   const {
-    searchContextState: { realEstateListing },
+    userState: { integrationUser },
+  } = useContext(UserContext);
+  const {
+    searchContextState: { realEstateListing, responseConfig },
     searchContextDispatch,
   } = useContext(SearchContext);
 
   const { sendToOnOffice } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
-  const isIntegrationIframeExpired = integrationType
+  const isIntegrationIframeExpired = integrationUser
     ? realEstateListing?.iframeEndsAt
       ? dayjs().isAfter(realEstateListing.iframeEndsAt)
       : true
@@ -66,6 +66,24 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       OnOfficeIntActTypesEnum.UNLOCK_IFRAME
     );
   };
+
+  const isIntUserIframeExportAvail = !!(
+    integrationUser?.config.exportMatching &&
+    integrationUser?.config.exportMatching[
+      AreaButlerExportTypesEnum.INLINE_FRAME
+    ]
+  );
+
+  const intUserLinkExportType =
+    integrationUser?.config.exportMatching &&
+    (responseConfig?.showAddress
+      ? integrationUser?.config.exportMatching[
+          AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+        ] && AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+      : integrationUser?.config.exportMatching[
+          AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+        ]) &&
+    AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
 
   return (
     <div
@@ -96,7 +114,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       <div className="collapse-content">
         {!isIntegrationIframeExpired ? (
           <div className="digital-media">
-            {/* iFrame url */}
+            {/* Embedded snapshot url */}
 
             <div>
               <div>
@@ -111,14 +129,22 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={copyIcon} alt="copy" />
                 <span>Kopieren</span>
               </div>
-              {integrationType && (
+              {!!intUserLinkExportType && (
                 <div
-                  onClick={async (): Promise<void> => {
-                    await sendToOnOffice({
-                      fileTitle: "iFrame Direktlink",
-                      url: directLink,
-                      artType: ApiOnOfficeArtTypesEnum.LINK,
+                  onClick={() => {
+                    void sendToOnOffice({
+                      exportType: intUserLinkExportType,
+                      text: directLink,
                     });
+
+                    // The "old" approach of the onOffice link sending
+                    // void sendToOnOffice({
+                    //   exportType: responseConfig?.showAddress
+                    //     ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+                    //     : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
+                    //   fileTitle: "iFrame Direktlink",
+                    //   url: directLink,
+                    // });
                   }}
                 >
                   <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
@@ -145,10 +171,11 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={downloadIcon} alt="download-qr-code" />
                 <span>Herunterladen</span>
               </div>
-              {integrationType && (
+              {integrationUser && (
                 <div
                   onClick={async () => {
-                    await sendToOnOffice({
+                    void sendToOnOffice({
+                      exportType: AreaButlerExportTypesEnum.QR_CODE,
                       filename: `${searchAddress.replace(
                         /[\s|,]+/g,
                         "-"
@@ -157,7 +184,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                         await getQrCodeBase64(directLink)
                       ).replace(/^data:.*;base64,/, ""),
                       fileTitle: "QR-Code",
-                      artType: ApiOnOfficeArtTypesEnum["QR-CODE"],
                     });
                   }}
                 >
@@ -202,13 +228,19 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={copyIcon} alt="copy-iframe" />
                 <span>Kopieren</span>
               </div>
-              {/* TODO will be added in future */}
-              {/*{isIntegration && (*/}
-              {/*  <div onClick={async () => {}}>*/}
-              {/*    <img src={sendToOnOfficeIcon} alt="send-to-on-office" />*/}
-              {/*    <span>onOffice</span>*/}
-              {/*  </div>*/}
-              {/*)}*/}
+              {isIntUserIframeExportAvail && (
+                <div
+                  onClick={() => {
+                    void sendToOnOffice({
+                      exportType: AreaButlerExportTypesEnum.INLINE_FRAME,
+                      text: codeSnippet,
+                    });
+                  }}
+                >
+                  <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
+                  <span>onOffice</span>
+                </div>
+              )}
             </div>
           </div>
         ) : (

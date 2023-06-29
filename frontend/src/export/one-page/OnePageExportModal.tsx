@@ -48,9 +48,9 @@ export const ENTITY_GROUP_LIMIT = 8;
 const GROUP_ITEM_LIMIT = 3;
 
 export interface IExportFlowState {
-  addressDescription: boolean;
+  locationDescription: boolean;
   poiSelection: boolean;
-  qrCodeMapClippings: boolean;
+  mapClippings: boolean;
 }
 
 export interface ISortableEntityGroup extends EntityGroup {
@@ -66,9 +66,9 @@ interface IOnePageExportModalProps {
 }
 
 export const initialExportFlowState: IExportFlowState = {
-  addressDescription: false,
+  locationDescription: false,
   poiSelection: false,
-  qrCodeMapClippings: false,
+  mapClippings: false,
 };
 
 const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
@@ -237,7 +237,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
         <div className="flex flex-col flex-1 h-[35rem] overflow-y-auto">
           <div
             className={`collapse collapse-arrow view-option ${
-              isOpen.addressDescription ? "collapse-open" : "collapse-closed"
+              isOpen.locationDescription ? "collapse-open" : "collapse-closed"
             }`}
           >
             <div
@@ -248,12 +248,12 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               onClick={() => {
                 setIsOpen({
                   ...isOpen,
-                  addressDescription: !isOpen.addressDescription,
+                  locationDescription: !isOpen.locationDescription,
                 });
 
                 setExportFlow({
                   ...exportFlow,
-                  addressDescription: true,
+                  locationDescription: true,
                 });
 
                 cachingDispatch({
@@ -261,7 +261,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                   payload: {
                     exportFlowState: {
                       ...exportFlow,
-                      addressDescription: true,
+                      locationDescription: true,
                     },
                   },
                 });
@@ -367,7 +367,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
 
           <div
             className={`collapse collapse-arrow view-option ${
-              isOpen.qrCodeMapClippings ? "collapse-open" : "collapse-closed"
+              isOpen.mapClippings ? "collapse-open" : "collapse-closed"
             }`}
           >
             <div
@@ -378,12 +378,12 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               onClick={() => {
                 setIsOpen({
                   ...isOpen,
-                  qrCodeMapClippings: !isOpen.qrCodeMapClippings,
+                  mapClippings: !isOpen.mapClippings,
                 });
 
                 setExportFlow({
                   ...exportFlow,
-                  qrCodeMapClippings: true,
+                  mapClippings: true,
                 });
 
                 cachingDispatch({
@@ -391,7 +391,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                   payload: {
                     exportFlowState: {
                       ...exportFlow,
-                      qrCodeMapClippings: true,
+                      mapClippings: true,
                     },
                   },
                 });

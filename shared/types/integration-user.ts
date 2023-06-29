@@ -1,5 +1,6 @@
 import { IntegrationTypesEnum, TIntegrationActionTypes } from "./integration";
 import { ApiShowTour } from "./types";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 
 export interface IApiIntegrationUserSchema {
   integrationUserId: string;
@@ -97,7 +98,26 @@ export type TApiIntegrationUserConfig = {
   logo?: string;
   mapIcon?: string;
   showTour: ApiShowTour;
+  exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsParamNames, TApiIntUserUsageStatisticsMetrics>
 >;
+
+export type TAreaButlerExportTypes =
+  | OpenAiQueryTypeEnum
+  | AreaButlerExportTypesEnum;
+
+export enum AreaButlerExportTypesEnum {
+  EMBEDDED_LINK_WITH_ADDRESS = "EMBEDDED_LINK_WITH_ADDRESS",
+  EMBEDDED_LINK_WO_ADDRESS = "EMBEDDED_LINK_WO_ADDRESS",
+  QR_CODE = "QR_CODE",
+  INLINE_FRAME = "INLINE_FRAME",
+  ONE_PAGE_PNG = "ONE_PAGE_PNG",
+  SCREENSHOT = "SCREENSHOT",
+}
+
+export interface IIntUserExpMatchParams {
+  fieldId: string;
+  maxTextLength?: number;
+}

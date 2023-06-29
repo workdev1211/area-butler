@@ -17,10 +17,10 @@ import { IPoiIcon } from "../../shared/shared.types";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integrationtools";
-import { ApiOnOfficeArtTypesEnum } from "../../../../shared/types/on-office";
 import { ISortableEntityGroup } from "./OnePageExportModal";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 
 interface IOnePageDownloadProps {
   addressDescription: string;
@@ -183,16 +183,14 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
           className="btn btn-primary btn-sm"
           disabled={downloadButtonDisabled}
           onClick={async () => {
-            await sendToOnOffice({
+            void sendToOnOffice({
+              exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
               filename: `${documentTitle}.png`,
-              base64Content: (
-                await getRenderedPngImage()
-              ).replace(/^data:.*;base64,/, ""),
+              base64Content: (await getRenderedPngImage()).replace(
+                /^data:.*;base64,/,
+                ""
+              ),
               fileTitle: documentTitle,
-              artType: ApiOnOfficeArtTypesEnum.FOTO,
-              // TODO ask Michael how to use FOTO_GROSS instead of FOTO
-              // "filesize": 8364316,
-              // artType: ApiOnOfficeArtTypesEnum.FOTO_GROSS,
             });
           }}
         >

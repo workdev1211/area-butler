@@ -2,10 +2,8 @@ import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { toastSuccess } from "../shared/shared.functions";
-import { SearchContext } from "../context/SearchContext";
 import { UserContext } from "../context/UserContext";
-import { useHttp } from "../hooks/http";
+import { useIntegrationTools } from "../hooks/integrationtools";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -21,11 +19,8 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
-  const {
-    searchContextState: { realEstateListing },
-  } = useContext(SearchContext);
 
-  const { patch } = useHttp();
+  const { sendToOnOffice } = useIntegrationTools();
 
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
@@ -72,13 +67,12 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
             <button
               className="btn bg-primary-gradient max-w-fit self-end"
               onClick={(): void => {
-                toastSuccess("Die Daten wurden an onOffice gesendet!");
                 setIsCopyTextButtonDisabled(true);
 
-                void patch(
-                  `/api/on-office/estate/${realEstateListing?.integrationId}`,
-                  { queryType, queryResponse }
-                );
+                void sendToOnOffice({
+                  exportType: queryType!,
+                  text: queryResponse!,
+                });
               }}
               disabled={isCopyTextButtonDisabled}
             >

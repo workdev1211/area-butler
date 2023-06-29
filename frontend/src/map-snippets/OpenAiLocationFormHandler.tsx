@@ -84,7 +84,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
           <h3>Ihr KI-generierter Textvorschlag</h3>
           <div className="text-justify">{locationDescription}</div>
           <div
-            className="mt-3 inline-flex gap-2 cursor-pointer items-center mt-3"
+            className="inline-flex gap-2 cursor-pointer items-center mt-3"
             onClick={() => {
               const success = copy(locationDescription);
 

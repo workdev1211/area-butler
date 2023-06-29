@@ -11,7 +11,7 @@ import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../../shared/types/integration";
 import { useIntegrationTools } from "../../../hooks/integrationtools";
-import { ApiOnOfficeArtTypesEnum } from "../../../../../shared/types/on-office";
+import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
 
 interface IMapClippingsCollapsableProps {
   clippings: MapClipping[];
@@ -84,13 +84,13 @@ const MapClippingsCollapsable: FunctionComponent<
                 className="flex cursor-pointer"
                 onClick={async () => {
                   await sendToOnOffice({
+                    exportType: AreaButlerExportTypesEnum.SCREENSHOT,
                     filename: `${parsedAddress}-Kartenausschnitt-${i + 1}.jpg`,
                     base64Content: clipping.mapClippingDataUrl.replace(
                       /^data:.*;base64,/,
                       ""
                     ),
                     fileTitle: `${parsedAddress} Kartenausschnitt ${i + 1}`,
-                    artType: ApiOnOfficeArtTypesEnum.LAGEPLAN,
                   });
                 }}
               >

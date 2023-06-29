@@ -17,7 +17,6 @@ import { activateUserPath } from './shared/on-office.constants';
 import ApiOnOfficeUnlockProviderReqDto from './dto/api-on-office-unlock-provider-req.dto';
 import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
-  ApiOnOfficeArtTypesEnum,
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
   IApiOnOfficeLoginRes,
@@ -30,8 +29,9 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import ApiOnOfficeUpdateEstateReqDto from './dto/api-on-office-update-estate-req.dto';
-import ApiOnOfficeUploadFileReqDto from './dto/api-on-office-upload-file-req.dto';
+import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
+import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -105,30 +105,47 @@ export class OnOfficeController {
 
   @ApiOperation({ description: 'Update an estate' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Patch('estate/:integrationId')
-  updateEstate(
+  @Patch('estate-text/:integrationId')
+  updateEstateTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('integrationId') integrationId: string,
-    @Body() updateEstateData: ApiOnOfficeUpdateEstateReqDto,
+    @Body() updateEstateTextFieldData: ApiOnOfficeUpdEstTextFieldReqDto,
   ): Promise<void> {
-    return this.onOfficeService.updateEstate(
+    return this.onOfficeService.updateEstateTextField(
       integrationUser,
       integrationId,
-      updateEstateData,
+      updateEstateTextFieldData,
     );
   }
 
   @ApiOperation({ description: 'Upload a file' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('upload-file')
-  uploadFile(
+  @Post('estate-file/:integrationId')
+  uploadEstateFileOrLink(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() uploadFileData: ApiOnOfficeUploadFileReqDto,
+    @Param('integrationId') integrationId: string,
+    @Body() uploadEstateFileOrLinkData: ApiOnOfficeUplEstFileOrLinkReqDto,
   ): Promise<void> {
-    if (uploadFileData.artType === ApiOnOfficeArtTypesEnum.LINK) {
-      return this.onOfficeService.uploadLink(integrationUser, uploadFileData);
-    }
+    // The "old" approach of the onOffice link sending
+    // if (
+    //   [
+    //     AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
+    //     AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
+    //   ].includes(
+    //     uploadEstateFileOrLinkData.exportType as AreaButlerExportTypesEnum,
+    //   )
+    // ) {
+    //   return this.onOfficeService.uploadEstateLink(
+    //     integrationUser,
+    //     integrationId,
+    //     uploadEstateFileOrLinkData,
+    //   );
+    // }
 
-    return this.onOfficeService.uploadFile(integrationUser, uploadFileData);
+    return this.onOfficeService.uploadEstateFile(
+      integrationUser,
+      integrationId,
+      uploadEstateFileOrLinkData,
+    );
   }
 }

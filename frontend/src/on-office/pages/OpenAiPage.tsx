@@ -5,13 +5,12 @@ import { LoadingMessage } from "../OnOfficeContainer";
 import { SearchContext } from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
-import { useHttp } from "../../hooks/http";
-import { toastSuccess } from "../../shared/shared.functions";
+import { useIntegrationTools } from "../../hooks/integrationtools";
 
 const OpenAiPage: FunctionComponent = () => {
   const { searchContextState } = useContext(SearchContext);
 
-  const { patch } = useHttp();
+  const { sendToOnOffice } = useIntegrationTools();
 
   const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
@@ -83,13 +82,12 @@ const OpenAiPage: FunctionComponent = () => {
             <button
               className="btn bg-primary-gradient max-w-fit self-end"
               onClick={() => {
-                toastSuccess("Die Daten wurden an onOffice gesendet!");
                 setIsCopyTextButtonDisabled(true);
 
-                void patch(
-                  `/api/on-office/estate/${searchContextState.realEstateListing?.integrationId}`,
-                  { queryType, queryResponse }
-                );
+                void sendToOnOffice({
+                  exportType: queryType!,
+                  text: queryResponse!,
+                });
               }}
               disabled={isCopyTextButtonDisabled}
             >

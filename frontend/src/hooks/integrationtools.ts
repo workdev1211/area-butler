@@ -10,7 +10,8 @@ import {
   TIntegrationActionTypes,
 } from "../../../shared/types/integration";
 import {
-  IApiOnOfficeUploadFileReq,
+  IApiOnOfficeUpdEstTextFieldReq,
+  IApiOnOfficeUplEstFileOrLinkReq,
   TOnOfficeIntActTypes,
 } from "../../../shared/types/on-office";
 import { useHttp } from "./http";
@@ -35,7 +36,7 @@ export const useIntegrationTools = () => {
   } = useContext(SearchContext);
 
   const history = useHistory();
-  const { post } = useHttp();
+  const { post, patch } = useHttp();
 
   const getAvailProdContTypeOrFail = (
     actionType: TIntegrationActionTypes
@@ -56,15 +57,27 @@ export const useIntegrationTools = () => {
   };
 
   const sendToOnOffice = async (
-    sendToOnOfficeData: IApiOnOfficeUploadFileReq
+    sendToOnOfficeData:
+      | IApiOnOfficeUpdEstTextFieldReq
+      | IApiOnOfficeUplEstFileOrLinkReq
   ): Promise<void> => {
     try {
-      await post<void, IApiOnOfficeUploadFileReq>(
-        "/api/on-office/upload-file",
-        {
-          ...sendToOnOfficeData,
-          integrationId: realEstateListing!.integrationId!,
-        }
+      if ("text" in sendToOnOfficeData) {
+        await patch<
+          void,
+          IApiOnOfficeUpdEstTextFieldReq | IApiOnOfficeUplEstFileOrLinkReq
+        >(
+          `/api/on-office/estate-text/${realEstateListing?.integrationId}`,
+          sendToOnOfficeData
+        );
+
+        toastSuccess("Die Daten wurden an onOffice gesendet!");
+        return;
+      }
+
+      await post<void, IApiOnOfficeUplEstFileOrLinkReq>(
+        `/api/on-office/estate-file/${realEstateListing?.integrationId}`,
+        sendToOnOfficeData
       );
 
       toastSuccess("Die Daten wurden an onOffice gesendet!");

@@ -406,42 +406,6 @@ export class RealEstateListingImportService {
           'base64',
         );
 
-        // LEFT FOR DEBUGGING PURPOSES
-        // RETURNS THE LIST OF AVAILABLE FIELDS FOR ONOFFICE REAL ESTATE ENTITY
-        // const fieldDescResType = ApiOnOfficeResourceTypesEnum.FIELDS;
-        // const fieldDescActionId = ApiOnOfficeActionIdsEnum.GET;
-        // const fieldDescSignature = this.onOfficeApiService.generateSignature(
-        //   [timestamp, token, fieldDescResType, fieldDescActionId].join(''),
-        //   secret,
-        //   'base64',
-        // );
-        //
-        // const fieldDescRequest: IApiOnOfficeRequest = {
-        //   token,
-        //   request: {
-        //     actions: [
-        //       {
-        //         timestamp,
-        //         hmac: fieldDescSignature,
-        //         hmac_version: 2,
-        //         actionid: fieldDescActionId,
-        //         resourceid: '',
-        //         identifier: '',
-        //         resourcetype: fieldDescResType,
-        //         parameters: {
-        //           labels: true,
-        //           language: 'ENG',
-        //           modules: ['estate'],
-        //         },
-        //       },
-        //     ],
-        //   },
-        // };
-        //
-        // const fieldDescResponse = await this.onOfficeApiService.sendRequest(
-        //   fieldDescRequest,
-        // );
-
         const request: IApiOnOfficeRequest = {
           token,
           request: {
@@ -478,7 +442,7 @@ export class RealEstateListingImportService {
                     'anzahl_balkone',
                     'unterkellert',
                     'vermarktungsart',
-                    'status2',
+                    'status2', // used by ReMax
                   ],
                 },
               },
@@ -664,11 +628,10 @@ export class RealEstateListingImportService {
         }
 
         case ApiRealEstateExtSourcesEnum.ON_OFFICE: {
-          const actionId = ApiOnOfficeActionIdsEnum.READ;
-          const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
           const timestamp = dayjs().unix();
-          const token = connectionSettings.token;
-          const secret = connectionSettings.secret;
+          const { token, secret } = connectionSettings;
+          const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
+          const actionId = ApiOnOfficeActionIdsEnum.GET;
 
           const signature = this.onOfficeApiService.generateSignature(
             [timestamp, token, resourceType, actionId].join(''),
@@ -689,24 +652,28 @@ export class RealEstateListingImportService {
                   identifier: '',
                   resourcetype: resourceType,
                   parameters: {
-                    listlimit: 1,
-                    listoffset: 0,
-                    data: ['Id'],
+                    labels: true,
+                    language: 'ENG',
+                    modules: ['estate'],
                   },
                 },
               ],
             },
           };
 
+          const response = await this.onOfficeApiService.sendRequest(request);
+
+          // LEFT FOR DEBUGGING PURPOSES
+          // RETURNS THE LIST OF AVAILABLE FIELDS FOR ONOFFICE REAL ESTATE ENTITY
+          // this.logger.debug(
+          //   response.response.results[0].data.records[0].elements,
+          // );
+
           const {
             status: { code, errorcode, message },
-          } = await this.onOfficeApiService.sendRequest(request);
+          } = response;
 
-          if (
-            code === 400 &&
-            errorcode === 22 &&
-            message === 'not authenticated'
-          ) {
+          if (!(code === 200 && errorcode === 0 && message === 'OK')) {
             throw new HttpException('OnOffice authentication failed!', 401);
           }
         }

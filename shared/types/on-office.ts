@@ -1,6 +1,7 @@
 import {
   TApiIntegrationUserConfig,
   TApiIntUserAvailProdContingents,
+  TAreaButlerExportTypes,
 } from "./integration-user";
 import { ApiRealEstateListing } from "./real-estate";
 import {
@@ -119,6 +120,7 @@ export enum ApiOnOfficeArtTypesEnum {
   AUSHANG = "Aushang",
   MIETAUFSTELLUNG = "Mietaufstellung",
   DOKUMENT = "Dokument",
+  // TODO ask Michael how to use FOTO_GROSS instead of FOTO
   FOTO_GROSS = "Foto_gross",
   LINK = "Link",
   PANORAMA = "Panorama",
@@ -270,18 +272,17 @@ export interface IApiOnOfficeConfirmOrderReq {
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
-export interface IApiOnOfficeUpdateEstateReq {
-  queryType: OpenAiQueryTypeEnum;
-  queryResponse: string;
+export interface IApiOnOfficeUpdEstTextFieldReq {
+  exportType: TAreaButlerExportTypes;
+  text: string;
 }
 
-export interface IApiOnOfficeUploadFileReq {
+export interface IApiOnOfficeUplEstFileOrLinkReq {
+  exportType: TAreaButlerExportTypes;
   filename?: string;
   base64Content?: string;
   fileTitle: string;
   url?: string;
-  artType: ApiOnOfficeArtTypesEnum;
-  integrationId?: string;
 }
 
 export interface IApiOnOfficeConfirmOrderErrorRes {

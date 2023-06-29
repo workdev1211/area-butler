@@ -10,26 +10,27 @@ import { OnOfficeApiService } from '../client/on-office/on-office-api.service';
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
   ApiOnOfficeActionIdsEnum,
+  ApiOnOfficeArtTypesEnum,
   ApiOnOfficeResourceTypesEnum,
-  IApiOnOfficeConfirmOrderReq,
-  IApiOnOfficeCreateOrderReq,
+  ApiOnOfficeTransactionStatusesEnum,
+  IApiOnOfficeActivationReq,
   IApiOnOfficeActivationRes,
-  IApiOnOfficeRequest,
-  IApiOnOfficeLoginReq,
-  IApiOnOfficeUnlockProviderReq,
-  IApiOnOfficeLoginRes,
+  IApiOnOfficeConfirmOrderQueryParams,
+  IApiOnOfficeConfirmOrderReq,
+  IApiOnOfficeCreateOrderProduct,
+  IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
   IApiOnOfficeLoginQueryParams,
-  IApiOnOfficeConfirmOrderQueryParams,
-  ApiOnOfficeTransactionStatusesEnum,
+  IApiOnOfficeLoginReq,
+  IApiOnOfficeLoginRes,
   IApiOnOfficeOrderData,
-  IApiOnOfficeResponse,
-  IApiOnOfficeActivationReq,
-  IApiOnOfficeCreateOrderProduct,
-  TApiOnOfficeConfirmOrderRes,
-  IApiOnOfficeUpdateEstateReq,
-  IApiOnOfficeUploadFileReq,
   IApiOnOfficeRealEstate,
+  IApiOnOfficeRequest,
+  IApiOnOfficeResponse,
+  IApiOnOfficeUnlockProviderReq,
+  IApiOnOfficeUpdEstTextFieldReq,
+  IApiOnOfficeUplEstFileOrLinkReq,
+  TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
 import {
@@ -52,7 +53,9 @@ import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.m
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
+  AreaButlerExportTypesEnum,
   IApiIntUserOnOfficeParams,
+  IIntUserExpMatchParams,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
@@ -465,10 +468,13 @@ export class OnOfficeService {
     };
   }
 
-  async updateEstate(
-    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+  async updateEstateTextField(
+    {
+      parameters: { token, apiKey, extendedClaim },
+      config: { exportMatching },
+    }: TIntegrationUserDocument,
     integrationId: string,
-    { queryType, queryResponse }: IApiOnOfficeUpdateEstateReq,
+    { exportType, text }: IApiOnOfficeUpdEstTextFieldReq,
   ): Promise<void> {
     const actionId = ApiOnOfficeActionIdsEnum.MODIFY;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
@@ -479,6 +485,24 @@ export class OnOfficeService {
       apiKey,
       'base64',
     );
+
+    const defaultMaxTextLength = 2000;
+
+    const exportMatchingParams: IIntUserExpMatchParams =
+      exportMatching && exportMatching[exportType]
+        ? exportMatching[exportType]
+        : {
+            fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
+            maxTextLength: defaultMaxTextLength,
+          };
+
+    const processedText =
+      exportMatchingParams.maxTextLength === 0
+        ? text
+        : text.slice(
+            0,
+            exportMatchingParams.maxTextLength || defaultMaxTextLength,
+          );
 
     const request: IApiOnOfficeRequest = {
       token,
@@ -495,8 +519,7 @@ export class OnOfficeService {
             parameters: {
               extendedclaim: extendedClaim,
               data: {
-                [openAiQueryTypeToOnOfficeEstateFieldMapping[queryType]]:
-                  queryResponse.slice(0, 2000),
+                [exportMatchingParams.fieldId]: processedText,
               },
             },
           },
@@ -507,22 +530,25 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.updateEstate.name,
+      this.updateEstateTextField.name,
       'Estate update failed!',
       request,
       response,
     );
   }
 
-  async uploadFile(
-    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+  async uploadEstateFile(
     {
+      parameters: { token, apiKey, extendedClaim },
+      config: { exportMatching },
+    }: TIntegrationUserDocument,
+    integrationId: string,
+    {
+      exportType,
       fileTitle,
       base64Content,
-      artType,
-      integrationId,
       filename,
-    }: IApiOnOfficeUploadFileReq,
+    }: IApiOnOfficeUplEstFileOrLinkReq,
   ): Promise<void> {
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
@@ -560,11 +586,20 @@ export class OnOfficeService {
     );
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.uploadFile.name,
+      this.uploadEstateFile.name,
       'File upload failed on the 1st step!',
       initialRequest,
       initialResponse,
     );
+
+    let artType = ApiOnOfficeArtTypesEnum.FOTO;
+
+    if (exportType === AreaButlerExportTypesEnum.QR_CODE) {
+      artType = ApiOnOfficeArtTypesEnum['QR-CODE'];
+    }
+    if (exportType === AreaButlerExportTypesEnum.SCREENSHOT) {
+      artType = ApiOnOfficeArtTypesEnum.LAGEPLAN;
+    }
 
     const finalRequest: IApiOnOfficeRequest = {
       token,
@@ -595,66 +630,83 @@ export class OnOfficeService {
       },
     };
 
+    if (exportMatching && exportMatching[exportType]) {
+      finalRequest.request.actions[0].parameters.documentAttribute =
+        exportMatching[exportType].fieldId;
+    }
+
     const finalResponse = await this.onOfficeApiService.sendRequest(
       finalRequest,
     );
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.uploadFile.name,
+      this.uploadEstateFile.name,
       'File upload failed on the 2nd step!',
       finalRequest,
       finalResponse,
     );
   }
 
-  async uploadLink(
-    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
-    { fileTitle, url, artType, integrationId }: IApiOnOfficeUploadFileReq,
-  ): Promise<void> {
-    const actionId = ApiOnOfficeActionIdsEnum.DO;
-    const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
-
-    const timestamp = dayjs().unix();
-    const signature = this.onOfficeApiService.generateSignature(
-      [timestamp, token, resourceType, actionId].join(''),
-      apiKey,
-      'base64',
-    );
-
-    const request: IApiOnOfficeRequest = {
-      token,
-      request: {
-        actions: [
-          {
-            timestamp,
-            hmac: signature,
-            hmac_version: 2,
-            actionid: actionId,
-            resourceid: null,
-            resourcetype: resourceType,
-            identifier: '',
-            parameters: {
-              url,
-              extendedclaim: extendedClaim,
-              module: 'estate',
-              title: fileTitle,
-              Art: artType,
-              relatedRecordId: integrationId,
-            },
-          },
-        ],
-      },
-    };
-
-    const response = await this.onOfficeApiService.sendRequest(request);
-
-    this.onOfficeApiService.checkResponseIsSuccess(
-      this.uploadLink.name,
-      'Link upload failed!',
-      request,
-      response,
-    );
-  }
+  // Not used for the moment but kept just in case
+  // async uploadEstateLink(
+  //   {
+  //     parameters: { token, apiKey, extendedClaim },
+  //     config: { exportMatching },
+  //   }: TIntegrationUserDocument,
+  //   integrationId: string,
+  //   { fileTitle, url, exportType }: IApiOnOfficeUplEstFileOrLinkReq,
+  // ): Promise<void> {
+  //   const actionId = ApiOnOfficeActionIdsEnum.DO;
+  //   const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
+  //
+  //   const timestamp = dayjs().unix();
+  //   const signature = this.onOfficeApiService.generateSignature(
+  //     [timestamp, token, resourceType, actionId].join(''),
+  //     apiKey,
+  //     'base64',
+  //   );
+  //
+  //   const artType = ApiOnOfficeArtTypesEnum.LINK;
+  //
+  //   const request: IApiOnOfficeRequest = {
+  //     token,
+  //     request: {
+  //       actions: [
+  //         {
+  //           timestamp,
+  //           hmac: signature,
+  //           hmac_version: 2,
+  //           actionid: actionId,
+  //           resourceid: null,
+  //           resourcetype: resourceType,
+  //           identifier: '',
+  //           parameters: {
+  //             url,
+  //             extendedclaim: extendedClaim,
+  //             module: 'estate',
+  //             title: fileTitle,
+  //             Art: artType,
+  //             relatedRecordId: integrationId,
+  //           },
+  //         },
+  //       ],
+  //     },
+  //   };
+  //
+  //   if (exportMatching && exportMatching[exportType]) {
+  //     request.request.actions[0].parameters.documentAttribute =
+  //       exportMatching[exportType].fieldId;
+  //   }
+  //
+  //   const response = await this.onOfficeApiService.sendRequest(request);
+  //
+  //   this.onOfficeApiService.checkResponseIsSuccess(
+  //     this.uploadEstateLink.name,
+  //     'Link upload failed!',
+  //     request,
+  //     response,
+  //   );
+  // }
 
   verifySignature(
     queryParams:
