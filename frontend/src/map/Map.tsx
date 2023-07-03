@@ -12,7 +12,8 @@ import center from "@turf/center";
 import { toJpeg } from "html-to-image";
 
 import * as L from "leaflet";
-import { GestureHandling } from "leaflet-gesture-handling";
+// LEFT JUST IN CASE - the old touch screen solution
+// import { GestureHandling } from "leaflet-gesture-handling";
 import "leaflet-touch-helper";
 import "leaflet.markercluster";
 import "leaflet.markercluster/dist/MarkerCluster.css";
@@ -520,25 +521,36 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         currentMap.remove();
       }
 
-      L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
+      // LEFT JUST IN CASE - the old touch screen solution
+      // L.Map.addInitHook("addHandler", "gestureHandling", GestureHandling);
 
-      const localMap = L.map(leafletMapId, {
+      const mapOptions: L.MapOptions & {
+        gestureHandling?: boolean;
+        gestureHandlingOptions?: { duration: number };
+      } = {
         preferCanvas: true,
         renderer: new L.Canvas(),
-        tap: true,
+        touchZoom: true,
         maxZoom: 18,
+        // Adds zoom in / zoom out buttons
         zoomControl: false,
-        gestureHandling: L.Browser.mobile,
-        gestureHandlingOptions: {
-          duration: 1,
-        },
+        // LEFT JUST IN CASE - the old touch screen solution
+        // gestureHandling: L.Browser.mobile,
+        // gestureHandlingOptions: {
+        //   duration: 1,
+        // },
         // Controls zoom buttons' zoom rate. Default values - 1, smaller values for zoomDelta - smaller steps.
         zoomSnap: 0,
         zoomDelta: 0.25,
         // Controls mouse wheel zoom rate. Default value - 60, higher values - smaller steps.
         wheelPxPerZoomLevel: 60,
         scrollWheelZoom: isEditorMode,
-      } as any).setView(mapCenter, mapZoomLevel);
+      };
+
+      const localMap = L.map(leafletMapId, mapOptions).setView(
+        mapCenter,
+        mapZoomLevel
+      );
 
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);

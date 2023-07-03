@@ -54,8 +54,8 @@ const LocalityItem: FunctionComponent<ILocalityItemProps> = ({
         <PreferredLocationItemContent
           item={item}
           onToggleRoute={(item, mean) => onToggleRoute(item, mean)}
-          onToggleTransitRoute={() => onToggleTransitRoute(item)}
           route={route}
+          onToggleTransitRoute={() => onToggleTransitRoute(item)}
           transitRoute={transitRoute}
         />
       ) : (
@@ -143,7 +143,7 @@ export const PreferredLocationItemContent: FunctionComponent<{
         </label>
       </div>
 
-      {(route?.show.length || []) > 0 && transitRoute?.show && (
+      {((route?.show.length || []) > 0 || transitRoute?.show) && (
         <div className="locality-item-content">
           {(route?.show.length || []) > 0 && (
             <>

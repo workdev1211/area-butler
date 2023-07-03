@@ -282,41 +282,43 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         )}
 
         {fetchedResponse && (
-          <div>
+          <>
             <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
-            <div className="text-justify">{fetchedResponse}</div>
-            <div
-              className="inline-flex gap-2 cursor-pointer items-center mt-3"
-              onClick={(): void => {
-                const success = copy(fetchedResponse);
+            <div className="flex flex-col gap-2">
+              <div className="text-justify">{fetchedResponse}</div>
+              <div
+                className="flex gap-2 cursor-pointer items-center"
+                onClick={(): void => {
+                  const success = copy(fetchedResponse);
 
-                if (success) {
-                  toastSuccess("Erfolgreich in Zwischenablage kopiert!");
-                }
-              }}
-            >
-              <img
-                src={copyIcon}
-                alt="copy-icon"
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  filter:
-                    "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
+                  if (success) {
+                    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+                  }
                 }}
-              />
-              <span className="text-sm font-bold">
-                In Zwischenablage kopieren
-              </span>
+              >
+                <img
+                  src={copyIcon}
+                  alt="copy-icon"
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    filter:
+                      "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
+                  }}
+                />
+                <span className="text-sm font-bold">
+                  In Zwischenablage kopieren
+                </span>
+              </div>
+              <div
+                className="text-sm font-bold pt-2"
+                style={{ border: 0, borderTop: "1px solid black" }}
+              >
+                Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text
+                für Sie erstellt!
+              </div>
             </div>
-            <div
-              className="text-sm font-bold pt-3 mt-1.5"
-              style={{ border: 0, borderTop: "1px solid black" }}
-            >
-              Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text
-              für Sie erstellt!
-            </div>
-          </div>
+          </>
         )}
       </div>
     </div>

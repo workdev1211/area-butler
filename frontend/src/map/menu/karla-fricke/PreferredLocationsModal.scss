@@ -7,7 +7,8 @@
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
   opacity: 0.9;
   border-radius: 10px;
-  @apply z-9999 absolute;
+  z-index: 1000;
+  @apply absolute;
 
   .collapse-title {
     padding: 0 12px 0 12px;

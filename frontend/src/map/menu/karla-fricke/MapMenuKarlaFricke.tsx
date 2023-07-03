@@ -32,12 +32,12 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
 }) => {
   interface IListItemProps {
     group: EntityGroup;
-    dropdown?: boolean;
+    isDropdownButton?: boolean;
   }
 
   const ListItem: FunctionComponent<IListItemProps> = ({
     group,
-    dropdown = false,
+    isDropdownButton = false,
   }) => {
     const { searchContextDispatch } = useContext(SearchContext);
 
@@ -55,23 +55,25 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
 
     return (
       <li
+        className={group.active ? "active" : ""}
         onClick={() => {
-          togglePreferredLocationsModal(
-            isPreferredLocation ? !isShownPreferredLocationsModal : false
-          );
+          if (!isDropdownButton) {
+            togglePreferredLocationsModal(
+              isPreferredLocation ? !isShownPreferredLocationsModal : false
+            );
+          }
 
           searchContextDispatch({
             type: SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP,
             payload: group.title,
           });
         }}
-        className={group.active ? "active" : ""}
       >
         <div className="img-container">
           <img src={groupIconInfo.icon} alt="group-icon" />
         </div>
         {group.title}
-        {dropdown && <span className="dropdown-triangle">&#9660;</span>}
+        {isDropdownButton && <span className="dropdown-triangle">&#9660;</span>}
       </li>
     );
   };
@@ -97,24 +99,26 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     return <ul className="menu-desktop">{resultingList}</ul>;
   };
 
-  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const MobileMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
     const activeEntry = groupedEntries.find((ge) => ge.active);
 
     return (
-      <div className={`menu-mobile ${dropdownOpen && "open"}`}>
+      <div className={`menu-mobile ${isDropdownOpen && "open"}`}>
         {groupedEntries.length && (
           <div
             className={`dropdown dropdown-end ${
-              dropdownOpen && "dropdown-open"
+              isDropdownOpen && "dropdown-open"
             }`}
-            onClick={() => setDropdownOpen(!dropdownOpen)}
+            onClick={() => {
+              setIsDropdownOpen(!isDropdownOpen);
+            }}
           >
             <div tabIndex={0} className="w-52">
               {activeEntry && (
                 <ul>
-                  <ListItemMemo group={activeEntry} dropdown={true} />
+                  <ListItemMemo group={activeEntry} isDropdownButton={true} />
                 </ul>
               )}
               {!activeEntry && "Bitte auswählen"}

@@ -3,6 +3,7 @@ import { render } from "react-dom";
 import { BrowserRouter as Router } from "react-router-dom";
 
 import "./index.scss";
+import "./OnOffice.scss";
 
 import "assets/fonts/archia-light-webfont.eot";
 import "assets/fonts/archia-light-webfont.ttf";
