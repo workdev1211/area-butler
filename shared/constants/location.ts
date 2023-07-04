@@ -12,6 +12,7 @@ export const locationIndexNames: Record<LocationIndicesEnum, string> = {
   [LocationIndicesEnum.health]: "Medizin & Gesundheit",
   [LocationIndicesEnum.near_supply]: "Einkaufen & Nahversorgung",
   [LocationIndicesEnum.public_transport]: "ÖPNV Anbindung",
+  [LocationIndicesEnum.tourism]: "Tourismus",
   [LocationIndicesEnum.kids]: "Spielplätze & Früh-Bildung",
   [LocationIndicesEnum.culture]: "Kultur & Universitäten",
   [LocationIndicesEnum.sports]: "Sportliche Aktivitäten",

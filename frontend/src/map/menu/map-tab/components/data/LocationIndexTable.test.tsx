@@ -24,6 +24,11 @@ const testData: TLocationIndexData = {
     value: 98,
     colorStyle: { backgroundColor: "#007960", opacity: 1 },
   },
+  tourism: {
+    name: "Tourismus",
+    value: 98,
+    colorStyle: { backgroundColor: "#007960", opacity: 1 },
+  },
   kids: {
     name: "Spielplätze & Früh-Bildung",
     value: 91,

@@ -20,6 +20,7 @@ export enum LocationIndicesEnum {
   culture = "culture",
   sports = "sports",
   individual_mobility = "individualMobility",
+  tourism = "tourism",
 }
 
 export type TApiLocationIndexFeatureProperties = Record<

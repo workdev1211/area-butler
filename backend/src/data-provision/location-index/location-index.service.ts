@@ -53,7 +53,7 @@ export class LocationIndexService {
 
   async findIntersecting(
     user: UserDocument | TIntegrationUserDocument,
-    query: ApiGeometryDto,
+    { type, coordinates }: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -75,8 +75,8 @@ export class LocationIndexService {
       geometry: {
         $geoIntersects: {
           $geometry: {
-            type: query.type,
-            coordinates: query.coordinates,
+            type,
+            coordinates,
           },
         },
       },

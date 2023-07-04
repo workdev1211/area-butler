@@ -216,66 +216,6 @@ const SnippetEditorPage: FunctionComponent = () => {
         });
       }
 
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.CENSUS
-        )
-      ) {
-        const censusData = await fetchCensusData(
-          snapshotResponse.snapshot.location
-        );
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_CENSUS_DATA,
-          payload: censusData,
-        });
-      }
-
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.FEDERAL_ELECTION
-        )
-      ) {
-        const federalElectionData = await fetchFederalElectionData(
-          snapshotResponse.snapshot.location!
-        );
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
-          payload: federalElectionData!,
-        });
-      }
-
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.PARTICLE_POLLUTION
-        )
-      ) {
-        const particlePollutionData = await fetchParticlePollutionData(
-          snapshotResponse.snapshot.location!
-        );
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
-          payload: particlePollutionData,
-        });
-      }
-
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.LOCATION_INDICES
-        )
-      ) {
-        const locationIndexData = await fetchLocationIndexData(
-          snapshotResponse.snapshot.location!
-        );
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
-          payload: locationIndexData,
-        });
-      }
-
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
         payload: snapshotResponse.snapshot.localityParams,
@@ -296,6 +236,76 @@ const SnippetEditorPage: FunctionComponent = () => {
     void fetchSnapshotData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
+
+  useEffect(() => {
+    const fetchLocationStatistics = async () => {
+      if (!snapshot) {
+        return;
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.CENSUS
+        )
+      ) {
+        const censusData = await fetchCensusData(snapshot.location);
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_CENSUS_DATA,
+          payload: censusData,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.FEDERAL_ELECTION
+        )
+      ) {
+        const federalElectionData = await fetchFederalElectionData(
+          snapshot.location
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
+          payload: federalElectionData!,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.PARTICLE_POLLUTION
+        )
+      ) {
+        const particlePollutionData = await fetchParticlePollutionData(
+          snapshot.location
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
+          payload: particlePollutionData,
+        });
+      }
+
+      if (
+        user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.LOCATION_INDICES
+        )
+      ) {
+        const locationIndexData = await fetchLocationIndexData(
+          snapshot.location
+        );
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
+          payload: locationIndexData,
+        });
+      }
+    };
+
+    void fetchLocationStatistics();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshot]);
 
   // react to changes
   useEffect(() => {
@@ -323,6 +333,7 @@ const SnippetEditorPage: FunctionComponent = () => {
         snapshot.preferredLocations
       ),
     });
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchContextState.responseConfig?.defaultActiveGroups,
