@@ -58,9 +58,14 @@ export interface ICurrentMapRef {
   getZoom: () => number | undefined;
   getCenter: () => ApiCoordinates | undefined;
   handleScrollWheelZoom: {
-    isScrollWheelZoomEnabled: () => boolean | undefined;
+    isScrollWheelZoomEnabled: () => boolean;
     enableScrollWheelZoom: () => void;
     disableScrollWheelZoom: () => void;
+  };
+  handleDragging: {
+    isDraggingEnabled: () => boolean;
+    enableDragging: () => void;
+    disableDragging: () => void;
   };
 }
 
@@ -159,13 +164,19 @@ const SearchResultContainer = forwardRef<
       getCenter: () => mapRef.current?.getCenter(),
       handleScrollWheelZoom: {
         isScrollWheelZoomEnabled: () =>
-          mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled(),
+          !!mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled(),
         enableScrollWheelZoom: () => {
           mapRef.current?.handleScrollWheelZoom.enableScrollWheelZoom();
         },
         disableScrollWheelZoom: () => {
           mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
         },
+      },
+      handleDragging: {
+        isDraggingEnabled: () =>
+          !!mapRef.current?.handleDragging.isDraggingEnabled(),
+        enableDragging: () => mapRef.current?.handleDragging.enableDragging(),
+        disableDragging: () => mapRef.current?.handleDragging.disableDragging(),
       },
     }));
 

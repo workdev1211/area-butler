@@ -426,13 +426,21 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       },
       handleScrollWheelZoom: {
         isScrollWheelZoomEnabled: () =>
-          mapRef.current?.scrollWheelZoom.enabled(),
+          !!mapRef.current?.scrollWheelZoom.enabled(),
         enableScrollWheelZoom: () => {
           mapRef.current?.scrollWheelZoom.enable();
         },
         disableScrollWheelZoom: () => {
           mapRef.current?.scrollWheelZoom.disable();
         },
+      },
+      handleDragging: {
+        isDraggingEnabled: () =>
+          !!(L.Browser.mobile && mapRef.current?.dragging.enabled()),
+        enableDragging: () =>
+          L.Browser.mobile && mapRef.current?.dragging.enable(),
+        disableDragging: () =>
+          L.Browser.mobile && mapRef.current?.dragging.disable(),
       },
     }));
 
@@ -530,6 +538,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       } = {
         preferCanvas: true,
         renderer: new L.Canvas(),
+        dragging: !L.Browser.mobile,
         touchZoom: true,
         maxZoom: 18,
         // Adds zoom in / zoom out buttons

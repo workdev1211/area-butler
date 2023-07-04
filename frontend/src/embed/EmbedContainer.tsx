@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 
 import "./EmbedContainer.scss";
+
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
@@ -78,11 +79,16 @@ const EmbedContainer: FunctionComponent = () => {
 
   useEffect(() => {
     const handleEscape = (e: KeyboardEvent) => {
-      if (
-        e.key === "Escape" &&
-        mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
-      ) {
+      if (e.key !== "Escape") {
+        return;
+      }
+
+      if (mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()) {
         mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
+      }
+
+      if (mapRef.current?.handleDragging.isDraggingEnabled()) {
+        mapRef.current?.handleDragging.disableDragging();
       }
     };
 
@@ -248,6 +254,10 @@ const EmbedContainer: FunctionComponent = () => {
     ) {
       mapRef.current?.handleScrollWheelZoom.enableScrollWheelZoom();
     }
+
+    if (mapRef.current && !mapRef.current?.handleDragging.isDraggingEnabled()) {
+      mapRef.current?.handleDragging.enableDragging();
+    }
   };
 
   const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
@@ -258,6 +268,10 @@ const EmbedContainer: FunctionComponent = () => {
       mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
     ) {
       mapRef.current?.handleScrollWheelZoom.disableScrollWheelZoom();
+    }
+
+    if (mapRef.current && mapRef.current?.handleDragging.isDraggingEnabled()) {
+      mapRef.current?.handleDragging.disableDragging();
     }
   };
 
