@@ -59,11 +59,20 @@ import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
 
 const tinyColor = require("tinycolor2");
 
-export interface ColorPalette {
+export interface IColorPalette {
   primaryColor: string;
   primaryColorLight: string;
   primaryColorDark: string;
   textColor: string;
+}
+
+interface IDeriveParameters {
+  searchResponse: ApiSearchResponse;
+  config?: ApiSearchResultSnapshotConfig;
+  listings?: ApiRealEstateListing[];
+  locations?: ApiPreferredLocation[];
+  ignoreVisibility?: boolean;
+  ignorePoiFilter?: boolean;
 }
 
 export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
@@ -224,7 +233,7 @@ export const getRealEstateListingsIcon = (
     : { icon: realEstateListingIcon, color: "#c91444" };
 };
 
-export const deriveColorPalette = (hexColor: string): ColorPalette => {
+export const deriveColorPalette = (hexColor: string): IColorPalette => {
   const hexColorTinyColor = new tinyColor(hexColor);
 
   return {
@@ -413,7 +422,8 @@ export const deriveAvailableMeansFromResponse = (
 export const buildEntityData = (
   locationSearchResult: ApiSearchResponse,
   config?: ApiSearchResultSnapshotConfig,
-  ignoreVisibility?: boolean
+  ignoreVisibility?: boolean,
+  ignorePoiFilter?: boolean
 ): ResultEntity[] | undefined => {
   if (!locationSearchResult) {
     return;
@@ -440,6 +450,7 @@ export const buildEntityData = (
 
     // POI Filter by distance
     if (
+      !ignorePoiFilter &&
       config?.poiFilter?.type === PoiFilterTypesEnum.BY_DISTANCE &&
       config?.poiFilter?.value! < location.distanceInMeters
     ) {
@@ -624,13 +635,14 @@ export const deriveEntityGroupsByActiveMeans = (
   return entityGroups.map((group) => filterByMeans(group, activeMeans));
 };
 
-export const deriveInitialEntityGroups = (
-  searchResponse: ApiSearchResponse,
-  config?: ApiSearchResultSnapshotConfig,
-  listings?: ApiRealEstateListing[],
-  locations?: ApiPreferredLocation[],
-  ignoreVisibility?: boolean
-): EntityGroup[] => {
+export const deriveInitialEntityGroups = ({
+  searchResponse,
+  config,
+  listings,
+  locations,
+  ignoreVisibility,
+  ignorePoiFilter,
+}: IDeriveParameters): EntityGroup[] => {
   const groupedEntities: EntityGroup[] = [];
   const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
 
@@ -675,7 +687,8 @@ export const deriveInitialEntityGroups = (
   const allEntities = buildEntityData(
     searchResponse,
     config,
-    ignoreVisibility
+    ignoreVisibility,
+    ignorePoiFilter
   )?.sort(
     (
       { distanceInMeters: distanceInMeters1 },
@@ -695,6 +708,7 @@ export const deriveInitialEntityGroups = (
     )!.items;
 
     if (
+      !ignorePoiFilter &&
       config?.poiFilter?.type === PoiFilterTypesEnum.BY_AMOUNT &&
       config?.poiFilter?.value! === foundEntityGroupItems.length
     ) {

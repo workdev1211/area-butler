@@ -177,12 +177,12 @@ const SnippetEditorPage: FunctionComponent = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-        payload: deriveInitialEntityGroups(
+        payload: deriveInitialEntityGroups({
           searchResponse,
-          enhancedConfig,
-          filteredRealEstateListings,
-          preferredLocations
-        ),
+          config: enhancedConfig,
+          listings: filteredRealEstateListings,
+          locations: preferredLocations,
+        }),
       });
 
       searchContextDispatch({
@@ -221,15 +221,27 @@ const SnippetEditorPage: FunctionComponent = () => {
         payload: snapshotResponse.snapshot.localityParams,
       });
 
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES,
+        payload: deriveInitialEntityGroups({
+          searchResponse,
+          config: enhancedConfig,
+          listings: filteredRealEstateListings,
+          locations: preferredLocations,
+          ignoreVisibility: true,
+          ignorePoiFilter: true,
+        }),
+      });
+
       // use dedicated entity groups for editor (do not exclude any group by config)
       setEditorGroups(
-        deriveInitialEntityGroups(
+        deriveInitialEntityGroups({
           searchResponse,
-          enhancedConfig,
-          filteredRealEstateListings,
-          preferredLocations,
-          true
-        )
+          config: enhancedConfig,
+          listings: filteredRealEstateListings,
+          locations: preferredLocations,
+          ignoreVisibility: true,
+        })
       );
     };
 
@@ -326,12 +338,12 @@ const SnippetEditorPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
-        snapshot?.searchResponse!,
-        searchContextState.responseConfig,
-        filteredRealEstateListings,
-        snapshot.preferredLocations
-      ),
+      payload: deriveInitialEntityGroups({
+        searchResponse: snapshot?.searchResponse!,
+        config: searchContextState.responseConfig,
+        listings: filteredRealEstateListings,
+        locations: snapshot.preferredLocations,
+      }),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -400,12 +400,11 @@ const SearchParamsPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
+      payload: deriveInitialEntityGroups({
         searchResponse,
-        undefined,
-        filteredRealEstateListings,
-        searchContextState.preferredLocations
-      ),
+        listings: filteredRealEstateListings,
+        locations: searchContextState.preferredLocations,
+      }),
     });
 
     return searchResponse;

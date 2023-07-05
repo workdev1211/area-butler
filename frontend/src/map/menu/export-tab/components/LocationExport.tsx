@@ -157,12 +157,23 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
     searchContextState.printingOnePageActive,
   ]);
 
+  console.log(
+    1,
+    searchContextState.availGroupedEntities,
+    searchContextState.responseGroupedEntities
+  );
+
   const entityGroups = deriveEntityGroupsByActiveMeans(
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans
   );
 
-  const resultingGroups = entityGroups.map((g) => g.items).flat();
+  const resultingGroups = deriveEntityGroupsByActiveMeans(
+    searchContextState.availGroupedEntities,
+    searchContextState.responseActiveMeans
+  )
+    .map((g) => g.items)
+    .flat();
 
   return (
     <div

@@ -56,6 +56,7 @@ export interface SearchContextState {
   mapClippings: MapClipping[];
   realEstateListing?: ApiRealEstateListing;
   responseGroupedEntities?: EntityGroup[];
+  availGroupedEntities?: EntityGroup[];
   responseConfig?: ApiSearchResultSnapshotConfig;
   responseActiveMeans: MeansOfTransportation[];
   responseRoutes: EntityRoute[];
@@ -97,6 +98,7 @@ export enum SearchContextActionTypes {
   SET_SEARCH_BUSY = "SET_SEARCH_BUSY",
   SET_SEARCH_RESPONSE = "SET_SEARCH_RESPONSE",
   SET_RESPONSE_GROUPED_ENTITIES = "SET_RESPONSE_GROUPED_ENTITIES",
+  SET_AVAIL_GROUPED_ENTITIES = "SET_AVAIL_GROUPED_ENTITIES",
   SET_RESPONSE_ACTIVE_MEANS = "SET_RESPONSE_ACTIVE_MEANS",
   SET_RESPONSE_ROUTES = "SET_RESPONSE_ROUTES",
   SET_RESPONSE_TRANSIT_ROUTES = "SET_RESPONSE_TRANSIT_ROUTES",
@@ -142,6 +144,7 @@ type SearchContextActionsPayload = {
     | ApiSearchResultSnapshotConfig
     | undefined;
   [SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES]: EntityGroup[];
+  [SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES]: EntityGroup[];
   [SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS]: MeansOfTransportation[];
   [SearchContextActionTypes.TOGGLE_RESPONSE_GROUP]: string;
   [SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP]: string;
@@ -258,6 +261,12 @@ export const searchContextReducer = (
       return {
         ...state,
         responseGroupedEntities: [...action.payload],
+      };
+    }
+    case SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES: {
+      return {
+        ...state,
+        availGroupedEntities: [...action.payload],
       };
     }
     case SearchContextActionTypes.TOGGLE_SINGLE_RESPONSE_GROUP: {

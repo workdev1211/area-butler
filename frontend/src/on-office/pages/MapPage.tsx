@@ -213,22 +213,34 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
+      payload: deriveInitialEntityGroups({
         searchResponse,
-        config,
-        filteredRealEstates,
-        preferredLocations
-      ),
+        config: enhancedConfig,
+        listings: filteredRealEstates,
+        locations: preferredLocations,
+      }),
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES,
+      payload: deriveInitialEntityGroups({
+        searchResponse,
+        config: enhancedConfig,
+        listings: processedRealEstates,
+        locations: preferredLocations,
+        ignoreVisibility: true,
+        ignorePoiFilter: true,
+      }),
     });
 
     setEditorGroups(
-      deriveInitialEntityGroups(
+      deriveInitialEntityGroups({
         searchResponse,
-        searchContextState.responseConfig,
-        processedRealEstates,
-        preferredLocations,
-        true
-      )
+        config: enhancedConfig,
+        listings: processedRealEstates,
+        locations: preferredLocations,
+        ignoreVisibility: true,
+      })
     );
 
     setExportTabProps({
@@ -307,12 +319,12 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
-        snapshotResponse.snapshot.searchResponse,
-        searchContextState.responseConfig,
-        processedRealEstates,
-        snapshotResponse?.snapshot.preferredLocations
-      ),
+      payload: deriveInitialEntityGroups({
+        searchResponse: snapshotResponse.snapshot.searchResponse,
+        config: searchContextState.responseConfig,
+        listings: processedRealEstates,
+        locations: snapshotResponse?.snapshot.preferredLocations,
+      }),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps

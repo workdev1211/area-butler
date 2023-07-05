@@ -230,12 +230,12 @@ const EmbedContainer: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
-      payload: deriveInitialEntityGroups(
+      payload: deriveInitialEntityGroups({
         searchResponse,
-        searchConfig,
-        filteredRealEstateListings,
-        preferredLocations
-      ),
+        config: searchConfig,
+        listings: filteredRealEstateListings,
+        locations: preferredLocations,
+      }),
     });
 
     setMapDisplayMode(
