@@ -20,7 +20,6 @@ import { ILegendItem } from "../Legend";
 import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
-import OnePageMapClippingSelection from "./OnePageMapClippingSelection";
 import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
 import {
   ApiOpenAiResponseLimitTypesEnum,
@@ -42,6 +41,7 @@ import {
 } from "../../context/CachingContext";
 import { IPoiIcon } from "../../shared/shared.types";
 import { IQrCodeState } from "../../../../shared/types/export";
+import OnePageMediaFormat from "./components/OnePageMediaFormat";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
@@ -90,9 +90,13 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const user = userState.user as ApiUser;
   const integrationUser = userState.integrationUser as IApiIntegrationUser;
 
-  const initialSelectableMapClippings = (
-    searchContextState.mapClippings || []
-  ).map((c: MapClipping, i) => ({ ...c, selected: i < SCREENSHOT_LIMIT }));
+  const initSelectMapClippings = searchContextState.mapClippings.length
+    ? searchContextState.mapClippings.map((c: MapClipping, i) => ({
+        ...c,
+        id: i,
+        isSelected: i < SCREENSHOT_LIMIT,
+      }))
+    : cachedOnePageState.selectableMapClippings || [];
 
   let activeGroupNumber = 0;
 
@@ -159,7 +163,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   );
   const [selectableMapClippings, setSelectableMapClippings] = useState<
     ISelectableMapClipping[]
-  >(cachedOnePageState.selectableMapClippings || initialSelectableMapClippings);
+  >(initSelectMapClippings);
   const [legend, setLegend] = useState<ILegendItem[]>(() =>
     getFilteredLegend(sortableGroups)
   );
@@ -365,157 +369,40 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
             />
           </div>
 
-          <div
-            className={`collapse collapse-arrow view-option ${
-              isOpen.mapClippings ? "collapse-open" : "collapse-closed"
-            }`}
-          >
-            <div
-              className="collapse-title"
-              ref={(node) => {
-                setBackgroundColor(node, color);
-              }}
-              onClick={() => {
-                setIsOpen({
-                  ...isOpen,
-                  mapClippings: !isOpen.mapClippings,
-                });
+          <OnePageMediaFormat
+            selectableMapClippings={selectableMapClippings}
+            setSelectableMapClippings={setSelectableMapClippings}
+            isPng={isPng}
+            setIsPng={setIsPng}
+            isTransparentBackground={isTransparentBackground}
+            setIsTransparentBackground={setIsTransparentBackground}
+            qrCodeState={qrCodeState}
+            setQrCodeState={setQrCodeState}
+            snapshotToken={snapshotToken}
+            backgroundColor={color}
+            isOpenCollapsable={isOpen.mapClippings}
+            toggleCollapsable={() => {
+              setIsOpen({
+                ...isOpen,
+                mapClippings: !isOpen.mapClippings,
+              });
 
-                setExportFlow({
-                  ...exportFlow,
-                  mapClippings: true,
-                });
+              setExportFlow({
+                ...exportFlow,
+                mapClippings: true,
+              });
 
-                cachingDispatch({
-                  type: CachingActionTypesEnum.SET_ONE_PAGE,
-                  payload: {
-                    exportFlowState: {
-                      ...exportFlow,
-                      mapClippings: true,
-                    },
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_ONE_PAGE,
+                payload: {
+                  exportFlowState: {
+                    ...exportFlow,
+                    mapClippings: true,
                   },
-                });
-              }}
-            >
-              3. Medien & Format
-            </div>
-            <div className="collapse-content">
-              <div className="flex flex-col gap-5 pt-5">
-                <div className="flex gap-3">
-                  <div className="flex cursor-pointer gap-2 p-0">
-                    <div
-                      className="flex items-center gap-2"
-                      onClick={() => {
-                        setIsPng(false);
-
-                        cachingDispatch({
-                          type: CachingActionTypesEnum.SET_ONE_PAGE,
-                          payload: { isPng: false },
-                        });
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="export-format"
-                        className="radio radio-primary"
-                        checked={!isPng}
-                        onChange={() => {}}
-                      />
-                      <span className="label-text">PDF</span>
-                    </div>
-                    <div
-                      className="flex items-center gap-2"
-                      onClick={() => {
-                        setIsPng(true);
-
-                        cachingDispatch({
-                          type: CachingActionTypesEnum.SET_ONE_PAGE,
-                          payload: { isPng: true },
-                        });
-                      }}
-                    >
-                      <input
-                        type="radio"
-                        name="export-format"
-                        className="radio radio-primary"
-                        checked={isPng}
-                        onChange={() => {}}
-                      />
-                      <span className="label-text">PNG</span>
-                    </div>
-                  </div>
-
-                  {isPng && (
-                    <div
-                      className="flex cursor-pointer items-center gap-2 p-0"
-                      onClick={() => {
-                        setIsTransparentBackground(!isTransparentBackground);
-
-                        cachingDispatch({
-                          type: CachingActionTypesEnum.SET_ONE_PAGE,
-                          payload: {
-                            isTransparentBackground: !isTransparentBackground,
-                          },
-                        });
-                      }}
-                    >
-                      <input
-                        type="checkbox"
-                        checked={isTransparentBackground}
-                        className="checkbox checkbox-primary"
-                        readOnly
-                      />
-                      <span className="label-text">
-                        Transparenter Hintergrund
-                      </span>
-                    </div>
-                  )}
-                </div>
-
-                <div className="divider m-0" />
-
-                <label className="cursor-pointer label justify-start gap-3 p-0">
-                  <input
-                    type="checkbox"
-                    checked={
-                      selectableMapClippings.length > 0 &&
-                      qrCodeState.isShownQrCode
-                    }
-                    className="checkbox checkbox-primary"
-                    onChange={() => {
-                      const resultingQrCodeState = qrCodeState.isShownQrCode
-                        ? { isShownQrCode: false }
-                        : { snapshotToken, isShownQrCode: true };
-
-                      setQrCodeState(resultingQrCodeState);
-
-                      cachingDispatch({
-                        type: CachingActionTypesEnum.SET_ONE_PAGE,
-                        payload: { qrCodeState: resultingQrCodeState },
-                      });
-                    }}
-                    disabled={selectableMapClippings.length === 0}
-                  />
-                  <span className="label-text">QR-Code</span>
-                </label>
-
-                <div className="divider m-0" />
-
-                <OnePageMapClippingSelection
-                  selectableMapClippings={selectableMapClippings}
-                  setSelectableMapClippings={(selectedMapClippings) => {
-                    setSelectableMapClippings(selectedMapClippings);
-
-                    cachingDispatch({
-                      type: CachingActionTypesEnum.SET_ONE_PAGE,
-                      payload: { selectableMapClippings: selectedMapClippings },
-                    });
-                  }}
-                  limit={SCREENSHOT_LIMIT}
-                />
-              </div>
-            </div>
-          </div>
+                },
+              });
+            }}
+          />
         </div>
 
         <div className="modal-action">

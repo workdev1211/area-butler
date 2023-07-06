@@ -84,7 +84,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
   const initialSelectableMapClippings = (
     searchContextState.mapClippings || []
-  ).map((c: MapClipping) => ({ ...c, selected: true }));
+  ).map((c: MapClipping, i) => ({ ...c, id: i, isSelected: true }));
 
   const onClose = (): void => {
     searchContextDispatch({

@@ -4,7 +4,9 @@ import { MapClipping } from "context/SearchContext";
 import { toastError } from "../shared/shared.functions";
 
 export interface ISelectableMapClipping extends MapClipping {
-  selected: boolean;
+  id: number;
+  isSelected: boolean;
+  dimensions?: { width: number; height: number };
 }
 
 interface IMapClippingSelectionProps {
@@ -23,7 +25,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
   const onSelectionChange = (mapClipping: ISelectableMapClipping): void => {
     const selectedMapClippingsCount = selectableMapClippings.reduce(
       (result, mapClipping) => {
-        if (mapClipping.selected) {
+        if (mapClipping.isSelected) {
           result += 1;
         }
 
@@ -36,13 +38,13 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
       limit &&
       (selectedMapClippingsCount > limit ||
         selectedMapClippingsCount === limit) &&
-      !mapClipping.selected
+      !mapClipping.isSelected
     ) {
       toastError("Es wurden zu viele Gruppen ausgewählt!");
       return;
     }
 
-    mapClipping.selected = !mapClipping.selected;
+    mapClipping.isSelected = !mapClipping.isSelected;
     setSelectableMapClippings([...selectableMapClippings]);
   };
 
@@ -64,7 +66,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
         {selectableMapClippings.length > 0 ? (
           <span>
             Ausgewählte Bilder{" "}
-            {selectableMapClippings.filter((c) => c.selected).length} /{" "}
+            {selectableMapClippings.filter((c) => c.isSelected).length} /{" "}
             {limit
               ? `${limit} (${selectableMapClippings.length})`
               : selectableMapClippings.length}
@@ -81,7 +83,7 @@ const MapClippingSelection: FunctionComponent<IMapClippingSelectionProps> = ({
           >
             <input
               type="checkbox"
-              checked={item.selected}
+              checked={item.isSelected}
               onChange={() => {
                 onSelectionChange(item);
               }}

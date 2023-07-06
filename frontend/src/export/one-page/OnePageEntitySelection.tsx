@@ -52,7 +52,7 @@ const OnePageEntitySelection: FunctionComponent<
           {entityGroups.map((group) => (
             <div
               className="flex items-center gap-6 p-4 font-medium border cursor-pointer"
-              key={`entity-group-${group.title}`}
+              key={group.id}
               onClick={() => {
                 onGroupSelectionChange(group);
               }}

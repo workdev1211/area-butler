@@ -67,7 +67,7 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
 
     const selected = props.mapClippings.reduce<ISelectableMapClipping[]>(
       (result, mapClipping) => {
-        if (mapClipping.selected) {
+        if (mapClipping.isSelected) {
           result.push(mapClipping);
         }
 
@@ -197,12 +197,12 @@ export const OnePage = forwardRef((props: IOnePageProps, ref) => {
                               item.name || group.title
                             }`}
                           >
-                            {`${i + 1}. ${truncateText(
+                            {`(${distanceToHumanReadable(
+                              item.distanceInMeters
+                            )}) ${truncateText(
                               item.name || group.title,
                               poiNameMaxLength
-                            )} (${distanceToHumanReadable(
-                              item.distanceInMeters
-                            )})`}
+                            )}`}
                           </div>
                         );
                       })}

@@ -75,6 +75,13 @@ export const useIntegrationTools = () => {
         return;
       }
 
+      if (sendToOnOfficeData.filename) {
+        sendToOnOfficeData.filename = sendToOnOfficeData.filename.replace(
+          /[/\\?%*:|"<>\s,]/g,
+          "-"
+        );
+      }
+
       await post<void, IApiOnOfficeUplEstFileOrLinkReq>(
         `/api/on-office/estate-file/${realEstateListing?.integrationId}`,
         sendToOnOfficeData

@@ -161,7 +161,7 @@ const DocxExpose: FunctionComponent<DocxExposeProps> = ({
       (Paragraph | ImageRun | Table)[]
     >(
       (result, clipping, i) => {
-        if (!clipping.selected) {
+        if (!clipping.isSelected) {
           return result;
         }
 

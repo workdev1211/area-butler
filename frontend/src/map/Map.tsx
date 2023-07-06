@@ -1268,14 +1268,25 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gotoMapCenter]);
 
-    const takePicture = () => {
+    const takeScreenshot = () => {
+      if (isShownPreferredLocationsModal) {
+        togglePreferredLocationsModal(false);
+      }
+
       const poiSearchContainer = document.getElementById(poiSearchContainerId);
       if (poiSearchContainer) {
         poiSearchContainer.className = `${poiSearchContainer.className} hidden`;
       }
 
-      if (isShownPreferredLocationsModal) {
-        togglePreferredLocationsModal(false);
+      const meansContainer = document.getElementsByClassName(
+        "map-nav-bar-container"
+      )[0];
+      const isMeansContainerMenuOpen =
+        meansContainer?.className.match("map-menu-open");
+      if (isMeansContainerMenuOpen) {
+        meansContainer.className = meansContainer.className
+          .replace("map-menu-open", "")
+          .trim();
       }
 
       const bottomElements = document.getElementsByClassName("leaflet-bottom");
@@ -1290,6 +1301,10 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
         addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
         toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
 
+        if (isShownPreferredLocationsModal) {
+          togglePreferredLocationsModal(true);
+        }
+
         if (poiSearchContainer) {
           poiSearchContainer.className = poiSearchContainer.className.replace(
             "hidden",
@@ -1297,8 +1312,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
           );
         }
 
-        if (isShownPreferredLocationsModal) {
-          togglePreferredLocationsModal(true);
+        if (isMeansContainerMenuOpen) {
+          meansContainer.className = `${meansContainer.className} map-menu-open`;
         }
 
         for (let i = 0; i < bottomElements.length; i++) {
@@ -1529,7 +1544,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                 role="button"
                 onClick={(event) => {
                   event.preventDefault();
-                  takePicture();
+                  takeScreenshot();
                 }}
                 style={{
                   backgroundColor: "white",

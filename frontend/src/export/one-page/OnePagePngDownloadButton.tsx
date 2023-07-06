@@ -71,18 +71,49 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
       return;
     }
 
-    const selected = mapClippings.reduce<ISelectableMapClipping[]>(
-      (result, mapClipping) => {
-        if (mapClipping.selected) {
-          result.push(mapClipping);
-        }
+    const processMapClippings = async () => {
+      const filteredMapClippings = mapClippings.filter(
+        (mapClipping) => mapClipping.isSelected
+      );
 
-        return result;
-      },
-      []
-    );
+      const processedMapClippings = await Promise.all(
+        filteredMapClippings.map(
+          async (mapClipping): Promise<ISelectableMapClipping> => {
+            const image = new Image();
+            image.src = mapClipping.mapClippingDataUrl;
+            await image.decode();
 
-    setSelectedMapClippings(selected);
+            const maxWidth = 747;
+            const maxHeight = 350;
+            const sourceWidth = image.width;
+            const sourceHeight = image.height;
+            const widthRatio = sourceWidth / maxWidth;
+            const heightRatio = sourceHeight / maxHeight;
+            let resultingWidth = sourceWidth;
+            let resultingHeight = sourceHeight;
+
+            if (widthRatio > heightRatio || widthRatio === heightRatio) {
+              resultingWidth = maxWidth;
+              resultingHeight = Math.round(sourceHeight / widthRatio);
+            }
+
+            if (heightRatio > widthRatio) {
+              resultingWidth = Math.round(sourceWidth / heightRatio);
+              resultingHeight = maxHeight;
+            }
+
+            return {
+              ...mapClipping,
+              dimensions: { width: resultingWidth, height: resultingHeight },
+            };
+          }
+        )
+      );
+
+      setSelectedMapClippings(processedMapClippings);
+    };
+
+    void processMapClippings();
   }, [mapClippings]);
 
   useEffect(() => {
@@ -165,7 +196,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     const onePagePngElement = document.createElement("div");
     onePagePngElement.innerHTML = renderedOnePagePng;
 
-    const pngIcon = await toPng(onePagePngElement, {
+    const pngImage = await toPng(onePagePngElement, {
       pixelRatio: 6,
       width: 827, // 2480 / 3
       height: 1169, // 3508 / 3
@@ -173,7 +204,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
 
     onePagePngElement.remove();
 
-    return pngIcon;
+    return pngImage;
   };
 
   return (

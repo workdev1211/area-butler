@@ -157,12 +157,6 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
     searchContextState.printingOnePageActive,
   ]);
 
-  console.log(
-    1,
-    searchContextState.availGroupedEntities,
-    searchContextState.responseGroupedEntities
-  );
-
   const entityGroups = deriveEntityGroupsByActiveMeans(
     searchContextState.responseGroupedEntities,
     searchContextState.responseActiveMeans

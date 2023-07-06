@@ -230,12 +230,12 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
                             item.name || group.title
                           }`}
                         >
-                          {`${i + 1}. ${truncateText(
+                          {`(${distanceToHumanReadable(
+                            item.distanceInMeters
+                          )}) ${truncateText(
                             item.name || group.title,
                             poiNameMaxLength
-                          )} (${distanceToHumanReadable(
-                            item.distanceInMeters
-                          )})`}
+                          )}`}
                         </div>
                       );
                     })}
@@ -268,8 +268,8 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
             <div
               style={{
                 display: "flex",
-                maxWidth: "747px",
-                height: "auto",
+                maxWidth: props.mapClippings[0].dimensions!.width,
+                height: props.mapClippings[0].dimensions!.height,
                 position: "relative",
                 // marginTop: "1.25rem",
               }}
@@ -277,10 +277,8 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
               {/* Main image */}
               <img
                 style={{
-                  objectFit: "cover",
-                  height: "100%",
                   width: "100%",
-                  alignSelf: "center",
+                  height: "100%",
                 }}
                 src={props.mapClippings[0].mapClippingDataUrl}
                 alt="map-clipping-1"
@@ -290,9 +288,12 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
                 <img
                   style={{
                     position: "absolute",
-                    objectFit: "cover",
-                    width: "35%",
-                    height: "auto",
+                    width: Math.round(
+                      props.mapClippings[1].dimensions!.width * 0.35
+                    ),
+                    height: Math.round(
+                      props.mapClippings[1].dimensions!.height * 0.35
+                    ),
                     bottom: "3px",
                     left: "3px",
                     boxShadow: "0 0 5px #201c1e",
@@ -307,7 +308,6 @@ export const OnePagePng: FunctionComponent<IOnePageProps> = (
                   <div
                     style={{
                       display: "flex",
-                      alignItems: "center",
                       gap: "0.25rem",
                       position: "absolute",
                       padding: "0.125rem",

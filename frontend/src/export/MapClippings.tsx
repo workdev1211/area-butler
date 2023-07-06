@@ -19,7 +19,7 @@ export const MapClippings: FunctionComponent<IMapClippingsProps> = ({
   qrCode,
 }) => {
   const mapClippingPairs: ISelectableMapClipping[][] = mapClippings
-    .filter((c) => c.selected)
+    .filter((c) => c.isSelected)
     .reduce(
       (
         result: ISelectableMapClipping[][],
