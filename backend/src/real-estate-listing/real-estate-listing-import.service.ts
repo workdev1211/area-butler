@@ -442,6 +442,7 @@ export class RealEstateListingImportService {
                     'anzahl_balkone',
                     'unterkellert',
                     'vermarktungsart',
+                    'objektnr_extern', // external id
                     'status2', // used by ReMax
                   ],
                 },
@@ -505,6 +506,8 @@ export class RealEstateListingImportService {
           }
         }
 
+        // LEFT FOR DEBUGGING PURPOSES
+        // const testData = [''];
         const chunks = createChunks(realEstates, 100);
 
         for (const chunk of chunks) {
@@ -549,6 +552,15 @@ export class RealEstateListingImportService {
               setRealEstateStatusByUserEmail(userEmail, realEstate);
             }
 
+            // LEFT FOR DEBUGGING PURPOSES
+            // testData.push(
+            //   `${realEstate.objektnr_extern || realEstate.Id}: ${
+            //     realEstate.status2
+            //   }, ${realEstate.vermarktungsart}, ${
+            //     (realEstate as IApiOnOfficeProcessedRealEstate).areaButlerStatus
+            //   }`,
+            // );
+
             Object.assign(realEstate, {
               userId: user.id,
               address: place.formatted_address,
@@ -572,7 +584,7 @@ export class RealEstateListingImportService {
                 filter: {
                   userId: user.id,
                   externalSource: ApiRealEstateExtSourcesEnum.ON_OFFICE,
-                  externalId: realEstate.Id,
+                  externalId: areaButlerRealEstate.externalId,
                 },
                 update: areaButlerRealEstate,
                 upsert: true,
@@ -582,6 +594,10 @@ export class RealEstateListingImportService {
 
           await this.realEstateListingModel.bulkWrite(bulkOperations);
         }
+
+        // LEFT FOR DEBUGGING PURPOSES
+        // testData.push('');
+        // this.logger.log(testData.join('\n'));
 
         break;
       }

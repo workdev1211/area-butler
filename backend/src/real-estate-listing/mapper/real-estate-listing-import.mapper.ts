@@ -7,6 +7,7 @@ import {
 
 export enum ApiOnOfficeRealEstStatusByUserEmailsEnum {
   REMAX = 'immoservice-paderborn@remax.de',
+  VOVA = 'vladimir.kuznetsov@brocoders.team',
 }
 
 // Refer to the keys of 'permittedvalues' of the 'status2' field description
@@ -41,6 +42,7 @@ export const setRealEstateStatusByUserEmail = (
   let status = ApiRealEstateStatusEnum.IN_PREPARATION;
 
   switch (email) {
+    case ApiOnOfficeRealEstStatusByUserEmailsEnum.VOVA:
     case ApiOnOfficeRealEstStatusByUserEmailsEnum.REMAX: {
       if (checkIsRemaxStatus(realEstate.status2, remaxArchived)) {
         status = ApiRealEstateStatusEnum.ARCHIVED;
@@ -64,7 +66,7 @@ export const setRealEstateStatusByUserEmail = (
       }
 
       if (checkIsRemaxStatus(realEstate.status2, remaxActive)) {
-        switch (realEstate.vermarktungsart) {
+        switch (realEstate.vermarktungsart.toUpperCase()) {
           case ApiOnOfficeEstateMarketTypesEnum.MIETE: {
             status = ApiRealEstateStatusEnum.FOR_RENT;
             break;
