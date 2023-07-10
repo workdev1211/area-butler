@@ -7,12 +7,11 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiSnapshotService } from './api-snapshot.service';
 import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
-import { ApiGuard } from './api.guard';
 import { configService } from '../config/config.service';
 
 @ApiTags('api-snapshot')
 @Controller('api/snapshot')
-@UseGuards(AuthGuard('auth0-api'), ApiGuard)
+@UseGuards(AuthGuard('api-key'))
 export class ApiSnapshotController {
   constructor(private readonly snapshotService: ApiSnapshotService) {}
 

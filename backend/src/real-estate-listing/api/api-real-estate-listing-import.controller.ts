@@ -13,7 +13,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 
 import { InjectUser } from '../../user/inject-user.decorator';
-import { ApiGuard } from '../../location/api.guard';
 import { ApiOpenImmoService } from './api-open-immo.service';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { UserDocument } from '../../user/schema/user.schema';
@@ -25,7 +24,7 @@ import { RolesGuard } from '../../auth/roles.guard';
 
 @ApiTags('api-real-estate-listing-import')
 @Controller('api/real-estate-listing/import')
-@UseGuards(AuthGuard('auth0-api'), ApiGuard, RolesGuard)
+@UseGuards(AuthGuard('api-key'), RolesGuard)
 export class ApiRealEstateListingImportController {
   constructor(
     private readonly apiOpenImmoService: ApiOpenImmoService,

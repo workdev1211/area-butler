@@ -1,0 +1,40 @@
+import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { PassportStrategy } from '@nestjs/passport';
+import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
+
+import { UserService } from '../user/user.service';
+import { apiRoutePathToFeatureTypeMapping } from '../shared/api.constants';
+
+@Injectable()
+export class ApiKeyStrategy extends PassportStrategy(
+  HeaderAPIKeyStrategy,
+  'api-key',
+) {
+  constructor(private readonly userService: UserService) {
+    super(
+      {
+        header: 'X-Api-Key',
+      },
+      true,
+      async (apiKey: string, verified, req): Promise<void> => {
+        const user = await this.userService.fetchByApiKey(apiKey);
+
+        if (
+          !user ||
+          !user.apiKeyParams.allowedFeatures.includes(
+            apiRoutePathToFeatureTypeMapping[
+              req.route.path.replace(/^\/api\/([\w-]*)/, '$1')
+            ],
+          )
+        ) {
+          return verified(new UnauthorizedException());
+        }
+
+        req.principal = user;
+        req.user = { email: user.email };
+
+        verified(null, user);
+      },
+    );
+  }
+}

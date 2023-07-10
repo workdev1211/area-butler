@@ -485,6 +485,10 @@ export class UserService {
     );
   }
 
+  async fetchByApiKey(apiKey: string): Promise<UserDocument> {
+    return this.userModel.findOne({ 'apiKeyParams.apiKey': apiKey });
+  }
+
   private async fetchUserAssets(userEmail: string): Promise<IApiUserAssets> {
     const dirPath = joinPath(process.cwd(), `../shared/assets/${userEmail}`);
     const mapPoiIconPath = joinPath(dirPath, '/icons/poi/map');

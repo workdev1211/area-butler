@@ -11,6 +11,8 @@ import {
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
+import { ApiKeyParamsSchema } from './api-key-params.schema';
+import { IApiKeyParams } from '../../shared/api.types';
 
 export type UserDocument = User &
   Document & {
@@ -74,6 +76,9 @@ export class User {
 
   @Prop({ type: Object })
   apiConnections: TApiUserApiConnections;
+
+  @Prop({ type: ApiKeyParamsSchema })
+  apiKeyParams: IApiKeyParams;
 
   @Prop({ type: String })
   parentId: string;

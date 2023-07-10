@@ -12,7 +12,6 @@ import { AuthGuard } from '@nestjs/passport';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import { ApiGuard } from './api.guard';
 import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
 import { AddressRadiusPipe } from './pipe/address-radius.pipe';
 import { UserService } from '../user/user.service';
@@ -28,7 +27,7 @@ import { AddressCoordinatePipe } from './pipe/address-coordinate.pipe';
 
 @ApiTags('api-address-range')
 @Controller('api/addresses-in-range')
-@UseGuards(AuthGuard('auth0-api'), ApiGuard)
+@UseGuards(AuthGuard('api-key'))
 export class ApiAddressesInRangeController {
   constructor(
     private readonly addressesInRangeService: ApiAddressesInRangeService,
