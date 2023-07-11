@@ -356,7 +356,7 @@ export class RealEstateListingImportService {
               continue;
             }
 
-            const place = await this.googleGeocodeService.fetchPlaceByAddress(
+            const place = await this.googleGeocodeService.fetchPlace(
               realEstate.address,
             );
 
@@ -794,7 +794,7 @@ export class RealEstateListingImportService {
         const address = `${street} ${processedHouseNumber[0]}, ${zipCode} ${locality}, ${country}`;
 
         const coordinates = (
-          await this.googleGeocodeService.fetchPlaceByAddress(address)
+          await this.googleGeocodeService.fetchPlace(address)
         ).geometry?.location;
 
         if (coordinates) {
@@ -838,7 +838,7 @@ export class RealEstateListingImportService {
         }
 
         const coordinates = (
-          await this.googleGeocodeService.fetchPlaceByAddress(address)
+          await this.googleGeocodeService.fetchPlace(address)
         ).geometry?.location;
 
         if (coordinates) {
@@ -948,9 +948,7 @@ export class RealEstateListingImportService {
         geometry: {
           location: { lat, lng },
         },
-      } = await this.googleGeocodeService.fetchPlaceByAddress(
-        realEstate.address,
-      );
+      } = await this.googleGeocodeService.fetchPlace(realEstate.address);
 
       realEstate.location = { type: 'Point', coordinates: [lat, lng] };
       return;
@@ -958,7 +956,7 @@ export class RealEstateListingImportService {
 
     if (realEstate.location) {
       const { formatted_address: resultingAddress } =
-        await this.googleGeocodeService.fetchPlaceByCoordinates({
+        await this.googleGeocodeService.fetchPlace({
           lat: realEstate.location.coordinates[0],
           lng: realEstate.location.coordinates[1],
         });

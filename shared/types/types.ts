@@ -519,3 +519,19 @@ export enum MapDisplayModesEnum {
   "EMBED" = "EMBED",
   "EDITOR" = "EDITOR",
 }
+
+export interface IApiCoordinatesOrAddress {
+  lat?: string;
+  lng?: string;
+  address?: string;
+}
+
+export interface IApiLocationIndexReq extends IApiCoordinatesOrAddress {
+  type?: ApiGeojsonType;
+}
+
+export interface IApiFetchAddrInRangeReq extends IApiCoordinatesOrAddress {
+  radius?: string;
+  language?: string;
+  apiName?: ApiAddressesInRangeApiNameEnum;
+}

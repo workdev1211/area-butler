@@ -23,7 +23,7 @@ export class ApiKeyStrategy extends PassportStrategy(
           !user ||
           !user.apiKeyParams.allowedFeatures.includes(
             apiRoutePathToFeatureTypeMapping[
-              req.route.path.replace(/^\/api\/([\w-]*)/, '$1')
+              req.route.path.replace(/^\/api\/([\w-]*)[/?]?.*/, '$1')
             ],
           )
         ) {

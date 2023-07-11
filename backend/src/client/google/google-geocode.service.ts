@@ -31,7 +31,7 @@ export class GoogleGeocodeService {
 
   constructor(private readonly http: HttpService) {}
 
-  async fetchPlaceByAddress(
+  private async fetchPlaceByAddress(
     address: string,
     language = ApiGoogleLanguageEnum.DE,
   ): Promise<IGoogleGeocodeResult | undefined> {
@@ -69,7 +69,7 @@ export class GoogleGeocodeService {
     return results[0];
   }
 
-  async fetchPlaceByCoordinates(
+  private async fetchPlaceByCoordinates(
     { lat, lng }: ApiCoordinates,
     language = ApiGoogleLanguageEnum.DE,
   ): Promise<IGoogleGeocodeResult | undefined> {
@@ -108,15 +108,25 @@ export class GoogleGeocodeService {
   async fetchPlace(
     location: string | ApiCoordinates,
     language = ApiGoogleLanguageEnum.DE,
-  ) {
+  ): Promise<IGoogleGeocodeResult> {
+    let place;
+
     if (
       typeof location === 'object' &&
       'lat' in location &&
       'lng' in location
     ) {
-      return this.fetchPlaceByCoordinates(location, language);
+      place = await this.fetchPlaceByCoordinates(location, language);
     }
 
-    return this.fetchPlaceByAddress(location, language);
+    if (typeof location === 'string') {
+      place = await this.fetchPlaceByAddress(location, language);
+    }
+
+    if (!place) {
+      throw new HttpException('Location not found!', 400);
+    }
+
+    return place;
   }
 }

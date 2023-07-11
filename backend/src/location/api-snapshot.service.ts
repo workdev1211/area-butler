@@ -101,10 +101,7 @@ export class ApiSnapshotService {
       transportationParams.push(...defaultTransportationParams);
     }
 
-    const place =
-      typeof location === 'string'
-        ? await this.googleGeocodeService.fetchPlaceByAddress(location)
-        : await this.googleGeocodeService.fetchPlaceByCoordinates(location);
+    const place = await this.googleGeocodeService.fetchPlace(location);
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',
@@ -145,10 +142,7 @@ export class ApiSnapshotService {
       snapshot: { transportationParams, localityParams, preferredLocations },
     } = await this.locationService.fetchSnapshotById(user, templateId);
 
-    const place =
-      typeof location === 'string'
-        ? await this.googleGeocodeService.fetchPlaceByAddress(location)
-        : await this.googleGeocodeService.fetchPlaceByCoordinates(location);
+    const place = await this.googleGeocodeService.fetchPlace(location);
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',

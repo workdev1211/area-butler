@@ -7,7 +7,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { AuthGuard } from '@nestjs/passport';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ZensusAtlasService } from './zensus-atlas.service';
@@ -58,7 +57,7 @@ interface ZensusDataGeojson {
 
 @ApiTags('zensus-atlas')
 @Controller('api/zensus-atlas')
-@UseGuards(AuthGuard('auth0-spa'), RolesGuard)
+@UseGuards(RolesGuard)
 export class ZensusAtlasController extends AuthenticatedController {
   constructor(private readonly zensusAtlasService: ZensusAtlasService) {
     super();

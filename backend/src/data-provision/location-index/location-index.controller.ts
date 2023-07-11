@@ -6,7 +6,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -24,7 +23,7 @@ import { LocationIndexDocument } from '../schemas/location-index.schema';
 
 @ApiTags('location-index')
 @Controller('api/location-index')
-@UseGuards(AuthGuard('auth0-spa'), RolesGuard)
+@UseGuards(RolesGuard)
 export class LocationIndexController extends AuthenticatedController {
   constructor(private readonly locationIndexService: LocationIndexService) {
     super();

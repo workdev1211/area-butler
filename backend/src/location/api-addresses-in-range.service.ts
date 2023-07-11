@@ -23,7 +23,7 @@ interface IFetchedAddresses {
   requestsNumber: number;
 }
 
-interface IFetchedAddressesResponse {
+interface IFetchedAddressesRes {
   sourceAddress: string;
   returnedAddressesNumber: number;
   returnedAddresses: IApiAddressInRange[];
@@ -43,18 +43,15 @@ export class ApiAddressesInRangeService {
     private readonly hereGeocodeService: HereGeocodeService,
   ) {}
 
-  async getAddressesInRange(
-    address: string | ApiCoordinates,
+  async fetchAddressesInRange(
+    location: string | ApiCoordinates,
     radius = 150, // meters
     language?: string,
     apiName = ApiAddressesInRangeApiNameEnum.HERE,
-  ): Promise<IFetchedAddressesResponse> {
+  ): Promise<IFetchedAddressesRes> {
     let resultingLanguage = language;
 
-    const place =
-      typeof address === 'string'
-        ? await this.googleGeocodeService.fetchPlaceByAddress(address)
-        : await this.googleGeocodeService.fetchPlaceByCoordinates(address);
+    const place = await this.googleGeocodeService.fetchPlace(location);
 
     const isInAllowedCountry = place?.address_components.some(
       ({ short_name: shortName, types }) =>
@@ -207,11 +204,10 @@ export class ApiAddressesInRangeService {
 
     const addresses = await Promise.all(
       coordinateGrid.map(async (coordinates) => {
-        const currentPlace =
-          await this.googleGeocodeService.fetchPlaceByCoordinates(
-            coordinates,
-            language,
-          );
+        const currentPlace = await this.googleGeocodeService.fetchPlace(
+          coordinates,
+          language,
+        );
 
         if (
           !currentPlace ||

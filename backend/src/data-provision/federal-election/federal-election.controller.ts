@@ -6,7 +6,6 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
@@ -24,7 +23,7 @@ import { FederalElectionDocument } from '../schemas/federal-election.schema';
 
 @ApiTags('federal-election')
 @Controller('api/federal-election')
-@UseGuards(AuthGuard('auth0-spa'), RolesGuard)
+@UseGuards(RolesGuard)
 export class FederalElectionController extends AuthenticatedController {
   constructor(private readonly federalElectionService: FederalElectionService) {
     super();

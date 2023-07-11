@@ -1,66 +1,46 @@
-import {
-  Controller,
-  Get,
-  HttpException,
-  Query,
-  Req,
-  UseGuards,
-} from '@nestjs/common';
+import { Controller, Get, HttpException, Query, Req } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthGuard } from '@nestjs/passport';
 
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
-import { AddressRadiusPipe } from './pipe/address-radius.pipe';
 import { UserService } from '../user/user.service';
 import {
-  ApiAddressesInRangeApiNameEnum,
   IApiAddressesInRangeRequestStatus,
   IApiAddressesInRangeRequestStatusEnum,
   IApiAddressesInRangeResponse,
 } from '@area-butler-types/types';
-import { AddressApiNamePipe } from './pipe/address-api-name.pipe';
-import { AddressLanguagePipe } from './pipe/address-language.pipe';
-import { AddressCoordinatePipe } from './pipe/address-coordinate.pipe';
+import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
+import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 
-@ApiTags('api-address-range')
-@Controller('api/addresses-in-range')
-@UseGuards(AuthGuard('api-key'))
-export class ApiAddressesInRangeController {
+@ApiTags('addresses-in-range', 'api')
+@Controller('api/api-addresses-in-range')
+export class ApiAddressesInRangeController extends ApiKeyAuthController {
   constructor(
     private readonly addressesInRangeService: ApiAddressesInRangeService,
     private readonly userService: UserService,
-  ) {}
+  ) {
+    super();
+  }
 
   @ApiOperation({
     description:
-      'Gets all addresses around the central one within a specified range',
+      'Fetches all of the addresses around the central one within a specified range',
   })
   @Get()
-  async getAddressesInRange(
+  async fetchAddressesInRange(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Req() request: any,
-    @Query('address') address?: string,
-    @Query('lat', AddressCoordinatePipe) lat?: number,
-    @Query('lng', AddressCoordinatePipe) lng?: number,
-    @Query('radius', AddressRadiusPipe) radius?: number,
-    @Query('language', AddressLanguagePipe) language?: string,
-    @Query('api', AddressApiNamePipe) apiName?: ApiAddressesInRangeApiNameEnum,
+    @Query()
+    fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<IApiAddressesInRangeResponse> {
-    if (!address && (!lat || !lng)) {
-      throw new HttpException(
-        'Please, provide either an "address" or the coordinates ("lat", "lng") of the central point!',
-        400,
-      );
-    }
-
-    const parsedUrl = request.url.match(/^\/.*\?(.*)$/);
+    const { lat, lng, address, radius, language, apiName } =
+      fetchAddrInRangeReq;
 
     const requestStatus: IApiAddressesInRangeRequestStatus = {
       status: IApiAddressesInRangeRequestStatusEnum.SUCCESS,
-      queryParams: Array.isArray(parsedUrl) ? parsedUrl[1] : request.url,
+      queryParams: JSON.stringify(fetchAddrInRangeReq),
     };
 
     try {
@@ -70,9 +50,9 @@ export class ApiAddressesInRangeController {
         returnedAddresses,
         requestType,
         requestsNumber,
-      } = await this.addressesInRangeService.getAddressesInRange(
-        address || { lat, lng },
-        radius,
+      } = await this.addressesInRangeService.fetchAddressesInRange(
+        address || { lat: +lat, lng: +lng },
+        +radius,
         language,
         apiName,
       );
