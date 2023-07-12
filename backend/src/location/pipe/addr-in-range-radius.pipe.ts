@@ -1,7 +1,7 @@
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
 
 @Injectable()
-export class AddressRadiusPipe implements PipeTransform {
+export class AddrInRangeRadiusPipe implements PipeTransform {
   transform(radius: string): number {
     if (!radius) {
       return;

@@ -4,15 +4,15 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import { ApiSnapshotService } from './api-snapshot.service';
+import { SnapshotExtService } from './snapshot-ext.service';
 import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
 import { configService } from '../config/config.service';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 
 @ApiTags('snapshot', 'api')
-@Controller('api/api-snapshot')
-export class ApiSnapshotController extends ApiKeyAuthController {
-  constructor(private readonly snapshotService: ApiSnapshotService) {
+@Controller('api/snapshot-ext')
+export class SnapshotExtController extends ApiKeyAuthController {
+  constructor(private readonly snapshotService: SnapshotExtService) {
     super();
   }
 

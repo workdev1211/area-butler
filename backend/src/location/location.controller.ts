@@ -26,7 +26,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
 import { IApiMongoParams } from '@area-butler-types/types';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
-import { ApiSnapshotService } from './api-snapshot.service';
+import { SnapshotExtService } from './snapshot-ext.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
@@ -39,7 +39,7 @@ export class LocationController extends AuthenticatedController {
     private readonly locationService: LocationService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly apiSnapshotService: ApiSnapshotService,
+    private readonly apiSnapshotService: SnapshotExtService,
   ) {
     super();
   }

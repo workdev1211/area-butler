@@ -14,6 +14,7 @@ import {
   systemEnvironments,
 } from "../constants/constants";
 import { IntegrationTypesEnum } from "./integration";
+import { ApiHereLanguageEnum } from "./here";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -456,10 +457,13 @@ export type TApiDataProvision = Record<
   ApiGeojsonFeature[]
 >;
 
-// TODO describe it later
-export interface IApiUserUsageStatistics {
-  addressesInRange: any;
+export enum ApiUserUsageStatsTypesEnum {
+  ADDRESSES_IN_RANGE = "addressesInRange",
+  LOCATION_INDICES = "locationIndices",
 }
+
+// TODO describe it later
+export type TApiUserUsageStatistics = Record<ApiUserUsageStatsTypesEnum, any>;
 
 export interface IApiAddressInRange {
   full_address: string;
@@ -477,23 +481,34 @@ export interface IApiAddressesInRangeResponse {
   addresses: IApiAddressInRange[];
 }
 
-export enum ApiAddressesInRangeApiNameEnum {
+export enum ApiAddrInRangeApiTypesEnum {
   HERE = "here",
   GOOGLE = "google",
 }
 
-export enum IApiAddressesInRangeRequestStatusEnum {
+export enum ApiRequestStatusesEnum {
   SUCCESS = "success",
   ERROR = "error",
 }
 
-export interface IApiAddressesInRangeRequestStatus {
-  status: IApiAddressesInRangeRequestStatusEnum;
-  queryParams: string;
+export type TApiUsageStatsReqStatus =
+  | IApiLocIndexQueryReqStatus
+  | IApiAddrInRangeReqStatus;
+
+export interface IApiLocIndexQueryReqStatus {
+  status: ApiRequestStatusesEnum;
+  queryParams: IApiFetchAddrInRangeReq | IApiLocationIndexReq;
+  coordinates: ApiCoordinates;
+  message?: string;
+}
+
+export interface IApiAddrInRangeReqStatus {
+  status: ApiRequestStatusesEnum;
+  queryParams: IApiFetchAddrInRangeReq | IApiLocationIndexReq;
   message?: string;
   sourceAddress?: string;
   returnedAddressesNumber?: number;
-  requestType?: ApiAddressesInRangeApiNameEnum;
+  apiType?: ApiAddrInRangeApiTypesEnum;
   requestsNumber?: number;
 }
 
@@ -521,8 +536,8 @@ export enum MapDisplayModesEnum {
 }
 
 export interface IApiCoordinatesOrAddress {
-  lat?: string;
-  lng?: string;
+  lat?: number;
+  lng?: number;
   address?: string;
 }
 
@@ -531,7 +546,7 @@ export interface IApiLocationIndexReq extends IApiCoordinatesOrAddress {
 }
 
 export interface IApiFetchAddrInRangeReq extends IApiCoordinatesOrAddress {
-  radius?: string;
-  language?: string;
-  apiName?: ApiAddressesInRangeApiNameEnum;
+  radius?: number;
+  language?: ApiHereLanguageEnum;
+  apiType?: ApiAddrInRangeApiTypesEnum;
 }

@@ -12,7 +12,7 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotSchema,
 } from './schema/search-result-snapshot.schema';
-import { ApiSnapshotController } from './api-snapshot.controller';
+import { SnapshotExtController } from './snapshot-ext.controller';
 import { TilesController } from './tiles.controller';
 import { ClientModule } from '../client/client.module';
 import { AuthModule } from '../auth/auth.module';
@@ -26,11 +26,11 @@ import {
   RealEstateListing,
   RealEstateListingSchema,
 } from '../real-estate-listing/schema/real-estate-listing.schema';
-import { ApiSnapshotService } from './api-snapshot.service';
+import { SnapshotExtService } from './snapshot-ext.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
-import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
-import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
+import { AddressesInRangeExtController } from './addresses-in-range-ext.controller';
+import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntegrationController } from './location-integration.controller';
 import { LocationIntegrationService } from './location-integration.service';
@@ -54,9 +54,9 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
     LocationController,
     LocationIntegrationController,
     EmbeddedMapController,
-    ApiSnapshotController,
+    SnapshotExtController,
     TilesController,
-    ApiAddressesInRangeController,
+    AddressesInRangeExtController,
   ],
   providers: [
     LocationService,
@@ -64,12 +64,12 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
     RoutingService,
     RealEstateListingService,
     RealEstateListingIntService,
-    ApiSnapshotService,
+    SnapshotExtService,
     MongoParamPipe,
     MongoSortParamPipe,
-    ApiAddressesInRangeService,
+    AddressesInRangeExtService,
     LocationIntegrationService,
   ],
-  exports: [LocationService, ApiSnapshotService, LocationIntegrationService],
+  exports: [LocationService, SnapshotExtService, LocationIntegrationService],
 })
 export class LocationModule {}

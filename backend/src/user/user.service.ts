@@ -26,10 +26,11 @@ import {
 } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
-  IApiAddressesInRangeRequestStatus,
+  ApiUserUsageStatsTypesEnum,
   IApiUserApiConnectionSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
+  TApiUsageStatsReqStatus,
 } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
@@ -444,9 +445,10 @@ export class UserService {
     return user;
   }
 
-  async onAddressesInRangeFetch(
+  async logUsageStatistics(
     user: UserDocument,
-    requestStatus: IApiAddressesInRangeRequestStatus,
+    statsType: ApiUserUsageStatsTypesEnum,
+    requestStatus: TApiUsageStatsReqStatus,
   ): Promise<void> {
     const currentDate = new Date();
 
@@ -455,7 +457,7 @@ export class UserService {
         { _id: user.parentId },
         {
           $inc: {
-            [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+            [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
               currentDate.getUTCMonth() + 1
             }.total`]: 1,
           },
@@ -468,12 +470,12 @@ export class UserService {
       { _id: user.id },
       {
         $inc: {
-          [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+          [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
             currentDate.getUTCMonth() + 1
           }.total`]: 1,
         },
         $push: {
-          [`usageStatistics.addressesInRange.${currentDate.getUTCFullYear()}.${
+          [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
             currentDate.getUTCMonth() + 1
           }.requests`]: {
             timestamp: currentDate.toISOString(),

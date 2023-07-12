@@ -1,7 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 
 import {
-  ApiAddressesInRangeApiNameEnum,
+  ApiAddrInRangeApiTypesEnum,
   ApiCoordinates,
   IApiAddressInRange,
 } from '@area-butler-types/types';
@@ -20,23 +20,23 @@ import { HereGeocodeService } from '../client/here/here-geocode.service';
 
 interface IFetchedAddresses {
   addresses: IApiAddressInRange[];
-  requestsNumber: number;
+  apiRequestsNumber: number;
 }
 
 interface IFetchedAddressesRes {
   sourceAddress: string;
   returnedAddressesNumber: number;
   returnedAddresses: IApiAddressInRange[];
-  requestType: ApiAddressesInRangeApiNameEnum;
-  requestsNumber: number;
+  apiType: ApiAddrInRangeApiTypesEnum;
+  apiRequestsNumber: number;
 }
 
 const MAXIMUM_RADIUS = 400;
 const MINIMUM_ADDRESSES_NUMBER = 200;
 
 @Injectable()
-export class ApiAddressesInRangeService {
-  private readonly logger = new Logger(ApiAddressesInRangeService.name);
+export class AddressesInRangeExtService {
+  private readonly logger = new Logger(AddressesInRangeExtService.name);
 
   constructor(
     private readonly googleGeocodeService: GoogleGeocodeService,
@@ -47,7 +47,7 @@ export class ApiAddressesInRangeService {
     location: string | ApiCoordinates,
     radius = 150, // meters
     language?: string,
-    apiName = ApiAddressesInRangeApiNameEnum.HERE,
+    apiType = ApiAddrInRangeApiTypesEnum.HERE,
   ): Promise<IFetchedAddressesRes> {
     let resultingLanguage = language;
 
@@ -82,8 +82,8 @@ export class ApiAddressesInRangeService {
 
     let fetchedAddresses;
 
-    switch (apiName) {
-      case ApiAddressesInRangeApiNameEnum.HERE: {
+    switch (apiType) {
+      case ApiAddrInRangeApiTypesEnum.HERE: {
         resultingLanguage = Object.values(ApiHereLanguageEnum).includes(
           resultingLanguage as ApiHereLanguageEnum,
         )
@@ -98,7 +98,7 @@ export class ApiAddressesInRangeService {
         break;
       }
 
-      case ApiAddressesInRangeApiNameEnum.GOOGLE: {
+      case ApiAddrInRangeApiTypesEnum.GOOGLE: {
         resultingLanguage = Object.values(ApiGoogleLanguageEnum).includes(
           resultingLanguage as ApiGoogleLanguageEnum,
         )
@@ -150,11 +150,11 @@ export class ApiAddressesInRangeService {
     );
 
     return {
+      apiType,
       sourceAddress: place.formatted_address,
       returnedAddressesNumber: filteredAddresses.length,
       returnedAddresses: filteredAddresses,
-      requestType: apiName,
-      requestsNumber: fetchedAddresses.requestsNumber,
+      apiRequestsNumber: fetchedAddresses.apiRequestsNumber,
     };
   }
 
@@ -244,7 +244,7 @@ export class ApiAddressesInRangeService {
       }),
     );
 
-    return { addresses, requestsNumber: coordinateGrid.length };
+    return { addresses, apiRequestsNumber: coordinateGrid.length };
   }
 
   private async fetchAddressesByHere(
@@ -349,6 +349,6 @@ export class ApiAddressesInRangeService {
     //   }),
     // );
 
-    return { addresses, requestsNumber: coordinateGrid.length };
+    return { addresses, apiRequestsNumber: coordinateGrid.length };
   }
 }

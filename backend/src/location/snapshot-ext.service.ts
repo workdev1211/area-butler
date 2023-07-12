@@ -23,7 +23,7 @@ import {
 } from '../../../shared/constants/location';
 
 @Injectable()
-export class ApiSnapshotService {
+export class SnapshotExtService {
   constructor(
     private readonly locationService: LocationService,
     private readonly routingService: RoutingService,

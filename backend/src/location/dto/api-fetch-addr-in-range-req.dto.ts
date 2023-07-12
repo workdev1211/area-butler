@@ -1,26 +1,33 @@
-import { IsEnum, IsNumberString, IsOptional, IsString } from 'class-validator';
+import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
+import { Type } from 'class-transformer';
 
 import {
-  ApiAddressesInRangeApiNameEnum,
+  ApiAddrInRangeApiTypesEnum,
   IApiFetchAddrInRangeReq,
 } from '@area-butler-types/types';
 import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
+import { ApiHereLanguageEnum } from '@area-butler-types/here';
 
 class ApiFetchAddrInRangeReqDto
   extends ApiCoordinatesOrAddressDto
   implements IApiFetchAddrInRangeReq
 {
   @IsOptional()
-  @IsNumberString()
-  radius?: string;
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(400)
+  radius?: number;
 
   @IsOptional()
-  @IsString()
-  language?: string;
+  @IsEnum(ApiHereLanguageEnum, {
+    message: "language should be BCP 47 compliant (e.g., 'de')",
+  })
+  language?: ApiHereLanguageEnum;
 
   @IsOptional()
-  @IsEnum(ApiAddressesInRangeApiNameEnum)
-  apiName?: ApiAddressesInRangeApiNameEnum;
+  @IsEnum(ApiAddrInRangeApiTypesEnum)
+  apiType?: ApiAddrInRangeApiTypesEnum;
 }
 
 export default ApiFetchAddrInRangeReqDto;

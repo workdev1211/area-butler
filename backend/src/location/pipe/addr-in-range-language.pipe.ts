@@ -4,7 +4,7 @@ import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 
 @Injectable()
-export class AddressLanguagePipe implements PipeTransform {
+export class AddrInRangeLanguagePipe implements PipeTransform {
   transform(language: string): string {
     if (!language) {
       return;

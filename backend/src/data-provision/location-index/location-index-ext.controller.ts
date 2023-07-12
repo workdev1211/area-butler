@@ -9,13 +9,20 @@ import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
 import ApiLocIndexQueryReqDto from '../dto/api-loc-index-query-req.dto';
 import { GoogleGeocodeService } from '../../client/google/google-geocode.service';
 import { ApiLocationIndexFeaturePropertiesEnum } from '@area-butler-types/location-index';
+import {
+  ApiRequestStatusesEnum,
+  ApiUserUsageStatsTypesEnum,
+  IApiLocIndexQueryReqStatus,
+} from '@area-butler-types/types';
+import { UserService } from '../../user/user.service';
 
 @ApiTags('location-index', 'api')
-@Controller('api/api-location-index')
-export class ApiLocationIndexController extends ApiKeyAuthController {
+@Controller('api/location-index-ext')
+export class LocationIndexExtController extends ApiKeyAuthController {
   constructor(
     private readonly locationIndexService: LocationIndexService,
     private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly userService: UserService,
   ) {
     super();
   }
@@ -24,10 +31,11 @@ export class ApiLocationIndexController extends ApiKeyAuthController {
   @Get('query')
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Query() { lat, lng, address, type }: ApiLocIndexQueryReqDto,
+    @Query() locationIndexQueryReq: ApiLocIndexQueryReqDto,
   ): Promise<Record<ApiLocationIndexFeaturePropertiesEnum, number> | string> {
+    const { lat, lng, address, type } = locationIndexQueryReq;
     // Due to the specifics of GeoJson, longitude comes first, then latitude
-    const coordinates: Array<number | string> = [];
+    const coordinates: number[] = [];
 
     if (lat && lng) {
       coordinates.push(lng, lat);
@@ -42,18 +50,33 @@ export class ApiLocationIndexController extends ApiKeyAuthController {
       );
     }
 
-    const locationIndexData = await this.locationIndexService.findIntersecting(
-      user,
-      {
-        coordinates,
-        type: type || 'Point',
-      },
-    );
+    const requestStatus: IApiLocIndexQueryReqStatus = {
+      status: ApiRequestStatusesEnum.SUCCESS,
+      queryParams: locationIndexQueryReq,
+      coordinates: { lat: coordinates[1], lng: coordinates[0] },
+    };
 
-    if (locationIndexData[0]) {
-      return locationIndexData[0].properties;
+    try {
+      const locationIndexData =
+        await this.locationIndexService.findIntersecting(user, {
+          coordinates,
+          type: type || 'Point',
+        });
+
+      if (locationIndexData[0]) {
+        return locationIndexData[0].properties;
+      }
+
+      return 'Location indices not found!';
+    } catch (e) {
+      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.message = e.message;
+    } finally {
+      await this.userService.logUsageStatistics(
+        user,
+        ApiUserUsageStatsTypesEnum.LOCATION_INDICES,
+        requestStatus,
+      );
     }
-
-    return 'Location indices not found!';
   }
 }

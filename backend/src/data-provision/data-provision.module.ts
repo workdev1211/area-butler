@@ -31,7 +31,7 @@ import { LocationIndexController } from './location-index/location-index.control
 import { FederalElectionIntController } from './federal-election/federal-election-int.controller';
 import { ParticlePollutionIntController } from './particle-pollution/particle-pollution-int.controller';
 import { LocationIndexIntController } from './location-index/location-index-int.controller';
-import { ApiLocationIndexController } from './location-index/api-location-index.controller';
+import { LocationIndexExtController } from './location-index/location-index-ext.controller';
 
 @Module({
   providers: [
@@ -48,7 +48,7 @@ import { ApiLocationIndexController } from './location-index/api-location-index.
     FederalElectionIntController,
     ParticlePollutionIntController,
     LocationIndexIntController,
-    ApiLocationIndexController,
+    LocationIndexExtController,
   ],
   imports: [
     MongooseModule.forFeature([

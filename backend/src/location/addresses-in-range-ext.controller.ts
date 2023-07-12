@@ -4,21 +4,22 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import { ApiAddressesInRangeService } from './api-addresses-in-range.service';
+import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { UserService } from '../user/user.service';
 import {
-  IApiAddressesInRangeRequestStatus,
-  IApiAddressesInRangeRequestStatusEnum,
+  ApiRequestStatusesEnum,
+  ApiUserUsageStatsTypesEnum,
   IApiAddressesInRangeResponse,
+  IApiAddrInRangeReqStatus,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 
 @ApiTags('addresses-in-range', 'api')
-@Controller('api/api-addresses-in-range')
-export class ApiAddressesInRangeController extends ApiKeyAuthController {
+@Controller('api/addresses-in-range-ext')
+export class AddressesInRangeExtController extends ApiKeyAuthController {
   constructor(
-    private readonly addressesInRangeService: ApiAddressesInRangeService,
+    private readonly addressesInRangeService: AddressesInRangeExtService,
     private readonly userService: UserService,
   ) {
     super();
@@ -35,12 +36,12 @@ export class ApiAddressesInRangeController extends ApiKeyAuthController {
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<IApiAddressesInRangeResponse> {
-    const { lat, lng, address, radius, language, apiName } =
+    const { lat, lng, address, radius, language, apiType } =
       fetchAddrInRangeReq;
 
-    const requestStatus: IApiAddressesInRangeRequestStatus = {
-      status: IApiAddressesInRangeRequestStatusEnum.SUCCESS,
-      queryParams: JSON.stringify(fetchAddrInRangeReq),
+    const requestStatus: IApiAddrInRangeReqStatus = {
+      status: ApiRequestStatusesEnum.SUCCESS,
+      queryParams: fetchAddrInRangeReq,
     };
 
     try {
@@ -48,20 +49,20 @@ export class ApiAddressesInRangeController extends ApiKeyAuthController {
         sourceAddress,
         returnedAddressesNumber,
         returnedAddresses,
-        requestType,
-        requestsNumber,
+        apiRequestsNumber,
+        apiType: resultingApiType,
       } = await this.addressesInRangeService.fetchAddressesInRange(
-        address || { lat: +lat, lng: +lng },
-        +radius,
+        address || { lat, lng },
+        radius,
         language,
-        apiName,
+        apiType,
       );
 
       Object.assign(requestStatus, {
         sourceAddress,
         returnedAddressesNumber,
-        requestType,
-        requestsNumber,
+        apiRequestsNumber,
+        apiType: resultingApiType,
       });
 
       return {
@@ -69,7 +70,7 @@ export class ApiAddressesInRangeController extends ApiKeyAuthController {
         addresses: returnedAddresses,
       };
     } catch (e) {
-      requestStatus.status = IApiAddressesInRangeRequestStatusEnum.ERROR;
+      requestStatus.status = ApiRequestStatusesEnum.ERROR;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {
@@ -81,7 +82,11 @@ export class ApiAddressesInRangeController extends ApiKeyAuthController {
 
       throw e;
     } finally {
-      await this.userService.onAddressesInRangeFetch(user, requestStatus);
+      await this.userService.logUsageStatistics(
+        user,
+        ApiUserUsageStatsTypesEnum.ADDRESSES_IN_RANGE,
+        requestStatus,
+      );
     }
   }
 }
