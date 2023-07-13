@@ -22,7 +22,6 @@ import {
   TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
   TApiIntUserAvailProdContingents,
-  TApiIntUserUsageStatsParamNames,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { getAvailProdContType } from '../../../shared/functions/integration.functions';
@@ -292,25 +291,6 @@ export class IntegrationUserService {
       {
         $inc: {
           [`productsUsed.${prodContType}`]: 1,
-        },
-      },
-      { new: true },
-    );
-  }
-
-  async incrementUsageStatsParam(
-    integrationUserDbId: string,
-    paramName: TApiIntUserUsageStatsParamNames,
-  ): Promise<TIntegrationUserDocument> {
-    const currentDate = dayjs();
-
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUserDbId,
-      {
-        $inc: {
-          [`usageStatistics.${paramName}.${currentDate.year()}.${
-            currentDate.month() + 1
-          }.${currentDate.date()}`]: 1,
         },
       },
       { new: true },

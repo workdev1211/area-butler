@@ -71,7 +71,7 @@ export class AddressesInRangeExtService {
         )}, !isInAllowedCountry = ${!isInAllowedCountry}`,
       );
 
-      throw new HttpException('The location was not found!', 400);
+      throw new HttpException('Location not found!', 400);
     }
 
     if (!resultingLanguage) {

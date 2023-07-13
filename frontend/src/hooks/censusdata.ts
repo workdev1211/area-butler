@@ -61,7 +61,7 @@ const cleanProperties = (completeData: TApiDataProvision): TCensusData => {
 
   return Object.keys(completeData).reduce<TCensusData>(
     (resultingCompleteData, layerName) => {
-      const layerData = completeData[layerName as ApiDataProvisionEnum].reduce<
+      const layerData = completeData[layerName as ApiDataProvisionEnum]!.reduce<
         ICensusData[]
       >((resultingLayerData, layerParameter) => {
         const processedProperties = Object.keys(

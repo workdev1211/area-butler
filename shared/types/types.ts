@@ -444,26 +444,29 @@ export interface IApiUserAssets {
 export enum ApiDataProvisionEnum {
   ADDRESS_DATA = "addressData",
   ZIP_LEVEL_DATA = "zipLevelData",
-}
-
-export enum DataProvisionEnum {
-  ADDRESS_DATA = "addressData",
-  ZIP_LEVEL_DATA = "zipLevelData",
   AVERAGE_DATA = "averageData",
 }
 
-export type TApiDataProvision = Record<
-  ApiDataProvisionEnum,
-  ApiGeojsonFeature[]
+export type TApiDataProvision = Partial<
+  Record<ApiDataProvisionEnum, ApiGeojsonFeature[]>
 >;
 
-export enum ApiUserUsageStatsTypesEnum {
+export enum ApiUsageStatsTypesEnum {
   ADDRESSES_IN_RANGE = "addressesInRange",
   LOCATION_INDICES = "locationIndices",
 }
 
-// TODO describe it later
-export type TApiUserUsageStatistics = Record<ApiUserUsageStatsTypesEnum, any>;
+export interface IApiUsageStatisticsSchema {
+  userId: string;
+  integrationType: IntegrationTypesEnum;
+  timestamp: string;
+  statistics: TApiUsageStatistics;
+}
+
+export type TApiUsageStatistics = Record<
+  ApiUsageStatsTypesEnum,
+  Array<IApiAddrInRangeReqStatus | IApiLocIndexQueryReqStatus>
+>;
 
 export interface IApiAddressInRange {
   full_address: string;

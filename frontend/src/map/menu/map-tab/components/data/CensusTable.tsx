@@ -1,10 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { TCensusData } from "../../../../../hooks/censusdata";
-import {
-  ApiDataProvisionEnum,
-  DataProvisionEnum,
-} from "../../../../../../../shared/types/types";
+import { ApiDataProvisionEnum } from "../../../../../../../shared/types/types";
 import Loading from "../../../components/Loading";
 
 export const averageCensus = {
@@ -45,7 +42,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
       string,
       {
         label: string;
-        value: Record<DataProvisionEnum, string>;
+        value: Record<ApiDataProvisionEnum, string>;
         unit: string;
       }
     >
@@ -79,7 +76,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
             value: {
               [provisionKey]: processedValue,
               averageData: processCensusValue(averageCensus[label]),
-            } as Record<DataProvisionEnum, string>,
+            } as Record<ApiDataProvisionEnum, string>,
             unit,
           };
         }
@@ -107,15 +104,15 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
             </td>
             <td>
               <span className="font-bold italic">
-                {censusValue.value[DataProvisionEnum.ADDRESS_DATA] || "-"}
+                {censusValue.value[ApiDataProvisionEnum.ADDRESS_DATA] || "-"}
               </span>
               <br />
               <span className="font-bold italic">
-                {censusValue.value[DataProvisionEnum.ZIP_LEVEL_DATA] || "-"}
+                {censusValue.value[ApiDataProvisionEnum.ZIP_LEVEL_DATA] || "-"}
               </span>
               <br />
               <span className="italic">
-                {censusValue.value[DataProvisionEnum.AVERAGE_DATA] || "-"}
+                {censusValue.value[ApiDataProvisionEnum.AVERAGE_DATA] || "-"}
               </span>
             </td>
           </tr>

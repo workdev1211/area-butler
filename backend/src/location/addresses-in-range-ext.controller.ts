@@ -5,22 +5,22 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
-import { UserService } from '../user/user.service';
 import {
   ApiRequestStatusesEnum,
-  ApiUserUsageStatsTypesEnum,
+  ApiUsageStatsTypesEnum,
   IApiAddressesInRangeResponse,
   IApiAddrInRangeReqStatus,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
+import { UsageStatisticsService } from '../user/usage-statistics.service';
 
 @ApiTags('addresses-in-range', 'api')
 @Controller('api/addresses-in-range-ext')
 export class AddressesInRangeExtController extends ApiKeyAuthController {
   constructor(
     private readonly addressesInRangeService: AddressesInRangeExtService,
-    private readonly userService: UserService,
+    private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
   }
@@ -35,7 +35,7 @@ export class AddressesInRangeExtController extends ApiKeyAuthController {
     @Req() request: any,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
-  ): Promise<IApiAddressesInRangeResponse> {
+  ): Promise<IApiAddressesInRangeResponse | string> {
     const { lat, lng, address, radius, language, apiType } =
       fetchAddrInRangeReq;
 
@@ -80,11 +80,11 @@ export class AddressesInRangeExtController extends ApiKeyAuthController {
         );
       }
 
-      throw e;
+      return e.message;
     } finally {
-      await this.userService.logUsageStatistics(
+      await this.usageStatisticsService.logUsageStatistics(
         user,
-        ApiUserUsageStatsTypesEnum.ADDRESSES_IN_RANGE,
+        ApiUsageStatsTypesEnum.ADDRESSES_IN_RANGE,
         requestStatus,
       );
     }

@@ -33,6 +33,7 @@ import {
   MeansOfTransportation,
   OsmName,
   OsmType,
+  TApiUsageStatsReqStatus,
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
@@ -61,11 +62,11 @@ import {
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { UsageStatisticsService } from '../user/usage-statistics.service';
 
 @Injectable()
 export class LocationService {
@@ -77,12 +78,12 @@ export class LocationService {
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly userService: UserService,
-    private readonly integrationUserService: IntegrationUserService,
     private readonly subscriptionService: SubscriptionService,
     private readonly overpassDataService: OverpassDataService,
     private readonly openAiService: OpenAiService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
+    private readonly usageStatisticsService: UsageStatisticsService,
   ) {}
 
   async searchLocation(
@@ -268,9 +269,10 @@ export class LocationService {
     }
 
     if (!existingLocation && isIntegrationUser) {
-      await this.integrationUserService.incrementUsageStatsParam(
-        user.id,
+      await this.usageStatisticsService.logUsageStatistics(
+        user,
         ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT,
+        {} as TApiUsageStatsReqStatus,
       );
     }
 

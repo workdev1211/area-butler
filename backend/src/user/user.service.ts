@@ -26,11 +26,9 @@ import {
 } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
-  ApiUserUsageStatsTypesEnum,
   IApiUserApiConnectionSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
-  TApiUsageStatsReqStatus,
 } from '@area-butler-types/types';
 import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
@@ -443,48 +441,6 @@ export class UserService {
     }
 
     return user;
-  }
-
-  async logUsageStatistics(
-    user: UserDocument,
-    statsType: ApiUserUsageStatsTypesEnum,
-    requestStatus: TApiUsageStatsReqStatus,
-  ): Promise<void> {
-    const currentDate = new Date();
-
-    if (user.parentId) {
-      await this.userModel.updateOne(
-        { _id: user.parentId },
-        {
-          $inc: {
-            [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
-              currentDate.getUTCMonth() + 1
-            }.total`]: 1,
-          },
-        },
-        { upsert: true },
-      );
-    }
-
-    await this.userModel.updateOne(
-      { _id: user.id },
-      {
-        $inc: {
-          [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
-            currentDate.getUTCMonth() + 1
-          }.total`]: 1,
-        },
-        $push: {
-          [`usageStatistics.${statsType}.${currentDate.getUTCFullYear()}.${
-            currentDate.getUTCMonth() + 1
-          }.requests`]: {
-            timestamp: currentDate.toISOString(),
-            ...requestStatus,
-          },
-        },
-      },
-      { upsert: true, omitUndefined: true },
-    );
   }
 
   async fetchByApiKey(apiKey: string): Promise<UserDocument> {

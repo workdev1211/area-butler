@@ -6,7 +6,6 @@ import {
   ApiShowTour,
   IApiUserExportFont,
   IApiUserPoiIcons,
-  TApiUserUsageStatistics,
   TApiUserApiConnections,
 } from '@area-butler-types/types';
 import { initialShowTour } from '../../../../shared/constants/constants';
@@ -41,8 +40,9 @@ export class User {
   @Prop({ type: Array, default: [] })
   requestContingents: ApiRequestContingent[];
 
+  // TODO remove in the future
   @Prop({ type: Object })
-  usageStatistics: TApiUserUsageStatistics;
+  usageStatistics: any;
 
   @Prop({ type: String })
   stripeCustomerId: string;

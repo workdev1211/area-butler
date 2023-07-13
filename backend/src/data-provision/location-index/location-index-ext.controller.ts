@@ -11,10 +11,10 @@ import { GoogleGeocodeService } from '../../client/google/google-geocode.service
 import { ApiLocationIndexFeaturePropertiesEnum } from '@area-butler-types/location-index';
 import {
   ApiRequestStatusesEnum,
-  ApiUserUsageStatsTypesEnum,
+  ApiUsageStatsTypesEnum,
   IApiLocIndexQueryReqStatus,
 } from '@area-butler-types/types';
-import { UserService } from '../../user/user.service';
+import { UsageStatisticsService } from '../../user/usage-statistics.service';
 
 @ApiTags('location-index', 'api')
 @Controller('api/location-index-ext')
@@ -22,7 +22,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
   constructor(
     private readonly locationIndexService: LocationIndexService,
     private readonly googleGeocodeService: GoogleGeocodeService,
-    private readonly userService: UserService,
+    private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
   }
@@ -71,10 +71,12 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     } catch (e) {
       requestStatus.status = ApiRequestStatusesEnum.ERROR;
       requestStatus.message = e.message;
+
+      return e.message;
     } finally {
-      await this.userService.logUsageStatistics(
+      await this.usageStatisticsService.logUsageStatistics(
         user,
-        ApiUserUsageStatsTypesEnum.LOCATION_INDICES,
+        ApiUsageStatsTypesEnum.LOCATION_INDICES,
         requestStatus,
       );
     }

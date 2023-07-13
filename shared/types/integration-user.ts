@@ -49,11 +49,10 @@ export enum ApiIntUserOnOfficeProdContTypesEnum {
   SUBSCRIPTION = "SUBSCRIPTION",
 }
 
-export type TApiIntUserOnOfficeUsageStatsParamNames =
+export type TApiIntUserOnOfficeUsageStatsTypes =
   ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT;
 
-export type TApiIntUserUsageStatsParamNames =
-  TApiIntUserOnOfficeUsageStatsParamNames;
+export type TApiIntUserUsageStatsTypes = TApiIntUserOnOfficeUsageStatsTypes;
 
 export type TApiIntUserUsageStatisticsMetrics = {
   [year: number]: { [month: number]: { [date: number]: number } };
@@ -101,7 +100,7 @@ export type TApiIntegrationUserConfig = {
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
-  Record<TApiIntUserUsageStatsParamNames, TApiIntUserUsageStatisticsMetrics>
+  Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>
 >;
 
 export type TAreaButlerExportTypes =

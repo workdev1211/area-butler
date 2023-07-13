@@ -15,6 +15,11 @@ import {
 } from './schema/integration-user.schema';
 import { IntegrationUserService } from './integration-user.service';
 import { IntegrationUserController } from './integration-user.controller';
+import { UsageStatisticsService } from './usage-statistics.service';
+import {
+  UsageStatistics,
+  UsageStatisticsSchema,
+} from './schema/usage-statistics.schema';
 
 @Module({
   imports: [
@@ -25,6 +30,10 @@ import { IntegrationUserController } from './integration-user.controller';
         schema: SubscriptionSchema,
       },
       { name: IntegrationUser.name, schema: IntegrationUserSchema },
+      {
+        name: UsageStatistics.name,
+        schema: UsageStatisticsSchema,
+      },
     ]),
     ClientModule,
   ],
@@ -34,8 +43,14 @@ import { IntegrationUserController } from './integration-user.controller';
     SubscriptionListener,
     UserSubscriptionPipe,
     IntegrationUserService,
+    UsageStatisticsService,
   ],
-  exports: [UserService, SubscriptionService, IntegrationUserService],
+  exports: [
+    UserService,
+    SubscriptionService,
+    IntegrationUserService,
+    UsageStatisticsService,
+  ],
   controllers: [UserController, IntegrationUserController],
 })
 export class UserModule {}
