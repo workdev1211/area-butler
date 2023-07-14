@@ -18,7 +18,7 @@ import { IntegrationUserService } from '../user/integration-user.service';
 import { LocationService } from './location.service';
 
 @Injectable()
-export class LocationIntegrationService {
+export class LocationIntService {
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,

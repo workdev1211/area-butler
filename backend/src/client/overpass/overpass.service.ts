@@ -9,10 +9,14 @@ import { firstValueFrom } from 'rxjs';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { configService } from '../../config/config.service';
 import { OverpassData } from '../../data-provision/schemas/overpass-data.schema';
-import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
-import { ApiOsmEntity, OsmName, OsmType } from '@area-butler-types/types';
-import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
-import ApiAddressDto from '../../dto/api-address.dto';
+import {
+  ApiAddress,
+  ApiCoordinates,
+  ApiOsmEntity,
+  ApiOsmLocation,
+  OsmName,
+  OsmType,
+} from '@area-butler-types/types';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
@@ -25,10 +29,10 @@ export class OverpassService {
   constructor(private readonly http: HttpService) {}
 
   async fetchEntities(
-    coordinates: ApiCoordinatesDto,
+    coordinates: ApiCoordinates,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocationDto[]> {
+  ): Promise<ApiOsmLocation[]> {
     const requestParams = await this.deriveRequestParams(
       coordinates,
       distanceInMeters,
@@ -52,9 +56,9 @@ export class OverpassService {
 
   async mapResponse(
     response,
-    centerCoordinates: ApiCoordinatesDto,
+    centerCoordinates: ApiCoordinates,
     preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocationDto[]> {
+  ): Promise<ApiOsmLocation[]> {
     const elements = Array.isArray(response)
       ? response
       : response?.data?.elements;
@@ -63,93 +67,90 @@ export class OverpassService {
       return [];
     }
 
-    const rawElements: ApiOsmLocationDto[] = elements.reduce(
-      (result, element) => {
-        const elementTags: Record<string, any> = element.tags;
+    const rawElements: ApiOsmLocation[] = elements.reduce((result, element) => {
+      const elementTags: Record<string, any> = element.tags;
 
-        const isSwimmingPool =
-          elementTags[OsmType.leisure] === OsmName.sports_centre &&
-          elementTags['sport'] === 'swimming';
+      const isSwimmingPool =
+        elementTags[OsmType.leisure] === OsmName.sports_centre &&
+        elementTags['sport'] === 'swimming';
 
-        const entityTypes = osmEntityTypes.filter((entityType) => {
-          // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
-          if (isSwimmingPool) {
-            return entityType.name === OsmName.swimming_pool;
+      const entityTypes = osmEntityTypes.filter((entityType) => {
+        // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
+        if (isSwimmingPool) {
+          return entityType.name === OsmName.swimming_pool;
+        }
+
+        return elementTags[entityType.type] === entityType.name;
+      });
+
+      const coordinates = !!element.center
+        ? {
+            lat: element.center.lat,
+            lng: element.center.lon,
+          }
+        : {
+            lat: element.lat,
+            lng: element.lon,
+          };
+
+      const distanceInMeters = harversine(
+        {
+          latitude: centerCoordinates.lat,
+          longitude: centerCoordinates.lng,
+        },
+        {
+          latitude: coordinates.lat,
+          longitude: coordinates.lng,
+        },
+        { unit: 'meter' },
+      );
+
+      const address: ApiAddress = {
+        street: `${elementTags['addr:street']}${
+          !!elementTags['addr:housenumber']
+            ? ` ${elementTags['addr:housenumber']}`
+            : ''
+        }`,
+        postalCode: elementTags['addr:postcode'],
+        city: elementTags['addr:city'],
+      };
+
+      const processedElements = entityTypes.reduce<ApiOsmLocation[]>(
+        (result, entity) => {
+          // sometimes Overpass returns POI objects which were not specified in the request query
+          if (!preferredAmenities.includes(entity.name)) {
+            return result;
           }
 
-          return elementTags[entityType.type] === entityType.name;
-        });
+          // Adds the highway number to its title
+          const processedTitle =
+            entity.name === OsmName.motorway_link &&
+            elementTags['destination:ref']
+              ? `${entity.label} ${elementTags['destination:ref']}`
+              : elementTags.name;
 
-        const coordinates = !!element.center
-          ? {
-              lat: element.center.lat,
-              lng: element.center.lon,
-            }
-          : {
-              lat: element.lat,
-              lng: element.lon,
-            };
+          result.push({
+            entity: {
+              id: `${element.id}-${entity.name}`,
+              label: entity.label,
+              title: processedTitle,
+              type: entity.type,
+              name: entity.name,
+            } as ApiOsmEntity,
+            coordinates,
+            distanceInMeters,
+            address,
+          });
 
-        const distanceInMeters = harversine(
-          {
-            latitude: centerCoordinates.lat,
-            longitude: centerCoordinates.lng,
-          },
-          {
-            latitude: coordinates.lat,
-            longitude: coordinates.lng,
-          },
-          { unit: 'meter' },
-        );
+          return result;
+        },
+        [],
+      );
 
-        const address: ApiAddressDto = {
-          street: `${elementTags['addr:street']}${
-            !!elementTags['addr:housenumber']
-              ? ` ${elementTags['addr:housenumber']}`
-              : ''
-          }`,
-          postalCode: elementTags['addr:postcode'],
-          city: elementTags['addr:city'],
-        };
+      result.push(...processedElements);
 
-        const processedElements = entityTypes.reduce<ApiOsmLocationDto[]>(
-          (result, entity) => {
-            // sometimes Overpass returns POI objects which were not specified in the request query
-            if (!preferredAmenities.includes(entity.name)) {
-              return result;
-            }
-
-            // Adds the highway number to its title
-            const processedTitle =
-              entity.name === OsmName.motorway_link &&
-              elementTags['destination:ref']
-                ? `${entity.label} ${elementTags['destination:ref']}`
-                : elementTags.name;
-
-            result.push({
-              entity: {
-                id: `${element.id}-${entity.name}`,
-                label: entity.label,
-                title: processedTitle,
-                type: entity.type,
-                name: entity.name,
-              } as ApiOsmEntity,
-              coordinates,
-              distanceInMeters,
-              address,
-            });
-
-            return result;
-          },
-          [],
-        );
-
-        result.push(...processedElements);
-
-        return result;
-      },
-      [],
-    );
+      return result;
+    }, []);
 
     const CIRCLE_OPTIONS: Properties = { units: 'meters' };
 
@@ -224,7 +225,7 @@ export class OverpassService {
   }
 
   private async deriveRequestParams(
-    coordinates: ApiCoordinatesDto,
+    coordinates: ApiCoordinates,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
   ) {
@@ -235,6 +236,10 @@ export class OverpassService {
       const entityType = osmEntityTypes.find(
         (e) => e.name === preferredAmenity,
       );
+
+      if ([OsmName.favorite, OsmName.property].includes(preferredAmenity)) {
+        continue;
+      }
 
       const entityQuery =
         entityType.replacementQuery ||

@@ -17,7 +17,7 @@ export class UserSubscriptionPipe implements PipeTransform {
     );
 
     if (!userSubscription) {
-      throw new HttpException('User has no active subscription', 400);
+      throw new HttpException('User has no active subscription.', 400);
     }
 
     user.subscription = userSubscription;

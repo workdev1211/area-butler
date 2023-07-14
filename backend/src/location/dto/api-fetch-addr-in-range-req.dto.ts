@@ -1,5 +1,5 @@
 import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Transform } from 'class-transformer';
 
 import {
   ApiAddrInRangeApiTypesEnum,
@@ -13,11 +13,11 @@ class ApiFetchAddrInRangeReqDto
   implements IApiFetchAddrInRangeReq
 {
   @IsOptional()
-  @Type(() => Number)
+  @Transform(({ value }) => +value, { toClassOnly: true })
   @IsInt()
   @Min(1)
   @Max(400)
-  radius?: number;
+  radius?: number = 150;
 
   @IsOptional()
   @IsEnum(ApiHereLanguageEnum, {
@@ -27,7 +27,7 @@ class ApiFetchAddrInRangeReqDto
 
   @IsOptional()
   @IsEnum(ApiAddrInRangeApiTypesEnum)
-  apiType?: ApiAddrInRangeApiTypesEnum;
+  apiType?: ApiAddrInRangeApiTypesEnum = ApiAddrInRangeApiTypesEnum.HERE;
 }
 
 export default ApiFetchAddrInRangeReqDto;

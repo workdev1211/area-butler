@@ -28,7 +28,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
   }
 
   @ApiOperation({ description: 'Query for location index data' })
-  @Get('query')
+  @Get()
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query() locationIndexQueryReq: ApiLocIndexQueryReqDto,

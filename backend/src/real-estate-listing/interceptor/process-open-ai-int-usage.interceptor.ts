@@ -34,7 +34,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
     let actionType;
 
     switch (path) {
-      case '/api/location-integration/open-ai-loc-desc': {
+      case '/api/location-int/open-ai-loc-desc': {
         actionType = OpenAiQueryTypeEnum.LOCATION_DESCRIPTION;
         break;
       }
@@ -44,12 +44,12 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
         break;
       }
 
-      case '/api/location-integration/open-ai-loc-real-est-desc': {
+      case '/api/location-int/open-ai-loc-real-est-desc': {
         actionType = OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION;
         break;
       }
 
-      case '/api/open-ai-integration/query': {
+      case '/api/open-ai-int/query': {
         actionType = isFormalToInformal
           ? OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL
           : OpenAiQueryTypeEnum.GENERAL_QUESTION;

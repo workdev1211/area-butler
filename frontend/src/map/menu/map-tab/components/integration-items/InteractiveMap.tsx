@@ -81,7 +81,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
     try {
       const iframeEndsAt = (
         await post<Date>(
-          `/api/location-integration/unlock-iframe/${integrationSnapshotId}`
+          `/api/location-int/unlock-iframe/${integrationSnapshotId}`
         )
       ).data;
 

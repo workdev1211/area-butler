@@ -35,7 +35,6 @@ export const initialShowTour: ApiShowTour = {
 };
 
 export const localStorageConsentGivenKey = "ab-cg";
-export const localStorageSearchContext = "ab-sc";
 
 export const calculateMinutesToMeters = [
   { mean: MeansOfTransportation.WALK, multiplicator: 83 },

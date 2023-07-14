@@ -47,7 +47,7 @@ export const useOpenAi = () => {
     switch (openAiQueryType) {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
         url = isIntegration
-          ? "/api/location-integration/open-ai-loc-desc"
+          ? "/api/location-int/open-ai-loc-desc"
           : "/api/location/open-ai-loc-desc";
         break;
       }
@@ -61,7 +61,7 @@ export const useOpenAi = () => {
 
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
         url = isIntegration
-          ? "/api/location-integration/open-ai-loc-real-est-desc"
+          ? "/api/location-int/open-ai-loc-real-est-desc"
           : "/api/location/open-ai-loc-real-est-desc";
         break;
       }
@@ -69,9 +69,7 @@ export const useOpenAi = () => {
       case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
       case OpenAiQueryTypeEnum.GENERAL_QUESTION:
       default: {
-        url = isIntegration
-          ? "/api/open-ai-integration/query"
-          : "/api/open-ai/query";
+        url = isIntegration ? "/api/open-ai-int/query" : "/api/open-ai/query";
       }
     }
 

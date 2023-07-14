@@ -27,7 +27,6 @@ interface IFetchedAddressesRes {
   sourceAddress: string;
   returnedAddressesNumber: number;
   returnedAddresses: IApiAddressInRange[];
-  apiType: ApiAddrInRangeApiTypesEnum;
   apiRequestsNumber: number;
 }
 
@@ -45,9 +44,9 @@ export class AddressesInRangeExtService {
 
   async fetchAddressesInRange(
     location: string | ApiCoordinates,
-    radius = 150, // meters
+    radius, // meters
+    apiType,
     language?: string,
-    apiType = ApiAddrInRangeApiTypesEnum.HERE,
   ): Promise<IFetchedAddressesRes> {
     let resultingLanguage = language;
 
@@ -150,7 +149,6 @@ export class AddressesInRangeExtService {
     );
 
     return {
-      apiType,
       sourceAddress: place.formatted_address,
       returnedAddressesNumber: filteredAddresses.length,
       returnedAddresses: filteredAddresses,

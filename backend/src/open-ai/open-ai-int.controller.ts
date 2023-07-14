@@ -9,8 +9,8 @@ import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-int
 import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 
 @ApiTags('open-ai')
-@Controller('api/open-ai-integration')
-export class OpenAiIntegrationController {
+@Controller('api/open-ai-int')
+export class OpenAiIntController {
   constructor(private readonly openAiService: OpenAiService) {}
 
   @ApiOperation({ description: 'Fetch Open AI response' })

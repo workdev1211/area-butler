@@ -23,8 +23,8 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
-import { IntegrationUserService } from '../user/integration-user.service';
-import { LocationIntegrationService } from './location-integration.service';
+// import { IntegrationUserService } from '../user/integration-user.service';
+import { LocationIntService } from './location-int.service';
 // import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from '../real-estate-listing/inject-real-estate-listing.decorator';
@@ -35,13 +35,12 @@ import { IApiMongoParams } from '@area-butler-types/types';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
-@Controller('api/location-integration')
-export class LocationIntegrationController {
+@Controller('api/location-int')
+export class LocationIntController {
   constructor(
     private readonly locationService: LocationService,
-    private readonly locationIntegrationService: LocationIntegrationService,
-    private readonly realEstateListingService: RealEstateListingService,
-    private readonly integrationUserService: IntegrationUserService,
+    private readonly locationIntService: LocationIntService,
+    private readonly realEstateListingService: RealEstateListingService, // private readonly integrationUserService: IntegrationUserService,
   ) {}
 
   @ApiOperation({ description: 'Create a new map snapshot' })
@@ -51,10 +50,7 @@ export class LocationIntegrationController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationIntegrationService.createSnapshot(
-      integrationUser,
-      snapshot,
-    );
+    return this.locationIntService.createSnapshot(integrationUser, snapshot);
   }
 
   @ApiOperation({
@@ -194,7 +190,7 @@ export class LocationIntegrationController {
   //   );
   //
   //   const { iframeEndsAt } =
-  //     await this.locationIntegrationService.setIframeDuration(
+  //     await this.locationIntService.setIframeDuration(
   //       integrationUser,
   //       id,
   //     );

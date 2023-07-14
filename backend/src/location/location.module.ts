@@ -12,7 +12,6 @@ import {
   SearchResultSnapshot,
   SearchResultSnapshotSchema,
 } from './schema/search-result-snapshot.schema';
-import { SnapshotExtController } from './snapshot-ext.controller';
 import { TilesController } from './tiles.controller';
 import { ClientModule } from '../client/client.module';
 import { AuthModule } from '../auth/auth.module';
@@ -29,12 +28,12 @@ import {
 import { SnapshotExtService } from './snapshot-ext.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
-import { AddressesInRangeExtController } from './addresses-in-range-ext.controller';
-import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { OpenAiModule } from '../open-ai/open-ai.module';
-import { LocationIntegrationController } from './location-integration.controller';
-import { LocationIntegrationService } from './location-integration.service';
+import { LocationIntController } from './location-int.controller';
+import { LocationIntService } from './location-int.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
+import { LocationExtController } from './location-ext.controller';
 
 @Module({
   imports: [
@@ -52,11 +51,10 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
   ],
   controllers: [
     LocationController,
-    LocationIntegrationController,
+    LocationIntController,
     EmbeddedMapController,
-    SnapshotExtController,
     TilesController,
-    AddressesInRangeExtController,
+    LocationExtController,
   ],
   providers: [
     LocationService,
@@ -68,8 +66,8 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
     MongoParamPipe,
     MongoSortParamPipe,
     AddressesInRangeExtService,
-    LocationIntegrationService,
+    LocationIntService,
   ],
-  exports: [LocationService, SnapshotExtService, LocationIntegrationService],
+  exports: [LocationService, LocationIntService],
 })
 export class LocationModule {}

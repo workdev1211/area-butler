@@ -48,7 +48,7 @@ import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { LocationIntegrationService } from '../location/location-integration.service';
+import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
@@ -75,7 +75,7 @@ export class OnOfficeService {
     private readonly integrationUserService: IntegrationUserService,
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly locationIntegrationService: LocationIntegrationService,
+    private readonly locationIntService: LocationIntService,
   ) {}
 
   async getRenderData({
@@ -303,12 +303,11 @@ export class OnOfficeService {
       ),
     );
 
-    const snapshot =
-      await this.locationIntegrationService.fetchLatestSnapByIntId(
-        estateId,
-        integrationUser,
-        this.integrationType,
-      );
+    const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
+      estateId,
+      integrationUser,
+      this.integrationType,
+    );
 
     return {
       integrationUserId,
@@ -440,12 +439,11 @@ export class OnOfficeService {
       convertOnOfficeProdToIntUserProd(product),
     );
 
-    const snapshot =
-      await this.locationIntegrationService.fetchLatestSnapByIntId(
-        integrationId,
-        integrationUser,
-        this.integrationType,
-      );
+    const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
+      integrationId,
+      integrationUser,
+      this.integrationType,
+    );
 
     return {
       integrationUserId: integrationUser.integrationUserId,

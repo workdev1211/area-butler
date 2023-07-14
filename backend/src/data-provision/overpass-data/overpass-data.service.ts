@@ -9,9 +9,11 @@ import {
 } from '../schemas/overpass-data.schema';
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { OverpassService } from '../../client/overpass/overpass.service';
-import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
-import { OsmName } from '@area-butler-types/types';
-import ApiOsmLocationDto from '../../dto/api-osm-location.dto';
+import {
+  ApiCoordinates,
+  ApiOsmLocation,
+  OsmName,
+} from '@area-butler-types/types';
 
 @Injectable()
 export class OverpassDataService {
@@ -73,10 +75,10 @@ export class OverpassDataService {
   }
 
   async findForCenterAndDistance(
-    coordinates: ApiCoordinatesDto,
+    coordinates: ApiCoordinates,
     distanceInMeters: number,
     preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocationDto[]> {
+  ): Promise<ApiOsmLocation[]> {
     const dbQuery = {
       geometry: {
         $nearSphere: {

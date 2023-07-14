@@ -4,6 +4,7 @@ export const apiRoutePathToFeatureTypeMapping: Record<
   string,
   ApiFeatureTypesEnum
 > = {
-  'addresses-in-range-ext': ApiFeatureTypesEnum.ADDRESSES_IN_RANGE,
+  'addresses-in-range': ApiFeatureTypesEnum.ADDRESSES_IN_RANGE,
   'location-index-ext': ApiFeatureTypesEnum.LOCATION_INDICES,
+  'poi-data': ApiFeatureTypesEnum.POI_DATA,
 };

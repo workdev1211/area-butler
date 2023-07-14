@@ -39,7 +39,7 @@ export class LocationController extends AuthenticatedController {
     private readonly locationService: LocationService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly apiSnapshotService: SnapshotExtService,
+    private readonly snapshotExtService: SnapshotExtService,
   ) {
     super();
   }
@@ -73,7 +73,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiCreateRouteSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.apiSnapshotService.createRouteSnapshot(user, snapshot);
+    return this.snapshotExtService.createRouteSnapshot(user, snapshot);
   }
 
   // TODO think about merging updateSnapshot and updateSnapshotDescription

@@ -1,10 +1,16 @@
-import { Controller, Get, HttpException, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpException,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import {
   ApiRequestStatusesEnum,
   ApiUsageStatsTypesEnum,
@@ -14,13 +20,18 @@ import {
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
+import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
+import { configService } from '../config/config.service';
+import { SnapshotExtService } from './snapshot-ext.service';
+import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 
-@ApiTags('addresses-in-range', 'api')
-@Controller('api/addresses-in-range-ext')
-export class AddressesInRangeExtController extends ApiKeyAuthController {
+@ApiTags('location', 'api')
+@Controller('api/location-ext')
+export class LocationExtController extends ApiKeyAuthController {
   constructor(
-    private readonly addressesInRangeService: AddressesInRangeExtService,
+    private readonly addressesInRangeExtService: AddressesInRangeExtService,
     private readonly usageStatisticsService: UsageStatisticsService,
+    private readonly snapshotExtService: SnapshotExtService,
   ) {
     super();
   }
@@ -29,10 +40,9 @@ export class AddressesInRangeExtController extends ApiKeyAuthController {
     description:
       'Fetches all of the addresses around the central one within a specified range',
   })
-  @Get()
+  @Get('addresses-in-range')
   async fetchAddressesInRange(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Req() request: any,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<IApiAddressesInRangeResponse | string> {
@@ -50,19 +60,18 @@ export class AddressesInRangeExtController extends ApiKeyAuthController {
         returnedAddressesNumber,
         returnedAddresses,
         apiRequestsNumber,
-        apiType: resultingApiType,
-      } = await this.addressesInRangeService.fetchAddressesInRange(
+      } = await this.addressesInRangeExtService.fetchAddressesInRange(
         address || { lat, lng },
         radius,
-        language,
         apiType,
+        language,
       );
 
       Object.assign(requestStatus, {
         sourceAddress,
         returnedAddressesNumber,
         apiRequestsNumber,
-        apiType: resultingApiType,
+        apiType,
       });
 
       return {
@@ -88,5 +97,27 @@ export class AddressesInRangeExtController extends ApiKeyAuthController {
         requestStatus,
       );
     }
+  }
+
+  @ApiOperation({
+    description: 'Create a search result snapshot from a template',
+  })
+  @Post('snapshot-from-template')
+  async createSnapshotFromTemplate(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body()
+    { coordinates, address, snapshotId }: ApiCreateSnapshotFromTemplateDto,
+  ): Promise<{ snapshotId: string; directLink: string }> {
+    const { id, token } =
+      await this.snapshotExtService.createSnapshotFromTemplate(
+        user,
+        coordinates || address,
+        snapshotId,
+      );
+
+    return {
+      snapshotId: id,
+      directLink: `${configService.getBaseAppUrl()}/embed?token=${token}`,
+    };
   }
 }

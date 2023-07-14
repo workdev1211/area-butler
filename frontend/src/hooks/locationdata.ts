@@ -43,7 +43,7 @@ export const useLocationData = () => {
   ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
       isIntegrationUser
-        ? "/api/location-integration/search"
+        ? "/api/location-int/search"
         : "/api/location/search",
       search
     );
@@ -57,7 +57,7 @@ export const useLocationData = () => {
     return (
       await get<ApiSearchResultSnapshotResponse>(
         isIntegrationUser
-          ? `/api/location-integration/snapshot/${snapshotId}`
+          ? `/api/location-int/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`
       )
     ).data;
@@ -67,7 +67,7 @@ export const useLocationData = () => {
     queryParams?: string
   ): Promise<ApiSearchResultSnapshotResponse[]> => {
     let url = isIntegrationUser
-      ? "/api/location-integration/snapshots"
+      ? "/api/location-int/snapshots"
       : "/api/location/snapshots";
 
     if (queryParams) {
@@ -156,7 +156,7 @@ export const useLocationData = () => {
     return (
       await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
         isIntegrationUser
-          ? "/api/location-integration/snapshot"
+          ? "/api/location-int/snapshot"
           : "/api/location/snapshot",
         {
           location,
@@ -183,7 +183,7 @@ export const useLocationData = () => {
     return (
       await put<ApiSearchResultSnapshotResponse>(
         isIntegrationUser
-          ? `/api/location-integration/snapshot/${snapshotId}`
+          ? `/api/location-int/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`,
         updateSnapshotData
       )
