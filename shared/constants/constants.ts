@@ -36,11 +36,12 @@ export const initialShowTour: ApiShowTour = {
 
 export const localStorageConsentGivenKey = "ab-cg";
 
-export const calculateMinutesToMeters = [
-  { mean: MeansOfTransportation.WALK, multiplicator: 83 },
-  { mean: MeansOfTransportation.BICYCLE, multiplicator: 233 },
-  { mean: MeansOfTransportation.CAR, multiplicator: 338 },
-];
+export const minutesToMetersMultipliers: Record<MeansOfTransportation, number> =
+  {
+    [MeansOfTransportation.WALK]: 83,
+    [MeansOfTransportation.BICYCLE]: 233,
+    [MeansOfTransportation.CAR]: 338,
+  };
 
 export const unitsOfTransportation = [
   { label: "Minuten", type: UnitsOfTransportation.MINUTES },

@@ -11,7 +11,6 @@ import {
   OsmName,
 } from "../../../../../../../shared/types/types";
 import {
-  deriveMinutesFromMeters,
   distanceToHumanReadable,
   timeToHumanReadable,
 } from "../../../../../shared/shared.functions";
@@ -19,6 +18,7 @@ import {
   EntityGroup,
   ResultEntity,
 } from "../../../../../components/SearchResultContainer";
+import { convertMetersToMinutes } from "../../../../../../../shared/functions/shared.functions";
 
 interface ILocalityItemProps {
   item: ResultEntity;
@@ -212,7 +212,7 @@ export const LocalityItemContent: FunctionComponent<{
         <span className="locality-item-cell-label">Fußweg</span>
         <span>
           {timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               item.distanceInMeters,
               MeansOfTransportation.WALK
             )
@@ -223,7 +223,7 @@ export const LocalityItemContent: FunctionComponent<{
         <span className="locality-item-cell-label">Fahrrad</span>
         <span>
           {timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               item.distanceInMeters,
               MeansOfTransportation.BICYCLE
             )
@@ -234,7 +234,7 @@ export const LocalityItemContent: FunctionComponent<{
         <span className="locality-item-cell-label">Auto</span>
         <span>
           {timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               item.distanceInMeters,
               MeansOfTransportation.CAR
             )

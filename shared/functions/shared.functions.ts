@@ -1,5 +1,13 @@
-import { osmEntityTypes, umlautMap } from "../constants/constants";
-import { ApiCoordinates, ApiOsmEntity } from "../types/types";
+import {
+  minutesToMetersMultipliers,
+  osmEntityTypes,
+  umlautMap,
+} from "../constants/constants";
+import {
+  ApiCoordinates,
+  ApiOsmEntity,
+  MeansOfTransportation,
+} from "../types/types";
 
 export const groupBy = (xs: any, f: any): Record<string, any> =>
   xs.reduce(
@@ -201,3 +209,8 @@ export const truncateText = (text: string, limit: number): string =>
   limit < 4 || text.length <= limit
     ? text
     : `${text.substring(0, limit - 3)}...`;
+
+export const convertMetersToMinutes = (
+  distanceInMeters: number,
+  mean: MeansOfTransportation
+) => Math.round(distanceInMeters / (minutesToMetersMultipliers[mean] || 1));

@@ -27,6 +27,7 @@ import "./Map.scss";
 import FormModal, { ModalConfig } from "components/FormModal";
 import { IGotoMapCenter } from "context/SearchContext";
 import {
+  convertMetersToMinutes,
   getCombinedOsmEntityTypes,
   groupBy,
   randomizeCoordinates,
@@ -67,7 +68,6 @@ import {
 import {
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
-  deriveMinutesFromMeters,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   realEstateListingsTitle,
@@ -158,7 +158,7 @@ export class IdMarker extends L.Marker {
 
       const byFoot = this.entity.byFoot
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               this.entity.distanceInMeters,
               MeansOfTransportation.WALK
             )
@@ -167,7 +167,7 @@ export class IdMarker extends L.Marker {
 
       const byBike = this.entity.byBike
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               this.entity.distanceInMeters,
               MeansOfTransportation.BICYCLE
             )
@@ -176,7 +176,7 @@ export class IdMarker extends L.Marker {
 
       const byCar = this.entity.byCar
         ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(
-            deriveMinutesFromMeters(
+            convertMetersToMinutes(
               this.entity.distanceInMeters,
               MeansOfTransportation.CAR
             )

@@ -48,7 +48,6 @@ import windTurbineIcon from "../assets/icons/pois/wind_turbine.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
 import {
-  calculateMinutesToMeters,
   meansOfTransportations,
   osmEntityTypes,
 } from "../../../shared/constants/constants";
@@ -123,17 +122,6 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
       longitude: to.lng,
     },
     { unit: "meter" }
-  );
-};
-
-export const deriveMinutesFromMeters = (
-  distanceInMeters: number,
-  mean: MeansOfTransportation
-) => {
-  return Math.round(
-    distanceInMeters /
-      (calculateMinutesToMeters.find((mtm) => mtm.mean === mean)
-        ?.multiplicator || 1)
   );
 };
 

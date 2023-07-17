@@ -21,7 +21,6 @@ import {
   PollutionData,
 } from "map/menu/map-tab/components/data/ParticlePollutionTable";
 import {
-  deriveMinutesFromMeters,
   distanceToHumanReadable,
   timeToHumanReadable,
 } from "shared/shared.functions";
@@ -38,6 +37,7 @@ import {
   EntityGroup,
   ResultEntity,
 } from "../../../components/SearchResultContainer";
+import { convertMetersToMinutes } from "../../../../../shared/functions/shared.functions";
 
 export interface TableProps {
   data: { header: string[]; body: string[][] };
@@ -176,7 +176,7 @@ export const mapTableDataFromEntityGroup = (
               item.byFoot
                 ? timeToHumanReadable(
                     Math.trunc(
-                      deriveMinutesFromMeters(
+                      convertMetersToMinutes(
                         item.distanceInMeters,
                         MeansOfTransportation.WALK
                       )
@@ -191,7 +191,7 @@ export const mapTableDataFromEntityGroup = (
               item.byBike
                 ? timeToHumanReadable(
                     Math.trunc(
-                      deriveMinutesFromMeters(
+                      convertMetersToMinutes(
                         item.distanceInMeters,
                         MeansOfTransportation.BICYCLE
                       )
@@ -205,7 +205,7 @@ export const mapTableDataFromEntityGroup = (
               item.byCar
                 ? timeToHumanReadable(
                     Math.trunc(
-                      deriveMinutesFromMeters(
+                      convertMetersToMinutes(
                         item.distanceInMeters,
                         MeansOfTransportation.CAR
                       )

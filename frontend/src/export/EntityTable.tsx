@@ -1,6 +1,7 @@
+import { FunctionComponent } from "react";
+
 import "./EntityTable.scss";
-import React from "react";
-import { calculateMinutesToMeters } from "../../../shared/constants/constants";
+
 import { MeansOfTransportation } from "../../../shared/types/types";
 import {
   deriveColorPalette,
@@ -8,6 +9,7 @@ import {
   timeToHumanReadable,
 } from "shared/shared.functions";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { convertMetersToMinutes } from "../../../shared/functions/shared.functions";
 
 export interface EntityTableProps {
   entityGroup: EntityGroup;
@@ -16,18 +18,8 @@ export interface EntityTableProps {
   showRoutingColumns?: boolean;
   primaryColor?: string;
 }
-const deriveMinutesFromMeters = (
-  distanceInMeters: number,
-  mean: MeansOfTransportation
-) => {
-  return (
-    distanceInMeters /
-    (calculateMinutesToMeters.find((mtm) => mtm.mean === mean)?.multiplicator ||
-      1)
-  );
-};
 
-export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
+export const EntityTable: FunctionComponent<EntityTableProps> = ({
   entityGroup,
   limit = 10,
   activeMeans,
@@ -95,7 +87,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                     <td>
                       {item.byFoot
                         ? `${timeToHumanReadable(
-                            deriveMinutesFromMeters(
+                            convertMetersToMinutes(
                               item.distanceInMeters,
                               MeansOfTransportation.WALK
                             )
@@ -109,7 +101,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                     <td>
                       {item.byBike
                         ? `${timeToHumanReadable(
-                            deriveMinutesFromMeters(
+                            convertMetersToMinutes(
                               item.distanceInMeters,
                               MeansOfTransportation.BICYCLE
                             )
@@ -123,7 +115,7 @@ export const EntityTable: React.FunctionComponent<EntityTableProps> = ({
                     <td>
                       {item.byCar
                         ? `${timeToHumanReadable(
-                            deriveMinutesFromMeters(
+                            convertMetersToMinutes(
                               item.distanceInMeters,
                               MeansOfTransportation.CAR
                             )

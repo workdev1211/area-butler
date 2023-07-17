@@ -9,7 +9,6 @@ import {
   LocationSearch,
   LocationSearchDocument,
 } from './schema/location-search.schema';
-import { calculateMinutesToMeters } from '../../../shared/constants/constants';
 import { groupBy } from '../../../shared/functions/shared.functions';
 import { SubscriptionService } from '../user/subscription.service';
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
@@ -67,6 +66,7 @@ import { RealEstateListingDocument } from '../real-estate-listing/schema/real-es
 import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { minutesToMetersMultipliers } from '../../../shared/constants/constants';
 
 @Injectable()
 export class LocationService {
@@ -148,7 +148,7 @@ export class LocationService {
     const preferredAmenities = search.preferredAmenities;
     const routingProfiles = {};
 
-    function deriveMeterEquivalent(routingProfile: TransportationParam) {
+    const convertDistanceToMeters = (routingProfile: TransportationParam) => {
       const { amount } = routingProfile;
 
       if (routingProfile.unit === UnitsOfTransportation.KILOMETERS) {
@@ -156,49 +156,23 @@ export class LocationService {
         return amount * 1000;
       }
 
-      switch (routingProfile.type) {
-        case MeansOfTransportation.BICYCLE:
-          return (
-            amount *
-            1.2 *
-            calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.BICYCLE,
-            )?.multiplicator
-          );
-
-        case MeansOfTransportation.CAR:
-          return (
-            amount *
-            1.2 *
-            calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.CAR,
-            )?.multiplicator
-          );
-
-        case MeansOfTransportation.WALK:
-          return (
-            amount *
-            1.2 *
-            calculateMinutesToMeters.find(
-              (mtm) => mtm.mean === MeansOfTransportation.WALK,
-            )?.multiplicator
-          );
-
-        default:
-          return 0;
+      if (Object.values(MeansOfTransportation).includes(routingProfile.type)) {
+        return amount * 1.2 * minutesToMetersMultipliers[routingProfile.type];
       }
-    }
+
+      return 0;
+    };
 
     for (const routingProfile of search.meansOfTransportation) {
       const locationsOfInterest = !!configService.useOverpassDb()
         ? await this.overpassDataService.findForCenterAndDistance(
             coordinates,
-            deriveMeterEquivalent(routingProfile),
+            convertDistanceToMeters(routingProfile),
             preferredAmenities,
           )
         : await this.overpassService.fetchEntities(
             coordinates,
-            deriveMeterEquivalent(routingProfile),
+            convertDistanceToMeters(routingProfile),
             preferredAmenities,
           );
 
