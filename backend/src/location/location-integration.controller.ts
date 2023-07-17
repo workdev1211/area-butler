@@ -9,7 +9,6 @@ import {
   UseInterceptors,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import * as dayjs from 'dayjs';
 
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
@@ -105,9 +104,6 @@ export class LocationIntegrationController {
       integrationUser,
       id,
     );
-
-    snapshotDoc.updatedAt = dayjs().toDate();
-    await snapshotDoc.save();
 
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(

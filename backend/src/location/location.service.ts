@@ -425,7 +425,7 @@ export class LocationService {
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchSnapshotById(user, id);
 
-    Object.assign(snapshotDoc, { snapshot, config });
+    Object.assign(snapshotDoc, { snapshot, config, updatedAt: new Date() });
 
     return snapshotDoc.save();
   }
@@ -490,7 +490,11 @@ export class LocationService {
       );
     }
 
-    const filterQuery = filter || { userId: user.id };
+    const filterQuery =
+      filter ||
+      (isIntegrationUser
+        ? { 'integrationParams.integrationUserId': user.integrationUserId }
+        : { userId: user.id });
 
     return this.searchResultSnapshotModel
       .find(filterQuery, includedFields)

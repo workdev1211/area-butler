@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import * as dayjs from 'dayjs';
 
 import {
   SearchResultSnapshot,
@@ -56,30 +55,32 @@ export class LocationIntegrationService {
       await this.integrationUserService.createMapboxAccessToken(integrationUser)
     ).config.mapboxAccessToken;
 
-    const latestSnapshot = (
+    const latestAccountSnapshot = (
       await this.locationService.fetchSnapshots(
         integrationUser,
         0,
         1,
-        { iframeEndsAt: 1 },
-        { updatedAt: -1, createdAt: -1 },
-        { 'integrationParams.integrationId': snapshot.integrationId },
+        { config: 1 },
+        { updatedAt: -1 },
       )
     )[0];
 
     const { id, config, createdAt } =
-      await this.searchResultSnapshotModel.create({
-        mapboxAccessToken,
-        snapshot,
-        token,
-        config: defaultSnapshotConfig,
-        iframeEndsAt: latestSnapshot?.iframeEndsAt,
-        integrationParams: {
-          integrationId: snapshot.integrationId,
-          integrationUserId: integrationUser.integrationUserId,
-          integrationType: integrationUser.integrationType,
+      await this.searchResultSnapshotModel.findOneAndUpdate(
+        {
+          'integrationParams.integrationId': snapshot.integrationId,
         },
-      });
+        {
+          mapboxAccessToken,
+          snapshot,
+          token,
+          config: latestAccountSnapshot?.config || defaultSnapshotConfig,
+          'integrationParams.integrationUserId':
+            integrationUser.integrationUserId,
+          'integrationParams.integrationType': integrationUser.integrationType,
+        },
+        { new: true, upsert: true, sort: { updatedAt: -1 } },
+      );
 
     return {
       id,
@@ -90,16 +91,4 @@ export class LocationIntegrationService {
       createdAt,
     };
   }
-
-  // TODO remove in future
-  // async setIframeDuration(
-  //   integrationUser: TIntegrationUserDocument,
-  //   snapshotId: string,
-  // ): Promise<SearchResultSnapshotDocument> {
-  //   return this.searchResultSnapshotModel.findByIdAndUpdate(
-  //     snapshotId,
-  //     { iframeEndsAt: dayjs().add(6, 'months').toDate() },
-  //     { new: true },
-  //   );
-  // }
 }
