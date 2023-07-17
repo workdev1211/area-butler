@@ -239,6 +239,12 @@ export enum UnitsOfTransportation {
   KILOMETERS = "KILOMETERS",
 }
 
+export enum ApiUnitsOfTransportEnum {
+  MINUTES = "MIN",
+  METERS = "M",
+  KILOMETERS = "KM",
+}
+
 export enum MeansOfTransportation {
   WALK = "WALK",
   CAR = "CAR",
@@ -479,7 +485,7 @@ export interface IApiAddressInRange {
   distance_in_meters: number;
 }
 
-export interface IApiAddressesInRangeResponse {
+export interface IApiAddressesInRangeRes {
   address_count: number;
   addresses: IApiAddressInRange[];
 }
@@ -552,4 +558,20 @@ export interface IApiFetchAddrInRangeReq extends IApiCoordinatesOrAddress {
   radius?: number;
   language?: ApiHereLanguageEnum;
   apiType?: ApiAddrInRangeApiTypesEnum;
+}
+
+export interface IApiFetchPoiDataReq extends IApiCoordinatesOrAddress {
+  transportMode?: MeansOfTransportation;
+  distance?: number;
+  unit?: ApiUnitsOfTransportEnum;
+}
+
+export interface IApiFetchPoiDataRes {
+  query: {
+    location: string | ApiCoordinates;
+    transportMode: string;
+    distance: number;
+    unit: string;
+  };
+  result: ApiOsmLocation[];
 }

@@ -214,3 +214,16 @@ export const convertMetersToMinutes = (
   distanceInMeters: number,
   mean: MeansOfTransportation
 ) => Math.round(distanceInMeters / (minutesToMetersMultipliers[mean] || 1));
+
+export const convertMinutesToMeters = (
+  distanceInMinutes: number,
+  transportMode: MeansOfTransportation
+): number => {
+  const multiplier = minutesToMetersMultipliers[transportMode];
+
+  if (!multiplier) {
+    return 0;
+  }
+
+  return distanceInMinutes * 1.2 * multiplier;
+};

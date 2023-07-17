@@ -28,12 +28,13 @@ import {
 import { SnapshotExtService } from './snapshot-ext.service';
 import { MongoParamPipe } from '../pipe/mongo-param.pipe';
 import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
+import { LocationExtController } from './location-ext.controller';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntController } from './location-int.controller';
 import { LocationIntService } from './location-int.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
-import { LocationExtController } from './location-ext.controller';
+import { LocationExtService } from './location-ext.service';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { LocationExtController } from './location-ext.controller';
     MongoSortParamPipe,
     AddressesInRangeExtService,
     LocationIntService,
+    LocationExtService,
   ],
   exports: [LocationService, LocationIntService],
 })

@@ -10,15 +10,15 @@ import { Transform } from 'class-transformer';
 import { IApiCoordinatesOrAddress } from '@area-butler-types/types';
 
 class ApiCoordinatesOrAddressDto implements IApiCoordinatesOrAddress {
+  @Transform(({ value }) => +value, { toClassOnly: true })
   @ValidateIf(({ lat, lng, address }) => (lat && lng) || !address)
   @IsNotEmpty()
-  @Transform(({ value }) => +value, { toClassOnly: true })
   @IsNumber()
   lat?: number;
 
+  @Transform(({ value }) => +value, { toClassOnly: true })
   @ValidateIf(({ lat, lng, address }) => (lat && lng) || !address)
   @IsNotEmpty()
-  @Transform(({ value }) => +value, { toClassOnly: true })
   @IsNumber()
   lng?: number;
 

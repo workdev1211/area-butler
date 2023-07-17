@@ -14,8 +14,9 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiRequestStatusesEnum,
   ApiUsageStatsTypesEnum,
-  IApiAddressesInRangeResponse,
+  IApiAddressesInRangeRes,
   IApiAddrInRangeReqStatus,
+  IApiFetchPoiDataRes,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
@@ -24,6 +25,8 @@ import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-te
 import { configService } from '../config/config.service';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
+import ApiFetchPoiDataReqDto from './dto/api-fetch-poi-data-req.dto';
+import { LocationExtService } from './location-ext.service';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -32,6 +35,7 @@ export class LocationExtController extends ApiKeyAuthController {
     private readonly addressesInRangeExtService: AddressesInRangeExtService,
     private readonly usageStatisticsService: UsageStatisticsService,
     private readonly snapshotExtService: SnapshotExtService,
+    private readonly locationExtService: LocationExtService,
   ) {
     super();
   }
@@ -45,7 +49,7 @@ export class LocationExtController extends ApiKeyAuthController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
-  ): Promise<IApiAddressesInRangeResponse | string> {
+  ): Promise<IApiAddressesInRangeRes | string> {
     const { lat, lng, address, radius, language, apiType } =
       fetchAddrInRangeReq;
 
@@ -119,5 +123,23 @@ export class LocationExtController extends ApiKeyAuthController {
       snapshotId: id,
       directLink: `${configService.getBaseAppUrl()}/embed?token=${token}`,
     };
+  }
+
+  @ApiOperation({
+    description:
+      'Fetches all of the addresses around the central one within a specified range',
+  })
+  @Get('poi-data')
+  async fetchPoiData(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Query()
+    { address, lat, lng, transportMode, distance, unit }: ApiFetchPoiDataReqDto,
+  ): Promise<IApiFetchPoiDataRes> {
+    return this.locationExtService.fetchPoiData({
+      location: address || { lat, lng },
+      transportMode,
+      distance,
+      unit,
+    });
   }
 }

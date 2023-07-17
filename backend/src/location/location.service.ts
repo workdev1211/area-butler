@@ -9,7 +9,10 @@ import {
   LocationSearch,
   LocationSearchDocument,
 } from './schema/location-search.schema';
-import { groupBy } from '../../../shared/functions/shared.functions';
+import {
+  convertMinutesToMeters,
+  groupBy,
+} from '../../../shared/functions/shared.functions';
 import { SubscriptionService } from '../user/subscription.service';
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
 import { configService } from '../config/config.service';
@@ -66,7 +69,6 @@ import { RealEstateListingDocument } from '../real-estate-listing/schema/real-es
 import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
-import { minutesToMetersMultipliers } from '../../../shared/constants/constants';
 
 @Injectable()
 export class LocationService {
@@ -156,11 +158,7 @@ export class LocationService {
         return amount * 1000;
       }
 
-      if (Object.values(MeansOfTransportation).includes(routingProfile.type)) {
-        return amount * 1.2 * minutesToMetersMultipliers[routingProfile.type];
-      }
-
-      return 0;
+      return convertMinutesToMeters(amount, routingProfile.type);
     };
 
     for (const routingProfile of search.meansOfTransportation) {

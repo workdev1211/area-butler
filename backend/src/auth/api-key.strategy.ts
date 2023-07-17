@@ -22,9 +22,7 @@ export class ApiKeyStrategy extends PassportStrategy(
         if (
           !user ||
           !user.apiKeyParams.allowedFeatures.includes(
-            apiRoutePathToFeatureTypeMapping[
-              req.route.path.replace(/^\/api(\/([\w-]+))*[/?]?.*$/, '$2')
-            ],
+            apiRoutePathToFeatureTypeMapping[req.route.path],
           )
         ) {
           return verified(new UnauthorizedException());
