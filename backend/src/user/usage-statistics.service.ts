@@ -5,15 +5,15 @@ import * as dayjs from 'dayjs';
 
 import { UserDocument } from './schema/user.schema';
 import {
-  ApiUsageStatsTypesEnum,
-  TApiUsageStatsReqStatus,
-} from '@area-butler-types/types';
-import {
   UsageStatistics,
   UsageStatisticsDocument,
 } from './schema/usage-statistics.schema';
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
 import { TApiIntUserUsageStatsTypes } from '@area-butler-types/integration-user';
+import {
+  ApiUsageStatsTypesEnum,
+  TApiUsageStatsReqStatus,
+} from '@area-butler-types/external-api';
 
 @Injectable()
 export class UsageStatisticsService {

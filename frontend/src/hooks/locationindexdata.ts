@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { ApiCoordinates } from "../../../shared/types/types";
 import { useHttp } from "./http";
 import {
-  ApiLocationIndexFeaturePropertiesEnum,
+  ApiLocIndexFeatPropsEnum,
   IApiLocationIndexFeature,
   LocationIndicesEnum,
 } from "../../../shared/types/location-index";
@@ -45,14 +45,10 @@ export const useLocationIndexData = () => {
     return Object.keys(data[0].properties).reduce<TLocationIndexData>(
       (result, propertyName) => {
         const locationIndexName =
-          LocationIndicesEnum[
-            propertyName as ApiLocationIndexFeaturePropertiesEnum
-          ];
+          LocationIndicesEnum[propertyName as ApiLocIndexFeatPropsEnum];
 
         const locationIndexValue = Math.round(
-          data[0].properties[
-            propertyName as ApiLocationIndexFeaturePropertiesEnum
-          ] * 100
+          data[0].properties[propertyName as ApiLocIndexFeatPropsEnum] * 100
         );
 
         result[locationIndexName] = {

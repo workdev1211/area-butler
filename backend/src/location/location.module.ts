@@ -35,6 +35,7 @@ import { LocationIntService } from './location-int.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { LocationExtService } from './location-ext.service';
+import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 
 @Module({
   imports: [
@@ -56,6 +57,7 @@ import { LocationExtService } from './location-ext.service';
     EmbeddedMapController,
     TilesController,
     LocationExtController,
+    ApiAddressesInRangeController,
   ],
   providers: [
     LocationService,

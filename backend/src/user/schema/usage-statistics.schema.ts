@@ -2,11 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document } from 'mongoose';
 import * as dayjs from 'dayjs';
 
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   IApiUsageStatisticsSchema,
   TApiUsageStatistics,
-} from '@area-butler-types/types';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+} from '@area-butler-types/external-api';
 
 export type UsageStatisticsDocument = UsageStatistics & Document;
 

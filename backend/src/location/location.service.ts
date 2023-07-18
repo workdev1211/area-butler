@@ -35,7 +35,6 @@ import {
   MeansOfTransportation,
   OsmName,
   OsmType,
-  TApiUsageStatsReqStatus,
   TransportationParam,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
@@ -69,6 +68,7 @@ import { RealEstateListingDocument } from '../real-estate-listing/schema/real-es
 import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
 
 @Injectable()
 export class LocationService {

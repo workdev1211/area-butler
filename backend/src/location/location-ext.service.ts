@@ -1,18 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
 import { configService } from '../config/config.service';
 import {
   ApiCoordinates,
-  ApiOsmLocation,
-  ApiUnitsOfTransportEnum,
-  IApiFetchPoiDataRes,
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
 import { OverpassService } from '../client/overpass/overpass.service';
 import { convertMinutesToMeters } from '../../../shared/functions/shared.functions';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import {
+  ApiUnitsOfTransportEnum,
+  IApiFetchPoiDataRes,
+} from '@area-butler-types/external-api';
 
 @Injectable()
 export class LocationExtService {
@@ -63,9 +64,11 @@ export class LocationExtService {
       }
     }
 
-    resultingDistance = resultingDistance > 25000 ? 25000 : resultingDistance;
+    if (resultingDistance > 5000) {
+      throw new HttpException('The distance is too high!', 400);
+    }
 
-    const pointsOfInterest: ApiOsmLocation[] = !!configService.useOverpassDb()
+    const result = !!configService.useOverpassDb()
       ? await this.overpassDataService.findForCenterAndDistance(
           coordinates,
           resultingDistance,
@@ -77,14 +80,6 @@ export class LocationExtService {
           preferredAmenities,
         );
 
-    return {
-      query: {
-        location,
-        transportMode: transportMode.toLowerCase(),
-        distance: resultingDistance,
-        unit: ApiUnitsOfTransportEnum.METERS.toLowerCase(),
-      },
-      result: pointsOfInterest,
-    };
+    return { result, input: { coordinates } };
   }
 }

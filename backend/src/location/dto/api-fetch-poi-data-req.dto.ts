@@ -1,12 +1,12 @@
 import { IsEnum, IsNumber, IsOptional } from 'class-validator';
 import { Transform } from 'class-transformer';
 
+import { MeansOfTransportation } from '@area-butler-types/types';
+import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
 import {
   ApiUnitsOfTransportEnum,
   IApiFetchPoiDataReq,
-  MeansOfTransportation,
-} from '@area-butler-types/types';
-import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
+} from '@area-butler-types/external-api';
 
 class ApiFetchPoiDataReqDto
   extends ApiCoordinatesOrAddressDto

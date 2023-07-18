@@ -1,6 +1,6 @@
 import { ApiGeojsonFeature } from "./types";
 
-export enum ApiLocationIndexFeaturePropertiesEnum {
+export enum ApiLocIndexFeatPropsEnum {
   EVENING_ENTERTAINMENT = "evening_entertainment",
   HEALTH = "health",
   NEAR_SUPPLY = "near_supply",
@@ -24,7 +24,7 @@ export enum LocationIndicesEnum {
 }
 
 export type TApiLocationIndexFeatureProperties = Record<
-  ApiLocationIndexFeaturePropertiesEnum,
+  ApiLocIndexFeatPropsEnum,
   number
 >;
 

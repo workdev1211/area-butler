@@ -1,14 +1,7 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 
-import {
-  ApiAddrInRangeApiTypesEnum,
-  ApiCoordinates,
-  IApiAddressInRange,
-} from '@area-butler-types/types';
-import {
-  GoogleGeocodeService,
-  IGoogleGeocodeResult,
-} from '../client/google/google-geocode.service';
+import { ApiCoordinates } from '@area-butler-types/types';
+import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { distanceInMeters } from '../shared/shared.functions';
 import {
   allowedCountries,
@@ -16,6 +9,10 @@ import {
 } from '@area-butler-types/google';
 import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
+import {
+  ApiAddrInRangeApiTypesEnum,
+  IApiAddressInRange,
+} from '@area-butler-types/external-api';
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
 interface IFetchedAddresses {
@@ -23,7 +20,8 @@ interface IFetchedAddresses {
   apiRequestsNumber: number;
 }
 
-interface IFetchedAddressesRes {
+interface IFetchedAddressesInRange {
+  coordinates: ApiCoordinates;
   sourceAddress: string;
   returnedAddressesNumber: number;
   returnedAddresses: IApiAddressInRange[];
@@ -47,7 +45,7 @@ export class AddressesInRangeExtService {
     radius, // meters
     apiType,
     language?: string,
-  ): Promise<IFetchedAddressesRes> {
+  ): Promise<IFetchedAddressesInRange> {
     let resultingLanguage = language;
 
     const place = await this.googleGeocodeService.fetchPlace(location);
@@ -90,7 +88,7 @@ export class AddressesInRangeExtService {
           : ApiHereLanguageEnum.DE;
 
         fetchedAddresses = await this.fetchAddressesByHere(
-          place,
+          place.geometry.location,
           radius,
           resultingLanguage as ApiHereLanguageEnum,
         );
@@ -105,7 +103,7 @@ export class AddressesInRangeExtService {
           : ApiGoogleLanguageEnum.DE;
 
         fetchedAddresses = await this.fetchAddressesByGoogle(
-          place,
+          place.geometry.location,
           radius,
           resultingLanguage as ApiGoogleLanguageEnum,
         );
@@ -149,6 +147,7 @@ export class AddressesInRangeExtService {
     );
 
     return {
+      coordinates: place.geometry.location,
       sourceAddress: place.formatted_address,
       returnedAddressesNumber: filteredAddresses.length,
       returnedAddresses: filteredAddresses,
@@ -194,11 +193,11 @@ export class AddressesInRangeExtService {
   }
 
   private async fetchAddressesByGoogle(
-    { geometry: { location } }: IGoogleGeocodeResult,
+    coordinates: ApiCoordinates,
     radius: number,
     language: ApiGoogleLanguageEnum,
   ): Promise<IFetchedAddresses> {
-    const coordinateGrid = this.generateCoordinateGrid(location, radius, 20);
+    const coordinateGrid = this.generateCoordinateGrid(coordinates, radius, 20);
 
     const addresses = await Promise.all(
       coordinateGrid.map(async (coordinates) => {
@@ -235,7 +234,7 @@ export class AddressesInRangeExtService {
           )?.long_name,
           location: currentPlace.geometry.location,
           distance_in_meters: distanceInMeters(
-            location,
+            coordinates,
             currentPlace.geometry.location,
           ),
         };
@@ -246,11 +245,11 @@ export class AddressesInRangeExtService {
   }
 
   private async fetchAddressesByHere(
-    { geometry: { location } }: IGoogleGeocodeResult,
+    coordinates: ApiCoordinates,
     radius: number,
     language: ApiHereLanguageEnum,
   ): Promise<IFetchedAddresses> {
-    const coordinateGrid = this.generateCoordinateGrid(location, radius, 50);
+    const coordinateGrid = this.generateCoordinateGrid(coordinates, radius, 50);
     const addresses: IApiAddressInRange[] = [];
 
     // Uncomment in case of HERE API rate limits issue
@@ -274,7 +273,10 @@ export class AddressesInRangeExtService {
           locality: currentPlace.address.city,
           country: currentPlace.address.countryName,
           location: currentPlace.position,
-          distance_in_meters: distanceInMeters(location, currentPlace.position),
+          distance_in_meters: distanceInMeters(
+            coordinates,
+            currentPlace.position,
+          ),
         });
       });
     }

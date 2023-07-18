@@ -14,7 +14,6 @@ import {
   systemEnvironments,
 } from "../constants/constants";
 import { IntegrationTypesEnum } from "./integration";
-import { ApiHereLanguageEnum } from "./here";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -239,12 +238,6 @@ export enum UnitsOfTransportation {
   KILOMETERS = "KILOMETERS",
 }
 
-export enum ApiUnitsOfTransportEnum {
-  MINUTES = "MIN",
-  METERS = "M",
-  KILOMETERS = "KM",
-}
-
 export enum MeansOfTransportation {
   WALK = "WALK",
   CAR = "CAR",
@@ -457,68 +450,9 @@ export type TApiDataProvision = Partial<
   Record<ApiDataProvisionEnum, ApiGeojsonFeature[]>
 >;
 
-export enum ApiUsageStatsTypesEnum {
-  ADDRESSES_IN_RANGE = "addressesInRange",
-  LOCATION_INDICES = "locationIndices",
-}
-
-export interface IApiUsageStatisticsSchema {
-  userId: string;
-  integrationType: IntegrationTypesEnum;
-  timestamp: string;
-  statistics: TApiUsageStatistics;
-}
-
-export type TApiUsageStatistics = Record<
-  ApiUsageStatsTypesEnum,
-  Array<IApiAddrInRangeReqStatus | IApiLocIndexQueryReqStatus>
->;
-
-export interface IApiAddressInRange {
-  full_address: string;
-  street_name: string;
-  street_number: string;
-  postal_code: string;
-  locality: string;
-  country: string;
-  location: ApiCoordinates;
-  distance_in_meters: number;
-}
-
-export interface IApiAddressesInRangeRes {
-  address_count: number;
-  addresses: IApiAddressInRange[];
-}
-
-export enum ApiAddrInRangeApiTypesEnum {
-  HERE = "here",
-  GOOGLE = "google",
-}
-
 export enum ApiRequestStatusesEnum {
   SUCCESS = "success",
   ERROR = "error",
-}
-
-export type TApiUsageStatsReqStatus =
-  | IApiLocIndexQueryReqStatus
-  | IApiAddrInRangeReqStatus;
-
-export interface IApiLocIndexQueryReqStatus {
-  status: ApiRequestStatusesEnum;
-  queryParams: IApiFetchAddrInRangeReq | IApiLocationIndexReq;
-  coordinates: ApiCoordinates;
-  message?: string;
-}
-
-export interface IApiAddrInRangeReqStatus {
-  status: ApiRequestStatusesEnum;
-  queryParams: IApiFetchAddrInRangeReq | IApiLocationIndexReq;
-  message?: string;
-  sourceAddress?: string;
-  returnedAddressesNumber?: number;
-  apiType?: ApiAddrInRangeApiTypesEnum;
-  requestsNumber?: number;
 }
 
 export type TPlaceholderSelectOptionKey = "placeholder";
@@ -542,36 +476,4 @@ export enum MapDisplayModesEnum {
   "EMBED_INTEGRATION" = "EMBED_INTEGRATION", // left only because of the default map icon
   "EMBED" = "EMBED",
   "EDITOR" = "EDITOR",
-}
-
-export interface IApiCoordinatesOrAddress {
-  lat?: number;
-  lng?: number;
-  address?: string;
-}
-
-export interface IApiLocationIndexReq extends IApiCoordinatesOrAddress {
-  type?: ApiGeojsonType;
-}
-
-export interface IApiFetchAddrInRangeReq extends IApiCoordinatesOrAddress {
-  radius?: number;
-  language?: ApiHereLanguageEnum;
-  apiType?: ApiAddrInRangeApiTypesEnum;
-}
-
-export interface IApiFetchPoiDataReq extends IApiCoordinatesOrAddress {
-  transportMode?: MeansOfTransportation;
-  distance?: number;
-  unit?: ApiUnitsOfTransportEnum;
-}
-
-export interface IApiFetchPoiDataRes {
-  query: {
-    location: string | ApiCoordinates;
-    transportMode: string;
-    distance: number;
-    unit: string;
-  };
-  result: ApiOsmLocation[];
 }

@@ -6,15 +6,18 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import ApiLocIndexQueryReqDto from '../dto/api-loc-index-query-req.dto';
 import { GoogleGeocodeService } from '../../client/google/google-geocode.service';
-import { ApiLocationIndexFeaturePropertiesEnum } from '@area-butler-types/location-index';
 import {
+  ApiCoordinates,
   ApiRequestStatusesEnum,
-  ApiUsageStatsTypesEnum,
-  IApiLocIndexQueryReqStatus,
 } from '@area-butler-types/types';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
+import ApiQueryLocIndicesReqDto from '../dto/api-query-loc-indices-req.dto';
+import {
+  ApiUsageStatsTypesEnum,
+  IApiQueryLocIndicesReqStatus,
+  IApiQueryLocIndicesRes,
+} from '@area-butler-types/external-api';
 
 @ApiTags('location-index', 'api')
 @Controller('api/location-index-ext')
@@ -28,43 +31,51 @@ export class LocationIndexExtController extends ApiKeyAuthController {
   }
 
   @ApiOperation({ description: 'Query for location index data' })
-  @Get()
+  @Get('query')
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Query() locationIndexQueryReq: ApiLocIndexQueryReqDto,
-  ): Promise<Record<ApiLocationIndexFeaturePropertiesEnum, number> | string> {
-    const { lat, lng, address, type } = locationIndexQueryReq;
+    @Query() queryLocIndicesReq: ApiQueryLocIndicesReqDto,
+  ): Promise<IApiQueryLocIndicesRes | string> {
+    const { lat, lng, address, type } = queryLocIndicesReq;
     // Due to the specifics of GeoJson, longitude comes first, then latitude
-    const coordinates: number[] = [];
+    const geoJsonCoordinates: number[] = [];
 
     if (lat && lng) {
-      coordinates.push(lng, lat);
+      geoJsonCoordinates.push(lng, lat);
     }
 
     if ((!lat || !lng) && address) {
       const place = await this.googleGeocodeService.fetchPlace(address);
 
-      coordinates.push(
+      geoJsonCoordinates.push(
         place.geometry.location.lng,
         place.geometry.location.lat,
       );
     }
 
-    const requestStatus: IApiLocIndexQueryReqStatus = {
+    const coordinates: ApiCoordinates = {
+      lat: geoJsonCoordinates[1],
+      lng: geoJsonCoordinates[0],
+    };
+
+    const requestStatus: IApiQueryLocIndicesReqStatus = {
+      coordinates,
       status: ApiRequestStatusesEnum.SUCCESS,
-      queryParams: locationIndexQueryReq,
-      coordinates: { lat: coordinates[1], lng: coordinates[0] },
+      queryParams: queryLocIndicesReq,
     };
 
     try {
       const locationIndexData =
         await this.locationIndexService.findIntersecting(user, {
-          coordinates,
+          coordinates: geoJsonCoordinates,
           type: type || 'Point',
         });
 
       if (locationIndexData[0]) {
-        return locationIndexData[0].properties;
+        return {
+          input: { coordinates },
+          result: locationIndexData[0].properties,
+        };
       }
 
       return 'Location indices not found!';
