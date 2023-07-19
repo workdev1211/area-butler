@@ -26,9 +26,9 @@ import {
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
-import { TCensusData } from "../../hooks/censusdata";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
 interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;

@@ -15,7 +15,6 @@ import {
   FederalElectionDistrict,
   FederalElectionResult,
 } from "hooks/federalelectiondata";
-import { averageCensus } from "map/menu/map-tab/components/data/CensusTable";
 import {
   averageParticlePollution,
   PollutionData,
@@ -38,6 +37,7 @@ import {
   ResultEntity,
 } from "../../../components/SearchResultContainer";
 import { convertMetersToMinutes } from "../../../../../shared/functions/shared.functions";
+import { averageCensusData } from "../../../../../shared/constants/data-provision";
 
 export interface TableProps {
   data: { header: string[]; body: string[][] };
@@ -241,7 +241,7 @@ export const mapTableDataFromCensusData = (
         (p: { label: string; value: string; unit: string }) => [
           p.label,
           `${p.value} ${p.unit}`,
-          `${averageCensus[p.label]}${!p.unit ? "" : " " + p.unit}`,
+          `${averageCensusData[p.label]}${!p.unit ? "" : ` ${p.unit}`}`,
         ]
       ),
     },

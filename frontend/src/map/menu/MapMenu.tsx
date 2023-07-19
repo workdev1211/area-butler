@@ -17,7 +17,6 @@ import {
   MeansOfTransportation,
 } from "../../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { TCensusData } from "hooks/censusdata";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -38,6 +37,7 @@ import {
   TOnOfficeIntActTypes,
 } from "../../../../shared/types/on-office";
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
 enum TabsEnum {
   Map = "Map",

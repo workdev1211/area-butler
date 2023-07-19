@@ -11,7 +11,6 @@ import {
   IApiUserPoiIcon,
 } from "../../../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import { TCensusData } from "hooks/censusdata";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -25,6 +24,7 @@ import EconomicMetrics from "./components/EconomicMetrics";
 import { SearchContext } from "../../../context/SearchContext";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { TUnlockIntProduct } from "../../../../../shared/types/integration";
+import { TCensusData } from "../../../../../shared/types/data-provision";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];

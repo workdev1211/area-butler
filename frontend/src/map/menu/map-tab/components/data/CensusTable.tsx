@@ -1,20 +1,9 @@
 import { FunctionComponent } from "react";
 
-import { TCensusData } from "../../../../../hooks/censusdata";
 import { ApiDataProvisionEnum } from "../../../../../../../shared/types/types";
 import Loading from "../../../components/Loading";
-
-export const averageCensus = {
-  "Ø Alter": 44.6,
-  "Anteil, Ausländer": 11.2,
-  Einwohner: 233.0,
-  "Ø Pers. pro HH": 2.0,
-  "Anteil, Leerstand": 2.8,
-  "Ø m² pro Kopf": 45.3,
-  "Ø m² pro Whng.": 91.7,
-  "Anteil, Bev. ab 65": 21.1,
-  "Anteil, Bev. unter 18": 16.3,
-} as any;
+import { TCensusData } from "../../../../../../../shared/types/data-provision";
+import { processCensusData } from "../../../../../../../shared/functions/census.functions";
 
 interface ICensusTableProps {
   censusData?: TCensusData;
@@ -30,61 +19,7 @@ const CensusTable: FunctionComponent<ICensusTableProps> = ({ censusData }) => {
     return <Loading />;
   }
 
-  const processCensusValue = (value: unknown): string =>
-    !Number.isNaN(Number(value))
-      ? (Math.round(Number(value) * 10) / 10).toFixed(1)
-      : "-";
-
-  const processedCensusData = Object.values<ApiDataProvisionEnum>(
-    ApiDataProvisionEnum
-  ).reduce<
-    Record<
-      string,
-      {
-        label: string;
-        value: Record<ApiDataProvisionEnum, string>;
-        unit: string;
-      }
-    >
-  >((result, provisionKey) => {
-    if (!censusData[provisionKey]) {
-      return result;
-    }
-
-    const censusCenter =
-      censusData[provisionKey].find((c) =>
-        (c.properties as any).some((p: any) => p.value !== "unbekannt")
-      ) || (censusData.addressData[0] as any);
-
-    censusCenter.properties.forEach(
-      ({
-        label,
-        value,
-        unit,
-      }: {
-        label: string;
-        value: string;
-        unit: string;
-      }) => {
-        const processedValue = processCensusValue(value);
-
-        if (result[label]) {
-          result[label].value[provisionKey] = processedValue;
-        } else {
-          result[label] = {
-            label,
-            value: {
-              [provisionKey]: processedValue,
-              averageData: processCensusValue(averageCensus[label]),
-            } as Record<ApiDataProvisionEnum, string>,
-            unit,
-          };
-        }
-      }
-    );
-
-    return result;
-  }, {});
+  const processedCensusData = processCensusData(censusData);
 
   return (
     <table className="table w-full text-sm lg:text-base">

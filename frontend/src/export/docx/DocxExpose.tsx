@@ -37,11 +37,11 @@ import areaButlerIcon from "../../assets/icons/ab.png";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { base64PrefixRegex } from "../../shared/shared.constants";
 import { ILegendItem } from "../Legend";
-import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
-export interface DocxExposeProps {
+interface IDocxExposeProps {
   censusData?: TCensusData;
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
@@ -58,7 +58,7 @@ export interface DocxExposeProps {
   qrCode: IQrCodeState;
 }
 
-const DocxExpose: FunctionComponent<DocxExposeProps> = ({
+const DocxExpose: FunctionComponent<IDocxExposeProps> = ({
   groupedEntries,
   mapClippings,
   censusData,

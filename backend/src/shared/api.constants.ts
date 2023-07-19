@@ -1,4 +1,4 @@
-import { ApiFeatureTypesEnum } from './api.types';
+import { ApiFeatureTypesEnum } from '@area-butler-types/external-api';
 
 // TODO REMOVE IN THE FUTURE
 export const clientIdToUserId = {
@@ -25,4 +25,5 @@ export const apiRoutePathToFeatureTypeMapping: Record<
     ApiFeatureTypesEnum.ADDRESSES_IN_RANGE,
   '/api/location-ext/poi-data': ApiFeatureTypesEnum.POI_DATA,
   '/api/location-index-ext/query': ApiFeatureTypesEnum.LOCATION_INDICES,
+  '/api/zensus-atlas-ext/query': ApiFeatureTypesEnum.ZENSUS_ATLAS,
 };

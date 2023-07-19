@@ -12,11 +12,11 @@ import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
-import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
-export interface CheatsheetDownloadProps {
+interface ICheatsheetDownloadProps {
   entities: ResultEntity[];
   searchResponse: ApiSearchResponse;
   groupedEntries: any;
@@ -36,7 +36,9 @@ export interface CheatsheetDownloadProps {
   qrCode: IQrCodeState;
 }
 
-export const CheatsheetDownload: FunctionComponent<CheatsheetDownloadProps> = ({
+export const CheatsheetDownload: FunctionComponent<
+  ICheatsheetDownloadProps
+> = ({
   groupedEntries,
   transportationParams,
   listingAddress,

@@ -6,13 +6,13 @@ import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
 import CensusTable from "./data/CensusTable";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import FederalElectionTable from "./data/FederalElectionTable";
-import { TCensusData } from "hooks/censusdata";
 import socialDemographicsIcon from "../../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
 import censusDataIcon from "../../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../../assets/icons/federal-election.svg";
 import UnlockProduct from "../../components/UnlockProduct";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { useTools } from "../../../../hooks/tools";
+import { TCensusData } from "../../../../../../shared/types/data-provision";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>

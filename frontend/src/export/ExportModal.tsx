@@ -28,10 +28,10 @@ import {
 import { getRenderedLegend } from "./RenderedLegend";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
-import { TCensusData } from "../hooks/censusdata";
 import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
+import { TCensusData } from "../../../shared/types/data-provision";
 
 interface IExportModalProps {
   entities: ResultEntity[];

@@ -11,7 +11,7 @@ import {
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 import { ApiKeyParamsSchema } from './api-key-params.schema';
-import { IApiKeyParams } from '../../shared/api.types';
+import { IApiKeyParams } from '@area-butler-types/external-api';
 
 export type UserDocument = User &
   Document & {

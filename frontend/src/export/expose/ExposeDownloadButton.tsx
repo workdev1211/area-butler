@@ -12,11 +12,11 @@ import {
 import Expose from "./Expose";
 import { ResultEntity } from "../../components/SearchResultContainer";
 import { ILegendItem } from "../Legend";
-import { TCensusData } from "../../hooks/censusdata";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
-export interface ExposeDownloadProps {
+interface IExposeDownloadProps {
   entities: ResultEntity[];
   groupedEntries: any;
   transportationParams: TransportationParam[];
@@ -36,7 +36,7 @@ export interface ExposeDownloadProps {
   qrCode: IQrCodeState;
 }
 
-export const ExposeDownload: FunctionComponent<ExposeDownloadProps> = ({
+export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
   groupedEntries = [],
   transportationParams = [],
   activeMeans,

@@ -10,12 +10,19 @@ import {
   ZipLevelDataSchema,
 } from '../data-provision/schemas/zip-level-data.schema';
 import { ZensusAtlasIntController } from './zensus-atlas-int.controller';
+import { ZensusAtlasExtController } from './zensus-atlas-ext.controller';
+import { ClientModule } from '../client/client.module';
 
 @Module({
-  controllers: [ZensusAtlasController, ZensusAtlasIntController],
+  controllers: [
+    ZensusAtlasController,
+    ZensusAtlasIntController,
+    ZensusAtlasExtController,
+  ],
   providers: [ZensusAtlasService],
   imports: [
     UserModule,
+    ClientModule,
     MongooseModule.forFeature([
       { name: ZensusAtlas.name, schema: ZensusAtlasSchema },
       { name: ZipLevelData.name, schema: ZipLevelDataSchema },

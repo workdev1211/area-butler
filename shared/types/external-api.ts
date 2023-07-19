@@ -8,6 +8,12 @@ import {
   ApiRequestStatusesEnum,
   MeansOfTransportation,
 } from "./types";
+import { TProcessedCensusData } from "./data-provision";
+
+export interface IApiKeyParams {
+  apiKey: string;
+  allowedFeatures: ApiFeatureTypesEnum[];
+}
 
 export enum ApiUnitsOfTransportEnum {
   MINUTES = "MIN",
@@ -15,9 +21,17 @@ export enum ApiUnitsOfTransportEnum {
   KILOMETERS = "KM",
 }
 
+export enum ApiFeatureTypesEnum {
+  ADDRESSES_IN_RANGE = "ADDRESSES_IN_RANGE",
+  LOCATION_INDICES = "LOCATION_INDICES",
+  ZENSUS_ATLAS = "ZENSUS_ATLAS",
+  POI_DATA = "POI_DATA",
+}
+
 export enum ApiUsageStatsTypesEnum {
   ADDRESSES_IN_RANGE = "addressesInRange",
   LOCATION_INDICES = "locationIndices",
+  ZENSUS_ATLAS = "zensusAtlas",
   POI_DATA = "poiData",
 }
 
@@ -70,6 +84,9 @@ export interface IApiQueryLocIndicesReqStatus
 
 export interface IApiQueryLocIndicesRes
   extends IExternalApiRes<Record<ApiLocIndexFeatPropsEnum, number>> {}
+
+export interface IApiQueryZensusAtlasRes
+  extends IExternalApiRes<TProcessedCensusData> {}
 
 export interface IApiAddressInRange {
   full_address: string;

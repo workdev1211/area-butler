@@ -1,16 +1,16 @@
 import { FunctionComponent } from "react";
 
 import "./EntityTable.scss";
-import { averageCensus } from "map/menu/map-tab/components/data/CensusTable";
 import { deriveColorPalette } from "shared/shared.functions";
-import { TCensusData } from "../hooks/censusdata";
+import { TCensusData } from "../../../shared/types/data-provision";
+import { averageCensusData } from "../../../shared/constants/data-provision";
 
-export interface CensusSummaryProps {
+interface ICensusSummaryProps {
   censusData: TCensusData;
   primaryColor?: string;
 }
 
-export const CensusSummary: FunctionComponent<CensusSummaryProps> = ({
+export const CensusSummary: FunctionComponent<ICensusSummaryProps> = ({
   censusData,
   primaryColor = "#aa0c54",
 }) => {
@@ -46,8 +46,8 @@ export const CensusSummary: FunctionComponent<CensusSummaryProps> = ({
                     {p.value} {p.unit}
                   </td>
                   <td>
-                    {averageCensus[p.label]}
-                    {!p.unit ? "" : " " + p.unit}
+                    {averageCensusData[p.label]}
+                    {!p.unit ? "" : ` ${p.unit}`}
                   </td>
                 </tr>
               )

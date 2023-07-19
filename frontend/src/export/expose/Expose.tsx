@@ -18,9 +18,9 @@ import ExposeSummary from "./ExposeSummary";
 import { EntityGroup } from "../../components/SearchResultContainer";
 import { ILegendItem, Legend } from "../Legend";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import { TCensusData } from "../../hooks/censusdata";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { TCensusData } from "../../../../shared/types/data-provision";
 
 interface IExposeProps {
   groupedEntries: EntityGroup[];

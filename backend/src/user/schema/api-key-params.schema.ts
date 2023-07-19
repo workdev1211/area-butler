@@ -1,6 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 
-import { ApiFeatureTypesEnum, IApiKeyParams } from '../../shared/api.types';
+import {
+  ApiFeatureTypesEnum,
+  IApiKeyParams,
+} from '@area-butler-types/external-api';
 
 @Schema({ _id: false })
 export class ApiKeyParams implements IApiKeyParams {

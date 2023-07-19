@@ -15,11 +15,11 @@ import {
 } from "../../../shared/types/types";
 import { defaultTransportationParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { TCensusData } from "../hooks/censusdata";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { TLocationIndexData } from "../hooks/locationindexdata";
+import { TCensusData } from "../../../shared/types/data-provision";
 
 export interface MapClipping {
   zoomLevel: number;
