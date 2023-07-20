@@ -10,10 +10,9 @@ import {
 import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { OverpassService } from '../../client/overpass/overpass.service';
 import {
-  ApiCoordinates,
   ApiOsmLocation,
-  OsmName,
 } from '@area-butler-types/types';
+import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 
 @Injectable()
 export class OverpassDataService {
@@ -74,11 +73,12 @@ export class OverpassDataService {
     this.logger.log('New Overpass data is active.');
   }
 
-  async findForCenterAndDistance(
-    coordinates: ApiCoordinates,
-    distanceInMeters: number,
-    preferredAmenities: OsmName[],
-  ): Promise<ApiOsmLocation[]> {
+  async findForCenterAndDistance({
+    coordinates,
+    distanceInMeters,
+    preferredAmenities,
+    limit = 0,
+  }: IApiOverpassFetchNodes): Promise<ApiOsmLocation[]> {
     const dbQuery = {
       geometry: {
         $nearSphere: {
@@ -93,7 +93,10 @@ export class OverpassDataService {
       entityType: { $in: Object.values(preferredAmenities) },
     };
 
-    const response = await this.overpassDataModel.find(dbQuery).lean().exec();
+    const response = await this.overpassDataModel
+      .find(dbQuery)
+      .limit(limit)
+      .lean();
 
     return this.overpassService.mapResponse(
       response,

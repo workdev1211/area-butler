@@ -212,8 +212,11 @@ export const truncateText = (text: string, limit: number): string =>
 
 export const convertMetersToMinutes = (
   distanceInMeters: number,
-  mean: MeansOfTransportation
-) => Math.round(distanceInMeters / (minutesToMetersMultipliers[mean] || 1));
+  transportMode: MeansOfTransportation
+) =>
+  Math.round(
+    distanceInMeters / (minutesToMetersMultipliers[transportMode] || 1)
+  );
 
 export const convertMinutesToMeters = (
   distanceInMinutes: number,

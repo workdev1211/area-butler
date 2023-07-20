@@ -120,6 +120,7 @@ export interface IApiFetchAddrInRangeRes
   }> {}
 
 export interface IApiFetchPoiDataReq extends IApiCoordinatesOrAddress {
+  poiNumber?: number;
   transportMode?: MeansOfTransportation;
   distance?: number;
   unit?: ApiUnitsOfTransportEnum;

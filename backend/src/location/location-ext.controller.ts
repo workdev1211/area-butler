@@ -140,7 +140,7 @@ export class LocationExtController extends ApiKeyAuthController {
     @Query()
     fetchPoiDataReq: ApiFetchPoiDataReqDto,
   ): Promise<IApiFetchPoiDataRes | string> {
-    const { address, lat, lng, transportMode, distance, unit } =
+    const { address, lat, lng, poiNumber, transportMode, distance, unit } =
       fetchPoiDataReq;
 
     const requestStatus: IApiFetchPoiDataReqStatus = {
@@ -151,6 +151,7 @@ export class LocationExtController extends ApiKeyAuthController {
     try {
       const response = await this.locationExtService.fetchPoiData({
         location: address || { lat, lng },
+        poiNumber,
         transportMode,
         distance,
         unit,

@@ -17,6 +17,7 @@ import {
   OsmName,
   OsmType,
 } from '@area-butler-types/types';
+import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const Fuse = require('fuse.js/dist/fuse.common');
@@ -28,16 +29,11 @@ export class OverpassService {
 
   constructor(private readonly http: HttpService) {}
 
-  async fetchEntities(
-    coordinates: ApiCoordinates,
-    distanceInMeters: number,
-    preferredAmenities: OsmName[],
+  async fetchNodes(
+    fetchNodeParams: IApiOverpassFetchNodes,
   ): Promise<ApiOsmLocation[]> {
-    const requestParams = await this.deriveRequestParams(
-      coordinates,
-      distanceInMeters,
-      preferredAmenities,
-    );
+    const { coordinates, preferredAmenities } = fetchNodeParams;
+    const requestParams = await this.deriveRequestParams(fetchNodeParams);
 
     try {
       const response = await firstValueFrom(
@@ -224,11 +220,12 @@ export class OverpassService {
     return finalElements;
   }
 
-  private async deriveRequestParams(
-    coordinates: ApiCoordinates,
-    distanceInMeters: number,
-    preferredAmenities: OsmName[],
-  ) {
+  private async deriveRequestParams({
+    coordinates,
+    distanceInMeters,
+    preferredAmenities,
+    limit,
+  }: IApiOverpassFetchNodes): Promise<string> {
     const queryParts: string[] = [];
     queryParts.push('[out:json];(');
 
@@ -256,7 +253,8 @@ export class OverpassService {
       );
     }
 
-    queryParts.push(');out center;');
+    // TODO test the limit with direct Overpass calls
+    queryParts.push(limit ? `);out center ${limit};` : ');out center;');
 
     return queryParts.join('');
   }

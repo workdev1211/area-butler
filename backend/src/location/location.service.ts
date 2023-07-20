@@ -69,6 +69,7 @@ import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.f
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
+import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 
 @Injectable()
 export class LocationService {
@@ -162,17 +163,17 @@ export class LocationService {
     };
 
     for (const routingProfile of search.meansOfTransportation) {
+      const fetchNodeParams: IApiOverpassFetchNodes = {
+        coordinates,
+        preferredAmenities,
+        distanceInMeters: convertDistanceToMeters(routingProfile),
+      };
+
       const locationsOfInterest = !!configService.useOverpassDb()
         ? await this.overpassDataService.findForCenterAndDistance(
-            coordinates,
-            convertDistanceToMeters(routingProfile),
-            preferredAmenities,
+            fetchNodeParams,
           )
-        : await this.overpassService.fetchEntities(
-            coordinates,
-            convertDistanceToMeters(routingProfile),
-            preferredAmenities,
-          );
+        : await this.overpassService.fetchNodes(fetchNodeParams);
 
       const withIsochrone = search.withIsochrone !== false;
 
