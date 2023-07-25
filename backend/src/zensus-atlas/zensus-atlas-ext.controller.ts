@@ -5,10 +5,7 @@ import { ZensusAtlasService } from './zensus-atlas.service';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import {
-  ApiCoordinates,
-  ApiRequestStatusesEnum,
-} from '@area-butler-types/types';
+import { ApiRequestStatusesEnum } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
@@ -42,17 +39,15 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
     @Query() queryZensusAtlasReq: ApiCoordinatesOrAddressDto,
   ): Promise<IApiQueryZensusAtlasRes | string> {
     const { lat, lng, address } = queryZensusAtlasReq;
-    const coordinates = {} as ApiCoordinates;
+    let coordinates;
 
-    if (lat && lng) {
-      coordinates.lat = lat;
-      coordinates.lng = lng;
+    if (address) {
+      const place = await this.googleGeocodeService.fetchPlace(address);
+      coordinates = { ...place.geometry.location };
     }
 
-    if ((!lat || !lng) && address) {
-      const place = await this.googleGeocodeService.fetchPlace(address);
-      coordinates.lat = place.geometry.location.lat;
-      coordinates.lng = place.geometry.location.lng;
+    if (!address && lat && lng) {
+      coordinates = { lat, lng };
     }
 
     const requestStatus: IApiQueryLocIndicesReqStatus = {

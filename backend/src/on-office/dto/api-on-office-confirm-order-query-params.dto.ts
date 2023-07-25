@@ -17,7 +17,6 @@ class ApiOnOfficeConfirmOrderQueryParamsDto
   signature: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(ApiOnOfficeTransactionStatusesEnum)
   status: ApiOnOfficeTransactionStatusesEnum;
 

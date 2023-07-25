@@ -178,7 +178,7 @@ export class RealEstateListingService {
       realEstateListing ||
       (await this.fetchRealEstateListingById(user, realEstateListingId));
 
-    const queryText = this.openAiService.getRealEstateDescriptionQuery(
+    const queryText = this.openAiService.getRealEstDescQuery(
       resultingRealEstateListing,
       responseLimit,
     );

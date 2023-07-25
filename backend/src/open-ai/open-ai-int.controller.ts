@@ -25,7 +25,7 @@ export class OpenAiIntController {
     { text, isFormalToInformal }: ApiOpenAiQueryDto,
   ): Promise<string> {
     const queryText = isFormalToInformal
-      ? this.openAiService.getFormalToInformalQuery(text)
+      ? this.openAiService.getFormToInformQuery(text)
       : text;
 
     return this.openAiService.fetchResponse(queryText);

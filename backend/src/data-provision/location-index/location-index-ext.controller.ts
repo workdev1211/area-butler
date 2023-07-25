@@ -40,17 +40,17 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     // Due to the specifics of GeoJson, longitude comes first, then latitude
     const geoJsonCoordinates: number[] = [];
 
-    if (lat && lng) {
-      geoJsonCoordinates.push(lng, lat);
-    }
-
-    if ((!lat || !lng) && address) {
+    if (address) {
       const place = await this.googleGeocodeService.fetchPlace(address);
 
       geoJsonCoordinates.push(
         place.geometry.location.lng,
         place.geometry.location.lat,
       );
+    }
+
+    if (!address && lat && lng) {
+      geoJsonCoordinates.push(lng, lat);
     }
 
     const coordinates: ApiCoordinates = {

@@ -72,6 +72,6 @@ import { ApiAddressesInRangeController } from './api-addresses-in-range.controll
     LocationIntService,
     LocationExtService,
   ],
-  exports: [LocationService, LocationIntService],
+  exports: [LocationService, LocationIntService, LocationExtService],
 })
 export class LocationModule {}

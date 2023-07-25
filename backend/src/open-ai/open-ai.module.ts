@@ -13,6 +13,14 @@ import {
   RealEstateListingSchema,
 } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { OpenAiExtController } from './open-ai-ext.controller';
+import { LocationExtService } from '../location/location-ext.service';
+import { OverpassService } from '../client/overpass/overpass.service';
+import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
+import {
+  OverpassData,
+  OverpassDataSchema,
+} from '../data-provision/schemas/overpass-data.schema';
 
 @Module({
   imports: [
@@ -21,14 +29,18 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
     UserModule,
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
+      { name: OverpassData.name, schema: OverpassDataSchema },
     ]),
   ],
   providers: [
     OpenAiService,
     RealEstateListingService,
     RealEstateListingIntService,
+    LocationExtService,
+    OverpassService,
+    OverpassDataService,
   ],
-  controllers: [OpenAiController, OpenAiIntController],
+  controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   exports: [OpenAiService],
 })
 export class OpenAiModule {}

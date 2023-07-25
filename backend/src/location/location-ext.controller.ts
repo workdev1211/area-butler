@@ -28,6 +28,7 @@ import {
   IApiFetchPoiDataReqStatus,
   IApiFetchPoiDataRes,
 } from '@area-butler-types/external-api';
+import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -37,6 +38,7 @@ export class LocationExtController extends ApiKeyAuthController {
     private readonly usageStatisticsService: UsageStatisticsService,
     private readonly snapshotExtService: SnapshotExtService,
     private readonly locationExtService: LocationExtService,
+    private readonly googleGeocodeService: GoogleGeocodeService,
   ) {
     super();
   }
@@ -149,19 +151,28 @@ export class LocationExtController extends ApiKeyAuthController {
     };
 
     try {
-      const response = await this.locationExtService.fetchPoiData({
-        location: address || { lat, lng },
+      let coordinates;
+
+      if (address) {
+        const place = await this.googleGeocodeService.fetchPlace(address);
+        coordinates = { ...place.geometry.location };
+      }
+
+      if (!address && lat && lng) {
+        coordinates = { lat, lng };
+      }
+
+      const poiData = await this.locationExtService.fetchPoiData({
+        coordinates,
         poiNumber,
         transportMode,
         distance,
         unit,
       });
 
-      Object.assign(requestStatus, {
-        coordinates: response.input.coordinates,
-      });
+      Object.assign(requestStatus, { coordinates });
 
-      return response;
+      return { input: { coordinates }, result: poiData };
     } catch (e) {
       requestStatus.status = ApiRequestStatusesEnum.ERROR;
       requestStatus.message = e.message;

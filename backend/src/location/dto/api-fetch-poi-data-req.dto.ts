@@ -15,6 +15,7 @@ import {
   ApiUnitsOfTransportEnum,
   IApiFetchPoiDataReq,
 } from '@area-butler-types/external-api';
+import { getEnumValidMessage } from '../../shared/validation.functions';
 
 const DEFAULT_POI_NUMBER = 5;
 const DEFAULT_DISTANCE = 10;
@@ -23,53 +24,39 @@ class ApiFetchPoiDataReqDto
   extends ApiCoordinatesOrAddressDto
   implements IApiFetchPoiDataReq
 {
-  @Transform(
-    ({ value }: { value: string }): number =>
-      parseInt(value, 10) || DEFAULT_POI_NUMBER,
-    { toClassOnly: true },
-  )
+  @Transform(({ value }: { value: string }): number => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   @IsOptional()
   @IsInt()
   @Min(1)
   @Max(10)
   poiNumber?: number = DEFAULT_POI_NUMBER;
 
-  @Transform(
-    ({ value }: { value: string }): MeansOfTransportation => {
-      const transportMode = value.toUpperCase() as MeansOfTransportation;
-
-      return Object.values(MeansOfTransportation).includes(transportMode)
-        ? transportMode
-        : MeansOfTransportation.WALK;
-    },
-    { toClassOnly: true },
-  )
+  @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
+    toClassOnly: true,
+  })
   @IsOptional()
-  @IsEnum(MeansOfTransportation)
+  @IsEnum(MeansOfTransportation, {
+    message: getEnumValidMessage,
+  })
   transportMode?: MeansOfTransportation = MeansOfTransportation.WALK;
 
-  @Transform(
-    ({ value }: { value: string }): number =>
-      parseInt(value, 10) || DEFAULT_DISTANCE,
-    { toClassOnly: true },
-  )
+  @Transform(({ value }: { value: string }): number => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   @IsOptional()
   @IsNumber()
   @IsPositive()
   distance?: number = DEFAULT_DISTANCE;
 
-  @Transform(
-    ({ value }: { value: string }): ApiUnitsOfTransportEnum => {
-      const unit = value.toUpperCase() as ApiUnitsOfTransportEnum;
-
-      return Object.values(ApiUnitsOfTransportEnum).includes(unit)
-        ? unit
-        : ApiUnitsOfTransportEnum.MINUTES;
-    },
-    { toClassOnly: true },
-  )
+  @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
+    toClassOnly: true,
+  })
   @IsOptional()
-  @IsEnum(ApiUnitsOfTransportEnum)
+  @IsEnum(ApiUnitsOfTransportEnum, {
+    message: getEnumValidMessage,
+  })
   unit?: ApiUnitsOfTransportEnum = ApiUnitsOfTransportEnum.MINUTES;
 }
 

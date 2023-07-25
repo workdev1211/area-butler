@@ -67,8 +67,8 @@ export enum ApiRealEstateCostType {
 export interface ApiRealEstateCharacteristics {
   startingAt?: boolean;
   numberOfRooms?: number;
-  realEstateSizeInSquareMeters?: number; // living area
-  propertySizeInSquareMeters?: number; // whole area
+  realEstateSizeInSquareMeters?: number; // living area - housing area
+  propertySizeInSquareMeters?: number; // total area
   energyEfficiency?: ApiEnergyEfficiency;
   furnishing: ApiFurnishing[];
 }

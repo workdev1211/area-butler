@@ -635,7 +635,7 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
-    const queryText = this.openAiService.getLocationDescriptionQuery({
+    const queryText = this.openAiService.getLocDescQuery({
       responseLimit,
       meanOfTransportation,
       snapshot: searchResultSnapshot.snapshot,
@@ -689,7 +689,7 @@ export class LocationService {
         realEstateListingId,
       ));
 
-    const queryText = this.openAiService.getLocationRealEstateDescriptionQuery({
+    const queryText = this.openAiService.getLocRealEstDescQuery({
       meanOfTransportation,
       realEstateListing: resultingRealEstateListing,
       snapshot: searchResultSnapshot.snapshot,

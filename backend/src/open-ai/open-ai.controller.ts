@@ -9,6 +9,8 @@ import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { SubscriptionService } from '../user/subscription.service';
 
+// TODO think about moving all external OpenAI methods to the OpenAI controller
+
 @ApiTags('open-ai')
 @Controller('api/open-ai')
 export class OpenAiController extends AuthenticatedController {
@@ -35,7 +37,7 @@ export class OpenAiController extends AuthenticatedController {
     );
 
     const queryText = isFormalToInformal
-      ? this.openAiService.getFormalToInformalQuery(text)
+      ? this.openAiService.getFormToInformQuery(text)
       : text;
 
     return this.openAiService.fetchResponse(queryText);

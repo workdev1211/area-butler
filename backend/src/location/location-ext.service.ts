@@ -4,6 +4,7 @@ import { OverpassDataService } from '../data-provision/overpass-data/overpass-da
 import { configService } from '../config/config.service';
 import {
   ApiCoordinates,
+  ApiOsmLocation,
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
@@ -12,12 +13,17 @@ import {
   convertMetersToMinutes,
   convertMinutesToMeters,
 } from '../../../shared/functions/shared.functions';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import {
-  ApiUnitsOfTransportEnum,
-  IApiFetchPoiDataRes,
-} from '@area-butler-types/external-api';
+import { ApiUnitsOfTransportEnum } from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
+
+interface IFetchPoiDataArgs {
+  coordinates: ApiCoordinates;
+  transportMode: MeansOfTransportation;
+  distance: number;
+  poiNumber?: number;
+  unit: ApiUnitsOfTransportEnum;
+  preferredAmenities?: OsmName[];
+}
 
 const MAX_DISTANCE_IN_METERS = 2000;
 
@@ -26,31 +32,16 @@ export class LocationExtService {
   constructor(
     private readonly overpassService: OverpassService,
     private readonly overpassDataService: OverpassDataService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
   ) {}
 
   async fetchPoiData({
-    location,
-    poiNumber,
+    coordinates,
     transportMode,
     distance,
     unit,
+    poiNumber = 0,
     preferredAmenities = Object.values(OsmName),
-  }: {
-    location: string | ApiCoordinates;
-    poiNumber: number;
-    transportMode: MeansOfTransportation;
-    distance: number;
-    unit: ApiUnitsOfTransportEnum;
-    preferredAmenities?: OsmName[];
-  }): Promise<IApiFetchPoiDataRes> {
-    let coordinates = location as ApiCoordinates;
-
-    if (typeof location === 'string') {
-      const place = await this.googleGeocodeService.fetchPlace(location);
-      coordinates = place.geometry.location;
-    }
-
+  }: IFetchPoiDataArgs): Promise<ApiOsmLocation[]> {
     let resultDistInMeters = distance;
     let maxPossibleDistance;
 
@@ -94,13 +85,11 @@ export class LocationExtService {
       distanceInMeters: resultDistInMeters,
     };
 
-    const result = !!configService.useOverpassDb()
+    return !!configService.useOverpassDb()
       ? await this.overpassDataService.findForCenterAndDistance({
           ...fetchNodeParams,
           limit: poiNumber,
         })
       : await this.overpassService.fetchNodes(fetchNodeParams);
-
-    return { result, input: { coordinates } };
   }
 }

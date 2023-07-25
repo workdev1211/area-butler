@@ -12,10 +12,10 @@ import {
   openAiTranslationDictionary,
   osmNameToOsmQueryNameMapping,
 } from '../../../shared/constants/open-ai';
-import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import {
   ApiFurnishing,
   ApiRealEstateCostType,
+  IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import {
   ApiOpenAiResponseLimitTypesEnum,
@@ -28,7 +28,7 @@ import {
 // const { encode } = require('gpt-3-encoder');
 // const usedTokens = encode(queryString).length;
 
-interface ILocationDescriptionQueryData {
+interface ILocDescQueryData {
   snapshot: ApiSearchResultSnapshot;
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
@@ -36,9 +36,8 @@ interface ILocationDescriptionQueryData {
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
-interface ILocationRealEstateDescriptionQueryData
-  extends ILocationDescriptionQueryData {
-  realEstateListing: RealEstateListingDocument;
+interface ILocRealEstDescQueryData extends ILocDescQueryData {
+  realEstateListing: Partial<IApiRealEstateListingSchema>;
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
@@ -54,13 +53,13 @@ export class OpenAiService {
   });
   private readonly openAiApi = new OpenAIApi(this.openAiConfig);
 
-  getLocationDescriptionQuery({
+  getLocDescQuery({
     snapshot,
     meanOfTransportation,
     tonality,
     customText,
     responseLimit,
-  }: ILocationDescriptionQueryData): string {
+  }: ILocDescQueryData): string {
     const poiCount: Partial<Record<OsmName, number>> =
       snapshot.searchResponse.routingProfiles[
         meanOfTransportation
@@ -81,7 +80,7 @@ export class OpenAiService {
       }, {});
 
     const initialQueryText =
-      `Schreibe eine ${this.getResponseLimitText(
+      `Schreibe eine ${this.getResponseTextLimit(
         responseLimit,
       )} lange Beschreibung der Lage einer Immobilie für ` +
       `Immobilienexposee. Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points of ` +
@@ -111,10 +110,14 @@ export class OpenAiService {
     return queryText;
   }
 
-  getRealEstateDescriptionQuery(
-    { address, characteristics, costStructure }: RealEstateListingDocument,
-    responseLimit: IApiOpenAiResponseLimit,
-    initialQueryText = `Schreibe eine ${this.getResponseLimitText(
+  getRealEstDescQuery(
+    {
+      address,
+      characteristics,
+      costStructure,
+    }: Partial<IApiRealEstateListingSchema>,
+    responseLimit?: IApiOpenAiResponseLimit,
+    initialQueryText = `Schreibe eine ${this.getResponseTextLimit(
       responseLimit,
     )} lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
   ): string {
@@ -215,14 +218,14 @@ export class OpenAiService {
     return `${queryText}\n\n`;
   }
 
-  getLocationRealEstateDescriptionQuery({
+  getLocRealEstDescQuery({
     snapshot,
     meanOfTransportation,
     tonality,
     customText,
     realEstateListing,
     responseLimit,
-  }: ILocationRealEstateDescriptionQueryData): string {
+  }: ILocRealEstDescQueryData): string {
     const poiCount: Partial<Record<OpenAiOsmQueryNameEnum, number>> =
       snapshot.searchResponse.routingProfiles[
         meanOfTransportation
@@ -248,14 +251,14 @@ export class OpenAiService {
       }, {});
 
     const initialQueryText =
-      `Schreibe eine ${this.getResponseLimitText(
+      `Schreibe eine ${this.getResponseTextLimit(
         responseLimit,
       )} lange Beschreibung der Lage einer Immobilie für Immobilienexposee. Nutze eine ${tonality} Art der ` +
       `Formulierung. Im Fließtext erwähne die Points of Interest nicht mit Zahlen, sondern nur mit Worten ` +
       `"einige, viele, ausreichend, ...". Im Anschluss an den Text füge dann eine Bullet-Liste mit den ` +
       `Zahlen der Points of Interest hinzu. Verwende HTML Zeilenumbrüche.`;
 
-    let queryText = this.getRealEstateDescriptionQuery(
+    let queryText = this.getRealEstDescQuery(
       realEstateListing,
       undefined,
       initialQueryText,
@@ -345,7 +348,7 @@ export class OpenAiService {
     return `${queryText}\n\n`;
   }
 
-  getFormalToInformalQuery(formalText: string): string {
+  getFormToInformQuery(formalText: string): string {
     return `Ersetze im folgenden text die formale Sie-Form durch die informale Du-Form: \n\n ${formalText}`;
   }
 
@@ -379,7 +382,7 @@ export class OpenAiService {
     return choices[0]['message']['content'].replace(/^(\n)*(.*)/g, '$2');
   }
 
-  private getResponseLimitText(
+  private getResponseTextLimit(
     responseLimit?: IApiOpenAiResponseLimit,
   ): string {
     if (!responseLimit) {

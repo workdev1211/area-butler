@@ -9,6 +9,12 @@ import {
   MeansOfTransportation,
 } from "./types";
 import { TProcessedCensusData } from "./data-provision";
+import {
+  ApiEnergyEfficiency,
+  ApiFurnishing,
+  ApiRealEstateCostType,
+} from "./real-estate";
+import { OpenAiTonalityEnum } from "./open-ai";
 
 export interface IApiKeyParams {
   apiKey: string;
@@ -26,6 +32,7 @@ export enum ApiFeatureTypesEnum {
   LOCATION_INDICES = "LOCATION_INDICES",
   ZENSUS_ATLAS = "ZENSUS_ATLAS",
   POI_DATA = "POI_DATA",
+  OPEN_AI = "OPEN_AI",
 }
 
 export enum ApiUsageStatsTypesEnum {
@@ -33,11 +40,18 @@ export enum ApiUsageStatsTypesEnum {
   LOCATION_INDICES = "locationIndices",
   ZENSUS_ATLAS = "zensusAtlas",
   POI_DATA = "poiData",
+  OPEN_AI = "openAi",
 }
 
 export enum ApiAddrInRangeApiTypesEnum {
   HERE = "here",
   GOOGLE = "google",
+}
+
+export enum ApiOpenAiQueryTypesEnum {
+  "LOC_DESC" = "LOC_DESC",
+  "EST_DESC" = "EST_DESC",
+  "LOC_EST_DESC" = "LOC_EST_DESC",
 }
 
 export interface IApiUsageStatisticsSchema {
@@ -131,3 +145,20 @@ export interface IApiFetchPoiDataReqStatus
 
 export interface IApiFetchPoiDataRes
   extends IExternalApiRes<ApiOsmLocation[]> {}
+
+export interface IApiQueryOpenAiResExtReq extends IApiFetchPoiDataReq {
+  queryType?: ApiOpenAiQueryTypesEnum;
+  tonality?: OpenAiTonalityEnum;
+
+  price?: number;
+  priceType?: ApiRealEstateCostType;
+  housingArea?: number;
+  totalArea?: number;
+  energyEfficiency?: ApiEnergyEfficiency;
+  furnishing: ApiFurnishing[];
+}
+
+export interface IApiQueryOpenAiResExtReqStatus
+  extends IExternalApiReqStatus<IApiQueryOpenAiResExtReq> {}
+
+export interface IApiQueryOpenAiResExtRes extends IExternalApiRes<string> {}
