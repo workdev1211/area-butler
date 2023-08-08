@@ -6,7 +6,7 @@ import { RolesGuard } from '../auth/roles.guard';
 import { OverpassDataService } from './overpass-data/overpass-data.service';
 import { Role, Roles } from '../auth/roles.decorator';
 
-@ApiTags('overpass')
+@ApiTags('data-provision')
 @ApiBearerAuth()
 @Controller('api/data-provision')
 @UseGuards(AuthGuard('auth0-spa'), RolesGuard)
@@ -16,10 +16,8 @@ export class DataProvisionController {
   @ApiOperation({ description: 'Trigger import of overpass data' })
   @Post('overpass')
   @Roles(Role.Admin)
-  async importOverpassData() {
-    // noinspection ES6MissingAwait
-    this.overpassDataService.loadOverpassData();
-
+  async importOverpassData(): Promise<string> {
+    void this.overpassDataService.loadOverpassData();
     return 'Overpass data import triggered';
   }
 }

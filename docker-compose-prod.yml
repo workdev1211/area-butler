@@ -1,4 +1,10 @@
-version: "3"
+version: "3.4"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "30"
 
 services:
   area-butler-db-prod:
@@ -15,6 +21,7 @@ services:
       - area-butler-db-dump-prod:/dump
     labels:
       - "traefik.enable=false"
+    logging: *default-logging
 
   area-butler-prod:
     image: "${PROJECT_NAME}-${CI_COMMIT_REF_SLUG}:${CI_COMMIT_SHORT_SHA}"
@@ -69,13 +76,14 @@ services:
       - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
       - "traefik.http.routers.area-butler-prod-http.entrypoints=web"
       - "traefik.http.routers.area-butler-prod-http.middlewares=redirect"
-#      - "traefik.http.routers.area-butler-prod-http.middlewares=a-b-to-ab"
+      #      - "traefik.http.routers.area-butler-prod-http.middlewares=a-b-to-ab"
       - "traefik.http.routers.area-butler-prod-http.rule=Host(`app.area-butler.de`, `app.areabutler.de`)"
       - "traefik.http.routers.area-butler-prod.entrypoints=websecure"
       - "traefik.http.routers.area-butler-prod.rule=Host(`app.area-butler.de`, `app.areabutler.de`)"
       - "traefik.http.routers.area-butler-prod.tls=true"
       - "traefik.http.routers.area-butler-prod.tls.certresolver=le"
       - "traefik.port=8077"
+    logging: *default-logging
     depends_on:
       - area-butler-db-prod
 

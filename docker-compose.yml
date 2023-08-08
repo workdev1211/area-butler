@@ -1,4 +1,10 @@
-version: "3"
+version: "3.4"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "30"
 
 services:
   area-butler-db:
@@ -15,6 +21,7 @@ services:
       - area-butler-db-dump:/dump
     labels:
       - "traefik.enable=false"
+    logging: *default-logging
 
   area-butler:
     build: .
@@ -27,7 +34,7 @@ services:
       - 8073:3000
     volumes:
       - area-butler-assets:/home/node/app/shared/assets
-#      - area-butler-ftp:/home/node/app/shared/ftp
+    #      - area-butler-ftp:/home/node/app/shared/ftp
     environment:
       - PORT=3000
       - MAPBOX_ACCESS_TOKEN
@@ -78,6 +85,7 @@ services:
       - "traefik.http.routers.area-butler.tls=true"
       - "traefik.http.routers.area-butler.tls.certresolver=le"
       - "traefik.port=8073"
+    logging: *default-logging
     depends_on:
       - area-butler-db
 

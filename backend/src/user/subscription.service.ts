@@ -451,7 +451,7 @@ export class SubscriptionService {
     return paymentItem;
   }
 
-  @Cron('0 45 9 * * *')
+  @Cron('0 45 9 * * *', { name: 'SendSubscriptionExpirationEmail' })
   async sendSubscriptionExpirationEmail(): Promise<void> {
     const dateTimePattern = new RegExp(/(.+)T(.+)Z/);
     const specificIsoDate = dayjs()

@@ -12,10 +12,11 @@ import { osmEntityTypes } from '../../../../shared/constants/constants';
 import { OverpassService } from '../../client/overpass/overpass.service';
 import { ApiOsmLocation } from '@area-butler-types/types';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
+import { configService } from '../../config/config.service';
 
 @Injectable()
 export class OverpassDataService {
-  private readonly logger = new Logger(OverpassDataService.name);
+  private readonly logger: Logger = new Logger(OverpassDataService.name);
 
   constructor(
     @InjectModel(OverpassData.name)
@@ -24,10 +25,16 @@ export class OverpassDataService {
     @InjectConnection() private readonly connection: Connection,
   ) {}
 
-  @Cron('0 0 2 * * *')
-  async loadOverpassData() {
+  // 'name' is required in order to prevent the cron job duplication
+  @Cron(
+    ['local', 'dev'].includes(configService.getSystemEnv())
+      ? '0 0 2 * * 6'
+      : '0 0 2 * * 0-5',
+    { name: 'LoadOverpassData' },
+  )
+  async loadOverpassData(): Promise<void> {
     const tempCollectionName = `${this.overpassDataModel.collection.name}_tmp`;
-    this.logger.log(`Loading overpass data into database.`);
+    this.logger.log(`Loading overpass data into the database.`);
     const tempCollection = this.connection.db.collection(tempCollectionName);
 
     const chunkSize = 1000;
