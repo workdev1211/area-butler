@@ -24,36 +24,36 @@ class ApiFetchPoiDataReqDto
   extends ApiCoordinatesOrAddressDto
   implements IApiFetchPoiDataReq
 {
+  @IsOptional()
   @Transform(({ value }: { value: string }): number => parseInt(value, 10), {
     toClassOnly: true,
   })
-  @IsOptional()
   @IsInt()
   @Min(1)
   @Max(10)
   poiNumber?: number = DEFAULT_POI_NUMBER;
 
+  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
-  @IsOptional()
   @IsEnum(MeansOfTransportation, {
     message: getEnumValidMessage,
   })
   transportMode?: MeansOfTransportation = MeansOfTransportation.WALK;
 
+  @IsOptional()
   @Transform(({ value }: { value: string }): number => parseInt(value, 10), {
     toClassOnly: true,
   })
-  @IsOptional()
   @IsNumber()
   @IsPositive()
   distance?: number = DEFAULT_DISTANCE;
 
+  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
-  @IsOptional()
   @IsEnum(ApiUnitsOfTransportEnum, {
     message: getEnumValidMessage,
   })

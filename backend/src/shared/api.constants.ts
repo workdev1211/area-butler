@@ -23,8 +23,9 @@ export const apiRoutePathToFeatureTypeMapping: Record<
 > = {
   '/api/location-ext/addresses-in-range':
     ApiFeatureTypesEnum.ADDRESSES_IN_RANGE,
-  '/api/location-ext/poi-data': ApiFeatureTypesEnum.POI_DATA,
   '/api/location-index-ext/query': ApiFeatureTypesEnum.LOCATION_INDICES,
+  '/api/location-ext/snapshot-data': ApiFeatureTypesEnum.SNAPSHOT_DATA,
   '/api/zensus-atlas-ext/query': ApiFeatureTypesEnum.ZENSUS_ATLAS,
+  '/api/location-ext/poi-data': ApiFeatureTypesEnum.POI_DATA,
   '/api/open-ai-ext/query': ApiFeatureTypesEnum.OPEN_AI,
 };

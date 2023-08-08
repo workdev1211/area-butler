@@ -28,7 +28,7 @@ export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
   showDetailsInOnePage: true,
 };
 
-export const defaultTransportationParams: TransportationParam[] = [
+export const defaultTransportParams: TransportationParam[] = [
   {
     type: MeansOfTransportation.WALK,
     amount: 5,
@@ -46,6 +46,6 @@ export const defaultTransportationParams: TransportationParam[] = [
   },
 ];
 
-export const defaultOsmEntityNames = Object.values(OsmName).filter(
+export const defaultPoiTypes: OsmName[] = Object.values(OsmName).filter(
   (name) => ![OsmName.favorite, OsmName.property].includes(name)
 );

@@ -28,7 +28,7 @@ export const transportationParamIcons = [
   },
 ];
 
-export const defaultTransportationParams = [
+export const defaultTransportParams = [
   {
     type: MeansOfTransportation.WALK,
     amount: 5,
@@ -52,7 +52,7 @@ interface ITransportationParamsProps {
 }
 
 const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
-  values = defaultTransportationParams,
+  values = defaultTransportParams,
   onChange = () => {},
 }) => {
   const handleOnChange = (newValue: TransportationParam[]) => {

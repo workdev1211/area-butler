@@ -22,15 +22,13 @@ export const useTools = () => {
     }/embed?token=${token}`;
   };
 
-  const createCodeSnippet = (token: string): string => {
-    return `<iframe
+  const createCodeSnippet = (token: string): string => `<iframe
   style="border: none"
   width="100%"
   height="100%"
   src="${createDirectLink(token)}"
   title="AreaButler Map Snippet"
 ></iframe>`;
-  };
 
   // TODO think about refactoring to the same frontend interface
   const getActualUser = (): ApiUser | IApiIntegrationUser => {

@@ -7,6 +7,7 @@ import {
   ApiOsmLocation,
   ApiRequestStatusesEnum,
   MeansOfTransportation,
+  OsmName,
 } from "./types";
 import { TProcessedCensusData } from "./data-provision";
 import {
@@ -30,6 +31,7 @@ export enum ApiUnitsOfTransportEnum {
 export enum ApiFeatureTypesEnum {
   ADDRESSES_IN_RANGE = "ADDRESSES_IN_RANGE",
   LOCATION_INDICES = "LOCATION_INDICES",
+  SNAPSHOT_DATA = "SNAPSHOT_DATA",
   ZENSUS_ATLAS = "ZENSUS_ATLAS",
   POI_DATA = "POI_DATA",
   OPEN_AI = "OPEN_AI",
@@ -38,6 +40,7 @@ export enum ApiFeatureTypesEnum {
 export enum ApiUsageStatsTypesEnum {
   ADDRESSES_IN_RANGE = "addressesInRange",
   LOCATION_INDICES = "locationIndices",
+  SNAPSHOT_DATA = "snapshotData",
   ZENSUS_ATLAS = "zensusAtlas",
   POI_DATA = "poiData",
   OPEN_AI = "openAi",
@@ -52,6 +55,14 @@ export enum ApiOpenAiQueryTypesEnum {
   "LOC_DESC" = "LOC_DESC",
   "EST_DESC" = "EST_DESC",
   "LOC_EST_DESC" = "LOC_EST_DESC",
+}
+
+export enum SnapshotDataTypesEnum {
+  // TODO later
+  // IMAGE = "IMAGE",
+  QR_CODE = "QR_CODE",
+  DIRECT_LINK = "DIRECT_LINK",
+  IFRAME_CODE = "IFRAME_CODE",
 }
 
 export interface IApiUsageStatisticsSchema {
@@ -79,7 +90,7 @@ export interface IExternalApiReqStatus<T> {
 }
 
 export interface IExternalApiRes<T> {
-  input: { coordinates: ApiCoordinates };
+  input: { coordinates: ApiCoordinates; address?: string };
   result: T;
 }
 
@@ -146,7 +157,7 @@ export interface IApiFetchPoiDataReqStatus
 export interface IApiFetchPoiDataRes
   extends IExternalApiRes<ApiOsmLocation[]> {}
 
-export interface IApiQueryOpenAiResExtReq extends IApiFetchPoiDataReq {
+export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
   queryType?: ApiOpenAiQueryTypesEnum;
   tonality?: OpenAiTonalityEnum;
 
@@ -158,7 +169,20 @@ export interface IApiQueryOpenAiResExtReq extends IApiFetchPoiDataReq {
   furnishing: ApiFurnishing[];
 }
 
-export interface IApiQueryOpenAiResExtReqStatus
-  extends IExternalApiReqStatus<IApiQueryOpenAiResExtReq> {}
+export interface IApiQueryOpenAiExtReqStatus
+  extends IExternalApiReqStatus<IApiQueryOpenAiExtReq> {}
 
-export interface IApiQueryOpenAiResExtRes extends IExternalApiRes<string> {}
+export interface IApiQueryOpenAiExtRes extends IExternalApiRes<string> {}
+
+export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
+  responseType: SnapshotDataTypesEnum;
+  snapshotId?: string;
+  poiTypes?: OsmName[];
+}
+
+export interface IApiFetchSnapshotDataReqStatus
+  extends IExternalApiReqStatus<IApiFetchSnapshotDataReq> {}
+
+export interface IApiFetchSnapshotDataRes extends IExternalApiRes<string> {
+  snapshotId: string;
+}

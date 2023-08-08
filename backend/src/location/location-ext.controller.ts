@@ -11,7 +11,10 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import { ApiRequestStatusesEnum } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiRequestStatusesEnum,
+} from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
@@ -27,8 +30,11 @@ import {
   IApiFetchAddrInRangeRes,
   IApiFetchPoiDataReqStatus,
   IApiFetchPoiDataRes,
+  IApiFetchSnapshotDataReqStatus,
+  IApiFetchSnapshotDataRes,
 } from '@area-butler-types/external-api';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -66,6 +72,46 @@ export class LocationExtController extends ApiKeyAuthController {
   }
 
   @ApiOperation({
+    description: 'Create a search result snapshot and fetch its data',
+  })
+  @Post('snapshot-data')
+  async fetchSnapshotData(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body()
+    fetchSnapshotDataReq: ApiFetchSnapshotDataReqDto,
+  ): Promise<IApiFetchSnapshotDataRes> {
+    const requestStatus: IApiFetchSnapshotDataReqStatus = {
+      status: ApiRequestStatusesEnum.SUCCESS,
+      queryParams: fetchSnapshotDataReq,
+    };
+
+    try {
+      return this.locationExtService.fetchSnapshotData(
+        user,
+        fetchSnapshotDataReq,
+      );
+    } catch (e) {
+      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.message = e.message;
+
+      if (e.response?.status === 429 && !(e instanceof HttpException)) {
+        throw new HttpException(
+          'Too many requests at a time! Please, try again later.',
+          429,
+        );
+      }
+
+      throw e;
+    } finally {
+      await this.usageStatisticsService.logUsageStatistics(
+        user,
+        ApiUsageStatsTypesEnum.SNAPSHOT_DATA,
+        requestStatus,
+      );
+    }
+  }
+
+  @ApiOperation({
     description:
       'Fetches all of the addresses around the central one within a specified range',
   })
@@ -74,7 +120,7 @@ export class LocationExtController extends ApiKeyAuthController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
-  ): Promise<IApiFetchAddrInRangeRes | string> {
+  ): Promise<IApiFetchAddrInRangeRes> {
     const { lat, lng, address, radius, language, apiType } =
       fetchAddrInRangeReq;
 
@@ -122,7 +168,7 @@ export class LocationExtController extends ApiKeyAuthController {
         );
       }
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,
@@ -141,7 +187,7 @@ export class LocationExtController extends ApiKeyAuthController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
     fetchPoiDataReq: ApiFetchPoiDataReqDto,
-  ): Promise<IApiFetchPoiDataRes | string> {
+  ): Promise<IApiFetchPoiDataRes> {
     const { address, lat, lng, poiNumber, transportMode, distance, unit } =
       fetchPoiDataReq;
 
@@ -151,7 +197,7 @@ export class LocationExtController extends ApiKeyAuthController {
     };
 
     try {
-      let coordinates;
+      let coordinates: ApiCoordinates;
 
       if (address) {
         const place = await this.googleGeocodeService.fetchPlace(address);
@@ -184,7 +230,7 @@ export class LocationExtController extends ApiKeyAuthController {
         );
       }
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,

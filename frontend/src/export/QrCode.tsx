@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect, useState } from "react";
-
 import { toDataURL } from "qrcode";
+
 import { useTools } from "../hooks/tools";
 
 export interface QrCodeProps {

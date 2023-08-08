@@ -1,4 +1,4 @@
-import { Controller, Get, Query } from '@nestjs/common';
+import { Controller, Get, HttpException, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { LocationIndexService } from './location-index.service';
@@ -35,7 +35,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query() queryLocIndicesReq: ApiQueryLocIndicesReqDto,
-  ): Promise<IApiQueryLocIndicesRes | string> {
+  ): Promise<IApiQueryLocIndicesRes> {
     const { lat, lng, address, type } = queryLocIndicesReq;
     // Due to the specifics of GeoJson, longitude comes first, then latitude
     const geoJsonCoordinates: number[] = [];
@@ -78,12 +78,12 @@ export class LocationIndexExtController extends ApiKeyAuthController {
         };
       }
 
-      return 'Location indices not found!';
+      throw new HttpException('Location indices not found!', 400);
     } catch (e) {
       requestStatus.status = ApiRequestStatusesEnum.ERROR;
       requestStatus.message = e.message;
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,

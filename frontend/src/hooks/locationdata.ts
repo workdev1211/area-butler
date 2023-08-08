@@ -42,9 +42,7 @@ export const useLocationData = () => {
     search: ApiSearch
   ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
-      isIntegrationUser
-        ? "/api/location-int/search"
-        : "/api/location/search",
+      isIntegrationUser ? "/api/location-int/search" : "/api/location/search",
       search
     );
 
@@ -91,6 +89,7 @@ export const useLocationData = () => {
 
     let index = 0;
 
+    // TODO think about moving this logic to the backend
     for (const preferredLocation of preferredLocations) {
       items.push({
         key: `fetch-routes-${preferredLocation.title}-${index}`,
@@ -169,6 +168,8 @@ export const useLocationData = () => {
             searchContextState.localityParams
           ),
           searchResponse: searchResponse,
+          // TODO should be moved to the backend because unnecessary data is sent in the request body
+          // TODO check where it's needed, maybe it's not used anywhere
           realEstateListings: realEstateState.listings,
           integrationId: searchContextState.realEstateListing?.integrationId,
         }

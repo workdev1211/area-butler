@@ -5,16 +5,28 @@ import { configService } from '../config/config.service';
 import {
   ApiCoordinates,
   ApiOsmLocation,
+  ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
+  UnitsOfTransportation,
 } from '@area-butler-types/types';
 import { OverpassService } from '../client/overpass/overpass.service';
 import {
   convertMetersToMinutes,
   convertMinutesToMeters,
 } from '../../../shared/functions/shared.functions';
-import { ApiUnitsOfTransportEnum } from '@area-butler-types/external-api';
+import {
+  ApiUnitsOfTransportEnum,
+  IApiFetchSnapshotDataReq,
+  IApiFetchSnapshotDataRes,
+  SnapshotDataTypesEnum,
+} from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
+import { LocationService } from './location.service';
+import { UserDocument } from '../user/schema/user.schema';
+import { SnapshotExtService } from './snapshot-ext.service';
+import { defaultPoiTypes } from '../../../shared/constants/location';
+import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
 
 interface IFetchPoiDataArgs {
   coordinates: ApiCoordinates;
@@ -32,6 +44,8 @@ export class LocationExtService {
   constructor(
     private readonly overpassService: OverpassService,
     private readonly overpassDataService: OverpassDataService,
+    private readonly locationService: LocationService,
+    private readonly snapshotExtService: SnapshotExtService,
   ) {}
 
   async fetchPoiData({
@@ -40,7 +54,7 @@ export class LocationExtService {
     distance,
     unit,
     poiNumber = 0,
-    preferredAmenities = Object.values(OsmName),
+    preferredAmenities = defaultPoiTypes,
   }: IFetchPoiDataArgs): Promise<ApiOsmLocation[]> {
     let resultDistInMeters = distance;
     let maxPossibleDistance;
@@ -91,5 +105,97 @@ export class LocationExtService {
           limit: poiNumber,
         })
       : await this.overpassService.fetchNodes(fetchNodeParams);
+  }
+
+  async fetchSnapshotData(
+    user: UserDocument,
+    fetchSnapshotData: IApiFetchSnapshotDataReq,
+  ): Promise<IApiFetchSnapshotDataRes> {
+    const {
+      responseType,
+      snapshotId,
+      lat,
+      lng,
+      address,
+      transportMode,
+      distance,
+      unit,
+      poiTypes,
+    } = fetchSnapshotData;
+
+    let snapshotResponse:
+      | SearchResultSnapshotDocument
+      | ApiSearchResultSnapshotResponse;
+
+    if (snapshotId) {
+      snapshotResponse = await this.locationService.fetchSnapshotById(
+        user,
+        snapshotId,
+      );
+    }
+
+    if (!snapshotId) {
+      let resultingDistance = distance;
+      let resultingUnit = unit as unknown as UnitsOfTransportation;
+
+      if (unit === ApiUnitsOfTransportEnum.METERS) {
+        resultingUnit = UnitsOfTransportation.KILOMETERS;
+        resultingDistance = resultingDistance / 1000;
+      }
+
+      snapshotResponse = await this.snapshotExtService.createSnapshot({
+        user,
+        location: address || { lat, lng },
+        transportParams: [
+          {
+            type: transportMode,
+            amount: resultingDistance,
+            unit: resultingUnit,
+          },
+        ],
+        poiTypes,
+      });
+    }
+
+    const responseData = {
+      input: {
+        coordinates: snapshotResponse.snapshot.location,
+        address: snapshotResponse.snapshot.placesLocation?.label,
+      },
+      snapshotId: snapshotResponse.id,
+    } as IApiFetchSnapshotDataRes;
+
+    const directLink = `${configService.getBaseAppUrl()}/embed?token=${
+      snapshotResponse.token
+    }`;
+
+    switch (responseType) {
+      case SnapshotDataTypesEnum.DIRECT_LINK: {
+        responseData.result = directLink;
+        return responseData;
+      }
+
+      case SnapshotDataTypesEnum.IFRAME_CODE: {
+        const iframeCode = String.raw`
+<iframe
+ style="border: none"
+ width="100%"
+ height="100%"
+ src="${directLink}"
+ title="AreaButler Map Snippet"
+></iframe>`;
+
+        responseData.result = iframeCode.replace(/\n/g, '');
+        return responseData;
+      }
+
+      case SnapshotDataTypesEnum.QR_CODE: {
+        responseData.result = `${configService.getBaseApiUrl()}/api/location/embedded/qr-code/${
+          snapshotResponse.token
+        }`;
+
+        return responseData;
+      }
+    }
   }
 }

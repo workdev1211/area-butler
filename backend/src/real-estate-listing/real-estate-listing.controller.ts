@@ -8,13 +8,11 @@ import {
   Put,
   UploadedFile,
   UseInterceptors,
-  Res,
   StreamableFile,
   Query,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { Response } from 'express';
 import { createReadStream } from 'fs';
 import { join as joinPath } from 'path';
 
@@ -121,29 +119,20 @@ export class RealEstateListingController extends AuthenticatedController {
   downloadExampleFile(
     @Query('format') fileFormat: CsvFileFormatsEnum,
     @Query('type') fileType: ApiExampleFileTypeEnum,
-    @Res({ passthrough: true }) res: Response,
   ): StreamableFile {
+    let contentType: string;
+
     switch (fileType) {
       case ApiExampleFileTypeEnum.CSV: {
-        res.set({
-          'Content-Type': 'text/csv',
-        });
-
+        contentType = 'text/csv';
         break;
       }
 
       case ApiExampleFileTypeEnum.XLS: {
-        res.set({
-          'Content-Type': 'application/vnd.ms-excel',
-        });
-
+        contentType = 'application/vnd.ms-excel';
         break;
       }
     }
-
-    res.set({
-      'Content-Disposition': `attachment; filename="example.${fileType}"`,
-    });
 
     const path = joinPath(
       __dirname,
@@ -152,7 +141,10 @@ export class RealEstateListingController extends AuthenticatedController {
         .replace('_', '-')}/example.${fileType}`,
     );
 
-    return new StreamableFile(createReadStream(path));
+    return new StreamableFile(createReadStream(path), {
+      type: contentType,
+      disposition: `attachment; filename="example.${fileType}"`,
+    });
   }
 
   @ApiOperation({ description: 'Fetch Open AI real estate description' })

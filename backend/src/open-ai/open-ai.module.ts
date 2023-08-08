@@ -21,6 +21,17 @@ import {
   OverpassData,
   OverpassDataSchema,
 } from '../data-provision/schemas/overpass-data.schema';
+import { LocationService } from '../location/location.service';
+import {
+  LocationSearch,
+  LocationSearchSchema,
+} from '../location/schema/location-search.schema';
+import {
+  SearchResultSnapshot,
+  SearchResultSnapshotSchema,
+} from '../location/schema/search-result-snapshot.schema';
+import { SnapshotExtService } from '../location/snapshot-ext.service';
+import { RoutingService } from '../routing/routing.service';
 
 @Module({
   imports: [
@@ -30,15 +41,20 @@ import {
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
       { name: OverpassData.name, schema: OverpassDataSchema },
+      { name: LocationSearch.name, schema: LocationSearchSchema },
+      { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
   providers: [
     OpenAiService,
     RealEstateListingService,
     RealEstateListingIntService,
+    LocationService,
     LocationExtService,
     OverpassService,
     OverpassDataService,
+    SnapshotExtService,
+    RoutingService,
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   exports: [OpenAiService],

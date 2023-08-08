@@ -1,5 +1,14 @@
-import { Controller, Get, HttpException, Logger, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  HttpException,
+  Logger,
+  Param,
+  StreamableFile,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Readable } from 'stream';
+import { toBuffer } from 'qrcode';
 
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
@@ -10,11 +19,12 @@ import { subscriptionExpiredMessage } from '../../../shared/messages/error.messa
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import { configService } from '../config/config.service';
 
 @ApiTags('embedded-map')
-@Controller('api/location/snapshot/iframe')
+@Controller('api/location/embedded')
 export class EmbeddedMapController {
-  private readonly logger = new Logger(EmbeddedMapController.name);
+  private readonly logger: Logger = new Logger(EmbeddedMapController.name);
 
   constructor(
     private readonly locationService: LocationService,
@@ -25,7 +35,7 @@ export class EmbeddedMapController {
   ) {}
 
   @ApiOperation({ description: 'Fetch an embedded map' })
-  @Get(':token')
+  @Get('iframe/:token')
   async fetchEmbeddedMap(
     @Param('token') token: string,
   ): Promise<ApiSearchResultSnapshotResponse> {
@@ -78,5 +88,25 @@ export class EmbeddedMapController {
       isTrial,
       !isIntegrationSnapshot ? user.poiIcons : undefined,
     );
+  }
+
+  @ApiOperation({ description: 'Fetch a QrCode for an embedded map' })
+  @Get('qr-code/:token')
+  async fetchQrCode(@Param('token') token: string): Promise<StreamableFile> {
+    const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
+    const directLink = `${configService.getBaseAppUrl()}/embed?token=${token}`;
+
+    const qrCode = await toBuffer(directLink, {
+      type: 'png',
+      margin: 0,
+    });
+
+    return new StreamableFile(Readable.from(qrCode), {
+      type: 'image/png',
+      disposition: `attachment; filename="${snapshotDoc.snapshot.placesLocation.label.replace(
+        /[\s|,]+/g,
+        '-',
+      )}-QR-Code.png"`,
+    });
   }
 }

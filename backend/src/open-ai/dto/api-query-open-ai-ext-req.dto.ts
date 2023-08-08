@@ -10,7 +10,7 @@ import { Transform } from 'class-transformer';
 
 import {
   ApiOpenAiQueryTypesEnum,
-  IApiQueryOpenAiResExtReq,
+  IApiQueryOpenAiExtReq,
 } from '@area-butler-types/external-api';
 import ApiFetchPoiDataReqDto from '../../location/dto/api-fetch-poi-data-req.dto';
 import {
@@ -21,9 +21,9 @@ import {
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { getEnumValidMessage } from '../../shared/validation.functions';
 
-class ApiQueryOpenAiResExtReqDto
+class ApiQueryOpenAiExtReqDto
   extends ApiFetchPoiDataReqDto
-  implements IApiQueryOpenAiResExtReq
+  implements IApiQueryOpenAiExtReq
 {
   @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
@@ -98,4 +98,4 @@ class ApiQueryOpenAiResExtReqDto
   furnishing: ApiFurnishing[] = [];
 }
 
-export default ApiQueryOpenAiResExtReqDto;
+export default ApiQueryOpenAiExtReqDto;

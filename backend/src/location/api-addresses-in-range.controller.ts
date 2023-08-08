@@ -44,13 +44,10 @@ export class ApiAddressesInRangeController {
     @Req() request: any,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
-  ): Promise<
-    | {
-        address_count: number;
-        addresses: IApiAddressInRange[];
-      }
-    | string
-  > {
+  ): Promise<{
+    address_count: number;
+    addresses: IApiAddressInRange[];
+  }> {
     const { lat, lng, address, radius, language, apiType } =
       fetchAddrInRangeReq;
 
@@ -94,7 +91,7 @@ export class ApiAddressesInRangeController {
         );
       }
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,

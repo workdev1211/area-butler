@@ -53,7 +53,7 @@ import LocalityParams from "../components/LocalityParams";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";
 import TransportationParams, {
-  defaultTransportationParams,
+  defaultTransportParams,
 } from "../components/TransportationParams";
 import {
   SearchContext,
@@ -130,7 +130,7 @@ const SearchParamsPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: defaultTransportationParams,
+      payload: defaultTransportParams,
     });
 
     searchContextDispatch({

@@ -5,7 +5,10 @@ import { ZensusAtlasService } from './zensus-atlas.service';
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserDocument } from '../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { ApiRequestStatusesEnum } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiRequestStatusesEnum,
+} from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
@@ -37,9 +40,9 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query() queryZensusAtlasReq: ApiCoordinatesOrAddressDto,
-  ): Promise<IApiQueryZensusAtlasRes | string> {
+  ): Promise<IApiQueryZensusAtlasRes> {
     const { lat, lng, address } = queryZensusAtlasReq;
-    let coordinates;
+    let coordinates: ApiCoordinates;
 
     if (address) {
       const place = await this.googleGeocodeService.fetchPlace(address);
@@ -70,7 +73,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
       requestStatus.status = ApiRequestStatusesEnum.ERROR;
       requestStatus.message = e.message;
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,

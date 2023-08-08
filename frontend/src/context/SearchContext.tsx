@@ -13,7 +13,7 @@ import {
   OsmName,
   TransportationParam,
 } from "../../../shared/types/types";
-import { defaultTransportationParams } from "../components/TransportationParams";
+import { defaultTransportParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
@@ -74,7 +74,7 @@ export interface IGotoMapCenter {
 }
 
 export const initialState: SearchContextState = {
-  transportationParams: [...defaultTransportationParams],
+  transportationParams: [...defaultTransportParams],
   localityParams: [...getCombinedOsmEntityTypes()],
   searchBusy: false,
   printingActive: false,

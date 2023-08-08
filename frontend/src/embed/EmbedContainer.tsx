@@ -62,7 +62,7 @@ const EmbedContainer: FunctionComponent = () => {
   const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcons>();
   const [mapDisplayMode, setMapDisplayMode] = useState<MapDisplayModesEnum>();
 
-  const getQueryVariable = (variable: string) => {
+  const getQueryVariable = (variable: string): string | undefined => {
     const query = window.location.search.substring(1);
     const vars = query.split("&");
 
@@ -74,7 +74,7 @@ const EmbedContainer: FunctionComponent = () => {
       }
     }
 
-    return undefined;
+    return;
   };
 
   useEffect(() => {
@@ -106,7 +106,7 @@ const EmbedContainer: FunctionComponent = () => {
       try {
         const response = (
           await axios.get<ApiSearchResultSnapshotResponse>(
-            `${baseUrl}/api/location/snapshot/iframe/${getQueryVariable(
+            `${baseUrl}/api/location/embedded/iframe/${getQueryVariable(
               "token"
             )}`
           )

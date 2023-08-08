@@ -184,7 +184,7 @@ export interface ApiOsmEntity {
   id?: string;
   type: OsmType;
   name: OsmName;
-  // TODO change to the enum
+  // TODO change to an enum
   label: string;
   title?: string;
   category: ApiOsmEntityCategory;
@@ -303,7 +303,7 @@ export interface ApiUpdateSearchResultSnapshot {
 }
 
 export interface ApiSearchResultSnapshot {
-  placesLocation: any;
+  placesLocation: any | IApiPlacesLocation;
   location: ApiCoordinates;
   transportationParams: TransportationParam[];
   localityParams: ApiOsmEntity[];

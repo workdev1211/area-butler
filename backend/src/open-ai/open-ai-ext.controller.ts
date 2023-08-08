@@ -6,7 +6,7 @@ import { OpenAiService } from './open-ai.service';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
-import ApiQueryOpenAiResExtReqDto from './dto/api-query-open-ai-res-ext-req.dto';
+import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
 import {
   ApiRequestStatusesEnum,
@@ -15,8 +15,8 @@ import {
 import {
   ApiOpenAiQueryTypesEnum,
   ApiUsageStatsTypesEnum,
-  IApiQueryOpenAiResExtReqStatus,
-  IApiQueryOpenAiResExtRes,
+  IApiQueryOpenAiExtReqStatus,
+  IApiQueryOpenAiExtRes,
 } from '@area-butler-types/external-api';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
@@ -40,8 +40,8 @@ export class OpenAiExtController extends ApiKeyAuthController {
   async fetchResponse(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query()
-    queryOpenAiRes: ApiQueryOpenAiResExtReqDto,
-  ): Promise<IApiQueryOpenAiResExtRes | string> {
+    queryOpenAiRes: ApiQueryOpenAiExtReqDto,
+  ): Promise<IApiQueryOpenAiExtRes | string> {
     const {
       queryType,
       tonality,
@@ -59,12 +59,13 @@ export class OpenAiExtController extends ApiKeyAuthController {
       furnishing,
     } = queryOpenAiRes;
 
-    const requestStatus: IApiQueryOpenAiResExtReqStatus = {
+    const requestStatus: IApiQueryOpenAiExtReqStatus = {
       status: ApiRequestStatusesEnum.SUCCESS,
       queryParams: queryOpenAiRes,
     };
 
     try {
+      // TODO move all complex logic to a separate OpenAI service
       const place = await this.googleGeocodeService.fetchPlace(
         address || { lat, lng },
       );
@@ -147,7 +148,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
         );
       }
 
-      return e.message;
+      throw e;
     } finally {
       await this.usageStatisticsService.logUsageStatistics(
         user,
