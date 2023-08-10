@@ -9,7 +9,10 @@ import {
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
-import { IPropstackRealEstate } from '../../shared/propstack.types';
+import {
+  IPropstackRealEstate,
+  PropstackRealEstStatusesEnum,
+} from '../../shared/propstack.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 
 @Exclude()
@@ -139,7 +142,45 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
   externalId?: string;
 
   externalSource = ApiRealEstateExtSourcesEnum.PROPSTACK;
-  status = ApiRealEstateStatusEnum.IN_PREPARATION;
+
+  @Expose()
+  @Transform(
+    ({
+      obj: {
+        status: { name },
+      },
+    }: {
+      obj: IPropstackRealEstate;
+    }): ApiRealEstateStatusEnum => {
+      switch (name) {
+        case PropstackRealEstStatusesEnum.AKQUISE: {
+          return ApiRealEstateStatusEnum.RENTED;
+        }
+        case PropstackRealEstStatusesEnum.IN_VERMARKTUNG: {
+          return ApiRealEstateStatusEnum.MARKET_OBSERVATION;
+        }
+        case PropstackRealEstStatusesEnum.RESERVIERT: {
+          return ApiRealEstateStatusEnum.RESERVED;
+        }
+        case PropstackRealEstStatusesEnum.VERKAUFT: {
+          return ApiRealEstateStatusEnum.SOLD;
+        }
+        case PropstackRealEstStatusesEnum.INAKTIV: {
+          return ApiRealEstateStatusEnum.ARCHIVED;
+        }
+
+        case PropstackRealEstStatusesEnum.IN_VORBEREITUNG:
+        default: {
+          return ApiRealEstateStatusEnum.IN_PREPARATION;
+        }
+      }
+    },
+    {
+      toClassOnly: true,
+    },
+  )
+  status: ApiRealEstateStatusEnum;
+
   showInSnippet = true;
 }
 

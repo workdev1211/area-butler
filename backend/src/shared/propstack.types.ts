@@ -23,8 +23,17 @@ export interface IPropstackRealEstate {
 
 export interface IPropstackRealEstateStatus {
   id: string;
-  name: string;
+  name: PropstackRealEstStatusesEnum;
   color: string;
+}
+
+export enum PropstackRealEstStatusesEnum {
+  AKQUISE = 'Akquise',
+  IN_VORBEREITUNG = 'In Vorbereitung',
+  IN_VERMARKTUNG = 'In Vermarktung',
+  RESERVIERT = 'Reserviert',
+  VERKAUFT = 'Verkauft',
+  INAKTIV = 'Inaktiv',
 }
 
 export interface IPropstackRealEstateFurnishings {
