@@ -451,6 +451,7 @@ export class SubscriptionService {
     return paymentItem;
   }
 
+  // 'name' is required in order to prevent the cron job duplication
   @Cron('0 45 9 * * *', { name: 'SendSubscriptionExpirationEmail' })
   async sendSubscriptionExpirationEmail(): Promise<void> {
     const dateTimePattern = new RegExp(/(.+)T(.+)Z/);

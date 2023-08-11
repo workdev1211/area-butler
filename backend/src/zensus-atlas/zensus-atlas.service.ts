@@ -13,6 +13,7 @@ import {
   ZipLevelDataDocument,
 } from '../data-provision/schemas/zip-level-data.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { createChunks } from '../../../shared/functions/shared.functions';
 
 @Injectable()
 export class ZensusAtlasService {
@@ -40,22 +41,20 @@ export class ZensusAtlasService {
       `creating new ${collection.collectionName} collection [count: ${zensusAtlasFeatures.length}]`,
     );
 
-    const chunksize = 1000;
-
-    const createChunks = (a, size) =>
-      Array.from(new Array(Math.ceil(a.length / size)), (_, i) =>
-        a.slice(i * size, i * size + size),
-      );
+    const chunkSize = 1000;
 
     try {
       this.logger.debug('Dropping existing collection');
       await collection.drop();
     } catch (e) {}
 
-    const chunks = createChunks(zensusAtlasFeatures, chunksize);
+    const chunks = createChunks<ApiGeojsonFeature>(
+      zensusAtlasFeatures,
+      chunkSize,
+    );
 
     this.logger.debug(
-      `Inserting ${chunks.length} chunks of ${chunksize} datasets.`,
+      `Inserting ${chunks.length} chunks of ${chunkSize} datasets.`,
     );
 
     await Promise.all(chunks.map(async (c) => await collection.insertMany(c)));

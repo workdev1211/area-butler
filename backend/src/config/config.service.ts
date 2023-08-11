@@ -9,6 +9,7 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from '../../../shared/constants/constants';
+import { TOverpassAvailCountries } from '@area-butler-types/overpass';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -139,8 +140,13 @@ class ConfigService {
     return this.getValue('JWT_ROLES_CLAIM');
   }
 
-  getOverpassUrl(): string {
-    return this.getValue('OVERPASS_URL');
+  getOverpassBaseUrl(): string {
+    return this.getValue('OVERPASS_BASE_URL');
+  }
+
+  getOverpassCountries(): TOverpassAvailCountries[] {
+    const overpassCountries = this.getValue('OVERPASS_COUNTRIES');
+    return overpassCountries ? JSON.parse(overpassCountries) : ['de'];
   }
 
   useOverpassDb(): boolean {
@@ -231,7 +237,7 @@ class ConfigService {
 
 const configService = new ConfigService(process.env).ensureValues([
   'MAPBOX_ACCESS_TOKEN',
-  'OVERPASS_URL',
+  'OVERPASS_BASE_URL',
   'HERE_ROUTER_API_URL',
   'HERE_API_KEY',
   'HERE_TRANSIT_ROUTER_API_URL',

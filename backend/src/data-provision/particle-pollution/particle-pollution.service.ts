@@ -12,6 +12,7 @@ import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { SubscriptionService } from '../../user/subscription.service';
 import { UserDocument } from '../../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { createChunks } from '../../../../shared/functions/shared.functions';
 
 @Injectable()
 export class ParticlePollutionService {
@@ -33,22 +34,20 @@ export class ParticlePollutionService {
       `creating new ${collection.collectionName} collection [count: ${particlePollutionFeatures.length}]`,
     );
 
-    const chunksize = 1000;
-
-    const createChunks = (a, size) =>
-      Array.from(new Array(Math.ceil(a.length / size)), (_, i) =>
-        a.slice(i * size, i * size + size),
-      );
+    const chunkSize = 1000;
 
     try {
       this.logger.debug('Dropping existing collection');
       await collection.drop();
     } catch (e) {}
 
-    const chunks = createChunks(particlePollutionFeatures, chunksize);
+    const chunks = createChunks<ApiGeojsonFeature>(
+      particlePollutionFeatures,
+      chunkSize,
+    );
 
     this.logger.debug(
-      `Inserting ${chunks.length} chunks of ${chunksize} datasets.`,
+      `Inserting ${chunks.length} chunks of ${chunkSize} datasets.`,
     );
 
     await Promise.all(chunks.map(async (c) => await collection.insertMany(c)));

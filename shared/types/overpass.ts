@@ -6,3 +6,5 @@ export interface IApiOverpassFetchNodes {
   preferredAmenities: OsmName[];
   limit?: number;
 }
+
+export type TOverpassAvailCountries = "de" | "es" | "cy";
