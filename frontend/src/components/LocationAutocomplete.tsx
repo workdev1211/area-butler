@@ -10,6 +10,7 @@ import {
 } from "../shared/shared.functions";
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
+import { allowedCountries } from "../../../shared/constants/location";
 
 interface ILocationAutocompleteProps {
   afterChange?: ({
@@ -105,7 +106,7 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
           apiOptions={googleMapsApiOptions}
           autocompletionRequest={{
             componentRestrictions: {
-              country: ["de"],
+              country: allowedCountries,
             },
           }}
           minLengthAutocomplete={5}

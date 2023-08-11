@@ -6,6 +6,7 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from "../types/types";
+import { TOverpassAvailCountries } from "../types/overpass";
 
 export const locationIndexNames: Record<LocationIndicesEnum, string> = {
   [LocationIndicesEnum.evening_entertainment]: "Restaurants, Bars & Clubs",
@@ -49,3 +50,5 @@ export const defaultTransportParams: TransportationParam[] = [
 export const defaultPoiTypes: OsmName[] = Object.values(OsmName).filter(
   (name) => ![OsmName.favorite, OsmName.property].includes(name)
 );
+
+export const allowedCountries: TOverpassAvailCountries[] = ["de", "es", "cy"];

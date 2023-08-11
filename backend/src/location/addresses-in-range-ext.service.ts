@@ -3,16 +3,15 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { ApiCoordinates } from '@area-butler-types/types';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { distanceInMeters } from '../shared/shared.functions';
-import {
-  allowedCountries,
-  ApiGoogleLanguageEnum,
-} from '@area-butler-types/google';
+import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiAddressInRange,
 } from '@area-butler-types/external-api';
+import { allowedCountries } from '../../../shared/constants/location';
+import { TOverpassAvailCountries } from '@area-butler-types/overpass';
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
 interface IFetchedAddresses {
@@ -52,7 +51,8 @@ export class AddressesInRangeExtService {
 
     const isInAllowedCountry = place?.address_components.some(
       ({ short_name: shortName, types }) =>
-        types.includes('country') && allowedCountries.includes(shortName),
+        types.includes('country') &&
+        allowedCountries.includes(shortName as TOverpassAvailCountries),
     );
 
     if (
