@@ -60,11 +60,12 @@ export class RealEstateListingService {
     return this.realEstateListingModel.find(filter);
   }
 
-  async insertRealEstateListing(
+  async createRealEstateListing(
     user: UserDocument,
     upsertData: ApiUpsertRealEstateListing,
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
+    // Further object creation is no longer possible for the current plan
     subscriptionCheck &&
       this.subscriptionService.checkSubscriptionViolation(
         user.subscription.type,

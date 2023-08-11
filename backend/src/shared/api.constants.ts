@@ -29,3 +29,7 @@ export const apiRoutePathToFeatureTypeMapping: Record<
   '/api/location-ext/poi-data': ApiFeatureTypesEnum.POI_DATA,
   '/api/open-ai-ext/query': ApiFeatureTypesEnum.OPEN_AI,
 };
+
+export const apiAllowedRoutes: string[] = [
+  '/api/propstack-webhook/property-created',
+];

@@ -58,12 +58,12 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Insert a new real estate listing' })
   @Post()
-  async insertRealEstateListing(
+  async createRealEstateListing(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() realEstateListing: ApiUpsertRealEstateListingDto,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
-      await this.realEstateListingService.insertRealEstateListing(
+      await this.realEstateListingService.createRealEstateListing(
         user,
         realEstateListing,
       ),

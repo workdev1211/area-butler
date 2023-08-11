@@ -27,6 +27,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { defaultPoiTypes } from '../../../shared/constants/location';
 import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
+import { createDirectLink } from '../shared/shared.functions';
 
 interface IFetchPoiDataArgs {
   coordinates: ApiCoordinates;
@@ -165,9 +166,7 @@ export class LocationExtService {
       snapshotId: snapshotResponse.id,
     } as IApiFetchSnapshotDataRes;
 
-    const directLink = `${configService.getBaseAppUrl()}/embed?token=${
-      snapshotResponse.token
-    }`;
+    const directLink = createDirectLink(snapshotResponse.token);
 
     switch (responseType) {
       case SnapshotDataTypesEnum.DIRECT_LINK: {

@@ -294,7 +294,7 @@ export class RealEstateListingImportService {
 
     await this.setAddressAndCoordinates(realEstate);
 
-    await this.realEstateListingService.insertRealEstateListing(
+    await this.realEstateListingService.createRealEstateListing(
       user,
       realEstate,
     );

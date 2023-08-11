@@ -21,7 +21,7 @@ export class PropstackApiService {
   ): Promise<IPropstackApiFetchEstatesRes> {
     const headers = {
       'Content-Type': 'application/json',
-      'X-API-KEY': apiKey,
+      'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
@@ -42,7 +42,7 @@ export class PropstackApiService {
   ): Promise<IPropstackRealEstate> {
     const headers = {
       'Content-Type': 'application/json',
-      'X-API-KEY': apiKey,
+      'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
@@ -50,6 +50,29 @@ export class PropstackApiService {
     }>(
       this.http.get<IPropstackRealEstate>(
         `${this.apiUrl}/units/${realEstateId}`,
+        { headers },
+      ),
+    );
+
+    return data;
+  }
+
+  async updateRealEstateById(
+    apiKey: string,
+    realEstateId: number,
+    updatedParams: Partial<IPropstackRealEstate>,
+  ): Promise<IPropstackRealEstate> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    };
+
+    const { data } = await firstValueFrom<{
+      data: IPropstackRealEstate;
+    }>(
+      this.http.put<IPropstackRealEstate>(
+        `${this.apiUrl}/units/${realEstateId}`,
+        { property: updatedParams },
         { headers },
       ),
     );

@@ -273,7 +273,7 @@ export class SubscriptionService {
       { requestsExecuted: 0, requestContingents: [] },
     );
 
-    this.eventEmitter.emitAsync(EventType.TRIAL_DATA_REMOVE_EVENT, {
+    void this.eventEmitter.emitAsync(EventType.TRIAL_DATA_REMOVE_EVENT, {
       userId,
     });
   }

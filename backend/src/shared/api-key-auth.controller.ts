@@ -1,5 +1,6 @@
 import { UseGuards } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
 
-@UseGuards(AuthGuard('api-key'))
+import { ApiKeyGuard } from '../auth/api-key.guard';
+
+@UseGuards(ApiKeyGuard)
 export class ApiKeyAuthController {}

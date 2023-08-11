@@ -19,7 +19,7 @@ import { subscriptionExpiredMessage } from '../../../shared/messages/error.messa
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import { configService } from '../config/config.service';
+import { createDirectLink } from '../shared/shared.functions';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
@@ -94,7 +94,7 @@ export class EmbeddedMapController {
   @Get('qr-code/:token')
   async fetchQrCode(@Param('token') token: string): Promise<StreamableFile> {
     const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
-    const directLink = `${configService.getBaseAppUrl()}/embed?token=${token}`;
+    const directLink = createDirectLink(token);
 
     const qrCode = await toBuffer(directLink, {
       type: 'png',

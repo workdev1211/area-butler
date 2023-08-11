@@ -67,14 +67,16 @@ export const getUncombinedOsmEntityTypes = (
   }, []);
 };
 
-export const createChunks = <T = unknown>(
-  initialArray: Array<T>,
-  size: number
-): Array<T>[] =>
-  Array.from(
-    new Array(Math.ceil(initialArray.length / size)),
-    (arrayValue, i) => initialArray.slice(i * size, i * size + size)
-  );
+export const createChunks = <T = unknown>(arr: T[], size: number): Array<T[]> =>
+  arr.reduce<Array<T[]>>((result, curVal, i) => {
+    if (i % size === 0) {
+      result.push([curVal]);
+    } else {
+      result[result.length - 1].push(curVal);
+    }
+
+    return result;
+  }, []);
 
 export const convertPriceToHuman = (price: number): string =>
   `${price.toFixed(2)} €`;

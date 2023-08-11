@@ -36,18 +36,14 @@ export class SnapshotExtService {
   async createSnapshot({
     user,
     location,
-    transportParams,
-    poiTypes,
+    transportParams = defaultTransportParams,
+    poiTypes = defaultPoiTypes,
   }: {
     user: UserDocument;
     location: string | ApiCoordinates;
     transportParams?: TransportationParam[];
     poiTypes?: OsmName[];
   }): Promise<ApiSearchResultSnapshotResponse> {
-    const resultTransportParams = Array.isArray(transportParams)
-      ? [...transportParams]
-      : [...defaultTransportParams];
-
     const place = await this.googleGeocodeService.fetchPlace(location);
 
     const placesLocation: IApiPlacesLocation = {
@@ -59,8 +55,8 @@ export class SnapshotExtService {
 
     const searchData: ApiSearch = {
       coordinates,
-      preferredAmenities: poiTypes || defaultPoiTypes,
-      meansOfTransportation: resultTransportParams,
+      preferredAmenities: poiTypes,
+      meansOfTransportation: transportParams,
       searchTitle: place.formatted_address,
     };
 

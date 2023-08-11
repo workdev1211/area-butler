@@ -19,7 +19,6 @@ import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import ApiCreateSnapshotFromTemplateDto from '../dto/api-create-snapshot-from-template.dto';
-import { configService } from '../config/config.service';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import ApiFetchPoiDataReqDto from './dto/api-fetch-poi-data-req.dto';
@@ -35,6 +34,7 @@ import {
 } from '@area-butler-types/external-api';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
+import { createDirectLink } from '../shared/shared.functions';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -67,7 +67,7 @@ export class LocationExtController extends ApiKeyAuthController {
 
     return {
       snapshotId: id,
-      directLink: `${configService.getBaseAppUrl()}/embed?token=${token}`,
+      directLink: createDirectLink(token),
     };
   }
 

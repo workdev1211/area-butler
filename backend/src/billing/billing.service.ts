@@ -410,7 +410,7 @@ export class BillingService {
 
     switch (limitIncreaseParams.type) {
       case ApiSubscriptionLimitsEnum.NUMBER_OF_REQUESTS: {
-        this.eventEmitter.emitAsync(
+        void this.eventEmitter.emitAsync(
           EventType.REQUEST_CONTINGENT_INCREASE_EVENT,
           { ...limitIncreaseEvent, customerId },
         );
@@ -418,7 +418,7 @@ export class BillingService {
       }
 
       case ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION: {
-        this.eventEmitter.emitAsync(
+        void this.eventEmitter.emitAsync(
           EventType.ADDRESS_EXPIRATION_INCREASE_EVENT,
           { ...limitIncreaseEvent, metadata },
         );
@@ -442,7 +442,7 @@ export class BillingService {
       paymentSystemType,
     };
 
-    this.eventEmitter.emitAsync(
+    void this.eventEmitter.emitAsync(
       EventType.SUBSCRIPTION_UPSERT_EVENT,
       subscriptionUpsertEvent,
     );
@@ -450,7 +450,10 @@ export class BillingService {
 
   private emitSubscriptionRenewEvent(event: ISubscriptionRenewEvent) {
     if (event.subscriptionId) {
-      this.eventEmitter.emitAsync(EventType.SUBSCRIPTION_RENEW_EVENT, event);
+      void this.eventEmitter.emitAsync(
+        EventType.SUBSCRIPTION_RENEW_EVENT,
+        event,
+      );
     }
   }
 }

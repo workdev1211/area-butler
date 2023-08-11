@@ -3,7 +3,10 @@ import { PassportStrategy } from '@nestjs/passport';
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
 import { UserService } from '../user/user.service';
-import { apiRoutePathToFeatureTypeMapping } from '../shared/api.constants';
+import {
+  apiAllowedRoutes,
+  apiRoutePathToFeatureTypeMapping,
+} from '../shared/api.constants';
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(
@@ -18,12 +21,14 @@ export class ApiKeyStrategy extends PassportStrategy(
       true,
       async (apiKey: string, verified, req): Promise<void> => {
         const user = await this.userService.fetchByApiKey(apiKey);
+        const routePath = req.route.path;
 
         if (
           !user ||
-          !user.apiKeyParams.allowedFeatures.includes(
-            apiRoutePathToFeatureTypeMapping[req.route.path],
-          )
+          (!user.apiKeyParams.allowedFeatures.includes(
+            apiRoutePathToFeatureTypeMapping[routePath],
+          ) &&
+            !apiAllowedRoutes.includes(routePath))
         ) {
           return verified(new UnauthorizedException());
         }

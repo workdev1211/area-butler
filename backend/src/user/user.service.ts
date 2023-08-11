@@ -74,7 +74,7 @@ export class UserService {
     }).save();
 
     // creates a new Stripe customer and default potential customer records
-    this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
+    void this.eventEmitter.emitAsync(EventType.USER_CREATED_EVENT, {
       user: newUser,
     });
 
@@ -83,12 +83,15 @@ export class UserService {
     } = this.subscriptionService.getApiSubscriptionPlanPrice(TRIAL_PRICE_ID);
 
     // creates Trial subscription
-    this.eventEmitter.emitAsync(EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT, {
-      user: newUser,
-      endsAt: dayjs()
-        .add(interval.value, interval.unit as ManipulateType)
-        .toDate(),
-    });
+    void this.eventEmitter.emitAsync(
+      EventType.TRIAL_SUBSCRIPTION_UPSERT_EVENT,
+      {
+        user: newUser,
+        endsAt: dayjs()
+          .add(interval.value, interval.unit as ManipulateType)
+          .toDate(),
+      },
+    );
 
     return newUser;
   }

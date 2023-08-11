@@ -63,7 +63,7 @@ export class IntegrationUserService {
       config: processedConfig,
     });
 
-    this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
+    void this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
       integrationUser,
     });
 

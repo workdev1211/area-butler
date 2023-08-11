@@ -1,6 +1,5 @@
-import { parse } from 'csv-parse';
-
 import { ApiCoordinates } from '@area-butler-types/types';
+import { configService } from '../config/config.service';
 
 export const getRawPriceValue = (priceValue: string): string =>
   priceValue.replace('.', '');
@@ -69,3 +68,6 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
 
   return Math.round(earthRadius * c);
 };
+
+export const createDirectLink = (token: string): string =>
+  `${configService.getBaseAppUrl()}/embed?token=${token}`;
