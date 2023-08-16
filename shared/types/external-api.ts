@@ -175,7 +175,7 @@ export interface IApiQueryOpenAiExtReqStatus
 export interface IApiQueryOpenAiExtRes extends IExternalApiRes<string> {}
 
 export interface IApiFetchSnapshotDataReq extends IApiFetchPoiDataReq {
-  responseType: SnapshotDataTypesEnum;
+  responseType?: SnapshotDataTypesEnum;
   snapshotId?: string;
   poiTypes?: OsmName[];
 }

@@ -2,8 +2,10 @@ import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
@@ -20,18 +22,40 @@ class ApiFetchSnapshotDataReqDto
   extends ApiFetchPoiDataReqDto
   implements IApiFetchSnapshotDataReq
 {
+  @IsOptional()
+  @IsString()
+  snapshotId?: string;
+
+  @ValidateIf(
+    ({ snapshotId, lat, lng, address }) =>
+      !snapshotId && ((lat && lng) || !address),
+  )
   @IsNotEmpty()
+  @Transform(({ value }) => +value, { toClassOnly: true })
+  @IsNumber()
+  lat?: number;
+
+  @ValidateIf(
+    ({ snapshotId, lat, lng, address }) =>
+      !snapshotId && ((lat && lng) || !address),
+  )
+  @IsNotEmpty()
+  @Transform(({ value }) => +value, { toClassOnly: true })
+  @IsNumber()
+  lng?: number;
+
+  @IsOptional()
+  @IsString()
+  address?: string;
+
+  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
   @IsEnum(SnapshotDataTypesEnum, {
     message: getEnumValidMessage,
   })
-  responseType: SnapshotDataTypesEnum;
-
-  @IsOptional()
-  @IsString()
-  snapshotId?: string;
+  responseType?: SnapshotDataTypesEnum = SnapshotDataTypesEnum.DIRECT_LINK;
 
   @IsOptional()
   @Transform(
