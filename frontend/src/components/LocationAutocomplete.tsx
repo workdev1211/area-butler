@@ -10,7 +10,8 @@ import {
 } from "../shared/shared.functions";
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
-import { allowedCountries } from "../../../shared/constants/location";
+import { useTools } from "../hooks/tools";
+import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 
 interface ILocationAutocompleteProps {
   afterChange?: ({
@@ -32,6 +33,11 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
   menuZIndex = 99,
 }) => {
   const { googleApiKey } = useContext(ConfigContext);
+  const { getActualUser } = useTools();
+
+  const user = getActualUser();
+  const allowedCountries = (!("integrationUserId" in user) &&
+    user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE];
 
   const Menu = (props: any) => {
     return (

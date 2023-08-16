@@ -6,7 +6,10 @@ import {
   TransportationParam,
   UnitsOfTransportation,
 } from "../types/types";
-import { TOverpassAvailCountries } from "../types/overpass";
+import {
+  Iso3166_1Alpha2CountriesEnum,
+  Iso3166_1Alpha3CountriesEnum,
+} from "../types/location";
 
 export const locationIndexNames: Record<LocationIndicesEnum, string> = {
   [LocationIndicesEnum.evening_entertainment]: "Restaurants, Bars & Clubs",
@@ -51,4 +54,18 @@ export const defaultPoiTypes: OsmName[] = Object.values(OsmName).filter(
   (name) => ![OsmName.favorite, OsmName.property].includes(name)
 );
 
-export const allowedCountries: TOverpassAvailCountries[] = ["de", "es", "cy"];
+export const iso3166Alpha3CountryNames: Record<
+  Iso3166_1Alpha3CountriesEnum,
+  string
+> = {
+  [Iso3166_1Alpha3CountriesEnum.DEU]: "Deutschland",
+};
+
+export const allowedAddrInRangeCountries = [
+  Iso3166_1Alpha2CountriesEnum.DE,
+  Iso3166_1Alpha2CountriesEnum.AT,
+  Iso3166_1Alpha2CountriesEnum.CH,
+  Iso3166_1Alpha2CountriesEnum.NL,
+  Iso3166_1Alpha2CountriesEnum.LU,
+  Iso3166_1Alpha2CountriesEnum.BE,
+];

@@ -13,7 +13,7 @@ import {
   ApiUserSubscription,
   PaymentSystemTypeEnum,
 } from '@area-butler-types/subscription-plan';
-import ApiSubscriptionPlanDto from './api-subscription-plan.dto';
+import ApiSubscriptionPlanDto from '../../dto/api-subscription-plan.dto';
 
 class ApiUserSubscriptionDto implements ApiUserSubscription {
   @IsNotEmpty()

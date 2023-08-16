@@ -19,7 +19,7 @@ import {
 } from '@area-butler-types/types';
 import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-config.dto';
 import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
-import ApiUserPoiIconsDto from './api-user-poi-icons.dto';
+import ApiUserPoiIconsDto from '../user/dto/api-user-poi-icons.dto';
 
 class ApiSearchResultSnapshotResponseDto
   implements ApiSearchResultSnapshotResponse

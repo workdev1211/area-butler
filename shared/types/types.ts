@@ -14,6 +14,7 @@ import {
   systemEnvironments,
 } from "../constants/constants";
 import { IntegrationTypesEnum } from "./integration";
+import { Iso3166_1Alpha2CountriesEnum } from "./location";
 
 export interface RollbarConfig {
   accessToken: string;
@@ -68,6 +69,7 @@ export interface ApiUser {
   poiIcons?: IApiUserPoiIcons;
   exportFonts?: IApiUserExportFont[];
   apiConnections?: TApiUserApiConnections;
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
 }
 
 export type TApiUserApiConnectionSettings = Partial<

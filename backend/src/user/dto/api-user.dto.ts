@@ -2,6 +2,7 @@ import {
   IsArray,
   IsBoolean,
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -12,20 +13,28 @@ import {
 import { Type, Transform, Expose, Exclude } from 'class-transformer';
 
 import {
+  ApiShowTour,
   ApiUser,
   IApiUserExportFont,
+  IApiUserParentSettings,
   IApiUserPoiIcons,
+  MapBoxStyle,
   TApiUserApiConnections,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
 import ApiUserSubscriptionDto from './api-user-subscription.dto';
-import MapBoxStyleDto from './map-box-style.dto';
-import { mapSubscriptionToApiSubscription } from '../user/mapper/subscription.mapper';
-import { retrieveTotalRequestContingent } from '../user/schema/user.schema';
+import MapBoxStyleDto from '../../dto/map-box-style.dto';
+import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
+import { retrieveTotalRequestContingent } from '../schema/user.schema';
 import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
 import ApiUserExportFontDto from './api-user-export-font.dto';
 import ApiUserPoiIconsDto from './api-user-poi-icons.dto';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
+import {
+  ApiRequestContingent,
+  ApiUserSubscription,
+} from '@area-butler-types/subscription-plan';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
@@ -34,7 +43,7 @@ class ApiUserDto implements ApiUser {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => MapBoxStyleDto)
-  additionalMapBoxStyles: MapBoxStyleDto[];
+  additionalMapBoxStyles: MapBoxStyle[];
 
   @Expose()
   @IsOptional()
@@ -77,7 +86,7 @@ class ApiUserDto implements ApiUser {
       toClassOnly: true,
     },
   )
-  requestContingents: ApiRequestContingentDto[];
+  requestContingents: ApiRequestContingent[];
 
   @Expose()
   @IsNotEmpty()
@@ -94,7 +103,7 @@ class ApiUserDto implements ApiUser {
   @IsObject()
   @ValidateNested()
   @Type(() => ApiShowTourDto)
-  showTour: ApiShowTourDto;
+  showTour: ApiShowTour;
 
   @Expose({ name: 'subscription', toClassOnly: true })
   @IsOptional()
@@ -106,7 +115,7 @@ class ApiUserDto implements ApiUser {
       subscription ? mapSubscriptionToApiSubscription(subscription) : null,
     { toClassOnly: true },
   )
-  subscription?: ApiUserSubscriptionDto;
+  subscription?: ApiUserSubscription;
 
   @Expose({ name: 'parentId' })
   @IsNotEmpty()
@@ -132,7 +141,7 @@ class ApiUserDto implements ApiUser {
         : undefined,
     { toClassOnly: true },
   )
-  parentSettings?: ApiUserParentSettingsDto;
+  parentSettings?: IApiUserParentSettings;
 
   @Expose()
   @IsOptional()
@@ -148,10 +157,17 @@ class ApiUserDto implements ApiUser {
   @Type(() => ApiUserExportFontDto)
   exportFonts?: IApiUserExportFont[];
 
+  // TODO add a separate type
   @Expose()
   @IsOptional()
   @IsObject()
   apiConnections?: TApiUserApiConnections;
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @IsEnum(Iso3166_1Alpha2CountriesEnum, { each: true })
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
 }
 
 export default ApiUserDto;

@@ -12,6 +12,7 @@ import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 import { ApiKeyParamsSchema } from './api-key-params.schema';
 import { IApiKeyParams } from '@area-butler-types/external-api';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 
 export type UserDocument = User &
   Document & {
@@ -76,6 +77,9 @@ export class User {
 
   @Prop({ type: Object })
   apiConnections: TApiUserApiConnections;
+
+  @Prop({ type: Array })
+  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 
   @Prop({ type: ApiKeyParamsSchema })
   apiKeyParams: IApiKeyParams;

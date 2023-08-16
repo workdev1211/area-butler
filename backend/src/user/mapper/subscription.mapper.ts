@@ -1,6 +1,6 @@
 import { SubscriptionDocument } from '../schema/subscription.schema';
 import { allSubscriptions } from '../../../../shared/constants/subscription-plan';
-import ApiUserSubscriptionDto from '../../dto/api-user-subscription.dto';
+import ApiUserSubscriptionDto from '../dto/api-user-subscription.dto';
 import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
 
 const getPaymentSystemType = (subscription: SubscriptionDocument) => {

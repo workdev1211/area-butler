@@ -1,4 +1,4 @@
-import { Iso3166Alpha3CountryCodesEnum } from '@area-butler-types/iso-countries';
+import { Iso3166_1Alpha3CountriesEnum } from '@area-butler-types/location';
 import { ApiEnergyEfficiency } from '@area-butler-types/real-estate';
 
 export interface IOpenImmoXmlData {
@@ -91,7 +91,7 @@ export interface IOpenImmoXmlGeo {
 }
 
 export interface IOpenImmoXmlCountry {
-  iso_land: Iso3166Alpha3CountryCodesEnum;
+  iso_land: Iso3166_1Alpha3CountriesEnum;
 }
 
 export interface IOpenImmoXmlCoordinates {

@@ -8,9 +8,9 @@ import {
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
-import { iso3166Alpha3CountryNames } from '../../../../shared/constants/iso-countries';
 import { IOpenImmoXmlVendor } from '../../shared/open-immo.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { iso3166Alpha3CountryNames } from '../../../../shared/constants/location';
 
 @Exclude()
 class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {

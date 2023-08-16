@@ -311,6 +311,7 @@ export class OverpassService {
     }
   }
 
+  // left just in case of future usage
   async fetchAllByEntityType(
     entityType: ApiOsmEntity,
   ): Promise<OverpassData[]> {

@@ -10,8 +10,8 @@ import {
   ApiAddrInRangeApiTypesEnum,
   IApiAddressInRange,
 } from '@area-butler-types/external-api';
-import { allowedCountries } from '../../../shared/constants/location';
-import { TOverpassAvailCountries } from '@area-butler-types/overpass';
+import { allowedAddrInRangeCountries } from '../../../shared/constants/location';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
 interface IFetchedAddresses {
@@ -52,7 +52,9 @@ export class AddressesInRangeExtService {
     const isInAllowedCountry = place?.address_components.some(
       ({ short_name: shortName, types }) =>
         types.includes('country') &&
-        allowedCountries.includes(shortName as TOverpassAvailCountries),
+        allowedAddrInRangeCountries.includes(
+          shortName as Iso3166_1Alpha2CountriesEnum,
+        ),
     );
 
     if (
