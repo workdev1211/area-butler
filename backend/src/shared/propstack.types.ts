@@ -1,4 +1,6 @@
 // obtained via the 'GET' request from Propstack
+import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
+
 export interface IPropstackRealEstate {
   id: number;
   name: string;
@@ -19,14 +21,18 @@ export interface IPropstackRealEstate {
   living_space?: number;
   property_space_value?: number;
   status: IPropstackRealEstateStatus;
-  furnishings?: IPropstackRealEstateFurnishings;
+  furnishings?: IPropstackRealEstFurnishings;
   custom_fields?: IPropstackRealEstCustFields;
+}
+
+export interface IPropstackProcessedRealEstate extends IPropstackRealEstate {
+  areaButlerStatus?: ApiRealEstateStatusEnum;
 }
 
 export interface IPropstackRealEstateStatus {
   id: number;
-  name: PropstackRealEstStatusesEnum;
-  color: string;
+  name: PropstackRealEstStatusesEnum | string;
+  color?: string;
 }
 
 export interface IPropstackRealEstCustFields {
@@ -63,7 +69,7 @@ export enum PropstackRealEstStatusesEnum {
   INAKTIV = 'Inaktiv',
 }
 
-export interface IPropstackRealEstateFurnishings {
+export interface IPropstackRealEstFurnishings {
   cellar: boolean;
   balcony: boolean;
   garden: boolean;
@@ -71,7 +77,29 @@ export interface IPropstackRealEstateFurnishings {
   ramp: boolean;
 }
 
-export interface IPropstackApiFetchEstatesRes {
+export interface IPropstackApiFetchEstates {
+  apiKey: string;
+  pageNumber?: number;
+  queryParams?: IPropstackApiFetchEstsQueryParams;
+  isTest?: boolean;
+}
+
+export interface IPropstackApiFetchEstsQueryParams {
+  order?: string;
+  sort_by?: string;
+  status?: string; // ID of the status in which the object must be. Multiple statuses are passed separated by commas
+  group?: string; // number
+  q?: string;
+  country?: string;
+  project_id?: string; // number
+  marketing_type?: string;
+  rs_type?: string;
+  expand?: string; // number
+  archived?: string;
+  property_ids?: string; // number[]
+}
+
+export interface IPropstackApiFetchedEstates {
   data: IPropstackRealEstate[];
   meta: { total_count: number };
 }

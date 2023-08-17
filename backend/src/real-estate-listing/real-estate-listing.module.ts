@@ -15,6 +15,7 @@ import { RealEstateListingIntController } from './real-estate-listing-int.contro
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import { ApiOpenImmoService } from './api/api-open-immo.service';
 import { ApiRealEstateListingImportController } from './api/api-real-estate-listing-import.controller';
+import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { ApiRealEstateListingImportController } from './api/api-real-estate-list
     RealEstateListingIntService,
     RealEstateListingImportService,
     ApiOpenImmoService,
+    RealEstateCrmImportService,
   ],
   controllers: [
     RealEstateListingController,

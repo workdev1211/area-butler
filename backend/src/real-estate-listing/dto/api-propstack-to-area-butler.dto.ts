@@ -10,6 +10,7 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import {
+  IPropstackProcessedRealEstate,
   IPropstackRealEstate,
   PropstackRealEstStatusesEnum,
 } from '../../shared/propstack.types';
@@ -148,10 +149,15 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
     ({
       obj: {
         status: { name },
+        areaButlerStatus,
       },
     }: {
-      obj: IPropstackRealEstate;
+      obj: IPropstackProcessedRealEstate;
     }): ApiRealEstateStatusEnum => {
+      if (areaButlerStatus) {
+        return areaButlerStatus;
+      }
+
       switch (name) {
         case PropstackRealEstStatusesEnum.AKQUISE: {
           return ApiRealEstateStatusEnum.RENTED;

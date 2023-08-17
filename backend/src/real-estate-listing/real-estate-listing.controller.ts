@@ -34,6 +34,7 @@ import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import ApiUserApiConnectionSettingsDto from '../dto/api-user-api-connection-settings.dto';
+import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
@@ -41,6 +42,7 @@ export class RealEstateListingController extends AuthenticatedController {
   constructor(
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingImportService: RealEstateListingImportService,
+    private readonly realEstateCrmImportService: RealEstateCrmImportService,
   ) {
     super();
   }
@@ -164,8 +166,8 @@ export class RealEstateListingController extends AuthenticatedController {
   async importFromCrm(
     @Param('type') type: ApiRealEstateExtSourcesEnum,
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-  ): Promise<number[]> {
-    return this.realEstateListingImportService.importFromCrm(user, type);
+  ): Promise<string[]> {
+    return this.realEstateCrmImportService.importFromCrm(user, type);
   }
 
   @ApiOperation({ description: 'Test a specified CRM connection' })
@@ -175,7 +177,7 @@ export class RealEstateListingController extends AuthenticatedController {
     @Body()
     connectionSettings: ApiUserApiConnectionSettingsDto,
   ): Promise<void> {
-    await this.realEstateListingImportService.testApiConnection(
+    await this.realEstateCrmImportService.testApiConnection(
       user,
       connectionSettings,
     );

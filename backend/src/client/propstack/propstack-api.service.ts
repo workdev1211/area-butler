@@ -3,10 +3,12 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 import {
-  IPropstackApiFetchEstatesRes,
+  IPropstackApiFetchEstates,
+  IPropstackApiFetchedEstates,
   IPropstackRealEstate,
 } from '../../shared/propstack.types';
 
+// This value is recommended by Propstack
 export const PROPSTACK_ESTATES_PER_PAGE = 20;
 
 @Injectable()
@@ -15,20 +17,31 @@ export class PropstackApiService {
 
   constructor(private readonly http: HttpService) {}
 
-  async fetchRealEstates(
-    apiKey: string,
-    pageNumber: number,
-  ): Promise<IPropstackApiFetchEstatesRes> {
+  async fetchRealEstates({
+    apiKey,
+    pageNumber = 1,
+    queryParams = {},
+    isTest = false,
+  }: IPropstackApiFetchEstates): Promise<IPropstackApiFetchedEstates> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
+    const resultingPerPage = isTest ? 1 : PROPSTACK_ESTATES_PER_PAGE;
+
+    const resultingQueryParams = new URLSearchParams({
+      ...queryParams,
+      with_meta: '1',
+      page: `${pageNumber}`,
+      per: `${resultingPerPage}`,
+    }).toString();
+
     const { data } = await firstValueFrom<{
-      data: IPropstackApiFetchEstatesRes;
+      data: IPropstackApiFetchedEstates;
     }>(
-      this.http.get<IPropstackApiFetchEstatesRes>(
-        `${this.apiUrl}/units?with_meta=1&page=${pageNumber}&per=${PROPSTACK_ESTATES_PER_PAGE}`,
+      this.http.get<IPropstackApiFetchedEstates>(
+        `${this.apiUrl}/units?${resultingQueryParams}`,
         { headers },
       ),
     );

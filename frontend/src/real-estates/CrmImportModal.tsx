@@ -69,7 +69,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
 
                 try {
                   const errorIds = (
-                    await get<number[]>(
+                    await get<string[]>(
                       `/api/real-estate-listing/crm-import/${connectionType}`
                     )
                   ).data;
