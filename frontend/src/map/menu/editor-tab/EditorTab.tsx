@@ -36,6 +36,7 @@ import {
 import PoiFilter from "./components/PoiFilter";
 import IconSizes from "./components/IconSizes";
 import { useLocationData } from "../../../hooks/locationdata";
+import { truncateText } from "../../../../../shared/functions/shared.functions";
 
 interface IRecentSnippetConfig {
   id: string;
@@ -517,7 +518,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <div className="flex items-center gap-6 py-1 w-full">
                   <h4 className="w-[6.5rem] font-bold">Vorlagen</h4>
                   <select
-                    className="select select-bordered select-sm flex-1"
+                    className="select select-bordered select-sm flex-1 w-full"
                     value={selectedSnippetConfigId}
                     disabled={recentSnippetConfigs.length === 1}
                     onChange={(e): void => {
@@ -533,7 +534,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   >
                     {recentSnippetConfigs.map((snippetConfig) => (
                       <option value={snippetConfig.id} key={snippetConfig.id}>
-                        {snippetConfig.label}
+                        {truncateText(snippetConfig.label, 45)}
                       </option>
                     ))}
                   </select>
@@ -542,7 +543,50 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             )}
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Menu</h4>
+                <h4 className="w-[6.5rem] font-bold">Karten-Stil</h4>
+                <select
+                  className="select select-bordered select-sm flex-1 w-full"
+                  value={
+                    config?.mapBoxMapId ||
+                    "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
+                  }
+                  onChange={(event) => {
+                    changeMapboxMap(event.target.value);
+                  }}
+                >
+                  {mapStyles.map((style) => (
+                    <option
+                      value={style.key}
+                      key={style.key}
+                      disabled={!!style.isDisabled}
+                    >
+                      {style.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-[6.5rem] font-bold">Status</h4>
+                <select
+                  className="select select-bordered select-sm flex-1 w-full"
+                  value={config?.realEstateStatus}
+                  onChange={(event) => {
+                    changeRealEstateStatusFilter(event.target.value);
+                  }}
+                >
+                  {allRealEstateStatuses.map(({ label, status }) => (
+                    <option value={status} key={`${status ? status : "alle"}`}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-[6.5rem] font-bold">Menü-Stil</h4>
                 <label className="cursor-pointer label">
                   <input
                     type="radio"
@@ -570,47 +614,12 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Karte</h4>
-                <select
-                  className="select select-bordered select-sm flex-1"
-                  value={
-                    config?.mapBoxMapId ||
-                    "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
-                  }
-                  onChange={(event) => {
-                    changeMapboxMap(event.target.value);
-                  }}
-                >
-                  {mapStyles.map((style) => (
-                    <option
-                      value={style.key}
-                      key={style.key}
-                      disabled={!!style.isDisabled}
-                    >
-                      {style.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Immobilienart</h4>
-                <select
-                  className="select select-bordered select-sm flex-1"
-                  value={config?.realEstateStatus}
-                  onChange={(event) => {
-                    changeRealEstateStatusFilter(event.target.value);
-                  }}
-                >
-                  {allRealEstateStatuses.map(({ label, status }) => (
-                    <option value={status} key={`${status ? status : "alle"}`}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </div>
+              <IconSizes
+                iconSizes={config?.iconSizes}
+                onChange={(resultingIconSizes) => {
+                  changeIconSizes(resultingIconSizes);
+                }}
+              />
             </li>
             <li>
               <div className="flex flex-col">
@@ -679,14 +688,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               </div>
             </li>
             <li>
-              <IconSizes
-                iconSizes={config?.iconSizes}
-                onChange={(resultingIconSizes) => {
-                  changeIconSizes(resultingIconSizes);
-                }}
-              />
-            </li>
-            <li>
               <div className="flex items-center gap-6 py-1">
                 <label className="cursor-pointer label">
                   <input
@@ -698,7 +699,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Objekt anzeigen</span>
+                  <span className="label-text">Icon anzeigen</span>
                 </label>
               </div>
             </li>
@@ -747,7 +748,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Objekte gruppieren beim Rauszoomen
+                    POIs gruppieren beim Rauszoomen
                   </span>
                 </label>
               </div>
@@ -782,7 +783,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Linien ausblenden</span>
+                  <span className="label-text">Isochronen ausblenden</span>
                 </label>
               </div>
             </li>

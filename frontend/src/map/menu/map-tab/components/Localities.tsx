@@ -83,7 +83,7 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
         <div className="collapse-title-container">
           <img src={localitiesIcon} alt="localities-icon" />
           <div className="collapse-title-text">
-            <div className="collapse-title-text-1">Lokalitäten</div>
+            <div className="collapse-title-text-1">Points-of-Interest</div>
             <div className="collapse-title-text-2">Was ist in der Nähe?</div>
           </div>
         </div>

@@ -701,7 +701,7 @@ const SearchParamsPage: FunctionComponent = () => {
             />
             <PotentialCustomerDropDown />
           </div>
-          <h2>Lokalitäten: Points-of-Interest</h2>
+          <h2>Points-of-Interest</h2>
           <LocalityParams
             values={searchContextState.localityParams}
             onChange={(newValues) => {

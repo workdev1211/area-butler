@@ -87,7 +87,7 @@ const MapSettings: FunctionComponent = () => {
                   onChange={toggleShowLocation}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
-                <span className="label-text">Objekt anzeigen</span>
+                <span className="label-text">Icon anzeigen</span>
               </label>
             </div>
           </li>
