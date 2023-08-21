@@ -272,11 +272,14 @@ const SearchResultContainer = forwardRef<
 
       setAvailableMeans(meansFromResponse);
 
-      const activeMeans =
-        searchContextState.responseConfig &&
-        searchContextState.responseConfig.defaultActiveMeans
-          ? [...searchContextState.responseConfig.defaultActiveMeans]
-          : meansFromResponse;
+      // 1. Don't remember why we use 'defaultActiveMeans' instead of 'meansFromResponse'
+      // 2. 'filter' is added to sort the means which are not actually present in the snapshot
+      // (a fix for the first iterations of recent config feature which should be removed later)
+      const activeMeans = searchContextState.responseConfig?.defaultActiveMeans
+        ? searchContextState.responseConfig.defaultActiveMeans.filter(
+            (activeMean) => meansFromResponse.includes(activeMean)
+          )
+        : meansFromResponse;
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,

@@ -70,6 +70,7 @@ export interface ApiUser {
   exportFonts?: IApiUserExportFont[];
   apiConnections?: TApiUserApiConnections;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  templateSnapshotId?: string;
 }
 
 export type TApiUserApiConnectionSettings = Partial<
@@ -99,6 +100,7 @@ export interface ApiUserSettings {
   logo?: string;
   mapIcon?: string;
   color?: string;
+  templateSnapshotId?: string;
 }
 
 export interface ApiUserRequests {

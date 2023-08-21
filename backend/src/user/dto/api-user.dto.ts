@@ -168,6 +168,11 @@ class ApiUserDto implements ApiUser {
   @IsArray()
   @IsEnum(Iso3166_1Alpha2CountriesEnum, { each: true })
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  templateSnapshotId?: string;
 }
 
 export default ApiUserDto;

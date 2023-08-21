@@ -305,22 +305,37 @@ export class LocationService {
       await this.userService.createMapboxAccessToken(user)
     ).mapboxAccessToken;
 
-    let parsedConfig = config;
+    let snapshotConfig = config;
 
     // a standard flow - we should use a config from a previous snapshot
-    if (!parsedConfig) {
-      const snapshot = (
-        await this.fetchSnapshots(user, 0, 1, { config: 1 }, { updatedAt: -1 })
-      )[0];
+    if (!snapshotConfig) {
+      const templateSnapshotId = user.templateSnapshotId;
 
-      parsedConfig = snapshot?.config || defaultSnapshotConfig;
+      const templateSnapshot = templateSnapshotId
+        ? await this.fetchSnapshotById(user, templateSnapshotId)
+        : (
+            await this.fetchSnapshots(
+              user,
+              0,
+              1,
+              { config: 1 },
+              { updatedAt: -1 },
+            )
+          )[0];
+
+      snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
     }
+
+    // because of the different transportation params in the new snapshot and the template one
+    snapshotConfig.defaultActiveMeans = snapshot.transportationParams.map(
+      ({ type }) => type,
+    );
 
     const snapshotDoc = {
       mapboxAccessToken,
       snapshot,
       token,
-      config: parsedConfig,
+      config: snapshotConfig,
       userId: user.id,
       isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
@@ -347,7 +362,7 @@ export class LocationService {
       id: savedSnapshotDoc.id,
       token,
       snapshot,
-      config: parsedConfig,
+      config: snapshotConfig,
       mapboxAccessToken,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,

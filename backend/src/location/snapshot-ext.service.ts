@@ -20,7 +20,6 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import {
   defaultPoiTypes,
-  defaultSnapshotConfig,
   defaultTransportParams,
 } from '../../../shared/constants/location';
 
@@ -36,11 +35,13 @@ export class SnapshotExtService {
   async createSnapshot({
     user,
     location,
+    templateSnapshotId,
     transportParams = defaultTransportParams,
     poiTypes = defaultPoiTypes,
   }: {
     user: UserDocument;
     location: string | ApiCoordinates;
+    templateSnapshotId?: string;
     transportParams?: TransportationParam[];
     poiTypes?: OsmName[];
   }): Promise<ApiSearchResultSnapshotResponse> {
@@ -81,11 +82,58 @@ export class SnapshotExtService {
       transportationParams: searchData.meansOfTransportation,
     };
 
-    return this.locationService.createSnapshot(
+    let snapshotConfig;
+
+    if (templateSnapshotId) {
+      const { config } = await this.locationService.fetchSnapshotById(
+        user,
+        templateSnapshotId,
+      );
+
+      snapshotConfig = config;
+    }
+
+    return this.locationService.createSnapshot(user, snapshot, snapshotConfig);
+  }
+
+  async createSnapshotFromTemplate(
+    user: UserDocument,
+    location: ApiCoordinates | string,
+    templateSnapshotId: string,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const {
+      config,
+      snapshot: { transportationParams, localityParams, preferredLocations },
+    } = await this.locationService.fetchSnapshotById(user, templateSnapshotId);
+
+    const place = await this.googleGeocodeService.fetchPlace(location);
+
+    const placesLocation = {
+      label: place?.formatted_address || 'Mein Standort',
+      value: { place_id: place?.place_id || '123' },
+    };
+
+    const preferredAmenities = localityParams.map(({ name }) => name);
+
+    const searchData: ApiSearch = {
+      searchTitle: placesLocation.label,
+      coordinates: place?.geometry?.location,
+      meansOfTransportation: transportationParams,
+      preferredAmenities,
+      preferredLocations,
+    };
+
+    const searchResponse = await this.locationService.searchLocation(
       user,
-      snapshot,
-      defaultSnapshotConfig,
+      searchData,
     );
+
+    return this.createRouteSnapshot(user, {
+      searchData,
+      searchResponse,
+      placesLocation,
+      config,
+    });
   }
 
   async createRouteSnapshot(
@@ -140,45 +188,5 @@ export class SnapshotExtService {
     }
 
     return this.locationService.createSnapshot(user, snapshot, config);
-  }
-
-  async createSnapshotFromTemplate(
-    user: UserDocument,
-    location: ApiCoordinates | string,
-    templateId: string,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    const {
-      config,
-      snapshot: { transportationParams, localityParams, preferredLocations },
-    } = await this.locationService.fetchSnapshotById(user, templateId);
-
-    const place = await this.googleGeocodeService.fetchPlace(location);
-
-    const placesLocation = {
-      label: place?.formatted_address || 'Mein Standort',
-      value: { place_id: place?.place_id || '123' },
-    };
-
-    const preferredAmenities = localityParams.map(({ name }) => name);
-
-    const searchData: ApiSearch = {
-      searchTitle: placesLocation.label,
-      coordinates: place?.geometry?.location,
-      meansOfTransportation: transportationParams,
-      preferredAmenities,
-      preferredLocations,
-    };
-
-    const searchResponse = await this.locationService.searchLocation(
-      user,
-      searchData,
-    );
-
-    return this.createRouteSnapshot(user, {
-      searchData,
-      searchResponse,
-      placesLocation,
-      config,
-    });
   }
 }

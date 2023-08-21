@@ -413,23 +413,9 @@ export class UserService {
       'Angepasste Exporte sind im aktuellen Abonnement nicht verfügbar.',
     );
 
-    if (settings.logo) {
-      user.logo = settings.logo;
-    } else if (settings.logo === null) {
-      user.logo = undefined;
-    }
-
-    if (settings.mapIcon) {
-      user.mapIcon = settings.mapIcon;
-    } else if (settings.logo === null) {
-      user.mapIcon = undefined;
-    }
-
-    if (settings.color) {
-      user.color = settings.color;
-    } else if (settings.color === null) {
-      user.color = undefined;
-    }
+    Object.keys(settings).forEach((key) => {
+      user[key] = settings[key] || undefined;
+    });
 
     return user.save();
   }

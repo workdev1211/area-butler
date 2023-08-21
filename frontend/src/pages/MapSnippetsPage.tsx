@@ -18,12 +18,13 @@ const MapSnippetsPage: FunctionComponent = () => {
 
   const embeddableMaps = userState.embeddableMaps || [];
 
+  // called too often, conditions should be reviewed
   useEffect(() => {
     if (!user || !hasHtmlSnippet) {
       return;
     }
 
-    const fetchEmbeddableMaps = async () => {
+    const fetchEmbeddableMaps = async (): Promise<void> => {
       const embeddableMaps = await fetchSnapshots();
 
       userDispatch({

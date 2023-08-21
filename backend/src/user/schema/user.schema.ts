@@ -85,6 +85,9 @@ export class User {
   apiKeyParams: IApiKeyParams;
 
   @Prop({ type: String })
+  templateSnapshotId: string;
+
+  @Prop({ type: String })
   parentId: string;
 }
 

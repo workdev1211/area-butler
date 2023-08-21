@@ -3,12 +3,14 @@ import { useHistory } from "react-router-dom";
 import copy from "copy-to-clipboard";
 import dayjs from "dayjs";
 
-import "./EmbeddableMapsTable.scss";
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
-import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
+import {
+  ApiSearchResultSnapshotResponse,
+  ApiUser,
+} from "../../../shared/types/types";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
 import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
@@ -23,9 +25,9 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
   const history = useHistory();
-  const { deleteRequest } = useHttp();
+  const { deleteRequest, post } = useHttp();
   const { createDirectLink, createCodeSnippet } = useTools();
-  const { userDispatch } = useContext(UserContext);
+  const { userDispatch, userState } = useContext(UserContext);
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -67,6 +69,18 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
       toastError("Fehler beim Löschen eines Snippets");
       console.error(err);
     }
+  };
+
+  const updateTemplateSnapshotId = async (
+    templateSnapshotId: string | null
+  ): Promise<void> => {
+    userDispatch({
+      type: UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID,
+      payload: templateSnapshotId || undefined,
+    });
+
+    await post<ApiUser>("/api/users/me/settings", { templateSnapshotId });
+    toastSuccess("Vorlage gespeichert.");
   };
 
   const OpenMapEditorButton: FunctionComponent<{
@@ -144,57 +158,78 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
                 openCodeSnippetModal(embeddableMap);
               }}
             >
-              <th>{embeddableMap?.snapshot?.placesLocation?.label}</th>
-              <td>{embeddableMap.description}</td>
+              <th style={{ whiteSpace: "normal" }}>
+                {embeddableMap?.snapshot?.placesLocation?.label}
+              </th>
+              <td style={{ whiteSpace: "normal" }}>
+                {embeddableMap.description}
+              </td>
               <td>
                 {new Date(embeddableMap.createdAt).toLocaleDateString("de-DE")}
               </td>
               <td>
                 {embeddableMap.lastAccess
-                  ? new Date(embeddableMap.lastAccess).toLocaleDateString(
+                  ? `${new Date(embeddableMap.lastAccess).toLocaleDateString(
                       "de-DE"
-                    ) +
-                    " " +
-                    new Date(embeddableMap.lastAccess).toLocaleTimeString(
+                    )} ${new Date(embeddableMap.lastAccess).toLocaleTimeString(
                       "de-DE"
-                    )
+                    )}`
                   : "Kein Aufruf"}
               </td>
               <td>{embeddableMap.visitAmount || "Keine Besuche"}</td>
               <td>
-                {!embeddableMap.endsAt ||
-                dayjs().isBefore(embeddableMap.endsAt) ? (
-                  <OpenMapEditorButton embeddableMap={embeddableMap} />
-                ) : (
-                  <IncreaseLimitModal modelId={embeddableMap.id} />
-                )}
-                <button
-                  className="ml-5 rounded btn-xs btn-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyCodeToClipBoard(createDirectLink(embeddableMap.token));
-                  }}
+                <div
+                  className="grid"
+                  style={{ gridTemplateColumns: "1fr 1fr 2fr 1fr" }}
                 >
-                  Link Kopieren
-                </button>
-                <button
-                  className="ml-5 rounded btn-xs btn-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    copyCodeToClipBoard(createCodeSnippet(embeddableMap.token));
-                  }}
-                >
-                  Snippet Kopieren
-                </button>
-                <button
-                  className="ml-5 rounded btn-xs btn-primary"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    void deleteSnippet(embeddableMap.id);
-                  }}
-                >
-                  Löschen
-                </button>
+                  {!embeddableMap.endsAt ||
+                  dayjs().isBefore(embeddableMap.endsAt) ? (
+                    <OpenMapEditorButton embeddableMap={embeddableMap} />
+                  ) : (
+                    <IncreaseLimitModal modelId={embeddableMap.id} />
+                  )}
+                  <button
+                    className="ml-5 rounded btn-xs btn-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      copyCodeToClipBoard(
+                        createDirectLink(embeddableMap.token)
+                      );
+                    }}
+                  >
+                    Link Kopieren
+                  </button>
+                  {embeddableMap.id === userState.user?.templateSnapshotId ? (
+                    <button
+                      className="ml-5 rounded btn-xs btn-accent"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void updateTemplateSnapshotId(null);
+                      }}
+                    >
+                      Vorlage aufheben
+                    </button>
+                  ) : (
+                    <button
+                      className="ml-5 rounded btn-xs btn-primary"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        void updateTemplateSnapshotId(embeddableMap.id);
+                      }}
+                    >
+                      Als Vorlage festlegen
+                    </button>
+                  )}
+                  <button
+                    className="ml-5 rounded btn-xs btn-primary"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      void deleteSnippet(embeddableMap.id);
+                    }}
+                  >
+                    Löschen
+                  </button>
+                </div>
               </td>
             </tr>
           ))}

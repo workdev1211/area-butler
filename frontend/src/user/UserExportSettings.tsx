@@ -1,4 +1,5 @@
-import React, { useContext, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
+
 import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import { useHttp } from "../hooks/http";
@@ -6,42 +7,53 @@ import { ApiUser } from "../../../shared/types/types";
 import ColorPicker from "../components/ColorPicker";
 import { toastSuccess } from "../shared/shared.functions";
 
-const UserExportSettings: React.FunctionComponent = () => {
-  const { userState, userDispatch } = useContext(UserContext);
+const UserExportSettings: FunctionComponent = () => {
+  const {
+    userState: { user },
+    userDispatch,
+  } = useContext(UserContext);
   const { post } = useHttp();
 
-  const [color, setColor] = useState<string | undefined>(
-    userState.user!.color || ""
-  );
-  const [logo, setLogo] = useState<string | undefined>(
-    userState.user!.logo || ""
-  );
+  const [color, setColor] = useState<string | undefined>(user!.color || "");
+  const [logo, setLogo] = useState<string | undefined>(user!.logo || "");
   const [mapIcon, setMapIcon] = useState<string | undefined>(
-    userState.user!.mapIcon || ""
+    user!.mapIcon || ""
   );
 
-  const updateLogo = async (logo: string) => {
-    userDispatch({ type: UserActionTypes.SET_LOGO, payload: logo });
+  const updateLogo = async (logo: string | null): Promise<void> => {
+    userDispatch({
+      type: UserActionTypes.SET_LOGO,
+      payload: logo || undefined,
+    });
+
     await post<ApiUser>("/api/users/me/settings", { logo });
     toastSuccess("Logo gespeichert.");
   };
 
-  const updateMapIcon = async (mapIcon: string) => {
-    userDispatch({ type: UserActionTypes.SET_MAP_ICON, payload: mapIcon });
+  const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
+    userDispatch({
+      type: UserActionTypes.SET_MAP_ICON,
+      payload: mapIcon || undefined,
+    });
+
     await post<ApiUser>("/api/users/me/settings", { mapIcon });
     toastSuccess("Logo gespeichert.");
   };
 
-  const updateColor = async (color: string) => {
-    userDispatch({ type: UserActionTypes.SET_COLOR, payload: color });
+  const updateColor = async (color: string | null): Promise<void> => {
+    userDispatch({
+      type: UserActionTypes.SET_COLOR,
+      payload: color || undefined,
+    });
+
     await post<ApiUser>("/api/users/me/settings", { color });
     toastSuccess("Primärfarbe gespeichert.");
   };
 
-  const rollbackSettings = async () => {
-    const newColor = userState.user!.parentSettings?.color || undefined;
-    const newLogo = userState.user!.parentSettings?.logo || undefined;
-    const newMapIcon = userState.user!.parentSettings?.mapIcon || undefined;
+  const rollbackSettings = async (): Promise<void> => {
+    const newColor = user!.parentSettings?.color;
+    const newLogo = user!.parentSettings?.logo;
+    const newMapIcon = user!.parentSettings?.mapIcon;
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
@@ -88,9 +100,7 @@ const UserExportSettings: React.FunctionComponent = () => {
       <div className="mt-5">
         <ColorPicker color={color} setColor={setColor} onChange={updateColor} />
       </div>
-      {(!!userState.user!.logo ||
-        !!userState.user!.color ||
-        !!userState.user!.mapIcon) && (
+      {(!!user!.logo || !!user!.color || !!user!.mapIcon) && (
         <div className="mt-5">
           <button className="btn btn-sm btn-primary" onClick={rollbackSettings}>
             Export Einstellungen Zurücksetzen

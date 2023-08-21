@@ -26,6 +26,10 @@ class ApiFetchSnapshotDataReqDto
   @IsString()
   snapshotId?: string;
 
+  @IsOptional()
+  @IsString()
+  templateSnapshotId?: string;
+
   @ValidateIf(
     ({ snapshotId, lat, lng, address }) =>
       !snapshotId && ((lat && lng) || !address),

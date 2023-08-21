@@ -115,6 +115,7 @@ export class LocationExtService {
     const {
       responseType,
       snapshotId,
+      templateSnapshotId,
       lat,
       lng,
       address,
@@ -147,6 +148,7 @@ export class LocationExtService {
       snapshotResponse = await this.snapshotExtService.createSnapshot({
         user,
         location: address || { lat, lng },
+        templateSnapshotId,
         transportParams: [
           {
             type: transportMode,
