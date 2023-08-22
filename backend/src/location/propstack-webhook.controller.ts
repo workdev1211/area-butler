@@ -1,4 +1,4 @@
-import { Body, Controller, Post } from '@nestjs/common';
+import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
@@ -30,6 +30,7 @@ export class PropstackWebhookController extends ApiKeyAuthController {
     description: 'Process a Propstack webhook on event "Property created"',
   })
   @Post('property-created')
+  @HttpCode(HttpStatus.OK)
   async processPropertyCreated(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
