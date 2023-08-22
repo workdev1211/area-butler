@@ -1,3 +1,4 @@
+# An example file which should be lunched via the Portainer
 version: "3.4"
 
 x-logging: &default-logging
@@ -108,12 +109,45 @@ services:
       - "traefik.port=8077"
     logging: *default-logging
 
+  overpass-gcc:
+    image: wiktorn/overpass-api
+    container_name: overpass-gcc
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8103:80
+    volumes:
+      - overpass-gcc-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/asia/gcc-states-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/asia/gcc-states-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.overpass-gcc-http.entrypoints=web"
+      - "traefik.http.routers.overpass-gcc-http.middlewares=redirect"
+      - "traefik.http.routers.overpass-gcc-http.rule=Host(`overpass-gcc.areabutler.de`)"
+      - "traefik.http.routers.overpass-gcc.entrypoints=websecure"
+      - "traefik.http.routers.overpass-gcc.rule=Host(`overpass-gcc.areabutler.de`)"
+      - "traefik.http.routers.overpass-gcc.tls=true"
+      - "traefik.http.routers.overpass-gcc.tls.certresolver=le"
+      - "traefik.port=8077"
+    logging: *default-logging
+
 volumes:
   overpass-de-db:
     external: true
   overpass-es-db:
     external: true
   overpass-cy-db:
+    external: true
+  overpass-gcc-db:
     external: true
 
 networks:
