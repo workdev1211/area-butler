@@ -34,6 +34,11 @@ export class OverpassDataService {
     { name: 'LoadOverpassData' },
   )
   async loadOverpassData(): Promise<void> {
+    if (!configService.useOverpassDb()) {
+      this.logger.log('The Overpass DB data is not used.');
+      return;
+    }
+
     const tempCollectionName = `${this.overpassDataModel.collection.name}_tmp`;
     this.logger.log('Loading overpass data into the database.');
     const tempCollection = this.connection.db.collection(tempCollectionName);
@@ -45,7 +50,9 @@ export class OverpassDataService {
       await tempCollection.drop();
     } catch (e) {}
 
-    this.logger.log('Fetching the Overpass data.');
+    this.logger.log(
+      `Fetching the Overpass data of ${this.countries.join(', ')}.`,
+    );
 
     try {
       for (const et of osmEntityTypes) {
@@ -57,7 +64,7 @@ export class OverpassDataService {
 
           const chunks = createChunks<OverpassData>(feats, chunkSize);
           this.logger.log(
-            `Starting the bulkWrite ${et.name}[${feats.length}].`,
+            `Starting the bulkWrite ${et.name}[${feats.length}] for ${country}.`,
           );
 
           if (feats.length) {

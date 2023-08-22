@@ -5,7 +5,9 @@ import {
   HttpException,
   Post,
   Query,
+  UseGuards,
 } from '@nestjs/common';
+import { Throttle, ThrottlerGuard } from '@nestjs/throttler';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
@@ -75,6 +77,8 @@ export class LocationExtController extends ApiKeyAuthController {
     description: 'Create a search result snapshot and fetch its data',
   })
   @Post('snapshot-data')
+  @UseGuards(ThrottlerGuard)
+  @Throttle(1, 5) // ttl is given in seconds
   async fetchSnapshotData(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()

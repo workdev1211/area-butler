@@ -3,6 +3,7 @@ import { Module } from '@nestjs/common';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ServeStaticModule } from '@nestjs/serve-static';
+import { ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
 import { HttpModule } from '@nestjs/axios';
 import { join } from 'path';
@@ -69,6 +70,7 @@ import { OpenAiModule } from './open-ai/open-ai.module';
     HealthModule,
     OnOfficeModule,
     OpenAiModule,
+    ThrottlerModule.forRoot(),
   ],
   providers: [
     {
