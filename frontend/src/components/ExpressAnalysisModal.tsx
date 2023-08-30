@@ -34,6 +34,7 @@ import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan
 import OpenAiLocationDescriptionModal from "./OpenAiLocationDescriptionModal";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum } from "../../../shared/types/export";
+import { snapshotEditorPath } from "../shared/shared.constants";
 
 export interface ExpressAnalysisModalProps {
   snapshotResponse: ApiSearchResultSnapshotResponse;
@@ -318,7 +319,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 className="btn btn-sm btn-primary"
                 onClick={async () => {
                   await handleCloseModal();
-                  history.push(`snippet-editor/${snapshotResponse.id}`);
+                  history.push(`${snapshotEditorPath}/${snapshotResponse.id}`);
                 }}
               >
                 Editor öffnen

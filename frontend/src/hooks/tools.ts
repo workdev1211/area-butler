@@ -2,15 +2,19 @@ import { useContext } from "react";
 
 import { ConfigContext } from "../context/ConfigContext";
 import { UserContext } from "../context/UserContext";
-import { ApiUser } from "../../../shared/types/types";
+import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { toastError } from "../shared/shared.functions";
+import { useHttp } from "./http";
 
 export const useTools = () => {
   const { systemEnv } = useContext(ConfigContext);
   const {
     userState: { user, integrationUser },
   } = useContext(UserContext);
+
+  const { post } = useHttp();
+  const isIntegrationUser = !!integrationUser;
 
   const createDirectLink = (token: string): string => {
     const origin = window.location.origin;
@@ -41,10 +45,50 @@ export const useTools = () => {
     }
 
     const errorMessage = "Benutzer wurde nicht gefunden!"; // User is not found!
-
     toastError(errorMessage);
     throw new Error(errorMessage);
   };
 
-  return { createDirectLink, createCodeSnippet, getActualUser };
+  const updateUserSettings = async (settings: {
+    [key: string]: string | null;
+  }): Promise<void> => {
+    const url = isIntegrationUser
+      ? "/api/integration-users/update-config"
+      : "/api/users/me/settings";
+
+    await post<ApiUser | IApiIntegrationUser>(url, settings);
+  };
+
+  const hideTour = async (
+    tour: ApiTourNamesEnum
+  ): Promise<ApiUser | IApiIntegrationUser> => {
+    return (
+      await post<ApiUser | IApiIntegrationUser>(
+        isIntegrationUser
+          ? `/api/integration-users/me/hide-tour/${tour}`
+          : `/api/users/me/hide-tour/${tour}`,
+        {}
+      )
+    ).data;
+  };
+
+  const hideTours = async (): Promise<ApiUser | IApiIntegrationUser> => {
+    return (
+      await post<ApiUser | IApiIntegrationUser>(
+        isIntegrationUser
+          ? "/api/integration-users/me/hide-tour"
+          : "/api/users/me/hide-tour",
+        {}
+      )
+    ).data;
+  };
+
+  return {
+    createDirectLink,
+    createCodeSnippet,
+    getActualUser,
+    updateUserSettings,
+    hideTour,
+    hideTours,
+  };
 };

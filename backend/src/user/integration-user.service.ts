@@ -172,6 +172,18 @@ export class IntegrationUserService {
   //   );
   // }
 
+  async updateConfig(
+    integrationUser: TIntegrationUserDocument,
+    config: Partial<TApiIntegrationUserConfig>,
+  ): Promise<TIntegrationUserDocument> {
+    Object.keys(config).forEach((key) => {
+      // 'set' is used because we update properties of a nested object
+      integrationUser.set(`config.${key}`, config[key] || undefined);
+    });
+
+    return integrationUser.save();
+  }
+
   async bulkWrite(writes: any[]): Promise<BulkWriteResult> {
     return this.integrationUserModel.bulkWrite(writes);
   }

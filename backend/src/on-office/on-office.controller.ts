@@ -31,7 +31,6 @@ import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-offi
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
 import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
-import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')

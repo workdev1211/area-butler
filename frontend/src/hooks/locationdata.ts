@@ -1,11 +1,11 @@
 import { Dispatch, RefObject, SetStateAction, useContext } from "react";
+import { AxiosResponse } from "axios";
 
 import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
 import { useRouting } from "./routing";
-import { RealEstateContext } from "../context/RealEstateContext";
 import { useHttp } from "./http";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
@@ -31,9 +31,8 @@ export const useLocationData = () => {
   } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { realEstateState } = useContext(RealEstateContext);
 
-  const { get, post, put } = useHttp();
+  const { get, post, put, deleteRequest } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
   const isIntegrationUser = !!integrationUser;
@@ -64,7 +63,7 @@ export const useLocationData = () => {
   const fetchSnapshots = async (
     queryParams?: string
   ): Promise<ApiSearchResultSnapshotResponse[]> => {
-    let url = isIntegrationUser
+    let url: string = isIntegrationUser
       ? "/api/location-int/snapshots"
       : "/api/location/snapshots";
 
@@ -98,11 +97,9 @@ export const useLocationData = () => {
 
       const routesResult = await fetchRoutes({
         userEmail,
-        meansOfTransportation: [
-          MeansOfTransportation.BICYCLE,
-          MeansOfTransportation.CAR,
-          MeansOfTransportation.WALK,
-        ],
+        meansOfTransportation: Object.keys(
+          searchResponse.routingProfiles
+        ) as MeansOfTransportation[],
         origin: location,
         destinations: [
           {
@@ -148,7 +145,7 @@ export const useLocationData = () => {
     }
 
     items.push({
-      key: "save-map-snippet",
+      key: "save-map-snapshot",
     });
     setBusyModalItems([...items]);
 
@@ -168,9 +165,7 @@ export const useLocationData = () => {
             searchContextState.localityParams
           ),
           searchResponse: searchResponse,
-          // TODO should be moved to the backend because unnecessary data is sent in the request body
-          // TODO check where it's needed, maybe it's not used anywhere
-          realEstateListings: realEstateState.listings,
+          realEstateListings: [],
           integrationId: searchContextState.realEstateListing?.integrationId,
         }
       )
@@ -243,6 +238,16 @@ export const useLocationData = () => {
     }
   };
 
+  const deleteSnapshot = async (
+    snapshotId: string
+  ): Promise<AxiosResponse<void>> => {
+    return deleteRequest<void>(
+      isIntegrationUser
+        ? `/api/location-int/snapshot/${snapshotId}`
+        : `/api/location/snapshot/${snapshotId}`
+    );
+  };
+
   return {
     createLocation,
     fetchSnapshot,
@@ -250,5 +255,6 @@ export const useLocationData = () => {
     createSnapshot,
     updateSnapshot,
     saveSnapshotConfig,
+    deleteSnapshot,
   };
 };

@@ -1,4 +1,4 @@
-import { Controller, Param, Post, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Param, Post, UseInterceptors } from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
@@ -8,6 +8,7 @@ import { InjectUser } from './inject-user.decorator';
 import { IntegrationUserService } from './integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import ApiIntegrationUserDto from './dto/api-integration-user.dto';
+import ApiIntegrationUserConfigDto from './dto/api-integration-user-config.dto';
 
 @ApiTags('users', 'integration')
 @Controller('api/integration-users')
@@ -38,6 +39,19 @@ export class IntegrationUserController {
     return plainToInstance(
       ApiIntegrationUserDto,
       await this.integrationUserService.hideTour(integrationUser, tour),
+    );
+  }
+
+  @ApiProperty({ description: "Update the user's config" })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('update-config')
+  async updateConfig(
+    @InjectUser() integrationUser,
+    @Body() config: ApiIntegrationUserConfigDto,
+  ): Promise<IApiIntegrationUser> {
+    return plainToInstance(
+      ApiIntegrationUserDto,
+      await this.integrationUserService.updateConfig(integrationUser, config),
     );
   }
 }

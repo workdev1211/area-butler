@@ -98,6 +98,7 @@ export type TApiIntegrationUserConfig = {
   mapIcon?: string;
   showTour: ApiShowTour;
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
+  templateSnapshotId?: string;
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>

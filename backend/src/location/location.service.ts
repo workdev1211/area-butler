@@ -31,7 +31,8 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
-  IApiMongoParams,
+  IApiMongoFilterParams,
+  IApiMongoIncludedSortParams,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -70,6 +71,7 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
+import { IntegrationUserService } from '../user/integration-user.service';
 
 @Injectable()
 export class LocationService {
@@ -81,6 +83,7 @@ export class LocationService {
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly userService: UserService,
+    private readonly integrationUserService: IntegrationUserService,
     private readonly subscriptionService: SubscriptionService,
     private readonly overpassDataService: OverpassDataService,
     private readonly openAiService: OpenAiService,
@@ -295,32 +298,39 @@ export class LocationService {
   }
 
   async createSnapshot(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     snapshot: ApiSearchResultSnapshot,
     config?: ApiSearchResultSnapshotConfig,
   ): Promise<ApiSearchResultSnapshotResponse> {
+    const isIntegrationUser = 'integrationUserId' in user;
     const token = randomBytes(60).toString('hex');
 
-    const mapboxAccessToken = (
-      await this.userService.createMapboxAccessToken(user)
-    ).mapboxAccessToken;
+    const mapboxAccessToken = isIntegrationUser
+      ? (await this.integrationUserService.createMapboxAccessToken(user)).config
+          .mapboxAccessToken
+      : (await this.userService.createMapboxAccessToken(user))
+          .mapboxAccessToken;
 
     let snapshotConfig = config;
 
     // a standard flow - we should use a config from a previous snapshot
     if (!snapshotConfig) {
-      const templateSnapshotId = user.templateSnapshotId;
+      const templateSnapshotId = isIntegrationUser
+        ? undefined
+        : user.templateSnapshotId;
 
       const templateSnapshot = templateSnapshotId
-        ? await this.fetchSnapshotById(user, templateSnapshotId)
+        ? await this.fetchSnapshotById(user, templateSnapshotId).catch(
+            () => undefined,
+          )
         : (
-            await this.fetchSnapshots(
+            await this.fetchSnapshots({
               user,
-              0,
-              1,
-              { config: 1 },
-              { updatedAt: -1 },
-            )
+              skipNumber: 0,
+              limitNumber: 1,
+              includedFields: { config: 1 },
+              sortParams: { updatedAt: -1 },
+            })
           )[0];
 
       snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
@@ -331,19 +341,36 @@ export class LocationService {
       ({ type }) => type,
     );
 
-    const snapshotDoc = {
+    const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
       snapshot,
       token,
       config: snapshotConfig,
-      userId: user.id,
-      isTrial: user.subscription.type === ApiSubscriptionPlanType.TRIAL,
     };
 
-    const addressExpiration = this.subscriptionService.getLimitAmount(
-      user.subscription.stripePriceId,
-      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-    );
+    if (isIntegrationUser) {
+      snapshotDoc.integrationParams = {
+        integrationUserId: user.integrationUserId,
+        integrationType: user.integrationType,
+        integrationId: snapshot.integrationId,
+      };
+    } else {
+      snapshotDoc.userId = user.id;
+    }
+
+    if (
+      !isIntegrationUser &&
+      user.subscription.type === ApiSubscriptionPlanType.TRIAL
+    ) {
+      snapshotDoc.isTrial = true;
+    }
+
+    const addressExpiration = !isIntegrationUser
+      ? this.subscriptionService.getLimitAmount(
+          user.subscription.stripePriceId,
+          ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+        )
+      : undefined;
 
     if (addressExpiration) {
       const createdAt = dayjs();
@@ -397,7 +424,7 @@ export class LocationService {
 
   async updateSnapshot(
     user: UserDocument | TIntegrationUserDocument,
-    id: string,
+    snapshotId: string,
     { snapshot, config }: ApiUpdateSearchResultSnapshot,
   ): Promise<SearchResultSnapshotDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -413,7 +440,7 @@ export class LocationService {
     }
 
     const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchSnapshotById(user, id);
+      await this.fetchSnapshotById(user, snapshotId);
 
     Object.assign(snapshotDoc, { snapshot, config, updatedAt: new Date() });
 
@@ -441,9 +468,14 @@ export class LocationService {
     return snapshotDoc.save();
   }
 
-  async deleteSnapshot(user: UserDocument, id: string): Promise<void> {
+  async deleteSnapshot(user: UserDocument, snapshotId: string): Promise<void> {
+    if (user.templateSnapshotId === snapshotId) {
+      user.templateSnapshotId = undefined;
+      await user.save();
+    }
+
     await this.searchResultSnapshotModel.deleteOne({
-      _id: id,
+      _id: snapshotId,
       userId: user.id,
     });
   }
@@ -460,14 +492,21 @@ export class LocationService {
     });
   }
 
-  async fetchSnapshots(
-    user: UserDocument | TIntegrationUserDocument,
-    skip = 0,
-    limit = 0,
-    includedFields?: IApiMongoParams,
-    sortOptions?: IApiMongoParams,
-    filter?: { [p: string]: unknown },
-  ): Promise<SearchResultSnapshotDocument[]> {
+  async fetchSnapshots({
+    user,
+    skipNumber = 0,
+    limitNumber = 0,
+    includedFields,
+    sortParams,
+    filterParams,
+  }: {
+    user: UserDocument | TIntegrationUserDocument;
+    skipNumber: number;
+    limitNumber: number;
+    includedFields?: IApiMongoIncludedSortParams;
+    sortParams?: IApiMongoIncludedSortParams;
+    filterParams?: IApiMongoFilterParams;
+  }): Promise<SearchResultSnapshotDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser) {
@@ -480,17 +519,20 @@ export class LocationService {
       );
     }
 
-    const filterQuery =
-      filter ||
-      (isIntegrationUser
-        ? { 'integrationParams.integrationUserId': user.integrationUserId }
-        : { userId: user.id });
+    const filterQuery = filterParams ? { ...filterParams } : {};
+
+    if (isIntegrationUser) {
+      filterQuery['integrationParams.integrationUserId'] =
+        user.integrationUserId;
+    } else {
+      filterQuery.userId = user.id;
+    }
 
     return this.searchResultSnapshotModel
       .find(filterQuery, includedFields)
-      .sort(sortOptions)
-      .skip(skip)
-      .limit(limit);
+      .sort(sortParams)
+      .skip(skipNumber)
+      .limit(limitNumber);
   }
 
   async fetchSnapshotById(
@@ -593,7 +635,7 @@ export class LocationService {
     modelName: LimitIncreaseModelNameEnum,
     modelId: string,
     { value, unit }: IApiSubscriptionLimitAmount,
-  ) {
+  ): Promise<void> {
     const endsAt = dayjs()
       .add(value, unit as ManipulateType)
       .toDate();
@@ -617,7 +659,6 @@ export class LocationService {
           },
           { endsAt },
         );
-        break;
       }
     }
   }

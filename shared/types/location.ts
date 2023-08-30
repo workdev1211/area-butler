@@ -1,3 +1,5 @@
+import { IApiMongoFilterParams, IApiMongoIncludedSortParams } from "./types";
+
 export enum Iso3166_1Alpha2CountriesEnum {
   "AD" = "AD",
   "AE" = "AE",
@@ -252,4 +254,11 @@ export enum Iso3166_1Alpha2CountriesEnum {
 
 export enum Iso3166_1Alpha3CountriesEnum {
   "DEU" = "DEU",
+}
+
+export interface IApiFetchSnapshotsReq {
+  skip?: number;
+  limit?: number;
+  sort?: IApiMongoIncludedSortParams;
+  filter?: IApiMongoFilterParams;
 }

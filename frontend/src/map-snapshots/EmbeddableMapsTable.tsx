@@ -5,17 +5,15 @@ import dayjs from "dayjs";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
-import {
-  ApiSearchResultSnapshotResponse,
-  ApiUser,
-} from "../../../shared/types/types";
+import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import FormModal, { ModalConfig } from "../components/FormModal";
 import IncreaseLimitFormHandler from "../user/IncreaseLimitFormHandler";
 import { ApiSubscriptionLimitsEnum } from "../../../shared/types/subscription-plan";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
 import { useTools } from "../hooks/tools";
+import { snapshotEditorPath } from "../shared/shared.constants";
+import { useLocationData } from "../hooks/locationdata";
 
 interface IEmbeddableMapsTableProps {
   embeddableMaps: ApiSearchResultSnapshotResponse[];
@@ -24,10 +22,21 @@ interface IEmbeddableMapsTableProps {
 const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   embeddableMaps,
 }) => {
+  const { userDispatch } = useContext(UserContext);
   const history = useHistory();
-  const { deleteRequest, post } = useHttp();
-  const { createDirectLink, createCodeSnippet } = useTools();
-  const { userDispatch, userState } = useContext(UserContext);
+  const {
+    createDirectLink,
+    createCodeSnippet,
+    getActualUser,
+    updateUserSettings,
+  } = useTools();
+  const { deleteSnapshot } = useLocationData();
+
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
+  const templateSnapshotId = isIntegrationUser
+    ? user.config.templateSnapshotId
+    : user.templateSnapshotId;
 
   const [isShownModal, setIsShownModal] = useState(false);
   const [codeSnippet, setCodeSnippet] = useState("");
@@ -51,18 +60,18 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
     setIsShownModal(true);
   };
 
-  const deleteSnippet = async (id: string): Promise<void> => {
+  const handleSnapshotDelete = async (snapshotId: string): Promise<void> => {
     try {
       const confirmDeleteRequest = window.confirm(
         "Wollen Sie wirklich das Kartensnippet löschen?"
       );
 
       if (confirmDeleteRequest) {
-        await deleteRequest(`/api/location/snapshot/${id}`);
+        await deleteSnapshot(snapshotId);
 
         userDispatch({
           type: UserActionTypes.REMOVE_EMBEDDABLE_MAP,
-          payload: id,
+          payload: snapshotId,
         });
       }
     } catch (err) {
@@ -72,14 +81,15 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   };
 
   const updateTemplateSnapshotId = async (
-    templateSnapshotId: string | null
+    updatedTemplateId: string | null
   ): Promise<void> => {
+    await updateUserSettings({ templateSnapshotId: updatedTemplateId });
+
     userDispatch({
       type: UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID,
-      payload: templateSnapshotId || undefined,
+      payload: updatedTemplateId || undefined,
     });
 
-    await post<ApiUser>("/api/users/me/settings", { templateSnapshotId });
     toastSuccess("Vorlage gespeichert.");
   };
 
@@ -91,7 +101,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
         className="ml-5 rounded btn-xs btn-primary"
         onClick={(e) => {
           e.stopPropagation();
-          history.push(`snippet-editor/${embeddableMap.id}`);
+          history.push(`${snapshotEditorPath}/${embeddableMap.id}`);
         }}
       >
         Editor öffnen
@@ -199,7 +209,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
                   >
                     Link Kopieren
                   </button>
-                  {embeddableMap.id === userState.user?.templateSnapshotId ? (
+                  {embeddableMap.id === templateSnapshotId ? (
                     <button
                       className="ml-5 rounded btn-xs btn-accent"
                       onClick={(e) => {
@@ -224,7 +234,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
                     className="ml-5 rounded btn-xs btn-primary"
                     onClick={(e) => {
                       e.stopPropagation();
-                      void deleteSnippet(embeddableMap.id);
+                      void handleSnapshotDelete(embeddableMap.id);
                     }}
                   >
                     Löschen

@@ -2,11 +2,12 @@ import { FunctionComponent } from "react";
 import { Link, useLocation } from "react-router-dom";
 
 import { kudibaCompany } from "../../../shared/constants/constants";
+import { snapshotEditorPath } from "../shared/shared.constants";
 
 const Footer: FunctionComponent = () => {
   const path = useLocation().pathname.replace(/^\/(.*)\/.*$/, "$1");
 
-  if (path === "snippet-editor") {
+  if (path === snapshotEditorPath) {
     return null;
   }
 

@@ -139,7 +139,7 @@ const Nav: FunctionComponent = () => {
                     Meine Zielgruppen
                   </NavLink>
                   <NavLink
-                    to="/map-snippets"
+                    to="/map-snapshots"
                     className="nav-link"
                     aria-current="page"
                   >
@@ -243,7 +243,7 @@ const Nav: FunctionComponent = () => {
               Meine Zielgruppen
             </NavLink>
             <NavLink
-              to="/map-snippets"
+              to="/map-snapshots"
               className="nav-mobile-menu-link"
               aria-current="page"
             >

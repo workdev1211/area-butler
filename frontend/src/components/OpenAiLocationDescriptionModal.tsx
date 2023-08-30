@@ -3,7 +3,7 @@
 import { FunctionComponent } from "react";
 
 import FormModal, { ModalConfig } from "./FormModal";
-import OpenAiLocationFormHandler from "../map-snippets/OpenAiLocationFormHandler";
+import OpenAiLocationFormHandler from "../map-snapshots/OpenAiLocationFormHandler";
 
 interface IOpenAiLocationDescriptionModalProps {
   isShownModal: boolean;

@@ -24,13 +24,11 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
-import { IApiMongoParams } from '@area-butler-types/types';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { SnapshotExtService } from './snapshot-ext.service';
-import { MongoParamPipe } from '../pipe/mongo-param.pipe';
-import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
 import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
+import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -113,7 +111,7 @@ export class LocationController extends AuthenticatedController {
   async deleteSnapshot(
     @InjectUser() user: UserDocument,
     @Param('id') id: string,
-  ) {
+  ): Promise<void> {
     await this.locationService.deleteSnapshot(user, id);
   }
 
@@ -131,11 +129,15 @@ export class LocationController extends AuthenticatedController {
   @Get('snapshots')
   async fetchSnapshots(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Query('skip', MongoParamPipe) skip: number,
-    @Query('limit', MongoParamPipe) limit: number,
-    @Query('sort', MongoSortParamPipe)
-    sort: IApiMongoParams = { 'snapshot.placesLocation.label': 1 },
+    @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
   ): Promise<ApiSearchResultSnapshotResponseDto[]> {
+    const {
+      skip: skipNumber,
+      limit: limitNumber,
+      sort: sortParams,
+      filter: filterParams,
+    } = fetchSnapshotsReq;
+
     const includedFields = {
       token: 1,
       description: 1,
@@ -150,13 +152,14 @@ export class LocationController extends AuthenticatedController {
     };
 
     return (
-      await this.locationService.fetchSnapshots(
+      await this.locationService.fetchSnapshots({
         user,
-        skip,
-        limit,
+        skipNumber,
+        limitNumber,
         includedFields,
-        sort,
-      )
+        sortParams,
+        filterParams,
+      })
     ).map((r) => mapSnapshotToEmbeddableMap(r));
   }
 

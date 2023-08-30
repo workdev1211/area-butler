@@ -407,8 +407,12 @@ export interface IApiPlacesLocationValue {
   place_id: string;
 }
 
-export interface IApiMongoParams {
+export interface IApiMongoIncludedSortParams {
   [key: string]: number;
+}
+
+export interface IApiMongoFilterParams {
+  [key: string]: string;
 }
 
 export interface IApiCreatePaypalOrder {

@@ -64,12 +64,14 @@ export const defaultMapZoom = 16.5;
 export const defaultMyLocationIconSize = 46;
 export const defaultAmenityIconSize = 32;
 
+export const snapshotEditorPath = "snapshot-editor";
+
 export const tourPaths = [
   "profile",
   "potential-customers",
   "real-estates",
-  "snippet-editor",
   "search",
+  snapshotEditorPath,
 ];
 
 export const integrationTourPaths = ["search", "map"];

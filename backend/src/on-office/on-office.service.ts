@@ -304,8 +304,8 @@ export class OnOfficeService {
     );
 
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
-      estateId,
       integrationUser,
+      estateId,
       this.integrationType,
     );
 
@@ -440,8 +440,8 @@ export class OnOfficeService {
     );
 
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
-      integrationId,
       integrationUser,
+      integrationId,
       this.integrationType,
     );
 

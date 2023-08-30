@@ -2,17 +2,17 @@ import { FunctionComponent, useContext, useState } from "react";
 
 import ImageUpload from "../components/ImageUpload";
 import { UserActionTypes, UserContext } from "../context/UserContext";
-import { useHttp } from "../hooks/http";
-import { ApiUser } from "../../../shared/types/types";
 import ColorPicker from "../components/ColorPicker";
 import { toastSuccess } from "../shared/shared.functions";
+import { useTools } from "../hooks/tools";
 
 const UserExportSettings: FunctionComponent = () => {
   const {
     userState: { user },
     userDispatch,
   } = useContext(UserContext);
-  const { post } = useHttp();
+
+  const { updateUserSettings } = useTools();
 
   const [color, setColor] = useState<string | undefined>(user!.color || "");
   const [logo, setLogo] = useState<string | undefined>(user!.logo || "");
@@ -21,32 +21,35 @@ const UserExportSettings: FunctionComponent = () => {
   );
 
   const updateLogo = async (logo: string | null): Promise<void> => {
+    await updateUserSettings({ logo });
+
     userDispatch({
       type: UserActionTypes.SET_LOGO,
       payload: logo || undefined,
     });
 
-    await post<ApiUser>("/api/users/me/settings", { logo });
     toastSuccess("Logo gespeichert.");
   };
 
   const updateMapIcon = async (mapIcon: string | null): Promise<void> => {
+    await updateUserSettings({ mapIcon });
+
     userDispatch({
       type: UserActionTypes.SET_MAP_ICON,
       payload: mapIcon || undefined,
     });
 
-    await post<ApiUser>("/api/users/me/settings", { mapIcon });
     toastSuccess("Logo gespeichert.");
   };
 
   const updateColor = async (color: string | null): Promise<void> => {
+    await updateUserSettings({ color });
+
     userDispatch({
       type: UserActionTypes.SET_COLOR,
       payload: color || undefined,
     });
 
-    await post<ApiUser>("/api/users/me/settings", { color });
     toastSuccess("Primärfarbe gespeichert.");
   };
 
@@ -54,6 +57,12 @@ const UserExportSettings: FunctionComponent = () => {
     const newColor = user!.parentSettings?.color;
     const newLogo = user!.parentSettings?.logo;
     const newMapIcon = user!.parentSettings?.mapIcon;
+
+    await updateUserSettings({
+      color: newColor || null,
+      logo: newLogo || null,
+      mapIcon: newMapIcon || null,
+    });
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
@@ -71,12 +80,6 @@ const UserExportSettings: FunctionComponent = () => {
     setColor(newColor);
     setLogo(newLogo);
     setMapIcon(newMapIcon);
-
-    await post<ApiUser>("/api/users/me/settings", {
-      color: newColor || null,
-      logo: newLogo || null,
-      mapIcon: newMapIcon || null,
-    });
 
     toastSuccess("Export Einstellungen zurückgesetzt.");
   };

@@ -3,8 +3,8 @@ import { FunctionComponent, useContext, useState } from "react";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import { toastError } from "shared/shared.functions";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
-import { useTour } from "../hooks/tour";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
+import { useTools } from "../hooks/tools";
 
 const tourDescriptions: Record<ApiTourNamesEnum, string> = {
   [ApiTourNamesEnum.SEARCH]:
@@ -42,7 +42,7 @@ const StartTourModal: FunctionComponent<IStartTourModalProps> = ({
   } = useContext(UserContext);
 
   const isIntegrationUser = !!integrationUser;
-  const { hideTour, hideTours } = useTour();
+  const { hideTour, hideTours } = useTools();
 
   const [showNoMoreTips, setShowNoMoreTips] = useState(false);
 

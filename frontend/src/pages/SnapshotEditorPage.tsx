@@ -8,6 +8,8 @@ import {
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
+import "./SnapshotEditorPage.scss";
+
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
@@ -34,7 +36,6 @@ import {
   ApiTourNamesEnum,
   MapDisplayModesEnum,
 } from "../../../shared/types/types";
-import "./SnippetEditorPage.scss";
 import {
   ApiDataSource,
   ApiSubscriptionPlanType,
@@ -52,11 +53,11 @@ import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
 import { useTools } from "../hooks/tools";
 
-export interface SnippetEditorRouterProps {
+export interface SnapshotEditorRouterProps {
   snapshotId: string;
 }
 
-const SnippetEditorPage: FunctionComponent = () => {
+const SnapshotEditorPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
@@ -66,7 +67,7 @@ const SnippetEditorPage: FunctionComponent = () => {
 
   const history = useHistory<IMapPageHistoryState>();
   const { state } = useLocation<IMapPageHistoryState>();
-  const { snapshotId } = useParams<SnippetEditorRouterProps>();
+  const { snapshotId } = useParams<SnapshotEditorRouterProps>();
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchCensusData } = useCensusData();
@@ -498,4 +499,4 @@ const SnippetEditorPage: FunctionComponent = () => {
   );
 };
 
-export default SnippetEditorPage;
+export default SnapshotEditorPage;

@@ -1,19 +1,13 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
-import { SearchContext } from "../../context/SearchContext";
 import { onOfficeRootEntries } from "../OnOfficeContainer";
 
 const IntegrationNav: FunctionComponent = () => {
-  const { searchContextState } = useContext(SearchContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  if (!searchContextState.integrationSnapshotId) {
-    return null;
-  }
 
   let mobileMenuClass = "hidden";
   if (mobileMenuOpen) {
@@ -114,11 +108,11 @@ const IntegrationNav: FunctionComponent = () => {
                 Meine Zielgruppen
               </NavLink>
               <NavLink
-                to={`/map/${searchContextState.integrationSnapshotId}`}
+                to="/map-snapshots"
                 className="nav-link"
                 aria-current="page"
               >
-                Meine Karte
+                Meine Karten
               </NavLink>
               <NavLink to="/products" className="nav-link" aria-current="page">
                 Meine Produkte
@@ -155,12 +149,8 @@ const IntegrationNav: FunctionComponent = () => {
           >
             Meine Zielgruppen
           </NavLink>
-          <NavLink
-            to={`/map/${searchContextState.integrationSnapshotId}`}
-            className="nav-link"
-            aria-current="page"
-          >
-            Meine Karte
+          <NavLink to="/map-snapshots" className="nav-link" aria-current="page">
+            Meine Karten
           </NavLink>
           <NavLink to="/products" className="nav-link" aria-current="page">
             Meine Produkte

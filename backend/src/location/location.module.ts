@@ -26,8 +26,6 @@ import {
   RealEstateListingSchema,
 } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
-import { MongoParamPipe } from '../pipe/mongo-param.pipe';
-import { MongoSortParamPipe } from '../pipe/mongo-sort-param.pipe';
 import { LocationExtController } from './location-ext.controller';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntController } from './location-int.controller';
@@ -68,8 +66,6 @@ import { PropstackWebhookController } from './propstack-webhook.controller';
     RealEstateListingService,
     RealEstateListingIntService,
     SnapshotExtService,
-    MongoParamPipe,
-    MongoSortParamPipe,
     AddressesInRangeExtService,
     LocationIntService,
     LocationExtService,

@@ -20,6 +20,7 @@ import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
+import { snapshotEditorPath } from "../shared/shared.constants";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -45,6 +46,7 @@ const MapPage = lazy(() => import("./pages/MapPage"));
 const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
+const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
 
 const OnOfficeContainer: FunctionComponent = () => {
   const {
@@ -94,7 +96,7 @@ const OnOfficeContainer: FunctionComponent = () => {
     ) {
       history.push(
         searchContextState.integrationSnapshotId
-          ? `/map/${searchContextState.integrationSnapshotId}`
+          ? `/${snapshotEditorPath}/${searchContextState.integrationSnapshotId}`
           : "/search"
       );
       return;
@@ -141,8 +143,11 @@ const OnOfficeContainer: FunctionComponent = () => {
           <Route path="/potential-customers">
             <PotentialCustomersPage />
           </Route>
-          <Route path="/map/:snapshotId">
+          <Route path={`/${snapshotEditorPath}/:snapshotId`}>
             <MapPage />
+          </Route>
+          <Route path="/map-snapshots">
+            <MapSnapshotsPage />
           </Route>
           <Route path="/open-ai">
             <OpenAiPage />

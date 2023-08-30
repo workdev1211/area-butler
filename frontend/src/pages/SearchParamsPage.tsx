@@ -71,6 +71,7 @@ import {
 import { ISearchParamsHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
+import { snapshotEditorPath } from "../shared/shared.constants";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -228,6 +229,7 @@ const SearchParamsPage: FunctionComponent = () => {
     void getPotentialCustomers();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+  // needed for the 'Meine Immobilien' select
   useEffect(() => {
     if (isIntegrationUser) {
       return;
@@ -534,9 +536,11 @@ const SearchParamsPage: FunctionComponent = () => {
           payload: snapshotId,
         });
 
-        history.push(`map/${snapshotId}`, { isNewSnapshot: true });
+        history.push(`${snapshotEditorPath}/${snapshotId}`, {
+          isNewSnapshot: true,
+        });
       } else {
-        history.push(`snippet-editor/${snapshotId}`, {
+        history.push(`${snapshotEditorPath}/${snapshotId}`, {
           isNewSnapshot: true,
         });
       }

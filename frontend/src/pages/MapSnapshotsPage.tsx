@@ -4,17 +4,24 @@ import DefaultLayout from "../layout/defaultLayout";
 // TODO implement a tour
 // import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import EmbeddableMapsTable from "../map-snippets/EmbeddableMapsTable";
+import { SearchContext } from "../context/SearchContext";
+import EmbeddableMapsTable from "../map-snapshots/EmbeddableMapsTable";
 import { useLocationData } from "../hooks/locationdata";
+import { useTools } from "../hooks/tools";
 
-const MapSnippetsPage: FunctionComponent = () => {
-  const { fetchSnapshots } = useLocationData();
+const MapSnapshotsPage: FunctionComponent = () => {
+  const { searchContextState } = useContext(SearchContext);
   const { userState, userDispatch } = useContext(UserContext);
+  const { getActualUser } = useTools();
+  const { fetchSnapshots } = useLocationData();
 
-  const user = userState.user!;
-  const hasSubscription = !!user?.subscription;
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
+  const hasSubscription = isIntegrationUser || !!user?.subscription;
+
   const hasHtmlSnippet =
-    hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet;
+    isIntegrationUser ||
+    (hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet);
 
   const embeddableMaps = userState.embeddableMaps || [];
 
@@ -24,8 +31,19 @@ const MapSnippetsPage: FunctionComponent = () => {
       return;
     }
 
+    let queryParams: string;
+
+    if (isIntegrationUser) {
+      queryParams = new URLSearchParams({
+        filter: JSON.stringify({
+          "integrationParams.integrationId":
+            searchContextState.realEstateListing?.integrationId,
+        }),
+      }).toString();
+    }
+
     const fetchEmbeddableMaps = async (): Promise<void> => {
-      const embeddableMaps = await fetchSnapshots();
+      const embeddableMaps = await fetchSnapshots(queryParams);
 
       userDispatch({
         type: UserActionTypes.SET_EMBEDDABLE_MAPS,
@@ -48,4 +66,4 @@ const MapSnippetsPage: FunctionComponent = () => {
   );
 };
 
-export default MapSnippetsPage;
+export default MapSnapshotsPage;

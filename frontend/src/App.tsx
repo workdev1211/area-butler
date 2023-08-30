@@ -26,7 +26,10 @@ import { useHttp } from "./hooks/http";
 import Footer from "./layout/Footer";
 import Nav from "./layout/Nav";
 import { ConfigContext } from "./context/ConfigContext";
-import { commonPaypalOptions } from "./shared/shared.constants";
+import {
+  commonPaypalOptions,
+  snapshotEditorPath,
+} from "./shared/shared.constants";
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
 import FeedbackModal from "./components/FeedbackModal";
@@ -77,9 +80,9 @@ const UserProfilePage = lazy(() => import("./pages/UserProfilePage"));
 
 const CallbackPage = lazy(() => import("./pages/CallbackPage"));
 
-const SnippetEditorPage = lazy(() => import("./pages/SnippetEditorPage"));
+const SnapshotEditorPage = lazy(() => import("./pages/SnapshotEditorPage"));
 
-const MapSnippetsPage = lazy(() => import("./pages/MapSnippetsPage"));
+const MapSnapshotsPage = lazy(() => import("./pages/MapSnapshotsPage"));
 
 // const maintenanceKey = "is-seen-maintenance-2023-02-23";
 
@@ -218,7 +221,7 @@ function App() {
           <Nav />
           <Authenticated>
             <UpgradeSubscriptionHandlerContainer />
-            {!["snippet-editor"].includes(currentPath) && <FeedbackModal />}
+            {snapshotEditorPath !== currentPath && <FeedbackModal />}
           </Authenticated>
           <PayPalScriptProvider options={initialPaypalOptions}>
             <PotentialCustomerContextProvider>
@@ -254,9 +257,9 @@ function App() {
                       <Route path="/terms">
                         <TermsPage />
                       </Route>
-                      <Route path="/snippet-editor/:snapshotId">
+                      <Route path={`/${snapshotEditorPath}/:snapshotId`}>
                         <Authenticated>
-                          <SnippetEditorPage />
+                          <SnapshotEditorPage />
                         </Authenticated>
                       </Route>
                       <Route path="/potential-customers/:customerId">
@@ -287,9 +290,9 @@ function App() {
                           <SearchParamsPage />
                         </Authenticated>
                       </Route>
-                      <Route path="/map-snippets">
+                      <Route path="/map-snapshots">
                         <Authenticated>
-                          <MapSnippetsPage />
+                          <MapSnapshotsPage />
                         </Authenticated>
                       </Route>
                       <Route path="/">

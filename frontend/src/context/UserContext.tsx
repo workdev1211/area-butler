@@ -82,6 +82,36 @@ export const userReducer = (
   state: UserState,
   action: UserActions
 ): UserState => {
+  const updateUserSetting = (
+    settingName: string,
+    settingValue: string | undefined
+  ): UserState => {
+    if (
+      (!state.user && !state.integrationUser) ||
+      (state.user && state.integrationUser)
+    ) {
+      return { ...state };
+    }
+
+    if (state.user) {
+      return {
+        ...state,
+        user: { ...state.user, [settingName]: settingValue },
+      };
+    }
+
+    return {
+      ...state,
+      integrationUser: {
+        ...state.integrationUser!,
+        config: {
+          ...state.integrationUser!.config,
+          [settingName]: settingValue,
+        },
+      },
+    };
+  };
+
   switch (action.type) {
     case UserActionTypes.SET_USER: {
       return { ...state, user: { ...action.payload } };
@@ -137,19 +167,16 @@ export const userReducer = (
       return { ...state, startTour: action.payload };
     }
     case UserActionTypes.SET_LOGO: {
-      return { ...state, user: { ...state.user!, logo: action.payload } };
+      return updateUserSetting("logo", action.payload);
     }
     case UserActionTypes.SET_MAP_ICON: {
-      return { ...state, user: { ...state.user!, mapIcon: action.payload } };
+      return updateUserSetting("mapIcon", action.payload);
     }
     case UserActionTypes.SET_COLOR: {
-      return { ...state, user: { ...state.user!, color: action.payload } };
+      return updateUserSetting("color", action.payload);
     }
     case UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID: {
-      return {
-        ...state,
-        user: { ...state.user!, templateSnapshotId: action.payload },
-      };
+      return updateUserSetting("templateSnapshotId", action.payload);
     }
     case UserActionTypes.SET_API_CONNECTION: {
       const { connectionType, ...connectionSettings } = action.payload;

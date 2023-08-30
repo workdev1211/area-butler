@@ -43,7 +43,7 @@ import SearchResultContainer, {
 } from "../../components/SearchResultContainer";
 import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
-import { SnippetEditorRouterProps } from "../../pages/SnippetEditorPage";
+import { SnapshotEditorRouterProps } from "../../pages/SnapshotEditorPage";
 import TourStarter from "../../tour/TourStarter";
 import { IMapPageHistoryState } from "../../shared/shared.types";
 import { useCensusData } from "../../hooks/censusdata";
@@ -62,7 +62,7 @@ const MapPage: FunctionComponent = () => {
     useContext(SearchContext);
 
   const { state } = useLocation<IMapPageHistoryState>();
-  const { snapshotId } = useParams<SnippetEditorRouterProps>();
+  const { snapshotId } = useParams<SnapshotEditorRouterProps>();
 
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
