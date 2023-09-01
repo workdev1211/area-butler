@@ -2,27 +2,27 @@ import { Controller, Get, Query } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ZensusAtlasService } from './zensus-atlas.service';
-import { InjectUser } from '../user/inject-user.decorator';
-import { UserDocument } from '../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { InjectUser } from '../../user/inject-user.decorator';
+import { UserDocument } from '../../user/schema/user.schema';
+import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import {
   ApiCoordinates,
   ApiRequestStatusesEnum,
 } from '@area-butler-types/types';
-import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
+import { GoogleGeocodeService } from '../../client/google/google-geocode.service';
+import { UsageStatisticsService } from '../../user/usage-statistics.service';
 import {
   ApiUsageStatsTypesEnum,
   IApiQueryLocIndicesReqStatus,
   IApiQueryZensusAtlasRes,
 } from '@area-butler-types/external-api';
-import { calculateRelevantArea } from '../shared/geo-json.functions';
-import ApiCoordinatesOrAddressDto from '../location/dto/api-coordinates-or-address.dto';
+import { calculateRelevantArea } from '../../shared/geo-json.functions';
+import ApiCoordinatesOrAddressDto from '../../location/dto/api-coordinates-or-address.dto';
 import {
   cleanCensusProperties,
   processCensusData,
-} from '../../../shared/functions/census.functions';
+} from '../../../../shared/functions/census.functions';
 
 @ApiTags('zensus-atlas', 'api')
 @Controller('api/zensus-atlas-ext')
@@ -60,7 +60,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
     };
 
     try {
-      const zensusAtlasData = await this.zensusAtlasService.findIntersecting(
+      const zensusAtlasData = await this.zensusAtlasService.query(
         user,
         calculateRelevantArea(coordinates).geometry,
       );

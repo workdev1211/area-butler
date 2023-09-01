@@ -66,7 +66,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
 
     try {
       const locationIndexData =
-        await this.locationIndexService.findIntersecting(user, {
+        await this.locationIndexService.query(user, {
           coordinates: geoJsonCoordinates,
           type: type || 'Point',
         });

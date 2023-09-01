@@ -28,7 +28,6 @@ import MapTab from "./map-tab/MapTab";
 import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
-import { TLocationIndexData } from "../../hooks/locationindexdata";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { statsExportUnlockText } from "../../../../shared/constants/on-office/products";
 import { useIntegrationTools } from "../../hooks/integrationtools";
@@ -38,6 +37,7 @@ import {
 } from "../../../../shared/types/on-office";
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
 import { TCensusData } from "../../../../shared/types/data-provision";
+import { TLocationIndexData } from "../../../../shared/types/location-index";
 
 enum TabsEnum {
   Map = "Map",

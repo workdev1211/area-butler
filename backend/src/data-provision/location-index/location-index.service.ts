@@ -51,7 +51,7 @@ export class LocationIndexService {
     return;
   }
 
-  async findIntersecting(
+  async query(
     user: UserDocument | TIntegrationUserDocument,
     { type, coordinates }: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {

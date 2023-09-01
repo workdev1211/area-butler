@@ -18,7 +18,6 @@ import { PotentialCustomerModule } from './potential-customer/potential-customer
 import { RealEstateListingModule } from './real-estate-listing/real-estate-listing.module';
 import { RoutingModule } from './routing/routing.module';
 import { UserModule } from './user/user.module';
-import { ZensusAtlasModule } from './zensus-atlas/zensus-atlas.module';
 import { BillingModule } from './billing/billing.module';
 import { DataProvisionModule } from './data-provision/data-provision.module';
 import { HealthModule } from './health/health.module';
@@ -54,7 +53,6 @@ import { OpenAiModule } from './open-ai/open-ai.module';
     RealEstateListingModule,
     FeedbackModule,
     PotentialCustomerModule,
-    ZensusAtlasModule,
     DataProvisionModule,
     EventEmitterModule.forRoot({
       wildcard: true,

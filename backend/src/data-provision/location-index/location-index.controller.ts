@@ -52,6 +52,6 @@ export class LocationIndexController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() query: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
-    return this.locationIndexService.findIntersecting(user, query);
+    return this.locationIndexService.query(user, query);
   }
 }

@@ -15,7 +15,6 @@ import {
   EntityRoute,
   EntityTransitRoute,
 } from "../../../../../shared/types/routing";
-import { TLocationIndexData } from "../../../hooks/locationindexdata";
 import Localities from "./components/Localities";
 import LocationIndices from "./components/LocationIndices";
 import SocialDemographics from "./components/SocialDemographics";
@@ -25,6 +24,7 @@ import { SearchContext } from "../../../context/SearchContext";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { TUnlockIntProduct } from "../../../../../shared/types/integration";
 import { TCensusData } from "../../../../../shared/types/data-provision";
+import { TLocationIndexData } from "../../../../../shared/types/location-index";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];

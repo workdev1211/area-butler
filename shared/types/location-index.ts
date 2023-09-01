@@ -31,3 +31,12 @@ export type TApiLocationIndexFeatureProperties = Record<
 export interface IApiLocationIndexFeature extends ApiGeojsonFeature {
   properties: TApiLocationIndexFeatureProperties;
 }
+
+export type TLocationIndexData = Record<
+  LocationIndicesEnum,
+  {
+    name: string;
+    value: number;
+    colorStyle?: { backgroundColor: "#007960"; opacity: number };
+  }
+>;

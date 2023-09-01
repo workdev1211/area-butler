@@ -3,21 +3,11 @@ import { useContext } from "react";
 import { ApiCoordinates } from "../../../shared/types/types";
 import { useHttp } from "./http";
 import {
-  ApiLocIndexFeatPropsEnum,
   IApiLocationIndexFeature,
-  LocationIndicesEnum,
+  TLocationIndexData,
 } from "../../../shared/types/location-index";
-import { locationIndexNames } from "../../../shared/constants/location";
 import { UserContext } from "../context/UserContext";
-
-export type TLocationIndexData = Record<
-  LocationIndicesEnum,
-  {
-    name: string;
-    value: number;
-    colorStyle: { backgroundColor: "#007960"; opacity: number };
-  }
->;
+import { processLocationIndices } from "../../../shared/functions/location-index.functions";
 
 export const useLocationIndexData = () => {
   const {
@@ -42,33 +32,7 @@ export const useLocationIndexData = () => {
       return;
     }
 
-    return Object.keys(data[0].properties).reduce<TLocationIndexData>(
-      (result, propertyName) => {
-        const locationIndexName =
-          LocationIndicesEnum[propertyName as ApiLocIndexFeatPropsEnum];
-
-        const locationIndexValue = Math.round(
-          data[0].properties[propertyName as ApiLocIndexFeatPropsEnum] * 100
-        );
-
-        result[locationIndexName] = {
-          name: locationIndexNames[locationIndexName],
-          value: locationIndexValue,
-          colorStyle: {
-            backgroundColor: "#007960",
-            opacity:
-              locationIndexValue < 20
-                ? 0.5
-                : locationIndexValue < 60
-                ? 0.75
-                : 1,
-          },
-        };
-
-        return result;
-      },
-      {} as TLocationIndexData
-    );
+    return processLocationIndices(data[0].properties, true);
   };
 
   return { fetchLocationIndexData };

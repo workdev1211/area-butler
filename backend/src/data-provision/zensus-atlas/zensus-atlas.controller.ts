@@ -10,14 +10,14 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { ZensusAtlasService } from './zensus-atlas.service';
-import { RolesGuard } from '../auth/roles.guard';
-import { Role, Roles } from '../auth/roles.decorator';
-import FileUploadDto from '../dto/file-upload.dto';
-import ApiGeometryDto from '../dto/api-geometry.dto';
-import { AuthenticatedController } from '../shared/authenticated.controller';
-import { InjectUser } from '../user/inject-user.decorator';
-import { UserDocument } from '../user/schema/user.schema';
-import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import { RolesGuard } from '../../auth/roles.guard';
+import { Role, Roles } from '../../auth/roles.decorator';
+import FileUploadDto from '../../dto/file-upload.dto';
+import ApiGeometryDto from '../../dto/api-geometry.dto';
+import { AuthenticatedController } from '../../shared/authenticated.controller';
+import { InjectUser } from '../../user/inject-user.decorator';
+import { UserDocument } from '../../user/schema/user.schema';
+import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { TApiDataProvision } from '@area-butler-types/types';
 
 interface ZensusDataGeojson {
@@ -84,6 +84,6 @@ export class ZensusAtlasController extends AuthenticatedController {
     @Body() query: ApiGeometryDto,
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
   ): Promise<TApiDataProvision> {
-    return this.zensusAtlasService.findIntersecting(user, query);
+    return this.zensusAtlasService.query(user, query);
   }
 }

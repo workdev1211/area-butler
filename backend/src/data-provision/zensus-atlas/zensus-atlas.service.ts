@@ -2,18 +2,18 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Promise } from 'mongoose';
 
-import { ZensusAtlas, ZensusAtlasDocument } from './schema/zensus-atlas.schema';
+import { ZensusAtlas, ZensusAtlasDocument } from '../schemas/zensus-atlas.schema';
 import { ApiGeojsonFeature, TApiDataProvision } from '@area-butler-types/types';
-import ApiGeometryDto from '../dto/api-geometry.dto';
+import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
-import { UserDocument } from '../user/schema/user.schema';
-import { SubscriptionService } from '../user/subscription.service';
+import { UserDocument } from '../../user/schema/user.schema';
+import { SubscriptionService } from '../../user/subscription.service';
 import {
   ZipLevelData,
   ZipLevelDataDocument,
-} from '../data-provision/schemas/zip-level-data.schema';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { createChunks } from '../../../shared/functions/shared.functions';
+} from '../schemas/zip-level-data.schema';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { createChunks } from '../../../../shared/functions/shared.functions';
 
 @Injectable()
 export class ZensusAtlasService {
@@ -69,7 +69,7 @@ export class ZensusAtlasService {
     return this.zensusAtlasModel.findById(id);
   }
 
-  async findIntersecting(
+  async query(
     user: UserDocument | TIntegrationUserDocument,
     query: ApiGeometryDto,
   ): Promise<TApiDataProvision> {

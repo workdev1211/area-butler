@@ -2,10 +2,10 @@ import { FunctionComponent, useState } from "react";
 
 import { setBackgroundColor } from "../../../../shared/shared.functions";
 import locationIndicesIcon from "../../../../assets/icons/map-menu/11-lageindizes.svg";
-import { TLocationIndexData } from "../../../../hooks/locationindexdata";
 import LocationIndexTable from "./data/LocationIndexTable";
 import UnlockProduct from "../../components/UnlockProduct";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
+import { TLocationIndexData } from "../../../../../../shared/types/location-index";
 
 interface ILocationIndicesProps {
   isStatsExportActive: boolean;

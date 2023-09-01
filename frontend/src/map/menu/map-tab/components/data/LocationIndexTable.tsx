@@ -1,7 +1,9 @@
 import { FunctionComponent } from "react";
 
-import { TLocationIndexData } from "../../../../../hooks/locationindexdata";
-import { LocationIndicesEnum } from "../../../../../../../shared/types/location-index";
+import {
+  LocationIndicesEnum,
+  TLocationIndexData,
+} from "../../../../../../../shared/types/location-index";
 import Loading from "../../../components/Loading";
 
 interface ILocationIndexTableProps {

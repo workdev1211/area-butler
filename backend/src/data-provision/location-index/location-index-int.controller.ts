@@ -21,6 +21,6 @@ export class LocationIndexIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() query: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
-    return this.locationIndexService.findIntersecting(integrationUser, query);
+    return this.locationIndexService.query(integrationUser, query);
   }
 }
