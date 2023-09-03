@@ -17,10 +17,6 @@ import { OpenAiExtController } from './open-ai-ext.controller';
 import { LocationExtService } from '../location/location-ext.service';
 import { OverpassService } from '../client/overpass/overpass.service';
 import { OverpassDataService } from '../data-provision/overpass-data/overpass-data.service';
-import {
-  OverpassData,
-  OverpassDataSchema,
-} from '../data-provision/schemas/overpass-data.schema';
 import { LocationService } from '../location/location.service';
 import {
   LocationSearch,
@@ -32,15 +28,18 @@ import {
 } from '../location/schema/search-result-snapshot.schema';
 import { SnapshotExtService } from '../location/snapshot-ext.service';
 import { RoutingService } from '../routing/routing.service';
+import { ZensusAtlasService } from '../data-provision/zensus-atlas/zensus-atlas.service';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { DataProvisionModule } from '../data-provision/data-provision.module';
 
 @Module({
   imports: [
     ClientModule,
     HttpModule,
     UserModule,
+    DataProvisionModule,
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
-      { name: OverpassData.name, schema: OverpassDataSchema },
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
@@ -55,6 +54,8 @@ import { RoutingService } from '../routing/routing.service';
     OverpassDataService,
     SnapshotExtService,
     RoutingService,
+    LocationIndexService,
+    ZensusAtlasService,
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   exports: [OpenAiService],

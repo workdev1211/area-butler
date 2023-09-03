@@ -2,7 +2,10 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model, Promise } from 'mongoose';
 
-import { ZensusAtlas, ZensusAtlasDocument } from '../schemas/zensus-atlas.schema';
+import {
+  ZensusAtlas,
+  ZensusAtlasDocument,
+} from '../schemas/zensus-atlas.schema';
 import { ApiGeojsonFeature, TApiDataProvision } from '@area-butler-types/types';
 import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
@@ -105,7 +108,7 @@ export class ZensusAtlasService {
         delete d?.properties?.Frauen_A;
       }
 
-      return d;
+      return d.toObject();
     });
 
     const zipLevelData = (
@@ -138,7 +141,7 @@ export class ZensusAtlasService {
 
       d.properties = { ...zensusProperties };
 
-      return d;
+      return d.toObject();
     });
 
     return { addressData, zipLevelData };

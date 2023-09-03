@@ -691,12 +691,12 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
-    const queryText = this.openAiService.getLocDescQuery({
+    const queryText = await this.openAiService.getLocDescQuery(user, {
+      searchResultSnapshot,
       responseLimit,
-      meanOfTransportation,
-      snapshot: searchResultSnapshot.snapshot,
       tonality: openAiTonalities[tonality],
       customText: customText?.text,
+      meanOfTransportation,
     });
 
     return this.openAiService.fetchResponse(queryText);
@@ -745,13 +745,13 @@ export class LocationService {
         realEstateListingId,
       ));
 
-    const queryText = this.openAiService.getLocRealEstDescQuery({
+    const queryText = this.openAiService.getLocRealEstDescQuery(user, {
+      searchResultSnapshot,
       meanOfTransportation,
-      realEstateListing: resultingRealEstateListing,
-      snapshot: searchResultSnapshot.snapshot,
       tonality: openAiTonalities[tonality],
       customText: customText?.text,
       responseLimit: resultingResponseLimit,
+      realEstateListing: resultingRealEstateListing,
     });
 
     return this.openAiService.fetchResponse(queryText);

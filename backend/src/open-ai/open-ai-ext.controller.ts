@@ -8,10 +8,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
-import {
-  ApiRequestStatusesEnum,
-  ApiSearchResultSnapshot,
-} from '@area-butler-types/types';
+import { ApiRequestStatusesEnum } from '@area-butler-types/types';
 import {
   ApiOpenAiQueryTypesEnum,
   ApiUsageStatsTypesEnum,
@@ -22,6 +19,7 @@ import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
+import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
@@ -100,24 +98,26 @@ export class OpenAiExtController extends ApiKeyAuthController {
             coordinates,
           });
 
-          const snapshot = {
-            placesLocation: { label: resultingAddress },
-            searchResponse: {
-              routingProfiles: {
-                [transportMode]: { locationsOfInterest: poiData },
+          const searchResultSnapshot = {
+            snapshot: {
+              placesLocation: { label: resultingAddress },
+              searchResponse: {
+                routingProfiles: {
+                  [transportMode]: { locationsOfInterest: poiData },
+                },
               },
             },
-          } as ApiSearchResultSnapshot;
+          } as SearchResultSnapshotDocument;
 
           query =
             queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
-              ? this.openAiService.getLocDescQuery({
-                  snapshot,
+              ? await this.openAiService.getLocDescQuery(user, {
+                  searchResultSnapshot,
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
                 })
-              : this.openAiService.getLocRealEstDescQuery({
-                  snapshot,
+              : this.openAiService.getLocRealEstDescQuery(user, {
+                  searchResultSnapshot,
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
                   realEstateListing,

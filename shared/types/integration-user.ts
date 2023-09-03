@@ -41,11 +41,11 @@ export interface IApiIntUserOnOfficeParams {
 // The products are arranged in a certain order representing their hierarchy.
 // Please, check the 'getProdContTypeByActType' method for better understanding.
 export enum ApiIntUserOnOfficeProdContTypesEnum {
-  MAP_SNAPSHOT = "MAP_SNAPSHOT",
-  OPEN_AI = "OPEN_AI",
-  MAP_IFRAME = "MAP_IFRAME",
-  ONE_PAGE = "ONE_PAGE",
-  STATS_EXPORT = "STATS_EXPORT",
+  MAP_SNAPSHOT = "MAP_SNAPSHOT", // P1 - free package
+  OPEN_AI = "OPEN_AI", // P2
+  MAP_IFRAME = "MAP_IFRAME", // P3
+  ONE_PAGE = "ONE_PAGE", // P4
+  STATS_EXPORT = "STATS_EXPORT", // P5
   SUBSCRIPTION = "SUBSCRIPTION",
 }
 

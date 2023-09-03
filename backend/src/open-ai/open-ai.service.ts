@@ -5,6 +5,7 @@ import { configService } from '../config/config.service';
 import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
 import {
   ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
@@ -22,6 +23,19 @@ import {
   IApiOpenAiResponseLimit,
   OpenAiOsmQueryNameEnum,
 } from '@area-butler-types/open-ai';
+import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { UserDocument } from '../user/schema/user.schema';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { processLocationIndices } from '../../../shared/functions/location-index.functions';
+import { ZensusAtlasService } from '../data-provision/zensus-atlas/zensus-atlas.service';
+import { defaultSnapshotConfig } from '../../../shared/constants/location';
+import {
+  cleanCensusProperties,
+  processCensusData,
+} from '../../../shared/functions/census.functions';
+import { osmEntityTypes } from '../../../shared/constants/constants';
+import { calculateRelevantArea } from '../shared/geo-json.functions';
 
 // Left just in case in order to be able to calculate the number of tokens
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -29,19 +43,20 @@ import {
 // const usedTokens = encode(queryString).length;
 
 interface ILocDescQueryData {
-  snapshot: ApiSearchResultSnapshot;
+  searchResultSnapshot: SearchResultSnapshotDocument;
   meanOfTransportation: MeansOfTransportation;
   tonality: string;
-  customText?: string;
   responseLimit?: IApiOpenAiResponseLimit;
+  customText?: string;
+  targetGroupName?: string;
 }
 
 interface ILocRealEstDescQueryData extends ILocDescQueryData {
   realEstateListing: Partial<IApiRealEstateListingSchema>;
-  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 const CHARACTER_LIMIT = 2000;
+const POI_LIMIT_BY_CATEGORY = 3;
 
 @Injectable()
 export class OpenAiService {
@@ -53,59 +68,122 @@ export class OpenAiService {
   });
   private readonly openAiApi = new OpenAIApi(this.openAiConfig);
 
-  getLocDescQuery({
-    snapshot,
-    meanOfTransportation,
-    tonality,
-    customText,
-    responseLimit,
-  }: ILocDescQueryData): string {
-    const poiCount: Partial<Record<OsmName, number>> =
-      snapshot.searchResponse.routingProfiles[
-        meanOfTransportation
-      ].locationsOfInterest.reduce((result, { entity: { name, type } }) => {
-        const osmName = Object.values(OsmName).includes(
-          type as unknown as OsmName,
-        )
-          ? (type as unknown as OsmName)
-          : name;
+  constructor(
+    private readonly locationIndexService: LocationIndexService,
+    private readonly zensusAtlasService: ZensusAtlasService,
+  ) {}
 
-        if (!result[osmName]) {
-          result[osmName] = 0;
-        }
-
-        result[osmName] += 1;
-
-        return result;
-      }, {});
-
-    const initialQueryText =
-      `Schreibe eine ${this.getResponseTextLimit(
-        responseLimit,
-      )} lange Beschreibung der Lage einer Immobilie für ` +
-      `Immobilienexposee. Nutze eine ${tonality} Art der Formulierung. Erwähne im Text die Points of ` +
-      'Interest nicht mit absoluten Zahlen, sondern nur qualitativ oder mit "einige, viele, ausreichend". ' +
-      'Beende den Text mit einer Bullet-Liste der Points of Interest.\nDie Points of interest sind: ' +
-      `${snapshot.placesLocation.label}.\n`;
-
-    const poiCountEntries = Object.entries(poiCount);
-
-    let queryText = poiCountEntries.reduce(
-      (result, [name, count]: [OsmName, number], i) => {
-        result += `Anzahl ${
-          count === 1
-            ? openAiTranslationDictionary[name].singular
-            : openAiTranslationDictionary[name].plural
-        }: ${count}${poiCountEntries.length - 1 === i ? '' : '\n'}`;
-
-        return result;
+  async getLocDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    {
+      searchResultSnapshot: {
+        snapshot,
+        config: snapshotConfig = defaultSnapshotConfig,
       },
-      initialQueryText,
+      responseLimit,
+      tonality,
+      customText,
+      targetGroupName = 'Immobilieninteressent',
+      meanOfTransportation,
+    }: ILocDescQueryData,
+  ): Promise<string> {
+    let queryText = `Sei mein Experte für Immobilien-Exposés und schreibe einen werblichen Exposétext für eine Immobile mit der Adresse: ${snapshot.placesLocation.label}.`;
+    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
+      responseLimit,
+    )} Zeichen lang sein.`;
+
+    if (!snapshotConfig.showAddress) {
+      queryText += ' Die Adresse darf nicht explizit im Text genannt werden.';
+    }
+
+    queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
+    queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
+    queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen. Erwähne vor allem POI-Kategorien die der Zielgruppe "${targetGroupName}" gefallen und lege dar warum diese Lage gerade für diese Zielgruppe optimal ist.`;
+    queryText +=
+      ' Wenn möglich, nenne die Entfernung zum nächstgelegenen internationalen Flughafen, nenne die Autobahnen die nah an der Immobilien verlaufen, nenne die nächste ÖPNV Möglichkeiten.\n';
+
+    // POIs
+
+    const processedPoiData = this.processPoiData(
+      snapshot,
+      snapshotConfig,
+      meanOfTransportation,
+    );
+    const poiCategories = Object.keys(processedPoiData);
+
+    if (poiCategories.length) {
+      queryText += `Hier eine Tabelle mit den jeweils 3 nächsten erreichbaren POIs der jeweiligen Kategorie mit Entfernung in Meter und Name. Schaffe aus der Tabelle Mehrwert für die Zielgruppe "${targetGroupName}":\n`;
+
+      poiCategories.forEach((category) => {
+        queryText += `${category}:`;
+        const pois = processedPoiData[category];
+        pois.sort((a, b) => a.distanceInMeters - b.distanceInMeters);
+
+        pois.forEach(({ name, distanceInMeters }) => {
+          queryText += ` ${name} (${Math.round(distanceInMeters)}m),`;
+        });
+
+        queryText = queryText.slice(0, -1);
+        queryText += '.\n';
+      });
+    }
+
+    // Location indices
+
+    const locationIndices = await this.locationIndexService.query(user, {
+      type: 'Point',
+      coordinates: [snapshot.location.lng, snapshot.location.lat],
+    });
+
+    if (
+      locationIndices.length &&
+      Object.keys(locationIndices[0].properties).length
+    ) {
+      const resultingLocationIndices = processLocationIndices(
+        locationIndices[0].properties,
+      );
+
+      queryText +=
+        'Hier die von uns berechneten Lage-Indizes für diese Adresse. Diese aggregieren alle POIs in der Umgebung der Adresse, gewichten Sie nach der Distanz und errechnen eine Zahl zwischen 0-100%. Zudem fließt auch die Flächenbedeckung mit ein. z.B. je mehr Grünflächen in der Umgebung desto höher der Gesundheitsindex. Benutze die Indizes für qualitative Aussagen ohne die Indizes explizit zu erwähnen:\n';
+
+      Object.values(resultingLocationIndices).forEach(({ name, value }) => {
+        queryText += `${name}: ${value}%, `;
+      });
+
+      queryText = queryText.slice(0, -2);
+      queryText += '.\n';
+    }
+
+    // Zensus data
+
+    const zensusData = await this.zensusAtlasService.query(
+      user,
+      calculateRelevantArea(snapshot.location).geometry,
     );
 
-    if (customText) {
-      queryText += `\n${customText}`;
+    if (Object.values(zensusData).some((dataType) => dataType.length > 0)) {
+      const processedCensusData = processCensusData(
+        cleanCensusProperties(zensusData),
+      );
+
+      queryText +=
+        'Hier ist zudem die Analyse der Zensus Daten an der Adresse. Nutze die Zahlen zu positiven Formulierungen für die Zielgruppe. Nenne keine Zahlen Quantitativ sondern kreiere nur qualitative Aussagen:\n';
+
+      Object.values(processedCensusData).forEach(
+        ({ label, value: { addressData } }) => {
+          queryText += `${label}: ${addressData}, `;
+        },
+      );
+
+      queryText = queryText.slice(0, -2);
+      queryText += '.\n';
     }
+
+    // TODO will be added later
+    // // Landcover data
+    //
+    // queryText +=
+    //   'Hier die Landcover data für diese plz. Nutze diese Prozentzahlen für qualitative Aussagen welche Flächenbedeckung diese Umgebung prägt:';
 
     return queryText;
   }
@@ -218,14 +296,21 @@ export class OpenAiService {
     return `${queryText}\n\n`;
   }
 
-  getLocRealEstDescQuery({
-    snapshot,
-    meanOfTransportation,
-    tonality,
-    customText,
-    realEstateListing,
-    responseLimit,
-  }: ILocRealEstDescQueryData): string {
+  getLocRealEstDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    {
+      searchResultSnapshot: {
+        snapshot,
+        config: snapshotConfig = defaultSnapshotConfig,
+      },
+      responseLimit,
+      tonality,
+      customText,
+      targetGroupName = 'Immobilieninteressent',
+      meanOfTransportation,
+      realEstateListing,
+    }: ILocRealEstDescQueryData,
+  ): string {
     const poiCount: Partial<Record<OpenAiOsmQueryNameEnum, number>> =
       snapshot.searchResponse.routingProfiles[
         meanOfTransportation
@@ -394,5 +479,59 @@ export class OpenAiService {
     return type === ApiOpenAiResponseLimitTypesEnum.CHARACTER
       ? `maximal ${quantity} Zeichen`
       : `etwa ${quantity} Worte`;
+  }
+
+  private processPoiData(
+    snapshot: ApiSearchResultSnapshot,
+    snapshotConfig: ApiSearchResultSnapshotConfig,
+    meanOfTransportation: MeansOfTransportation,
+  ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
+    const selectedPoiCategories = osmEntityTypes.reduce<OsmName[]>(
+      (result, { label, name }) => {
+        if (snapshotConfig.defaultActiveGroups.includes(label)) {
+          result.push(name);
+        }
+
+        return result;
+      },
+      [],
+    );
+
+    return snapshot.searchResponse.routingProfiles[
+      meanOfTransportation
+    ].locationsOfInterest.reduce((result, location) => {
+      const {
+        entity: { name, type, title, label },
+        distanceInMeters,
+      } = location;
+
+      const osmName = Object.values(OsmName).includes(
+        type as unknown as OsmName,
+      )
+        ? (type as unknown as OsmName)
+        : name;
+
+      if (
+        selectedPoiCategories.length &&
+        !selectedPoiCategories.includes(osmName)
+      ) {
+        return result;
+      }
+
+      const resultingName = openAiTranslationDictionary[osmName].plural;
+
+      if (!result[resultingName]) {
+        result[resultingName] = [];
+      }
+
+      if (result[resultingName].length < POI_LIMIT_BY_CATEGORY) {
+        result[resultingName].push({
+          distanceInMeters,
+          name: title || label,
+        });
+      }
+
+      return result;
+    }, {});
   }
 }
