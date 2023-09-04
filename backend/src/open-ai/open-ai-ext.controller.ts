@@ -20,6 +20,7 @@ import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
+import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
@@ -116,7 +117,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
                 })
-              : this.openAiService.getLocRealEstDescQuery(user, {
+              : await this.openAiService.getLocRealEstDescQuery(user, {
                   searchResultSnapshot,
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
@@ -127,7 +128,10 @@ export class OpenAiExtController extends ApiKeyAuthController {
         }
 
         case ApiOpenAiQueryTypesEnum.EST_DESC: {
-          query = this.openAiService.getRealEstDescQuery(realEstateListing);
+          query = this.openAiService.getRealEstDescQuery({
+            realEstateListing,
+            tonality: openAiTonalities[OpenAiTonalityEnum.FORMAL_SERIOUS],
+          });
         }
       }
 

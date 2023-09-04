@@ -745,7 +745,7 @@ export class LocationService {
         realEstateListingId,
       ));
 
-    const queryText = this.openAiService.getLocRealEstDescQuery(user, {
+    const queryText = await this.openAiService.getLocRealEstDescQuery(user, {
       searchResultSnapshot,
       meanOfTransportation,
       tonality: openAiTonalities[tonality],

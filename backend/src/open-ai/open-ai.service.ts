@@ -11,17 +11,17 @@ import {
 } from '@area-butler-types/types';
 import {
   openAiTranslationDictionary,
-  osmNameToOsmQueryNameMapping,
 } from '../../../shared/constants/open-ai';
 import {
   ApiFurnishing,
+  ApiRealEstateCharacteristics,
+  ApiRealEstateCost,
   ApiRealEstateCostType,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import {
   ApiOpenAiResponseLimitTypesEnum,
   IApiOpenAiResponseLimit,
-  OpenAiOsmQueryNameEnum,
 } from '@area-butler-types/open-ai';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
@@ -45,9 +45,17 @@ import { calculateRelevantArea } from '../shared/geo-json.functions';
 interface ILocDescQueryData {
   searchResultSnapshot: SearchResultSnapshotDocument;
   meanOfTransportation: MeansOfTransportation;
-  tonality: string;
-  responseLimit?: IApiOpenAiResponseLimit;
+  tonality: string; // should be enum
   customText?: string;
+  responseLimit?: IApiOpenAiResponseLimit;
+  targetGroupName?: string;
+}
+
+interface IRealEstDescQueryData {
+  realEstateListing: Partial<IApiRealEstateListingSchema>;
+  tonality: string; // should be enum
+  customText?: string;
+  responseLimit?: IApiOpenAiResponseLimit;
   targetGroupName?: string;
 }
 
@@ -55,7 +63,12 @@ interface ILocRealEstDescQueryData extends ILocDescQueryData {
   realEstateListing: Partial<IApiRealEstateListingSchema>;
 }
 
-const CHARACTER_LIMIT = 2000;
+interface ILocRealEstDescQueryData extends ILocDescQueryData {
+  realEstateListing: Partial<IApiRealEstateListingSchema>;
+}
+
+// const MIN_CHARACTER_NUMBER = 1500;
+const MAX_CHARACTER_NUMBER = 6000;
 const POI_LIMIT_BY_CATEGORY = 3;
 
 @Injectable()
@@ -188,35 +201,24 @@ export class OpenAiService {
     return queryText;
   }
 
-  getRealEstDescQuery(
-    {
-      address,
-      characteristics,
-      costStructure,
-    }: Partial<IApiRealEstateListingSchema>,
-    responseLimit?: IApiOpenAiResponseLimit,
-    initialQueryText = `Schreibe eine ${this.getResponseTextLimit(
+  getRealEstDescQuery({
+    realEstateListing: { address, costStructure, characteristics },
+    tonality,
+    customText,
+    responseLimit,
+    targetGroupName = 'Immobilieninteressent',
+  }: IRealEstDescQueryData): string {
+    let queryText =
+      'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
+    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
       responseLimit,
-    )} lange, werbliche Beschreibung in einem Immobilienexposee.\n\n`,
-  ): string {
+    )} lang sein.`;
+
     const objectType = 'Haus';
-
-    // Keep in mind that in the future, the currency may not only be the Euro
-    // minPrice is a minimum price, price is a price or a maximum one
-    const price =
-      costStructure &&
-      ((!costStructure.minPrice?.amount && costStructure.price?.amount) ||
-      (costStructure.minPrice?.amount && !costStructure.price?.amount)
-        ? costStructure.minPrice?.amount || costStructure.price?.amount
-        : (costStructure.minPrice?.amount + costStructure.price?.amount) / 2);
-
-    const costType = costStructure?.type;
-
-    let queryText = initialQueryText;
 
     switch (objectType) {
       case 'Haus': {
-        queryText += 'Das Exposee ist für ein Haus.';
+        queryText += ' Das Exposee ist für ein Haus.';
         break;
       }
 
@@ -231,206 +233,47 @@ export class OpenAiService {
       }
     }
 
-    if (price && costType) {
-      switch (costType) {
-        case ApiRealEstateCostType.RENT_MONTHLY_COLD: {
-          queryText += ` Das Objekt kostet ${price} Euro kalt zur Miete.`;
-          break;
-        }
+    // left just in case because the address should be mandatory
+    // if (address) {
+    queryText += ` Die Adresse lautet ${address}.`;
+    // }
 
-        case ApiRealEstateCostType.RENT_MONTHLY_WARM: {
-          queryText += ` Das Objekt kostet ${price} Euro warm zur Miete.`;
-          break;
-        }
+    queryText = this.getRealEstateDescription(
+      queryText,
+      costStructure,
+      characteristics,
+    );
 
-        default: {
-          queryText += ` Das Objekt hat einen Kaufpreis von ${price} Euro.`;
-        }
-      }
-    }
-
-    if (address) {
-      queryText += ` Die Adresse lautet ${address}.`;
-    }
-    if (characteristics.propertySizeInSquareMeters) {
-      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm.`;
-    }
-    if (characteristics.realEstateSizeInSquareMeters) {
-      queryText += ` Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm.`;
-    }
-    if (characteristics.numberOfRooms) {
-      queryText += ` Es gibt ${characteristics.numberOfRooms} Zimmer.`;
-    }
-    if (characteristics.energyEfficiency) {
-      queryText += ` Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'.`;
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.GARDEN)) {
-      queryText += ' Es gibt einen Garten.';
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.BALCONY)) {
-      queryText += ' Das Objekt verfügt über einen Balkon.';
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.BASEMENT)) {
-      queryText += ' Zu dem Objekt gehört ein Keller.';
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.GUEST_REST_ROOMS)) {
-      queryText += ' Es gibt ein Gäste-WC.';
-    }
-    if (
-      characteristics?.furnishing?.includes(ApiFurnishing.UNDERFLOOR_HEATING)
-    ) {
-      queryText += ' Bei der Heizung handelt es sich um ein Fußbodenheizung.';
-    }
-    if (
-      characteristics?.furnishing?.includes(ApiFurnishing.GARAGE_PARKING_SPACE)
-    ) {
-      queryText += ' Zugehörig gibt es einen Stellplatz.';
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.ACCESSIBLE)) {
-      queryText += ' Das Objekt ist barrierefrei eingerichtet und zugänglich.';
-    }
-    if (characteristics?.furnishing?.includes(ApiFurnishing.FITTED_KITCHEN)) {
-      queryText += ' Das Objekt verfügt über eine Einbauküche.';
-    }
-
-    return `${queryText}\n\n`;
-  }
-
-  getLocRealEstDescQuery(
-    user: UserDocument | TIntegrationUserDocument,
-    {
-      searchResultSnapshot: {
-        snapshot,
-        config: snapshotConfig = defaultSnapshotConfig,
-      },
-      responseLimit,
-      tonality,
-      customText,
-      targetGroupName = 'Immobilieninteressent',
-      meanOfTransportation,
-      realEstateListing,
-    }: ILocRealEstDescQueryData,
-  ): string {
-    const poiCount: Partial<Record<OpenAiOsmQueryNameEnum, number>> =
-      snapshot.searchResponse.routingProfiles[
-        meanOfTransportation
-      ].locationsOfInterest.reduce((result, { entity: { name, type } }) => {
-        const osmQueryName =
-          osmNameToOsmQueryNameMapping[
-            Object.values(OsmName).includes(type as unknown as OsmName)
-              ? (type as unknown as OsmName)
-              : name
-          ];
-
-        if (!osmQueryName) {
-          return result;
-        }
-
-        if (!result[osmQueryName]) {
-          result[osmQueryName] = 0;
-        }
-
-        result[osmQueryName] += 1;
-
-        return result;
-      }, {});
-
-    const initialQueryText =
-      `Schreibe eine ${this.getResponseTextLimit(
-        responseLimit,
-      )} lange Beschreibung der Lage einer Immobilie für Immobilienexposee. Nutze eine ${tonality} Art der ` +
-      `Formulierung. Im Fließtext erwähne die Points of Interest nicht mit Zahlen, sondern nur mit Worten ` +
-      `"einige, viele, ausreichend, ...". Im Anschluss an den Text füge dann eine Bullet-Liste mit den ` +
-      `Zahlen der Points of Interest hinzu. Verwende HTML Zeilenumbrüche.`;
-
-    let queryText = this.getRealEstDescQuery(
-      realEstateListing,
-      undefined,
-      initialQueryText,
-    ).replace('\n\n', '\n');
-
-    if (poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.PUBLIC_TRANSPORT]
-      } ÖPNV Haltestellen\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.HIGHWAY_ACCESS]
-      } Autobahnauffahrten\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.CHARGING_STATIONS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.CHARGING_STATIONS]
-      } E-Ladestellen\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.GAS_STATIONS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.GAS_STATIONS]
-      } Tankstellen\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.SUPERMARKETS_AND_DRUGSTORES]
-      } Supermärkte und Drogerien\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.SCHOOLS_AND_KINDERGARDEN]
-      } Schulen und Kindergärten`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.UNIVERSITIES]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.UNIVERSITIES]
-      } Univerität(en)\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.PLAYGROUNDS_AND_PARKS]
-      } Spielplätze und Parks\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.BARS_AND_RESTAURANTS]
-      } Bars und Restaurants\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.THEATERS]) {
-      queryText += ` - ${poiCount[OpenAiOsmQueryNameEnum.THEATERS]} Theater\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.SPORTS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.SPORTS]
-      } Sportangebote\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.SWIMMING_POOLS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.SWIMMING_POOLS]
-      } Swimmingpools und Schwimmbäder\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.DOCTORS]) {
-      queryText += ` - ${poiCount[OpenAiOsmQueryNameEnum.DOCTORS]} Ärzte\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.PHARMACIES]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.PHARMACIES]
-      } Apotheken\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.HOSPITALS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.HOSPITALS]
-      } Krankenhäuser\n`;
-    }
-    if (poiCount[OpenAiOsmQueryNameEnum.SIGHTS]) {
-      queryText += ` - ${
-        poiCount[OpenAiOsmQueryNameEnum.SIGHTS]
-      } Sehenswürdigkeiten\n`;
-    }
+    queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
 
     if (customText) {
-      queryText += `\n${customText}`;
+      queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
     }
 
-    return `${queryText}\n\n`;
+    queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen.`;
+
+    return queryText;
+  }
+
+  async getLocRealEstDescQuery(
+    user: UserDocument | TIntegrationUserDocument,
+    {
+      realEstateListing: { costStructure, characteristics },
+      ...locRealEstDescQueryData
+    }: ILocRealEstDescQueryData,
+  ): Promise<string> {
+    let queryText: string = await this.getLocDescQuery(
+      user,
+      locRealEstDescQueryData,
+    );
+
+    queryText = this.getRealEstateDescription(
+      queryText,
+      costStructure,
+      characteristics,
+    );
+
+    return queryText;
   }
 
   getFormToInformQuery(formalText: string): string {
@@ -471,7 +314,7 @@ export class OpenAiService {
     responseLimit?: IApiOpenAiResponseLimit,
   ): string {
     if (!responseLimit) {
-      return `maximal ${CHARACTER_LIMIT} Zeichen`;
+      return `maximal ${MAX_CHARACTER_NUMBER} Zeichen`;
     }
 
     const { quantity, type } = responseLimit;
@@ -533,5 +376,83 @@ export class OpenAiService {
 
       return result;
     }, {});
+  }
+
+  private getRealEstateDescription(
+    queryText: string,
+    costStructure: ApiRealEstateCost,
+    characteristics: ApiRealEstateCharacteristics,
+  ): string {
+    // Keep in mind that in the future, the currency may not only be the Euro
+    // minPrice is a minimum price, price is a price or a maximum one
+    const price =
+      costStructure &&
+      ((!costStructure.minPrice?.amount && costStructure.price?.amount) ||
+      (costStructure.minPrice?.amount && !costStructure.price?.amount)
+        ? costStructure.minPrice?.amount || costStructure.price?.amount
+        : (costStructure.minPrice?.amount + costStructure.price?.amount) / 2);
+
+    const costType = costStructure?.type;
+
+    if (price && costType) {
+      switch (costType) {
+        case ApiRealEstateCostType.RENT_MONTHLY_COLD: {
+          queryText += ` Das Objekt kostet ${price} Euro kalt zur Miete.`;
+          break;
+        }
+
+        case ApiRealEstateCostType.RENT_MONTHLY_WARM: {
+          queryText += ` Das Objekt kostet ${price} Euro warm zur Miete.`;
+          break;
+        }
+
+        default: {
+          queryText += ` Das Objekt hat einen Kaufpreis von ${price} Euro.`;
+        }
+      }
+    }
+
+    if (characteristics.propertySizeInSquareMeters) {
+      queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm.`;
+    }
+    if (characteristics.realEstateSizeInSquareMeters) {
+      queryText += ` Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm.`;
+    }
+    if (characteristics.numberOfRooms) {
+      queryText += ` Es gibt ${characteristics.numberOfRooms} Zimmer.`;
+    }
+    if (characteristics.energyEfficiency) {
+      queryText += ` Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'.`;
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.GARDEN)) {
+      queryText += ' Es gibt einen Garten.';
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.BALCONY)) {
+      queryText += ' Das Objekt verfügt über einen Balkon.';
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.BASEMENT)) {
+      queryText += ' Zu dem Objekt gehört ein Keller.';
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.GUEST_REST_ROOMS)) {
+      queryText += ' Es gibt ein Gäste-WC.';
+    }
+    if (
+      characteristics?.furnishing?.includes(ApiFurnishing.UNDERFLOOR_HEATING)
+    ) {
+      queryText += ' Bei der Heizung handelt es sich um ein Fußbodenheizung.';
+    }
+    if (
+      characteristics?.furnishing?.includes(ApiFurnishing.GARAGE_PARKING_SPACE)
+    ) {
+      queryText += ' Zugehörig gibt es einen Stellplatz.';
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.ACCESSIBLE)) {
+      queryText += ' Das Objekt ist barrierefrei eingerichtet und zugänglich.';
+    }
+    if (characteristics?.furnishing?.includes(ApiFurnishing.FITTED_KITCHEN)) {
+      queryText += ' Das Objekt verfügt über eine Einbauküche.';
+    }
+
+    return queryText;
   }
 }

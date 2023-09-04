@@ -13,9 +13,13 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import { IApiOpenAiRealEstateDescriptionQuery } from '@area-butler-types/open-ai';
+import {
+  IApiOpenAiRealEstateDescriptionQuery,
+  OpenAiTonalityEnum,
+} from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { openAiTonalities } from '../../../shared/constants/open-ai';
 
 @Injectable()
 export class RealEstateListingService {
@@ -161,7 +165,7 @@ export class RealEstateListingService {
       responseLimit,
     }: IApiOpenAiRealEstateDescriptionQuery,
     realEstateListing?: RealEstateListingDocument,
-  ) {
+  ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
     if (!isIntegrationUser) {
@@ -179,10 +183,11 @@ export class RealEstateListingService {
       realEstateListing ||
       (await this.fetchRealEstateListingById(user, realEstateListingId));
 
-    const queryText = this.openAiService.getRealEstDescQuery(
-      resultingRealEstateListing,
+    const queryText = this.openAiService.getRealEstDescQuery({
+      realEstateListing: resultingRealEstateListing,
+      tonality: openAiTonalities[OpenAiTonalityEnum.FORMAL_SERIOUS],
       responseLimit,
-    );
+    });
 
     return this.openAiService.fetchResponse(queryText);
   }
