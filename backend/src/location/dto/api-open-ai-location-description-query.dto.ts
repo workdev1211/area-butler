@@ -1,7 +1,6 @@
 import {
   IsEnum,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -18,8 +17,8 @@ import {
   IApiOpenAiResponseLimit,
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
-import ApiSelectTextValueDto from '../../dto/api-select-text-value.dto';
 import ApiOpenAiResponseLimitDto from '../../open-ai/dto/api-open-ai-response-limit.dto';
+import ApiSelectTextValueDto from '../../dto/api-select-text-value.dto';
 
 class ApiOpenAiLocationDescriptionQueryDto
   implements IApiOpenAiLocationDescriptionQuery
@@ -32,19 +31,19 @@ class ApiOpenAiLocationDescriptionQueryDto
   @IsEnum(MeansOfTransportation)
   meanOfTransportation: MeansOfTransportation;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(OpenAiTonalityEnum)
-  tonality: OpenAiTonalityEnum;
+  tonality?: OpenAiTonalityEnum;
+
+  @IsOptional()
+  @IsString()
+  targetGroupName?: string;
 
   @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => ApiSelectTextValueDto)
   customText?: ISelectTextValue;
-
-  @IsOptional()
-  @IsNumber()
-  characterLimit?: number;
 
   @IsOptional()
   @IsObject()

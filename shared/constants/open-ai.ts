@@ -164,3 +164,6 @@ export const osmNameToOsmQueryNameMapping: Partial<
   [OsmName.hospital]: OpenAiOsmQueryNameEnum.HOSPITALS,
   [OsmName.attraction]: OpenAiOsmQueryNameEnum.SIGHTS,
 };
+
+export const minCharacterNumber = 1500;
+export const maxCharacterNumber = 6000;

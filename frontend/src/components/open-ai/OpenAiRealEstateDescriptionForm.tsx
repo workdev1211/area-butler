@@ -43,7 +43,9 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
   IRealEstateDescriptionFormProps
 > = ({
   formId,
-  initialValues = { realEstateListingId: "" },
+  initialValues = {
+    realEstateListingId: "",
+  },
   onValuesChange,
   onSubmit,
   formRef,
@@ -89,7 +91,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
     return "";
   };
 
-  const processedInitialValues = {
+  const processedInitialValues: IApiOpenAiRealEstateDescriptionQuery = {
     realEstateListingId: getInitRealEstListId(),
   };
 

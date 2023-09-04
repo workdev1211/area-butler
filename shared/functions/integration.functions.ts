@@ -8,7 +8,7 @@ import {
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
 import {
-  ApiOpenAiResponseLimitTypesEnum,
+  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiResponseLimit,
   OpenAiQueryTypeEnum,
 } from "../types/open-ai";
@@ -57,7 +57,7 @@ export const getProdContTypeByActType = (
 export const getAvailProdContType = (
   integrationType: IntegrationTypesEnum,
   actionType: TIntegrationActionTypes,
-  availProdContingents?: TApiIntUserAvailProdContingents,
+  availProdContingents?: TApiIntUserAvailProdContingents
 ): ApiIntUserOnOfficeProdContTypesEnum | undefined => {
   const prodContType = getProdContTypeByActType(integrationType, actionType);
 
@@ -95,7 +95,7 @@ export const getOpenAiRespLimitByInt = (
     default: {
       return {
         quantity: onOfficeOpenAiCharacterLimit,
-        type: ApiOpenAiResponseLimitTypesEnum.CHARACTER,
+        type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
       };
     }
   }

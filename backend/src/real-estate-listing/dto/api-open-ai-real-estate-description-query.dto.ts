@@ -1,4 +1,5 @@
 import {
+  IsEnum,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -10,6 +11,7 @@ import { Type } from 'class-transformer';
 import {
   IApiOpenAiRealEstateDescriptionQuery,
   IApiOpenAiResponseLimit,
+  OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 import ApiOpenAiResponseLimitDto from '../../open-ai/dto/api-open-ai-response-limit.dto';
 
@@ -19,6 +21,14 @@ class ApiOpenAiRealEstateDescriptionQueryDto
   @IsNotEmpty()
   @IsString()
   realEstateListingId: string;
+
+  @IsOptional()
+  @IsString()
+  targetGroupName?: string;
+
+  @IsOptional()
+  @IsEnum(OpenAiTonalityEnum)
+  tonality?: OpenAiTonalityEnum;
 
   @IsOptional()
   @IsObject()

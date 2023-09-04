@@ -19,7 +19,8 @@ export enum OpenAiCustomTextEnum {
 
 export interface IOpenAiLocationDescriptionFormValues {
   meanOfTransportation: MeansOfTransportation;
-  tonality: OpenAiTonalityEnum;
+  tonality?: OpenAiTonalityEnum;
+  targetGroupName?: string;
   customText?: ISelectTextValue;
 }
 
@@ -32,6 +33,8 @@ export interface IApiOpenAiLocationDescriptionQuery
 
 export interface IApiOpenAiRealEstateDescriptionQuery {
   realEstateListingId: string;
+  tonality?: OpenAiTonalityEnum;
+  targetGroupName?: string;
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
@@ -39,12 +42,11 @@ export interface IApiOpenAiLocationRealEstateDescriptionQuery
   extends IOpenAiLocationDescriptionFormValues,
     IApiOpenAiRealEstateDescriptionQuery {
   searchResultSnapshotId: string;
-  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 export interface IApiOpenAiResponseLimit {
   quantity: number;
-  type: ApiOpenAiResponseLimitTypesEnum;
+  type: ApiOpenAiRespLimitTypesEnum;
 }
 
 export enum OpenAiQueryTypeEnum {
@@ -81,7 +83,7 @@ export interface IApiOpenAiQuery {
   integrationId?: string;
 }
 
-export enum ApiOpenAiResponseLimitTypesEnum {
+export enum ApiOpenAiRespLimitTypesEnum {
   CHARACTER = "CHARACTER",
   WORD = "WORD",
 }

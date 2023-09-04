@@ -55,6 +55,15 @@ export class PotentialCustomerIntController {
     );
   }
 
+  @ApiOperation({ description: 'Fetch potential customer names' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('names')
+  async fetchNames(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<string[]> {
+    return this.potentialCustomerService.fetchNames(integrationUser);
+  }
+
   @ApiOperation({ description: 'Update a potential customer' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Put(':id')

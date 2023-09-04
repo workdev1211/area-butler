@@ -1,7 +1,7 @@
 import { IsEnum, IsNotEmpty, IsNumber } from 'class-validator';
 
 import {
-  ApiOpenAiResponseLimitTypesEnum,
+  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiResponseLimit,
 } from '@area-butler-types/open-ai';
 
@@ -11,8 +11,8 @@ class ApiOpenAiResponseLimitDto implements IApiOpenAiResponseLimit {
   quantity: number;
 
   @IsNotEmpty()
-  @IsEnum(ApiOpenAiResponseLimitTypesEnum)
-  type: ApiOpenAiResponseLimitTypesEnum;
+  @IsEnum(ApiOpenAiRespLimitTypesEnum)
+  type: ApiOpenAiRespLimitTypesEnum;
 }
 
 export default ApiOpenAiResponseLimitDto;

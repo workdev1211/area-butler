@@ -56,10 +56,11 @@ import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
-  ApiOpenAiResponseLimitTypesEnum,
+  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiLocationDescriptionQuery,
   IApiOpenAiLocationRealEstateDescriptionQuery,
   IApiOpenAiResponseLimit,
+  OpenAiCustomTextEnum,
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
@@ -669,6 +670,7 @@ export class LocationService {
       searchResultSnapshotId,
       meanOfTransportation,
       tonality,
+      targetGroupName,
       customText,
       responseLimit,
     }: IApiOpenAiLocationDescriptionQuery,
@@ -693,10 +695,15 @@ export class LocationService {
 
     const queryText = await this.openAiService.getLocDescQuery(user, {
       searchResultSnapshot,
-      responseLimit,
-      tonality: openAiTonalities[tonality],
-      customText: customText?.text,
       meanOfTransportation,
+      responseLimit,
+      targetGroupName,
+      // TODO a hack
+      customText:
+        customText?.value === OpenAiCustomTextEnum.NONE
+          ? undefined
+          : customText?.text,
+      tonality: openAiTonalities[tonality],
     });
 
     return this.openAiService.fetchResponse(queryText);
@@ -707,6 +714,7 @@ export class LocationService {
     {
       searchResultSnapshotId,
       meanOfTransportation,
+      targetGroupName,
       tonality,
       customText,
       realEstateListingId,
@@ -736,7 +744,7 @@ export class LocationService {
       responseLimit ||
       (isIntegrationUser
         ? getOpenAiRespLimitByInt(user.integrationType)
-        : { quantity: 700, type: ApiOpenAiResponseLimitTypesEnum.WORD });
+        : { quantity: 700, type: ApiOpenAiRespLimitTypesEnum.WORD });
 
     const resultingRealEstateListing =
       realEstateListing ||
@@ -746,12 +754,17 @@ export class LocationService {
       ));
 
     const queryText = await this.openAiService.getLocRealEstDescQuery(user, {
-      searchResultSnapshot,
       meanOfTransportation,
-      tonality: openAiTonalities[tonality],
-      customText: customText?.text,
-      responseLimit: resultingResponseLimit,
+      searchResultSnapshot,
+      targetGroupName,
+      // TODO a hack
+      customText:
+        customText?.value === OpenAiCustomTextEnum.NONE
+          ? undefined
+          : customText?.text,
       realEstateListing: resultingRealEstateListing,
+      responseLimit: resultingResponseLimit,
+      tonality: openAiTonalities[tonality],
     });
 
     return this.openAiService.fetchResponse(queryText);

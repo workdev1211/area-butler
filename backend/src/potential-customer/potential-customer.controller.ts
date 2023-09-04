@@ -42,6 +42,12 @@ export class PotentialCustomerController extends AuthenticatedController {
     ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
   }
 
+  @ApiOperation({ description: 'Fetch potential customer names' })
+  @Get('names')
+  async fetchNames(@InjectUser() user: UserDocument): Promise<string[]> {
+    return this.potentialCustomerService.fetchNames(user);
+  }
+
   @ApiOperation({ description: 'Create a potential customer' })
   @Post()
   async createPotentialCustomer(

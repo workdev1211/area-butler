@@ -40,6 +40,16 @@ export const usePotentialCustomerData = () => {
     ).data;
   };
 
+  const fetchPotentCustomerNames = async (): Promise<string[]> => {
+    return (
+      await get<string[]>(
+        isIntegrationUser
+          ? "/api/potential-customers-int/names"
+          : "/api/potential-customers/names"
+      )
+    ).data;
+  };
+
   const updatePotentialCustomer = async (
     potentialCustomerId: string,
     potentialCustomer: ApiUpsertPotentialCustomer
@@ -67,6 +77,7 @@ export const usePotentialCustomerData = () => {
   return {
     createPotentialCustomer,
     fetchPotentialCustomers,
+    fetchPotentCustomerNames,
     updatePotentialCustomer,
     deletePotentialCustomer,
   };

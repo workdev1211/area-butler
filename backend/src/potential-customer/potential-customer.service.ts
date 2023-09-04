@@ -71,6 +71,40 @@ export class PotentialCustomerService {
     return this.potentialCustomerModel.find(filter);
   }
 
+  async fetchNames(
+    user: UserDocument | TIntegrationUserDocument,
+  ): Promise<string[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+    let filter;
+
+    if (isIntegrationUser) {
+      filter = {
+        'integrationParams.integrationUserId': user.integrationUserId,
+        'integrationParams.integrationType': user.integrationType,
+      };
+    }
+
+    if (!isIntegrationUser) {
+      const userIds = [user.id];
+
+      if (user.parentId) {
+        userIds.push(user.parentId);
+      }
+
+      filter = {
+        userId: { $in: userIds },
+      };
+    }
+
+    const potentialCustomers = await this.potentialCustomerModel.find(filter, {
+      name: 1,
+    });
+
+    return potentialCustomers.map(
+      (potentialCustomer) => potentialCustomer.toObject().name,
+    );
+  }
+
   async createPotentialCustomer(
     user: UserDocument | TIntegrationUserDocument,
     { ...upsertData }: ApiUpsertPotentialCustomer,

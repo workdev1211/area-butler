@@ -9,7 +9,10 @@ import {
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
-import { openAiTranslationDictionary } from '../../../shared/constants/open-ai';
+import {
+  maxCharacterNumber,
+  openAiTranslationDictionary,
+} from '../../../shared/constants/open-ai';
 import {
   ApiFurnishing,
   ApiRealEstateCharacteristics,
@@ -18,7 +21,7 @@ import {
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import {
-  ApiOpenAiResponseLimitTypesEnum,
+  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiResponseLimit,
 } from '@area-butler-types/open-ai';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
@@ -34,6 +37,7 @@ import {
 } from '../../../shared/functions/census.functions';
 import { osmEntityTypes } from '../../../shared/constants/constants';
 import { calculateRelevantArea } from '../shared/geo-json.functions';
+import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 
 // Left just in case in order to be able to calculate the number of tokens
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -65,8 +69,6 @@ interface ILocRealEstDescQueryData extends ILocDescQueryData {
   realEstateListing: Partial<IApiRealEstateListingSchema>;
 }
 
-// const MIN_CHARACTER_NUMBER = 1500;
-const MAX_CHARACTER_NUMBER = 6000;
 const POI_LIMIT_BY_CATEGORY = 3;
 
 @Injectable()
@@ -94,7 +96,7 @@ export class OpenAiService {
       responseLimit,
       tonality,
       customText,
-      targetGroupName = 'Immobilieninteressent',
+      targetGroupName = defaultTargetGroupName,
       meanOfTransportation,
     }: ILocDescQueryData,
   ): Promise<string> {
@@ -204,7 +206,7 @@ export class OpenAiService {
     tonality,
     customText,
     responseLimit,
-    targetGroupName = 'Immobilieninteressent',
+    targetGroupName = defaultTargetGroupName,
   }: IRealEstDescQueryData): string {
     let queryText =
       'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
@@ -313,12 +315,12 @@ export class OpenAiService {
     responseLimit?: IApiOpenAiResponseLimit,
   ): string {
     if (!responseLimit) {
-      return `maximal ${MAX_CHARACTER_NUMBER} Zeichen`;
+      return `maximal ${maxCharacterNumber} Zeichen`;
     }
 
     const { quantity, type } = responseLimit;
 
-    return type === ApiOpenAiResponseLimitTypesEnum.CHARACTER
+    return type === ApiOpenAiRespLimitTypesEnum.CHARACTER
       ? `maximal ${quantity} Zeichen`
       : `etwa ${quantity} Worte`;
   }

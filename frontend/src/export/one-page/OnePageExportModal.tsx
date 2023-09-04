@@ -22,7 +22,7 @@ import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
 import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
 import {
-  ApiOpenAiResponseLimitTypesEnum,
+  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiLocationDescriptionQuery,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
@@ -185,7 +185,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
         searchResultSnapshotId: snapshotId,
         responseLimit: {
           quantity: onePageOpenAiWordLimit,
-          type: ApiOpenAiResponseLimitTypesEnum.WORD,
+          type: ApiOpenAiRespLimitTypesEnum.WORD,
         },
       }
     );
