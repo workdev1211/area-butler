@@ -9,9 +9,7 @@ import {
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
-import {
-  openAiTranslationDictionary,
-} from '../../../shared/constants/open-ai';
+import { openAiTranslationDictionary } from '../../../shared/constants/open-ai';
 import {
   ApiFurnishing,
   ApiRealEstateCharacteristics,
@@ -289,7 +287,7 @@ export class OpenAiService {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(
       {
-        model: 'gpt-3.5-turbo',
+        model: 'gpt-4',
         messages: [
           {
             role: 'system',
@@ -299,7 +297,8 @@ export class OpenAiService {
           { role: 'user', content: queryText },
         ],
         temperature: 1,
-        max_tokens: 1200,
+        // the maximum number of tokens will be used
+        // max_tokens: 1200,
         top_p: 1,
         n: 1,
         frequency_penalty: 0,
