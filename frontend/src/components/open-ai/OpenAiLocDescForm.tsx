@@ -8,12 +8,12 @@ import { meansOfTransportations } from "../../../../shared/constants/constants";
 import { IOpenAiLocDescFormValues } from "../../../../shared/types/open-ai";
 import { TFormikInnerRef } from "../../shared/shared.types";
 
-interface IOpenAiLocationDescriptionFormListenerProps {
+interface IOpenAiLocDescFormListenProps {
   onValuesChange: (values: IOpenAiLocDescFormValues) => void;
 }
 
-const OpenAiLocationDescriptionFormListener: FunctionComponent<
-  IOpenAiLocationDescriptionFormListenerProps
+const OpenAiLocDescFormListener: FunctionComponent<
+  IOpenAiLocDescFormListenProps
 > = ({ onValuesChange }) => {
   const { values } = useFormikContext<IOpenAiLocDescFormValues>();
 
@@ -25,7 +25,7 @@ const OpenAiLocationDescriptionFormListener: FunctionComponent<
   return null;
 };
 
-interface ILocationDescriptionFormProps {
+interface IOpenAiLocDescFormProps {
   formId: string;
   initialValues?: IOpenAiLocDescFormValues;
   onValuesChange?: (values: IOpenAiLocDescFormValues) => void;
@@ -33,9 +33,13 @@ interface ILocationDescriptionFormProps {
   formRef?: TFormikInnerRef<IOpenAiLocDescFormValues>;
 }
 
-const OpenAiLocationDescriptionForm: FunctionComponent<
-  ILocationDescriptionFormProps
-> = ({ formId, initialValues, onValuesChange, onSubmit, formRef }) => {
+const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
+  formId,
+  initialValues,
+  onValuesChange,
+  onSubmit,
+  formRef,
+}) => {
   const { searchContextState } = useContext(SearchContext);
 
   const meansOfTransportation = searchContextState.transportationParams.map(
@@ -94,7 +98,7 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
         </div>
 
         {typeof onValuesChange === "function" && (
-          <OpenAiLocationDescriptionFormListener
+          <OpenAiLocDescFormListener
             onValuesChange={(values) => {
               onValuesChange(values);
             }}
@@ -105,4 +109,4 @@ const OpenAiLocationDescriptionForm: FunctionComponent<
   );
 };
 
-export default OpenAiLocationDescriptionForm;
+export default OpenAiLocDescForm;

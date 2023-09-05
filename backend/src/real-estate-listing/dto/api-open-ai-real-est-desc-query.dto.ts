@@ -10,6 +10,10 @@ class ApiOpenAiRealEstDescQueryDto
   @IsNotEmpty()
   @IsString()
   realEstateListingId: string;
+
+  @IsNotEmpty()
+  @IsString()
+  realEstateType: string;
 }
 
 export default ApiOpenAiRealEstDescQueryDto;

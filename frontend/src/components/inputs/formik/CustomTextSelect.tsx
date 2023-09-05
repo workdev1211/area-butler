@@ -8,7 +8,7 @@ interface ICustomTextSelectProps {
   name: string;
   selectOptions: ISelectTextValue[];
   customTextValue: string;
-  emptyTextValue: string;
+  emptyTextValue?: string;
   initialText?: string;
   textLengthLimit?: number;
   placeholder?: string;
@@ -28,7 +28,7 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
   const { value: textValue } = meta;
   const { setValue } = helpers;
 
-  let selectValue = emptyTextValue;
+  let selectValue = emptyTextValue || selectOptions[0]?.value;
 
   if (initialText) {
     selectValue =

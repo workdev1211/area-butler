@@ -21,7 +21,7 @@ import { ILegendItem } from "../Legend";
 import OnePageDownload from "./OnePageDownloadButton";
 import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
-import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
+import OpenAiLocDescForm from "../../components/open-ai/OpenAiLocDescForm";
 import {
   IOpenAiGeneralFormValues,
   IOpenAiLocDescFormValues,
@@ -286,7 +286,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       formRef={generalFormRef}
                     />
 
-                    <OpenAiLocationDescriptionForm
+                    <OpenAiLocDescForm
                       formId="open-ai-location-description-form"
                       initialValues={cachedOpenAi.locationDescription}
                       onValuesChange={(values) => {

@@ -18,11 +18,11 @@ import {
 import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
-import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
+import OpenAiLocDescForm from "./OpenAiLocDescForm";
 import { TOpenAiQuery, useOpenAi } from "../../hooks/openai";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
-import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
+import OpenAiRealEstDescForm from "./OpenAiRealEstDescForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
 import {
   CachingActionTypesEnum,
@@ -208,7 +208,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       <div className="divider mb-2" />
 
       {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
-        <OpenAiLocationDescriptionForm
+        <OpenAiLocDescForm
           formId="open-ai-loc-desc-form"
           initialValues={cachedOpenAi.locationDescription}
           onValuesChange={(values) => {
@@ -222,8 +222,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       )}
 
       {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
-        <OpenAiRealEstateDescriptionForm
-          formId="open-ai-real-estate-description-form"
+        <OpenAiRealEstDescForm
+          formId="open-ai-real-est-desc-form"
           initialValues={cachedOpenAi.realEstateDescription}
           onValuesChange={(values) => {
             onModuleStatusChange(
@@ -243,8 +243,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
       {queryType === OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION && (
         <>
-          <OpenAiLocationDescriptionForm
-            formId="open-ai-location-description-form"
+          <OpenAiLocDescForm
+            formId="open-ai-loc-desc-form"
             initialValues={cachedOpenAi.locationDescription}
             onValuesChange={(values) => {
               cachingDispatch({
@@ -255,8 +255,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             formRef={locDescFormRef}
           />
 
-          <OpenAiRealEstateDescriptionForm
-            formId="open-ai-real-estate-description-form"
+          <OpenAiRealEstDescForm
+            formId="open-ai-real-est-desc-form"
             initialValues={cachedOpenAi.realEstateDescription}
             onValuesChange={(values) => {
               onModuleStatusChange(

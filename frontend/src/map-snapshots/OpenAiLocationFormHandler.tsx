@@ -5,7 +5,7 @@ import copy from "copy-to-clipboard";
 
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
-import OpenAiLocationDescriptionForm from "../components/open-ai/OpenAiLocationDescriptionForm";
+import OpenAiLocDescForm from "../components/open-ai/OpenAiLocDescForm";
 import { IApiOpenAiLocDescQuery } from "../../../shared/types/open-ai";
 import copyIcon from "../assets/icons/copy.svg";
 
@@ -77,7 +77,9 @@ const OpenAiLocationFormHandler: FunctionComponent<
         </p>
         <p>Viel Spaß mit unserem KI-Textgenerator.</p>
       </div>
-      <OpenAiLocationDescriptionForm formId={formId!} onSubmit={onSubmit} />
+
+      <OpenAiLocDescForm formId={formId!} onSubmit={onSubmit} />
+
       {locationDescription && (
         <div>
           <h3>Ihr KI-generierter Textvorschlag</h3>

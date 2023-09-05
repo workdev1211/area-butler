@@ -2,6 +2,7 @@ import {
   OpenAiCustomTextEnum,
   OpenAiOsmQueryNameEnum,
   OpenAiQueryTypeEnum,
+  OpenAiRealEstTypesEnum,
   OpenAiTonalityEnum,
 } from "../types/open-ai";
 import { OsmName } from "../types/types";
@@ -168,3 +169,34 @@ export const osmNameToOsmQueryNameMapping: Partial<
 export const minCharacterNumber = 1500;
 export const maxCharacterNumber = 6000;
 export const defaultCharacterNumber = 4000;
+
+export const openAiRealEstTypeOptions: Array<{
+  value: OpenAiRealEstTypesEnum;
+  text: string;
+}> = [
+  { value: OpenAiRealEstTypesEnum.ROOM, text: "Zimmer" },
+  { value: OpenAiRealEstTypesEnum.HOUSE, text: "Haus" },
+  { value: OpenAiRealEstTypesEnum.APARTMENT, text: "Wohnung" },
+  { value: OpenAiRealEstTypesEnum.PROPERTY, text: "Grundstück" },
+  { value: OpenAiRealEstTypesEnum.OFFICE_PRACTICES, text: "Büro/Praxen" },
+  { value: OpenAiRealEstTypesEnum.STORE_RETAIL, text: "Laden/Einzelhandel" },
+  { value: OpenAiRealEstTypesEnum.HOSPITALITY, text: "Gastgewerbe" },
+  {
+    value: OpenAiRealEstTypesEnum.HALLS_WAREHOUSE_PRODUCTION,
+    text: "Hallen/Lager/Produktion",
+  },
+  {
+    value: OpenAiRealEstTypesEnum.AGRICULTURE_FORESTRY,
+    text: "Land/Forstwirtschaft",
+  },
+  {
+    value: OpenAiRealEstTypesEnum.LEISURE_COMMERCIAL,
+    text: "Freizeitimmobilie (gewerblich)",
+  },
+  { value: OpenAiRealEstTypesEnum.OTHER, text: "Sonstige" },
+  { value: OpenAiRealEstTypesEnum.CUSTOM, text: "Eigene Angabe machen" },
+];
+
+export const defaultRealEstType = openAiRealEstTypeOptions.find(
+  ({ value }) => value === OpenAiRealEstTypesEnum.HOUSE
+)!.text;

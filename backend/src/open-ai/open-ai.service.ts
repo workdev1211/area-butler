@@ -44,30 +44,27 @@ import { defaultTargetGroupName } from '../../../shared/constants/potential-cust
 // const { encode } = require('gpt-3-encoder');
 // const usedTokens = encode(queryString).length;
 
-interface ILocDescQueryData {
+// TODO remove similar interfaces like for the frontend part
+interface IGeneralQueryData {
+  tonality: string; // should be enum
+  customText?: string;
+  responseLimit?: IApiOpenAiResponseLimit;
+  targetGroupName?: string;
+}
+
+interface ILocDescQueryData extends IGeneralQueryData {
   searchResultSnapshot: SearchResultSnapshotDocument;
   meanOfTransportation: MeansOfTransportation;
-  tonality: string; // should be enum
-  customText?: string;
-  responseLimit?: IApiOpenAiResponseLimit;
-  targetGroupName?: string;
 }
 
-interface IRealEstDescQueryData {
+interface IRealEstDescQueryData extends IGeneralQueryData {
   realEstateListing: Partial<IApiRealEstateListingSchema>;
-  tonality: string; // should be enum
-  customText?: string;
-  responseLimit?: IApiOpenAiResponseLimit;
-  targetGroupName?: string;
+  realEstateType: string;
 }
 
-interface ILocRealEstDescQueryData extends ILocDescQueryData {
-  realEstateListing: Partial<IApiRealEstateListingSchema>;
-}
-
-interface ILocRealEstDescQueryData extends ILocDescQueryData {
-  realEstateListing: Partial<IApiRealEstateListingSchema>;
-}
+interface ILocRealEstDescQueryData
+  extends ILocDescQueryData,
+    IRealEstDescQueryData {}
 
 const POI_LIMIT_BY_CATEGORY = 3;
 
@@ -206,6 +203,7 @@ export class OpenAiService {
 
   getRealEstDescQuery({
     realEstateListing: { address, costStructure, characteristics },
+    realEstateType,
     tonality,
     customText,
     responseLimit,
@@ -214,28 +212,9 @@ export class OpenAiService {
     let queryText =
       'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
 
-    queryText += `Der Text darf insgesamt maximal ${this.getResponseTextLimit(
+    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
       responseLimit,
     )} lang sein.`;
-
-    const objectType = 'Haus';
-
-    switch (objectType) {
-      case 'Haus': {
-        queryText += ' Das Exposee ist für ein Haus.';
-        break;
-      }
-
-      // For future usage
-      // case 'Wohnung': {
-      //   queryText += ' Das Exposee ist für eine Wohnung.';
-      //   break;
-      // }
-
-      default: {
-        queryText += ' Das Exposee ist für eine Objekt.';
-      }
-    }
 
     // left just in case because the address should be mandatory
     // if (address) {
@@ -244,6 +223,7 @@ export class OpenAiService {
 
     queryText = this.getRealEstateDescription(
       queryText,
+      realEstateType,
       costStructure,
       characteristics,
     );
@@ -263,6 +243,7 @@ export class OpenAiService {
     user: UserDocument | TIntegrationUserDocument,
     {
       realEstateListing: { costStructure, characteristics },
+      realEstateType,
       ...locRealEstDescQueryData
     }: ILocRealEstDescQueryData,
   ): Promise<string> {
@@ -273,6 +254,7 @@ export class OpenAiService {
 
     queryText = this.getRealEstateDescription(
       queryText,
+      realEstateType,
       costStructure,
       characteristics,
     );
@@ -385,9 +367,12 @@ export class OpenAiService {
 
   private getRealEstateDescription(
     queryText: string,
+    realEstateType: string,
     costStructure: ApiRealEstateCost,
     characteristics: ApiRealEstateCharacteristics,
   ): string {
+    queryText += ` Das Exposee ist für ein ${realEstateType}.`;
+
     // Keep in mind that in the future, the currency may not only be the Euro
     // minPrice is a minimum price, price is a price or a maximum one
     const price =

@@ -32,12 +32,11 @@ export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
 export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
-  responseLimit?: IApiOpenAiResponseLimit;
 }
 
 export interface IApiOpenAiRealEstDescQuery extends IOpenAiGeneralFormValues {
   realEstateListingId: string;
-  responseLimit?: IApiOpenAiResponseLimit;
+  realEstateType: string;
 }
 
 export interface IApiOpenAiLocRealEstDescQuery
@@ -88,4 +87,19 @@ export interface IApiOpenAiQuery {
 export enum ApiOpenAiRespLimitTypesEnum {
   CHARACTER = "CHARACTER",
   WORD = "WORD",
+}
+
+export enum OpenAiRealEstTypesEnum {
+  ROOM = "ROOM",
+  HOUSE = "HOUSE",
+  APARTMENT = "APARTMENT",
+  PROPERTY = "PROPERTY",
+  OFFICE_PRACTICES = "OFFICE_PRACTICES",
+  STORE_RETAIL = "STORE_RETAIL",
+  HOSPITALITY = "HOSPITALITY",
+  HALLS_WAREHOUSE_PRODUCTION = "HALLS_WAREHOUSE_PRODUCTION",
+  AGRICULTURE_FORESTRY = "AGRICULTURE_FORESTRY",
+  LEISURE_COMMERCIAL = "LEISURE_COMMERCIAL",
+  OTHER = "OTHER",
+  CUSTOM = "CUSTOM",
 }

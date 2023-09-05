@@ -38,7 +38,7 @@ const OpenAiGeneralFormListener: FunctionComponent<
   return null;
 };
 
-interface IGeneralFormProps {
+interface IOpenAiGeneralFormProps {
   formId: string;
   initialValues?: IOpenAiGeneralFormValues;
   onValuesChange?: (values: IOpenAiGeneralFormValues) => void;
@@ -46,7 +46,7 @@ interface IGeneralFormProps {
   formRef?: TFormikInnerRef<IOpenAiGeneralFormValues>;
 }
 
-const OpenAiGeneralForm: FunctionComponent<IGeneralFormProps> = ({
+const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
   formId,
   initialValues,
   onValuesChange,
@@ -168,8 +168,8 @@ const OpenAiGeneralForm: FunctionComponent<IGeneralFormProps> = ({
               <div className="grid place-items-center w-full">
                 <CustomTextSelect
                   label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
-                  name="customText"
                   placeholder="Benutzerdefinierter Text"
+                  name="customText"
                   selectOptions={openAiCustomTextOptions}
                   customTextValue={OpenAiCustomTextEnum.CUSTOM}
                   emptyTextValue={OpenAiCustomTextEnum.NONE}

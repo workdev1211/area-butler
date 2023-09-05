@@ -162,6 +162,7 @@ export class RealEstateListingService {
     user: UserDocument | TIntegrationUserDocument,
     {
       realEstateListingId,
+      realEstateType,
       characterLimit,
       responseLimit,
       targetGroupName,
@@ -188,6 +189,7 @@ export class RealEstateListingService {
 
     const queryText = this.openAiService.getRealEstDescQuery({
       targetGroupName,
+      realEstateType,
       responseLimit: responseLimit || {
         quantity: characterLimit,
         type: ApiOpenAiRespLimitTypesEnum.CHARACTER,

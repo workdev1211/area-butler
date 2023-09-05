@@ -4,7 +4,10 @@ import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
-import { IApiOpenAiRealEstDescQuery } from "../../../../shared/types/open-ai";
+import {
+  IApiOpenAiRealEstDescQuery,
+  OpenAiRealEstTypesEnum,
+} from "../../../../shared/types/open-ai";
 import {
   RealEstateActionTypes,
   RealEstateContext,
@@ -13,25 +16,30 @@ import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { UserContext } from "../../context/UserContext";
 import { SearchContext } from "../../context/SearchContext";
+import {
+  defaultRealEstType,
+  openAiRealEstTypeOptions,
+} from "../../../../shared/constants/open-ai";
+import CustomTextSelect from "../inputs/formik/CustomTextSelect";
 
-interface IOpenAiRealEstateDescriptionFormListenerProps {
+interface IOpenAiRealEstDescFormListenProps {
   onValuesChange: (values: IApiOpenAiRealEstDescQuery) => void;
 }
 
-const OpenAiRealEstateDescriptionFormListener: FunctionComponent<
-  IOpenAiRealEstateDescriptionFormListenerProps
+const OpenAiRealEstDescFormListener: FunctionComponent<
+  IOpenAiRealEstDescFormListenProps
 > = ({ onValuesChange }) => {
   const { values } = useFormikContext<IApiOpenAiRealEstDescQuery>();
 
   useEffect(() => {
     onValuesChange(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.realEstateListingId]);
+  }, [values.realEstateListingId, values.realEstateType]);
 
   return null;
 };
 
-interface IRealEstateDescriptionFormProps {
+interface IOpenAiRealEstDescFormProps {
   formId: string;
   initialValues?: IApiOpenAiRealEstDescQuery;
   onValuesChange?: (values: IApiOpenAiRealEstDescQuery) => void;
@@ -39,12 +47,11 @@ interface IRealEstateDescriptionFormProps {
   formRef?: TFormikInnerRef<IApiOpenAiRealEstDescQuery>;
 }
 
-const OpenAiRealEstateDescriptionForm: FunctionComponent<
-  IRealEstateDescriptionFormProps
-> = ({
+const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   formId,
   initialValues = {
     realEstateListingId: "",
+    realEstateType: defaultRealEstType,
   },
   onValuesChange,
   onSubmit,
@@ -91,17 +98,19 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
     return "";
   };
 
-  const processedInitialValues: IApiOpenAiRealEstDescQuery = {
+  const resultingInitialValues: IApiOpenAiRealEstDescQuery = {
+    ...initialValues,
     realEstateListingId: getInitRealEstListId(),
   };
 
   const validationSchema = Yup.object({
     realEstateListingId: Yup.string(),
+    realEstateType: Yup.string(),
   });
 
   return (
     <Formik
-      initialValues={processedInitialValues}
+      initialValues={resultingInitialValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -120,7 +129,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
               name="realEstateListingId"
               disabled={listings.length < 2}
               defaultValue={
-                processedInitialValues.realEstateListingId ||
+                resultingInitialValues.realEstateListingId ||
                 placeholderSelectOptionKey
               }
             >
@@ -141,8 +150,19 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
             </Select>
           </div>
 
+          <div className="form-control">
+            <CustomTextSelect
+              label="Objektart"
+              placeholder="Objektart"
+              name="realEstateType"
+              selectOptions={openAiRealEstTypeOptions}
+              customTextValue={OpenAiRealEstTypesEnum.CUSTOM}
+              initialText={resultingInitialValues?.realEstateType}
+            />
+          </div>
+
           {typeof onValuesChange === "function" && (
-            <OpenAiRealEstateDescriptionFormListener
+            <OpenAiRealEstDescFormListener
               onValuesChange={(values) => {
                 onValuesChange(values);
               }}
@@ -154,4 +174,4 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
   );
 };
 
-export default OpenAiRealEstateDescriptionForm;
+export default OpenAiRealEstDescForm;
