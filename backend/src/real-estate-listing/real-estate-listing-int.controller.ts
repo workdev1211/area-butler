@@ -3,7 +3,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RealEstateListingService } from './real-estate-listing.service';
 import { InjectUser } from '../user/inject-user.decorator';
-import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
+import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
@@ -31,7 +31,7 @@ export class RealEstateListingIntController {
   async fetchOpenAiRealEstateDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
+    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
   ): Promise<string> {
     return this.realEstateListingService.fetchOpenAiRealEstateDesc(
       integrationUser,

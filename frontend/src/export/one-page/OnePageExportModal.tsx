@@ -1,4 +1,5 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useRef, useState } from "react";
+import { FormikProps } from "formik/dist/types";
 
 import "./OnePageExportModal.scss";
 
@@ -22,16 +23,13 @@ import OnePageEntitySelection from "./OnePageEntitySelection";
 import { getFilteredLegend } from "../shared/shared.functions";
 import OpenAiLocationDescriptionForm from "../../components/open-ai/OpenAiLocationDescriptionForm";
 import {
-  ApiOpenAiRespLimitTypesEnum,
-  IApiOpenAiLocationDescriptionQuery,
+  IOpenAiGeneralFormValues,
+  IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
 } from "../../../../shared/types/open-ai";
 import OnePagePngDownload from "./OnePagePngDownloadButton";
 import { useOpenAi } from "../../hooks/openai";
-import {
-  onePageCharacterLimit,
-  onePageOpenAiWordLimit,
-} from "../../../../shared/constants/constants";
+import { onePageCharacterLimit } from "../../../../shared/constants/constants";
 import { IApiIntegrationUser } from "../../../../shared/types/integration-user";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { ApiSubscriptionPlanType } from "../../../../shared/types/subscription-plan";
@@ -42,6 +40,7 @@ import {
 import { IPoiIcon } from "../../shared/shared.types";
 import { IQrCodeState } from "../../../../shared/types/export";
 import OnePageMediaFormat from "./components/OnePageMediaFormat";
+import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
@@ -81,9 +80,12 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     useContext(SearchContext);
   const { userState } = useContext(UserContext);
   const {
-    cachingState: { onePage: cachedOnePageState },
+    cachingState: { onePage: cachedOnePage, openAi: cachedOpenAi },
     cachingDispatch,
   } = useContext(CachingContext);
+
+  const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
+  const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
 
   const { fetchOpenAiResponse } = useOpenAi();
 
@@ -96,7 +98,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
         id: i,
         isSelected: i < SCREENSHOT_LIMIT,
       }))
-    : cachedOnePageState.selectableMapClippings || [];
+    : cachedOnePage.selectableMapClippings || [];
 
   let activeGroupNumber = 0;
 
@@ -111,8 +113,8 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
         return result;
       }
 
-      const isGroupActive = cachedOnePageState.filteredGroups
-        ? cachedOnePageState.filteredGroups!.some(
+      const isGroupActive = cachedOnePage.filteredGroups
+        ? cachedOnePage.filteredGroups!.some(
             ({ id, active }) => id === group.title && active
           )
         : activeGroupNumber < ENTITY_GROUP_LIMIT;
@@ -141,22 +143,22 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     }, []);
 
   const [isOpen, setIsOpen] = useState<IExportFlowState>(
-    cachedOnePageState.exportFlowState || initialExportFlowState
+    cachedOnePage.exportFlowState || initialExportFlowState
   );
   const [exportFlow, setExportFlow] = useState<IExportFlowState>(
-    cachedOnePageState.exportFlowState || initialExportFlowState
+    cachedOnePage.exportFlowState || initialExportFlowState
   );
   const [locationDescription, setLocationDescription] = useState<string>(
-    cachedOnePageState.locationDescription || ""
+    cachedOnePage.locationDescription || ""
   );
   const [filteredGroups, setFilteredGroups] =
     useState<ISortableEntityGroup[]>(sortableGroups);
-  const [isPng, setIsPng] = useState(cachedOnePageState.isPng || false);
+  const [isPng, setIsPng] = useState(cachedOnePage.isPng || false);
   const [isTransparentBackground, setIsTransparentBackground] = useState(
-    cachedOnePageState.isTransparentBackground || false
+    cachedOnePage.isTransparentBackground || false
   );
   const [qrCodeState, setQrCodeState] = useState<IQrCodeState>(
-    cachedOnePageState.qrCodeState || {
+    cachedOnePage.qrCodeState || {
       snapshotToken,
       isShownQrCode: true,
     }
@@ -169,31 +171,24 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   );
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
 
-  const fetchOpenAiLocationDescription = async ({
-    meanOfTransportation,
-    tonality,
-    customText,
-  }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
+  const fetchOpenAiLocDesc = async (): Promise<void> => {
     setIsOpenAiBusy(true);
+    generalFormRef.current?.handleSubmit();
+    locDescFormRef.current?.handleSubmit();
 
-    const openAiLocationDescription = await fetchOpenAiResponse(
+    const openAiLocDesc = await fetchOpenAiResponse(
       OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
       {
-        meanOfTransportation,
-        tonality,
-        customText,
         searchResultSnapshotId: snapshotId,
-        responseLimit: {
-          quantity: onePageOpenAiWordLimit,
-          type: ApiOpenAiRespLimitTypesEnum.WORD,
-        },
+        ...generalFormRef.current!.values,
+        ...locDescFormRef.current!.values,
       }
     );
 
     setIsOpenAiBusy(false);
 
-    if (openAiLocationDescription) {
-      setLocationDescription(openAiLocationDescription);
+    if (openAiLocDesc) {
+      setLocationDescription(openAiLocDesc);
     }
   };
 
@@ -274,24 +269,36 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
               1. Lagebeschreibung ({locationDescription.length}/
               {onePageCharacterLimit})
             </div>
+
             <div className="collapse-content textarea-content">
               {hasOpenAiFeature && (
                 <>
                   <div className="flex flex-col gap-2 w-[97%]">
+                    <OpenAiGeneralForm
+                      formId="open-ai-general-form"
+                      initialValues={cachedOpenAi.general}
+                      onValuesChange={(values) => {
+                        cachingDispatch({
+                          type: CachingActionTypesEnum.SET_OPEN_AI,
+                          payload: { general: { ...values } },
+                        });
+                      }}
+                      formRef={generalFormRef}
+                    />
+
                     <OpenAiLocationDescriptionForm
                       formId="open-ai-location-description-form"
-                      onSubmit={fetchOpenAiLocationDescription}
-                      initialValues={
-                        cachedOnePageState.locationDescriptionParams
-                      }
+                      initialValues={cachedOpenAi.locationDescription}
                       onValuesChange={(values) => {
                         // triggers on initial render
                         cachingDispatch({
-                          type: CachingActionTypesEnum.SET_ONE_PAGE,
-                          payload: { locationDescriptionParams: { ...values } },
+                          type: CachingActionTypesEnum.SET_OPEN_AI,
+                          payload: { locationDescription: { ...values } },
                         });
                       }}
+                      formRef={locDescFormRef}
                     />
+
                     <button
                       className={`btn bg-primary-gradient max-w-fit self-end ${
                         isOpenAiBusy ? "loading" : ""
@@ -301,6 +308,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                       type="submit"
                       onClick={(e) => {
                         e.stopPropagation();
+                        void fetchOpenAiLocDesc();
                       }}
                       disabled={isOpenAiBusy}
                     >

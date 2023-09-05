@@ -4,7 +4,7 @@ import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
-import { IApiOpenAiRealEstateDescriptionQuery } from "../../../../shared/types/open-ai";
+import { IApiOpenAiRealEstDescQuery } from "../../../../shared/types/open-ai";
 import {
   RealEstateActionTypes,
   RealEstateContext,
@@ -15,13 +15,13 @@ import { UserContext } from "../../context/UserContext";
 import { SearchContext } from "../../context/SearchContext";
 
 interface IOpenAiRealEstateDescriptionFormListenerProps {
-  onValuesChange: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
+  onValuesChange: (values: IApiOpenAiRealEstDescQuery) => void;
 }
 
 const OpenAiRealEstateDescriptionFormListener: FunctionComponent<
   IOpenAiRealEstateDescriptionFormListenerProps
 > = ({ onValuesChange }) => {
-  const { values } = useFormikContext<IApiOpenAiRealEstateDescriptionQuery>();
+  const { values } = useFormikContext<IApiOpenAiRealEstDescQuery>();
 
   useEffect(() => {
     onValuesChange(values);
@@ -33,10 +33,10 @@ const OpenAiRealEstateDescriptionFormListener: FunctionComponent<
 
 interface IRealEstateDescriptionFormProps {
   formId: string;
-  initialValues?: IApiOpenAiRealEstateDescriptionQuery;
-  onValuesChange?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
-  onSubmit?: (values: IApiOpenAiRealEstateDescriptionQuery) => void;
-  formRef?: TFormikInnerRef<IApiOpenAiRealEstateDescriptionQuery>;
+  initialValues?: IApiOpenAiRealEstDescQuery;
+  onValuesChange?: (values: IApiOpenAiRealEstDescQuery) => void;
+  onSubmit?: (values: IApiOpenAiRealEstDescQuery) => void;
+  formRef?: TFormikInnerRef<IApiOpenAiRealEstDescQuery>;
 }
 
 const OpenAiRealEstateDescriptionForm: FunctionComponent<
@@ -91,7 +91,7 @@ const OpenAiRealEstateDescriptionForm: FunctionComponent<
     return "";
   };
 
-  const processedInitialValues: IApiOpenAiRealEstateDescriptionQuery = {
+  const processedInitialValues: IApiOpenAiRealEstDescQuery = {
     realEstateListingId: getInitRealEstListId(),
   };
 

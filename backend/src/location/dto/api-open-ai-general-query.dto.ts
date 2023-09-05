@@ -1,34 +1,44 @@
 import {
   IsEnum,
-  IsNotEmpty,
+  IsInt,
   IsObject,
   IsOptional,
   IsString,
+  Max,
+  Min,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
-  IApiOpenAiRealEstateDescriptionQuery,
   IApiOpenAiResponseLimit,
+  IOpenAiGeneralFormValues,
   OpenAiTonalityEnum,
 } from '@area-butler-types/open-ai';
 import ApiOpenAiResponseLimitDto from '../../open-ai/dto/api-open-ai-response-limit.dto';
+import {
+  maxCharacterNumber,
+  minCharacterNumber,
+} from '../../../../shared/constants/open-ai';
 
-class ApiOpenAiRealEstateDescriptionQueryDto
-  implements IApiOpenAiRealEstateDescriptionQuery
-{
-  @IsNotEmpty()
-  @IsString()
-  realEstateListingId: string;
+class ApiOpenAiGeneralQueryDto implements IOpenAiGeneralFormValues {
+  @IsOptional()
+  @IsEnum(OpenAiTonalityEnum)
+  tonality?: OpenAiTonalityEnum;
 
   @IsOptional()
   @IsString()
   targetGroupName?: string;
 
   @IsOptional()
-  @IsEnum(OpenAiTonalityEnum)
-  tonality?: OpenAiTonalityEnum;
+  @IsString()
+  customText?: string;
+
+  @IsOptional()
+  @IsInt()
+  @Min(minCharacterNumber)
+  @Max(maxCharacterNumber)
+  characterLimit?: number;
 
   @IsOptional()
   @IsObject()
@@ -37,4 +47,4 @@ class ApiOpenAiRealEstateDescriptionQueryDto
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
-export default ApiOpenAiRealEstateDescriptionQueryDto;
+export default ApiOpenAiGeneralQueryDto;

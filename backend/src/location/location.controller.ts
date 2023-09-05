@@ -26,8 +26,8 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { SnapshotExtService } from './snapshot-ext.service';
-import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
-import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
+import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
+import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 
 @ApiTags('location')
@@ -184,7 +184,7 @@ export class LocationController extends AuthenticatedController {
   @Post('open-ai-loc-desc')
   async fetchOpenAiLocationDescription(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
+    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     return this.locationService.fetchOpenAiLocationDescription(
       user,
@@ -199,11 +199,11 @@ export class LocationController extends AuthenticatedController {
   async fetchOpenAiLocRealEstDesc(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
+    locRealEstDescQueryQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
     return this.locationService.fetchOpenAiLocRealEstDesc(
       user,
-      locationRealEstateDescriptionQuery,
+      locRealEstDescQueryQuery,
     );
   }
 }

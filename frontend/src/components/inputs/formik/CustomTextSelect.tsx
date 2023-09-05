@@ -3,30 +3,42 @@ import { useField } from "formik";
 
 import { ISelectTextValue } from "../../../../../shared/types/types";
 
-interface ICustomTextAreaSelectProps {
+interface ICustomTextSelectProps {
   label: string;
   name: string;
-  customTextValue: ISelectTextValue;
-  emptyTextValue: ISelectTextValue;
-  selectedTextValue?: ISelectTextValue;
+  selectOptions: ISelectTextValue[];
+  customTextValue: string;
+  emptyTextValue: string;
+  initialText?: string;
   textLengthLimit?: number;
   placeholder?: string;
 }
 
-const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
+const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
   label,
   name,
+  selectOptions,
   customTextValue,
   emptyTextValue,
-  selectedTextValue,
+  initialText,
   textLengthLimit,
   placeholder,
-  children,
 }) => {
-  const [, meta, helpers] = useField<ISelectTextValue>(name);
-  const [isCustomText, setIsCustomText] = useState(false);
-  const { value } = meta;
+  const [, meta, helpers] = useField<string>(name);
+  const { value: textValue } = meta;
   const { setValue } = helpers;
+
+  let selectValue = emptyTextValue;
+
+  if (initialText) {
+    selectValue =
+      selectOptions.find(({ text }) => text === initialText)?.value ||
+      customTextValue;
+  }
+
+  const [isCustomText, setIsCustomText] = useState(
+    selectValue === customTextValue
+  );
 
   return (
     <div
@@ -35,30 +47,31 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
     >
       <select
         className="select select-bordered w-full"
-        defaultValue={selectedTextValue?.value}
-        onChange={({ target: { selectedOptions } }): void => {
+        defaultValue={selectValue}
+        onChange={({ target: { selectedOptions } }) => {
           const selectedOption = selectedOptions[0];
 
-          if (emptyTextValue.value === selectedOption.value) {
-            setValue(emptyTextValue);
+          if (emptyTextValue === selectedOption.value) {
+            setValue("");
             setIsCustomText(false);
             return;
           }
 
-          if (customTextValue.value === selectedOption.value) {
-            setValue(customTextValue);
+          if (customTextValue === selectedOption.value) {
+            setValue("");
             setIsCustomText(true);
             return;
           }
 
           setIsCustomText(false);
-          setValue({
-            text: selectedOptions[0].text,
-            value: selectedOptions[0].value,
-          });
+          setValue(selectedOptions[0].text);
         }}
       >
-        {children}
+        {selectOptions.map(({ text, value }) => (
+          <option key={value} value={value}>
+            {text}
+          </option>
+        ))}
       </select>
 
       {isCustomText && (
@@ -69,18 +82,17 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
 
           <textarea
             className="textarea h-36 textarea-bordered w-full pb-0"
-            onChange={({ target: { value: textValue } }) => {
+            placeholder={placeholder}
+            value={textValue}
+            onChange={({ target: { value: currentText } }) => {
               if (
                 !textLengthLimit ||
-                textValue.length < textLengthLimit + 1 ||
-                textValue.length < value.text.length
+                currentText.length < textLengthLimit + 1 ||
+                currentText.length < textValue.length
               ) {
-                setValue({ ...value, text: textValue });
+                setValue(currentText);
               }
             }}
-            defaultValue={selectedTextValue?.text}
-            value={value.text}
-            placeholder={placeholder}
           />
         </>
       )}
@@ -94,4 +106,4 @@ const CustomTextareaSelect: FunctionComponent<ICustomTextAreaSelectProps> = ({
   );
 };
 
-export default CustomTextareaSelect;
+export default CustomTextSelect;

@@ -6,7 +6,7 @@ import copy from "copy-to-clipboard";
 import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import OpenAiLocationDescriptionForm from "../components/open-ai/OpenAiLocationDescriptionForm";
-import { IApiOpenAiLocationDescriptionQuery } from "../../../shared/types/open-ai";
+import { IApiOpenAiLocDescQuery } from "../../../shared/types/open-ai";
 import copyIcon from "../assets/icons/copy.svg";
 
 export interface IOpenAiLocationFormHandlerProps {
@@ -33,10 +33,10 @@ const OpenAiLocationFormHandler: FunctionComponent<
     meanOfTransportation,
     tonality,
     customText,
-  }: Omit<IApiOpenAiLocationDescriptionQuery, "searchResultSnapshotId">) => {
+  }: Omit<IApiOpenAiLocDescQuery, "searchResultSnapshotId">): Promise<void> => {
     setLocationDescription(
       (
-        await post<string, IApiOpenAiLocationDescriptionQuery>(
+        await post<string, IApiOpenAiLocDescQuery>(
           "/api/location/open-ai-loc-desc",
           {
             searchResultSnapshotId: searchResultSnapshotId,
@@ -50,10 +50,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
   };
 
   const onSubmit = async (
-    aiDescriptionQuery: Omit<
-      IApiOpenAiLocationDescriptionQuery,
-      "searchResultSnapshotId"
-    >
+    aiDescriptionQuery: Omit<IApiOpenAiLocDescQuery, "searchResultSnapshotId">
   ) => {
     try {
       beforeSubmit();

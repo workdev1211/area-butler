@@ -67,41 +67,41 @@ export const openAiTonalities: Record<OpenAiTonalityEnum, string> = {
   [OpenAiTonalityEnum.EASYGOING_YOUTHFUL]: "lockere und jugendliche",
 };
 
-export const openAiCustomText: { type: OpenAiCustomTextEnum; label: string }[] =
-  [
-    { type: OpenAiCustomTextEnum.NONE, label: "Keiner" },
-    {
-      type: OpenAiCustomTextEnum.POPULATION,
-      label: "Der Text soll die Bevölkerungszahl der Stadt beinhalten.",
-    },
-    {
-      type: OpenAiCustomTextEnum.SEO,
-      label:
-        "Der Text soll typische Immobilien SEO Begriffe beinhalten und SEO optimiert sein.",
-    },
-    {
-      type: OpenAiCustomTextEnum.REGION,
-      label: "Der Text soll eine kurze Beschreibung der Region beinhalten.",
-    },
-    {
-      type: OpenAiCustomTextEnum.POIS,
-      label:
-        "Der Text soll einige Sehenswürdigkeiten in der Umgebung hervorheben.",
-    },
-    {
-      type: OpenAiCustomTextEnum.OFFICE,
-      label: "Der Text soll für eine Büroimmobilien optimiert sein.",
-    },
-    {
-      type: OpenAiCustomTextEnum.COMMERCIAL,
-      label: "Der Text soll für eine Gewerbeimmobilie optimiert sein.",
-    },
-    {
-      type: OpenAiCustomTextEnum.RESIDENTIAL,
-      label: "Der Text soll für eine Wohnimmobilie optimiert sein.",
-    },
-    { type: OpenAiCustomTextEnum.CUSTOM, label: "Eigenen Text eingeben." },
-  ];
+export const openAiCustomTextOptions: Array<{
+  value: OpenAiCustomTextEnum;
+  text: string;
+}> = [
+  { value: OpenAiCustomTextEnum.NONE, text: "Keiner" },
+  {
+    value: OpenAiCustomTextEnum.POPULATION,
+    text: "Der Text soll die Bevölkerungszahl der Stadt beinhalten.",
+  },
+  {
+    value: OpenAiCustomTextEnum.SEO,
+    text: "Der Text soll typische Immobilien SEO Begriffe beinhalten und SEO optimiert sein.",
+  },
+  {
+    value: OpenAiCustomTextEnum.REGION,
+    text: "Der Text soll eine kurze Beschreibung der Region beinhalten.",
+  },
+  {
+    value: OpenAiCustomTextEnum.POIS,
+    text: "Der Text soll einige Sehenswürdigkeiten in der Umgebung hervorheben.",
+  },
+  {
+    value: OpenAiCustomTextEnum.OFFICE,
+    text: "Der Text soll für eine Büroimmobilien optimiert sein.",
+  },
+  {
+    value: OpenAiCustomTextEnum.COMMERCIAL,
+    text: "Der Text soll für eine Gewerbeimmobilie optimiert sein.",
+  },
+  {
+    value: OpenAiCustomTextEnum.RESIDENTIAL,
+    text: "Der Text soll für eine Wohnimmobilie optimiert sein.",
+  },
+  { value: OpenAiCustomTextEnum.CUSTOM, text: "Eigenen Text eingeben." },
+];
 
 export const openAiQueryTypes: Array<{
   type: OpenAiQueryTypeEnum;
@@ -167,3 +167,4 @@ export const osmNameToOsmQueryNameMapping: Partial<
 
 export const minCharacterNumber = 1500;
 export const maxCharacterNumber = 6000;
+export const defaultCharacterNumber = 4000;

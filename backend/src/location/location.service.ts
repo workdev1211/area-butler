@@ -57,10 +57,9 @@ import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
   ApiOpenAiRespLimitTypesEnum,
-  IApiOpenAiLocationDescriptionQuery,
-  IApiOpenAiLocationRealEstateDescriptionQuery,
+  IApiOpenAiLocDescQuery,
+  IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiResponseLimit,
-  OpenAiCustomTextEnum,
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
@@ -672,8 +671,9 @@ export class LocationService {
       tonality,
       targetGroupName,
       customText,
+      characterLimit,
       responseLimit,
-    }: IApiOpenAiLocationDescriptionQuery,
+    }: IApiOpenAiLocDescQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -696,13 +696,12 @@ export class LocationService {
     const queryText = await this.openAiService.getLocDescQuery(user, {
       searchResultSnapshot,
       meanOfTransportation,
-      responseLimit,
+      responseLimit: responseLimit || {
+        quantity: characterLimit,
+        type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
+      },
       targetGroupName,
-      // TODO a hack
-      customText:
-        customText?.value === OpenAiCustomTextEnum.NONE
-          ? undefined
-          : customText?.text,
+      customText,
       tonality: openAiTonalities[tonality],
     });
 
@@ -718,8 +717,9 @@ export class LocationService {
       tonality,
       customText,
       realEstateListingId,
+      characterLimit,
       responseLimit,
-    }: IApiOpenAiLocationRealEstateDescriptionQuery,
+    }: IApiOpenAiLocRealEstDescQuery,
     realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -741,10 +741,14 @@ export class LocationService {
     );
 
     const resultingResponseLimit: IApiOpenAiResponseLimit =
-      responseLimit ||
-      (isIntegrationUser
+      responseLimit || characterLimit
+        ? {
+            quantity: characterLimit,
+            type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
+          }
+        : isIntegrationUser
         ? getOpenAiRespLimitByInt(user.integrationType)
-        : { quantity: 700, type: ApiOpenAiRespLimitTypesEnum.WORD });
+        : { quantity: 700, type: ApiOpenAiRespLimitTypesEnum.WORD };
 
     const resultingRealEstateListing =
       realEstateListing ||
@@ -757,11 +761,7 @@ export class LocationService {
       meanOfTransportation,
       searchResultSnapshot,
       targetGroupName,
-      // TODO a hack
-      customText:
-        customText?.value === OpenAiCustomTextEnum.NONE
-          ? undefined
-          : customText?.text,
+      customText,
       realEstateListing: resultingRealEstateListing,
       responseLimit: resultingResponseLimit,
       tonality: openAiTonalities[tonality],

@@ -9,37 +9,26 @@ import { FormikProps } from "formik/dist/types";
 import copy from "copy-to-clipboard";
 
 import {
-  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiQuery,
-  IApiOpenAiRealEstateDescriptionQuery,
-  IOpenAiLocationDescriptionFormValues,
+  IApiOpenAiRealEstDescQuery,
+  IOpenAiGeneralFormValues,
+  IOpenAiLocDescFormValues,
   OpenAiQueryTypeEnum,
-  OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
-import {
-  maxCharacterNumber,
-  minCharacterNumber,
-  openAiQueryTypes,
-  openAiTonalities,
-} from "../../../../shared/constants/open-ai";
+import { openAiQueryTypes } from "../../../../shared/constants/open-ai";
 import { placeholderSelectOptionKey } from "../../../../shared/constants/constants";
 import { TPlaceholderSelectOptionKey } from "../../../../shared/types/types";
 import OpenAiLocationDescriptionForm from "./OpenAiLocationDescriptionForm";
-import { useOpenAi } from "../../hooks/openai";
+import { TOpenAiQuery, useOpenAi } from "../../hooks/openai";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
 import OpenAiRealEstateDescriptionForm from "./OpenAiRealEstateDescriptionForm";
 import OpenAiQueryForm from "./OpenAiQueryForm";
-import { TFormikInnerRef } from "../../shared/shared.types";
 import {
   CachingActionTypesEnum,
   CachingContext,
 } from "../../context/CachingContext";
-import { usePotentialCustomerData } from "../../hooks/potentialcustomerdata";
-import { defaultTargetGroupName } from "../../../../shared/constants/potential-customer";
-
-// TODO move tonality, targetGroupName, characterLimit to a separate form
-// TODO simplify customText to a string
+import OpenAiGeneralForm from "./OpenAiGeneralForm";
 
 interface IOpenAiModuleProps {
   searchResultSnapshotId: string;
@@ -58,45 +47,23 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   initialQueryType,
   onQueryTypeChange,
 }) => {
-  const { cachingState, cachingDispatch } = useContext(CachingContext);
+  const {
+    cachingState: { openAi: cachedOpenAi },
+    cachingDispatch,
+  } = useContext(CachingContext);
 
-  const formRef =
-    useRef<FormikProps<IOpenAiLocationDescriptionFormValues | IApiOpenAiQuery>>(
-      null
-    );
-  const realEstateDescriptionFormRef =
-    useRef<FormikProps<IApiOpenAiRealEstateDescriptionQuery>>(null);
+  const generalFormRef = useRef<FormikProps<IOpenAiGeneralFormValues>>(null);
+  const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
+  const realEstDescFormRef =
+    useRef<FormikProps<IApiOpenAiRealEstDescQuery>>(null);
+  const formRef = useRef<FormikProps<IApiOpenAiQuery>>(null);
 
-  const { fetchPotentCustomerNames } = usePotentialCustomerData();
   const { fetchOpenAiResponse } = useOpenAi();
 
   const [queryType, setQueryType] = useState<
     OpenAiQueryTypeEnum | TPlaceholderSelectOptionKey | undefined
   >(initialQueryType);
-  const [potentCustomerNames, setPotentCustomerNames] = useState<string[]>();
   const [fetchedResponse, setFetchedResponse] = useState<string>();
-
-  const [tonality, setTonality] = useState<OpenAiTonalityEnum>(
-    OpenAiTonalityEnum.FORMAL_SERIOUS
-  );
-  const [potentCustomerName, setPotentCustomerName] = useState<string>(
-    defaultTargetGroupName
-  );
-  const [characterLimit, setCharacterLimit] = useState<number>(
-    Math.round(maxCharacterNumber) / 2
-  );
-
-  useEffect(() => {
-    const fetchTargetGroupNames = async () => {
-      setPotentCustomerNames([
-        defaultTargetGroupName,
-        ...(await fetchPotentCustomerNames()),
-      ]);
-    };
-
-    void fetchTargetGroupNames();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   useEffect(() => {
     if (!isFetchResponse || !queryType) {
@@ -104,61 +71,43 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
     }
 
     const fetchResponse = async (): Promise<void> => {
-      let response;
+      generalFormRef.current?.handleSubmit();
+      let query: TOpenAiQuery;
 
       switch (queryType) {
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION: {
           formRef.current?.handleSubmit();
 
-          response = await fetchOpenAiResponse(queryType, {
+          query = {
             searchResultSnapshotId,
-            tonality,
-            targetGroupName: potentCustomerName,
-            responseLimit: {
-              quantity: characterLimit,
-              type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-            },
-            ...(formRef.current
-              ?.values as IOpenAiLocationDescriptionFormValues),
-          });
+            ...generalFormRef.current!.values,
+            ...locDescFormRef.current!.values,
+          };
 
           break;
         }
 
         case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
-          realEstateDescriptionFormRef.current?.handleSubmit();
+          realEstDescFormRef.current?.handleSubmit();
 
-          response = await fetchOpenAiResponse(queryType, {
-            tonality,
-            targetGroupName: potentCustomerName,
-            responseLimit: {
-              quantity: characterLimit,
-              type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-            },
-            ...(realEstateDescriptionFormRef.current
-              ?.values as IApiOpenAiRealEstateDescriptionQuery),
-          });
+          query = {
+            ...generalFormRef.current!.values,
+            ...realEstDescFormRef.current!.values,
+          };
 
           break;
         }
 
         case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION: {
           formRef.current?.handleSubmit();
-          realEstateDescriptionFormRef.current?.handleSubmit();
+          realEstDescFormRef.current?.handleSubmit();
 
-          response = await fetchOpenAiResponse(queryType, {
+          query = {
             searchResultSnapshotId,
-            tonality,
-            targetGroupName: potentCustomerName,
-            responseLimit: {
-              quantity: characterLimit,
-              type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-            },
-            ...(formRef.current
-              ?.values as IOpenAiLocationDescriptionFormValues),
-            ...(realEstateDescriptionFormRef.current
-              ?.values as IApiOpenAiRealEstateDescriptionQuery),
-          });
+            ...generalFormRef.current!.values,
+            ...locDescFormRef.current!.values,
+            ...realEstDescFormRef.current!.values,
+          };
 
           break;
         }
@@ -167,11 +116,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         case OpenAiQueryTypeEnum.GENERAL_QUESTION: {
           formRef.current?.handleSubmit();
 
-          response = await fetchOpenAiResponse(queryType, {
-            ...(formRef.current?.values as IApiOpenAiQuery),
+          query = {
+            ...formRef.current!.values,
             isFormalToInformal:
               queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
-          });
+          };
 
           break;
         }
@@ -181,6 +130,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           return;
         }
       }
+
+      const response = await fetchOpenAiResponse(queryType, query);
 
       onResponseFetched(response);
       setFetchedResponse(response);
@@ -201,134 +152,79 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
   return (
     <div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 sm:gap-2">
-        <div className="form-control">
-          <label htmlFor="queryType" className="label">
-            <span className="label-text">Option wählen</span>
-          </label>
+      <div className="form-control">
+        <label htmlFor="queryType" className="label">
+          <span className="label-text">Option wählen</span>
+        </label>
 
-          <select
-            className="select select-bordered w-full max-w-xs"
-            name="queryType"
-            value={queryType || placeholderSelectOptionKey}
-            onChange={({ target: { value } }) => {
-              setQueryType(value as OpenAiQueryTypeEnum);
+        <select
+          className="select select-bordered w-full max-w-xs"
+          name="queryType"
+          value={queryType || placeholderSelectOptionKey}
+          onChange={({ target: { value } }) => {
+            setQueryType(value as OpenAiQueryTypeEnum);
 
-              if (onQueryTypeChange) {
-                onQueryTypeChange(value as OpenAiQueryTypeEnum);
-              }
-            }}
+            if (onQueryTypeChange) {
+              onQueryTypeChange(value as OpenAiQueryTypeEnum);
+            }
+          }}
+        >
+          <option
+            value={placeholderSelectOptionKey}
+            key={placeholderSelectOptionKey}
+            disabled={true}
           >
-            <option
-              value={placeholderSelectOptionKey}
-              key={placeholderSelectOptionKey}
-              disabled={true}
-            >
-              Was möchten Sie generieren?
+            Was möchten Sie generieren?
+          </option>
+          {openAiQueryTypes.map(({ type, label }) => (
+            <option value={type} key={type} className="flex flex-col">
+              {label}
             </option>
-            {openAiQueryTypes.map(({ type, label }) => (
-              <option value={type} key={type} className="flex flex-col">
-                {label}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control">
-          <label htmlFor="targetGroupName" className="label">
-            <span className="label-text">Zielgruppe Name</span>
-          </label>
-
-          <select
-            className="select select-bordered w-full max-w-xs"
-            name="targetGroupName"
-            value={potentCustomerName}
-            onChange={({ target: { value } }) => {
-              setPotentCustomerName(value);
-            }}
-          >
-            {potentCustomerNames?.map((targetGroupName) => (
-              <option
-                value={targetGroupName}
-                key={`target-group-${targetGroupName}`}
-                className="flex flex-col"
-              >
-                {targetGroupName}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control">
-          <label htmlFor="tonality" className="label">
-            <span className="label-text">Texttonalität</span>
-          </label>
-
-          <select
-            className="select select-bordered w-full max-w-xs"
-            name="tonality"
-            value={tonality}
-            onChange={({ target: { value } }) => {
-              setTonality(value as OpenAiTonalityEnum);
-            }}
-          >
-            {Object.keys(openAiTonalities).map((tonalityType) => (
-              <option
-                value={tonalityType}
-                key={tonalityType}
-                className="flex flex-col"
-              >
-                {openAiTonalities[tonalityType as OpenAiTonalityEnum]}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        <div className="form-control">
-          <label htmlFor="characterLimit" className="label">
-            <span className="label-text">Gewünschte Zeichenanzahl</span>
-          </label>
-
-          <div className="flex w-full items-center gap-2">
-            <input
-              className="input input-bordered range w-full max-w-xs"
-              name="characterLimit"
-              type="range"
-              min={minCharacterNumber}
-              max={maxCharacterNumber}
-              step={100}
-              value={characterLimit}
-              onInput={({ target }) => {
-                setCharacterLimit(+(target as HTMLInputElement).value);
-              }}
-            />
-            <div>{characterLimit}</div>
-          </div>
-        </div>
+          ))}
+        </select>
       </div>
+
+      {![
+        OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+        OpenAiQueryTypeEnum.GENERAL_QUESTION,
+      ].includes(queryType as OpenAiQueryTypeEnum) && (
+        <>
+          <div className="divider mb-2" />
+
+          <OpenAiGeneralForm
+            formId="open-ai-general-form"
+            initialValues={cachedOpenAi.general}
+            onValuesChange={(values) => {
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { general: { ...values } },
+              });
+            }}
+            formRef={generalFormRef}
+          />
+        </>
+      )}
 
       <div className="divider mb-2" />
 
       {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
         <OpenAiLocationDescriptionForm
-          formId="open-ai-location-description-form"
-          initialValues={cachingState.openAi.locationDescription}
+          formId="open-ai-loc-desc-form"
+          initialValues={cachedOpenAi.locationDescription}
           onValuesChange={(values) => {
             cachingDispatch({
               type: CachingActionTypesEnum.SET_OPEN_AI,
               payload: { locationDescription: { ...values } },
             });
           }}
-          formRef={
-            formRef as TFormikInnerRef<IOpenAiLocationDescriptionFormValues>
-          }
+          formRef={locDescFormRef}
         />
       )}
 
       {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
         <OpenAiRealEstateDescriptionForm
           formId="open-ai-real-estate-description-form"
-          initialValues={cachingState.openAi.realEstateDescription}
+          initialValues={cachedOpenAi.realEstateDescription}
           onValuesChange={(values) => {
             onModuleStatusChange(
               !!queryType &&
@@ -341,7 +237,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               payload: { realEstateDescription: { ...values } },
             });
           }}
-          formRef={realEstateDescriptionFormRef}
+          formRef={realEstDescFormRef}
         />
       )}
 
@@ -349,20 +245,19 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         <>
           <OpenAiLocationDescriptionForm
             formId="open-ai-location-description-form"
-            initialValues={cachingState.openAi.locationDescription}
+            initialValues={cachedOpenAi.locationDescription}
             onValuesChange={(values) => {
               cachingDispatch({
                 type: CachingActionTypesEnum.SET_OPEN_AI,
                 payload: { locationDescription: { ...values } },
               });
             }}
-            formRef={
-              formRef as TFormikInnerRef<IOpenAiLocationDescriptionFormValues>
-            }
+            formRef={locDescFormRef}
           />
+
           <OpenAiRealEstateDescriptionForm
             formId="open-ai-real-estate-description-form"
-            initialValues={cachingState.openAi.realEstateDescription}
+            initialValues={cachedOpenAi.realEstateDescription}
             onValuesChange={(values) => {
               onModuleStatusChange(
                 !!queryType &&
@@ -375,7 +270,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
                 payload: { realEstateDescription: { ...values } },
               });
             }}
-            formRef={realEstateDescriptionFormRef}
+            formRef={realEstDescFormRef}
           />
         </>
       )}
@@ -383,7 +278,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
       {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
         <OpenAiQueryForm
           formId="open-ai-formal-to-informal-form"
-          initialValues={cachingState.openAi.query}
+          initialValues={cachedOpenAi.query}
           onValuesChange={(values) => {
             onModuleStatusChange(!!queryType && !!values.text);
 
@@ -392,14 +287,14 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               payload: { query: { ...values } },
             });
           }}
-          formRef={formRef as TFormikInnerRef<IApiOpenAiQuery>}
+          formRef={formRef}
         />
       )}
 
       {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
         <OpenAiQueryForm
           formId="open-ai-general-question-form"
-          initialValues={cachingState.openAi.query}
+          initialValues={cachedOpenAi.query}
           onValuesChange={(values) => {
             onModuleStatusChange(!!queryType && !!values.text);
 
@@ -408,7 +303,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               payload: { query: { ...values } },
             });
           }}
-          formRef={formRef as TFormikInnerRef<IApiOpenAiQuery>}
+          formRef={formRef}
         />
       )}
 

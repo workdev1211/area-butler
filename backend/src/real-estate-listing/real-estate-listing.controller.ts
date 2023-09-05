@@ -31,7 +31,7 @@ import {
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatsEnum } from '@area-butler-types/types';
-import ApiOpenAiRealEstateDescriptionQueryDto from './dto/api-open-ai-real-estate-description-query.dto';
+import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import ApiUserApiConnectionSettingsDto from '../dto/api-user-api-connection-settings.dto';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
@@ -153,7 +153,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @Post('open-ai-real-estate-desc')
   async fetchOpenAiRealEstDesc(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstateDescriptionQueryDto,
+    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
   ): Promise<string> {
     return this.realEstateListingService.fetchOpenAiRealEstateDesc(
       user,

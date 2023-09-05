@@ -2,10 +2,10 @@ import { useContext } from "react";
 
 import { useHttp } from "./http";
 import {
-  IApiOpenAiLocationDescriptionQuery,
-  IApiOpenAiLocationRealEstateDescriptionQuery,
+  IApiOpenAiLocDescQuery,
+  IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiQuery,
-  IApiOpenAiRealEstateDescriptionQuery,
+  IApiOpenAiRealEstDescQuery,
   OpenAiQueryTypeEnum,
 } from "../../../shared/types/open-ai";
 import {
@@ -19,10 +19,10 @@ import { useIntegrationTools } from "./integrationtools";
 import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
 
-type TOpenAiQuery =
-  | IApiOpenAiLocationDescriptionQuery
-  | IApiOpenAiRealEstateDescriptionQuery
-  | IApiOpenAiLocationRealEstateDescriptionQuery
+export type TOpenAiQuery =
+  | IApiOpenAiLocDescQuery
+  | IApiOpenAiRealEstDescQuery
+  | IApiOpenAiLocRealEstDescQuery
   | IApiOpenAiQuery;
 
 export const useOpenAi = () => {

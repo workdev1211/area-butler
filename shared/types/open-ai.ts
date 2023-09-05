@@ -1,4 +1,4 @@
-import { ISelectTextValue, MeansOfTransportation } from "./types";
+import { MeansOfTransportation } from "./types";
 
 export enum OpenAiTonalityEnum {
   FORMAL_SERIOUS = "FORMAL_SERIOUS",
@@ -17,30 +17,32 @@ export enum OpenAiCustomTextEnum {
   NONE = "NONE",
 }
 
-export interface IOpenAiLocationDescriptionFormValues {
-  meanOfTransportation: MeansOfTransportation;
+export interface IOpenAiGeneralFormValues {
   tonality?: OpenAiTonalityEnum;
   targetGroupName?: string;
-  customText?: ISelectTextValue;
+  customText?: string;
+  characterLimit?: number; // for frontend range slider only
+  responseLimit?: IApiOpenAiResponseLimit; // for backend data processing
 }
 
-export interface IApiOpenAiLocationDescriptionQuery
-  extends IOpenAiLocationDescriptionFormValues {
+export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
+  meanOfTransportation: MeansOfTransportation;
+}
+
+export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
-export interface IApiOpenAiRealEstateDescriptionQuery {
+export interface IApiOpenAiRealEstDescQuery extends IOpenAiGeneralFormValues {
   realEstateListingId: string;
-  tonality?: OpenAiTonalityEnum;
-  targetGroupName?: string;
   responseLimit?: IApiOpenAiResponseLimit;
 }
 
-export interface IApiOpenAiLocationRealEstateDescriptionQuery
-  extends IOpenAiLocationDescriptionFormValues,
-    IApiOpenAiRealEstateDescriptionQuery {
+export interface IApiOpenAiLocRealEstDescQuery
+  extends IOpenAiLocDescFormValues,
+    IApiOpenAiRealEstDescQuery {
   searchResultSnapshotId: string;
 }
 

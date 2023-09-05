@@ -5,25 +5,26 @@ import {
   ISortableEntityGroup,
 } from "../export/one-page/OnePageExportModal";
 import {
-  IApiOpenAiLocationRealEstateDescriptionQuery,
+  IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiQuery,
-  IApiOpenAiRealEstateDescriptionQuery,
-  IOpenAiLocationDescriptionFormValues,
+  IApiOpenAiRealEstDescQuery,
+  IOpenAiGeneralFormValues,
+  IOpenAiLocDescFormValues,
 } from "../../../shared/types/open-ai";
 import { ISelectableMapClipping } from "../export/MapClippingSelection";
 import { IQrCodeState } from "../../../shared/types/export";
 
 interface IOpenAiCachingState {
-  locationDescription?: IOpenAiLocationDescriptionFormValues;
-  realEstateDescription?: IApiOpenAiRealEstateDescriptionQuery;
-  locationRealEstateDescription?: IApiOpenAiLocationRealEstateDescriptionQuery;
+  general?: IOpenAiGeneralFormValues;
+  locationDescription?: IOpenAiLocDescFormValues;
+  realEstateDescription?: IApiOpenAiRealEstDescQuery;
+  locationRealEstateDescription?: IApiOpenAiLocRealEstDescQuery;
   query?: IApiOpenAiQuery;
 }
 
 interface IOnePageCachingState {
   snapshotId?: string;
   exportFlowState?: IExportFlowState;
-  locationDescriptionParams?: IOpenAiLocationDescriptionFormValues;
   locationDescription?: string;
   filteredGroups?: ISortableEntityGroup[];
   isPng?: boolean;

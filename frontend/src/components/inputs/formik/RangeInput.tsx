@@ -3,14 +3,16 @@ import { useField } from "formik";
 
 import "./Input.scss";
 
-interface IInputProps extends InputHTMLAttributes<HTMLInputElement> {
+interface IRangeInputProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   icon?: string;
+  type?: string;
 }
 
-const Input: FunctionComponent<IInputProps> = ({
+const RangeInput: FunctionComponent<IRangeInputProps> = ({
   label = "",
   icon,
+  type,
   ...props
 }) => {
   const [field, meta] = useField(props as any);
@@ -25,7 +27,10 @@ const Input: FunctionComponent<IInputProps> = ({
         <span>{label}</span>
       </label>
 
-      <input {...field} {...props} />
+      <div className="flex w-full items-center gap-2">
+        <input type="range" {...field} {...props} />
+        <div>{meta.value}</div>
+      </div>
 
       {icon && <img src={icon} alt="input-icon" />}
 
@@ -38,4 +43,4 @@ const Input: FunctionComponent<IInputProps> = ({
   );
 };
 
-export default Input;
+export default RangeInput;

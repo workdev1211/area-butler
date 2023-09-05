@@ -21,8 +21,8 @@ import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-sn
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import ApiOpenAiLocationDescriptionQueryDto from './dto/api-open-ai-location-description-query.dto';
-import ApiOpenAiLocationRealEstateDescriptionQueryDto from './dto/api-open-ai-location-real-estate-description-query.dto';
+import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
+import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import { ProcessOpenAiIntUsageInterceptor } from '../real-estate-listing/interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from '../real-estate-listing/inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
@@ -126,7 +126,7 @@ export class LocationIntController {
   @Post('open-ai-loc-desc')
   async fetchOpenAiLocationDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() locationDescriptionQuery: ApiOpenAiLocationDescriptionQueryDto,
+    @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
     return this.locationService.fetchOpenAiLocationDescription(
       integrationUser,
@@ -146,7 +146,7 @@ export class LocationIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
     @Body()
-    locationRealEstateDescriptionQuery: ApiOpenAiLocationRealEstateDescriptionQueryDto,
+    locationRealEstateDescriptionQuery: ApiOpenAiLocRealEstDescQueryDto,
   ): Promise<string> {
     return this.locationService.fetchOpenAiLocRealEstDesc(
       integrationUser,
