@@ -100,8 +100,11 @@ export class OpenAiService {
       meanOfTransportation,
     }: ILocDescQueryData,
   ): Promise<string> {
-    let queryText = `Sei mein Experte für Immobilien-Exposés und schreibe einen werblichen Exposétext für eine Immobile mit der Adresse: ${snapshot.placesLocation.label}.`;
-    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
+    let queryText = snapshotConfig.showAddress
+      ? `Sei mein Experte für Immobilien-Lagebeschreibungen und schreibe eine Lagebeschreibung für eine Immobile mit der Adresse: ${snapshot.placesLocation.label}. `
+      : '';
+
+    queryText += `Der Text darf insgesamt maximal ${this.getResponseTextLimit(
       responseLimit,
     )} Zeichen lang sein.`;
 
@@ -210,7 +213,8 @@ export class OpenAiService {
   }: IRealEstDescQueryData): string {
     let queryText =
       'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
-    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
+
+    queryText += `Der Text darf insgesamt maximal ${this.getResponseTextLimit(
       responseLimit,
     )} lang sein.`;
 
