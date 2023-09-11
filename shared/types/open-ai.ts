@@ -21,8 +21,7 @@ export interface IOpenAiGeneralFormValues {
   tonality?: OpenAiTonalityEnum;
   targetGroupName?: string;
   customText?: string;
-  characterLimit?: number; // for frontend range slider only
-  responseLimit?: IApiOpenAiResponseLimit; // for backend data processing
+  textLength?: OpenAiTextLengthEnum;
 }
 
 export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
@@ -102,4 +101,10 @@ export enum OpenAiRealEstTypesEnum {
   LEISURE_COMMERCIAL = "LEISURE_COMMERCIAL",
   OTHER = "OTHER",
   CUSTOM = "CUSTOM",
+}
+
+export enum OpenAiTextLengthEnum {
+  SHORT = "SHORT",
+  MEDIUM = "MEDIUM",
+  LONG = "LONG"
 }

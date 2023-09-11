@@ -10,7 +10,7 @@ import {
   OsmName,
 } from '@area-butler-types/types';
 import {
-  maxCharacterNumber,
+  openAiTextLengthOptions,
   openAiTranslationDictionary,
 } from '../../../shared/constants/open-ai';
 import {
@@ -20,10 +20,7 @@ import {
   ApiRealEstateCostType,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import {
-  ApiOpenAiRespLimitTypesEnum,
-  IApiOpenAiResponseLimit,
-} from '@area-butler-types/open-ai';
+import { OpenAiTextLengthEnum } from '@area-butler-types/open-ai';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { UserDocument } from '../user/schema/user.schema';
@@ -48,7 +45,7 @@ import { defaultTargetGroupName } from '../../../shared/constants/potential-cust
 interface IGeneralQueryData {
   tonality: string; // should be enum
   customText?: string;
-  responseLimit?: IApiOpenAiResponseLimit;
+  textLength?: OpenAiTextLengthEnum;
   targetGroupName?: string;
 }
 
@@ -90,7 +87,7 @@ export class OpenAiService {
         snapshot,
         config: snapshotConfig = defaultSnapshotConfig,
       },
-      responseLimit,
+      textLength,
       tonality,
       customText,
       targetGroupName = defaultTargetGroupName,
@@ -101,16 +98,20 @@ export class OpenAiService {
       ? `Sei mein Experte für Immobilien-Lagebeschreibungen und schreibe eine Lagebeschreibung für eine Immobile mit der Adresse: ${snapshot.placesLocation.label}. `
       : '';
 
-    queryText += `Der Text darf insgesamt maximal ${this.getResponseTextLimit(
-      responseLimit,
-    )} Zeichen lang sein.`;
+    queryText += `Der Text darf insgesamt ${
+      openAiTextLengthOptions.find(({ value }) => value === textLength).text
+    } lang sein.`;
 
     if (!snapshotConfig.showAddress) {
       queryText += ' Die Adresse darf nicht explizit im Text genannt werden.';
     }
 
     queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
-    queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
+
+    if (customText) {
+      queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
+    }
+
     queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen. Erwähne vor allem POI-Kategorien die der Zielgruppe "${targetGroupName}" gefallen und lege dar warum diese Lage gerade für diese Zielgruppe optimal ist.`;
     queryText +=
       ' Wenn möglich, nenne die Entfernung zum nächstgelegenen internationalen Flughafen, nenne die Autobahnen die nah an der Immobilien verlaufen, nenne die nächste ÖPNV Möglichkeiten.\n';
@@ -206,15 +207,15 @@ export class OpenAiService {
     realEstateType,
     tonality,
     customText,
-    responseLimit,
+    textLength,
     targetGroupName = defaultTargetGroupName,
   }: IRealEstDescQueryData): string {
     let queryText =
       'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
 
-    queryText += ` Der Text darf insgesamt maximal ${this.getResponseTextLimit(
-      responseLimit,
-    )} lang sein.`;
+    queryText += ` Der Text darf insgesamt ${
+      openAiTextLengthOptions.find(({ value }) => value === textLength).text
+    } lang sein.`;
 
     // left just in case because the address should be mandatory
     // if (address) {
@@ -297,19 +298,20 @@ export class OpenAiService {
     return choices[0]['message']['content'].replace(/^(\n)*(.*)/g, '$2');
   }
 
-  private getResponseTextLimit(
-    responseLimit?: IApiOpenAiResponseLimit,
-  ): string {
-    if (!responseLimit) {
-      return `maximal ${maxCharacterNumber} Zeichen`;
-    }
-
-    const { quantity, type } = responseLimit;
-
-    return type === ApiOpenAiRespLimitTypesEnum.CHARACTER
-      ? `maximal ${quantity} Zeichen`
-      : `etwa ${quantity} Worte`;
-  }
+  // Left in case of a future progress in OpenAi text limiting
+  // private getResponseTextLimit(
+  //   responseLimit?: IApiOpenAiResponseLimit,
+  // ): string {
+  //   if (!responseLimit) {
+  //     return `maximal ${maxCharacterNumber} Zeichen`;
+  //   }
+  //
+  //   const { quantity, type } = responseLimit;
+  //
+  //   return type === ApiOpenAiRespLimitTypesEnum.CHARACTER
+  //     ? `maximal ${quantity} Zeichen`
+  //     : `etwa ${quantity} Worte`;
+  // }
 
   private processPoiData(
     snapshot: ApiSearchResultSnapshot,
@@ -318,7 +320,7 @@ export class OpenAiService {
   ): Partial<Record<OsmName, { name: string; distance: number }[]>> {
     const selectedPoiCategories = osmEntityTypes.reduce<OsmName[]>(
       (result, { label, name }) => {
-        if (snapshotConfig.defaultActiveGroups.includes(label)) {
+        if (snapshotConfig.defaultActiveGroups?.includes(label)) {
           result.push(name);
         }
 

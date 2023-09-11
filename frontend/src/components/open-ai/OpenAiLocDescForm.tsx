@@ -83,8 +83,8 @@ const OpenAiLocDescForm: FunctionComponent<IOpenAiLocDescFormProps> = ({
       <Form id={formId}>
         <div className="form-control">
           <Select
-            label="Transportmitteln"
-            placeholder="Transportmitteln"
+            label="KI-Wissensgebiet"
+            placeholder="KI-Wissensgebiet"
             name="meanOfTransportation"
             disabled={meansOfTransportation.length === 1}
             defaultValue={processedInitialValues.meanOfTransportation}

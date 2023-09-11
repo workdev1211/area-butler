@@ -3,9 +3,10 @@ import {
   OpenAiOsmQueryNameEnum,
   OpenAiQueryTypeEnum,
   OpenAiRealEstTypesEnum,
+  OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from "../types/open-ai";
-import { OsmName } from "../types/types";
+import { ISelectTextValue, OsmName } from "../types/types";
 
 export const openAiTranslationDictionary: Record<
   OsmName,
@@ -121,7 +122,7 @@ export const openAiQueryTypes: Array<{
   },
   {
     type: OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-    label: "Exposé Text für",
+    label: "Exposé Text",
     sidebarLabel: "Exposé-Text",
   },
   {
@@ -170,10 +171,13 @@ export const minCharacterNumber = 1500;
 export const maxCharacterNumber = 6000;
 export const defaultCharacterNumber = 4000;
 
-export const openAiRealEstTypeOptions: Array<{
-  value: OpenAiRealEstTypesEnum;
-  text: string;
-}> = [
+export const openAiTextLengthOptions: ISelectTextValue[] = [
+  { value: OpenAiTextLengthEnum.SHORT, text: "kurz" },
+  { value: OpenAiTextLengthEnum.MEDIUM, text: "mittel" },
+  { value: OpenAiTextLengthEnum.LONG, text: "lang" },
+];
+
+export const openAiRealEstTypeOptions: ISelectTextValue[] = [
   { value: OpenAiRealEstTypesEnum.ROOM, text: "Zimmer" },
   { value: OpenAiRealEstTypesEnum.HOUSE, text: "Haus" },
   { value: OpenAiRealEstTypesEnum.APARTMENT, text: "Wohnung" },

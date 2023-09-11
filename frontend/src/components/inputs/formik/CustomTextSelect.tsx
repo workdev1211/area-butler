@@ -12,6 +12,8 @@ interface ICustomTextSelectProps {
   initialText?: string;
   textLengthLimit?: number;
   placeholder?: string;
+  isDisabled?: boolean;
+  isSimple?: boolean;
 }
 
 const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
@@ -23,6 +25,8 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
   initialText,
   textLengthLimit,
   placeholder,
+  isDisabled,
+  isSimple,
 }) => {
   const [, meta, helpers] = useField<string>(name);
   const { value: textValue } = meta;
@@ -42,12 +46,13 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
 
   return (
     <div
-      className={`rounded-lg p-2 w-full ${isCustomText ? "pb-0" : ""}`}
+      className={`rounded-lg p-2 ${isCustomText && !isSimple ? "pb-0" : ""}`}
       style={{ border: "1px solid lightgray" }}
     >
       <select
         className="select select-bordered w-full"
         defaultValue={selectValue}
+        disabled={isDisabled}
         onChange={({ target: { selectedOptions } }) => {
           const selectedOption = selectedOptions[0];
 
@@ -75,26 +80,44 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
       </select>
 
       {isCustomText && (
-        <>
+        <div>
           <label htmlFor={name} className="label">
             <span className="label-text">{label}</span>
           </label>
 
-          <textarea
-            className="textarea h-36 textarea-bordered w-full pb-0"
-            placeholder={placeholder}
-            value={textValue}
-            onChange={({ target: { value: currentText } }) => {
-              if (
-                !textLengthLimit ||
-                currentText.length < textLengthLimit + 1 ||
-                currentText.length < textValue.length
-              ) {
-                setValue(currentText);
-              }
-            }}
-          />
-        </>
+          {isSimple ? (
+            <input
+              className="input input-bordered w-full"
+              type="text"
+              placeholder={placeholder}
+              value={textValue}
+              onChange={({ target: { value: currentText } }) => {
+                if (
+                  !textLengthLimit ||
+                  currentText.length < textLengthLimit + 1 ||
+                  currentText.length < textValue.length
+                ) {
+                  setValue(currentText);
+                }
+              }}
+            />
+          ) : (
+            <textarea
+              className="textarea h-36 textarea-bordered w-full pb-0"
+              placeholder={placeholder}
+              value={textValue}
+              onChange={({ target: { value: currentText } }) => {
+                if (
+                  !textLengthLimit ||
+                  currentText.length < textLengthLimit + 1 ||
+                  currentText.length < textValue.length
+                ) {
+                  setValue(currentText);
+                }
+              }}
+            />
+          )}
+        </div>
       )}
 
       {meta.touched && meta.error && (

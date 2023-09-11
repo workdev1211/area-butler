@@ -311,7 +311,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         <>
           <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
           <div className="flex flex-col gap-2">
-            <div className="text-justify">{fetchedResponse}</div>
+            <textarea
+              className="textarea textarea-bordered w-full"
+              value={fetchedResponse}
+              rows={7}
+            />
             <div
               className="flex gap-2 cursor-pointer items-center"
               onClick={(): void => {

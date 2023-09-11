@@ -4,22 +4,23 @@ import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
 import {
-  defaultCharacterNumber,
-  maxCharacterNumber,
-  minCharacterNumber,
   openAiCustomTextOptions,
+  openAiTextLengthOptions,
   openAiTonalities,
 } from "../../../../shared/constants/open-ai";
 import {
   IOpenAiGeneralFormValues,
   OpenAiCustomTextEnum,
+  OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { defaultTargetGroupName } from "../../../../shared/constants/potential-customer";
 import { usePotentialCustomerData } from "../../hooks/potentialcustomerdata";
-import RangeInput from "../inputs/formik/RangeInput";
+// import RangeInput from "../inputs/formik/RangeInput";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
+import { ISelectTextValue } from "../../../../shared/types/types";
+import { camelize } from "../../../../shared/functions/shared.functions";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;
@@ -43,21 +44,33 @@ interface IOpenAiGeneralFormProps {
   initialValues?: IOpenAiGeneralFormValues;
   onValuesChange?: (values: IOpenAiGeneralFormValues) => void;
   onSubmit?: (values: IOpenAiGeneralFormValues) => void;
+  isFromOnePage?: boolean;
   formRef?: TFormikInnerRef<IOpenAiGeneralFormValues>;
 }
+
+const defTargetGroupOption: ISelectTextValue = {
+  text: defaultTargetGroupName,
+  value: "default",
+};
+
+const custTargetGroupOption: ISelectTextValue = {
+  text: "Eigene Zielgruppe eingeben",
+  value: "custom",
+};
 
 const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
   formId,
   initialValues,
   onValuesChange,
   onSubmit,
+  isFromOnePage,
   formRef,
 }) => {
   const { fetchPotentCustomerNames } = usePotentialCustomerData();
 
-  const [potentCustomerNames, setPotentCustomerNames] = useState<string[]>([
-    defaultTargetGroupName,
-  ]);
+  const [targetGroupOptions, setTargetGroupOptions] = useState<
+    ISelectTextValue[]
+  >([defTargetGroupOption, custTargetGroupOption]);
 
   const resultInitValues: IOpenAiGeneralFormValues = initialValues
     ? {
@@ -67,21 +80,28 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
         tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
         targetGroupName: defaultTargetGroupName,
         customText: "",
-        characterLimit: defaultCharacterNumber,
+        textLength: isFromOnePage
+          ? OpenAiTextLengthEnum.SHORT
+          : OpenAiTextLengthEnum.MEDIUM,
       };
 
   const validationSchema = Yup.object({
     tonality: Yup.string().oneOf(Object.values(OpenAiTonalityEnum)).optional(),
     targetGroupName: Yup.string().optional(),
     customText: Yup.string().optional(),
-    characterLimit: Yup.number().optional(),
+    textLength: Yup.string()
+      .oneOf(Object.values(OpenAiTextLengthEnum))
+      .optional(),
   });
 
   useEffect(() => {
     const fetchTargetGroupNames = async () => {
-      setPotentCustomerNames([
-        defaultTargetGroupName,
-        ...(await fetchPotentCustomerNames()),
+      const fetchedNames = await fetchPotentCustomerNames();
+
+      setTargetGroupOptions([
+        defTargetGroupOption,
+        ...fetchedNames.map((name) => ({ text: name, value: camelize(name) })),
+        custTargetGroupOption,
       ]);
     };
 
@@ -103,23 +123,17 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
       {({ values }) => {
         return (
           <Form id={formId}>
-            <div className="form-control">
-              <Select
+            <div className="form-control max-w-xs">
+              <CustomTextSelect
                 label="Zielgruppe Name"
                 placeholder="Zielgruppe Name"
                 name="targetGroupName"
-                disabled={potentCustomerNames.length === 1}
-                defaultValue={resultInitValues.targetGroupName}
-              >
-                {potentCustomerNames.map((potentCustomerName) => (
-                  <option
-                    value={potentCustomerName}
-                    key={`potential-customer-${potentCustomerName}`}
-                  >
-                    {potentCustomerName}
-                  </option>
-                ))}
-              </Select>
+                selectOptions={targetGroupOptions}
+                customTextValue={custTargetGroupOption.value}
+                initialText={initialValues?.targetGroupName}
+                textLengthLimit={250}
+                isSimple={true}
+              />
             </div>
 
             <div className="form-control">
@@ -137,16 +151,32 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
               </Select>
             </div>
 
-            <RangeInput
-              label="Gewünschte Zeichenanzahl"
-              placeholder="Gewünschte Zeichenanzahl"
-              name="characterLimit"
-              type="range"
-              min={minCharacterNumber}
-              max={maxCharacterNumber}
-              step={100}
-              className="input input-bordered range max-w-xs"
-            />
+            {/* !!! The failed attempt to limit the OpenAI output to a certain amount of words / characters !!! */}
+            {/*<RangeInput*/}
+            {/*  label="Gewünschte Zeichenanzahl"*/}
+            {/*  placeholder="Gewünschte Zeichenanzahl"*/}
+            {/*  name="characterLimit"*/}
+            {/*  type="range"*/}
+            {/*  min={minCharacterNumber}*/}
+            {/*  max={maxCharacterNumber}*/}
+            {/*  step={100}*/}
+            {/*  className="input input-bordered range max-w-xs"*/}
+            {/*/>*/}
+
+            <div className="form-control">
+              <Select
+                label="Gewünschte Textlänge"
+                placeholder="Gewünschte Textlänge"
+                name="textLength"
+                defaultValue={OpenAiTextLengthEnum.MEDIUM}
+              >
+                {openAiTextLengthOptions.map(({ text, value }) => (
+                  <option value={value} key={value}>
+                    {text}
+                  </option>
+                ))}
+              </Select>
+            </div>
 
             <div className="form-control mt-3 indicator w-full">
               <div
@@ -165,7 +195,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
                 </div>
               </div>
 
-              <div className="grid place-items-center w-full">
+              <div className="grid w-full">
                 <CustomTextSelect
                   label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
                   placeholder="Benutzerdefinierter Text"

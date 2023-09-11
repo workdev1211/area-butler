@@ -56,17 +56,14 @@ import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
-  ApiOpenAiRespLimitTypesEnum,
   IApiOpenAiLocDescQuery,
   IApiOpenAiLocRealEstDescQuery,
-  IApiOpenAiResponseLimit,
 } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
-import { getOpenAiRespLimitByInt } from '../../../shared/functions/integration.functions';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
@@ -671,8 +668,7 @@ export class LocationService {
       tonality,
       targetGroupName,
       customText,
-      characterLimit,
-      responseLimit,
+      textLength,
     }: IApiOpenAiLocDescQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -696,10 +692,7 @@ export class LocationService {
     const queryText = await this.openAiService.getLocDescQuery(user, {
       searchResultSnapshot,
       meanOfTransportation,
-      responseLimit: responseLimit || {
-        quantity: characterLimit,
-        type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-      },
+      textLength,
       targetGroupName,
       customText,
       tonality: openAiTonalities[tonality],
@@ -718,8 +711,7 @@ export class LocationService {
       customText,
       realEstateListingId,
       realEstateType,
-      characterLimit,
-      responseLimit,
+      textLength,
     }: IApiOpenAiLocRealEstDescQuery,
     realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
@@ -741,16 +733,6 @@ export class LocationService {
       searchResultSnapshotId,
     );
 
-    const resultingResponseLimit: IApiOpenAiResponseLimit =
-      responseLimit || characterLimit
-        ? {
-            quantity: characterLimit,
-            type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-          }
-        : isIntegrationUser
-        ? getOpenAiRespLimitByInt(user.integrationType)
-        : { quantity: 700, type: ApiOpenAiRespLimitTypesEnum.WORD };
-
     const resultingRealEstateListing =
       realEstateListing ||
       (await this.realEstateListingService.fetchRealEstateListingById(
@@ -764,8 +746,8 @@ export class LocationService {
       targetGroupName,
       customText,
       realEstateType,
+      textLength,
       realEstateListing: resultingRealEstateListing,
-      responseLimit: resultingResponseLimit,
       tonality: openAiTonalities[tonality],
     });
 

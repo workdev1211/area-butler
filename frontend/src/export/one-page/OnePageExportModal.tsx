@@ -283,6 +283,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
                           payload: { general: { ...values } },
                         });
                       }}
+                      isFromOnePage={true}
                       formRef={generalFormRef}
                     />
 

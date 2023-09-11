@@ -13,10 +13,7 @@ import {
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import {
-  ApiOpenAiRespLimitTypesEnum,
-  IApiOpenAiRealEstDescQuery,
-} from '@area-butler-types/open-ai';
+import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
@@ -163,8 +160,7 @@ export class RealEstateListingService {
     {
       realEstateListingId,
       realEstateType,
-      characterLimit,
-      responseLimit,
+      textLength,
       targetGroupName,
       tonality,
     }: IApiOpenAiRealEstDescQuery,
@@ -190,10 +186,7 @@ export class RealEstateListingService {
     const queryText = this.openAiService.getRealEstDescQuery({
       targetGroupName,
       realEstateType,
-      responseLimit: responseLimit || {
-        quantity: characterLimit,
-        type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-      },
+      textLength,
       realEstateListing: resultingRealEstateListing,
       tonality: openAiTonalities[tonality],
     });
