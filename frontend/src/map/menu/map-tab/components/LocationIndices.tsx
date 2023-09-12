@@ -3,9 +3,9 @@ import { FunctionComponent, useState } from "react";
 import { setBackgroundColor } from "../../../../shared/shared.functions";
 import locationIndicesIcon from "../../../../assets/icons/map-menu/11-lageindizes.svg";
 import LocationIndexTable from "./data/LocationIndexTable";
-import UnlockProduct from "../../components/UnlockProduct";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { TLocationIndexData } from "../../../../../../shared/types/location-index";
+import UnlockProductButton from "../../components/UnlockProductButton";
 
 interface ILocationIndicesProps {
   isStatsExportActive: boolean;
@@ -72,7 +72,7 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
             <LocationIndexTable locationIndexData={locationIndexData} />
           )
         ) : (
-          <UnlockProduct performUnlock={performUnlock} />
+          <UnlockProductButton performUnlock={performUnlock} />
         )}
       </div>
     </div>

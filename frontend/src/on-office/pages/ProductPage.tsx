@@ -97,6 +97,7 @@ export const ProductPage: FunctionComponent = () => {
             <ProductCard
               key={groupedProducts[0].type}
               products={groupedProducts}
+              isDisabled={!!integrationUser?.isChild}
             />
           ))}
         </div>

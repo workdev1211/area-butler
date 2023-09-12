@@ -27,7 +27,7 @@ interface ILocationExportProps {
   snapshotId: string;
   hasOpenAiFeature: boolean;
   backgroundColor: string;
-  performUnlock: TUnlockIntProduct;
+  performUnlock?: TUnlockIntProduct;
 }
 
 const LocationExport: FunctionComponent<ILocationExportProps> = ({
@@ -114,7 +114,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
       return;
     }
 
-    if (isIntegration) {
+    if (isIntegration && performUnlock) {
       const actionType = isOnePageExport
         ? OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
         : OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT;

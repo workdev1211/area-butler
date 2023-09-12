@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 interface IConfirmationModalProps {
   closeModal: () => void;
@@ -11,6 +11,8 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
   onConfirm,
   text,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
+
   // TODO make a common modal component in future
   useEffect(() => {
     const handleEscape = async (e: KeyboardEvent) => {
@@ -40,12 +42,16 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
             Nein
           </button>
           <button
+            className={`btn bg-primary-gradient btn-sm self-end ${
+              isLoading ? "loading" : ""
+            }`}
+            style={{ flexBasis: "25%" }}
             onClick={async () => {
+              setIsLoading(true);
               await onConfirm();
+              setIsLoading(false);
               closeModal();
             }}
-            className="btn btn-sm btn-primary"
-            style={{ flexBasis: "25%" }}
           >
             Ja
           </button>

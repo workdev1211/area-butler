@@ -1,4 +1,4 @@
-import { IntegrationTypesEnum, TIntegrationActionTypes } from "./integration";
+import { IntegrationTypesEnum } from "./integration";
 import { ApiShowTour } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 
@@ -8,9 +8,10 @@ export interface IApiIntegrationUserSchema {
   accessToken: string;
   parameters?: TApiIntegrationUserParameters;
   config?: TApiIntegrationUserConfig;
-  userId?: string;
   productsUsed?: TApiIntegrationUserProductsUsed;
   productContingents?: TApiIntegrationUserProductContingents;
+  parentId?: string;
+  // obsolete, moved to a separate collection
   usageStatistics?: TApiIntegrationUserUsageStatistics;
 }
 
@@ -18,6 +19,7 @@ export interface IApiIntegrationUser {
   integrationUserId: string;
   accessToken: string;
   config: TApiIntegrationUserConfig;
+  isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 

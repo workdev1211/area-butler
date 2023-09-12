@@ -22,18 +22,18 @@ import {
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
-import UnlockProduct from "../../components/UnlockProduct";
 import digitalMediaIcon from "../../../../assets/icons/map-menu/08-digitale-medien.svg";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../../shared/types/integration-user";
 import { UserContext } from "../../../../context/UserContext";
+import UnlockProductButton from "../../components/UnlockProductButton";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
   directLink: string;
   searchAddress: string;
   backgroundColor: string;
-  performUnlock: TUnlockIntProduct;
+  performUnlock?: TUnlockIntProduct;
 }
 
 const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
@@ -54,17 +54,18 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   const { sendToOnOffice } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
-  const isIntegrationIframeExpired = integrationUser
-    ? realEstateListing?.iframeEndsAt
-      ? dayjs().isAfter(realEstateListing.iframeEndsAt)
-      : true
-    : false;
+  const isNotIntOrNotExpForIntUser =
+    !integrationUser ||
+    (!!realEstateListing?.iframeEndsAt &&
+      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
 
   const handleUnlock = (): void => {
-    performUnlock(
-      "Interaktive Karte freischalten?",
-      OnOfficeIntActTypesEnum.UNLOCK_IFRAME
-    );
+    if (performUnlock) {
+      performUnlock(
+        "Interaktive Karte freischalten?",
+        OnOfficeIntActTypesEnum.UNLOCK_IFRAME
+      );
+    }
   };
 
   const isIntUserIframeExportAvail = !!(
@@ -120,7 +121,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {!isIntegrationIframeExpired ? (
+        {isNotIntOrNotExpForIntUser ? (
           <div className="digital-media">
             {/* Embedded snapshot url */}
 
@@ -259,7 +260,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
             </div>
           </div>
         ) : (
-          <UnlockProduct performUnlock={handleUnlock} />
+          <UnlockProductButton performUnlock={handleUnlock} />
         )}
       </div>
     </div>

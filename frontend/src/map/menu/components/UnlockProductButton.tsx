@@ -2,11 +2,11 @@ import { FunctionComponent } from "react";
 
 import { TUnlockIntProduct } from "../../../../../shared/types/integration";
 
-interface IUnlockProductProps {
+interface IUnlockProductButtonProps {
   performUnlock: TUnlockIntProduct;
 }
 
-const UnlockProduct: FunctionComponent<IUnlockProductProps> = ({
+const UnlockProductButton: FunctionComponent<IUnlockProductButtonProps> = ({
   performUnlock,
 }) => {
   return (
@@ -33,4 +33,4 @@ const UnlockProduct: FunctionComponent<IUnlockProductProps> = ({
   );
 };
 
-export default UnlockProduct;
+export default UnlockProductButton;

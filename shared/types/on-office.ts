@@ -242,10 +242,11 @@ export interface IApiOnOfficeLoginReq {
 
 export interface IApiOnOfficeLoginRes {
   integrationUserId: string;
-  realEstate: ApiRealEstateListing;
-  latestSnapshot?: ApiSearchResultSnapshotResponse;
   accessToken: string;
   config: TApiIntegrationUserConfig;
+  isChild: boolean;
+  realEstate: ApiRealEstateListing;
+  latestSnapshot?: ApiSearchResultSnapshotResponse;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
 

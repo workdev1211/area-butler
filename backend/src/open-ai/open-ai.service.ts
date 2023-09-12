@@ -190,7 +190,7 @@ export class OpenAiService {
       );
 
       queryText = queryText.slice(0, -2);
-      queryText += '.\n';
+      queryText += '.';
     }
 
     // TODO will be added later

@@ -64,19 +64,28 @@ export const useLogin = () => {
     }
 
     try {
-      await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
+      if (
+        "customerWebId" in
+        (queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>)
+          .queryParams
+      ) {
+        await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
 
-      return performLogin(
-        queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>
-      );
-    } catch {}
+        return performLogin(
+          queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>
+        );
+      }
 
-    try {
-      await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
+      if (
+        "products" in
+        (queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>)
+      ) {
+        await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
 
-      return confirmOrder(
-        queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
-      );
+        return confirmOrder(
+          queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
+        );
+      }
     } catch {}
 
     return { requestStatus: RequestStatusTypesEnum.FAILURE };
@@ -152,9 +161,10 @@ export const useLogin = () => {
 
   const dispatchContextData = ({
     integrationUserId,
-    realEstate,
     accessToken,
     config,
+    isChild,
+    realEstate,
     availProdContingents,
     latestSnapshot,
   }: IApiOnOfficeLoginRes): void => {
@@ -163,8 +173,9 @@ export const useLogin = () => {
       payload: {
         integrationUserId,
         accessToken,
-        availProdContingents,
         config,
+        isChild,
+        availProdContingents,
       },
     });
 

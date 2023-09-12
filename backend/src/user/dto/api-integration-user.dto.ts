@@ -1,4 +1,10 @@
-import { IsNotEmpty, IsObject, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsNotEmpty,
+  IsObject,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 import { Expose, Exclude } from 'class-transformer';
 
 import {
@@ -23,6 +29,11 @@ class ApiIntegrationUserDto implements IApiIntegrationUser {
   @IsNotEmpty()
   @IsObject()
   config: TApiIntegrationUserConfig;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsBoolean()
+  isChild: boolean;
 
   @Expose()
   @IsOptional()

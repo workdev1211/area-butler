@@ -73,7 +73,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
 
     if (!openAiRequestQuantity) {
       const availProdContType =
-        this.integrationUserService.getAvailProdContTypeOrFail(
+        await this.integrationUserService.getAvailProdContTypeOrFail(
           integrationUser,
           actionType,
         );

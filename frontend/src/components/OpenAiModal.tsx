@@ -4,18 +4,25 @@ import OpenAiModule from "./open-ai/OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 import { UserContext } from "../context/UserContext";
 import { useIntegrationTools } from "../hooks/integrationtools";
+import { TUnlockIntProduct } from "../../../shared/types/integration";
+import { SearchContext } from "../context/SearchContext";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
   searchResultSnapshotId: string;
   queryType?: OpenAiQueryTypeEnum;
+  performUnlock?: TUnlockIntProduct;
 }
 
 const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   closeModal,
   searchResultSnapshotId,
   queryType,
+  performUnlock,
 }) => {
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
@@ -30,6 +37,14 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const [queryResponse, setQueryResponse] = useState("");
 
   const isIntegrationUser = !!integrationUser;
+  const isNotIntOrAvailForIntUser =
+    !integrationUser || !!realEstateListing?.openAiRequestQuantity;
+
+  const handleUnlock = (): void => {
+    if (performUnlock) {
+      performUnlock("KI-Texte freischalten?", queryType);
+    }
+  };
 
   return (
     <div className="modal modal-open z-2000">
@@ -89,11 +104,16 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
               }`}
               form="open-ai-location-description-form"
               onClick={() => {
-                setIsFetchResponse(true);
+                if (isNotIntOrAvailForIntUser) {
+                  setIsFetchResponse(true);
+                  return;
+                }
+
+                handleUnlock();
               }}
               disabled={isGenerateButtonDisabled || isFetchResponse}
             >
-              Generieren
+              {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
             </button>
           </div>
         </div>

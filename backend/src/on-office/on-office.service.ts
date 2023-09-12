@@ -212,7 +212,7 @@ export class OnOfficeService {
       this.integrationType,
     );
 
-    let integrationUser;
+    let integrationUser: TIntegrationUserDocument;
 
     if (existingUser) {
       const { userName, email } = await this.fetchUserData({
@@ -290,7 +290,9 @@ export class OnOfficeService {
     }
 
     const availProdContingents =
-      this.integrationUserService.getAvailProdContingents(integrationUser);
+      await this.integrationUserService.getAvailProdContingents(
+        integrationUser,
+      );
 
     const areaButlerEstate = await this.fetchAndProcessEstateData(
       estateId,
@@ -313,6 +315,7 @@ export class OnOfficeService {
       integrationUserId,
       availProdContingents,
       realEstate,
+      isChild: !!integrationUser.parentId,
       accessToken: extendedClaim,
       config: integrationUser.config,
       latestSnapshot: snapshot
@@ -326,9 +329,14 @@ export class OnOfficeService {
     {
       accessToken,
       integrationUserId,
+      parentId,
       parameters: { parameterCacheId },
     }: TIntegrationUserDocument,
   ): Promise<IApiOnOfficeCreateOrderRes> {
+    if (parentId) {
+      return;
+    }
+
     await Promise.all(
       products.map(async (product) => {
         const { _id: id } = await new this.onOfficeTransactionModel({
@@ -446,12 +454,10 @@ export class OnOfficeService {
     );
 
     return {
+      accessToken,
       integrationUserId: integrationUser.integrationUserId,
       config: integrationUser.config,
-      availProdContingents:
-        await this.integrationUserService.getAvailProdContingents(
-          integrationUser,
-        ),
+      isChild: !!integrationUser.parentId,
       realEstate: mapRealEstateListingToApiRealEstateListing(
         await this.realEstateListingIntService.findOneOrFailByIntParams({
           integrationId,
@@ -459,7 +465,10 @@ export class OnOfficeService {
           integrationType: this.integrationType,
         }),
       ),
-      accessToken,
+      availProdContingents:
+        await this.integrationUserService.getAvailProdContingents(
+          integrationUser,
+        ),
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(snapshot)
         : undefined,

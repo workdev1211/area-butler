@@ -50,7 +50,7 @@ export class RealEstateListingIntController {
     @Body() { realEstateListingId, actionType }: ApiUnlockIntProductReqDto,
   ): Promise<void> {
     const availProdContType =
-      this.integrationUserService.getAvailProdContTypeOrFail(
+      await this.integrationUserService.getAvailProdContTypeOrFail(
         integrationUser,
         actionType,
       );

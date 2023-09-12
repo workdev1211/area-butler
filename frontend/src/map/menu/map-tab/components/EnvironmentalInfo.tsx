@@ -7,9 +7,9 @@ import MapMenuCollapsable from "./menu-collapsable/MapMenuCollapsable";
 import ParticlePollutionTable from "./data/ParticlePollutionTable";
 import environmentalInfoIcon from "../../../../assets/icons/map-menu/03-umweltinformationen.svg";
 import particlePollutionIcon from "../../../../assets/icons/particle-pollution.svg";
-import UnlockProduct from "../../components/UnlockProduct";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { useTools } from "../../../../hooks/tools";
+import UnlockProductButton from "../../components/UnlockProductButton";
 
 interface IEnvironmentalInfoProps {
   isStatsExportActive: boolean;
@@ -82,7 +82,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
             </li>
           </ul>
         ) : (
-          <UnlockProduct performUnlock={performUnlock} />
+          <UnlockProductButton performUnlock={performUnlock} />
         )}
       </div>
     </div>

@@ -44,20 +44,21 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
         directLink={directLink}
         searchAddress={searchAddress}
         backgroundColor={backgroundColor}
-        performUnlock={performUnlock!}
+        performUnlock={performUnlock}
       />
 
       <LocationExport
         snapshotId={snapshotId}
         hasOpenAiFeature={hasOpenAiFeature}
         backgroundColor={backgroundColor}
-        performUnlock={performUnlock!}
+        performUnlock={performUnlock}
       />
 
       {hasOpenAiFeature && (
         <OpenAiTexts
           snapshotId={snapshotId}
           backgroundColor={backgroundColor}
+          performUnlock={performUnlock}
         />
       )}
 

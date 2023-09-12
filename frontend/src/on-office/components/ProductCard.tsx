@@ -17,9 +17,13 @@ import { SearchContext } from "../../context/SearchContext";
 
 interface IProductCardProps {
   products: IOnOfficeProduct[];
+  isDisabled: boolean;
 }
 
-const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
+const ProductCard: FunctionComponent<IProductCardProps> = ({
+  products,
+  isDisabled,
+}) => {
   const {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
@@ -35,7 +39,8 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
   const [mainProduct, tenfoldProduct] = products;
   const { name, type, price } = mainProduct;
 
-  const isCardDisabled = products.some(({ isDisabled }) => isDisabled);
+  const isCardDisabled =
+    isDisabled || products.some(({ isDisabled }) => isDisabled);
 
   return (
     <div className="card shadow-lg bg-gray-50">
@@ -96,7 +101,12 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
                 </div>
                 <button
                   className="btn btn-primary w-48"
+                  disabled={isCardDisabled}
                   onClick={async () => {
+                    if (isCardDisabled) {
+                      return;
+                    }
+
                     const {
                       ordinary: ordinaryQuantity,
                       tenfold: tenfoldQuantity,
@@ -153,7 +163,11 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
                 className="btn w-48"
                 target="_blank"
                 rel="noreferrer"
-                href="https://calendly.com/areabutler/30-minuten-area-butler"
+                href={
+                  !isCardDisabled
+                    ? `https://calendly.com/areabutler/30-minuten-area-butler`
+                    : "#0"
+                }
                 style={{
                   padding: "0 var(--btn-padding) 0 var(--btn-padding)",
                   backgroundColor:
@@ -175,7 +189,6 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({ products }) => {
                   padding: "0 var(--btn-padding) 0 var(--btn-padding)",
                   backgroundColor: "lightgreen",
                 }}
-                disabled={isCardDisabled}
               >
                 Karte gratis erstellen
               </button>

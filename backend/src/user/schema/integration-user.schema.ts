@@ -30,15 +30,16 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ type: Object })
   config: TApiIntegrationUserConfig;
 
-  @Prop({ type: String })
-  userId: string;
-
   @Prop({ type: Object })
   productsUsed: TApiIntegrationUserProductsUsed;
 
   @Prop({ type: Object })
   productContingents: TApiIntegrationUserProductContingents;
 
+  @Prop({ type: String })
+  parentId: string;
+
+  // Obsolete, moved to a separate collection
   @Prop({ type: Object })
   usageStatistics: TApiIntegrationUserUsageStatistics;
 }

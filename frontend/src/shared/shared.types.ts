@@ -26,7 +26,7 @@ export interface ISearchParamsHistoryState
     IPotentialCustomersHistoryState,
     IMapPageHistoryState {}
 
-export interface IQueryParamsAndUrl<T> {
+export interface IQueryParamsAndUrl<T = unknown> {
   queryParams: T;
   url: string;
 }

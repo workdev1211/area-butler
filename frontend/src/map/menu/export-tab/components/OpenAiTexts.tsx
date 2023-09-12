@@ -7,15 +7,18 @@ import { openAiQueryTypes } from "../../../../../../shared/constants/open-ai";
 import { OpenAiQueryTypeEnum } from "../../../../../../shared/types/open-ai";
 import { invertFilter } from "../../../../shared/shared.constants";
 import OpenAiModal from "../../../../components/OpenAiModal";
+import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 
 interface IOpenAiTextsProps {
   snapshotId: string;
   backgroundColor: string;
+  performUnlock?: TUnlockIntProduct;
 }
 
 const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
   snapshotId,
   backgroundColor,
+  performUnlock,
 }) => {
   const [isOpenAiTextsOpen, setIsOpenAiTextsOpen] = useState(false);
   const [isShownOpenAiModal, setIsShownOpenAiModal] = useState(false);
@@ -30,6 +33,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
           }}
           searchResultSnapshotId={snapshotId}
           queryType={openAiQueryType}
+          performUnlock={performUnlock}
         />
       )}
 

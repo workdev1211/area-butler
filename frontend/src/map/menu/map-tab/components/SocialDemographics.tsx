@@ -9,10 +9,10 @@ import FederalElectionTable from "./data/FederalElectionTable";
 import socialDemographicsIcon from "../../../../assets/icons/map-menu/02-soziales-und-demographie.svg";
 import censusDataIcon from "../../../../assets/icons/census-data.svg";
 import federalElectionIcon from "../../../../assets/icons/federal-election.svg";
-import UnlockProduct from "../../components/UnlockProduct";
 import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { useTools } from "../../../../hooks/tools";
 import { TCensusData } from "../../../../../../shared/types/data-provision";
+import UnlockProductButton from "../../components/UnlockProductButton";
 
 const censusNotInSubscriptionPlanMessage = (
   <div>
@@ -144,7 +144,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
             </li>
           </ul>
         ) : (
-          <UnlockProduct performUnlock={performUnlock} />
+          <UnlockProductButton performUnlock={performUnlock} />
         )}
       </div>
     </div>

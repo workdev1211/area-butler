@@ -145,33 +145,6 @@ export class IntegrationUserService {
     );
   }
 
-  // Stays here for the moment just in case
-  // async updateParamsAndConfig(
-  //   integrationUser: TIntegrationUserDocument,
-  //   { accessToken, parameters, config }: IApiIntUserUpdateParamsAndConfig,
-  // ): Promise<TIntegrationUserDocument> {
-  //   const updatedFields: IApiIntUserUpdateParamsAndConfig = {
-  //     accessToken,
-  //     parameters:
-  //       typeof integrationUser.parameters === 'object'
-  //         ? { ...integrationUser.parameters, ...parameters }
-  //         : { ...parameters },
-  //   };
-  //
-  //   if (config) {
-  //     updatedFields.config =
-  //       typeof integrationUser.config === 'object'
-  //         ? { ...integrationUser.config, ...config }
-  //         : { ...config };
-  //   }
-  //
-  //   return this.integrationUserModel.findByIdAndUpdate(
-  //     integrationUser.id,
-  //     updatedFields,
-  //     { new: true },
-  //   );
-  // }
-
   async updateConfig(
     integrationUser: TIntegrationUserDocument,
     config: Partial<TApiIntegrationUserConfig>,
@@ -216,19 +189,25 @@ export class IntegrationUserService {
       {},
     );
 
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUserDbId,
-      {
-        $push: updatePushQuery,
-      },
-      { new: true },
-    );
+    return this.findByDbIdAndUpdate(integrationUserDbId, {
+      $push: updatePushQuery,
+    });
   }
 
-  getAvailProdContingents({
-    productContingents,
-    productsUsed,
-  }: TIntegrationUserDocument): TApiIntUserAvailProdContingents {
+  // The main method to get the available product contingents
+  async getAvailProdContingents(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<TApiIntUserAvailProdContingents> {
+    let { productContingents, productsUsed } = integrationUser;
+
+    if (integrationUser.parentId) {
+      const parentUser = await this.integrationUserModel.findById(
+        integrationUser.parentId,
+      );
+
+      ({ productContingents, productsUsed } = parentUser);
+    }
+
     const availProdContingents =
       productContingents &&
       Object.keys(productContingents).reduce(
@@ -252,11 +231,13 @@ export class IntegrationUserService {
       : undefined;
   }
 
-  getAvailProdContTypeOrFail(
+  async getAvailProdContTypeOrFail(
     integrationUser: TIntegrationUserDocument,
     actionType: TIntegrationActionTypes,
-  ): ApiIntUserOnOfficeProdContTypesEnum {
-    const availProdContingents = this.getAvailProdContingents(integrationUser);
+  ): Promise<ApiIntUserOnOfficeProdContTypesEnum> {
+    const availProdContingents = await this.getAvailProdContingents(
+      integrationUser,
+    );
 
     const availProdContType = getAvailProdContType(
       integrationUser.integrationType,
@@ -294,19 +275,16 @@ export class IntegrationUserService {
     return remainingQuantity > 0 ? remainingQuantity : 0;
   }
 
+  // The main method which increases the amount of a used contingent
   async incrementProductUsage(
-    integrationUser: TIntegrationUserDocument,
+    { id, parentId }: TIntegrationUserDocument,
     prodContType: ApiIntUserOnOfficeProdContTypesEnum,
   ): Promise<TIntegrationUserDocument> {
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUser.id,
-      {
-        $inc: {
-          [`productsUsed.${prodContType}`]: 1,
-        },
+    return this.findByDbIdAndUpdate(parentId || id, {
+      $inc: {
+        [`productsUsed.${prodContType}`]: 1,
       },
-      { new: true },
-    );
+    });
   }
 
   async createMapboxAccessToken(
@@ -320,13 +298,9 @@ export class IntegrationUserService {
       integrationUser.id,
     );
 
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUser.id,
-      {
-        'config.mapboxAccessToken': mapboxAccessToken,
-      },
-      { new: true },
-    );
+    return this.findByDbIdAndUpdate(integrationUser.id, {
+      'config.mapboxAccessToken': mapboxAccessToken,
+    });
   }
 
   async hideTour(
@@ -343,12 +317,8 @@ export class IntegrationUserService {
       });
     }
 
-    return this.integrationUserModel.findByIdAndUpdate(
-      integrationUser.id,
-      {
-        'config.showTour': showTour,
-      },
-      { new: true },
-    );
+    return this.findByDbIdAndUpdate(integrationUser.id, {
+      'config.showTour': showTour,
+    });
   }
 }
