@@ -130,7 +130,7 @@ export class LocationExtService {
       | ApiSearchResultSnapshotResponse;
 
     if (snapshotId) {
-      snapshotResponse = await this.locationService.fetchSnapshotById(
+      snapshotResponse = await this.locationService.fetchSnapshotByIdOrFail(
         user,
         snapshotId,
       );

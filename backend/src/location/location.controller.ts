@@ -169,7 +169,10 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const snapshotDoc = await this.locationService.fetchSnapshotById(user, id);
+    const snapshotDoc = await this.locationService.fetchSnapshotByIdOrFail(
+      user,
+      id,
+    );
 
     snapshotDoc.updatedAt = new Date();
     await snapshotDoc.save();

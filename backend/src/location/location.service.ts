@@ -313,11 +313,11 @@ export class LocationService {
     // a standard flow - we should use a config from a previous snapshot
     if (!snapshotConfig) {
       const templateSnapshotId = isIntegrationUser
-        ? undefined
+        ? user.config.templateSnapshotId
         : user.templateSnapshotId;
 
       const templateSnapshot = templateSnapshotId
-        ? await this.fetchSnapshotById(user, templateSnapshotId).catch(
+        ? await this.fetchSnapshotByIdOrFail(user, templateSnapshotId).catch(
             () => undefined,
           )
         : (
@@ -437,7 +437,7 @@ export class LocationService {
     }
 
     const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchSnapshotById(user, snapshotId);
+      await this.fetchSnapshotByIdOrFail(user, snapshotId);
 
     Object.assign(snapshotDoc, { snapshot, config, updatedAt: new Date() });
 
@@ -458,7 +458,7 @@ export class LocationService {
     );
 
     const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchSnapshotById(user, id);
+      await this.fetchSnapshotByIdOrFail(user, id);
 
     snapshotDoc.description = description;
 
@@ -532,7 +532,7 @@ export class LocationService {
       .limit(limitNumber);
   }
 
-  async fetchSnapshotById(
+  async fetchSnapshotByIdOrFail(
     user: UserDocument | TIntegrationUserDocument,
     id: string,
   ): Promise<SearchResultSnapshotDocument> {
@@ -684,7 +684,7 @@ export class LocationService {
       );
     }
 
-    const searchResultSnapshot = await this.fetchSnapshotById(
+    const searchResultSnapshot = await this.fetchSnapshotByIdOrFail(
       user,
       searchResultSnapshotId,
     );
@@ -728,7 +728,7 @@ export class LocationService {
       );
     }
 
-    const searchResultSnapshot = await this.fetchSnapshotById(
+    const searchResultSnapshot = await this.fetchSnapshotByIdOrFail(
       user,
       searchResultSnapshotId,
     );

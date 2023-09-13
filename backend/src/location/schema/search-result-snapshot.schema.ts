@@ -51,7 +51,7 @@ export class SearchResultSnapshot {
   @Prop({ type: IntegrationParamsSchema })
   integrationParams: IApiIntegrationParams;
 
-  @Prop({ type: Boolean, default: false })
+  @Prop({ type: Boolean })
   isTrial: boolean;
 }
 

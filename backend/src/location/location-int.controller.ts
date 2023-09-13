@@ -110,7 +110,7 @@ export class LocationIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('id') id: string,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    const snapshotDoc = await this.locationService.fetchSnapshotById(
+    const snapshotDoc = await this.locationService.fetchSnapshotByIdOrFail(
       integrationUser,
       id,
     );

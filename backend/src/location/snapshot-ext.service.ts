@@ -85,7 +85,7 @@ export class SnapshotExtService {
     let snapshotConfig;
 
     if (templateSnapshotId) {
-      const { config } = await this.locationService.fetchSnapshotById(
+      const { config } = await this.locationService.fetchSnapshotByIdOrFail(
         user,
         templateSnapshotId,
       );
@@ -104,7 +104,10 @@ export class SnapshotExtService {
     const {
       config,
       snapshot: { transportationParams, localityParams, preferredLocations },
-    } = await this.locationService.fetchSnapshotById(user, templateSnapshotId);
+    } = await this.locationService.fetchSnapshotByIdOrFail(
+      user,
+      templateSnapshotId,
+    );
 
     const place = await this.googleGeocodeService.fetchPlace(location);
 
