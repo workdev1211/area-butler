@@ -217,7 +217,11 @@ const SearchResultContainer = forwardRef<
     const isMeanTogglesShown =
       !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
 
-    const [isMapMenuOpen, setIsMapMenuOpen] = useState(isMapMenuShown);
+    const [isMapMenuOpen, setIsMapMenuOpen] = useState(
+      isEmbeddedMode && searchContextState.responseConfig?.isMapMenuCollapsed
+        ? false
+        : isMapMenuShown
+    );
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
     >([]);

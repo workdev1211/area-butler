@@ -81,7 +81,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   }, [config, groupedEntries, onConfigChange]);
 
   useEffect(() => {
-    const fetchEmbeddableMaps = async () => {
+    const fetchEmbeddableMaps = async (): Promise<void> => {
       const limit = isNewSnapshot ? 6 : 5;
 
       const embeddableMaps = await fetchSnapshots(
@@ -156,7 +156,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     },
   ];
 
-  const changeTheme = (value: ApiSearchResultSnapshotConfigTheme) => {
+  const changeTheme = (value: ApiSearchResultSnapshotConfigTheme): void => {
     let newConfig = { ...config, theme: value };
     const oldGroups = config.defaultActiveGroups ?? [];
 
@@ -170,62 +170,73 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({ ...newConfig });
   };
 
-  const changeMapboxMap = (value: string) => {
+  const changeMapboxMap = (value: string): void => {
     onConfigChange({ ...config, mapBoxMapId: value });
   };
 
-  const changeShowLocation = () => {
+  const changeShowLocation = (): void => {
     onConfigChange({ ...config, showLocation: !config?.showLocation });
   };
 
-  const changeShowAddress = () => {
+  const changeShowAddress = (): void => {
     onConfigChange({ ...config, showAddress: !config?.showAddress });
   };
 
-  const changeGroupItems = () => {
+  const changeGroupItems = (): void => {
     onConfigChange({ ...config, groupItems: !config?.groupItems });
   };
 
-  const changeFixedRealEstates = () => {
+  const changeFixedRealEstates = (): void => {
     onConfigChange({ ...config, fixedRealEstates: !config?.fixedRealEstates });
   };
 
-  const changeEntityVisibility = (visibility: ApiSnippetEntityVisibility[]) => {
+  const changeEntityVisibility = (
+    visibility: ApiSnippetEntityVisibility[]
+  ): void => {
     onConfigChange({ ...config, entityVisibility: [...visibility] });
   };
 
-  const changeShowStreetViewLink = () => {
+  const changeShowStreetViewLink = (): void => {
     onConfigChange({
       ...config,
       showStreetViewLink: !config.showStreetViewLink,
     });
   };
 
-  const changeHideIsochrones = () => {
+  const changeHideIsochrones = (): void => {
     onConfigChange({
       ...config,
       hideIsochrones: !config.hideIsochrones,
     });
   };
 
-  const changeShowDetailsInOnePage = () => {
+  const changeShowDetailsInOnePage = (): void => {
     onConfigChange({
       ...config,
       showDetailsInOnePage: !config.showDetailsInOnePage,
     });
   };
 
-  const changeColor = (color: string | undefined) => {
+  const changeIsMapMenuCollapsed = (): void => {
+    onConfigChange({
+      ...config,
+      isMapMenuCollapsed: !config.isMapMenuCollapsed,
+    });
+  };
+
+  const changeColor = (color: string | undefined): void => {
     setColor(color);
     onConfigChange({ ...config, primaryColor: color });
   };
 
-  const changeMapIcon = (mapIcon: string | undefined) => {
+  const changeMapIcon = (mapIcon: string | undefined): void => {
     setMapIcon(mapIcon);
     onConfigChange({ ...config, mapIcon: mapIcon });
   };
 
-  const changeDefaultActiveMeans = (activeMeans: MeansOfTransportation) => {
+  const changeDefaultActiveMeans = (
+    activeMeans: MeansOfTransportation
+  ): void => {
     let defaultActiveMeans = config.defaultActiveMeans || [];
 
     if (defaultActiveMeans.includes(activeMeans)) {
@@ -260,7 +271,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     });
   };
 
-  const changeRealEstateStatusFilter = (value: string) => {
+  const changeRealEstateStatusFilter = (value: string): void => {
     onConfigChange({
       ...config,
       realEstateStatus:
@@ -284,15 +295,13 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     });
   };
 
-  const isDefaultActiveGroup = (activeGroup: string) => {
-    return (config.defaultActiveGroups ?? []).includes(activeGroup);
-  };
+  const isDefaultActiveGroup = (activeGroup: string): boolean =>
+    (config.defaultActiveGroups ?? []).includes(activeGroup);
 
-  const isGroupOpen = (group: EntityGroup) => {
-    return poiGroupsOpen.includes(group.title);
-  };
+  const isGroupOpen = (group: EntityGroup): boolean =>
+    poiGroupsOpen.includes(group.title);
 
-  const toggleGroupOpen = (group: EntityGroup) => {
+  const toggleGroupOpen = (group: EntityGroup): void => {
     if (isGroupOpen(group)) {
       setPoiGroupsOpen(poiGroupsOpen.filter((g) => g !== group.title));
     } else {
@@ -300,7 +309,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     }
   };
 
-  const isGroupHidden = (group: EntityGroup) => {
+  const isGroupHidden = (group: EntityGroup): boolean => {
     const groupEntityIds = group.items.map((i) => i.id);
 
     return groupEntityIds.every((id) =>
@@ -308,7 +317,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     );
   };
 
-  const toggleGroupVisibility = (group: EntityGroup) => {
+  const toggleGroupVisibility = (group: EntityGroup): void => {
     const visibilityWithoutGroup = (config.entityVisibility || []).filter(
       (ev) => !group.items.some((i) => i.id === ev.id)
     );
@@ -792,7 +801,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="hideIsochrones"
+                    name="showDetailsInOnePage"
                     checked={!!config?.showDetailsInOnePage}
                     onChange={() => {
                       changeShowDetailsInOnePage();
@@ -801,6 +810,24 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   />
                   <span className="label-text">
                     Objekt Infos in Lage-Exposé anzeigen
+                  </span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isMapMenuCollapsed"
+                    checked={!!config?.isMapMenuCollapsed}
+                    onChange={() => {
+                      changeIsMapMenuCollapsed();
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Kartenmenü im Iframe minimieren
                   </span>
                 </label>
               </div>

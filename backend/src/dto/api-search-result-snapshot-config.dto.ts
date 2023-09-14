@@ -119,6 +119,10 @@ class ApiSearchResultSnapshotConfigDto
   @ValidateNested()
   @Type(() => ApiSnapshotIconSizesDto)
   iconSizes?: IApiSnapshotIconSizes;
+
+  @IsOptional()
+  @IsBoolean()
+  isMapMenuCollapsed?: boolean;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

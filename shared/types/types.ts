@@ -379,6 +379,7 @@ export interface ApiSearchResultSnapshotConfig {
   realEstateStatus?: ApiRealEstateStatusEnum;
   poiFilter?: IApiSnapshotPoiFilter;
   iconSizes?: IApiSnapshotIconSizes;
+  isMapMenuCollapsed?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {
