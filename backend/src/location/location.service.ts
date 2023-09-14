@@ -445,17 +445,21 @@ export class LocationService {
   }
 
   async updateSnapshotDescription(
-    user: UserDocument,
+    user: UserDocument | TIntegrationUserDocument,
     id: string,
     description: string,
   ): Promise<SearchResultSnapshotDocument> {
-    await this.subscriptionService.checkSubscriptionViolation(
-      user.subscription.type,
-      (subscriptionPlan) =>
-        !user.subscription?.appFeatures?.htmlSnippet &&
-        !subscriptionPlan.appFeatures.htmlSnippet,
-      'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-    );
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
 
     const snapshotDoc: SearchResultSnapshotDocument =
       await this.fetchSnapshotByIdOrFail(user, id);

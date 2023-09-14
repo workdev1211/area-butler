@@ -29,6 +29,7 @@ import { SnapshotExtService } from './snapshot-ext.service';
 import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -96,7 +97,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() { description }: { description: string },
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
+  ): Promise<ApiSearchResultSnapshotResponse> {
     return mapSnapshotToEmbeddableMap(
       await this.locationService.updateSnapshotDescription(
         user,

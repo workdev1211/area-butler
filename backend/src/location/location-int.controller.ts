@@ -172,6 +172,25 @@ export class LocationIntController {
     );
   }
 
+  @ApiOperation({
+    description: 'Update an existing map snapshot description',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Put('snapshot/:id/description')
+  async updateSnapshotDescription(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('id') id: string,
+    @Body() { description }: { description: string },
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return mapSnapshotToEmbeddableMap(
+      await this.locationService.updateSnapshotDescription(
+        integrationUser,
+        id,
+        description,
+      ),
+    );
+  }
+
   @ApiOperation({ description: 'Delete an existing map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Delete('snapshot/:id')

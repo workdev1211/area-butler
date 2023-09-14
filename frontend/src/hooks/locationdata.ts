@@ -186,6 +186,20 @@ export const useLocationData = () => {
     ).data;
   };
 
+  const updateSnapshotDesc = async (
+    snapshotId: string,
+    description?: string
+  ): Promise<ApiSearchResultSnapshotResponse> => {
+    return (
+      await put<ApiSearchResultSnapshotResponse>(
+        isIntegrationUser
+          ? `/api/location-int/snapshot/${snapshotId}/description`
+          : `/api/location/snapshot/${snapshotId}/description`,
+        { description }
+      )
+    ).data;
+  };
+
   const saveSnapshotConfig = async (
     mapRef: RefObject<ICurrentMapRef>,
     snapshotId: string,
@@ -254,6 +268,7 @@ export const useLocationData = () => {
     fetchSnapshots,
     createSnapshot,
     updateSnapshot,
+    updateSnapshotDesc,
     saveSnapshotConfig,
     deleteSnapshot,
   };

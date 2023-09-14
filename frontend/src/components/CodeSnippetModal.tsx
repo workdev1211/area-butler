@@ -3,7 +3,6 @@ import copy from "copy-to-clipboard";
 import { saveAs } from "file-saver";
 
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { useHttp } from "hooks/http";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 import closeIcon from "../assets/icons/cross.svg";
@@ -11,6 +10,7 @@ import copyIcon from "../assets/icons/copy.svg";
 import downloadIcon from "../assets/icons/download.svg";
 import { svgPrimaryColorFilter } from "../shared/shared.constants";
 import { getQrCodeBase64 } from "../export/QrCode";
+import { useLocationData } from "../hooks/locationdata";
 
 export interface CodeSnippetModalProps {
   codeSnippet: string;
@@ -29,8 +29,9 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
   snapshot,
   label,
 }) => {
-  const { put } = useHttp();
   const { userDispatch } = useContext(UserContext);
+
+  const { updateSnapshotDesc } = useLocationData();
 
   const [description, setDescription] = useState(snapshot?.description);
 
@@ -51,9 +52,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
       snapshot.description !== description
     ) {
       try {
-        await put(`/api/location/snapshot/${snapshot.id}/description`, {
-          description,
-        });
+        await updateSnapshotDesc(snapshot.id, description); //1
 
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION,
