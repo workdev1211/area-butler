@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -29,6 +30,7 @@ import { RealEstateListingDocument } from '../real-estate-listing/schema/real-es
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { LocationIntService } from './location-int.service';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -59,7 +61,7 @@ export class LocationIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSnapshot(integrationUser, snapshot);
+    return this.locationIntService.createSnapshot(integrationUser, snapshot);
   }
 
   @ApiOperation({
@@ -74,11 +76,12 @@ export class LocationIntController {
     const {
       skip: skipNumber,
       limit: limitNumber,
-      sort: sortParams,
       filter: filterParams,
+      project: projectParams,
+      sort: sortParams,
     } = fetchSnapshotsReq;
 
-    const includedFields = {
+    const resultProjectParams = projectParams || {
       token: 1,
       description: 1,
       config: 1,
@@ -95,9 +98,9 @@ export class LocationIntController {
       await this.locationService.fetchSnapshots({
         skipNumber,
         limitNumber,
-        includedFields,
         sortParams,
         filterParams,
+        projectParams: resultProjectParams,
         user: integrationUser,
       })
     ).map((r) => mapSnapshotToEmbeddableMap(r));
@@ -116,6 +119,21 @@ export class LocationIntController {
     );
 
     return mapSnapshotToEmbeddableMap(snapshotDoc, false);
+  }
+
+  @ApiOperation({
+    description: 'Fetch the configs of the latest snapshots',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('snapshots/configs')
+  async fetchLateSnapConfigs(
+    @Query('limitNumber', ParseIntPipe) limitNumber = 5,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiLateSnapConfigOption[]> {
+    return this.locationService.fetchLateSnapConfigs(
+      integrationUser,
+      limitNumber,
+    );
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })

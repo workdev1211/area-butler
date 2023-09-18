@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -32,7 +32,7 @@ import {
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
   IApiMongoFilterParams,
-  IApiMongoIncludedSortParams,
+  IApiMongoProjectSortParams,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -69,6 +69,7 @@ import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
+import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 
 @Injectable()
 export class LocationService {
@@ -295,40 +296,45 @@ export class LocationService {
   }
 
   async createSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
+    user: UserDocument,
     snapshot: ApiSearchResultSnapshot,
     config?: ApiSearchResultSnapshotConfig,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    const isIntegrationUser = 'integrationUserId' in user;
     const token = randomBytes(60).toString('hex');
 
-    const mapboxAccessToken = isIntegrationUser
-      ? (await this.integrationUserService.createMapboxAccessToken(user)).config
-          .mapboxAccessToken
-      : (await this.userService.createMapboxAccessToken(user))
-          .mapboxAccessToken;
+    const mapboxAccessToken = (
+      await this.userService.createMapboxAccessToken(user)
+    ).mapboxAccessToken;
 
     let snapshotConfig = config;
 
-    // a standard flow - we should use a config from a previous snapshot
     if (!snapshotConfig) {
-      const templateSnapshotId = isIntegrationUser
-        ? user.config.templateSnapshotId
-        : user.templateSnapshotId;
+      let templateSnapshot: SearchResultSnapshotDocument;
+      let templateSnapshotId = user.templateSnapshotId;
 
-      const templateSnapshot = templateSnapshotId
-        ? await this.fetchSnapshotByIdOrFail(user, templateSnapshotId).catch(
-            () => undefined,
-          )
-        : (
-            await this.fetchSnapshots({
-              user,
-              skipNumber: 0,
-              limitNumber: 1,
-              includedFields: { config: 1 },
-              sortParams: { updatedAt: -1 },
-            })
-          )[0];
+      if (!templateSnapshotId && user.parentId) {
+        const parentUser = await this.userService.findById(user.parentId, {
+          templateSnapshotId: 1,
+        });
+
+        templateSnapshotId = parentUser?.templateSnapshotId;
+      }
+
+      if (templateSnapshotId) {
+        templateSnapshot = await this.fetchSnapshot({
+          user,
+          filterParams: { id: templateSnapshotId },
+          projectParams: { config: 1 },
+        });
+      }
+
+      if (!templateSnapshot) {
+        templateSnapshot = await this.fetchSnapshot({
+          user,
+          projectParams: { config: 1 },
+          sortParams: { updatedAt: -1 },
+        });
+      }
 
       snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
     }
@@ -345,29 +351,16 @@ export class LocationService {
       config: snapshotConfig,
     };
 
-    if (isIntegrationUser) {
-      snapshotDoc.integrationParams = {
-        integrationUserId: user.integrationUserId,
-        integrationType: user.integrationType,
-        integrationId: snapshot.integrationId,
-      };
-    } else {
-      snapshotDoc.userId = user.id;
-    }
+    snapshotDoc.userId = user.id;
 
-    if (
-      !isIntegrationUser &&
-      user.subscription.type === ApiSubscriptionPlanType.TRIAL
-    ) {
+    if (user.subscription.type === ApiSubscriptionPlanType.TRIAL) {
       snapshotDoc.isTrial = true;
     }
 
-    const addressExpiration = !isIntegrationUser
-      ? this.subscriptionService.getLimitAmount(
-          user.subscription.stripePriceId,
-          ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-        )
-      : undefined;
+    const addressExpiration = this.subscriptionService.getLimitAmount(
+      user.subscription.stripePriceId,
+      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
+    );
 
     if (addressExpiration) {
       const createdAt = dayjs();
@@ -383,11 +376,11 @@ export class LocationService {
     ).save();
 
     return {
-      id: savedSnapshotDoc.id,
+      mapboxAccessToken,
       token,
       snapshot,
+      id: savedSnapshotDoc.id,
       config: snapshotConfig,
-      mapboxAccessToken,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
     };
@@ -497,15 +490,15 @@ export class LocationService {
     user,
     skipNumber = 0,
     limitNumber = 0,
-    includedFields,
+    projectParams,
     sortParams,
     filterParams,
   }: {
     user: UserDocument | TIntegrationUserDocument;
     skipNumber: number;
     limitNumber: number;
-    includedFields?: IApiMongoIncludedSortParams;
-    sortParams?: IApiMongoIncludedSortParams;
+    projectParams?: IApiMongoProjectSortParams;
+    sortParams?: IApiMongoProjectSortParams;
     filterParams?: IApiMongoFilterParams;
   }): Promise<SearchResultSnapshotDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -525,15 +518,139 @@ export class LocationService {
     if (isIntegrationUser) {
       filterQuery['integrationParams.integrationUserId'] =
         user.integrationUserId;
+
+      filterQuery['integrationParams.integrationType'] = user.integrationType;
     } else {
       filterQuery.userId = user.id;
     }
 
     return this.searchResultSnapshotModel
-      .find(filterQuery, includedFields)
+      .find(filterQuery, projectParams)
       .sort(sortParams)
       .skip(skipNumber)
       .limit(limitNumber);
+  }
+
+  async fetchLateSnapConfigs(
+    user: UserDocument | TIntegrationUserDocument,
+    limitNumber: number,
+  ): Promise<IApiLateSnapConfigOption[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
+
+    const matchQuery = { $and: [] };
+
+    if (isIntegrationUser) {
+      matchQuery['$and'].push({
+        'integrationParams.integrationUserId': user.integrationUserId,
+        'integrationParams.integrationType': user.integrationType,
+      });
+    } else {
+      matchQuery['$and'].push({
+        userId: user.id,
+      });
+    }
+
+    const pipelines: any = [{ $match: matchQuery }, { $limit: limitNumber }];
+
+    const parentUserId = user.parentId;
+    let parentTemplateSnapId: string;
+
+    if (parentUserId) {
+      const parentUser = isIntegrationUser
+        ? await this.integrationUserService.findByDbId(parentUserId, {
+            'config.templateSnapshotId': 1,
+          })
+        : await this.userService.findById(parentUserId, {
+            templateSnapshotId: 1,
+          });
+
+      const isParentIntUser = 'integrationUserId' in parentUser;
+
+      parentTemplateSnapId = isParentIntUser
+        ? parentUser.config.templateSnapshotId
+        : parentUser.templateSnapshotId;
+
+      if (parentTemplateSnapId) {
+        pipelines.push({
+          $unionWith: {
+            coll: 'searchresultsnapshots',
+            pipeline: [
+              { $match: { _id: new Types.ObjectId(parentTemplateSnapId) } },
+              {
+                $set: {
+                  isParentTemplate: true,
+                  'snapshot.placesLocation.label': {
+                    $concat: ['Elternteil: ', '$snapshot.placesLocation.label'],
+                  },
+                },
+              },
+            ],
+          },
+        });
+      }
+    }
+
+    const userTemplateSnapId = isIntegrationUser
+      ? user.config.templateSnapshotId
+      : user.templateSnapshotId;
+
+    if (userTemplateSnapId) {
+      matchQuery['$and'].push({
+        _id: { $not: { $eq: new Types.ObjectId(userTemplateSnapId) } },
+      });
+
+      pipelines.push({
+        $unionWith: {
+          coll: 'searchresultsnapshots',
+          pipeline: [
+            { $match: { _id: new Types.ObjectId(userTemplateSnapId) } },
+            {
+              $set: {
+                isUserTemplate: true,
+                'snapshot.placesLocation.label': {
+                  $concat: ['Benutzer: ', '$snapshot.placesLocation.label'],
+                },
+              },
+            },
+          ],
+        },
+      });
+    }
+
+    pipelines.push(
+      { $sort: { isParentTemplate: -1, isUserTemplate: -1 } },
+      {
+        $project: {
+          config: 1,
+          'snapshot.placesLocation.label': 1,
+        },
+      },
+    );
+
+    const snapshots =
+      await this.searchResultSnapshotModel.aggregate<SearchResultSnapshotDocument>(
+        pipelines,
+      );
+
+    return snapshots.map(
+      ({
+        _id,
+        config,
+        snapshot: {
+          placesLocation: { label },
+        },
+      }) => ({ id: `${_id}`, label, config }),
+    );
   }
 
   async fetchSnapshotByIdOrFail(
@@ -596,6 +713,45 @@ export class LocationService {
     }
 
     return snapshotDoc;
+  }
+
+  async fetchSnapshot({
+    user,
+    filterParams,
+    projectParams,
+    sortParams,
+  }: {
+    user: UserDocument | TIntegrationUserDocument;
+    filterParams?: IApiMongoFilterParams;
+    projectParams?: IApiMongoProjectSortParams;
+    sortParams?: IApiMongoProjectSortParams;
+  }): Promise<SearchResultSnapshotDocument> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      await this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) =>
+          !user.subscription?.appFeatures?.htmlSnippet &&
+          !subscriptionPlan.appFeatures.htmlSnippet,
+        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+      );
+    }
+
+    const filterQuery = filterParams ? { ...filterParams } : {};
+
+    if (isIntegrationUser) {
+      filterQuery['integrationParams.integrationUserId'] =
+        user.integrationUserId;
+
+      filterQuery['integrationParams.integrationType'] = user.integrationType;
+    } else {
+      filterQuery.userId = user.id;
+    }
+
+    return this.searchResultSnapshotModel
+      .findOne(filterQuery, projectParams)
+      .sort(sortParams);
   }
 
   private checkLocationExpiration(

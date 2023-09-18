@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Post,
   Put,
   Query,
@@ -30,6 +31,7 @@ import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -135,11 +137,12 @@ export class LocationController extends AuthenticatedController {
     const {
       skip: skipNumber,
       limit: limitNumber,
-      sort: sortParams,
       filter: filterParams,
+      project: projectParams,
+      sort: sortParams,
     } = fetchSnapshotsReq;
 
-    const includedFields = {
+    const resultProjectParams = projectParams || {
       token: 1,
       description: 1,
       config: 1,
@@ -157,9 +160,9 @@ export class LocationController extends AuthenticatedController {
         user,
         skipNumber,
         limitNumber,
-        includedFields,
-        sortParams,
         filterParams,
+        sortParams,
+        projectParams: resultProjectParams,
       })
     ).map((r) => mapSnapshotToEmbeddableMap(r));
   }
@@ -182,6 +185,17 @@ export class LocationController extends AuthenticatedController {
       await this.realEstateListingService.fetchRealEstateListings(user);
 
     return mapSnapshotToEmbeddableMap(snapshotDoc, false, realEstateListings);
+  }
+
+  @ApiOperation({
+    description: 'Fetch the configs of the latest snapshots',
+  })
+  @Get('snapshots/configs')
+  async fetchLateSnapConfigs(
+    @Query('limitNumber', ParseIntPipe) limitNumber = 5,
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+  ): Promise<IApiLateSnapConfigOption[]> {
+    return this.locationService.fetchLateSnapConfigs(user, limitNumber);
   }
 
   @ApiOperation({ description: 'Fetch Open AI location description' })

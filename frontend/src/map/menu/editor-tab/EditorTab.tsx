@@ -7,7 +7,6 @@ import {
   ResultEntity,
 } from "components/SearchResultContainer";
 import {
-  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
   ApiSnippetEntityVisibility,
   IApiSnapshotPoiFilter,
@@ -37,12 +36,7 @@ import PoiFilter from "./components/PoiFilter";
 import IconSizes from "./components/IconSizes";
 import { useLocationData } from "../../../hooks/locationdata";
 import { truncateText } from "../../../../../shared/functions/shared.functions";
-
-interface IRecentSnippetConfig {
-  id: string;
-  label: string;
-  config: ApiSearchResultSnapshotConfig;
-}
+import { IApiLateSnapConfigOption } from "../../../../../shared/types/location";
 
 const currentSnippetConfigLabel = "Aktuell";
 
@@ -55,7 +49,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   additionalMapBoxStyles = [],
   isNewSnapshot = false,
 }) => {
-  const { fetchSnapshots } = useLocationData();
+  const { fetchLateSnapConfigs } = useLocationData();
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
@@ -64,8 +58,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
   const [color, setColor] = useState(config?.primaryColor);
   const [mapIcon, setMapIcon] = useState(config?.mapIcon);
-  const [recentSnippetConfigs, setRecentSnippetConfigs] = useState<
-    IRecentSnippetConfig[]
+  const [lateSnapConfigs, setLateSnapConfigs] = useState<
+    IApiLateSnapConfigOption[]
   >([]);
   const [selectedSnippetConfigId, setSelectedSnippetConfigId] = useState(
     currentSnippetConfigLabel.toLowerCase()
@@ -82,54 +76,29 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
 
   useEffect(() => {
     const fetchEmbeddableMaps = async (): Promise<void> => {
-      const limit = isNewSnapshot ? 6 : 5;
-
-      const embeddableMaps = await fetchSnapshots(
-        `limit=${limit}&sort=${JSON.stringify({
-          updatedAt: -1,
-        })}`
+      const lateSnapConfResponse = await fetchLateSnapConfigs(
+        isNewSnapshot ? 6 : 5
       );
 
-      const snippetConfigs = embeddableMaps.reduce<IRecentSnippetConfig[]>(
-        (
-          result,
-          {
-            id,
-            snapshot: {
-              placesLocation: { label },
-            },
-            config,
-          }
-        ) => {
-          if (
-            !id ||
-            !label ||
-            !config ||
-            result.length === 5 ||
-            (id === snapshotId && isNewSnapshot)
-          ) {
-            return result;
-          }
-
-          const snippetConfig = { config };
-
-          if (id === snapshotId) {
-            Object.assign(snippetConfig, {
-              id: currentSnippetConfigLabel.toLowerCase(),
-              label: currentSnippetConfigLabel,
-            });
-          } else {
-            Object.assign(snippetConfig, { id, label });
-          }
-
-          result.push(snippetConfig as IRecentSnippetConfig);
-
+      const snapshotConfigs = lateSnapConfResponse.reduce<
+        IApiLateSnapConfigOption[]
+      >((result, snapshotConfig) => {
+        if (
+          !snapshotConfig.id ||
+          !snapshotConfig.label ||
+          !snapshotConfig.config ||
+          result.length === 5 ||
+          (snapshotConfig.id === snapshotId && isNewSnapshot)
+        ) {
           return result;
-        },
-        []
-      );
+        }
 
-      setRecentSnippetConfigs(snippetConfigs);
+        result.push(snapshotConfig);
+
+        return result;
+      }, []);
+
+      setLateSnapConfigs(snapshotConfigs);
     };
 
     void fetchEmbeddableMaps();
@@ -522,28 +491,28 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         </div>
         <div className="collapse-content">
           <ul className="editor-configuration-list">
-            {recentSnippetConfigs.length > 0 && (
+            {lateSnapConfigs.length > 0 && (
               <li>
                 <div className="flex items-center gap-6 py-1 w-full">
                   <h4 className="w-[6.5rem] font-bold">Vorlagen</h4>
                   <select
                     className="select select-bordered select-sm flex-1 w-full"
                     value={selectedSnippetConfigId}
-                    disabled={recentSnippetConfigs.length === 1}
+                    disabled={lateSnapConfigs.length === 1}
                     onChange={(e): void => {
                       const changedSnippetConfigId = e.target.value;
                       setSelectedSnippetConfigId(changedSnippetConfigId);
 
                       onConfigChange({
-                        ...recentSnippetConfigs.find(
+                        ...lateSnapConfigs.find(
                           ({ id }) => id === changedSnippetConfigId
                         )!.config,
                       });
                     }}
                   >
-                    {recentSnippetConfigs.map((snippetConfig) => (
-                      <option value={snippetConfig.id} key={snippetConfig.id}>
-                        {truncateText(snippetConfig.label, 45)}
+                    {lateSnapConfigs.map((snapshotConfig) => (
+                      <option value={snapshotConfig.id} key={snapshotConfig.id}>
+                        {truncateText(snapshotConfig.label, 45)}
                       </option>
                     ))}
                   </select>

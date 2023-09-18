@@ -4,6 +4,8 @@ import {
 } from "../types/integration";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
+  IApiIntegrationUserSchema,
+  IApiIntUserOnOfficeParams,
   TApiIntUserAvailProdContingents,
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
@@ -99,4 +101,31 @@ export const getOpenAiRespLimitByInt = (
       };
     }
   }
+};
+
+export const checkIsParent = (
+  integrationUser: IApiIntegrationUserSchema,
+  parentUser: IApiIntegrationUserSchema
+): boolean => {
+  const isSameIntegration =
+    integrationUser.integrationType === parentUser.integrationType;
+
+  if (!isSameIntegration) {
+    return false;
+  }
+
+  let isParent = false;
+
+  switch (integrationUser.integrationType) {
+    default:
+    case IntegrationTypesEnum.ON_OFFICE: {
+      return (
+        (integrationUser.parameters as IApiIntUserOnOfficeParams)
+          .customerWebId ===
+        (parentUser.parameters as IApiIntUserOnOfficeParams).customerWebId
+      );
+    }
+  }
+
+  return isParent;
 };

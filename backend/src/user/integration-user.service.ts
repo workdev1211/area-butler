@@ -24,8 +24,14 @@ import {
   TApiIntUserAvailProdContingents,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
-import { getAvailProdContType } from '../../../shared/functions/integration.functions';
-import { ApiTourNamesEnum } from '@area-butler-types/types';
+import {
+  checkIsParent,
+  getAvailProdContType,
+} from '../../../shared/functions/integration.functions';
+import {
+  ApiTourNamesEnum,
+  IApiMongoProjectSortParams,
+} from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
 
@@ -134,6 +140,16 @@ export class IntegrationUserService {
     return existingUser;
   }
 
+  async findByDbId(
+    integrationUserDbId: string,
+    projectParams?: IApiMongoProjectSortParams,
+  ): Promise<TIntegrationUserDocument> {
+    return this.integrationUserModel.findById(
+      integrationUserDbId,
+      projectParams,
+    );
+  }
+
   async findByDbIdAndUpdate(
     integrationUserDbId: string,
     updateQuery: UpdateQuery<unknown>,
@@ -204,6 +220,14 @@ export class IntegrationUserService {
       const parentUser = await this.integrationUserModel.findById(
         integrationUser.parentId,
       );
+
+      if (!checkIsParent(integrationUser, parentUser)) {
+        const errorMessage = 'The user info is incorrect!';
+        let logMessage = `${errorMessage}\nIntegration user id: ${integrationUser.integrationUserId}\n`;
+        logMessage += `Parent user id: ${parentUser.integrationUserId}.`;
+        this.logger.error(logMessage);
+        throw new HttpException(errorMessage, 400);
+      }
 
       ({ productContingents, productsUsed } = parentUser);
     }

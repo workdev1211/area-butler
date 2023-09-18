@@ -1,4 +1,8 @@
-import { IApiMongoFilterParams, IApiMongoIncludedSortParams } from "./types";
+import {
+  ApiSearchResultSnapshotConfig,
+  IApiMongoFilterParams,
+  IApiMongoProjectSortParams,
+} from "./types";
 
 export enum Iso3166_1Alpha2CountriesEnum {
   "AD" = "AD",
@@ -259,6 +263,13 @@ export enum Iso3166_1Alpha3CountriesEnum {
 export interface IApiFetchSnapshotsReq {
   skip?: number;
   limit?: number;
-  sort?: IApiMongoIncludedSortParams;
   filter?: IApiMongoFilterParams;
+  project?: IApiMongoProjectSortParams;
+  sort?: IApiMongoProjectSortParams;
+}
+
+export interface IApiLateSnapConfigOption {
+  id: string;
+  label: string;
+  config: ApiSearchResultSnapshotConfig;
 }

@@ -408,7 +408,7 @@ export interface IApiPlacesLocationValue {
   place_id: string;
 }
 
-export interface IApiMongoIncludedSortParams {
+export interface IApiMongoProjectSortParams {
   [key: string]: number;
 }
 

@@ -26,6 +26,7 @@ import {
 } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
+  IApiMongoProjectSortParams,
   IApiUserApiConnectionSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
@@ -204,8 +205,11 @@ export class UserService {
     return this.userModel.findOne({ paypalCustomerId });
   }
 
-  async findById(id: string): Promise<UserDocument> {
-    return this.userModel.findById({ _id: id });
+  async findById(
+    userId: string,
+    projectParams?: IApiMongoProjectSortParams,
+  ): Promise<UserDocument> {
+    return this.userModel.findById(userId, projectParams);
   }
 
   async findByIdWithSubscription(id: string): Promise<UserDocument> {

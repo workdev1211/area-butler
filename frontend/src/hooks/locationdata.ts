@@ -23,6 +23,7 @@ import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.fu
 import { ICurrentMapRef } from "../components/SearchResultContainer";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { UserContext } from "../context/UserContext";
+import { IApiLateSnapConfigOption } from "../../../shared/types/location";
 
 export const useLocationData = () => {
   // TODO refactor to use the useTools hook
@@ -72,6 +73,18 @@ export const useLocationData = () => {
     }
 
     return (await get<ApiSearchResultSnapshotResponse[]>(url)).data;
+  };
+
+  const fetchLateSnapConfigs = async (
+    limitNumber: number
+  ): Promise<IApiLateSnapConfigOption[]> => {
+    let url = isIntegrationUser
+      ? "/api/location-int/snapshots/configs"
+      : "/api/location/snapshots/configs";
+
+    url += `?limitNumber=${limitNumber}`;
+
+    return (await get<IApiLateSnapConfigOption[]>(url)).data;
   };
 
   const createSnapshot = async (
@@ -266,6 +279,7 @@ export const useLocationData = () => {
     createLocation,
     fetchSnapshot,
     fetchSnapshots,
+    fetchLateSnapConfigs,
     createSnapshot,
     updateSnapshot,
     updateSnapshotDesc,
