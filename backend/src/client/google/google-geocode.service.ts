@@ -134,7 +134,7 @@ export class GoogleGeocodeService {
 
     if (!place) {
       this.logger.error(
-        `Place not found!\nLocation is ${location}.\nLanguage is ${language}.`,
+        `\nPlace not found!\nLocation is ${location}.\nLanguage is ${language}.`,
       );
 
       throw new HttpException('Place not found!', 400);

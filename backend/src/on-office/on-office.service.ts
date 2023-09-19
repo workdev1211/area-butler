@@ -645,66 +645,66 @@ export class OnOfficeService {
     );
   }
 
-  // Not used for the moment but kept just in case
-  // async uploadEstateLink(
-  //   {
-  //     parameters: { token, apiKey, extendedClaim },
-  //     config: { exportMatching },
-  //   }: TIntegrationUserDocument,
-  //   integrationId: string,
-  //   { fileTitle, url, exportType }: IApiOnOfficeUplEstFileOrLinkReq,
-  // ): Promise<void> {
-  //   const actionId = ApiOnOfficeActionIdsEnum.DO;
-  //   const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
-  //
-  //   const timestamp = dayjs().unix();
-  //   const signature = this.onOfficeApiService.generateSignature(
-  //     [timestamp, token, resourceType, actionId].join(''),
-  //     apiKey,
-  //     'base64',
-  //   );
-  //
-  //   const artType = ApiOnOfficeArtTypesEnum.LINK;
-  //
-  //   const request: IApiOnOfficeRequest = {
-  //     token,
-  //     request: {
-  //       actions: [
-  //         {
-  //           timestamp,
-  //           hmac: signature,
-  //           hmac_version: 2,
-  //           actionid: actionId,
-  //           resourceid: null,
-  //           resourcetype: resourceType,
-  //           identifier: '',
-  //           parameters: {
-  //             url,
-  //             extendedclaim: extendedClaim,
-  //             module: 'estate',
-  //             title: fileTitle,
-  //             Art: artType,
-  //             relatedRecordId: integrationId,
-  //           },
-  //         },
-  //       ],
-  //     },
-  //   };
-  //
-  //   if (exportMatching && exportMatching[exportType]) {
-  //     request.request.actions[0].parameters.documentAttribute =
-  //       exportMatching[exportType].fieldId;
-  //   }
-  //
-  //   const response = await this.onOfficeApiService.sendRequest(request);
-  //
-  //   this.onOfficeApiService.checkResponseIsSuccess(
-  //     this.uploadEstateLink.name,
-  //     'Link upload failed!',
-  //     request,
-  //     response,
-  //   );
-  // }
+  async uploadEstateLink(
+    {
+      parameters: { token, apiKey, extendedClaim },
+      config: { exportMatching },
+    }: TIntegrationUserDocument,
+    integrationId: string,
+    { fileTitle, url, exportType }: IApiOnOfficeUplEstFileOrLinkReq,
+  ): Promise<void> {
+    const actionId = ApiOnOfficeActionIdsEnum.DO;
+    const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
+
+    const timestamp = dayjs().unix();
+    const signature = this.onOfficeApiService.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const artType = ApiOnOfficeArtTypesEnum.LINK;
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: null,
+            resourcetype: resourceType,
+            identifier: '',
+            parameters: {
+              url,
+              extendedclaim: extendedClaim,
+              module: 'estate',
+              title: fileTitle,
+              Art: artType,
+              relatedRecordId: integrationId,
+            },
+          },
+        ],
+      },
+    };
+
+    // should be verified or removed in the future
+    // if (exportMatching && exportMatching[exportType]) {
+    //   request.request.actions[0].parameters.documentAttribute =
+    //     exportMatching[exportType].fieldId;
+    // }
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    this.onOfficeApiService.checkResponseIsSuccess(
+      this.uploadEstateLink.name,
+      'Link upload failed!',
+      request,
+      response,
+    );
+  }
 
   verifySignature(
     queryParams:

@@ -119,7 +119,7 @@ export class IntegrationUserService {
     return existingUser;
   }
 
-  async findOneByAccessTokenOrFail(
+  async findByTokenOrFail(
     accessToken: string,
   ): Promise<TIntegrationUserDocument> {
     const existingUser = await this.integrationUserModel.findOne({

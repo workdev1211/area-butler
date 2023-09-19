@@ -46,7 +46,7 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
     }
 
     if (accessToken?.length === 2) {
-      user = await this.integrationUserService.findOneByAccessTokenOrFail(
+      user = await this.integrationUserService.findByTokenOrFail(
         accessToken[1],
       );
     }

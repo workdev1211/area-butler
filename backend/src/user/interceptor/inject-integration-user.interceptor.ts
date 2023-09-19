@@ -29,7 +29,7 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
 
     if (accessToken?.length === 2) {
       integrationUser =
-        await this.integrationUserService.findOneByAccessTokenOrFail(
+        await this.integrationUserService.findByTokenOrFail(
           accessToken[1],
         );
     }

@@ -31,6 +31,7 @@ import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-offi
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
 import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
+import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -125,21 +126,20 @@ export class OnOfficeController {
     @Param('integrationId') integrationId: string,
     @Body() uploadEstateFileOrLinkData: ApiOnOfficeUplEstFileOrLinkReqDto,
   ): Promise<void> {
-    // The "old" approach of the onOffice link sending
-    // if (
-    //   [
-    //     AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
-    //     AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
-    //   ].includes(
-    //     uploadEstateFileOrLinkData.exportType as AreaButlerExportTypesEnum,
-    //   )
-    // ) {
-    //   return this.onOfficeService.uploadEstateLink(
-    //     integrationUser,
-    //     integrationId,
-    //     uploadEstateFileOrLinkData,
-    //   );
-    // }
+    if (
+      [
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
+      ].includes(
+        uploadEstateFileOrLinkData.exportType as AreaButlerExportTypesEnum,
+      )
+    ) {
+      return this.onOfficeService.uploadEstateLink(
+        integrationUser,
+        integrationId,
+        uploadEstateFileOrLinkData,
+      );
+    }
 
     return this.onOfficeService.uploadEstateFile(
       integrationUser,

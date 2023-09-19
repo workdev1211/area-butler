@@ -74,16 +74,24 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     ]
   );
 
-  const intUserLinkExportType =
-    integrationUser?.config.exportMatching &&
-    (responseConfig?.showAddress
-      ? integrationUser?.config.exportMatching[
-          AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-        ] && AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-      : integrationUser?.config.exportMatching[
-          AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-        ]) &&
-    AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+  let intUserLinkExportType: AreaButlerExportTypesEnum | undefined;
+
+  if (integrationUser?.config.isFileLink) {
+    intUserLinkExportType = responseConfig?.showAddress
+      ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+      : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+  } else {
+    intUserLinkExportType =
+      integrationUser?.config.exportMatching &&
+      (responseConfig?.showAddress
+        ? integrationUser?.config.exportMatching[
+            AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+          ] && AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+        : integrationUser?.config.exportMatching[
+            AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+          ]) &&
+      AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+  }
 
   return (
     <div
@@ -132,19 +140,26 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
               {!!intUserLinkExportType && (
                 <div
                   onClick={() => {
+                    if (integrationUser?.config.isFileLink) {
+                      const fileTitle =
+                        intUserLinkExportType ===
+                        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+                          ? "Anonym - AreaButler Link ohne Adresse"
+                          : "Mit Adresse - AreaButler Link";
+
+                      void sendToOnOffice({
+                        fileTitle,
+                        exportType: intUserLinkExportType!,
+                        url: directLink,
+                      });
+
+                      return;
+                    }
+
                     void sendToOnOffice({
-                      exportType: intUserLinkExportType,
+                      exportType: intUserLinkExportType!,
                       text: directLink,
                     });
-
-                    // The "old" approach of the onOffice link sending
-                    // void sendToOnOffice({
-                    //   exportType: responseConfig?.showAddress
-                    //     ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-                    //     : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
-                    //   fileTitle: "iFrame Direktlink",
-                    //   url: directLink,
-                    // });
                   }}
                 >
                   <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
