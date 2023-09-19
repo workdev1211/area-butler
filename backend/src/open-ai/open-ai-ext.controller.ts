@@ -67,7 +67,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
     try {
       // TODO move all complex logic to a separate OpenAI service
-      const place = await this.googleGeocodeService.fetchPlace(
+      const place = await this.googleGeocodeService.fetchPlaceOrFail(
         address || { lat, lng },
       );
 

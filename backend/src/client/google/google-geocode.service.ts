@@ -123,8 +123,21 @@ export class GoogleGeocodeService {
       place = await this.fetchPlaceByAddress(location, language);
     }
 
+    return place;
+  }
+
+  async fetchPlaceOrFail(
+    location: string | ApiCoordinates,
+    language = ApiGoogleLanguageEnum.DE,
+  ): Promise<IGoogleGeocodeResult> {
+    const place = await this.fetchPlace(location, language);
+
     if (!place) {
-      throw new HttpException('Location not found!', 400);
+      this.logger.error(
+        `Place not found!\nLocation is ${location}.\nLanguage is ${language}.`,
+      );
+
+      throw new HttpException('Place not found!', 400);
     }
 
     return place;

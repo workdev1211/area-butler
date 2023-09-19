@@ -45,7 +45,7 @@ export class SnapshotExtService {
     transportParams?: TransportationParam[];
     poiTypes?: OsmName[];
   }): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.googleGeocodeService.fetchPlace(location);
+    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
 
     const placesLocation: IApiPlacesLocation = {
       label: place.formatted_address || 'Mein Standort',
@@ -109,7 +109,7 @@ export class SnapshotExtService {
       templateSnapshotId,
     );
 
-    const place = await this.googleGeocodeService.fetchPlace(location);
+    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',

@@ -45,7 +45,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
     let coordinates: ApiCoordinates;
 
     if (address) {
-      const place = await this.googleGeocodeService.fetchPlace(address);
+      const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
       coordinates = { ...place.geometry.location };
     }
 
