@@ -404,16 +404,16 @@ export class OpenAiService {
       }
     }
 
-    if (characteristics.propertySizeInSquareMeters) {
+    if (characteristics?.propertySizeInSquareMeters) {
       queryText += ` Zu dem Objekt gehört ein Grundstück mit einer Fläche von ${characteristics.propertySizeInSquareMeters}qm.`;
     }
-    if (characteristics.realEstateSizeInSquareMeters) {
+    if (characteristics?.realEstateSizeInSquareMeters) {
       queryText += ` Die Wohnfläche beträgt ${characteristics.realEstateSizeInSquareMeters}qm.`;
     }
-    if (characteristics.numberOfRooms) {
+    if (characteristics?.numberOfRooms) {
       queryText += ` Es gibt ${characteristics.numberOfRooms} Zimmer.`;
     }
-    if (characteristics.energyEfficiency) {
+    if (characteristics?.energyEfficiency) {
       queryText += ` Die Energieeffizienzklasse des Objektes ist '${characteristics.energyEfficiency}'.`;
     }
     if (characteristics?.furnishing?.includes(ApiFurnishing.GARDEN)) {
