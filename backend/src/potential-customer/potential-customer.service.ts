@@ -30,6 +30,7 @@ import {
   ApiUpsertQuestionnaire,
   ApiUpsertQuestionnaireRequest,
 } from '@area-butler-types/potential-customer';
+import { IntegrationUserService } from '../user/integration-user.service';
 
 @Injectable()
 export class PotentialCustomerService {
@@ -39,6 +40,7 @@ export class PotentialCustomerService {
     @InjectModel(QuestionnaireRequest.name)
     private readonly questionnaireRequestModel: Model<QuestionnaireRequestDocument>,
     private readonly userService: UserService,
+    private readonly integrationUserService: IntegrationUserService,
     private readonly mailSender: MailSenderService,
     private readonly subscriptionService: SubscriptionService,
   ) {}
@@ -47,17 +49,29 @@ export class PotentialCustomerService {
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<PotentialCustomerDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
+    const userIds: string[] = [];
     let filter;
 
     if (isIntegrationUser) {
+      userIds.push(user.integrationUserId);
+
+      if (user.parentId) {
+        const { integrationUserId: parentIntUserId } =
+          await this.integrationUserService.findByDbId(user.parentId, {
+            integrationUserId: 1,
+          });
+
+        userIds.push(parentIntUserId);
+      }
+
       filter = {
-        'integrationParams.integrationUserId': user.integrationUserId,
+        'integrationParams.integrationUserId': { $in: userIds },
         'integrationParams.integrationType': user.integrationType,
       };
     }
 
     if (!isIntegrationUser) {
-      const userIds = [user.id];
+      userIds.push(user.id);
 
       if (user.parentId) {
         userIds.push(user.parentId);

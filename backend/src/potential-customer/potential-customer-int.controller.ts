@@ -51,7 +51,11 @@ export class PotentialCustomerIntController {
         integrationUser,
       )
     ).map((potentialCustomer) =>
-      mapPotentialCustomerToApiPotentialCustomer(potentialCustomer),
+      mapPotentialCustomerToApiPotentialCustomer(
+        potentialCustomer,
+        integrationUser.integrationUserId,
+        true,
+      ),
     );
   }
 
