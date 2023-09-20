@@ -32,6 +32,7 @@ import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-int
 import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
 import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
+import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
@@ -46,19 +47,9 @@ export class OnOfficeController {
   @Get('activation-iframe')
   @Render('on-office/activation-iframe')
   renderActivationIframe(
-    @Query('apiClaim') apiClaim: string,
-    @Query('apiToken') apiToken: string,
-    @Query('customerWebId') customerWebId: string,
-    @Query('parameterCacheId') parameterCacheId: string,
-    @Query('userId') userId: string,
+    @Query() activationData: ApiOnOfficeActivationReqDto,
   ): Promise<IApiOnOfficeActivationRes> {
-    return this.onOfficeService.getRenderData({
-      apiClaim,
-      apiToken,
-      customerWebId,
-      parameterCacheId,
-      userId,
-    });
+    return this.onOfficeService.getRenderData(activationData);
   }
 
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
