@@ -87,11 +87,11 @@ export class OpenAiService {
         snapshot,
         config: snapshotConfig = defaultSnapshotConfig,
       },
-      textLength,
       tonality,
       customText,
-      targetGroupName = defaultTargetGroupName,
       meanOfTransportation,
+      targetGroupName = defaultTargetGroupName,
+      textLength = OpenAiTextLengthEnum.MEDIUM,
     }: ILocDescQueryData,
   ): Promise<string> {
     let queryText = snapshotConfig.showAddress
@@ -207,8 +207,8 @@ export class OpenAiService {
     realEstateType,
     tonality,
     customText,
-    textLength,
     targetGroupName = defaultTargetGroupName,
+    textLength = OpenAiTextLengthEnum.MEDIUM,
   }: IRealEstDescQueryData): string {
     let queryText =
       'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
