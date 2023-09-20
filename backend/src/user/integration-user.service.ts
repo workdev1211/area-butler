@@ -28,12 +28,10 @@ import {
   checkIsParent,
   getAvailProdContType,
 } from '../../../shared/functions/integration.functions';
-import {
-  ApiTourNamesEnum,
-  IApiMongoProjectSortParams,
-} from '@area-butler-types/types';
+import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
+import { IApiMongoProjectSortParams } from '../shared/shared.types';
 
 @Injectable()
 export class IntegrationUserService {

@@ -1,11 +1,11 @@
 import { IsInt, IsObject, IsOptional, IsPositive } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { IApiFetchSnapshotsReq } from '@area-butler-types/location';
 import {
+  IApiFetchSnapshotsReq,
   IApiMongoFilterParams,
   IApiMongoProjectSortParams,
-} from '@area-butler-types/types';
+} from '../../shared/shared.types';
 
 class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {
   @IsOptional()

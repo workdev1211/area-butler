@@ -26,7 +26,6 @@ import {
 } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
-  IApiMongoProjectSortParams,
   IApiUserApiConnectionSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
@@ -36,6 +35,7 @@ import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { getImageTypeFromFileType } from '../shared/shared.functions';
+import { IApiMongoProjectSortParams } from '../shared/shared.types';
 
 @Injectable()
 export class UserService {

@@ -31,8 +31,6 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
-  IApiMongoFilterParams,
-  IApiMongoProjectSortParams,
   MeansOfTransportation,
   OsmName,
   OsmType,
@@ -70,6 +68,10 @@ import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
+import {
+  IApiMongoFilterParams,
+  IApiMongoProjectSortParams,
+} from '../shared/shared.types';
 
 @Injectable()
 export class LocationService {
@@ -323,7 +325,7 @@ export class LocationService {
       if (templateSnapshotId) {
         templateSnapshot = await this.fetchSnapshot({
           user,
-          filterParams: { id: templateSnapshotId },
+          filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
           projectParams: { config: 1 },
         });
       }

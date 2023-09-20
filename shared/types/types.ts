@@ -408,14 +408,6 @@ export interface IApiPlacesLocationValue {
   place_id: string;
 }
 
-export interface IApiMongoProjectSortParams {
-  [key: string]: number;
-}
-
-export interface IApiMongoFilterParams {
-  [key: string]: string;
-}
-
 export interface IApiCreatePaypalOrder {
   priceId: string;
 }

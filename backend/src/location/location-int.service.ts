@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 
 import {
@@ -56,7 +56,7 @@ export class LocationIntService {
       if (templateSnapshotId) {
         templateSnapshot = await this.locationService.fetchSnapshot({
           user: integrationUser,
-          filterParams: { id: templateSnapshotId },
+          filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
           projectParams: { config: 1 },
         });
       }
