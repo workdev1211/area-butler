@@ -4,6 +4,7 @@ import { Document } from 'mongoose';
 import { ApiRequestContingent } from '@area-butler-types/subscription-plan';
 import {
   ApiShowTour,
+  IApiMapboxStyle,
   IApiUserExportFont,
   IApiUserPoiIcons,
   TApiUserApiConnections,
@@ -73,7 +74,7 @@ export class User {
   allowedUrls: string[];
 
   @Prop({ type: Array, default: [] })
-  additionalMapBoxStyles: { key: string; label: string }[];
+  additionalMapBoxStyles: IApiMapboxStyle[];
 
   @Prop({ type: Object })
   apiConnections: TApiUserApiConnections;

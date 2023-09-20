@@ -15,18 +15,20 @@ import { Type, Transform, Expose, Exclude } from 'class-transformer';
 import {
   ApiShowTour,
   ApiUser,
+  IApiMapboxStyle,
   IApiUserExportFont,
   IApiUserParentSettings,
   IApiUserPoiIcons,
-  MapBoxStyle,
   TApiUserApiConnections,
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
 import ApiUserSubscriptionDto from './api-user-subscription.dto';
-import MapBoxStyleDto from '../../dto/map-box-style.dto';
 import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
-import { retrieveTotalRequestContingent } from '../schema/user.schema';
+import {
+  retrieveTotalRequestContingent,
+  UserDocument,
+} from '../schema/user.schema';
 import ApiUserParentSettingsDto from './api-user-parent-settings.dto';
 import ApiUserExportFontDto from './api-user-export-font.dto';
 import ApiUserPoiIconsDto from './api-user-poi-icons.dto';
@@ -35,6 +37,7 @@ import {
   ApiRequestContingent,
   ApiUserSubscription,
 } from '@area-butler-types/subscription-plan';
+import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
 
 @Exclude()
 class ApiUserDto implements ApiUser {
@@ -42,8 +45,28 @@ class ApiUserDto implements ApiUser {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => MapBoxStyleDto)
-  additionalMapBoxStyles: MapBoxStyle[];
+  @Type(() => ApiMapboxStyleDto)
+  @Transform(
+    ({
+      obj: { parentUser, additionalMapBoxStyles },
+    }: {
+      obj: UserDocument;
+    }): IApiMapboxStyle[] => {
+      const parentMapboxStyles = parentUser?.additionalMapBoxStyles;
+
+      return [
+        ...(parentMapboxStyles
+          ? parentMapboxStyles.map((parentStyle) => {
+              parentStyle.label = `Elternteil: ${parentStyle.label}`;
+              return parentStyle;
+            })
+          : []),
+        ...(additionalMapBoxStyles || []),
+      ];
+    },
+    { toClassOnly: true },
+  )
+  additionalMapBoxStyles: IApiMapboxStyle[];
 
   @Expose()
   @IsOptional()

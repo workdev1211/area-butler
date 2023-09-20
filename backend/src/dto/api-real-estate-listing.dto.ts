@@ -62,7 +62,7 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
 
   @IsNotEmpty()
   @IsBoolean()
-  belongsToParent: boolean;
+  isFromParent: boolean;
 
   @IsOptional()
   @IsString()

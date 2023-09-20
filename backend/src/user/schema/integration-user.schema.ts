@@ -11,7 +11,8 @@ import {
   TApiIntegrationUserUsageStatistics,
 } from '@area-butler-types/integration-user';
 
-export type TIntegrationUserDocument = IntegrationUser & Document;
+export type TIntegrationUserDocument = IntegrationUser &
+  Document & { parentUser?: TIntegrationUserDocument };
 
 @Schema({ timestamps: true })
 export class IntegrationUser implements IApiIntegrationUserSchema {

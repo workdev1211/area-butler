@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -20,6 +20,8 @@ import { IntegrationUserService } from '../user/integration-user.service';
 
 @Injectable()
 export class LocationIntService {
+  private readonly logger = new Logger(LocationIntService.name);
+
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
@@ -39,10 +41,18 @@ export class LocationIntService {
     ).config.mapboxAccessToken;
 
     let snapshotConfig = config;
+    this.logger.debug(this.createSnapshot.name, 1, snapshotConfig);
 
     if (!snapshotConfig) {
       let templateSnapshot: SearchResultSnapshotDocument;
       let templateSnapshotId = integrationUser.config.templateSnapshotId;
+
+      this.logger.debug(
+        this.createSnapshot.name,
+        2,
+        templateSnapshotId,
+        integrationUser.parentId,
+      );
 
       if (!templateSnapshotId && integrationUser.parentId) {
         const parentUser = await this.integrationUserService.findByDbId(
@@ -53,6 +63,8 @@ export class LocationIntService {
         templateSnapshotId = parentUser?.config.templateSnapshotId;
       }
 
+      this.logger.debug(this.createSnapshot.name, 3, templateSnapshotId);
+
       if (templateSnapshotId) {
         templateSnapshot = await this.locationService.fetchSnapshot({
           user: integrationUser,
@@ -61,6 +73,8 @@ export class LocationIntService {
         });
       }
 
+      this.logger.debug(this.createSnapshot.name, 4, templateSnapshot?.id);
+
       if (!templateSnapshot) {
         templateSnapshot = await this.locationService.fetchSnapshot({
           user: integrationUser,
@@ -68,6 +82,13 @@ export class LocationIntService {
           sortParams: { updatedAt: -1 },
         });
       }
+
+      this.logger.debug(
+        this.createSnapshot.name,
+        5,
+        templateSnapshot?.id,
+        templateSnapshot?.config,
+      );
 
       snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
     }

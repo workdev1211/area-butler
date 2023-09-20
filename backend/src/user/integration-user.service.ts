@@ -215,9 +215,9 @@ export class IntegrationUserService {
     let { productContingents, productsUsed } = integrationUser;
 
     if (integrationUser.parentId) {
-      const parentUser = await this.integrationUserModel.findById(
-        integrationUser.parentId,
-      );
+      const parentUser =
+        integrationUser.parentUser ||
+        (await this.integrationUserModel.findById(integrationUser.parentId));
 
       if (!checkIsParent(integrationUser, parentUser)) {
         const errorMessage = 'The user info is incorrect!';

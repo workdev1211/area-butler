@@ -42,7 +42,7 @@ export interface IApiSentryConfig {
   environment: string;
 }
 
-export interface MapBoxStyle {
+export interface IApiMapboxStyle {
   key: string;
   label: string;
 }
@@ -63,7 +63,7 @@ export interface ApiUser {
   logo?: string;
   mapIcon?: string;
   color?: string;
-  additionalMapBoxStyles: MapBoxStyle[];
+  additionalMapBoxStyles: IApiMapboxStyle[];
   isChild: boolean;
   parentSettings?: IApiUserParentSettings;
   poiIcons?: IApiUserPoiIcons;

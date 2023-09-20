@@ -347,7 +347,7 @@ const RealEstatesPage: FunctionComponent = () => {
                         }}
                         data-tour={`real-estates-table-item-search-button-${index}`}
                       />
-                      {!realEstate.belongsToParent ? (
+                      {!realEstate.isFromParent ? (
                         <img
                           src={editIcon}
                           alt="icon-edit"
@@ -368,7 +368,7 @@ const RealEstatesPage: FunctionComponent = () => {
                           openEmbeddableMapsModal(realEstate);
                         }}
                       />
-                      {!realEstate.belongsToParent && (
+                      {!realEstate.isFromParent && (
                         <FormModal
                           modalConfig={{
                             ...deleteRealEstateModalConfig,

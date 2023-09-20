@@ -27,7 +27,7 @@ export interface ApiRealEstateListing {
   characteristics?: ApiRealEstateCharacteristics;
   coordinates: ApiCoordinates;
   status: ApiRealEstateStatusEnum;
-  belongsToParent: boolean;
+  isFromParent: boolean;
   integrationId?: string; // only for integration users
   openAiRequestQuantity?: number;
   iframeEndsAt?: string;

@@ -60,6 +60,7 @@ import {
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
+import { checkIsParent } from '../../../shared/functions/integration.functions';
 
 @Injectable()
 export class OnOfficeService {
@@ -289,6 +290,8 @@ export class OnOfficeService {
       throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
     }
 
+    await this.processParentUser(integrationUser);
+
     const availProdContingents =
       await this.integrationUserService.getAvailProdContingents(
         integrationUser,
@@ -446,6 +449,8 @@ export class OnOfficeService {
       integrationUser.id,
       convertOnOfficeProdToIntUserProd(product),
     );
+
+    await this.processParentUser(integrationUser);
 
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
@@ -655,12 +660,9 @@ export class OnOfficeService {
   }
 
   async uploadEstateLink(
-    {
-      parameters: { token, apiKey, extendedClaim },
-      config: { exportMatching },
-    }: TIntegrationUserDocument,
+    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
     integrationId: string,
-    { fileTitle, url, exportType }: IApiOnOfficeUplEstFileOrLinkReq,
+    { fileTitle, url }: IApiOnOfficeUplEstFileOrLinkReq,
   ): Promise<void> {
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
@@ -978,5 +980,31 @@ export class OnOfficeService {
       response.response.results[0].data.records[0].elements;
 
     return { userName, email };
+  }
+
+  private async processParentUser(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<void> {
+    if (!integrationUser.parentId) {
+      return;
+    }
+
+    const parentUser = await this.integrationUserService.findByDbId(
+      integrationUser.parentId,
+    );
+
+    if (checkIsParent(integrationUser, parentUser)) {
+      integrationUser.parentUser = parentUser;
+
+      integrationUser.config.extraMapboxStyles = [
+        ...(parentUser?.config.extraMapboxStyles
+          ? parentUser.config.extraMapboxStyles.map((parentStyle) => {
+              parentStyle.label = `Elternteil: ${parentStyle.label}`;
+              return parentStyle;
+            })
+          : []),
+        ...(integrationUser.config.extraMapboxStyles || []),
+      ];
+    }
   }
 }

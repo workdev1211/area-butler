@@ -67,10 +67,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   const { sendToOnOffice } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
-  const isNotIntOrNotExpForIntUser =
-    !integrationUser ||
-    (!!realEstateListing?.iframeEndsAt &&
-      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
   useEffect(() => {
     if (!printingZipActive) {
       return;
@@ -107,12 +103,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [printingZipActive, responseActiveMeans, responseGroupedEntities]);
 
-  const isIntegrationIframeExpired = integrationUser
-    ? realEstateListing?.iframeEndsAt
-      ? dayjs().isAfter(realEstateListing.iframeEndsAt)
-      : true
-    : false;
-
   const handleUnlock = (): void => {
     if (performUnlock) {
       performUnlock(
@@ -121,6 +111,11 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       );
     }
   };
+
+  const isNotIntOrNotExpForIntUser =
+    !integrationUser ||
+    (!!realEstateListing?.iframeEndsAt &&
+      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
 
   const isIntUserIframeExportAvail = !!(
     integrationUser?.config.exportMatching &&

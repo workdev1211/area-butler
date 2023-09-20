@@ -57,7 +57,7 @@ class ApiPotentialCustomerDto implements ApiPotentialCustomer {
 
   @IsNotEmpty()
   @IsBoolean()
-  belongsToParent: boolean;
+  isFromParent: boolean;
 }
 
 export default ApiPotentialCustomerDto;

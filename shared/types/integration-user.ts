@@ -1,5 +1,5 @@
 import { IntegrationTypesEnum } from "./integration";
-import { ApiShowTour } from "./types";
+import { ApiShowTour, IApiMapboxStyle } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 
 export interface IApiIntegrationUserSchema {
@@ -105,7 +105,7 @@ export type TApiIntegrationUserConfig = {
   showTour: ApiShowTour;
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
   templateSnapshotId?: string;
-  extraMapboxStyles?: Array<{ key: string; label: string }>;
+  extraMapboxStyles?: IApiMapboxStyle[];
 } & IApiIntUserOnOfficeConfig;
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>

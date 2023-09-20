@@ -16,7 +16,7 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
   preferredLocations: potentialCustomer.preferredLocations,
   realEstateCharacteristics: potentialCustomer.realEstateCharacteristics,
   realEstateCostStructure: potentialCustomer.realEstateCostStructure,
-  belongsToParent: isIntegrationUser
+  isFromParent: isIntegrationUser
     ? potentialCustomer.integrationParams.integrationUserId !== userId
     : potentialCustomer.userId !== userId,
 });

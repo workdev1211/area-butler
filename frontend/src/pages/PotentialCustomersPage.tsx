@@ -240,7 +240,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
                         }}
                         data-tour={`customers-table-item-search-button-${index}`}
                       />
-                      {!customer.belongsToParent && (
+                      {!customer.isFromParent && (
                         <>
                           <img
                             src={editIcon}
