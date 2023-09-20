@@ -1,5 +1,6 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { saveAs } from "file-saver";
+import JsZip from "jszip";
 import dayjs from "dayjs";
 
 import "./DigitalMedia.scss";
@@ -19,6 +20,9 @@ import legendIcon from "../../../../assets/icons/map-menu/editor-tab/legend-icon
 import iframeIcon from "../../../../assets/icons/map-menu/editor-tab/iframe.svg";
 import {
   copyTextToClipboard,
+  deriveEntityGroupsByActiveMeans,
+  realEstateListingsTitle,
+  sanitizeFilename,
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
 import { useIntegrationTools } from "../../../../hooks/integrationtools";
@@ -27,6 +31,9 @@ import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../../shared/types/integration-user";
 import { UserContext } from "../../../../context/UserContext";
 import UnlockProductButton from "../../components/UnlockProductButton";
+import { EntityGroup } from "../../../../components/SearchResultContainer";
+import { getFilteredLegend } from "../../../../export/shared/shared.functions";
+import { getRenderedLegend } from "../../../../export/RenderedLegend";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -47,7 +54,13 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     userState: { integrationUser },
   } = useContext(UserContext);
   const {
-    searchContextState: { realEstateListing, responseConfig },
+    searchContextState: {
+      realEstateListing,
+      responseConfig,
+      responseGroupedEntities,
+      responseActiveMeans,
+      printingZipActive,
+    },
     searchContextDispatch,
   } = useContext(SearchContext);
 
@@ -58,6 +71,47 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     !integrationUser ||
     (!!realEstateListing?.iframeEndsAt &&
       !dayjs().isAfter(realEstateListing?.iframeEndsAt));
+  useEffect(() => {
+    if (!printingZipActive) {
+      return;
+    }
+
+    const downloadZipArchive = async () => {
+      const entityGroups = deriveEntityGroupsByActiveMeans(
+        responseGroupedEntities,
+        responseActiveMeans
+      ).filter(
+        ({ title, items }: EntityGroup) =>
+          title !== realEstateListingsTitle && items.length > 0
+      );
+
+      const legend = getFilteredLegend(entityGroups);
+      const zip = new JsZip();
+
+      (await getRenderedLegend(legend)).forEach(({ title, icon }) => {
+        zip.file(`icons/${sanitizeFilename(title)}.png`, icon, {
+          base64: true,
+        });
+      });
+
+      const archive = await zip.generateAsync({ type: "blob" });
+      saveAs(archive, "AreaButler-Icons.zip");
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
+        payload: false,
+      });
+    };
+
+    void downloadZipArchive();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [printingZipActive, responseActiveMeans, responseGroupedEntities]);
+
+  const isIntegrationIframeExpired = integrationUser
+    ? realEstateListing?.iframeEndsAt
+      ? dayjs().isAfter(realEstateListing.iframeEndsAt)
+      : true
+    : false;
 
   const handleUnlock = (): void => {
     if (performUnlock) {

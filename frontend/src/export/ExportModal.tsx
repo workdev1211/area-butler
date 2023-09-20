@@ -1,6 +1,4 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
-import { saveAs } from "file-saver";
-import JsZip from "jszip";
 
 import {
   MapClipping,
@@ -21,11 +19,7 @@ import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
-import {
-  realEstateListingsTitle,
-  sanitizeFilename,
-} from "../shared/shared.functions";
-import { getRenderedLegend } from "./RenderedLegend";
+import { realEstateListingsTitle } from "../shared/shared.functions";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
 import areaButlerLogo from "../assets/img/logo.svg";
@@ -99,10 +93,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
       type: SearchContextActionTypes.SET_PRINTING_DOCX_ACTIVE,
       payload: false,
     });
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_PRINTING_ZIP_ACTIVE,
-      payload: false,
-    });
   };
 
   const [filteredEntities, setFilteredEntities] =
@@ -144,32 +134,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filteredEntities]);
 
-  useEffect(() => {
-    if (
-      exportType !== ExportTypeEnum.ARCHIVE ||
-      !searchContextState.printingZipActive
-    ) {
-      return;
-    }
-
-    const downloadZipArchive = async () => {
-      const zip = new JsZip();
-
-      (await getRenderedLegend(legend)).forEach(({ title, icon }) => {
-        zip.file(`icons/${sanitizeFilename(title)}.png`, icon, {
-          base64: true,
-        });
-      });
-
-      const archive = await zip.generateAsync({ type: "blob" });
-      saveAs(archive, "AreaButler-Icons.zip");
-      onClose();
-    };
-
-    void downloadZipArchive();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [exportType, searchContextState.printingZipActive]);
-
   const buttonTitle =
     exportType !== ExportTypeEnum.CHEATSHEET
       ? "Umgebungsanalyse exportieren"
@@ -183,10 +147,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   const isTrial = !isIntegrationUser
     ? user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
     : false;
-
-  if (searchContextState.printingZipActive) {
-    return null;
-  }
 
   return (
     <>
