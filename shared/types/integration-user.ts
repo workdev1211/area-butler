@@ -105,6 +105,7 @@ export type TApiIntegrationUserConfig = {
   showTour: ApiShowTour;
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
   templateSnapshotId?: string;
+  extraMapboxStyles?: Array<{ key: string; label: string }>;
 } & IApiIntUserOnOfficeConfig;
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>

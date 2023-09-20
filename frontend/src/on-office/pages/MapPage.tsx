@@ -53,6 +53,7 @@ import { useLocationIndexData } from "../../hooks/locationindexdata";
 import { useTools } from "../../hooks/tools";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
+import { UserContext } from "../../context/UserContext";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -60,6 +61,9 @@ const MapPage: FunctionComponent = () => {
   const { googleApiKey } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
@@ -293,9 +297,7 @@ const MapPage: FunctionComponent = () => {
         });
       },
       snapshotId,
-      // TODO implement for the integration user
-      // additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
-      additionalMapBoxStyles: [],
+      additionalMapBoxStyles: integrationUser?.config.extraMapboxStyles || [],
       isNewSnapshot: !!state?.isNewSnapshot,
     });
 
