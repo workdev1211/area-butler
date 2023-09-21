@@ -4,13 +4,11 @@ import DefaultLayout from "../layout/defaultLayout";
 // TODO implement a tour
 // import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
-import { SearchContext } from "../context/SearchContext";
 import EmbeddableMapsTable from "../map-snapshots/EmbeddableMapsTable";
 import { useLocationData } from "../hooks/locationdata";
 import { useTools } from "../hooks/tools";
 
 const MapSnapshotsPage: FunctionComponent = () => {
-  const { searchContextState } = useContext(SearchContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { getActualUser } = useTools();
   const { fetchSnapshots } = useLocationData();
@@ -31,19 +29,20 @@ const MapSnapshotsPage: FunctionComponent = () => {
       return;
     }
 
-    let queryParams: string;
-
-    if (isIntegrationUser) {
-      queryParams = new URLSearchParams({
-        filter: JSON.stringify({
-          "integrationParams.integrationId":
-            searchContextState.realEstateListing?.integrationId,
-        }),
-      }).toString();
-    }
+    // TODO remove in the future
+    // let queryParams: string;
+    //
+    // if (isIntegrationUser) {
+    //   queryParams = new URLSearchParams({
+    //     filter: JSON.stringify({
+    //       "integrationParams.integrationId":
+    //         searchContextState.realEstateListing?.integrationId,
+    //     }),
+    //   }).toString();
+    // }
 
     const fetchEmbeddableMaps = async (): Promise<void> => {
-      const embeddableMaps = await fetchSnapshots(queryParams);
+      const embeddableMaps = await fetchSnapshots();
 
       userDispatch({
         type: UserActionTypes.SET_EMBEDDABLE_MAPS,

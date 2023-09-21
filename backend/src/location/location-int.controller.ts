@@ -15,9 +15,7 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import ApiSearchDto from '../dto/api-search.dto';
-import ApiSearchResponseDto from '../dto/api-search-response.dto';
 import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
-import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
 import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
@@ -29,7 +27,10 @@ import { InjectRealEstateListing } from '../real-estate-listing/inject-real-esta
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { LocationIntService } from './location-int.service';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import {
+  ApiSearchResponse,
+  ApiSearchResultSnapshotResponse,
+} from '@area-butler-types/types';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 
 // TODO sometimes too much data is sent back to the frontend
@@ -50,7 +51,7 @@ export class LocationIntController {
   async searchLocation(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() searchData: ApiSearchDto,
-  ): Promise<ApiSearchResponseDto> {
+  ): Promise<ApiSearchResponse> {
     return this.locationService.searchLocation(integrationUser, searchData);
   }
 
@@ -60,7 +61,7 @@ export class LocationIntController {
   async createSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
+  ): Promise<ApiSearchResultSnapshotResponse> {
     return this.locationIntService.createSnapshot(integrationUser, snapshot);
   }
 
@@ -72,7 +73,7 @@ export class LocationIntController {
   async fetchSnapshots(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto[]> {
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
     const {
       skip: skipNumber,
       limit: limitNumber,
@@ -92,6 +93,7 @@ export class LocationIntController {
       'snapshot.location': 1,
       'snapshot.description': 1,
       'snapshot.placesLocation.label': 1,
+      'integrationParams.integrationId': 1,
     };
 
     return (
@@ -112,7 +114,7 @@ export class LocationIntController {
   async fetchSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('id') id: string,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
+  ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.locationService.fetchSnapshotByIdOrFail(
       integrationUser,
       id,
