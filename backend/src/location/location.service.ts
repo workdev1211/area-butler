@@ -312,19 +312,26 @@ export class LocationService {
 
     if (!snapshotConfig) {
       let templateSnapshot: SearchResultSnapshotDocument;
-      let templateSnapshotId = user.templateSnapshotId;
+      const userTemplateId = user.templateSnapshotId;
+      let parentUser;
+      let parentTemplateId;
 
-      if (!templateSnapshotId && user.parentId) {
-        const parentUser = await this.userService.findById(user.parentId, {
+      if (!userTemplateId && user.parentId) {
+        parentUser = await this.userService.findById(user.parentId, {
           templateSnapshotId: 1,
         });
 
-        templateSnapshotId = parentUser?.templateSnapshotId;
+        if (parentUser) {
+          parentUser.subscription = user.subscription;
+          parentTemplateId = parentUser.templateSnapshotId;
+        }
       }
+
+      const templateSnapshotId = userTemplateId || parentTemplateId;
 
       if (templateSnapshotId) {
         templateSnapshot = await this.fetchSnapshot({
-          user,
+          user: userTemplateId ? user : parentUser,
           filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
           projectParams: { config: 1 },
         });

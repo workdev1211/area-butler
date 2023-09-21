@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -20,8 +20,6 @@ import { IntegrationUserService } from '../user/integration-user.service';
 
 @Injectable()
 export class LocationIntService {
-  private readonly logger = new Logger(LocationIntService.name);
-
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
@@ -41,39 +39,31 @@ export class LocationIntService {
     ).config.mapboxAccessToken;
 
     let snapshotConfig = config;
-    this.logger.debug(this.createSnapshot.name, 1, snapshotConfig);
 
     if (!snapshotConfig) {
       let templateSnapshot: SearchResultSnapshotDocument;
-      let templateSnapshotId = integrationUser.config.templateSnapshotId;
+      const userTemplateId = integrationUser.config.templateSnapshotId;
+      let parentUser;
+      let parentTemplateId;
 
-      this.logger.debug(
-        this.createSnapshot.name,
-        2,
-        templateSnapshotId,
-        integrationUser.parentId,
-      );
-
-      if (!templateSnapshotId && integrationUser.parentId) {
-        const parentUser = await this.integrationUserService.findByDbId(
+      if (!userTemplateId && integrationUser.parentId) {
+        parentUser = await this.integrationUserService.findByDbId(
           integrationUser.parentId,
           { 'config.templateSnapshotId': 1 },
         );
 
-        templateSnapshotId = parentUser?.config.templateSnapshotId;
+        parentTemplateId = parentUser?.config.templateSnapshotId;
       }
 
-      this.logger.debug(this.createSnapshot.name, 3, templateSnapshotId);
+      const templateSnapshotId = userTemplateId || parentTemplateId;
 
       if (templateSnapshotId) {
         templateSnapshot = await this.locationService.fetchSnapshot({
-          user: integrationUser,
+          user: userTemplateId ? integrationUser : parentUser,
           filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
           projectParams: { config: 1 },
         });
       }
-
-      this.logger.debug(this.createSnapshot.name, 4, templateSnapshot?.id);
 
       if (!templateSnapshot) {
         templateSnapshot = await this.locationService.fetchSnapshot({
@@ -82,13 +72,6 @@ export class LocationIntService {
           sortParams: { updatedAt: -1 },
         });
       }
-
-      this.logger.debug(
-        this.createSnapshot.name,
-        5,
-        templateSnapshot?.id,
-        templateSnapshot?.config,
-      );
 
       snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
     }
