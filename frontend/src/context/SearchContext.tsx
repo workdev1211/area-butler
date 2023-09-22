@@ -63,8 +63,9 @@ export interface SearchContextState {
   responseTransitRoutes: EntityTransitRoute[];
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
-  integrationSnapshotId?: string;
   storedContextState?: IStoredContextState;
+  intSnapshotId?: string;
+  realEstateIntId?: string;
 }
 
 export interface IGotoMapCenter {
@@ -126,8 +127,9 @@ export enum SearchContextActionTypes {
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
-  SET_INTEGRATION_SNAPSHOT_ID = "SET_INTEGRATION_SNAPSHOT_ID",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
+  SET_INT_SNAPSHOT_ID = "SET_INT_SNAPSHOT_ID",
+  SET_REAL_ESTATE_INT_ID = "SET_REAL_ESTATE_INT_ID",
 }
 
 type SearchContextActionsPayload = {
@@ -182,9 +184,10 @@ type SearchContextActionsPayload = {
     | undefined;
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
-  // TODO on further expansion move to a new integration context
-  [SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID]: string;
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
+  // TODO on further expansion move to a new integration context
+  [SearchContextActionTypes.SET_INT_SNAPSHOT_ID]: string;
+  [SearchContextActionTypes.SET_REAL_ESTATE_INT_ID]: string;
 };
 
 export type SearchContextActions =
@@ -405,11 +408,14 @@ export const searchContextReducer = (
 
       return { ...state, searchResponse };
     }
-    case SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID: {
-      return { ...state, integrationSnapshotId: action.payload };
-    }
     case SearchContextActionTypes.SET_STORED_CONTEXT_STATE: {
       return { ...state, storedContextState: action.payload };
+    }
+    case SearchContextActionTypes.SET_INT_SNAPSHOT_ID: {
+      return { ...state, intSnapshotId: action.payload };
+    }
+    case SearchContextActionTypes.SET_REAL_ESTATE_INT_ID: {
+      return { ...state, realEstateIntId: action.payload };
     }
     default:
       return state;

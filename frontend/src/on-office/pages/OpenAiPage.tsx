@@ -29,10 +29,10 @@ const OpenAiPage: FunctionComponent = () => {
   }>({ isShownModal: false });
 
   useEffect(() => {
-    if (searchContextState.integrationSnapshotId) {
-      setSnapshotId(searchContextState.integrationSnapshotId);
+    if (searchContextState.intSnapshotId) {
+      setSnapshotId(searchContextState.intSnapshotId);
     }
-  }, [searchContextState.integrationSnapshotId]);
+  }, [searchContextState.intSnapshotId]);
 
   const isShownOnOfficeButton =
     !!queryType &&

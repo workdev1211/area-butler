@@ -532,7 +532,7 @@ const SearchParamsPage: FunctionComponent = () => {
     }: ApiSearchResultSnapshotResponse): void => {
       if (isIntegrationUser) {
         searchContextDispatch({
-          type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
+          type: SearchContextActionTypes.SET_INT_SNAPSHOT_ID,
           payload: snapshotId,
         });
 

@@ -43,7 +43,7 @@ export class RealEstateListingService {
     }
 
     if (!isIntegrationUser) {
-      const userIds = [user.id];
+      const userIds: string[] = [user.id];
 
       if (user.parentId) {
         userIds.push(user.parentId);

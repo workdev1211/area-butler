@@ -49,7 +49,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   const { userDispatch } = useContext(UserContext);
   const {
     searchContextState: {
-      integrationSnapshotId,
+      intSnapshotId,
       // integrationIframeEndsAt,
       responseToken,
       responseConfig: config,
@@ -80,9 +80,7 @@ const InteractiveMap: FunctionComponent<IInteractiveMapProps> = ({
   const unlockIframe = async (): Promise<void> => {
     try {
       const iframeEndsAt = (
-        await post<Date>(
-          `/api/location-int/unlock-iframe/${integrationSnapshotId}`
-        )
+        await post<Date>(`/api/location-int/unlock-iframe/${intSnapshotId}`)
       ).data;
 
       // userDispatch({

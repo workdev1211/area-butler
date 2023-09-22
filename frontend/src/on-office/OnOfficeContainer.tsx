@@ -95,8 +95,8 @@ const OnOfficeContainer: FunctionComponent = () => {
       integrationUser?.availProdContingents
     ) {
       history.push(
-        searchContextState.integrationSnapshotId
-          ? `/${snapshotEditorPath}/${searchContextState.integrationSnapshotId}`
+        searchContextState.intSnapshotId
+          ? `/${snapshotEditorPath}/${searchContextState.intSnapshotId}`
           : "/search"
       );
       return;
