@@ -108,7 +108,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
       history.push("/profile");
     }
 
-    const fetchSnapshotData = async () => {
+    const fetchSnapshotData = async (): Promise<void> => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
         payload: undefined,

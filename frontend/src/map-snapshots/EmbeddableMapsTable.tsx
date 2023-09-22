@@ -82,6 +82,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
         <tbody>
           {curEstSnapshots.map((snapshot) => (
             <SnapshotsTableRow
+              key={`embeddable-map-${snapshot.token}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
               templateSnapshotId={templateSnapshotId}
@@ -98,6 +99,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
             )}
           {otherSnapshots.map((snapshot) => (
             <SnapshotsTableRow
+              key={`embeddable-map-${snapshot.token}`}
               snapshot={snapshot}
               openCodeSnippetModal={openCodeSnippetModal}
               templateSnapshotId={templateSnapshotId}

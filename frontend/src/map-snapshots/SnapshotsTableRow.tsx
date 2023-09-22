@@ -115,7 +115,6 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
 
   return (
     <tr
-      key={`embeddable-map-${snapshot.token}`}
       className="cursor-pointer"
       onClick={() => {
         openCodeSnippetModal(snapshot);
