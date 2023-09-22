@@ -6,23 +6,20 @@ import {
   IApiLocationIndexFeature,
   TLocationIndexData,
 } from "../../../shared/types/location-index";
-import { UserContext } from "../context/UserContext";
 import { processLocationIndices } from "../../../shared/functions/location-index.functions";
+import { ConfigContext } from "../context/ConfigContext";
 
 export const useLocationIndexData = () => {
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
+  const { integrationType } = useContext(ConfigContext);
   const { post } = useHttp();
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
 
   const fetchLocationIndexData = async (
     coordinates: ApiCoordinates
   ): Promise<TLocationIndexData | undefined> => {
     const { data } = await post<IApiLocationIndexFeature[]>(
-      isIntegrationUser
+      isIntegration
         ? "/api/location-index-int/query"
         : "/api/location-index/query",
       { type: "Point", coordinates: [coordinates.lng, coordinates.lat] }

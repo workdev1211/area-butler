@@ -8,9 +8,9 @@ import {
   ApiGeometry,
   TApiDataProvision,
 } from "../../../shared/types/types";
-import { UserContext } from "../context/UserContext";
 import { cleanCensusProperties } from "../../../shared/functions/census.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
+import { ConfigContext } from "../context/ConfigContext";
 
 const calculateRelevantArea = (
   coords: ApiCoordinates,
@@ -21,13 +21,10 @@ const calculateRelevantArea = (
   });
 
 export const useCensusData = () => {
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
+  const { integrationType } = useContext(ConfigContext);
   const { post } = useHttp();
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
 
   const fetchCensusData = async (
     coords: ApiCoordinates
@@ -36,9 +33,7 @@ export const useCensusData = () => {
     const geo: ApiGeometry = relevantArea.geometry;
 
     const { data } = await post<TApiDataProvision>(
-      isIntegrationUser
-        ? "/api/zensus-atlas-int/query"
-        : "/api/zensus-atlas/query",
+      isIntegration ? "/api/zensus-atlas-int/query" : "/api/zensus-atlas/query",
       geo
     );
 

@@ -11,7 +11,7 @@ import {
   ApiGeometry,
 } from "../../../shared/types/types";
 import { useHttp } from "./http";
-import { UserContext } from "../context/UserContext";
+import { ConfigContext } from "../context/ConfigContext";
 
 export interface FederalElectionDistrict {
   type: ApiGeojsonType;
@@ -27,13 +27,10 @@ export interface FederalElectionResult {
 }
 
 export const useFederalElectionData = () => {
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
+  const { integrationType } = useContext(ConfigContext);
   const { post } = useHttp();
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
 
   const fetchFederalElectionData = async (
     point: ApiCoordinates
@@ -46,7 +43,7 @@ export const useFederalElectionData = () => {
     const { data: federalElectionData } = await post<
       ApiFederalElectionFeature[]
     >(
-      isIntegrationUser
+      isIntegration
         ? "/api/federal-election-int/query"
         : "/api/federal-election/query",
       geo

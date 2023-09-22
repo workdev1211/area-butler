@@ -9,15 +9,21 @@ import {
   RealEstateActionTypes,
   RealEstateContext,
 } from "../context/RealEstateContext";
+import { ConfigContext } from "../context/ConfigContext";
 
 export const useRealEstateData = () => {
+  const { integrationType } = useContext(ConfigContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
   const { get } = useHttp();
+
+  const isIntegration = !!integrationType;
 
   const fetchRealEstates = async (
     realEstateStatus = ApiRealEstateStatusEnum.ALL
   ): Promise<void> => {
-    let url = "/api/real-estate-listing/listings";
+    let url = isIntegration
+      ? "/api/real-estate-listing-int/listings"
+      : "/api/real-estate-listing/listings";
 
     if (realEstateStatus) {
       url += `?status=${realEstateStatus}`;

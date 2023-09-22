@@ -5,24 +5,20 @@ import {
   ApiPotentialCustomer,
   ApiUpsertPotentialCustomer,
 } from "../../../shared/types/potential-customer";
-import { UserContext } from "../context/UserContext";
+import { ConfigContext } from "../context/ConfigContext";
 
 export const usePotentialCustomerData = () => {
-  // TODO refactor to the useTools hook
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
-
+  const { integrationType } = useContext(ConfigContext);
   const { post, get, put, deleteRequest } = useHttp();
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
 
   const createPotentialCustomer = async (
     potentialCustomer: ApiUpsertPotentialCustomer
   ): Promise<ApiPotentialCustomer> => {
     return (
       await post<ApiPotentialCustomer>(
-        isIntegrationUser
+        isIntegration
           ? "/api/potential-customers-int"
           : "/api/potential-customers",
         potentialCustomer
@@ -33,7 +29,7 @@ export const usePotentialCustomerData = () => {
   const fetchPotentialCustomers = async (): Promise<ApiPotentialCustomer[]> => {
     return (
       await get<ApiPotentialCustomer[]>(
-        isIntegrationUser
+        isIntegration
           ? "/api/potential-customers-int"
           : "/api/potential-customers"
       )
@@ -43,7 +39,7 @@ export const usePotentialCustomerData = () => {
   const fetchPotentCustomerNames = async (): Promise<string[]> => {
     return (
       await get<string[]>(
-        isIntegrationUser
+        isIntegration
           ? "/api/potential-customers-int/names"
           : "/api/potential-customers/names"
       )
@@ -56,7 +52,7 @@ export const usePotentialCustomerData = () => {
   ): Promise<ApiPotentialCustomer> => {
     return (
       await put<ApiPotentialCustomer>(
-        isIntegrationUser
+        isIntegration
           ? `/api/potential-customers-int/${potentialCustomerId}`
           : `/api/potential-customers/${potentialCustomerId}`,
         potentialCustomer
@@ -68,7 +64,7 @@ export const usePotentialCustomerData = () => {
     potentialCustomerId: string
   ): Promise<void> => {
     await deleteRequest<void>(
-      isIntegrationUser
+      isIntegration
         ? `/api/potential-customers-int/${potentialCustomerId}`
         : `/api/potential-customers/${potentialCustomerId}`
     );

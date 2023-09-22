@@ -22,27 +22,24 @@ import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { ICurrentMapRef } from "../components/SearchResultContainer";
 import { toastError, toastSuccess } from "../shared/shared.functions";
-import { UserContext } from "../context/UserContext";
 import { IApiLateSnapConfigOption } from "../../../shared/types/location";
+import { ConfigContext } from "../context/ConfigContext";
 
 export const useLocationData = () => {
-  // TODO refactor to use the useTools hook
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
+  const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
   const { get, post, put, deleteRequest } = useHttp();
   const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
 
   const createLocation = async (
     search: ApiSearch
   ): Promise<ApiSearchResponse> => {
     const { data: searchResponse } = await post<ApiSearchResponse>(
-      isIntegrationUser ? "/api/location-int/search" : "/api/location/search",
+      isIntegration ? "/api/location-int/search" : "/api/location/search",
       search
     );
 
@@ -54,7 +51,7 @@ export const useLocationData = () => {
   ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
       await get<ApiSearchResultSnapshotResponse>(
-        isIntegrationUser
+        isIntegration
           ? `/api/location-int/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`
       )
@@ -64,7 +61,7 @@ export const useLocationData = () => {
   const fetchSnapshots = async (
     queryParams?: string
   ): Promise<ApiSearchResultSnapshotResponse[]> => {
-    let url: string = isIntegrationUser
+    let url: string = isIntegration
       ? "/api/location-int/snapshots"
       : "/api/location/snapshots";
 
@@ -78,7 +75,7 @@ export const useLocationData = () => {
   const fetchLateSnapConfigs = async (
     limitNumber: number
   ): Promise<IApiLateSnapConfigOption[]> => {
-    let url = isIntegrationUser
+    let url = isIntegration
       ? "/api/location-int/snapshots/configs"
       : "/api/location/snapshots/configs";
 
@@ -164,9 +161,7 @@ export const useLocationData = () => {
 
     return (
       await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
-        isIntegrationUser
-          ? "/api/location-int/snapshot"
-          : "/api/location/snapshot",
+        isIntegration ? "/api/location-int/snapshot" : "/api/location/snapshot",
         {
           location,
           preferredLocations,
@@ -191,7 +186,7 @@ export const useLocationData = () => {
   ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
       await put<ApiSearchResultSnapshotResponse>(
-        isIntegrationUser
+        isIntegration
           ? `/api/location-int/snapshot/${snapshotId}`
           : `/api/location/snapshot/${snapshotId}`,
         updateSnapshotData
@@ -205,7 +200,7 @@ export const useLocationData = () => {
   ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
       await put<ApiSearchResultSnapshotResponse>(
-        isIntegrationUser
+        isIntegration
           ? `/api/location-int/snapshot/${snapshotId}/description`
           : `/api/location/snapshot/${snapshotId}/description`,
         { description }
@@ -269,7 +264,7 @@ export const useLocationData = () => {
     snapshotId: string
   ): Promise<AxiosResponse<void>> => {
     return deleteRequest<void>(
-      isIntegrationUser
+      isIntegration
         ? `/api/location-int/snapshot/${snapshotId}`
         : `/api/location/snapshot/${snapshotId}`
     );
