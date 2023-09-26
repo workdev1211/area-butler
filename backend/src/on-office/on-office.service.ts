@@ -484,6 +484,7 @@ export class OnOfficeService {
     {
       parameters: { token, apiKey, extendedClaim },
       config: { exportMatching },
+      parentUser,
     }: TIntegrationUserDocument,
     integrationId: string,
     { exportType, text }: IApiOnOfficeUpdEstTextFieldReq,
@@ -500,9 +501,12 @@ export class OnOfficeService {
 
     const defaultMaxTextLength = 2000;
 
+    const resExportMatching =
+      exportMatching || parentUser?.config.exportMatching;
+
     const exportMatchingParams: IIntUserExpMatchParams =
-      exportMatching && exportMatching[exportType]
-        ? exportMatching[exportType]
+      resExportMatching && resExportMatching[exportType]
+        ? resExportMatching[exportType]
         : {
             fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
             maxTextLength: defaultMaxTextLength,
@@ -553,6 +557,7 @@ export class OnOfficeService {
     {
       parameters: { token, apiKey, extendedClaim },
       config: { exportMatching },
+      parentUser,
     }: TIntegrationUserDocument,
     integrationId: string,
     {
@@ -642,9 +647,12 @@ export class OnOfficeService {
       },
     };
 
-    if (exportMatching && exportMatching[exportType]) {
+    const resExportMatching =
+      exportMatching || parentUser?.config.exportMatching;
+
+    if (resExportMatching && resExportMatching[exportType]) {
       finalRequest.request.actions[0].parameters.documentAttribute =
-        exportMatching[exportType].fieldId;
+        resExportMatching[exportType].fieldId;
     }
 
     const finalResponse = await this.onOfficeApiService.sendRequest(
