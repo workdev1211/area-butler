@@ -21,7 +21,7 @@ export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
 export type TIntegrationActionTypes = TOnOfficeIntActTypes;
 
 export interface IApiUnlockIntProductReq {
-  realEstateListingId: string;
+  integrationId: string;
   actionType: TOnOfficeIntActTypes;
 }
 

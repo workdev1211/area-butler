@@ -54,6 +54,7 @@ import { useTools } from "../../hooks/tools";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
 import { UserContext } from "../../context/UserContext";
+import { useRealEstateData } from "../../hooks/realestatedata";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -74,6 +75,7 @@ const MapPage: FunctionComponent = () => {
   const { fetchParticlePollutionData } = useParticlePollutionData();
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
+  const { fetchRealEstateByIntId } = useRealEstateData();
   const { createDirectLink, createCodeSnippet } = useTools();
 
   const [snapshotResponse, setSnapshotResponse] =
@@ -102,8 +104,8 @@ const MapPage: FunctionComponent = () => {
     }
 
     const getSnapshot = async () => {
-      const snapshotResponseData = await fetchSnapshot(snapshotId);
-      const config = snapshotResponseData.config;
+      const snapshotRespData = await fetchSnapshot(snapshotId);
+      const config = snapshotRespData.config;
 
       if (config && !("showAddress" in config)) {
         config["showAddress"] = true;
@@ -113,14 +115,33 @@ const MapPage: FunctionComponent = () => {
         config["showStreetViewLink"] = true;
       }
 
-      setSnapshotResponse(snapshotResponseData);
-      setMapBoxToken(snapshotResponseData.mapboxAccessToken);
+      setSnapshotResponse(snapshotRespData);
+      setMapBoxToken(snapshotRespData.mapboxAccessToken);
     };
 
     void getSnapshot();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
+
+  useEffect(() => {
+    if (
+      !snapshotResponse?.snapshot.integrationId ||
+      snapshotResponse?.snapshot.integrationId ===
+        searchContextState.realEstateListing?.integrationId
+    ) {
+      return;
+    }
+
+    const getRealEstate = (): Promise<void> =>
+      fetchRealEstateByIntId(snapshotResponse?.snapshot.integrationId!);
+
+    void getRealEstate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    searchContextState.realEstateListing?.integrationId,
+    snapshotResponse?.snapshot.integrationId,
+  ]);
 
   useEffect(() => {
     if (!snapshotResponse || !snapshotResponse.config) {

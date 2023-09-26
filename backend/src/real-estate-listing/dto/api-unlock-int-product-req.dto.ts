@@ -13,7 +13,7 @@ class ApiUnlockIntProductReqDto implements IApiUnlockIntProductReq {
   @Expose()
   @IsNotEmpty()
   @IsString()
-  realEstateListingId: string;
+  integrationId: string;
 
   @Expose()
   @IsNotEmpty()

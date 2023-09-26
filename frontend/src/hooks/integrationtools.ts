@@ -97,7 +97,7 @@ export const useIntegrationTools = () => {
   const unlockProduct = async (
     actionType: TOnOfficeIntActTypes
   ): Promise<void> => {
-    if (!realEstateListing) {
+    if (!realEstateListing?.integrationId) {
       return;
     }
 
@@ -112,7 +112,7 @@ export const useIntegrationTools = () => {
     try {
       await post<void, IApiUnlockIntProductReq>(
         "/api/real-estate-listing-int/unlock-product",
-        { realEstateListingId: realEstateListing.id, actionType }
+        { integrationId: realEstateListing.integrationId, actionType }
       );
 
       // it's not an exact expiration date, but it's not relevant for the moment

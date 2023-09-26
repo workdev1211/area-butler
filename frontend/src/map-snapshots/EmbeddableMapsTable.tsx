@@ -44,7 +44,9 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
 
   if (isIntegrationUser) {
     embeddableMaps.forEach((snapshot) => {
-      if (snapshot.integrationId === realEstateListing?.integrationId) {
+      if (
+        snapshot.snapshot.integrationId === realEstateListing?.integrationId
+      ) {
         curEstSnapshots.push(snapshot);
       } else {
         otherSnapshots.push(snapshot);
@@ -93,7 +95,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
             otherSnapshots.length > 0 && (
               <tr className="cursor-none">
                 <td colSpan={6}>
-                  <div className="divider" />
+                  <div className="divider my-0" />
                 </td>
               </tr>
             )}

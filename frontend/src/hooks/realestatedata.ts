@@ -10,9 +10,14 @@ import {
   RealEstateContext,
 } from "../context/RealEstateContext";
 import { ConfigContext } from "../context/ConfigContext";
+import {
+  SearchContext,
+  SearchContextActionTypes,
+} from "../context/SearchContext";
 
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
+  const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
   const { get } = useHttp();
 
@@ -37,5 +42,20 @@ export const useRealEstateData = () => {
     });
   };
 
-  return { fetchRealEstates };
+  const fetchRealEstateByIntId = async (
+    integrationId: string
+  ): Promise<void> => {
+    const realEstate = (
+      await get<ApiRealEstateListing>(
+        `/api/real-estate-listing-int/listing/${integrationId}`
+      )
+    ).data;
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+      payload: realEstate,
+    });
+  };
+
+  return { fetchRealEstates, fetchRealEstateByIntId };
 };

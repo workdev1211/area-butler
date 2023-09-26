@@ -1,11 +1,11 @@
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 import { RealEstateListingDocument } from '../../real-estate-listing/schema/real-estate-listing.schema';
 import { mapRealEstateListingToApiRealEstateListing } from '../../real-estate-listing/mapper/real-estate-listing.mapper';
-import ApiSearchResultSnapshotDto from '../../dto/api-search-result-snapshot.dto';
-import ApiSearchResultSnapshotConfigDto from '../../dto/api-search-result-snapshot-config.dto';
-import ApiCoordinatesDto from '../../dto/api-coordinates.dto';
-import ApiSearchResponseDto from '../../dto/api-search-response.dto';
 import {
+  ApiCoordinates,
+  ApiSearchResponse,
+  ApiSearchResultSnapshot,
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   IApiUserPoiIcons,
 } from '@area-butler-types/types';
@@ -14,7 +14,7 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 
 export const mapSnapshotToEmbeddableMap = (
   searchResultSnapshot: SearchResultSnapshotDocument,
-  embed = false,
+  isEmbedded = false,
   realEstateListings: RealEstateListingDocument[] = [],
   isTrial = false,
   userPoiIcons?: IApiUserPoiIcons,
@@ -72,20 +72,25 @@ export const mapSnapshotToEmbeddableMap = (
     ];
   }
 
+  const processedSnapshot = mapSnapshot(
+    {
+      ...snapshot,
+      realEstateListing,
+      realEstateListings: mappedListings,
+    },
+    config,
+    isEmbedded,
+  );
+
+  processedSnapshot.integrationId =
+    searchResultSnapshot.integrationParams?.integrationId;
+
   return {
     isTrial,
     userPoiIcons,
     id: searchResultSnapshot.id,
-    snapshot: mapSnapshot(
-      {
-        ...searchResultSnapshot.snapshot,
-        realEstateListing,
-        realEstateListings: mappedListings,
-      },
-      searchResultSnapshot.config,
-      embed,
-    ),
-    description: embed ? undefined : searchResultSnapshot.description,
+    snapshot: processedSnapshot,
+    description: isEmbedded ? undefined : searchResultSnapshot.description,
     lastAccess: searchResultSnapshot.lastAccess,
     visitAmount: searchResultSnapshot.visitAmount,
     config: searchResultSnapshot.config,
@@ -95,25 +100,24 @@ export const mapSnapshotToEmbeddableMap = (
     endsAt: searchResultSnapshot.endsAt,
     iframeEndsAt: searchResultSnapshot.iframeEndsAt,
     updatedAt: searchResultSnapshot.updatedAt,
-    integrationId: searchResultSnapshot.integrationParams?.integrationId,
   };
 };
 
 const mapSnapshot = (
-  snapshot: ApiSearchResultSnapshotDto,
-  config: ApiSearchResultSnapshotConfigDto,
-  embed: boolean,
-): ApiSearchResultSnapshotDto => {
-  if (!embed || config.showAddress) {
+  snapshot: ApiSearchResultSnapshot,
+  config: ApiSearchResultSnapshotConfig,
+  isEmbedded: boolean,
+): ApiSearchResultSnapshot => {
+  if (!isEmbedded || config.showAddress) {
     return snapshot;
   }
 
-  const randomizedCoordinates: ApiCoordinatesDto = randomizeCoordinates(
+  const randomizedCoordinates: ApiCoordinates = randomizeCoordinates(
     snapshot.location,
   );
 
   // no location
-  const searchResponseWithoutLocation: ApiSearchResponseDto = {
+  const searchResponseWithoutLocation: ApiSearchResponse = {
     ...snapshot.searchResponse,
     centerOfInterest: {
       coordinates: randomizedCoordinates,

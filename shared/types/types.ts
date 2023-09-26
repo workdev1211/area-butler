@@ -397,7 +397,6 @@ export interface ApiSearchResultSnapshotResponse {
   updatedAt?: Date;
   isTrial?: boolean;
   userPoiIcons?: IApiUserPoiIcons;
-  integrationId?: string;
 }
 
 export interface IApiPlacesLocation {

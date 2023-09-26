@@ -200,7 +200,7 @@ export const useLogin = () => {
 
     // TODO add other important snapshot context data
     searchContextDispatch({
-      type: SearchContextActionTypes.SET_INTEGRATION_SNAPSHOT_ID,
+      type: SearchContextActionTypes.SET_INT_SNAPSHOT_ID,
       payload: latestSnapshot.id,
     });
 

@@ -14,13 +14,13 @@ import {
 } from "../../context/RealEstateContext";
 import { TFormikInnerRef } from "../../shared/shared.types";
 import { useRealEstateData } from "../../hooks/realestatedata";
-import { UserContext } from "../../context/UserContext";
 import { SearchContext } from "../../context/SearchContext";
 import {
   defaultRealEstType,
   openAiRealEstTypeOptions,
 } from "../../../../shared/constants/open-ai";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
+import { ConfigContext } from "../../context/ConfigContext";
 
 interface IOpenAiRealEstDescFormListenProps {
   onValuesChange: (values: IApiOpenAiRealEstDescQuery) => void;
@@ -57,9 +57,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   onSubmit,
   formRef,
 }) => {
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
+  const { integrationType } = useContext(ConfigContext);
   const { searchContextState } = useContext(SearchContext);
   const {
     realEstateState: { listings },
@@ -68,8 +66,10 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
   const { fetchRealEstates } = useRealEstateData();
 
+  const isIntegration = !!integrationType;
+
   useEffect(() => {
-    if (integrationUser) {
+    if (isIntegration) {
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
         payload: [searchContextState.realEstateListing!],
@@ -79,9 +79,8 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
     }
 
     void fetchRealEstates();
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationUser]);
+  }, [integrationType]);
 
   const getInitRealEstListId = (): string => {
     if (

@@ -65,7 +65,6 @@ export interface SearchContextState {
   gotoMapCenter?: IGotoMapCenter;
   storedContextState?: IStoredContextState;
   intSnapshotId?: string;
-  realEstateIntId?: string;
 }
 
 export interface IGotoMapCenter {
@@ -129,7 +128,6 @@ export enum SearchContextActionTypes {
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
   SET_INT_SNAPSHOT_ID = "SET_INT_SNAPSHOT_ID",
-  SET_REAL_ESTATE_INT_ID = "SET_REAL_ESTATE_INT_ID",
 }
 
 type SearchContextActionsPayload = {
@@ -187,7 +185,6 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
   // TODO on further expansion move to a new integration context
   [SearchContextActionTypes.SET_INT_SNAPSHOT_ID]: string;
-  [SearchContextActionTypes.SET_REAL_ESTATE_INT_ID]: string;
 };
 
 export type SearchContextActions =
@@ -413,9 +410,6 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_INT_SNAPSHOT_ID: {
       return { ...state, intSnapshotId: action.payload };
-    }
-    case SearchContextActionTypes.SET_REAL_ESTATE_INT_ID: {
-      return { ...state, realEstateIntId: action.payload };
     }
     default:
       return state;

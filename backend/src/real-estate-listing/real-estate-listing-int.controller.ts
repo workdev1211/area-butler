@@ -1,4 +1,12 @@
-import { Body, Controller, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Query,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { RealEstateListingService } from './real-estate-listing.service';
@@ -12,6 +20,11 @@ import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
+import {
+  ApiRealEstateListing,
+  ApiRealEstateStatusEnum,
+} from '@area-butler-types/real-estate';
+import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
@@ -21,6 +34,39 @@ export class RealEstateListingIntController {
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly integrationUserService: IntegrationUserService,
   ) {}
+
+  @ApiOperation({ description: 'Get real estate listings for current user' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('listings')
+  async fetchRealEstateListings(
+    @Query('status') status: ApiRealEstateStatusEnum,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<ApiRealEstateListing[]> {
+    return (
+      await this.realEstateListingService.fetchRealEstateListings(
+        integrationUser,
+        status,
+      )
+    ).map((listing) => mapRealEstateListingToApiRealEstateListing(listing));
+  }
+
+  @ApiOperation({
+    description: 'Get real estate listing by integration id for current user',
+  })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('listing/:id')
+  async fetchRealEstateListing(
+    @Param('id') integrationId: string,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<ApiRealEstateListing> {
+    return mapRealEstateListingToApiRealEstateListing(
+      await this.realEstateListingIntService.findOneOrFailByIntParams({
+        integrationId,
+        integrationUserId: integrationUser.integrationUserId,
+        integrationType: integrationUser.integrationType,
+      }),
+    );
+  }
 
   @ApiOperation({ description: 'Fetch Open AI real estate description' })
   @UseInterceptors(
@@ -47,7 +93,7 @@ export class RealEstateListingIntController {
   @Post('unlock-product')
   async unlockProduct(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() { realEstateListingId, actionType }: ApiUnlockIntProductReqDto,
+    @Body() { integrationId, actionType }: ApiUnlockIntProductReqDto,
   ): Promise<void> {
     const availProdContType =
       await this.integrationUserService.getAvailProdContTypeOrFail(
@@ -58,7 +104,7 @@ export class RealEstateListingIntController {
     await this.realEstateListingIntService.unlockProduct(
       integrationUser,
       availProdContType,
-      realEstateListingId,
+      integrationId,
     );
 
     await this.integrationUserService.incrementProductUsage(
