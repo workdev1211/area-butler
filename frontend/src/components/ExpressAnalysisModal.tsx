@@ -1,4 +1,4 @@
-// TODO remove in future
+// TODO REMOVE IN THE FUTURE
 
 import { CSSProperties, FunctionComponent, useContext, useState } from "react";
 import { useHistory } from "react-router-dom";

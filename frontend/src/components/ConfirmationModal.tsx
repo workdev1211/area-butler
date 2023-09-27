@@ -13,7 +13,7 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
 }) => {
   const [isLoading, setIsLoading] = useState(false);
 
-  // TODO make a common modal component in future
+  // TODO make a common modal component in the future
   useEffect(() => {
     const handleEscape = async (e: KeyboardEvent) => {
       if (e.key === "Escape") {

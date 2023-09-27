@@ -428,7 +428,7 @@ export class RealEstateListingImportService {
     fileFormat,
     userId,
   }: IListingData): Promise<ApiOnOfficeToAreaButlerDto> {
-    // TODO change to 'switch' in future and change PADERBORN to ON_OFFICE
+    // TODO change to 'switch' in the future and change PADERBORN to ON_OFFICE
     if (fileFormat !== CsvFileFormatsEnum.PADERBORN) {
       return;
     }

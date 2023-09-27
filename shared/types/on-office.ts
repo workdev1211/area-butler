@@ -10,7 +10,7 @@ import {
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 
-// TODO remove _10 products in future
+// TODO remove _10 products in the future
 export enum OnOfficeProductTypesEnum {
   MAP_SNAPSHOT = "MAP_SNAPSHOT",
   OPEN_AI = "OPEN_AI",

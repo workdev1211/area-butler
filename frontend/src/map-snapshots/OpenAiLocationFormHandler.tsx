@@ -1,4 +1,4 @@
-// TODO remove in future
+// TODO REMOVE IN THE FUTURE
 
 import { FunctionComponent, useState } from "react";
 import copy from "copy-to-clipboard";

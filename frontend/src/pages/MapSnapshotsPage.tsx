@@ -29,7 +29,7 @@ const MapSnapshotsPage: FunctionComponent = () => {
       return;
     }
 
-    // TODO remove in the future
+    // TODO REMOVE IN THE FUTURE
     // let queryParams: string;
     //
     // if (isIntegrationUser) {

@@ -42,7 +42,7 @@ export class User {
   @Prop({ type: Array, default: [] })
   requestContingents: ApiRequestContingent[];
 
-  // TODO remove in the future
+  // TODO REMOVE IN THE FUTURE
   @Prop({ type: Object })
   usageStatistics: any;
 

@@ -100,7 +100,7 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
         immobilie: {
           preise: {
             kaufpreis: purchasePrice,
-            // TODO parse in future
+            // TODO parse in the future
             // kaufpreisnetto: purchasePriceNet,
             // kaufpreisbrutto: purchasePriceGross,
             // nettokaltmiete: coldRentNet,

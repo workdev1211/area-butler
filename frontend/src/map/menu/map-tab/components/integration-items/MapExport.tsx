@@ -1,4 +1,4 @@
-// TODO REMOVE IN FUTURE
+// TODO REMOVE IN THE FUTURE
 
 import { CSSProperties, FunctionComponent, useContext, useState } from "react";
 

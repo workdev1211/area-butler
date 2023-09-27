@@ -65,7 +65,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
         </div>
         <div className="collapse-content">
           <ul>
-            {/* Could be needed in future */}
+            {/* Could be needed in the future */}
             {/*<li>*/}
             {/*  <h3*/}
             {/*    className="max-w-fit items-center cursor-pointer"*/}

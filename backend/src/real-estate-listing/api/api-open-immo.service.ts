@@ -14,7 +14,7 @@ export class ApiOpenImmoService {
     private readonly userService: UserService,
   ) {}
 
-  // TODO uncomment in future
+  // TODO uncomment in the future
   // @Cron('0 0 * * * *')
   async handleFtpImport() {
     const dirPath = joinPath(process.cwd(), '../shared/ftp');
