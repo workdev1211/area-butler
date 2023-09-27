@@ -49,7 +49,11 @@ export class LocationIntService {
       if (!userTemplateId && integrationUser.parentId) {
         parentUser = await this.integrationUserService.findByDbId(
           integrationUser.parentId,
-          { 'config.templateSnapshotId': 1 },
+          {
+            integrationUserId: 1,
+            integrationType: 1,
+            'config.templateSnapshotId': 1,
+          },
         );
 
         parentTemplateId = parentUser?.config.templateSnapshotId;
