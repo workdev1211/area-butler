@@ -838,6 +838,7 @@ export class LocationService {
       targetGroupName,
       customText,
       textLength,
+      isForOnePage,
     }: IApiOpenAiLocDescQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -865,6 +866,7 @@ export class LocationService {
       targetGroupName,
       customText,
       tonality: openAiTonalities[tonality],
+      isForOnePage,
     });
 
     return this.openAiService.fetchResponse(queryText);

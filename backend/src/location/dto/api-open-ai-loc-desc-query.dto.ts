@@ -1,4 +1,10 @@
-import { IsEnum, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 import { MeansOfTransportation } from '@area-butler-types/types';
 import { IApiOpenAiLocDescQuery } from '@area-butler-types/open-ai';
@@ -20,6 +26,10 @@ class ApiOpenAiLocDescQueryDto
   @IsOptional()
   @IsString()
   realEstateListingId?: string;
+
+  @IsOptional()
+  @IsBoolean()
+  isForOnePage?: boolean;
 }
 
 export default ApiOpenAiLocDescQueryDto;

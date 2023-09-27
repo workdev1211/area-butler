@@ -182,6 +182,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
         searchResultSnapshotId: snapshotId,
         ...generalFormRef.current!.values,
         ...locDescFormRef.current!.values,
+        isForOnePage: true,
       }
     );
 

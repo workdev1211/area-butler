@@ -172,9 +172,18 @@ export const maxCharacterNumber = 6000;
 export const defaultCharacterNumber = 4000;
 
 export const openAiTextLengthOptions: ISelectTextValue[] = [
-  { value: OpenAiTextLengthEnum.SHORT, text: "kurz" },
-  { value: OpenAiTextLengthEnum.MEDIUM, text: "mittel" },
-  { value: OpenAiTextLengthEnum.LONG, text: "lang" },
+  {
+    value: OpenAiTextLengthEnum.SHORT,
+    text: "Der Text soll kurz und prägnant sein.",
+  },
+  {
+    value: OpenAiTextLengthEnum.MEDIUM,
+    text: "Der Text soll mittellang sein.",
+  },
+  {
+    value: OpenAiTextLengthEnum.LONG,
+    text: "Der Text soll lang und ausführlich sein.",
+  },
 ];
 
 export const openAiRealEstTypeOptions: ISelectTextValue[] = [

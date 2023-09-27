@@ -31,6 +31,7 @@ export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
 export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
   searchResultSnapshotId: string;
   realEstateListingId?: string;
+  isForOnePage?: boolean;
 }
 
 export interface IApiOpenAiRealEstDescQuery extends IOpenAiGeneralFormValues {
@@ -106,5 +107,5 @@ export enum OpenAiRealEstTypesEnum {
 export enum OpenAiTextLengthEnum {
   SHORT = "SHORT",
   MEDIUM = "MEDIUM",
-  LONG = "LONG"
+  LONG = "LONG",
 }

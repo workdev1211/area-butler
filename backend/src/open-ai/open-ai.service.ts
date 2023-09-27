@@ -52,6 +52,7 @@ interface IGeneralQueryData {
 interface ILocDescQueryData extends IGeneralQueryData {
   searchResultSnapshot: SearchResultSnapshotDocument;
   meanOfTransportation: MeansOfTransportation;
+  isForOnePage?: boolean;
 }
 
 interface IRealEstDescQueryData extends IGeneralQueryData {
@@ -92,19 +93,24 @@ export class OpenAiService {
       meanOfTransportation,
       targetGroupName = defaultTargetGroupName,
       textLength = OpenAiTextLengthEnum.MEDIUM,
+      isForOnePage,
     }: ILocDescQueryData,
+    initQueryText?: string,
   ): Promise<string> {
-    let queryText = snapshotConfig.showAddress
-      ? `Sei mein Experte für Immobilien-Lagebeschreibungen und schreibe eine Lagebeschreibung für eine Immobile mit der Adresse: ${snapshot.placesLocation.label}. `
+    let queryText =
+      initQueryText ||
+      'Sei mein Experte für die Immobilien-Lagetexte und schreibe eine werbliche Lagebeschreibung.';
+
+    queryText += snapshotConfig.showAddress
+      ? ` Es geht um eine Immobilien mit der Adresse: ${snapshot.placesLocation.label}.`
       : '';
 
-    queryText += `Der Text darf insgesamt ${
-      openAiTextLengthOptions.find(({ value }) => value === textLength).text
-    } lang sein.`;
-
-    if (!snapshotConfig.showAddress) {
-      queryText += ' Die Adresse darf nicht explizit im Text genannt werden.';
-    }
+    // text length with the OnePage case
+    queryText += ` ${
+      isForOnePage
+        ? 'Der Text darf maximal 500 Zeichen lang sein.'
+        : openAiTextLengthOptions.find(({ value }) => value === textLength).text
+    }`;
 
     queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
 
@@ -126,7 +132,9 @@ export class OpenAiService {
     const poiCategories = Object.keys(processedPoiData);
 
     if (poiCategories.length) {
-      queryText += `Hier eine Tabelle mit den jeweils 3 nächsten erreichbaren POIs der jeweiligen Kategorie mit Entfernung in Meter und Name. Schaffe aus der Tabelle Mehrwert für die Zielgruppe "${targetGroupName}":\n`;
+      queryText +=
+        'Hier eine Tabelle mit den jeweils 3 nächsten erreichbaren POIs der jeweiligen Kategorie mit Entfernung in Meter und Name.';
+      queryText += ` Nenne aus der Tabelle 3 POIs die für "${targetGroupName}" interessant sein könnten.\n`;
 
       poiCategories.forEach((category) => {
         queryText += `${category}:`;
@@ -210,12 +218,11 @@ export class OpenAiService {
     targetGroupName = defaultTargetGroupName,
     textLength = OpenAiTextLengthEnum.MEDIUM,
   }: IRealEstDescQueryData): string {
-    let queryText =
-      'Sei mein Experte für Immobilien-Exposés und schreibe eine werbliche Beschreibung der Ausstattung der Immobilie.';
+    let queryText = 'Sei mein Experte für die Immobilienbeschreibungen.';
 
-    queryText += ` Der Text darf insgesamt ${
+    queryText += ` ${
       openAiTextLengthOptions.find(({ value }) => value === textLength).text
-    } lang sein.`;
+    }`;
 
     // left just in case because the address should be mandatory
     // if (address) {
@@ -248,9 +255,13 @@ export class OpenAiService {
       ...locRealEstDescQueryData
     }: ILocRealEstDescQueryData,
   ): Promise<string> {
-    let queryText: string = await this.getLocDescQuery(
+    let queryText =
+      'Sei mein Experte für Immobilien-Exposé-Texte und schreibe einen werblichen Text über die Immobilie und gehe darin auf Fakten des Objekts sowie über die Lage ein.';
+
+    queryText = await this.getLocDescQuery(
       user,
       locRealEstDescQueryData,
+      queryText,
     );
 
     queryText = this.getRealEstateDescription(

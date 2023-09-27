@@ -80,9 +80,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
         tonality: OpenAiTonalityEnum.EASYGOING_YOUTHFUL,
         targetGroupName: defaultTargetGroupName,
         customText: "",
-        textLength: isFromOnePage
-          ? OpenAiTextLengthEnum.SHORT
-          : OpenAiTextLengthEnum.MEDIUM,
+        textLength: isFromOnePage ? undefined : OpenAiTextLengthEnum.MEDIUM,
       };
 
   const validationSchema = Yup.object({
@@ -163,20 +161,22 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
             {/*  className="input input-bordered range max-w-xs"*/}
             {/*/>*/}
 
-            <div className="form-control">
-              <Select
-                label="Gewünschte Textlänge"
-                placeholder="Gewünschte Textlänge"
-                name="textLength"
-                defaultValue={OpenAiTextLengthEnum.MEDIUM}
-              >
-                {openAiTextLengthOptions.map(({ text, value }) => (
-                  <option value={value} key={value}>
-                    {text}
-                  </option>
-                ))}
-              </Select>
-            </div>
+            {!isFromOnePage && (
+              <div className="form-control">
+                <Select
+                  label="Gewünschte Textlänge"
+                  placeholder="Gewünschte Textlänge"
+                  name="textLength"
+                  defaultValue={OpenAiTextLengthEnum.MEDIUM}
+                >
+                  {openAiTextLengthOptions.map(({ text, value }) => (
+                    <option value={value} key={value}>
+                      {text}
+                    </option>
+                  ))}
+                </Select>
+              </div>
+            )}
 
             <div className="form-control mt-3 indicator w-full">
               <div
