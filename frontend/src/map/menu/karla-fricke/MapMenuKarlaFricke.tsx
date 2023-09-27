@@ -95,7 +95,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
     groupedEntries: EntityGroup[];
   }
 
-  const DesktopMenu: FunctionComponent<IMenuProps> = ({ groupedEntries }) => {
+  const DesktopMenu: FunctionComponent = () => {
     return <ul className="menu-desktop">{resultingList}</ul>;
   };
 
@@ -140,7 +140,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
   return (
     <div className={menuClasses}>
       <MobileMenu groupedEntries={groupedEntries} />
-      <DesktopMenu groupedEntries={groupedEntries} />
+      <DesktopMenu />
     </div>
   );
 };

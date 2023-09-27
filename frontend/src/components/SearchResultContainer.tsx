@@ -321,39 +321,42 @@ const SearchResultContainer = forwardRef<
         return;
       }
 
+      const handleConfigChange = (
+        config: ApiSearchResultSnapshotConfig
+      ): void => {
+        if (
+          searchContextState.responseConfig?.mapBoxMapId !==
+            config.mapBoxMapId ||
+          searchContextState.responseConfig?.showLocation !==
+            config.showLocation ||
+          searchContextState.responseConfig?.showAddress !== config.showAddress
+        ) {
+          const mapCenter =
+            mapRef.current?.getCenter() || searchContextState.mapCenter;
+          const mapZoomLevel =
+            mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
+
+          if (mapCenter && mapZoomLevel) {
+            searchContextDispatch({
+              type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+              payload: { mapCenter, mapZoomLevel },
+            });
+          }
+        }
+
+        searchContextDispatch({
+          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+          payload: { ...config },
+        });
+      };
+
       setEditorTabProps({
         availableMeans: deriveAvailableMeansFromResponse(
           searchContextState.searchResponse
         ),
         groupedEntries: searchContextState.availGroupedEntities,
         config: searchContextState.responseConfig,
-        onConfigChange: (config: ApiSearchResultSnapshotConfig): void => {
-          if (
-            searchContextState.responseConfig?.mapBoxMapId !==
-              config.mapBoxMapId ||
-            searchContextState.responseConfig?.showLocation !==
-              config.showLocation ||
-            searchContextState.responseConfig?.showAddress !==
-              config.showAddress
-          ) {
-            const mapCenter =
-              mapRef.current?.getCenter() || searchContextState.mapCenter;
-            const mapZoomLevel =
-              mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-            if (mapCenter && mapZoomLevel) {
-              searchContextDispatch({
-                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-                payload: { mapCenter, mapZoomLevel },
-              });
-            }
-          }
-
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-            payload: { ...config },
-          });
-        },
+        onConfigChange: handleConfigChange,
         snapshotId: searchContextState.snapshotId,
         additionalMapBoxStyles: user?.additionalMapBoxStyles || [],
         isNewSnapshot: !!isNewSnapshot,
