@@ -349,7 +349,6 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
                 user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
               }
               mapDisplayMode={MapDisplayModesEnum.EDITOR}
-              user={user}
               userPoiIcons={user?.poiIcons}
             />
             <img

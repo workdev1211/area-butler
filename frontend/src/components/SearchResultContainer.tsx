@@ -19,7 +19,6 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
-  ApiUser,
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -35,7 +34,7 @@ import {
 import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
 import closeMenuIcon from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 import Map from "../map/Map";
-import { UserActions, UserActionTypes } from "../context/UserContext";
+import { UserActionTypes, UserContext } from "../context/UserContext";
 import { useRouting } from "../hooks/routing";
 import "./SearchResultContainer.scss";
 import {
@@ -53,6 +52,8 @@ import {
 } from "../shared/shared.constants";
 import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
 import { TUnlockIntProduct } from "../../../shared/types/integration";
+import { useTools } from "../hooks/tools";
+import { LoadingMessage } from "../on-office/OnOfficeContainer";
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -123,13 +124,10 @@ interface ISearchResultContainerProps {
   mapDisplayMode: MapDisplayModesEnum;
   saveConfig?: () => Promise<void>;
   mapZoomLevel?: number;
-  user?: ApiUser;
-  userDispatch?: (action: UserActions) => void; // we need it because Embed module doesn't have the user context
   onPoiAdd?: (poi: ApiOsmLocation) => void;
   isTrial: boolean;
   userPoiIcons?: IApiUserPoiIcons;
-  editorTabProps?: IEditorTabProps;
-  exportTabProps?: IExportTabProps;
+  isNewSnapshot?: boolean;
 }
 
 const SearchResultContainer = forwardRef<
@@ -146,13 +144,10 @@ const SearchResultContainer = forwardRef<
       mapDisplayMode,
       saveConfig,
       mapZoomLevel,
-      user,
-      userDispatch = () => null,
       onPoiAdd,
       isTrial,
-      userPoiIcons = user?.poiIcons,
-      editorTabProps,
-      exportTabProps,
+      userPoiIcons,
+      isNewSnapshot,
     },
     parentMapRef
   ) => {
@@ -180,10 +175,28 @@ const SearchResultContainer = forwardRef<
       },
     }));
 
+    const {
+      userState: { user },
+      userDispatch,
+    } = useContext(UserContext);
     const { searchContextState, searchContextDispatch } =
       useContext(SearchContext);
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
+    const { createDirectLink, createCodeSnippet } = useTools();
+
+    const isEmbeddedMode = [
+      MapDisplayModesEnum.EMBED,
+      MapDisplayModesEnum.EMBED_INTEGRATION,
+    ].includes(mapDisplayMode);
+
+    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
+
+    const isMapMenuShown =
+      !isEmbeddedMode ||
+      (searchContextState.responseConfig?.hideMapMenu
+        ? false
+        : isEmbeddedMode && !isThemeKf);
 
     const initialMapBoxMapIds = {
       current:
@@ -195,27 +208,6 @@ const SearchResultContainer = forwardRef<
         ({ label }) => label === MapboxStyleLabelsEnum.SATELLITE
       )?.key,
     };
-
-    const isThemeKf = searchContextState.responseConfig?.theme === "KF";
-    const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-
-    const isEmbeddedMode = [
-      MapDisplayModesEnum.EMBED,
-      MapDisplayModesEnum.EMBED_INTEGRATION,
-    ].includes(mapDisplayMode);
-
-    const isMapMenuShown =
-      !isEmbeddedMode ||
-      (searchContextState.responseConfig?.hideMapMenu
-        ? false
-        : isEmbeddedMode && !isThemeKf);
-
-    const isMapMenuKarlaFrickeShown =
-      isThemeKf &&
-      (!isEmbeddedMode || !searchContextState.responseConfig?.hideMapMenu);
-
-    const isMeanTogglesShown =
-      !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
 
     const [isMapMenuOpen, setIsMapMenuOpen] = useState(
       isEmbeddedMode && searchContextState.responseConfig?.isMapMenuCollapsed
@@ -236,6 +228,8 @@ const SearchResultContainer = forwardRef<
       useState<EntityGroup>();
     const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
       useState(false);
+    const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
+    const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
 
     useEffect(() => {
       if (
@@ -316,6 +310,80 @@ const SearchResultContainer = forwardRef<
       searchContextState.responseGroupedEntities,
       searchContextState.responseActiveMeans,
     ]);
+
+    useEffect(() => {
+      if (
+        mapDisplayMode !== MapDisplayModesEnum.EDITOR ||
+        !searchContextState.availGroupedEntities?.length ||
+        !searchContextState.responseConfig ||
+        !searchContextState.snapshotId
+      ) {
+        return;
+      }
+
+      setEditorTabProps({
+        availableMeans: deriveAvailableMeansFromResponse(
+          searchContextState.searchResponse
+        ),
+        groupedEntries: searchContextState.availGroupedEntities,
+        config: searchContextState.responseConfig,
+        onConfigChange: (config: ApiSearchResultSnapshotConfig): void => {
+          if (
+            searchContextState.responseConfig?.mapBoxMapId !==
+              config.mapBoxMapId ||
+            searchContextState.responseConfig?.showLocation !==
+              config.showLocation ||
+            searchContextState.responseConfig?.showAddress !==
+              config.showAddress
+          ) {
+            const mapCenter =
+              mapRef.current?.getCenter() || searchContextState.mapCenter;
+            const mapZoomLevel =
+              mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
+
+            if (mapCenter && mapZoomLevel) {
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+                payload: { mapCenter, mapZoomLevel },
+              });
+            }
+          }
+
+          searchContextDispatch({
+            type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+            payload: { ...config },
+          });
+        },
+        snapshotId: searchContextState.snapshotId,
+        additionalMapBoxStyles: user?.additionalMapBoxStyles || [],
+        isNewSnapshot: !!isNewSnapshot,
+      });
+
+      setExportTabProps({
+        codeSnippet: createCodeSnippet(searchContextState.responseToken),
+        directLink: createDirectLink(searchContextState.responseToken),
+        searchAddress: searchContextState.placesLocation?.label,
+        snapshotId: searchContextState.snapshotId,
+      });
+
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [
+      isNewSnapshot,
+      mapDisplayMode,
+      searchContextState.availGroupedEntities,
+      searchContextState.mapCenter,
+      searchContextState.mapZoomLevel,
+      searchContextState.placesLocation?.label,
+      searchContextState.responseConfig,
+      searchContextState.responseToken,
+      searchContextState.searchResponse,
+      searchContextState.snapshotId,
+      user?.additionalMapBoxStyles,
+    ]);
+
+    if (!searchResponse || !mapBoxToken) {
+      return <LoadingMessage />;
+    }
 
     const toggleRoutesToEntity = async (
       origin: ApiCoordinates,
@@ -447,6 +515,8 @@ const SearchResultContainer = forwardRef<
       }
     };
 
+    const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
+
     const ShowMapMenuButton: FunctionComponent = () => {
       return (
         <button
@@ -470,10 +540,6 @@ const SearchResultContainer = forwardRef<
         </button>
       );
     };
-
-    if (!searchResponse) {
-      return <div>Laden...</div>;
-    }
 
     const hideEntity = (item: ResultEntity): void => {
       if (!searchContextState.responseConfig) {
@@ -559,10 +625,14 @@ const SearchResultContainer = forwardRef<
 
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
     const mapWithLegendId = "map-with-legend";
+    const resUserPoiIcons = userPoiIcons || user?.poiIcons;
 
-    if (!mapBoxToken) {
-      return null;
-    }
+    const isMapMenuKarlaFrickeShown =
+      isThemeKf &&
+      (!isEmbeddedMode || !searchContextState.responseConfig?.hideMapMenu);
+
+    const isMeanTogglesShown =
+      !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
 
     return (
       <>
@@ -666,7 +736,7 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               isTrial={isTrial}
-              userMapPoiIcons={userPoiIcons?.mapPoiIcons}
+              userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
               ref={mapRef}
             />
           </div>
@@ -682,7 +752,7 @@ const SearchResultContainer = forwardRef<
               isMapMenuOpen={isMapMenuOpen}
               isShownPreferredLocationsModal={isShownPreferredLocationsModal}
               togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-              userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
+              userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
             />
           )}
           {isMapMenuShown && (
@@ -715,7 +785,7 @@ const SearchResultContainer = forwardRef<
                 });
               }}
               saveConfig={saveConfig}
-              userMenuPoiIcons={userPoiIcons?.menuPoiIcons}
+              userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
               openUpgradeSubscriptionModal={(message) => {
                 userDispatch({
                   type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,

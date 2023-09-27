@@ -278,7 +278,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     }
   };
 
-  const isGroupHidden = (group: EntityGroup): boolean => {
+  const checkIsGroupHidden = (group: EntityGroup): boolean => {
     const groupEntityIds = group.items.map((i) => i.id);
 
     return groupEntityIds.every((id) =>
@@ -291,14 +291,14 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
       (ev) => !group.items.some((i) => i.id === ev.id)
     );
 
-    const wasGroupHidden = isGroupHidden(group);
+    const isGroupHidden = checkIsGroupHidden(group);
 
     const newGroup = [
       ...visibilityWithoutGroup,
       ...group.items.map((i) => ({
         id: i.id,
         osmName: i.osmName,
-        excluded: !wasGroupHidden,
+        excluded: !isGroupHidden,
       })),
     ];
 
@@ -415,7 +415,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     <div className="flex items-center py-4">
                       <input
                         type="checkbox"
-                        checked={!isGroupHidden(group)}
+                        checked={!checkIsGroupHidden(group)}
                         className="checkbox checkbox-primary"
                         onChange={() => {
                           toggleGroupVisibility(group);

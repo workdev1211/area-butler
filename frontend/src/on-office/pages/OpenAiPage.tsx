@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
 import { LoadingMessage } from "../OnOfficeContainer";
@@ -14,7 +14,6 @@ const OpenAiPage: FunctionComponent = () => {
 
   const { sendToOnOffice, unlockProduct } = useIntegrationTools();
 
-  const [snapshotId, setSnapshotId] = useState<string>();
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
   const [isCopyTextButtonDisabled, setIsCopyTextButtonDisabled] =
@@ -27,12 +26,6 @@ const OpenAiPage: FunctionComponent = () => {
     modalMessage?: string;
     actionType?: TOnOfficeIntActTypes;
   }>({ isShownModal: false });
-
-  useEffect(() => {
-    if (searchContextState.intSnapshotId) {
-      setSnapshotId(searchContextState.intSnapshotId);
-    }
-  }, [searchContextState.intSnapshotId]);
 
   const isShownOnOfficeButton =
     !!queryType &&
@@ -50,7 +43,7 @@ const OpenAiPage: FunctionComponent = () => {
     setIsCopyTextButtonDisabled(false);
   };
 
-  if (!snapshotId) {
+  if (!searchContextState.snapshotId) {
     return <LoadingMessage />;
   }
 
@@ -86,7 +79,7 @@ const OpenAiPage: FunctionComponent = () => {
         </div>
 
         <OpenAiModule
-          searchResultSnapshotId={snapshotId}
+          searchResultSnapshotId={searchContextState.snapshotId}
           onModuleStatusChange={(isReady) => {
             setIsGenerateButtonDisabled(!isReady);
           }}

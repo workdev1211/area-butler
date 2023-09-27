@@ -14,8 +14,6 @@ import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   EntityGroup,
   ICurrentMapRef,
-  IEditorTabProps,
-  IExportTabProps,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
@@ -61,7 +59,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const { userState, userDispatch } = useContext(UserContext);
+  const { userState } = useContext(UserContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
 
@@ -208,6 +206,11 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SNAPSHOT_ID,
+        payload: snapshotId,
       });
 
       if (snapshotResponse.snapshot.realEstateListing) {
@@ -405,48 +408,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
     );
   };
 
-  // TODO think about using useEffect or memoizing the props
-  const editorTabProps: IEditorTabProps = {
-    availableMeans: deriveAvailableMeansFromResponse(snapshot.searchResponse),
-    groupedEntries: editorGroups,
-    config: searchContextState.responseConfig!,
-    onConfigChange: (config: ApiSearchResultSnapshotConfig) => {
-      if (
-        searchContextState.responseConfig?.mapBoxMapId !== config.mapBoxMapId ||
-        searchContextState.responseConfig?.showLocation !==
-          config.showLocation ||
-        searchContextState.responseConfig?.showAddress !== config.showAddress
-      ) {
-        const mapCenter =
-          mapRef.current?.getCenter() || searchContextState.mapCenter;
-        const mapZoomLevel =
-          mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-        if (mapCenter && mapZoomLevel) {
-          searchContextDispatch({
-            type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-            payload: { mapCenter, mapZoomLevel },
-          });
-        }
-      }
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...config },
-      });
-    },
-    snapshotId,
-    additionalMapBoxStyles: userState?.user?.additionalMapBoxStyles || [],
-    isNewSnapshot: !!state?.isNewSnapshot,
-  };
-
-  const exportTabProps: IExportTabProps = {
-    codeSnippet,
-    directLink,
-    snapshotId,
-    searchAddress: snapshot.placesLocation.label,
-  };
-
   return (
     <>
       <DefaultLayout withHorizontalPadding={false}>
@@ -487,11 +448,8 @@ const SnapshotEditorPage: FunctionComponent = () => {
             mapDisplayMode={MapDisplayModesEnum.EDITOR}
             onPoiAdd={onPoiAdd}
             isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
+            isNewSnapshot={!!state?.isNewSnapshot}
             ref={mapRef}
-            user={user}
-            userDispatch={userDispatch}
-            editorTabProps={editorTabProps}
-            exportTabProps={exportTabProps}
           />
         </div>
       </DefaultLayout>

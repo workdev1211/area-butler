@@ -64,7 +64,7 @@ export interface SearchContextState {
   responseToken: string;
   gotoMapCenter?: IGotoMapCenter;
   storedContextState?: IStoredContextState;
-  intSnapshotId?: string;
+  snapshotId?: string;
 }
 
 export interface IGotoMapCenter {
@@ -75,7 +75,7 @@ export interface IGotoMapCenter {
 
 export const initialState: SearchContextState = {
   transportationParams: [...defaultTransportParams],
-  localityParams: [...getCombinedOsmEntityTypes()],
+  localityParams: getCombinedOsmEntityTypes(),
   searchBusy: false,
   printingActive: false,
   printingCheatsheetActive: false,
@@ -127,7 +127,7 @@ export enum SearchContextActionTypes {
   CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
-  SET_INT_SNAPSHOT_ID = "SET_INT_SNAPSHOT_ID",
+  SET_SNAPSHOT_ID = "SET_SNAPSHOT_ID",
 }
 
 type SearchContextActionsPayload = {
@@ -183,8 +183,7 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
-  // TODO on further expansion move to a new integration context
-  [SearchContextActionTypes.SET_INT_SNAPSHOT_ID]: string;
+  [SearchContextActionTypes.SET_SNAPSHOT_ID]: string;
 };
 
 export type SearchContextActions =
@@ -408,8 +407,8 @@ export const searchContextReducer = (
     case SearchContextActionTypes.SET_STORED_CONTEXT_STATE: {
       return { ...state, storedContextState: action.payload };
     }
-    case SearchContextActionTypes.SET_INT_SNAPSHOT_ID: {
-      return { ...state, intSnapshotId: action.payload };
+    case SearchContextActionTypes.SET_SNAPSHOT_ID: {
+      return { ...state, snapshotId: action.payload };
     }
     default:
       return state;

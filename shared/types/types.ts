@@ -318,6 +318,7 @@ export interface ApiSearchResultSnapshot {
   realEstateListing?: ApiRealEstateListing;
   realEstateListings: ApiRealEstateListing[];
   integrationId?: string;
+  token?: string;
 }
 
 export interface IApiCreateRouteSnapshot {
@@ -472,8 +473,6 @@ export enum RequestStatusTypesEnum {
 }
 
 export enum MapDisplayModesEnum {
-  // TODO remove in future
-  // "INTEGRATION" = "INTEGRATION",
   "EMBED_INTEGRATION" = "EMBED_INTEGRATION", // left only because of the default map icon
   "EMBED" = "EMBED",
   "EDITOR" = "EDITOR",

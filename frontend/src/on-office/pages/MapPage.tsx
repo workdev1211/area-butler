@@ -30,7 +30,6 @@ import {
 import {
   ApiOsmLocation,
   ApiSearchResponse,
-  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   MapDisplayModesEnum,
@@ -38,8 +37,6 @@ import {
 import SearchResultContainer, {
   EntityGroup,
   ICurrentMapRef,
-  IEditorTabProps,
-  IExportTabProps,
 } from "../../components/SearchResultContainer";
 import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
@@ -50,10 +47,8 @@ import { useCensusData } from "../../hooks/censusdata";
 import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
-import { useTools } from "../../hooks/tools";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
-import { UserContext } from "../../context/UserContext";
 import { useRealEstateData } from "../../hooks/realestatedata";
 
 const MapPage: FunctionComponent = () => {
@@ -62,9 +57,6 @@ const MapPage: FunctionComponent = () => {
   const { googleApiKey } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
@@ -76,7 +68,6 @@ const MapPage: FunctionComponent = () => {
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
   const { fetchRealEstateByIntId } = useRealEstateData();
-  const { createDirectLink, createCodeSnippet } = useTools();
 
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
@@ -85,8 +76,6 @@ const MapPage: FunctionComponent = () => {
     ApiRealEstateListing[]
   >([]);
   const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
-  const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
-  const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
 
   // initialization
   useEffect(() => {
@@ -237,6 +226,11 @@ const MapPage: FunctionComponent = () => {
     });
 
     searchContextDispatch({
+      type: SearchContextActionTypes.SET_SNAPSHOT_ID,
+      payload: snapshotId,
+    });
+
+    searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
         searchResponse,
@@ -258,81 +252,8 @@ const MapPage: FunctionComponent = () => {
       }),
     });
 
-    setEditorGroups(
-      deriveInitialEntityGroups({
-        searchResponse,
-        config: enhancedConfig,
-        listings: processedRealEstates,
-        locations: preferredLocations,
-        ignoreVisibility: true,
-      })
-    );
-
-    setExportTabProps({
-      snapshotId,
-      directLink: createDirectLink(snapshotResponse.token),
-      codeSnippet: createCodeSnippet(snapshotResponse.token),
-      searchAddress: placesLocation.label,
-    });
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId, snapshotResponse]);
-
-  useEffect(() => {
-    if (!snapshotResponse || !searchContextState.responseConfig) {
-      return;
-    }
-
-    const {
-      snapshot: { searchResponse },
-    } = snapshotResponse;
-
-    setEditorTabProps({
-      config: searchContextState.responseConfig,
-      availableMeans: deriveAvailableMeansFromResponse(searchResponse),
-      groupedEntries: editorGroups,
-      onConfigChange: (config: ApiSearchResultSnapshotConfig): void => {
-        if (
-          searchContextState.responseConfig?.mapBoxMapId !==
-            config.mapBoxMapId ||
-          searchContextState.responseConfig?.showLocation !==
-            config.showLocation ||
-          searchContextState.responseConfig?.showAddress !== config.showAddress
-        ) {
-          const mapCenter =
-            mapRef.current?.getCenter() || searchContextState.mapCenter;
-          const mapZoomLevel =
-            mapRef.current?.getZoom() || searchContextState.mapZoomLevel;
-
-          if (mapCenter && mapZoomLevel) {
-            searchContextDispatch({
-              type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
-              payload: { mapCenter, mapZoomLevel },
-            });
-          }
-        }
-
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-          payload: { ...config },
-        });
-      },
-      snapshotId,
-      additionalMapBoxStyles: integrationUser?.config.extraMapboxStyles || [],
-      isNewSnapshot: !!state?.isNewSnapshot,
-    });
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    processedRealEstates,
-    searchContextState.mapCenter,
-    searchContextState.mapZoomLevel,
-    searchContextState.responseConfig,
-    snapshotId,
-    snapshotResponse,
-    state?.isNewSnapshot,
-    editorGroups,
-  ]);
 
   // react to changes
   useEffect(() => {
@@ -458,9 +379,7 @@ const MapPage: FunctionComponent = () => {
   if (
     !searchContextState.searchResponse ||
     !searchContextState.responseConfig ||
-    !mapBoxToken ||
-    !editorTabProps ||
-    !exportTabProps
+    !mapBoxToken
   ) {
     return <LoadingMessage />;
   }
@@ -482,14 +401,11 @@ const MapPage: FunctionComponent = () => {
         />
       </div>
       <SearchResultContainer
-        ref={mapRef}
         mapBoxToken={mapBoxToken}
         mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
-        editorTabProps={editorTabProps}
-        exportTabProps={exportTabProps}
         mapDisplayMode={MapDisplayModesEnum.EDITOR}
         onPoiAdd={onPoiAdd}
         saveConfig={async () => {
@@ -500,6 +416,8 @@ const MapPage: FunctionComponent = () => {
           );
         }}
         isTrial={false}
+        isNewSnapshot={!!state?.isNewSnapshot}
+        ref={mapRef}
       />
     </>
   );

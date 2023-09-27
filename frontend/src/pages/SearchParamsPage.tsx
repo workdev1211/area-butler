@@ -530,12 +530,12 @@ const SearchParamsPage: FunctionComponent = () => {
     const onFinish = ({
       id: snapshotId,
     }: ApiSearchResultSnapshotResponse): void => {
-      if (isIntegrationUser) {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_INT_SNAPSHOT_ID,
-          payload: snapshotId,
-        });
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_SNAPSHOT_ID,
+        payload: snapshotId,
+      });
 
+      if (isIntegrationUser) {
         history.push(`${snapshotEditorPath}/${snapshotId}`, {
           isNewSnapshot: true,
         });

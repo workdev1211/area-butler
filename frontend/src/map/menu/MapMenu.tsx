@@ -64,9 +64,9 @@ interface IMapMenuProps {
   federalElectionData?: FederalElectionDistrict;
   particlePollutionData?: ApiGeojsonFeature[];
   locationIndexData?: TLocationIndexData;
+  userMenuPoiIcons?: IApiUserPoiIcon[];
   editorTabProps?: IEditorTabProps;
   exportTabProps?: IExportTabProps;
-  userMenuPoiIcons?: IApiUserPoiIcon[];
 }
 
 const MapMenu: FunctionComponent<IMapMenuProps> = ({
@@ -88,9 +88,9 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   federalElectionData,
   particlePollutionData,
   locationIndexData,
+  userMenuPoiIcons,
   editorTabProps,
   exportTabProps,
-  userMenuPoiIcons,
 }) => {
   const { unlockProduct } = useIntegrationTools();
 
