@@ -49,10 +49,10 @@ export class AddressesInRangeExtService {
 
     const place = await this.googleGeocodeService.fetchPlace(location);
 
-    const isInAllowedCountry = place?.address_components.some(
+    const isCountryAllowed = place?.address_components.some(
       ({ short_name: shortName, types }) =>
         types.includes('country') &&
-        allowedAddrInRangeCountries.includes(
+        allowedAddrInRangeCountries.has(
           shortName as Iso3166_1Alpha2CountriesEnum,
         ),
     );
@@ -61,13 +61,13 @@ export class AddressesInRangeExtService {
       !place ||
       !place.geometry.location ||
       !Array.isArray(place.address_components) ||
-      !isInAllowedCountry
+      !isCountryAllowed
     ) {
       this.logger.debug(
         `!place = ${!place}, !location = ${!place.geometry
           .location}, !addressComponents = ${!Array.isArray(
           place.address_components,
-        )}, !isInAllowedCountry = ${!isInAllowedCountry}`,
+        )}, !isInAllowedCountry = ${!isCountryAllowed}`,
       );
 
       throw new HttpException('Place not found!', 400);

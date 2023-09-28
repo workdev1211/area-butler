@@ -61,11 +61,14 @@ export const iso3166Alpha3CountryNames: Record<
   [Iso3166_1Alpha3CountriesEnum.DEU]: "Deutschland",
 };
 
-export const allowedAddrInRangeCountries = [
-  Iso3166_1Alpha2CountriesEnum.DE,
-  Iso3166_1Alpha2CountriesEnum.AT,
-  Iso3166_1Alpha2CountriesEnum.CH,
-  Iso3166_1Alpha2CountriesEnum.NL,
-  Iso3166_1Alpha2CountriesEnum.LU,
-  Iso3166_1Alpha2CountriesEnum.BE,
-];
+export const allowedAddrInRangeCountries: Set<Iso3166_1Alpha2CountriesEnum> =
+  new Set([
+    Iso3166_1Alpha2CountriesEnum.DE,
+    Iso3166_1Alpha2CountriesEnum.AT,
+    Iso3166_1Alpha2CountriesEnum.CH,
+    Iso3166_1Alpha2CountriesEnum.NL,
+    Iso3166_1Alpha2CountriesEnum.LU,
+    Iso3166_1Alpha2CountriesEnum.BE,
+    Iso3166_1Alpha2CountriesEnum.IT,
+    Iso3166_1Alpha2CountriesEnum.ES,
+  ]);
