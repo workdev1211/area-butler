@@ -42,6 +42,7 @@ const PotentialCustomerPage = lazy(
 const PotentialCustomersPage = lazy(
   () => import("../pages/PotentialCustomersPage")
 );
+const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
 const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
@@ -142,6 +143,9 @@ const OnOfficeContainer: FunctionComponent = () => {
           </Route>
           <Route path="/potential-customers">
             <PotentialCustomersPage />
+          </Route>
+          <Route path="/real-estates">
+            <RealEstatesPage />
           </Route>
           <Route path={`/${snapshotEditorPath}/:snapshotId`}>
             <MapPage />

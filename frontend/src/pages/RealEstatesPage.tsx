@@ -57,7 +57,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
-  const { googleApiKey } = useContext(ConfigContext);
+  const { integrationType, googleApiKey } = useContext(ConfigContext);
 
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
@@ -75,10 +75,12 @@ const RealEstatesPage: FunctionComponent = () => {
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
   const [isShownCrmImportModal, setIsShownCrmImportModal] = useState(false);
 
+  const isIntegration = !!integrationType;
   const user = userState.user!;
-  const hasSubscription = !!user?.subscription;
+  const hasSubscription = isIntegration || !!user?.subscription;
   const hasHtmlSnippet =
-    hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet;
+    isIntegration ||
+    (hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet);
   const hasApiConnections = !!user?.apiConnections;
 
   useEffect(() => {
@@ -96,7 +98,7 @@ const RealEstatesPage: FunctionComponent = () => {
       return;
     }
 
-    const fetchEmbeddableMaps = async () => {
+    const fetchEmbeddableMaps = async (): Promise<void> => {
       const embeddableMaps = await fetchSnapshots();
 
       userDispatch({
@@ -109,9 +111,7 @@ const RealEstatesPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
-  const realEstates = realEstateState.listings || [];
-
-  const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing) => {
+  const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing): void => {
     const { lat, lng } = realEstate.coordinates!;
 
     setRealEstateEmbeddableMaps(
@@ -124,7 +124,14 @@ const RealEstatesPage: FunctionComponent = () => {
     setShowEmbeddableMapsModal(true);
   };
 
-  const startSearchFromRealEstate = async (listing: ApiRealEstateListing) => {
+  useEffect(() => {
+    void fetchRealEstates(selectedRealEstateStatus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRealEstateStatus]);
+
+  const startSearchFromRealEstate = async (
+    listing: ApiRealEstateListing
+  ): Promise<void> => {
     const result = await deriveGeocodeByAddress(listing.address);
     const { lat, lng } = result;
 
@@ -147,10 +154,7 @@ const RealEstatesPage: FunctionComponent = () => {
     history.push("/search", { isFromRealEstates: true });
   };
 
-  useEffect(() => {
-    void fetchRealEstates(selectedRealEstateStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRealEstateStatus]);
+  const realEstates = realEstateState.listings || [];
 
   const ActionsTop: FunctionComponent = () => {
     return (
@@ -160,23 +164,25 @@ const RealEstatesPage: FunctionComponent = () => {
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
         </li>
-        <li>
-          <button
-            className="btn btn-link"
-            onClick={() => {
-              setIsShownCsvImportModal(true);
-            }}
-          >
-            <img
-              src={uploadIcon}
-              alt="upload-icon"
-              style={{ filter: "invert(100%)" }}
-            />
-            <label htmlFor="file" style={{ cursor: "pointer" }}>
-              Import aus CSV-Datei
-            </label>
-          </button>
-        </li>
+        {!isIntegration && (
+          <li>
+            <button
+              className="btn btn-link"
+              onClick={() => {
+                setIsShownCsvImportModal(true);
+              }}
+            >
+              <img
+                src={uploadIcon}
+                alt="upload-icon"
+                style={{ filter: "invert(100%)" }}
+              />
+              <label htmlFor="file" style={{ cursor: "pointer" }}>
+                Import aus CSV-Datei
+              </label>
+            </button>
+          </li>
+        )}
         {hasApiConnections && (
           <li>
             <button
@@ -229,10 +235,10 @@ const RealEstatesPage: FunctionComponent = () => {
     }),
   };
 
-  const onRealEstateStatusChange = async (
+  const onRealEstateStatusChange = (
     option: SingleValue<IApiRealEstateStatus>,
     action: ActionMeta<IApiRealEstateStatus>
-  ) => {
+  ): void => {
     setSelectedRealEstateStatus(option!.status);
   };
 
@@ -250,14 +256,16 @@ const RealEstatesPage: FunctionComponent = () => {
           embeddableMaps={realEstateEmbeddableMaps}
         />
       )}
-      <CsvImportModal
-        isShownModal={isShownCsvImportModal}
-        closeModal={async () => {
-          await fetchRealEstates(selectedRealEstateStatus);
-          setIsShownCsvImportModal(false);
-        }}
-        fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
-      />
+      {!isIntegration && (
+        <CsvImportModal
+          isShownModal={isShownCsvImportModal}
+          closeModal={async () => {
+            await fetchRealEstates(selectedRealEstateStatus);
+            setIsShownCsvImportModal(false);
+          }}
+          fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
+        />
+      )}
       {isShownCrmImportModal && (
         <CrmImportModal
           apiConnections={user.apiConnections!}
@@ -368,7 +376,7 @@ const RealEstatesPage: FunctionComponent = () => {
                           openEmbeddableMapsModal(realEstate);
                         }}
                       />
-                      {!realEstate.isFromParent && (
+                      {!realEstate.isFromParent && !isIntegration && (
                         <FormModal
                           modalConfig={{
                             ...deleteRealEstateModalConfig,

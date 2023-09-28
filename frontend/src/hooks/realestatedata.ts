@@ -4,6 +4,7 @@ import { useHttp } from "./http";
 import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
+  ApiUpsertRealEstateListing,
 } from "../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
@@ -19,9 +20,20 @@ export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
   const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
-  const { get } = useHttp();
+  const { post, get, put } = useHttp();
 
   const isIntegration = !!integrationType;
+
+  const createRealEstate = async (
+    realEstateData: ApiUpsertRealEstateListing
+  ): Promise<ApiRealEstateListing> => {
+    return (
+      await post<ApiRealEstateListing, ApiUpsertRealEstateListing>(
+        "/api/real-estate-listing",
+        realEstateData
+      )
+    ).data;
+  };
 
   const fetchRealEstates = async (
     realEstateStatus = ApiRealEstateStatusEnum.ALL
@@ -57,5 +69,22 @@ export const useRealEstateData = () => {
     });
   };
 
-  return { fetchRealEstates, fetchRealEstateByIntId };
+  const updateRealEstate = async (
+    realEstateId: string,
+    updatedData: ApiUpsertRealEstateListing
+  ): Promise<ApiRealEstateListing> => {
+    return (
+      await put<ApiRealEstateListing, ApiUpsertRealEstateListing>(
+        "/api/real-estate-listing",
+        updatedData
+      )
+    ).data;
+  };
+
+  return {
+    createRealEstate,
+    fetchRealEstates,
+    fetchRealEstateByIntId,
+    updateRealEstate,
+  };
 };

@@ -2,7 +2,6 @@ import { FunctionComponent, useContext } from "react";
 import { useHistory } from "react-router-dom";
 
 import { FormModalData } from "components/FormModal";
-import { useHttp } from "hooks/http";
 import {
   deriveGeocodeByAddress,
   toastError,
@@ -18,6 +17,7 @@ import {
   RealEstateContext,
 } from "../context/RealEstateContext";
 import RealEstateForm from "./RealEstateForm";
+import { useRealEstateData } from "../hooks/realestatedata";
 
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
@@ -102,11 +102,12 @@ export const RealEstateFormHandler: FunctionComponent<
   postSubmit = () => {},
   realEstate,
 }) => {
-  const history = useHistory();
-  const { post, put } = useHttp();
   const { realEstateDispatch } = useContext(RealEstateContext);
 
-  const onSubmit = async (values: any) => {
+  const history = useHistory();
+  const { createRealEstate, updateRealEstate } = useRealEstateData();
+
+  const onSubmit = async (values: any): Promise<void> => {
     const isValidated = validateBeforeSubmit(values);
 
     if (!isValidated) {
@@ -114,35 +115,25 @@ export const RealEstateFormHandler: FunctionComponent<
       return;
     }
 
-    const mappedRealEstateListing: ApiUpsertRealEstateListing =
-      await mapFormToApiUpsertRealEstateListing(values);
+    const updatedRealEstateData = await mapFormToApiUpsertRealEstateListing(
+      values
+    );
 
     try {
-      let response;
       beforeSubmit();
 
-      if (realEstate.id) {
-        response = await put(
-          `/api/real-estate-listing/${realEstate.id}`,
-          mappedRealEstateListing
-        );
-      } else {
-        response = await post(
-          "/api/real-estate-listing",
-          mappedRealEstateListing
-        );
-      }
-
-      const newRealEstate = response.data as ApiRealEstateListing;
+      const updatedRealEstate = realEstate.id
+        ? await updateRealEstate(realEstate.id, updatedRealEstateData)
+        : await createRealEstate(updatedRealEstateData);
 
       realEstateDispatch({
         type: RealEstateActionTypes.PUT_REAL_ESTATE,
-        payload: newRealEstate,
+        payload: updatedRealEstate,
       });
 
       postSubmit(true);
       toastSuccess("Objekt erfolgreich gespeichert!");
-      history.push(`/real-estates?id=${newRealEstate.id}`);
+      history.push(`/real-estates?id=${updatedRealEstate.id}`);
     } catch (err) {
       toastError("Fehler beim Speichern des Objektes");
       console.error(err);

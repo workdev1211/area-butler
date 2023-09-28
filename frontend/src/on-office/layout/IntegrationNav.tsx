@@ -63,7 +63,7 @@ const IntegrationNav: FunctionComponent = () => {
           </button>
         </div>
 
-        {/* Desktop main menu */}
+        {/* Desktop nav menu */}
         <div className="h-full flex-1 flex items-center justify-center lg:items-stretch lg:justify-start">
           {/* AreaButler logo link */}
           <NavLink
@@ -101,6 +101,13 @@ const IntegrationNav: FunctionComponent = () => {
                 Mein KI-Assistent
               </NavLink>
               <NavLink
+                to="/real-estates"
+                className="nav-link"
+                aria-current="page"
+              >
+                Meine Immobilien
+              </NavLink>
+              <NavLink
                 to="/potential-customers"
                 className="nav-link"
                 aria-current="page"
@@ -122,7 +129,7 @@ const IntegrationNav: FunctionComponent = () => {
         </div>
       </div>
 
-      {/* Mobile main menu */}
+      {/* Mobile nav menu */}
       <div className={mobileMenuClass} id="mobile-menu">
         <div className="ml-5 flex flex-col gap-5 px-2 pt-2 pb-3 space-y-1 bg-white">
           <NavLink
@@ -143,16 +150,31 @@ const IntegrationNav: FunctionComponent = () => {
             Mein KI-Assistent
           </NavLink>
           <NavLink
+            to="/real-estates"
+            className="nav-mobile-menu-link"
+            aria-current="page"
+          >
+            Meine Immobilien
+          </NavLink>
+          <NavLink
             to="/potential-customers"
-            className="nav-link"
+            className="nav-mobile-menu-link"
             aria-current="page"
           >
             Meine Zielgruppen
           </NavLink>
-          <NavLink to="/map-snapshots" className="nav-link" aria-current="page">
+          <NavLink
+            to="/map-snapshots"
+            className="nav-mobile-menu-link"
+            aria-current="page"
+          >
             Meine Karten
           </NavLink>
-          <NavLink to="/products" className="nav-link" aria-current="page">
+          <NavLink
+            to="/products"
+            className="nav-mobile-menu-link"
+            aria-current="page"
+          >
             Meine Produkte
           </NavLink>
         </div>

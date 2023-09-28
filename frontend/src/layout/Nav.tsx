@@ -51,7 +51,7 @@ const Nav: FunctionComponent = () => {
   return (
     <nav>
       <div className="nav">
-        {/* Mobile main menu button */}
+        {/* Mobile nav menu button */}
         <div className="nav-button">
           <button
             type="button"
@@ -97,7 +97,7 @@ const Nav: FunctionComponent = () => {
           </button>
         </div>
 
-        {/* Desktop main menu */}
+        {/* Desktop nav menu */}
         <div className="h-full flex-1 flex items-center justify-center lg:items-stretch lg:justify-start">
           {/* AreaButler logo link */}
           <NavLink to="/" className="nav-logo">
@@ -216,7 +216,7 @@ const Nav: FunctionComponent = () => {
         )}
       </div>
 
-      {/* Mobile main menu */}
+      {/* Mobile nav menu */}
       <div className={mobileMenuClass} id="mobile-menu">
         <div className="ml-5 flex flex-col gap-5 px-2 pt-2 pb-3 space-y-1 bg-white">
           <NavLink
