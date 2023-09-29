@@ -68,10 +68,10 @@ const RealEstatesPage: FunctionComponent = () => {
   const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState(
     ApiRealEstateStatusEnum.ALL
   );
-  const [realEstateEmbeddableMaps, setRealEstateEmbeddableMaps] = useState<
+  const [realEstateSnapshots, setRealEstateSnapshots] = useState<
     ApiSearchResultSnapshotResponse[]
   >([]);
-  const [showEmbeddableMapsModal, setShowEmbeddableMapsModal] = useState(false);
+  const [isShownSnapshotsModal, setIsShownSnapshotsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
   const [isShownCrmImportModal, setIsShownCrmImportModal] = useState(false);
 
@@ -94,7 +94,7 @@ const RealEstatesPage: FunctionComponent = () => {
   }, [googleApiKey]);
 
   useEffect(() => {
-    if (!user || !hasHtmlSnippet) {
+    if (!hasHtmlSnippet) {
       return;
     }
 
@@ -111,37 +111,37 @@ const RealEstatesPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
+  useEffect(() => {
+    void fetchRealEstates(selectedRealEstateStatus);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selectedRealEstateStatus]);
+
   const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing): void => {
     const { lat, lng } = realEstate.coordinates!;
 
-    setRealEstateEmbeddableMaps(
+    setRealEstateSnapshots(
       userState.embeddableMaps.filter(
         (map) =>
           map.snapshot.location.lat === lat && map.snapshot.location.lng === lng
       )
     );
 
-    setShowEmbeddableMapsModal(true);
+    setIsShownSnapshotsModal(true);
   };
 
-  useEffect(() => {
-    void fetchRealEstates(selectedRealEstateStatus);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRealEstateStatus]);
-
   const startSearchFromRealEstate = async (
-    listing: ApiRealEstateListing
+    realEstate: ApiRealEstateListing
   ): Promise<void> => {
-    const result = await deriveGeocodeByAddress(listing.address);
+    const result = await deriveGeocodeByAddress(realEstate.address);
     const { lat, lng } = result;
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: { label: listing.address, value: { place_id: "123" } },
+      payload: { label: realEstate.address, value: { place_id: "123" } },
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: listing,
+      payload: realEstate,
     });
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCATION,
@@ -249,11 +249,10 @@ const RealEstatesPage: FunctionComponent = () => {
       actionsTop={<ActionsTop />}
     >
       <TourStarter tour={ApiTourNamesEnum.REAL_ESTATES} />
-      {showEmbeddableMapsModal && (
+      {isShownSnapshotsModal && (
         <EmbeddableMapsModal
-          showModal={showEmbeddableMapsModal}
-          setShowModal={setShowEmbeddableMapsModal}
-          embeddableMaps={realEstateEmbeddableMaps}
+          setShowModal={setIsShownSnapshotsModal}
+          embeddableMaps={realEstateSnapshots}
         />
       )}
       {!isIntegration && (

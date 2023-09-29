@@ -4,20 +4,14 @@ import EmbeddableMapsTable from "map-snapshots/EmbeddableMapsTable";
 import { ApiSearchResultSnapshotResponse } from "../../../shared/types/types";
 
 export interface IEmbeddableMapsModalProps {
-  embeddableMaps: ApiSearchResultSnapshotResponse[];
   setShowModal: (show: boolean) => void;
-  showModal: boolean;
+  embeddableMaps: ApiSearchResultSnapshotResponse[];
 }
 
 const EmbeddableMapsModal: FunctionComponent<IEmbeddableMapsModalProps> = ({
-  showModal,
   setShowModal,
   embeddableMaps,
 }) => {
-  if (!showModal) {
-    return null;
-  }
-
   return (
     <div className="modal modal-open z-9999">
       <div className="modal-box max-w-max">
