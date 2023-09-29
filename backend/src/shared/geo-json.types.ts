@@ -1,4 +1,6 @@
 export interface GeoJsonPoint {
   type: 'Point';
-  coordinates: number[]; // it's a tuple containing latitude and longitude
+  // it's a malformed tuple containing latitude and longitude
+  // keep in mind that in this case latitude comes first
+  coordinates: number[];
 }

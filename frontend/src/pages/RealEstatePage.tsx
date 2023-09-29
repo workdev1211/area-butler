@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useEffect, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import { useParams } from "react-router-dom";
 import { v4 as uuid } from "uuid";
 
@@ -8,9 +8,10 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
 import { SearchContext } from "context/SearchContext";
-// import { useRealEstateData } from "../hooks/realestatedata";
+import { ConfigContext } from "../context/ConfigContext";
+import RealEstateIntFormHandler from "../real-estates/RealEstateIntFormHandler";
 
-export interface IRealEstatePageRouterProps {
+interface IRealEstatePageRouterProps {
   realEstateId: string;
 }
 
@@ -19,22 +20,20 @@ const defaultRealEstate: Partial<ApiRealEstateListing> = {
 };
 
 const RealEstatePage: FunctionComponent = () => {
+  const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { storedContextState },
   } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
 
-  // const { fetchRealEstates } = useRealEstateData();
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
+
+  const [busy, setBusy] = useState(false);
 
   const isNewRealEstate =
     realEstateId === "new" || realEstateId === "from-result";
 
   let initialRealEstate = { ...defaultRealEstate };
-
-  const [realEstate, setRealEstate] =
-    useState<Partial<ApiRealEstateListing>>(initialRealEstate);
-  const [busy, setBusy] = useState(false);
 
   if (realEstateId === "from-result" && storedContextState) {
     initialRealEstate = {
@@ -43,30 +42,13 @@ const RealEstatePage: FunctionComponent = () => {
     };
   }
 
-  // TODO REMOVE IN THE FUTURE
-  // useEffect(() => {
-  //   const getRealEstates = (): Promise<void> => {
-  //     return fetchRealEstates();
-  //   };
-  //
-  //   void getRealEstates();
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, []);
-
-  useEffect(() => {
-    if (isNewRealEstate) {
-      setRealEstate(initialRealEstate);
-      return;
-    }
-
-    setRealEstate(
-      realEstateState.listings.find(
+  const realEstate = isNewRealEstate
+    ? initialRealEstate
+    : realEstateState.listings.find(
         (e: ApiRealEstateListing) => e.id === realEstateId
-      ) ?? initialRealEstate
-    );
+      ) ?? initialRealEstate;
 
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [realEstateState.listings, isNewRealEstate, realEstateId]);
+  const isIntegration = !!integrationType;
 
   const formId = `form-${uuid()}`;
 
@@ -106,12 +88,21 @@ const RealEstatePage: FunctionComponent = () => {
       ]}
     >
       <div className="py-20">
-        <RealEstateFormHandler
-          realEstate={realEstate}
-          formId={formId}
-          beforeSubmit={beforeSubmit}
-          postSubmit={postSubmit}
-        />
+        {isIntegration ? (
+          <RealEstateIntFormHandler
+            realEstate={realEstate as ApiRealEstateListing}
+            formId={formId}
+            beforeSubmit={beforeSubmit}
+            postSubmit={postSubmit}
+          />
+        ) : (
+          <RealEstateFormHandler
+            realEstate={realEstate}
+            formId={formId}
+            beforeSubmit={beforeSubmit}
+            postSubmit={postSubmit}
+          />
+        )}
       </div>
     </DefaultLayout>
   );

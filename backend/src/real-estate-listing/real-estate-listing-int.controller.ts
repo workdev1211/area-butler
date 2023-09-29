@@ -4,6 +4,7 @@ import {
   Get,
   Param,
   Post,
+  Put,
   Query,
   UseInterceptors,
 } from '@nestjs/common';
@@ -25,6 +26,7 @@ import {
   ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
+import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
@@ -47,7 +49,9 @@ export class RealEstateListingIntController {
         integrationUser,
         status,
       )
-    ).map((listing) => mapRealEstateListingToApiRealEstateListing(listing));
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(integrationUser, realEstate),
+    );
   }
 
   @ApiOperation({
@@ -60,6 +64,7 @@ export class RealEstateListingIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
       await this.realEstateListingIntService.findOneOrFailByIntParams({
         integrationId,
         integrationUserId: integrationUser.integrationUserId,
@@ -83,6 +88,24 @@ export class RealEstateListingIntController {
       integrationUser,
       realEstateDescriptionQuery,
       realEstateListing,
+    );
+  }
+
+  @ApiOperation({ description: 'Update a real estate listing' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Put(':id')
+  async updateRealEstateListing(
+    @Param('id') realEstateId: string,
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() updatedData: Partial<ApiUpsertRealEstateListingDto>,
+  ): Promise<ApiRealEstateListing> {
+    return mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
+      await this.realEstateListingService.updateRealEstateListing(
+        integrationUser,
+        realEstateId,
+        updatedData,
+      ),
     );
   }
 

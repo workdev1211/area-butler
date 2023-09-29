@@ -87,6 +87,7 @@ export class LocationController extends AuthenticatedController {
     @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponseDto> {
     return mapSnapshotToEmbeddableMap(
+      user,
       await this.locationService.updateSnapshot(user, id, body),
     );
   }
@@ -101,6 +102,7 @@ export class LocationController extends AuthenticatedController {
     @Body() { description }: { description: string },
   ): Promise<ApiSearchResultSnapshotResponse> {
     return mapSnapshotToEmbeddableMap(
+      user,
       await this.locationService.updateSnapshotDescription(
         user,
         id,
@@ -164,7 +166,7 @@ export class LocationController extends AuthenticatedController {
         sortParams,
         projectParams: resultProjectParams,
       })
-    ).map((r) => mapSnapshotToEmbeddableMap(r));
+    ).map((snapshot) => mapSnapshotToEmbeddableMap(user, snapshot));
   }
 
   @ApiOperation({ description: 'Fetch a specific map snapshot' })
@@ -184,7 +186,12 @@ export class LocationController extends AuthenticatedController {
     const realEstateListings =
       await this.realEstateListingService.fetchRealEstateListings(user);
 
-    return mapSnapshotToEmbeddableMap(snapshotDoc, false, realEstateListings);
+    return mapSnapshotToEmbeddableMap(
+      user,
+      snapshotDoc,
+      false,
+      realEstateListings,
+    );
   }
 
   @ApiOperation({

@@ -11,8 +11,11 @@ import {
 } from '@area-butler-types/types';
 import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { UserDocument } from '../../user/schema/user.schema';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 
 export const mapSnapshotToEmbeddableMap = (
+  user: UserDocument | TIntegrationUserDocument,
   searchResultSnapshot: SearchResultSnapshotDocument,
   isEmbedded = false,
   realEstateListings: RealEstateListingDocument[] = [],
@@ -34,8 +37,8 @@ export const mapSnapshotToEmbeddableMap = (
 
       const mappedApiRealEstateListing =
         mapRealEstateListingToApiRealEstateListing(
+          user,
           currentEstate,
-          searchResultSnapshot.userId,
           !!searchResultSnapshot?.config?.showAddress,
         );
 

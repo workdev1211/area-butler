@@ -71,11 +71,13 @@ export const useRealEstateData = () => {
 
   const updateRealEstate = async (
     realEstateId: string,
-    updatedData: ApiUpsertRealEstateListing
+    updatedData: Partial<ApiUpsertRealEstateListing>
   ): Promise<ApiRealEstateListing> => {
     return (
-      await put<ApiRealEstateListing, ApiUpsertRealEstateListing>(
-        "/api/real-estate-listing",
+      await put<ApiRealEstateListing, Partial<ApiUpsertRealEstateListing>>(
+        isIntegration
+          ? `/api/real-estate-listing-int/${realEstateId}`
+          : `/api/real-estate-listing/${realEstateId}`,
         updatedData
       )
     ).data;

@@ -82,6 +82,7 @@ export class EmbeddedMapController {
       await this.realEstateListingService.fetchRealEstateListings(user);
 
     return mapSnapshotToEmbeddableMap(
+      user,
       snapshotDoc,
       true,
       realEstateListings,

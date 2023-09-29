@@ -55,7 +55,9 @@ export class RealEstateListingController extends AuthenticatedController {
   ): Promise<ApiRealEstateListing[]> {
     return (
       await this.realEstateListingService.fetchRealEstateListings(user, status)
-    ).map((l) => mapRealEstateListingToApiRealEstateListing(l, user.id));
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(user, realEstate),
+    );
   }
 
   @ApiOperation({ description: 'Insert a new real estate listing' })
@@ -65,28 +67,28 @@ export class RealEstateListingController extends AuthenticatedController {
     @Body() realEstateListing: ApiUpsertRealEstateListingDto,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
+      user,
       await this.realEstateListingService.createRealEstateListing(
         user,
         realEstateListing,
       ),
-      user.id,
     );
   }
 
   @ApiOperation({ description: 'Update a real estate listing' })
   @Put(':id')
   async updateRealEstateListing(
-    @Param('id') id: string,
+    @Param('id') realEstateId: string,
     @InjectUser() user: UserDocument,
     @Body() realEstateListing: Partial<ApiUpsertRealEstateListingDto>,
   ): Promise<ApiRealEstateListing> {
     return mapRealEstateListingToApiRealEstateListing(
+      user,
       await this.realEstateListingService.updateRealEstateListing(
         user,
-        id,
+        realEstateId,
         realEstateListing,
       ),
-      user.id,
     );
   }
 

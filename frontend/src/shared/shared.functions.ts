@@ -8,6 +8,7 @@ import harversine from "haversine";
 import { toast } from "react-toastify";
 import { v4 } from "uuid";
 import copy from "copy-to-clipboard";
+import { LatLng } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 
 import {
   ApiCoordinates,
@@ -74,7 +75,7 @@ interface IDeriveParameters {
   ignorePoiFilter?: boolean;
 }
 
-export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
+export const dateDiffInDays = (d1: Date, d2: Date = new Date()): number => {
   const oneDay = 24 * 60 * 60 * 1000;
   d1.setHours(0, 0, 0);
   d2.setHours(0, 0, 0);
@@ -82,12 +83,16 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()) => {
   return Math.round(Math.abs((d1.getTime() - d2.getTime()) / oneDay));
 };
 
-export const deriveGeocodeByAddress = async (address: string) => {
+export const deriveGeocodeByAddress = async (
+  address: string
+): Promise<LatLng> => {
   const latlngResults = await geocodeByAddress(address);
   return await getLatLng(latlngResults[0]);
 };
 
-export const deriveGeocodeByPlaceId = async (placeId: string) => {
+export const deriveGeocodeByPlaceId = async (
+  placeId: string
+): Promise<LatLng> => {
   const latlngResults = await geocodeByPlaceId(placeId);
   return getLatLng(latlngResults[0]);
 };

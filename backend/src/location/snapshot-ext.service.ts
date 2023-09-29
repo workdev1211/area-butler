@@ -150,7 +150,9 @@ export class SnapshotExtService {
   ): Promise<ApiSearchResultSnapshotResponse> {
     const realEstateListings = (
       await this.realEstateListingService.fetchRealEstateListings(user)
-    ).map((l) => mapRealEstateListingToApiRealEstateListing(l, user.id));
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(user, realEstate),
+    );
 
     const localityParams = searchData.preferredAmenities
       .map((name) => osmEntityTypes.find((entity) => entity.name === name))

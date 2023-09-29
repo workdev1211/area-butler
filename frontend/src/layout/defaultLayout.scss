@@ -1,5 +1,5 @@
 .default-layout {
-  @apply flex flex-col w-full;
+  @apply flex flex-col flex-1;
 
   .default-layout-header {
     min-height: var(--content-header-height);
@@ -61,6 +61,8 @@
   }
 
   .default-layout-content {
+    @apply flex-1;
+
     &.padding {
       padding: 0 var(--content-padding-x) var(--content-padding-y);
     }

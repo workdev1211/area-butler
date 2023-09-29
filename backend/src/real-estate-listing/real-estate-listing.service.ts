@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 
 import {
   RealEstateListing,
@@ -83,31 +83,34 @@ export class RealEstateListingService {
   }
 
   async updateRealEstateListing(
-    user: UserDocument,
-    realEstateListingId: string,
-    upsertData: Partial<ApiUpsertRealEstateListing>,
+    user: UserDocument | TIntegrationUserDocument,
+    realEstateId: string,
+    updatedData: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
-    const existingListing = await this.realEstateListingModel.findById(
-      realEstateListingId,
+    const isIntegrationUser = 'integrationUserId' in user;
+    const filterQuery: FilterQuery<RealEstateListingDocument> = {
+      _id: new Types.ObjectId(realEstateId),
+    };
+
+    if (isIntegrationUser) {
+      filterQuery['integrationParams.integrationUserId'] =
+        user.integrationUserId;
+      filterQuery['integrationParams.integrationType'] = user.integrationType;
+    } else {
+      filterQuery.userId = user.id;
+    }
+
+    const realEstate = await this.realEstateListingModel.findOneAndUpdate(
+      filterQuery,
+      updatedData,
+      { new: true },
     );
 
-    if (!existingListing) {
+    if (!realEstate) {
       throw new HttpException('Real estate not found!', 400);
     }
 
-    if (existingListing.userId !== user.id) {
-      throw new HttpException('Invalid change!', 400);
-    }
-
-    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
-      ...upsertData,
-    };
-
-    return this.realEstateListingModel.findByIdAndUpdate(
-      realEstateListingId,
-      realEstateListingDoc,
-      { new: true },
-    );
+    return realEstate;
   }
 
   async deleteRealEstateListing(

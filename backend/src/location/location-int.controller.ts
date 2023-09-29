@@ -105,7 +105,9 @@ export class LocationIntController {
         projectParams: resultProjectParams,
         user: integrationUser,
       })
-    ).map((r) => mapSnapshotToEmbeddableMap(r));
+    ).map((snapshotDoc) =>
+      mapSnapshotToEmbeddableMap(integrationUser, snapshotDoc),
+    );
   }
 
   @ApiOperation({ description: 'Fetch a specific map snapshot' })
@@ -120,7 +122,7 @@ export class LocationIntController {
       id,
     );
 
-    return mapSnapshotToEmbeddableMap(snapshotDoc, false);
+    return mapSnapshotToEmbeddableMap(integrationUser, snapshotDoc, false);
   }
 
   @ApiOperation({
@@ -184,6 +186,7 @@ export class LocationIntController {
     @Body() body: ApiUpdateSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
     return mapSnapshotToEmbeddableMap(
+      integrationUser,
       await this.locationService.updateSnapshot(
         integrationUser,
         snapshotId,
@@ -199,13 +202,14 @@ export class LocationIntController {
   @Put('snapshot/:id/description')
   async updateSnapshotDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('id') id: string,
+    @Param('id') snapshotId: string,
     @Body() { description }: { description: string },
   ): Promise<ApiSearchResultSnapshotResponse> {
     return mapSnapshotToEmbeddableMap(
+      integrationUser,
       await this.locationService.updateSnapshotDescription(
         integrationUser,
-        id,
+        snapshotId,
         description,
       ),
     );

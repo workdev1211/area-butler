@@ -303,6 +303,7 @@ export class OnOfficeService {
     );
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
+      integrationUser,
       await this.realEstateListingIntService.upsertByIntegrationParams(
         areaButlerEstate,
       ),
@@ -322,7 +323,7 @@ export class OnOfficeService {
       accessToken: extendedClaim,
       config: integrationUser.config,
       latestSnapshot: snapshot
-        ? mapSnapshotToEmbeddableMap(snapshot)
+        ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
     };
   }
@@ -460,6 +461,7 @@ export class OnOfficeService {
       config: integrationUser.config,
       isChild: !!integrationUser.parentId,
       realEstate: mapRealEstateListingToApiRealEstateListing(
+        integrationUser,
         await this.realEstateListingIntService.findOneOrFailByIntParams({
           integrationId,
           integrationUserId: integrationUser.integrationUserId,
@@ -471,7 +473,7 @@ export class OnOfficeService {
           integrationUser,
         ),
       latestSnapshot: snapshot
-        ? mapSnapshotToEmbeddableMap(snapshot)
+        ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
     };
   }
