@@ -17,6 +17,7 @@ import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 
 @Injectable()
 export class RealEstateListingService {
@@ -26,7 +27,72 @@ export class RealEstateListingService {
     private readonly subscriptionService: SubscriptionService,
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly openAiService: OpenAiService,
+    private readonly locationIndexService: LocationIndexService,
   ) {}
+
+  async createRealEstateListing(
+    user: UserDocument,
+    upsertData: ApiUpsertRealEstateListing,
+    subscriptionCheck = true,
+  ): Promise<RealEstateListingDocument> {
+    // Further object creation is no longer possible for the current plan
+    subscriptionCheck &&
+      this.subscriptionService.checkSubscriptionViolation(
+        user.subscription.type,
+        (subscriptionPlan) => !subscriptionPlan,
+        'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
+      );
+
+    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
+      userId: user.id,
+      ...upsertData,
+    };
+
+    // Because in real estate DB records coordinates are stored in the malformed GeoJSON format
+    const resultLocation = JSON.parse(
+      JSON.stringify(realEstateListingDoc.location),
+    );
+    resultLocation.coordinates = [
+      resultLocation.coordinates[1],
+      resultLocation.coordinates[0],
+    ];
+
+    const locationIndexData = await this.locationIndexService.query(
+      resultLocation,
+    );
+
+    if (locationIndexData[0]) {
+      realEstateListingDoc.locationIndices = locationIndexData[0].properties;
+    }
+
+    return new this.realEstateListingModel(realEstateListingDoc).save();
+  }
+
+  async fetchRealEstateListingById(
+    user: UserDocument | TIntegrationUserDocument,
+    realEstateListingId: string,
+  ): Promise<RealEstateListingDocument> {
+    const isIntegrationUser = 'integrationUserId' in user;
+    const filter = { _id: realEstateListingId };
+
+    Object.assign(
+      filter,
+      isIntegrationUser
+        ? {
+            'integrationParams.integrationUserId': user.integrationUserId,
+            'integrationParams.integrationType': user.integrationType,
+          }
+        : { userId: user.id },
+    );
+
+    const realEstateListing = await this.realEstateListingModel.findOne(filter);
+
+    if (!realEstateListing) {
+      throw new HttpException('Real estate listing not found!', 400);
+    }
+
+    return realEstateListing;
+  }
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
@@ -59,27 +125,6 @@ export class RealEstateListingService {
     }
 
     return this.realEstateListingModel.find(filter);
-  }
-
-  async createRealEstateListing(
-    user: UserDocument,
-    upsertData: ApiUpsertRealEstateListing,
-    subscriptionCheck = true,
-  ): Promise<RealEstateListingDocument> {
-    // Further object creation is no longer possible for the current plan
-    subscriptionCheck &&
-      this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) => !subscriptionPlan,
-        'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
-      );
-
-    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
-      userId: user.id,
-      ...upsertData,
-    };
-
-    return new this.realEstateListingModel(realEstateListingDoc).save();
   }
 
   async updateRealEstateListing(
@@ -130,32 +175,6 @@ export class RealEstateListingService {
     }
 
     await existingListing.deleteOne();
-  }
-
-  async fetchRealEstateListingById(
-    user: UserDocument | TIntegrationUserDocument,
-    realEstateListingId: string,
-  ): Promise<RealEstateListingDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-    const filter = { _id: realEstateListingId };
-
-    Object.assign(
-      filter,
-      isIntegrationUser
-        ? {
-            'integrationParams.integrationUserId': user.integrationUserId,
-            'integrationParams.integrationType': user.integrationType,
-          }
-        : { userId: user.id },
-    );
-
-    const realEstateListing = await this.realEstateListingModel.findOne(filter);
-
-    if (!realEstateListing) {
-      throw new HttpException('Real estate listing not found!', 400);
-    }
-
-    return realEstateListing;
   }
 
   async fetchOpenAiRealEstateDesc(

@@ -1,6 +1,7 @@
 import { ApiCoordinates, ApiMoneyAmount } from "./types";
 import { GeoJsonPoint } from "../../backend/src/shared/geo-json.types";
 import { IApiIntegrationParams } from "./integration";
+import { ApiLocIndexFeatPropsEnum } from "./location-index";
 
 export interface IApiRealEstateListingSchema {
   userId?: string;
@@ -12,6 +13,7 @@ export interface IApiRealEstateListingSchema {
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
   location: GeoJsonPoint;
+  locationIndices?: Record<ApiLocIndexFeatPropsEnum, number>;
   status?: ApiRealEstateStatusEnum;
   externalId?: string;
   integrationParams?: IApiIntegrationParams;

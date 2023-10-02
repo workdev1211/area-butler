@@ -12,12 +12,14 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 
 @Injectable()
 export class RealEstateListingIntService {
   constructor(
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
+    private readonly locationIndexService: LocationIndexService,
   ) {}
 
   async findOneOrFailByIntParams({
@@ -40,27 +42,44 @@ export class RealEstateListingIntService {
     return existingRealEstateListing;
   }
 
-  async upsertByIntegrationParams(
+  async upsertByIntParams(
     realEstateListing: IApiRealEstateListingSchema,
   ): Promise<RealEstateListingDocument> {
     const {
       integrationParams: { integrationId, integrationUserId, integrationType },
-      ...realEstateListingData
+      ...realEstateData
     } = realEstateListing;
 
-    const existingRealEstateListing =
+    const existingRealEstate =
       await this.realEstateListingModel.findOneAndUpdate(
         {
           'integrationParams.integrationId': integrationId,
           'integrationParams.integrationUserId': integrationUserId,
           'integrationParams.integrationType': integrationType,
         },
-        realEstateListingData,
+        realEstateData,
         { new: true },
       );
 
-    if (existingRealEstateListing) {
-      return existingRealEstateListing;
+    if (existingRealEstate) {
+      return existingRealEstate;
+    }
+
+    // Because in real estate DB records coordinates are stored in the malformed GeoJSON format
+    const resultLocation = JSON.parse(
+      JSON.stringify(realEstateListing.location),
+    );
+    resultLocation.coordinates = [
+      resultLocation.coordinates[1],
+      resultLocation.coordinates[0],
+    ];
+
+    const locationIndexData = await this.locationIndexService.query(
+      resultLocation,
+    );
+
+    if (locationIndexData[0]) {
+      realEstateListing.locationIndices = locationIndexData[0].properties;
     }
 
     return new this.realEstateListingModel(realEstateListing).save();

@@ -47,19 +47,6 @@ export class RealEstateListingController extends AuthenticatedController {
     super();
   }
 
-  @ApiOperation({ description: 'Get real estate listings for current user' })
-  @Get('listings')
-  async fetchRealEstateListings(
-    @Query('status') status: ApiRealEstateStatusEnum,
-    @InjectUser() user: UserDocument,
-  ): Promise<ApiRealEstateListing[]> {
-    return (
-      await this.realEstateListingService.fetchRealEstateListings(user, status)
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(user, realEstate),
-    );
-  }
-
   @ApiOperation({ description: 'Insert a new real estate listing' })
   @Post()
   async createRealEstateListing(
@@ -72,6 +59,19 @@ export class RealEstateListingController extends AuthenticatedController {
         user,
         realEstateListing,
       ),
+    );
+  }
+
+  @ApiOperation({ description: 'Get real estate listings for current user' })
+  @Get('listings')
+  async fetchRealEstateListings(
+    @Query('status') status: ApiRealEstateStatusEnum,
+    @InjectUser() user: UserDocument,
+  ): Promise<ApiRealEstateListing[]> {
+    return (
+      await this.realEstateListingService.fetchRealEstateListings(user, status)
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(user, realEstate),
     );
   }
 
@@ -97,8 +97,8 @@ export class RealEstateListingController extends AuthenticatedController {
   async deleteRealEstateListing(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
-  ) {
-    await this.realEstateListingService.deleteRealEstateListing(user, id);
+  ): Promise<void> {
+    return this.realEstateListingService.deleteRealEstateListing(user, id);
   }
 
   @ApiOperation({ description: 'Import a csv file' })
