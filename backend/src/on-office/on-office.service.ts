@@ -61,6 +61,7 @@ import {
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
+import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 
 @Injectable()
 export class OnOfficeService {
@@ -304,7 +305,7 @@ export class OnOfficeService {
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
-      await this.realEstateListingIntService.upsertByIntegrationParams(
+      await this.realEstateListingIntService.upsertByIntParams(
         areaButlerEstate,
       ),
     );
@@ -762,7 +763,7 @@ export class OnOfficeService {
       integrationUserId,
       parameters: { token, apiKey, extendedClaim },
     }: TIntegrationUserDocument,
-  ): Promise<ApiOnOfficeToAreaButlerDto> {
+  ): Promise<IApiRealEstateListingSchema> {
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();

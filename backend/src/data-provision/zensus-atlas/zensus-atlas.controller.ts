@@ -69,10 +69,10 @@ export class ZensusAtlasController extends AuthenticatedController {
   @Post('upload')
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
     const data: ZensusDataGeojson = JSON.parse(file.buffer.toString());
 
-    //TODO: Validate Data
+    // TODO Validate Data
     await this.zensusAtlasService.createCollection(data.features);
 
     return 'done';

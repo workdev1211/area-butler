@@ -19,8 +19,8 @@ export class LocationIndexIntController {
   @Post('query')
   async query(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() query: ApiGeometryDto,
+    @Body() queryData: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
-    return this.locationIndexService.query(integrationUser, query);
+    return this.locationIndexService.queryWithUser(integrationUser, queryData);
   }
 }

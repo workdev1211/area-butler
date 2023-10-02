@@ -152,10 +152,13 @@ export class OpenAiService {
 
     // Location indices
 
-    const locationIndices = await this.locationIndexService.query(user, {
-      type: 'Point',
-      coordinates: [snapshot.location.lng, snapshot.location.lat],
-    });
+    const locationIndices = await this.locationIndexService.queryWithUser(
+      user,
+      {
+        type: 'Point',
+        coordinates: [snapshot.location.lng, snapshot.location.lat],
+      },
+    );
 
     if (
       locationIndices.length &&

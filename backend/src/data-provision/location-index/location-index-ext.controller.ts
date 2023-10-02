@@ -65,10 +65,13 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     };
 
     try {
-      const locationIndexData = await this.locationIndexService.query(user, {
-        coordinates: geoJsonCoordinates,
-        type: type || 'Point',
-      });
+      const locationIndexData = await this.locationIndexService.queryWithUser(
+        user,
+        {
+          coordinates: geoJsonCoordinates,
+          type: type || 'Point',
+        },
+      );
 
       if (locationIndexData[0]) {
         return {

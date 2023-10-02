@@ -35,12 +35,12 @@ export class FederalElectionController extends AuthenticatedController {
   @Post('upload')
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
     const data: { features: ApiFederalElectionFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
 
-    // TODO: Validate Data
+    // TODO Validate Data
     await this.federalElectionService.createCollection(data.features);
 
     return 'done';

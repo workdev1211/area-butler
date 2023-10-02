@@ -35,7 +35,7 @@ export class LocationIndexController extends AuthenticatedController {
   @Post('upload')
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
-  async uploadFile(@UploadedFile() file: Express.Multer.File) {
+  async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
     const data: { features: IApiLocationIndexFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
@@ -50,8 +50,8 @@ export class LocationIndexController extends AuthenticatedController {
   @Post('query')
   async query(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() query: ApiGeometryDto,
+    @Body() queryData: ApiGeometryDto,
   ): Promise<LocationIndexDocument[]> {
-    return this.locationIndexService.query(user, query);
+    return this.locationIndexService.queryWithUser(user, queryData);
   }
 }

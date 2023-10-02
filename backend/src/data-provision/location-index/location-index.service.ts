@@ -3,7 +3,6 @@ import { InjectConnection, InjectModel } from '@nestjs/mongoose';
 import { Connection, Model } from 'mongoose';
 
 import { ApiDataSource } from '@area-butler-types/subscription-plan';
-import ApiGeometryDto from '../../dto/api-geometry.dto';
 import { UserDocument } from '../../user/schema/user.schema';
 import { SubscriptionService } from '../../user/subscription.service';
 import {
@@ -12,6 +11,7 @@ import {
 } from '../schemas/location-index.schema';
 import { IApiLocationIndexFeature } from '@area-butler-types/location-index';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { ApiGeometry } from '@area-butler-types/types';
 
 @Injectable()
 export class LocationIndexService {
@@ -51,9 +51,9 @@ export class LocationIndexService {
     return;
   }
 
-  async query(
+  async queryWithUser(
     user: UserDocument | TIntegrationUserDocument,
-    { type, coordinates }: ApiGeometryDto,
+    queryData: ApiGeometry,
   ): Promise<LocationIndexDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -71,6 +71,13 @@ export class LocationIndexService {
       );
     }
 
+    return this.query(queryData);
+  }
+
+  async query({
+    type,
+    coordinates,
+  }: ApiGeometry): Promise<LocationIndexDocument[]> {
     return this.locationIndexModel.find({
       geometry: {
         $geoIntersects: {

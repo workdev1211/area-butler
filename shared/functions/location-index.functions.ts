@@ -4,7 +4,7 @@ import {
   TApiLocationIndexFeatureProperties,
   TLocationIndexData,
 } from "../types/location-index";
-import { locationIndexNames } from "../constants/location";
+import { locationIndexNames } from "../constants/location-index";
 
 export const processLocationIndices = (
   locationIndices: TApiLocationIndexFeatureProperties,

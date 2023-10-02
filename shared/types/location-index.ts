@@ -9,6 +9,7 @@ export enum ApiLocIndexFeatPropsEnum {
   CULTURE = "culture",
   SPORTS = "sports",
   INDIVIDUAL_MOBILITY = "individual_mobility",
+  TOURISM = "tourism",
 }
 
 export enum LocationIndicesEnum {
