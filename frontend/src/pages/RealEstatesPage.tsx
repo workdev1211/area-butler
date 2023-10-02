@@ -1,5 +1,5 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
-import { Link, useHistory, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Select, {
   ActionMeta,
   ControlProps,
@@ -11,27 +11,14 @@ import Select, {
 import { Loader } from "@googlemaps/js-api-loader";
 
 import DefaultLayout from "../layout/defaultLayout";
-import {
-  allFurnishing,
-  allRealEstateCostTypes,
-  allRealEstateStatuses,
-} from "../../../shared/constants/real-estate";
+import { allRealEstateStatuses } from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import uploadIcon from "../assets/icons/upload_file.svg";
-import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
-import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
-import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import locationIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
-import FormModal from "../components/FormModal";
-import { RealEstateContext } from "../context/RealEstateContext";
 import {
   ApiRealEstateListing,
   ApiRealEstateStatusEnum,
   IApiRealEstateStatus,
 } from "../../../shared/types/real-estate";
-import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler";
-import { deriveGeocodeByAddress } from "shared/shared.functions";
-import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import {
@@ -39,33 +26,23 @@ import {
   ApiTourNamesEnum,
 } from "../../../shared/types/types";
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
-import { getRealEstateCost } from "../shared/real-estate.functions";
 import CsvImportModal from "../real-estates/CsvImportModal";
 import { ConfigContext } from "../context/ConfigContext";
 import { googleMapsApiOptions } from "../shared/shared.constants";
-import { IRealEstatesHistoryState } from "../shared/shared.types";
 import { useRealEstateData } from "../hooks/realestatedata";
 import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
-
-const deleteRealEstateModalConfig = {
-  modalTitle: "Objekt löschen",
-  submitButtonTitle: "Löschen",
-};
+// import RealEstatesTable from "./RealEstatesTable";
+import RealEstatesTableV2 from "./RealEstatesTableV2";
 
 const RealEstatesPage: FunctionComponent = () => {
-  const { realEstateState } = useContext(RealEstateContext);
   const { userState, userDispatch } = useContext(UserContext);
-  const { searchContextDispatch } = useContext(SearchContext);
   const { integrationType, googleApiKey } = useContext(ConfigContext);
 
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
-  const history = useHistory<IRealEstatesHistoryState>();
-  const queryParams = new URLSearchParams(useLocation().search);
-  const realEstateHighlightId = queryParams.get("id");
 
-  const [selectedRealEstateStatus, setSelectedRealEstateStatus] = useState(
+  const [realEstateStatus, setRealEstateStatus] = useState(
     ApiRealEstateStatusEnum.ALL
   );
   const [realEstateSnapshots, setRealEstateSnapshots] = useState<
@@ -98,7 +75,7 @@ const RealEstatesPage: FunctionComponent = () => {
       return;
     }
 
-    const fetchEmbeddableMaps = async (): Promise<void> => {
+    const getSnapshots = async (): Promise<void> => {
       const embeddableMaps = await fetchSnapshots();
 
       userDispatch({
@@ -107,16 +84,16 @@ const RealEstatesPage: FunctionComponent = () => {
       });
     };
 
-    void fetchEmbeddableMaps();
+    void getSnapshots();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   useEffect(() => {
-    void fetchRealEstates(selectedRealEstateStatus);
+    void fetchRealEstates(realEstateStatus);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRealEstateStatus]);
+  }, [realEstateStatus]);
 
-  const openEmbeddableMapsModal = (realEstate: ApiRealEstateListing): void => {
+  const openSnapshotsModal = (realEstate: ApiRealEstateListing): void => {
     const { lat, lng } = realEstate.coordinates!;
 
     setRealEstateSnapshots(
@@ -128,33 +105,6 @@ const RealEstatesPage: FunctionComponent = () => {
 
     setIsShownSnapshotsModal(true);
   };
-
-  const startSearchFromRealEstate = async (
-    realEstate: ApiRealEstateListing
-  ): Promise<void> => {
-    const result = await deriveGeocodeByAddress(realEstate.address);
-    const { lat, lng } = result;
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: { label: realEstate.address, value: { place_id: "123" } },
-    });
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: realEstate,
-    });
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_LOCATION,
-      payload: {
-        lat,
-        lng,
-      },
-    });
-
-    history.push("/search", { isFromRealEstates: true });
-  };
-
-  const realEstates = realEstateState.listings || [];
 
   const ActionsTop: FunctionComponent = () => {
     return (
@@ -239,7 +189,7 @@ const RealEstatesPage: FunctionComponent = () => {
     option: SingleValue<IApiRealEstateStatus>,
     action: ActionMeta<IApiRealEstateStatus>
   ): void => {
-    setSelectedRealEstateStatus(option!.status);
+    setRealEstateStatus(option!.status);
   };
 
   return (
@@ -259,7 +209,7 @@ const RealEstatesPage: FunctionComponent = () => {
         <CsvImportModal
           isShownModal={isShownCsvImportModal}
           closeModal={async () => {
-            await fetchRealEstates(selectedRealEstateStatus);
+            await fetchRealEstates(realEstateStatus);
             setIsShownCsvImportModal(false);
           }}
           fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
@@ -293,112 +243,8 @@ const RealEstatesPage: FunctionComponent = () => {
         <span>Immobilienart</span>
       </div>
       <div data-tour="real-estates-table">
-        <table className="table w-full">
-          <thead>
-            <tr>
-              <th>Typ</th>
-              <th>Name</th>
-              <th>Addresse</th>
-              <th>Kosten</th>
-              <th>Ausstattung</th>
-              <th />
-            </tr>
-          </thead>
-          <tbody>
-            {realEstates.map(
-              (realEstate: ApiRealEstateListing, index: number) => (
-                <tr
-                  key={realEstate.id}
-                  className={
-                    realEstateHighlightId === realEstate.id ? "active" : ""
-                  }
-                >
-                  <th>
-                    {/*TODO move all such text table things to the useEffect and a specific table entity*/}
-                    {
-                      allRealEstateStatuses.find(
-                        (estate) => estate.status === realEstate.status
-                      )?.label
-                    }
-                  </th>
-                  <th>{realEstate.name}</th>
-                  <td>{realEstate.address}</td>
-                  <td>
-                    {realEstate?.costStructure
-                      ? `${getRealEstateCost(realEstate.costStructure)} (${
-                          allRealEstateCostTypes.find(
-                            (t) => t.type === realEstate.costStructure?.type
-                          )?.label
-                        })`
-                      : ""}
-                  </td>
-                  <td>
-                    {realEstate.characteristics?.furnishing &&
-                      allFurnishing
-                        .filter((f) =>
-                          realEstate.characteristics?.furnishing.includes(
-                            f.type
-                          )
-                        )
-                        .map((f) => f.label)
-                        .join(", ")}
-                  </td>
-                  <td>
-                    <div className="flex gap-4">
-                      <img
-                        src={searchIcon}
-                        alt="icon-search"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          void startSearchFromRealEstate(realEstate);
-                        }}
-                        data-tour={`real-estates-table-item-search-button-${index}`}
-                      />
-                      {!realEstate.isFromParent ? (
-                        <img
-                          src={editIcon}
-                          alt="icon-edit"
-                          className="cursor-pointer"
-                          data-tour={`"real-estates-table-item-edit-button-${index}`}
-                          onClick={() =>
-                            history.push(`/real-estates/${realEstate.id}`)
-                          }
-                        />
-                      ) : (
-                        <div style={{ width: "16px", height: "16px" }} />
-                      )}
-                      <img
-                        src={locationIcon}
-                        alt="icon-location"
-                        className="cursor-pointer"
-                        onClick={() => {
-                          openEmbeddableMapsModal(realEstate);
-                        }}
-                      />
-                      {!realEstate.isFromParent && !isIntegration && (
-                        <FormModal
-                          modalConfig={{
-                            ...deleteRealEstateModalConfig,
-                            modalButton: (
-                              <img
-                                src={deleteIcon}
-                                alt="icon-delete"
-                                data-tour={`real-estates-table-item-delete-button-${index}`}
-                                className="cursor-pointer"
-                              />
-                            ),
-                          }}
-                        >
-                          <RealEstateDeleteHandler realEstate={realEstate} />
-                        </FormModal>
-                      )}
-                    </div>
-                  </td>
-                </tr>
-              )
-            )}
-          </tbody>
-        </table>
+        {/*<RealEstatesTable openSnapshotsModal={openSnapshotsModal} />*/}
+        <RealEstatesTableV2 openSnapshotsModal={openSnapshotsModal} />
       </div>
     </DefaultLayout>
   );

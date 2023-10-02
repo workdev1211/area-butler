@@ -1992,6 +1992,18 @@
   dependencies:
     mini-svg-data-uri "^1.2.3"
 
+"@tanstack/react-table@^8.10.3":
+  version "8.10.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/react-table/-/react-table-8.10.3.tgz#d109be13ffca4085336e92b4a856bddc1ddfebd8"
+  integrity sha512-Qya1cJ+91arAlW7IRDWksRDnYw28O446jJ/ljkRSc663EaftJoBCAU10M+VV1K6MpCBLrXq1BD5IQc1zj/ZEjA==
+  dependencies:
+    "@tanstack/table-core" "8.10.3"
+
+"@tanstack/table-core@8.10.3":
+  version "8.10.3"
+  resolved "https://registry.yarnpkg.com/@tanstack/table-core/-/table-core-8.10.3.tgz#7f7a0753645e05bb15c97512785abbae7b626ee3"
+  integrity sha512-hJ55YfJlWbfzRROfcyA/kC1aZr/shsLA8XNAwN8jXylhYWGLnPmiJJISrUfj4dMMWRiFi0xBlnlC7MLH+zSrcw==
+
 "@testing-library/dom@^7.28.1":
   version "7.31.2"
   resolved "https://registry.npmjs.org/@testing-library/dom/-/dom-7.31.2.tgz"
