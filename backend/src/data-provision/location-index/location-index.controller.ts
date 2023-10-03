@@ -18,7 +18,7 @@ import { AuthenticatedController } from '../../shared/authenticated.controller';
 import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
-import { IApiLocationIndexFeature } from '@area-butler-types/location-index';
+import { IApiLocIndexFeature } from '@area-butler-types/location-index';
 import { LocationIndexDocument } from '../schemas/location-index.schema';
 
 @ApiTags('location-index')
@@ -36,7 +36,7 @@ export class LocationIndexController extends AuthenticatedController {
   @Roles(Role.Admin)
   @UseInterceptors(FileInterceptor('file'))
   async uploadFile(@UploadedFile() file: Express.Multer.File): Promise<string> {
-    const data: { features: IApiLocationIndexFeature[] } = JSON.parse(
+    const data: { features: IApiLocIndexFeature[] } = JSON.parse(
       file.buffer.toString(),
     );
 

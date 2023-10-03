@@ -1,10 +1,10 @@
 import { FunctionComponent } from "react";
 
+import Loading from "../../../components/Loading";
 import {
-  LocationIndicesEnum,
+  LocIndexPropsEnum,
   TLocationIndexData,
 } from "../../../../../../../shared/types/location-index";
-import Loading from "../../../components/Loading";
 
 interface ILocationIndexTableProps {
   locationIndexData?: TLocationIndexData;
@@ -20,9 +20,9 @@ const LocationIndexTable: FunctionComponent<ILocationIndexTableProps> = ({
   return (
     <div className="flex flex-col w-full px-[14px]">
       {Object.keys(locationIndexData).map((indexKey) => {
-        const locationIndexValueStyle = {
+        const locIndexValueStyle = {
           borderRadius: "15%",
-          ...locationIndexData[indexKey as LocationIndicesEnum].colorStyle,
+          ...locationIndexData[indexKey as LocIndexPropsEnum].colorStyle,
         };
 
         return (
@@ -34,13 +34,13 @@ const LocationIndexTable: FunctionComponent<ILocationIndexTableProps> = ({
             key={indexKey}
           >
             <div className="pl-[10px] text-lg font-bold">
-              {locationIndexData[indexKey as LocationIndicesEnum].name}
+              {locationIndexData[indexKey as LocIndexPropsEnum].name}
             </div>
             <div
               className="text-lg text-white font-bold px-2"
-              style={locationIndexValueStyle}
+              style={locIndexValueStyle}
             >
-              {locationIndexData[indexKey as LocationIndicesEnum].value} %
+              {locationIndexData[indexKey as LocIndexPropsEnum].value} %
             </div>
           </div>
         );

@@ -61,11 +61,9 @@ const DefaultLayout: FunctionComponent<DefaultLayoutProps> = ({
         </div>
       )}
       <div
-        className={
-          withHorizontalPadding
-            ? "default-layout-content padding"
-            : "default-layout-content"
-        }
+        className={`default-layout-content ${
+          withHorizontalPadding ? "padding" : ""
+        }`}
       >
         {children}
       </div>

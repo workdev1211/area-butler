@@ -1,13 +1,13 @@
-import { LocationIndicesEnum } from "../types/location-index";
+import { LocIndexPropsEnum } from "../types/location-index";
 
-export const locationIndexNames: Record<LocationIndicesEnum, string> = {
-  [LocationIndicesEnum.evening_entertainment]: "Restaurants, Bars & Clubs",
-  [LocationIndicesEnum.health]: "Medizin & Gesundheit",
-  [LocationIndicesEnum.near_supply]: "Einkaufen & Nahversorgung",
-  [LocationIndicesEnum.public_transport]: "ÖPNV Anbindung",
-  [LocationIndicesEnum.tourism]: "Tourismus",
-  [LocationIndicesEnum.kids]: "Spielplätze & Früh-Bildung",
-  [LocationIndicesEnum.culture]: "Kultur & Universitäten",
-  [LocationIndicesEnum.sports]: "Sportliche Aktivitäten",
-  [LocationIndicesEnum.individual_mobility]: "Individualmobilität",
+export const locationIndexNames: Record<LocIndexPropsEnum, string> = {
+  [LocIndexPropsEnum.EVENING_ENTERTAINMENT]: "Restaurants, Bars & Clubs",
+  [LocIndexPropsEnum.HEALTH]: "Medizin & Gesundheit",
+  [LocIndexPropsEnum.NEAR_SUPPLY]: "Einkaufen & Nahversorgung",
+  [LocIndexPropsEnum.PUBLIC_TRANSPORT]: "ÖPNV Anbindung",
+  [LocIndexPropsEnum.TOURISM]: "Tourismus",
+  [LocIndexPropsEnum.KIDS]: "Spielplätze & Früh-Bildung",
+  [LocIndexPropsEnum.CULTURE]: "Kultur & Universitäten",
+  [LocIndexPropsEnum.SPORTS]: "Sportliche Aktivitäten",
+  [LocIndexPropsEnum.INDIVIDUAL_MOBILITY]: "Individual mobilität",
 };

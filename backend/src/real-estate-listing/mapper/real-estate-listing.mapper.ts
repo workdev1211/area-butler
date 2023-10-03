@@ -3,6 +3,7 @@ import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { randomizeCoordinates } from '../../../../shared/functions/shared.functions';
 import { UserDocument } from '../../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { processLocationIndices } from '../../../../shared/functions/location-index.functions';
 
 export const mapRealEstateListingToApiRealEstateListing = (
   user: UserDocument | TIntegrationUserDocument,
@@ -17,8 +18,13 @@ export const mapRealEstateListingToApiRealEstateListing = (
         user.integrationUserId
       : realEstateListing.userId !== user.id;
 
+  const locationIndices = realEstateListing.locationIndices
+    ? processLocationIndices(realEstateListing.locationIndices)
+    : undefined;
+
   return {
     isFromParent,
+    locationIndices,
     id: realEstateListing.id,
     name: realEstateListing.name,
     address: showAddress ? realEstateListing.address : '',

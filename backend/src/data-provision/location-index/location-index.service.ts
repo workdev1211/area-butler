@@ -9,7 +9,7 @@ import {
   LocationIndex,
   LocationIndexDocument,
 } from '../schemas/location-index.schema';
-import { IApiLocationIndexFeature } from '@area-butler-types/location-index';
+import { IApiLocIndexFeature } from '@area-butler-types/location-index';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { ApiGeometry } from '@area-butler-types/types';
 
@@ -24,7 +24,9 @@ export class LocationIndexService {
     private readonly subscriptionService: SubscriptionService,
   ) {}
 
-  async createCollection(locationIndexFeatures: IApiLocationIndexFeature[]) {
+  async createCollection(
+    locationIndexFeatures: IApiLocIndexFeature[],
+  ): Promise<void> {
     const collection = this.connection.db.collection(
       this.locationIndexModel.collection.name,
     );

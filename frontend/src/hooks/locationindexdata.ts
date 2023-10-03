@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { ApiCoordinates } from "../../../shared/types/types";
 import { useHttp } from "./http";
 import {
-  IApiLocationIndexFeature,
+  IApiLocIndexFeature,
   TLocationIndexData,
 } from "../../../shared/types/location-index";
 import { processLocationIndices } from "../../../shared/functions/location-index.functions";
@@ -18,7 +18,7 @@ export const useLocationIndexData = () => {
   const fetchLocationIndexData = async (
     coordinates: ApiCoordinates
   ): Promise<TLocationIndexData | undefined> => {
-    const { data } = await post<IApiLocationIndexFeature[]>(
+    const { data } = await post<IApiLocIndexFeature[]>(
       isIntegration
         ? "/api/location-index-int/query"
         : "/api/location-index/query",

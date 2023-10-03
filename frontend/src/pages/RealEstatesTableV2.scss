@@ -1,0 +1,9 @@
+table.real-estates-table {
+  transform: rotateX(180deg);
+
+  th:last-child,
+  td:last-child {
+    position: sticky;
+    right: 0;
+  }
+}

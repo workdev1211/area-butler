@@ -1,6 +1,6 @@
 import { ApiGeojsonFeature } from "./types";
 
-export enum ApiLocIndexFeatPropsEnum {
+export enum LocIndexPropsEnum {
   EVENING_ENTERTAINMENT = "evening_entertainment",
   HEALTH = "health",
   NEAR_SUPPLY = "near_supply",
@@ -12,32 +12,16 @@ export enum ApiLocIndexFeatPropsEnum {
   TOURISM = "tourism",
 }
 
-export enum LocationIndicesEnum {
-  evening_entertainment = "eveningEntertainment",
-  health = "health",
-  near_supply = "nearSupply",
-  public_transport = "publicTransport",
-  kids = "kids",
-  culture = "culture",
-  sports = "sports",
-  individual_mobility = "individualMobility",
-  tourism = "tourism",
+export type TApiLocIndexProps = Record<LocIndexPropsEnum, number>;
+
+export interface IApiLocIndexFeature extends ApiGeojsonFeature {
+  properties: TApiLocIndexProps;
 }
 
-export type TApiLocationIndexFeatureProperties = Record<
-  ApiLocIndexFeatPropsEnum,
-  number
->;
-
-export interface IApiLocationIndexFeature extends ApiGeojsonFeature {
-  properties: TApiLocationIndexFeatureProperties;
+export interface ILocationIndex {
+  name: string;
+  value: number;
+  colorStyle?: { backgroundColor: "#007960"; opacity: number };
 }
 
-export type TLocationIndexData = Record<
-  LocationIndicesEnum,
-  {
-    name: string;
-    value: number;
-    colorStyle?: { backgroundColor: "#007960"; opacity: number };
-  }
->;
+export type TLocationIndexData = Record<LocIndexPropsEnum, ILocationIndex>;

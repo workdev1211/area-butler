@@ -11,7 +11,7 @@ import {
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 import { RealEstateIntegrationParamsSchema } from '../../shared/real-estate-integration-params.schema';
-import { ApiLocIndexFeatPropsEnum } from '@area-butler-types/location-index';
+import { TApiLocIndexProps } from '@area-butler-types/location-index';
 
 export type RealEstateListingDocument = RealEstateListing & Document;
 
@@ -45,7 +45,7 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
   location: GeoJsonPoint;
 
   @Prop({ type: Object })
-  locationIndices: Record<ApiLocIndexFeatPropsEnum, number>;
+  locationIndices: TApiLocIndexProps;
 
   @Prop({
     type: String,

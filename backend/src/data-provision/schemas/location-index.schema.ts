@@ -1,7 +1,7 @@
 import { Prop, raw, Schema, SchemaFactory } from '@nestjs/mongoose';
 
 import { ApiGeojsonType, ApiGeometry } from '@area-butler-types/types';
-import { TApiLocationIndexFeatureProperties } from '@area-butler-types/location-index';
+import { TApiLocIndexProps } from '@area-butler-types/location-index';
 
 export type LocationIndexDocument = LocationIndex & Document;
 
@@ -11,7 +11,7 @@ export class LocationIndex {
   type: ApiGeojsonType;
 
   @Prop(raw({}))
-  properties: TApiLocationIndexFeatureProperties;
+  properties: TApiLocIndexProps;
 
   @Prop(
     raw({

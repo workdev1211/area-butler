@@ -1,6 +1,5 @@
 import { IntegrationTypesEnum } from "./integration";
 import { ApiHereLanguageEnum } from "./here";
-import { ApiLocIndexFeatPropsEnum } from "./location-index";
 import {
   ApiCoordinates,
   ApiGeojsonType,
@@ -16,6 +15,7 @@ import {
   ApiRealEstateCostType,
 } from "./real-estate";
 import { OpenAiTonalityEnum } from "./open-ai";
+import { TApiLocIndexProps } from "./location-index";
 
 export interface IApiKeyParams {
   apiKey: string;
@@ -108,7 +108,7 @@ export interface IApiQueryLocIndicesReqStatus
   extends IExternalApiReqStatus<IApiQueryLocIndicesReq> {}
 
 export interface IApiQueryLocIndicesRes
-  extends IExternalApiRes<Record<ApiLocIndexFeatPropsEnum, number>> {}
+  extends IExternalApiRes<TApiLocIndexProps> {}
 
 export interface IApiQueryZensusAtlasRes
   extends IExternalApiRes<TProcessedCensusData> {}
