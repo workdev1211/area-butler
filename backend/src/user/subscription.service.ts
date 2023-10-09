@@ -34,7 +34,7 @@ import {
   newBusinessPlusSubscriptionTemplateId,
   newPayPerUseSubscriptionTemplateId,
   newTrialSubscriptionTemplateId,
-  subscriptionExpirationTemplateId,
+  // subscriptionExpirationTemplateId,
   trialSubscriptionExpirationTemplateId,
 } from '../shared/email.constants';
 import { User, UserDocument } from './schema/user.schema';
@@ -463,22 +463,19 @@ export class SubscriptionService {
     const subscriptions = await this.subscriptionModel.aggregate([
       {
         $match: {
-          $or: [
-            {
-              type: { $not: { $eq: ApiSubscriptionPlanType.TRIAL } },
-              endsAt: {
-                $gte: currentDate.add(2, 'days').toDate(),
-                $lt: currentDate.add(3, 'days').toDate(),
-              },
-            },
-            {
-              type: { $eq: ApiSubscriptionPlanType.TRIAL },
-              endsAt: {
-                $gte: currentDate.add(1, 'days').toDate(),
-                $lt: currentDate.add(2, 'days').toDate(),
-              },
-            },
-          ],
+          // $or: [
+          //   {
+          //     type: { $not: { $eq: ApiSubscriptionPlanType.TRIAL } },
+          //     endsAt: {
+          //       $gte: currentDate.add(2, 'days').toDate(),
+          //       $lt: currentDate.add(3, 'days').toDate(),
+          //     },
+          //   },
+          type: ApiSubscriptionPlanType.TRIAL,
+          endsAt: {
+            $gte: currentDate.add(1, 'days').toDate(),
+            $lt: currentDate.add(2, 'days').toDate(),
+          },
         },
       },
       { $project: { type: 1, userId: 1 } },
@@ -513,17 +510,17 @@ export class SubscriptionService {
       sendTo.map(({ name, email, type }) => {
         const mailProps: IMailProps = {
           to: [{ name, email }],
-          templateId:
-            type === ApiSubscriptionPlanType.TRIAL
-              ? trialSubscriptionExpirationTemplateId
-              : subscriptionExpirationTemplateId,
+          templateId: trialSubscriptionExpirationTemplateId,
+          // type === ApiSubscriptionPlanType.TRIAL
+          //   ? trialSubscriptionExpirationTemplateId
+          //   : subscriptionExpirationTemplateId,
         };
 
-        if (type !== ApiSubscriptionPlanType.TRIAL) {
-          mailProps.params = {
-            href: this.getSubscriptionCancelUrl(),
-          };
-        }
+        // if (type !== ApiSubscriptionPlanType.TRIAL) {
+        //   mailProps.params = {
+        //     href: this.getSubscriptionCancelUrl(),
+        //   };
+        // }
 
         return this.mailSenderService.sendMail(mailProps);
       }),
