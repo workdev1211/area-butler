@@ -65,6 +65,19 @@ export const useLogin = () => {
 
     try {
       if (
+        "products" in
+        (
+          queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
+        ).queryParams
+      ) {
+        await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
+
+        return confirmOrder(
+          queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
+        );
+      }
+
+      if (
         "customerWebId" in
         (queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>)
           .queryParams
@@ -73,17 +86,6 @@ export const useLogin = () => {
 
         return performLogin(
           queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>
-        );
-      }
-
-      if (
-        "products" in
-        (queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>)
-      ) {
-        await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
-
-        return confirmOrder(
-          queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
         );
       }
     } catch {}

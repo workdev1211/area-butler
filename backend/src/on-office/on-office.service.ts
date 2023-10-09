@@ -430,7 +430,7 @@ export class OnOfficeService {
 
       await this.onOfficeTransactionModel.updateOne(
         { _id: product.transactionDbId },
-        { message: parsedMessage },
+        { transactionId, referenceId, status, message: parsedMessage },
       );
 
       return { message: parsedMessage };
@@ -438,11 +438,7 @@ export class OnOfficeService {
 
     await this.onOfficeTransactionModel.updateOne(
       { _id: product.transactionDbId },
-      {
-        transactionId: transactionId,
-        referenceId: referenceId,
-        status: status,
-      },
+      { transactionId, referenceId, status },
     );
 
     integrationUser = await this.integrationUserService.addProductContingents(
