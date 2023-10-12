@@ -365,7 +365,7 @@ export interface ApiSearchResultSnapshotConfig {
   showStreetViewLink?: boolean;
   showDetailsInOnePage?: boolean;
   hideIsochrones?: boolean;
-  hideMeanToggles?: boolean; // 'MeansToggle' component, turns on and off the isochrones
+  hideMeanToggles?: boolean; // 'MeansToggle' component used to turn on and off the isochrones
   hideMapMenu?: boolean;
   hidePoiIcons?: boolean;
   mapBoxMapId?: string;

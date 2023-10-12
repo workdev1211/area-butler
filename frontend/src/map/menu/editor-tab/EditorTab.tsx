@@ -8,9 +8,6 @@ import {
 } from "components/SearchResultContainer";
 import {
   ApiSearchResultSnapshotConfigTheme,
-  ApiSnippetEntityVisibility,
-  IApiSnapshotPoiFilter,
-  IApiSnapshotIconSizes,
   MeansOfTransportation,
 } from "../../../../../shared/types/types";
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
@@ -26,7 +23,6 @@ import {
 import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
 import { allRealEstateStatuses } from "../../../../../shared/constants/real-estate";
 import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
-// import preselectedCategoriesIcon from "../../../assets/icons/map-menu/05-vorausgewählte-kategorien.svg";
 import poiVisibilityIcon from "../../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 import {
   defaultMapboxStyles,
@@ -52,8 +48,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const { fetchLateSnapConfigs } = useLocationData();
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
-  // const [isPreselectedCategoriesOpen, setIsPreselectedCategoriesOpen] =
-  //   useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
   const [poiGroupsOpen, setPoiGroupsOpen] = useState<string[]>([]);
   const [color, setColor] = useState(config?.primaryColor);
@@ -125,6 +119,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     },
   ];
 
+  const changeConfigParam = <T,>(paramName: string, value: T): void => {
+    onConfigChange({ ...config, [paramName]: value });
+  };
+
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme): void => {
     let newConfig = { ...config, theme: value };
     const oldGroups = config.defaultActiveGroups ?? [];
@@ -137,60 +135,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     }
 
     onConfigChange({ ...newConfig });
-  };
-
-  const changeMapboxMap = (value: string): void => {
-    onConfigChange({ ...config, mapBoxMapId: value });
-  };
-
-  const changeShowLocation = (): void => {
-    onConfigChange({ ...config, showLocation: !config?.showLocation });
-  };
-
-  const changeShowAddress = (): void => {
-    onConfigChange({ ...config, showAddress: !config?.showAddress });
-  };
-
-  const changeGroupItems = (): void => {
-    onConfigChange({ ...config, groupItems: !config?.groupItems });
-  };
-
-  const changeFixedRealEstates = (): void => {
-    onConfigChange({ ...config, fixedRealEstates: !config?.fixedRealEstates });
-  };
-
-  const changeEntityVisibility = (
-    visibility: ApiSnippetEntityVisibility[]
-  ): void => {
-    onConfigChange({ ...config, entityVisibility: [...visibility] });
-  };
-
-  const changeShowStreetViewLink = (): void => {
-    onConfigChange({
-      ...config,
-      showStreetViewLink: !config.showStreetViewLink,
-    });
-  };
-
-  const changeHideIsochrones = (): void => {
-    onConfigChange({
-      ...config,
-      hideIsochrones: !config.hideIsochrones,
-    });
-  };
-
-  const changeShowDetailsInOnePage = (): void => {
-    onConfigChange({
-      ...config,
-      showDetailsInOnePage: !config.showDetailsInOnePage,
-    });
-  };
-
-  const changeIsMapMenuCollapsed = (): void => {
-    onConfigChange({
-      ...config,
-      isMapMenuCollapsed: !config.isMapMenuCollapsed,
-    });
   };
 
   const changeColor = (color: string | undefined): void => {
@@ -218,56 +162,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
 
     onConfigChange({ ...config, defaultActiveMeans: [...defaultActiveMeans] });
   };
-
-  // TODO REMOVE IN THE FUTURE
-  // const changeDefaultActiveGroups = (activeGroup: string): void => {
-  //   let defaultActiveGroups = config.defaultActiveGroups || [];
-  //
-  //   if (defaultActiveGroups.includes(activeGroup)) {
-  //     defaultActiveGroups = [
-  //       ...defaultActiveGroups.filter((g) => g !== activeGroup),
-  //     ];
-  //   } else {
-  //     if (config.theme === "KF") {
-  //       defaultActiveGroups = [];
-  //     }
-  //
-  //     defaultActiveGroups.push(activeGroup);
-  //   }
-  //
-  //   onConfigChange({
-  //     ...config,
-  //     defaultActiveGroups: [...defaultActiveGroups],
-  //   });
-  // };
-
-  const changeRealEstateStatusFilter = (value: string): void => {
-    onConfigChange({
-      ...config,
-      realEstateStatus:
-        value !== ApiRealEstateStatusEnum.ALL
-          ? (value as ApiRealEstateStatusEnum)
-          : undefined,
-    });
-  };
-
-  const changePoiFilter = (resultingPoiFilter: IApiSnapshotPoiFilter): void => {
-    onConfigChange({
-      ...config,
-      poiFilter: { ...resultingPoiFilter },
-    });
-  };
-
-  const changeIconSizes = (iconSizes: IApiSnapshotIconSizes): void => {
-    onConfigChange({
-      ...config,
-      iconSizes: { ...iconSizes },
-    });
-  };
-
-  // TODO REMOVE IN THE FUTURE
-  // const isDefaultActiveGroup = (activeGroup: string): boolean =>
-  //   (config.defaultActiveGroups ?? []).includes(activeGroup);
 
   const isGroupOpen = (group: EntityGroup): boolean =>
     poiGroupsOpen.includes(group.title);
@@ -304,74 +198,19 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
       })),
     ];
 
-    changeEntityVisibility(newGroup);
+    changeConfigParam("entityVisibility", [...newGroup]);
   };
 
   const toggleSingleEntityVisibility = (entity: ResultEntity): void => {
-    changeEntityVisibility(toggleEntityVisibility(entity, config));
+    changeConfigParam("entityVisibility", [
+      ...toggleEntityVisibility(entity, config),
+    ]);
   };
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
 
   return (
     <div className="editor-tab z-9000" data-tour="editor-map-menu">
-      {/* TODO REMOVE IN THE FUTURE */}
-      {/*<div*/}
-      {/*  className={*/}
-      {/*    "collapse collapse-arrow view-option" +*/}
-      {/*    (isPreselectedCategoriesOpen ? " collapse-open" : " collapse-closed")*/}
-      {/*  }*/}
-      {/*>*/}
-      {/*  <div*/}
-      {/*    className="collapse-title"*/}
-      {/*    ref={(node) => {*/}
-      {/*      setBackgroundColor(node, backgroundColor);*/}
-      {/*    }}*/}
-      {/*    onClick={() => {*/}
-      {/*      setIsPreselectedCategoriesOpen(!isPreselectedCategoriesOpen);*/}
-      {/*    }}*/}
-      {/*  >*/}
-      {/*    <div className="collapse-title-container">*/}
-      {/*      <img*/}
-      {/*        src={preselectedCategoriesIcon}*/}
-      {/*        alt="preselected-categories-icon"*/}
-      {/*      />*/}
-      {/*      <div className="collapse-title-text">*/}
-      {/*        <div className="collapse-title-text-1">*/}
-      {/*          Vorausgewählte Kategorien*/}
-      {/*        </div>*/}
-      {/*        <div className="collapse-title-text-2">*/}
-      {/*          POIs die zu Beginn angezeigt werden*/}
-      {/*        </div>*/}
-      {/*      </div>*/}
-      {/*    </div>*/}
-      {/*  </div>*/}
-      {/*  <div className="collapse-content preselected-groups">*/}
-      {/*    <ul>*/}
-      {/*      {groupedEntries*/}
-      {/*        .filter((ge) => ge.items.length)*/}
-      {/*        .sort((a, b) => a.title.localeCompare(b.title))*/}
-      {/*        .map((group) => (*/}
-      {/*          <li key={group.title}>*/}
-      {/*            <input*/}
-      {/*              type="checkbox"*/}
-      {/*              checked={isDefaultActiveGroup(group.title)}*/}
-      {/*              className="checkbox checkbox-primary"*/}
-      {/*              onChange={() => {*/}
-      {/*                changeDefaultActiveGroups(group.title);*/}
-      {/*              }}*/}
-      {/*            />*/}
-      {/*            <h4 className="font-medium pl-2">*/}
-      {/*              {group.title === realEstateListingsTitle*/}
-      {/*                ? realEstateListingsTitleEmbed*/}
-      {/*                : group.title}{" "}*/}
-      {/*            </h4>*/}
-      {/*          </li>*/}
-      {/*        ))}*/}
-      {/*    </ul>*/}
-      {/*  </div>*/}
-      {/*</div>*/}
-
       <div
         className={
           "collapse collapse-arrow view-option" +
@@ -404,7 +243,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <PoiFilter
                   poiFilter={config.poiFilter}
                   onChange={(resultingPoiFilter) => {
-                    changePoiFilter(resultingPoiFilter);
+                    changeConfigParam("poiFilter", { ...resultingPoiFilter });
                   }}
                 />
               </li>
@@ -532,7 +371,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
                   }
                   onChange={(event) => {
-                    changeMapboxMap(event.target.value);
+                    changeConfigParam("mapBoxMapId", event.target.value);
                   }}
                 >
                   {mapStyles.map((style) => (
@@ -554,7 +393,12 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus}
                   onChange={(event) => {
-                    changeRealEstateStatusFilter(event.target.value);
+                    changeConfigParam(
+                      "realEstateStatus",
+                      event.target.value !== ApiRealEstateStatusEnum.ALL
+                        ? (event.target.value as ApiRealEstateStatusEnum)
+                        : undefined
+                    );
                   }}
                 >
                   {allRealEstateStatuses.map(({ label, status }) => (
@@ -598,7 +442,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               <IconSizes
                 iconSizes={config?.iconSizes}
                 onChange={(resultingIconSizes) => {
-                  changeIconSizes(resultingIconSizes);
+                  changeConfigParam("iconSizes", { ...resultingIconSizes });
                 }}
               />
             </li>
@@ -676,7 +520,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="showLocation"
                     checked={!!config?.showLocation}
                     onChange={() => {
-                      changeShowLocation();
+                      changeConfigParam("showLocation", !config?.showLocation);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -692,7 +536,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="showAddress"
                     checked={!!config?.showAddress}
                     onChange={() => {
-                      changeShowAddress();
+                      changeConfigParam("showAddress", !config?.showAddress);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -708,7 +552,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="showStreetViewLink"
                     checked={!!config?.showStreetViewLink}
                     onChange={() => {
-                      changeShowStreetViewLink();
+                      changeConfigParam(
+                        "showStreetViewLink",
+                        !config?.showStreetViewLink
+                      );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -724,7 +571,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="groupItems"
                     checked={!!config?.groupItems}
                     onChange={() => {
-                      changeGroupItems();
+                      changeConfigParam("groupItems", !config?.groupItems);
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -740,9 +587,12 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="fixedRealEstates"
-                    checked={!config?.fixedRealEstates}
+                    checked={!!config?.fixedRealEstates}
                     onChange={() => {
-                      changeFixedRealEstates();
+                      changeConfigParam(
+                        "fixedRealEstates",
+                        !config?.fixedRealEstates
+                      );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -760,7 +610,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="hideIsochrones"
                     checked={!!config?.hideIsochrones}
                     onChange={() => {
-                      changeHideIsochrones();
+                      changeConfigParam(
+                        "hideIsochrones",
+                        !config?.hideIsochrones
+                      );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -776,7 +629,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="showDetailsInOnePage"
                     checked={!!config?.showDetailsInOnePage}
                     onChange={() => {
-                      changeShowDetailsInOnePage();
+                      changeConfigParam(
+                        "showDetailsInOnePage",
+                        !config?.showDetailsInOnePage
+                      );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
@@ -794,13 +650,67 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     name="isMapMenuCollapsed"
                     checked={!!config?.isMapMenuCollapsed}
                     onChange={() => {
-                      changeIsMapMenuCollapsed();
+                      changeConfigParam(
+                        "isMapMenuCollapsed",
+                        !config?.isMapMenuCollapsed
+                      );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
                     Kartenmenü im Iframe minimieren
                   </span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isMapMenuCollapsed"
+                    checked={!!config?.hideMeanToggles}
+                    onChange={() => {
+                      changeConfigParam(
+                        "hideMeanToggles",
+                        !config?.hideMeanToggles
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Isochronen ausblenden</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isMapMenuCollapsed"
+                    checked={!!config?.hideMapMenu}
+                    onChange={() => {
+                      changeConfigParam("hideMapMenu", !config?.hideMapMenu);
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Kartenmenü ausblenden</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isMapMenuCollapsed"
+                    checked={!!config?.hidePoiIcons}
+                    onChange={() => {
+                      changeConfigParam("hidePoiIcons", !config?.hidePoiIcons);
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">POI-Symbole ausblenden</span>
                 </label>
               </div>
             </li>
