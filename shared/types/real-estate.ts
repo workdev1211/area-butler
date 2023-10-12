@@ -53,7 +53,7 @@ export interface ApiUpsertRealEstateListing {
   externalId?: string;
 }
 
-// should be present either minPrice or maxPrice, or both
+// should be present either minPrice or price (maxPrice), or both
 export interface ApiRealEstateCost {
   minPrice?: ApiMoneyAmount;
   price?: ApiMoneyAmount;

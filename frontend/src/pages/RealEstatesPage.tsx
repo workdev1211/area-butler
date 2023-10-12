@@ -33,11 +33,15 @@ import { useRealEstateData } from "../hooks/realestatedata";
 import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
 // import RealEstatesTable from "./RealEstatesTable";
-import RealEstatesTableV2 from "./RealEstatesTableV2";
+import RealEstatesTableV2 from "../real-estates/table/RealEstatesTableV2";
+import { RealEstateContext } from "../context/RealEstateContext";
 
 const RealEstatesPage: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
   const { integrationType, googleApiKey } = useContext(ConfigContext);
+  const {
+    realEstateState: { listings },
+  } = useContext(RealEstateContext);
 
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
@@ -242,10 +246,12 @@ const RealEstatesPage: FunctionComponent = () => {
         />
         <span>Immobilienart</span>
       </div>
-      <div data-tour="real-estates-table">
-        {/*<RealEstatesTable openSnapshotsModal={openSnapshotsModal} />*/}
-        <RealEstatesTableV2 openSnapshotsModal={openSnapshotsModal} />
-      </div>
+      {listings.length > 0 && (
+        <div data-tour="real-estates-table">
+          {/*<RealEstatesTable openSnapshotsModal={openSnapshotsModal} />*/}
+          <RealEstatesTableV2 openSnapshotsModal={openSnapshotsModal} />
+        </div>
+      )}
     </DefaultLayout>
   );
 };

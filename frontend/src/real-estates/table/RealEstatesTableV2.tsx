@@ -4,6 +4,7 @@ import {
   useContext,
   useMemo,
   useState,
+  Fragment,
 } from "react";
 import { useHistory, useLocation } from "react-router-dom";
 import {
@@ -14,6 +15,7 @@ import {
   flexRender,
   getCoreRowModel,
   getSortedRowModel,
+  getFilteredRowModel,
   getPaginationRowModel,
   useReactTable,
 } from "@tanstack/react-table";
@@ -24,29 +26,40 @@ import {
   allFurnishing,
   allRealEstateCostTypes,
   allRealEstateStatuses,
-} from "../../../shared/constants/real-estate";
-import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
-import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
-import searchIcon from "../assets/icons/icons-16-x-16-outline-ic-search.svg";
-import locationIcon from "../assets/icons/icons-16-x-16-outline-ic-type.svg";
-import FormModal from "../components/FormModal";
-import { RealEstateContext } from "../context/RealEstateContext";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler";
+} from "../../../../shared/constants/real-estate";
+import editIcon from "../../assets/icons/icons-16-x-16-outline-ic-edit.svg";
+import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
+import searchIcon from "../../assets/icons/icons-16-x-16-outline-ic-search.svg";
+import locationIcon from "../../assets/icons/icons-16-x-16-outline-ic-type.svg";
+import FormModal from "../../components/FormModal";
+import { RealEstateContext } from "../../context/RealEstateContext";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
+import { RealEstateDeleteHandler } from "../RealEstateDeleteHandler";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import { getRealEstateCost } from "../shared/real-estate.functions";
-import { ConfigContext } from "../context/ConfigContext";
-import { IRealEstatesHistoryState } from "../shared/shared.types";
-import { LocIndexPropsEnum } from "../../../shared/types/location-index";
-import { locationIndexNames } from "../../../shared/constants/location-index";
+import { getRealEstateCost } from "../../shared/real-estate.functions";
+import { ConfigContext } from "../../context/ConfigContext";
+import { IRealEstatesHistoryState } from "../../shared/shared.types";
+import { LocIndexPropsEnum } from "../../../../shared/types/location-index";
+import { locationIndexNames } from "../../../../shared/constants/location-index";
+import TableV2Pagination from "./TableV2Pagination";
+import TableV2Filter from "./TableV2Filter";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line
   interface ColumnMeta<TData extends RowData, TValue> {
     headStyles?: CSSProperties;
     cellStyles?: CSSProperties;
+    filterStyles?: CSSProperties;
   }
+}
+
+export interface IRealEstateTableItem {
+  status: string;
+  listing: ApiRealEstateListing;
+  cost?: string;
+  locationIndices?: Record<string, number>;
+  furnishing?: string[];
 }
 
 interface IRealEstatesTableV2Props {
@@ -100,62 +113,94 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
     history.push("/search", { isFromRealEstates: true });
   };
 
-  const columnHelper = createColumnHelper<ApiRealEstateListing>();
+  const tableData: IRealEstateTableItem[] = useMemo(
+    () =>
+      listings.map((listing) => {
+        const locationIndices = listing.locationIndices
+          ? Object.keys(listing.locationIndices).reduce<Record<string, number>>(
+              (result, indexName) => {
+                result[
+                  listing.locationIndices![indexName as LocIndexPropsEnum].name
+                ] =
+                  listing.locationIndices![
+                    indexName as LocIndexPropsEnum
+                  ].value;
 
-  const columns = useMemo<ColumnDef<ApiRealEstateListing, any>[]>(
+                return result;
+              },
+              {}
+            )
+          : undefined;
+
+        const furnishing = listing.characteristics?.furnishing.map(
+          (furnishName) =>
+            allFurnishing.find(({ type }) => type === furnishName)!.label
+        );
+
+        return {
+          listing,
+          locationIndices,
+          furnishing,
+          status: allRealEstateStatuses.find(
+            (estate) => estate.status === listing.status
+          )!.label,
+          cost: listing.costStructure
+            ? `${getRealEstateCost(listing.costStructure)} (${
+                allRealEstateCostTypes.find(
+                  (t) => t.type === listing.costStructure!.type
+                )?.label
+              })`
+            : undefined,
+        };
+      }),
+    [listings]
+  );
+
+  const columnHelper = createColumnHelper<IRealEstateTableItem>();
+
+  const columns = useMemo<ColumnDef<IRealEstateTableItem, any>[]>(
     () => [
       columnHelper.accessor("status", {
         header: "typ",
-        cell: (props) =>
-          allRealEstateStatuses.find(
-            (estate) => estate.status === props.getValue()
-          )?.label,
+        cell: (props) => props.getValue(),
         size: 150,
       }),
-      columnHelper.accessor("name", {
+      columnHelper.accessor((row) => row.listing.name, {
+        id: "name",
         cell: (props) => props.getValue(),
         size: 300,
         meta: {
           cellStyles: { whiteSpace: "normal" },
         },
       }),
-      columnHelper.accessor("address", {
+      columnHelper.accessor((row) => row.listing.address, {
+        id: "address",
+        header: "adresse",
         cell: (props) => props.getValue(),
         size: 300,
         meta: {
           cellStyles: { whiteSpace: "normal" },
         },
       }),
-      columnHelper.accessor("costStructure", {
+      columnHelper.accessor("cost", {
         header: "kosten",
-        cell: (props) => {
-          const costStructure = props.row.original.costStructure;
-
-          return costStructure
-            ? `${getRealEstateCost(costStructure)} (${
-                allRealEstateCostTypes.find(
-                  (t) => t.type === props.row.original.costStructure?.type
-                )?.label
-              })`
-            : null;
-        },
+        cell: (props) => (props.getValue() ? props.getValue() : null),
         size: 200,
         meta: {
           headStyles: { height: "130px" },
           cellStyles: { whiteSpace: "normal" },
         },
       }),
-      ...Object.values(LocIndexPropsEnum).reduce<
-        Array<ColumnDef<ApiRealEstateListing, any>>
-      >((result, locIndexProp) => {
+      ...Object.values(locationIndexNames).reduce<
+        Array<ColumnDef<IRealEstateTableItem, any>>
+      >((result, indexName, i) => {
         const column = columnHelper.accessor(
           (row) =>
-            row.locationIndices ? row.locationIndices[locIndexProp] : undefined,
+            row.locationIndices ? row.locationIndices[indexName] : undefined,
           {
-            id: locIndexProp,
-            header: locationIndexNames[locIndexProp],
-            cell: (props) =>
-              props.getValue()?.value ? `${props.getValue()!.value}%` : null,
+            id: indexName,
+            header: indexName,
+            cell: (props) => (props.getValue() ? `${props.getValue()}%` : null),
             size: 65,
             meta: {
               headStyles: {
@@ -164,7 +209,13 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
                 whiteSpace: "normal",
                 height: "100px",
               },
-              cellStyles: { whiteSpace: "normal", textAlign: "center" },
+              cellStyles: {
+                whiteSpace: "normal",
+                textAlign: "center",
+              },
+              filterStyles: {
+                transform: "rotate(-180deg)",
+              },
             },
           }
         );
@@ -176,17 +227,8 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       columnHelper.display({
         id: "furnishing",
         header: "ausstattung",
-        cell: (props) => {
-          const furnishing = props.row.original.characteristics?.furnishing;
-
-          return allFurnishing.reduce((result, { type, label }) => {
-            if (furnishing?.includes(type)) {
-              result += result.length ? `, ${label}` : label;
-            }
-
-            return result;
-          }, "");
-        },
+        cell: (props) =>
+          props.getValue() ? props.getValue<string[]>().join(", ") : null,
         size: 300,
         meta: {
           cellStyles: { whiteSpace: "normal" },
@@ -195,7 +237,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       columnHelper.display({
         id: "actions",
         cell: (props) => {
-          const realEstate = props.row.original;
+          const realEstate = props.row.original.listing;
           const index = props.row.index;
 
           return (
@@ -254,8 +296,8 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
     []
   );
 
-  const table = useReactTable<ApiRealEstateListing>({
-    data: listings,
+  const table = useReactTable<IRealEstateTableItem>({
+    data: tableData,
     columns,
     state: {
       sorting,
@@ -263,76 +305,14 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     // shows performance data
     // debugTable: true,
   });
 
-  const pageSizes = [10, 20, 30, 40, 50];
-
   return (
     <>
-      <div className="flex items-center gap-2">
-        <button
-          className="border rounded p-1"
-          onClick={() => table.setPageIndex(0)}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<<"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          {"<"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          {">"}
-        </button>
-        <button
-          className="border rounded p-1"
-          onClick={() => table.setPageIndex(table.getPageCount() - 1)}
-          disabled={!table.getCanNextPage()}
-        >
-          {">>"}
-        </button>
-        <span className="flex items-center gap-1">
-          <div>Seite</div>
-          <strong>
-            {table.getState().pagination.pageIndex + 1} of{" "}
-            {table.getPageCount()}
-          </strong>
-        </span>
-        <span className="flex items-center gap-1">
-          | Gehe zu Seite:
-          <input
-            type="number"
-            defaultValue={table.getState().pagination.pageIndex + 1}
-            onChange={(e) => {
-              const page = e.target.value ? Number(e.target.value) - 1 : 0;
-              table.setPageIndex(page);
-            }}
-            className="border p-1 rounded w-16"
-          />
-        </span>
-        <select
-          value={table.getState().pagination.pageSize}
-          onChange={(e) => {
-            table.setPageSize(Number(e.target.value));
-          }}
-        >
-          {pageSizes.map((pageSize) => (
-            <option key={pageSize} value={pageSize}>
-              Zeigen {pageSize}
-            </option>
-          ))}
-        </select>
-      </div>
       <div
         className="overflow-x-auto"
         style={{
@@ -342,41 +322,59 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
         <table className="real-estates-table table w-full">
           <thead>
             {table.getHeaderGroups().map((headerGroup, headGroupIndex) => (
-              <tr key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <th
-                    {...{
-                      key: header.id,
-                      colSpan: header.colSpan,
-                      style: {
-                        minWidth: header.getSize(),
-                        maxWidth: header.getSize(),
-                        ...(header.column.columnDef.meta?.headStyles || {}),
-                      },
-                    }}
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div
-                        {...{
-                          className: header.column.getCanSort()
-                            ? "cursor-pointer select-none"
-                            : "",
-                          onClick: header.column.getToggleSortingHandler(),
-                        }}
-                      >
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: "  🔼",
-                          desc: "  🔽",
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
-                  </th>
-                ))}
-              </tr>
+              <Fragment key={headerGroup.id}>
+                <tr>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      {...{
+                        key: `${header.id}-name`,
+                        colSpan: header.colSpan,
+                        style: {
+                          minWidth: header.getSize(),
+                          maxWidth: header.getSize(),
+                          ...(header.column.columnDef.meta?.headStyles || {}),
+                        },
+                      }}
+                    >
+                      {header.isPlaceholder ? null : (
+                        <>
+                          <div
+                            {...{
+                              className: header.column.getCanSort()
+                                ? "cursor-pointer select-none"
+                                : "",
+                              onClick: header.column.getToggleSortingHandler(),
+                            }}
+                          >
+                            {flexRender(
+                              header.column.columnDef.header,
+                              header.getContext()
+                            )}
+                            {{
+                              asc: "  🔼",
+                              desc: "  🔽",
+                            }[header.column.getIsSorted() as string] ?? null}
+                          </div>
+                        </>
+                      )}
+                    </th>
+                  ))}
+                </tr>
+                <tr>
+                  {headerGroup.headers.map((header) => (
+                    <th
+                      {...{
+                        key: `${header.id}-filter`,
+                        colSpan: header.colSpan,
+                      }}
+                    >
+                      {header.column.getCanFilter() ? (
+                        <TableV2Filter table={table} column={header.column} />
+                      ) : null}
+                    </th>
+                  ))}
+                </tr>
+              </Fragment>
             ))}
           </thead>
           <tbody>
@@ -384,7 +382,9 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
               <tr
                 key={row.id}
                 className={
-                  realEstateHighlightId === row.original.id ? "active" : ""
+                  realEstateHighlightId === row.original.listing.id
+                    ? "active"
+                    : ""
                 }
               >
                 {row.getVisibleCells().map((cell) => (
@@ -406,6 +406,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
           </tbody>
         </table>
       </div>
+      <TableV2Pagination table={table} />
     </>
   );
 };
