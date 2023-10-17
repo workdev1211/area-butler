@@ -20,21 +20,16 @@ import { LocationListener } from './listener/location.listener';
 import { EmbeddedMapController } from './embedded-map.controller';
 import { RoutingService } from '../routing/routing.service';
 import { HttpModule } from '@nestjs/axios';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import {
-  RealEstateListing,
-  RealEstateListingSchema,
-} from '../real-estate-listing/schema/real-estate-listing.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { LocationExtController } from './location-ext.controller';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntController } from './location-int.controller';
 import { LocationIntService } from './location-int.service';
-import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { LocationExtService } from './location-ext.service';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { PropstackWebhookController } from './propstack-webhook.controller';
+import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 
 @Module({
   imports: [
@@ -44,10 +39,10 @@ import { PropstackWebhookController } from './propstack-webhook.controller';
     DataProvisionModule,
     HttpModule,
     OpenAiModule,
+    RealEstateListingModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
-      { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
   ],
   controllers: [
@@ -63,8 +58,6 @@ import { PropstackWebhookController } from './propstack-webhook.controller';
     LocationService,
     LocationListener,
     RoutingService,
-    RealEstateListingService,
-    RealEstateListingIntService,
     SnapshotExtService,
     AddressesInRangeExtService,
     LocationIntService,

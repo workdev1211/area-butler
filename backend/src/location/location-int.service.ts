@@ -17,6 +17,8 @@ import {
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { LocationService } from './location.service';
 import { IntegrationUserService } from '../user/integration-user.service';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 @Injectable()
 export class LocationIntService {
@@ -25,6 +27,7 @@ export class LocationIntService {
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly integrationUserService: IntegrationUserService,
     private readonly locationService: LocationService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   async createSnapshot(
@@ -87,9 +90,21 @@ export class LocationIntService {
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
-      snapshot,
       token,
       config: snapshotConfig,
+      snapshot: {
+        ...snapshot,
+        realEstateListings: (
+          await this.realEstateListingService.fetchRealEstateListings(
+            integrationUser,
+          )
+        ).map((realEstate) =>
+          mapRealEstateListingToApiRealEstateListing(
+            integrationUser,
+            realEstate,
+          ),
+        ),
+      },
     };
 
     snapshotDoc.integrationParams = {

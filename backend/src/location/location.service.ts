@@ -72,6 +72,7 @@ import {
   IApiMongoFilterParams,
   IApiMongoProjectSortParams,
 } from '../shared/shared.types';
+import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 @Injectable()
 export class LocationService {
@@ -355,9 +356,16 @@ export class LocationService {
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
-      snapshot,
       token,
       config: snapshotConfig,
+      snapshot: {
+        ...snapshot,
+        realEstateListings: (
+          await this.realEstateListingService.fetchRealEstateListings(user)
+        ).map((realEstate) =>
+          mapRealEstateListingToApiRealEstateListing(user, realEstate),
+        ),
+      },
     };
 
     snapshotDoc.userId = user.id;
