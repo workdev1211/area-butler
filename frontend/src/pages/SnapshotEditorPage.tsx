@@ -12,7 +12,6 @@ import "./SnapshotEditorPage.scss";
 
 import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
-  EntityGroup,
   ICurrentMapRef,
 } from "components/SearchResultContainer";
 import { ConfigContext } from "context/ConfigContext";
@@ -78,7 +77,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const [codeSnippet, setCodeSnippet] = useState("");
   const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
-  const [editorGroups, setEditorGroups] = useState<EntityGroup[]>([]);
 
   const user = userState.user;
   const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
@@ -236,17 +234,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
           ignorePoiFilter: true,
         }),
       });
-
-      // use dedicated entity groups for editor (do not exclude any group by config)
-      setEditorGroups(
-        deriveInitialEntityGroups({
-          searchResponse,
-          config: enhancedConfig,
-          listings: filteredRealEstateListings,
-          locations: preferredLocations,
-          ignoreVisibility: true,
-        })
-      );
     };
 
     void fetchSnapshotData();
@@ -397,15 +384,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
             }
       ),
     });
-
-    // update dedicated entity groups for editor
-    setEditorGroups(
-      editorGroups.map((ge) =>
-        ge.title !== poi.entity.label
-          ? ge
-          : { ...ge, items: [...ge.items, newEntity] }
-      )
-    );
   };
 
   return (

@@ -1,6 +1,7 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
 import "./EditorTab.scss";
+
 import {
   EntityGroup,
   IEditorTabProps,
@@ -42,7 +43,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   config,
   onConfigChange,
   snapshotId,
-  additionalMapBoxStyles = [],
+  extraMapboxStyles = [],
   isNewSnapshot = false,
 }) => {
   const { fetchLateSnapConfigs } = useLocationData();
@@ -106,7 +107,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     isDisabled?: boolean;
   }> = [
     ...defaultMapboxStyles,
-    ...additionalMapBoxStyles,
+    ...extraMapboxStyles,
     {
       key: "new-map-style-1",
       label: "> Karte in Ihrem Branding? <",
@@ -242,8 +243,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
               <li>
                 <PoiFilter
                   poiFilter={config.poiFilter}
-                  onChange={(resultingPoiFilter) => {
-                    changeConfigParam("poiFilter", { ...resultingPoiFilter });
+                  onChange={(resultPoiFilter) => {
+                    changeConfigParam("poiFilter", { ...resultPoiFilter });
                   }}
                 />
               </li>

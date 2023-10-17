@@ -19,6 +19,7 @@ import {
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  IApiMapboxStyle,
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
@@ -99,11 +100,11 @@ export const poiSearchContainerId = "poi-search-container";
 
 export interface IEditorTabProps {
   availableMeans: MeansOfTransportation[];
-  groupedEntries: EntityGroup[];
+  groupedEntries?: EntityGroup[];
   config: ApiSearchResultSnapshotConfig;
   onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
   snapshotId: string;
-  additionalMapBoxStyles?: { key: string; label: string }[];
+  extraMapboxStyles?: IApiMapboxStyle[];
   isNewSnapshot: boolean;
 }
 
@@ -175,15 +176,12 @@ const SearchResultContainer = forwardRef<
       },
     }));
 
-    const {
-      userState: { user },
-      userDispatch,
-    } = useContext(UserContext);
+    const { userDispatch } = useContext(UserContext);
     const { searchContextState, searchContextDispatch } =
       useContext(SearchContext);
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
-    const { createDirectLink, createCodeSnippet } = useTools();
+    const { createDirectLink, createCodeSnippet, getActualUser } = useTools();
 
     const isEmbeddedMode = [
       MapDisplayModesEnum.EMBED,
@@ -217,7 +215,7 @@ const SearchResultContainer = forwardRef<
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
     >([]);
-    const [resultingGroupedEntities, setResultingGroupedEntities] = useState<
+    const [resultGroupEntities, setResultGroupEntities] = useState<
       EntityGroup[]
     >([]);
     const [hideIsochrones, setHideIsochrones] = useState(
@@ -230,6 +228,12 @@ const SearchResultContainer = forwardRef<
       useState(false);
     const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
     const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
+
+    const user = getActualUser();
+    const isIntegrationUser = "integrationUserId" in user;
+    const extraMapboxStyles = isIntegrationUser
+      ? user.config.extraMapboxStyles
+      : user.additionalMapBoxStyles;
 
     useEffect(() => {
       if (
@@ -303,7 +307,7 @@ const SearchResultContainer = forwardRef<
       );
 
       setPreferredLocationsGroup(foundPreferredLocationsGroup);
-      setResultingGroupedEntities(groupsFilteredByActiveMeans);
+      setResultGroupEntities(groupsFilteredByActiveMeans);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
@@ -351,6 +355,7 @@ const SearchResultContainer = forwardRef<
       };
 
       setEditorTabProps({
+        extraMapboxStyles,
         availableMeans: deriveAvailableMeansFromResponse(
           searchContextState.searchResponse
         ),
@@ -358,7 +363,6 @@ const SearchResultContainer = forwardRef<
         config: searchContextState.responseConfig,
         onConfigChange: handleConfigChange,
         snapshotId: searchContextState.snapshotId,
-        additionalMapBoxStyles: user?.additionalMapBoxStyles || [],
         isNewSnapshot: !!isNewSnapshot,
       });
 
@@ -373,6 +377,7 @@ const SearchResultContainer = forwardRef<
     }, [
       isNewSnapshot,
       mapDisplayMode,
+      extraMapboxStyles,
       searchContextState.availGroupedEntities,
       searchContextState.mapCenter,
       searchContextState.mapZoomLevel,
@@ -381,7 +386,6 @@ const SearchResultContainer = forwardRef<
       searchContextState.responseToken,
       searchContextState.searchResponse,
       searchContextState.snapshotId,
-      user?.additionalMapBoxStyles,
     ]);
 
     if (!searchResponse || !mapBoxToken) {
@@ -428,11 +432,11 @@ const SearchResultContainer = forwardRef<
 
       const routesResult = await fetchRoutes({
         snapshotToken: searchContextState.responseToken,
-        userEmail: user?.email!,
+        userEmail: !isIntegrationUser ? user.email : undefined,
         meansOfTransportation: [
+          MeansOfTransportation.WALK,
           MeansOfTransportation.BICYCLE,
           MeansOfTransportation.CAR,
-          MeansOfTransportation.WALK,
         ],
         origin: origin,
         destinations: [
@@ -492,7 +496,7 @@ const SearchResultContainer = forwardRef<
 
       const routesResult = await fetchTransitRoutes({
         snapshotToken: searchContextState.responseToken,
-        userEmail: user?.email!,
+        userEmail: !isIntegrationUser ? user.email : undefined,
         origin: origin,
         destinations: [
           {
@@ -565,14 +569,14 @@ const SearchResultContainer = forwardRef<
       });
     };
 
-    const toggleSatelliteMapMode = () => {
+    const toggleSatelliteMapMode = (): void => {
       setMapBoxMapIds({
         current: mapBoxMapIds.previous,
         previous: mapBoxMapIds.current,
       });
     };
 
-    const toggleAllLocalities = () => {
+    const toggleAllLocalities = (): void => {
       const oldGroupedEntities =
         searchContextState.responseGroupedEntities ?? [];
 
@@ -628,7 +632,8 @@ const SearchResultContainer = forwardRef<
 
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
     const mapWithLegendId = "map-with-legend";
-    const resUserPoiIcons = userPoiIcons || user?.poiIcons;
+    const resUserPoiIcons =
+      userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
 
     const isMapMenuKarlaFrickeShown =
       isThemeKf &&
@@ -670,7 +675,7 @@ const SearchResultContainer = forwardRef<
               mapboxMapId={mapBoxMapIds.current}
               searchResponse={searchResponse}
               searchAddress={searchAddress}
-              groupedEntities={resultingGroupedEntities ?? []}
+              groupedEntities={resultGroupEntities ?? []}
               snippetToken={searchContextState.responseToken}
               means={{
                 byFoot: searchContextState.responseActiveMeans.includes(
@@ -746,7 +751,7 @@ const SearchResultContainer = forwardRef<
           {isMapMenuShown && <ShowMapMenuButton />}
           {isMapMenuKarlaFrickeShown && (
             <MapMenuKarlaFricke
-              groupedEntries={(resultingGroupedEntities ?? [])
+              groupedEntries={(resultGroupEntities ?? [])
                 .filter(
                   (ge) =>
                     ge.items.length && ge.title !== realEstateListingsTitle
@@ -765,7 +770,7 @@ const SearchResultContainer = forwardRef<
               federalElectionData={searchContextState.federalElectionData}
               particlePollutionData={searchContextState.particlePollutionData}
               locationIndexData={searchContextState.locationIndexData}
-              groupedEntries={resultingGroupedEntities ?? []}
+              groupedEntries={resultGroupEntities ?? []}
               toggleAllLocalities={toggleAllLocalities}
               toggleRoute={(item, mean) =>
                 toggleRoutesToEntity(location, item, mean)

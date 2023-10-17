@@ -505,11 +505,17 @@ export const buildEntityDataFromPreferredLocations = (
     }));
 };
 
-export const buildEntityDataFromRealEstateListings = (
-  centerCoordinates: ApiCoordinates,
-  realEstateListings: ApiRealEstateListing[],
-  config?: ApiSearchResultSnapshotConfig
-): ResultEntity[] => {
+export const buildEntDataFromRealEstates = ({
+  centerOfSearch,
+  realEstates,
+  config,
+  ignoreVisibility,
+}: {
+  centerOfSearch: ApiCoordinates;
+  realEstates: ApiRealEstateListing[];
+  config?: ApiSearchResultSnapshotConfig;
+  ignoreVisibility?: boolean;
+}): ResultEntity[] => {
   const deriveName = (realEstateListing: ApiRealEstateListing) => {
     const showLocation = config?.showLocation ?? false;
 
@@ -521,34 +527,34 @@ export const buildEntityDataFromRealEstateListings = (
     }
   };
 
-  const mappedRealEstateListings = realEstateListings.reduce<ResultEntity[]>(
-    (result, realEstateListing) => {
-      if (!realEstateListing.coordinates) {
+  const mappedRealEstates = realEstates.reduce<ResultEntity[]>(
+    (result, realEstate) => {
+      if (!realEstate.coordinates) {
         return result;
       }
 
       result.push({
-        id: realEstateListing.id ?? v4(),
-        name: deriveName(realEstateListing),
+        id: realEstate.id ?? v4(),
+        name: deriveName(realEstate),
         label: realEstateListingsTitle,
         osmName: OsmName.property,
         distanceInMeters: distanceInMeters(
-          centerCoordinates,
-          realEstateListing.coordinates!
+          centerOfSearch,
+          realEstate.coordinates!
         ), // Calc distance
         realEstateData: {
-          costStructure: realEstateListing.costStructure,
-          characteristics: realEstateListing.characteristics,
+          costStructure: realEstate.costStructure,
+          characteristics: realEstate.characteristics,
         },
-        coordinates: realEstateListing.coordinates!,
+        coordinates: realEstate.coordinates!,
         address: config?.showLocation
-          ? { street: realEstateListing.address }
+          ? { street: realEstate.address }
           : { street: undefined },
         byFoot: true,
         byBike: true,
         byCar: true,
         selected: false,
-        externalUrl: realEstateListing.externalUrl,
+        externalUrl: realEstate.externalUrl,
       });
 
       return result;
@@ -556,15 +562,15 @@ export const buildEntityDataFromRealEstateListings = (
     []
   );
 
-  if (config && config.entityVisibility) {
+  if (config?.entityVisibility && !ignoreVisibility) {
     const { entityVisibility = [] } = config;
 
-    return mappedRealEstateListings.filter(
+    return mappedRealEstates.filter(
       (rel) => !entityVisibility.some((ev) => ev.id === rel.id && ev.excluded)
     );
   }
 
-  return mappedRealEstateListings;
+  return mappedRealEstates;
 };
 
 // ### Hide / Show Entities ###
@@ -633,7 +639,7 @@ export const deriveInitialEntityGroups = ({
   config,
   listings,
   locations,
-  ignoreVisibility,
+  ignoreVisibility = false,
   ignorePoiFilter,
 }: IDeriveParameters): EntityGroup[] => {
   const groupedEntities: EntityGroup[] = [];
@@ -666,11 +672,12 @@ export const deriveInitialEntityGroups = ({
     groupedEntities.push({
       title: realEstateListingsTitle,
       active: deriveActiveState(realEstateListingsTitle),
-      items: buildEntityDataFromRealEstateListings(
+      items: buildEntDataFromRealEstates({
         centerOfSearch,
-        listings,
-        config
-      ),
+        config,
+        ignoreVisibility,
+        realEstates: listings,
+      }),
     });
   }
 
