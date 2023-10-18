@@ -10,9 +10,13 @@ import {
 } from './schema/real-estate-listing.schema';
 import { SubscriptionService } from '../user/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
-import { ApiRealEstateExtSourcesEnum } from '@area-butler-types/real-estate';
+import {
+  ApiRealEstateExtSourcesEnum,
+  IApiRealEstateListingSchema,
+} from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import {
+  ApiGeometry,
   IApiUserApiConnectionSettingsReq,
   TApiUserApiConnectionSettings,
 } from '@area-butler-types/types';
@@ -46,6 +50,7 @@ import {
   propstackCustomSyncStatuses,
 } from './mapper/real-estate-propstack-import.mapper';
 import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -59,6 +64,7 @@ export class RealEstateCrmImportService {
     private readonly propstackApiService: PropstackApiService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly userService: UserService,
+    private readonly locationIndexService: LocationIndexService,
   ) {}
 
   async importFromCrm(
@@ -278,7 +284,9 @@ export class RealEstateCrmImportService {
           ApiPropstackToAreaButlerDto,
           realEstate,
           { exposeUnsetFields: false },
-        );
+        ) as IApiRealEstateListingSchema;
+
+        await this.addLocationIndices(areaButlerRealEstate);
 
         bulkOperations.push({
           updateOne: {
@@ -484,7 +492,9 @@ export class RealEstateCrmImportService {
           ApiOnOfficeToAreaButlerDto,
           realEstate,
           { exposeUnsetFields: false },
-        );
+        ) as IApiRealEstateListingSchema;
+
+        await this.addLocationIndices(areaButlerRealEstate);
 
         bulkOperations.push({
           updateOne: {
@@ -507,5 +517,25 @@ export class RealEstateCrmImportService {
     // this.logger.log(testData.join('\n'));
 
     return errorIds;
+  }
+
+  private async addLocationIndices(
+    realEstate: IApiRealEstateListingSchema,
+  ): Promise<void> {
+    const resultLocation: ApiGeometry = {
+      type: 'Point',
+      coordinates: [
+        realEstate.location.coordinates[1],
+        realEstate.location.coordinates[0],
+      ],
+    };
+
+    const locationIndexData = await this.locationIndexService.query(
+      resultLocation,
+    );
+
+    if (locationIndexData[0]) {
+      realEstate.locationIndices = locationIndexData[0].properties;
+    }
   }
 }

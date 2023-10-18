@@ -281,7 +281,7 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
   [MeansOfTransportation.WALK]: WALK_COLOR,
 };
 
-interface MapProps {
+interface IMapProps {
   mapBoxAccessToken: string;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
@@ -318,13 +318,14 @@ interface MapProps {
   setGotoMapCenter: (data: IGotoMapCenter | undefined) => void;
   isTrial: boolean;
   userMapPoiIcons?: IApiUserPoiIcon[];
+  isIntegration: boolean;
 }
 
-interface MapMemoProps extends MapProps {
+interface IMapMemoProps extends IMapProps {
   ref: ForwardedRef<ICurrentMapRef>;
 }
 
-const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
+const areMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
   const mapboxKeyEqual =
     prevProps.mapBoxAccessToken === nextProps.mapBoxAccessToken;
   const responseEqual =
@@ -375,7 +376,7 @@ const areMapPropsEqual = (prevProps: MapProps, nextProps: MapProps) => {
   );
 };
 
-const Map = forwardRef<ICurrentMapRef, MapProps>(
+const Map = forwardRef<ICurrentMapRef, IMapProps>(
   (
     {
       mapBoxAccessToken,
@@ -408,6 +409,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
       setGotoMapCenter,
       isTrial,
       userMapPoiIcons,
+      isIntegration,
     },
     parentMapRef
   ) => {
@@ -1470,8 +1472,8 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
             )}
           </div>
           <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
-            {!isEmbedMode ? (
-              <>
+            {!isIntegration &&
+              (!isEmbedMode ? (
                 <a
                   href="/"
                   data-tour="go-fullscreen"
@@ -1494,9 +1496,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                     <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
                   </svg>
                 </a>
-              </>
-            ) : (
-              <>
+              ) : (
                 <a
                   href={`${createDirectLink(snippetToken!)}`}
                   target="_blank"
@@ -1516,8 +1516,7 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
                     <path d="M 12,20 10,20 10,26 l 6,0 0,-2 -4,0 0,-4 0,0 z" />
                   </svg>
                 </a>
-              </>
-            )}
+              ))}
             <a
               href="/"
               className="leaflet-control-zoom-in cursor-pointer"
@@ -1560,4 +1559,4 @@ const Map = forwardRef<ICurrentMapRef, MapProps>(
   }
 );
 
-export default memo<MapMemoProps>(Map, areMapPropsEqual);
+export default memo<IMapMemoProps>(Map, areMapPropsEqual);

@@ -19,9 +19,14 @@ import {
   ApiRealEstateCostType,
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import { ApiCoordinates, CsvFileFormatsEnum } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiGeometry,
+  CsvFileFormatsEnum,
+} from '@area-butler-types/types';
 import { IOpenImmoXmlData } from '../shared/open-immo.types';
 import { RealEstateListingService } from './real-estate-listing.service';
 import { replaceUmlautWithEnglish } from '../../../shared/functions/shared.functions';
@@ -30,12 +35,13 @@ import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
 import { ApiOnOfficeEstateMarketTypesEnum } from '@area-butler-types/on-office';
+import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 
 interface IListingData {
-  listing: unknown;
-  listingIndex: number;
+  realEstateData: unknown;
+  realEstateIndex: number;
   chunkSize: number;
-  listingChunkIndex: number;
+  realEstateChunkIndex: number;
   fromLine: number;
   fileFormat: CsvFileFormatsEnum;
   errorLineNumbers: number[];
@@ -65,6 +71,7 @@ export class RealEstateListingImportService {
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly locationIndexService: LocationIndexService,
   ) {}
 
   // TODO should be refactored and simplified
@@ -79,7 +86,7 @@ export class RealEstateListingImportService {
     const resultingFromLine =
       fromLine || fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? 2 : 1;
 
-    const realEstateListingChunks = await this.processCsv(
+    const realEstateChunks = await this.processCsv(
       file,
       delimiter,
       resultingFromLine,
@@ -89,14 +96,14 @@ export class RealEstateListingImportService {
     const errorLineNumbers = [];
 
     const processedChunks = await Promise.allSettled(
-      realEstateListingChunks.map(async (listingChunk, listingChunkIndex) => {
+      realEstateChunks.map(async (realEstateChunk, realEstateChunkIndex) => {
         const result = await Promise.allSettled(
-          listingChunk.map((listing, listingIndex) => {
-            const listingData = {
-              listing,
-              listingIndex,
+          realEstateChunk.map((realEstateData, realEstateIndex) => {
+            const processData = {
+              realEstateData,
+              realEstateIndex,
               chunkSize,
-              listingChunkIndex,
+              realEstateChunkIndex,
               errorLineNumbers,
               fileFormat,
               fromLine: resultingFromLine,
@@ -105,8 +112,8 @@ export class RealEstateListingImportService {
 
             return resultingFromLine === 1 &&
               fileFormat === CsvFileFormatsEnum.PADERBORN
-              ? this.processObjectListingData(listingData)
-              : this.processArrayListingData(listingData);
+              ? this.processObjectListingData(processData)
+              : this.processArrayListingData(processData);
           }),
         );
 
@@ -131,12 +138,12 @@ export class RealEstateListingImportService {
           return;
         }
 
-        let listingDocuments;
+        let realEstates;
 
         switch (fileFormat) {
           case CsvFileFormatsEnum.AREA_BUTLER:
           case CsvFileFormatsEnum.ON_OFFICE: {
-            listingDocuments = processedChunk.value.map(
+            realEstates = processedChunk.value.map(
               ([
                 name,
                 address,
@@ -199,7 +206,7 @@ export class RealEstateListingImportService {
                   externalUrl,
                   externalId,
                   status,
-                } as RealEstateListingDocument;
+                } as IApiRealEstateListingSchema;
 
                 if (fileFormat === CsvFileFormatsEnum.ON_OFFICE) {
                   return {
@@ -220,21 +227,35 @@ export class RealEstateListingImportService {
 
           case CsvFileFormatsEnum.PADERBORN:
           default: {
-            listingDocuments = processedChunk.value;
+            realEstates = processedChunk.value.map((listingDocument) => ({
+              updateOne: {
+                filter: { externalId: listingDocument.externalId },
+                update: listingDocument,
+                upsert: true,
+              },
+            }));
           }
         }
 
-        switch (fileFormat) {
-          case CsvFileFormatsEnum.ON_OFFICE: {
-            await this.realEstateListingModel.bulkWrite(listingDocuments);
-            break;
-          }
+        for await (const realEstate of realEstates) {
+          const resultLocation: ApiGeometry = {
+            type: 'Point',
+            coordinates: [
+              realEstate.location.coordinates[1],
+              realEstate.location.coordinates[0],
+            ],
+          };
 
-          case CsvFileFormatsEnum.PADERBORN:
-          default: {
-            await this.realEstateListingModel.insertMany(listingDocuments);
+          const locationIndexData = await this.locationIndexService.query(
+            resultLocation,
+          );
+
+          if (locationIndexData[0]) {
+            realEstate.locationIndices = locationIndexData[0].properties;
           }
         }
+
+        await this.realEstateListingModel.bulkWrite(realEstates);
       }),
     );
 
@@ -302,9 +323,9 @@ export class RealEstateListingImportService {
 
   // TODO completely remove after refactoring
   private async processArrayListingData({
-    listing,
-    listingIndex,
-    listingChunkIndex,
+    realEstateData,
+    realEstateIndex,
+    realEstateChunkIndex,
     errorLineNumbers,
     chunkSize,
     fromLine,
@@ -325,7 +346,7 @@ export class RealEstateListingImportService {
           propertySizeInSquareMeters,
           realEstateSizeInSquareMeters,
           name,
-        ] = listing as string[];
+        ] = realEstateData as string[];
 
         const processedHouseNumber = houseNumber.match(
           new RegExp(
@@ -339,8 +360,8 @@ export class RealEstateListingImportService {
           !processedHouseNumber
         ) {
           errorLineNumbers.push(
-            (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
-              listingIndex +
+            (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+              realEstateIndex +
               1 +
               (fromLine - 1),
           );
@@ -369,8 +390,8 @@ export class RealEstateListingImportService {
         }
 
         errorLineNumbers.push(
-          (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
-            listingIndex +
+          (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+            realEstateIndex +
             1 +
             (fromLine - 1),
         );
@@ -379,12 +400,12 @@ export class RealEstateListingImportService {
       }
 
       default: {
-        const [name, address, ...otherParams] = listing as string[];
+        const [name, address, ...otherParams] = realEstateData as string[];
 
         if (checkAnyStringIsEmpty(address)) {
           errorLineNumbers.push(
-            (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
-              listingIndex +
+            (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+              realEstateIndex +
               1 +
               (fromLine - 1),
           );
@@ -407,8 +428,8 @@ export class RealEstateListingImportService {
         }
 
         errorLineNumbers.push(
-          (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
-            listingIndex +
+          (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+            realEstateIndex +
             1 +
             (fromLine - 1),
         );
@@ -419,9 +440,9 @@ export class RealEstateListingImportService {
   }
 
   private async processObjectListingData({
-    listing,
-    listingIndex,
-    listingChunkIndex,
+    realEstateData,
+    realEstateIndex,
+    realEstateChunkIndex,
     errorLineNumbers,
     chunkSize,
     fromLine,
@@ -439,25 +460,41 @@ export class RealEstateListingImportService {
       plz: zipCode,
       ort: city,
       land: country,
-    } = listing as { [key: string]: string };
+    } = realEstateData as { [key: string]: string };
 
-    const processedHouseNumber = houseNumber.match(
+    if (!street || !city) {
+      return;
+    }
+
+    const resultHouseNumber = houseNumber?.match(
       new RegExp(
         `^\\d+\\s?[a-zA-Z0-9${Object.keys(umlautMap).join('')}]?$`,
         'g',
       ),
     );
 
-    const locationAddress = processedHouseNumber
-      ? `${street} ${processedHouseNumber[0]}, ${zipCode} ${city}, ${country}`
-      : `${street}, ${zipCode} ${city}, ${country}`;
+    let locationAddress = resultHouseNumber
+      ? `${street} ${resultHouseNumber[0]}`
+      : `${street}`;
+
+    locationAddress += ', ';
+
+    if (zipCode) {
+      locationAddress += `${zipCode} `;
+    }
+
+    locationAddress += city;
+
+    if (country) {
+      locationAddress += `, ${country}`;
+    }
 
     const place = await this.googleGeocodeService.fetchPlace(locationAddress);
 
     if (!place) {
       errorLineNumbers.push(
-        (listingChunkIndex > 0 ? listingChunkIndex * chunkSize : 0) +
-          listingIndex +
+        (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
+          realEstateIndex +
           1 +
           (fromLine - 1),
       );
@@ -466,7 +503,7 @@ export class RealEstateListingImportService {
       return;
     }
 
-    Object.assign(listing, {
+    Object.assign(realEstateData, {
       userId,
       address: place.formatted_address,
       location: {
@@ -475,7 +512,7 @@ export class RealEstateListingImportService {
       } as GeoJsonPoint,
     });
 
-    return plainToInstance(ApiOnOfficeToAreaButlerDto, listing, {
+    return plainToInstance(ApiOnOfficeToAreaButlerDto, realEstateData, {
       excludeExtraneousValues: true,
       exposeUnsetFields: false,
     });

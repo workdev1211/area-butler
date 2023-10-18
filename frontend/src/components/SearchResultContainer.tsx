@@ -745,6 +745,7 @@ const SearchResultContainer = forwardRef<
               }}
               isTrial={isTrial}
               userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
+              isIntegration={isIntegrationUser}
               ref={mapRef}
             />
           </div>

@@ -473,7 +473,8 @@ export enum RequestStatusTypesEnum {
 }
 
 export enum MapDisplayModesEnum {
-  "EMBED_INTEGRATION" = "EMBED_INTEGRATION", // left only because of the default map icon
-  "EMBED" = "EMBED",
-  "EDITOR" = "EDITOR",
+  // TODO remove in the future because of the 'isIntegration' property of 'Map' component
+  EMBED_INTEGRATION = "EMBED_INTEGRATION", // left only because of the default map icon
+  EMBED = "EMBED",
+  EDITOR = "EDITOR",
 }

@@ -118,25 +118,23 @@ const RealEstatesPage: FunctionComponent = () => {
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
         </li>
-        {!isIntegration && (
-          <li>
-            <button
-              className="btn btn-link"
-              onClick={() => {
-                setIsShownCsvImportModal(true);
-              }}
-            >
-              <img
-                src={uploadIcon}
-                alt="upload-icon"
-                style={{ filter: "invert(100%)" }}
-              />
-              <label htmlFor="file" style={{ cursor: "pointer" }}>
-                Import aus CSV-Datei
-              </label>
-            </button>
-          </li>
-        )}
+        <li>
+          <button
+            className="btn btn-link"
+            onClick={() => {
+              setIsShownCsvImportModal(true);
+            }}
+          >
+            <img
+              src={uploadIcon}
+              alt="upload-icon"
+              style={{ filter: "invert(100%)" }}
+            />
+            <label htmlFor="file" style={{ cursor: "pointer" }}>
+              Import aus CSV-Datei
+            </label>
+          </button>
+        </li>
         {hasApiConnections && (
           <li>
             <button
@@ -200,7 +198,7 @@ const RealEstatesPage: FunctionComponent = () => {
     <DefaultLayout
       title="Meine Immobilien"
       withHorizontalPadding={false}
-      actionsTop={<ActionsTop />}
+      actionsTop={!isIntegration ? <ActionsTop /> : undefined}
     >
       <TourStarter tour={ApiTourNamesEnum.REAL_ESTATES} />
       {isShownSnapshotsModal && (
