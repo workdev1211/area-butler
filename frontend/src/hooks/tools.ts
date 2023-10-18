@@ -4,7 +4,6 @@ import { ConfigContext } from "../context/ConfigContext";
 import { UserContext } from "../context/UserContext";
 import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
-import { toastError } from "../shared/shared.functions";
 import { useHttp } from "./http";
 
 export const useTools = () => {
@@ -44,9 +43,7 @@ export const useTools = () => {
       return integrationUser;
     }
 
-    const errorMessage = "Benutzer wurde nicht gefunden!"; // User is not found!
-    toastError(errorMessage);
-    throw new Error(errorMessage);
+    return {} as ApiUser;
   };
 
   const updateUserSettings = async (settings: {
