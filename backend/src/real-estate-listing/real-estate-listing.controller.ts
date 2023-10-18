@@ -10,6 +10,7 @@ import {
   UseInterceptors,
   StreamableFile,
   Query,
+  Patch,
 } from '@nestjs/common';
 import { ApiBody, ApiConsumes, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { FileInterceptor } from '@nestjs/platform-express';
@@ -35,6 +36,7 @@ import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
 import ApiUserApiConnectionSettingsDto from '../dto/api-user-api-connection-settings.dto';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
+import { Role, Roles } from '../auth/roles.decorator';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
@@ -90,6 +92,15 @@ export class RealEstateListingController extends AuthenticatedController {
         realEstateListing,
       ),
     );
+  }
+
+  @ApiOperation({ description: 'Update real estate location indices' })
+  @Patch()
+  @Roles(Role.Admin)
+  async updateLocationIndices(): Promise<string> {
+    await this.realEstateListingService.updateLocationIndices();
+
+    return 'done';
   }
 
   @ApiOperation({ description: 'Delete a real estate listing' })

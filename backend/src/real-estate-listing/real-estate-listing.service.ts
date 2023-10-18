@@ -18,6 +18,7 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { ApiGeometry } from '@area-butler-types/types';
 
 @Injectable()
 export class RealEstateListingService {
@@ -156,6 +157,40 @@ export class RealEstateListingService {
     }
 
     return realEstate;
+  }
+
+  async updateLocationIndices(): Promise<void> {
+    const total = await this.realEstateListingModel.find().count();
+    const limit = 100;
+
+    for (let skip = 0; skip < total; skip += limit) {
+      const realEstates = await this.realEstateListingModel
+        .find()
+        .skip(skip)
+        .limit(limit);
+
+      for await (const realEstate of realEstates) {
+        const resultLocation: ApiGeometry = {
+          type: 'Point',
+          coordinates: [
+            realEstate.location.coordinates[1],
+            realEstate.location.coordinates[0],
+          ],
+        };
+
+        const locationIndexData = await this.locationIndexService.query(
+          resultLocation,
+        );
+
+        if (locationIndexData[0]) {
+          Object.assign(realEstate, {
+            locationIndices: locationIndexData[0].properties,
+          });
+
+          await realEstate.save();
+        }
+      }
+    }
   }
 
   async deleteRealEstateListing(
