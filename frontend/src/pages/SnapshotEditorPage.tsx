@@ -10,7 +10,6 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import "./SnapshotEditorPage.scss";
 
-import CodeSnippetModal from "components/CodeSnippetModal";
 import SearchResultContainer, {
   ICurrentMapRef,
 } from "components/SearchResultContainer";
@@ -48,7 +47,6 @@ import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
-import { useTools } from "../hooks/tools";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -71,11 +69,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const { fetchLocationIndexData } = useLocationIndexData();
-  const { createDirectLink, createCodeSnippet } = useTools();
 
-  const [isShownModal, setIsShownModal] = useState(false);
-  const [codeSnippet, setCodeSnippet] = useState("");
-  const [directLink, setDirectLink] = useState("");
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
 
   const user = userState.user;
@@ -153,8 +147,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
         });
       }
 
-      setDirectLink(createDirectLink(snapshotResponse.token));
-      setCodeSnippet(createCodeSnippet(snapshotResponse.token));
       setSnapshot(snapshotResponse.snapshot);
 
       if (!snapshotResponse.snapshot || !snapshotConfig) {
@@ -403,20 +395,10 @@ const SnapshotEditorPage: FunctionComponent = () => {
             apiKey={googleApiKey}
           />
         </div>
-        {isShownModal && (
-          <CodeSnippetModal
-            directLink={directLink}
-            codeSnippet={codeSnippet}
-            label={snapshot.placesLocation.label}
-            closeModal={() => {
-              setIsShownModal(false);
-            }}
-          />
-        )}
         <div className="editor-container">
           <SearchResultContainer
-            mapBoxToken={mapBoxAccessToken}
-            mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
+            mapboxToken={mapBoxAccessToken}
+            mapboxMapId={searchContextState.responseConfig?.mapBoxMapId}
             searchResponse={snapshot.searchResponse}
             searchAddress={snapshot.placesLocation.label}
             location={snapshot.location}

@@ -401,8 +401,8 @@ const MapPage: FunctionComponent = () => {
         />
       </div>
       <SearchResultContainer
-        mapBoxToken={mapBoxToken}
-        mapBoxMapId={searchContextState.responseConfig?.mapBoxMapId}
+        mapboxToken={mapBoxToken}
+        mapboxMapId={searchContextState.responseConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

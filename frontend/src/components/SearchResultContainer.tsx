@@ -117,8 +117,8 @@ export interface IExportTabProps {
 }
 
 interface ISearchResultContainerProps {
-  mapBoxToken: string;
-  mapBoxMapId?: string;
+  mapboxToken: string;
+  mapboxMapId?: string;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   location: ApiCoordinates;
@@ -137,8 +137,8 @@ const SearchResultContainer = forwardRef<
 >(
   (
     {
-      mapBoxToken,
-      mapBoxMapId,
+      mapboxToken,
+      mapboxMapId,
       searchResponse,
       searchAddress,
       location,
@@ -198,7 +198,7 @@ const SearchResultContainer = forwardRef<
 
     const initialMapBoxMapIds = {
       current:
-        mapBoxMapId ||
+        mapboxMapId ||
         defaultMapboxStyles.find(
           ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
         )?.key,
@@ -247,7 +247,7 @@ const SearchResultContainer = forwardRef<
     useEffect(() => {
       setMapBoxMapIds(initialMapBoxMapIds);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mapBoxMapId]);
+    }, [mapboxMapId]);
 
     useEffect(() => {
       setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
@@ -388,7 +388,7 @@ const SearchResultContainer = forwardRef<
       searchContextState.snapshotId,
     ]);
 
-    if (!searchResponse || !mapBoxToken) {
+    if (!searchResponse || !mapboxToken) {
       return <LoadingMessage />;
     }
 
@@ -666,12 +666,12 @@ const SearchResultContainer = forwardRef<
                       payload: [...newValues],
                     });
                   }}
-                  hideIsochrones={!!hideIsochrones}
+                  hideIsochrones={!!hideIsochrones} // don't remove the !! operators
                 />
               )}
             </div>
             <Map
-              mapBoxAccessToken={mapBoxToken}
+              mapBoxAccessToken={mapboxToken}
               mapboxMapId={mapBoxMapIds.current}
               searchResponse={searchResponse}
               searchAddress={searchAddress}
