@@ -15,8 +15,8 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import ApiSearchDto from '../dto/api-search.dto';
-import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
-import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
+import ApiSearchResultSnapshotDto from './dto/snapshot/api-search-result-snapshot.dto';
+import ApiUpdateSearchResultSnapshotDto from './dto/snapshot/api-update-search-result-snapshot.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -32,6 +32,7 @@ import {
   ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -40,6 +41,7 @@ export class LocationIntController {
   constructor(
     private readonly locationService: LocationService,
     private readonly locationIntService: LocationIntService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   @ApiOperation({
@@ -122,7 +124,20 @@ export class LocationIntController {
       id,
     );
 
-    return mapSnapshotToEmbeddableMap(integrationUser, snapshotDoc, false);
+    snapshotDoc.updatedAt = new Date();
+    await snapshotDoc.save();
+
+    const realEstateListings =
+      await this.realEstateListingService.fetchRealEstateListings(
+        integrationUser,
+      );
+
+    return mapSnapshotToEmbeddableMap(
+      integrationUser,
+      snapshotDoc,
+      false,
+      realEstateListings,
+    );
   }
 
   @ApiOperation({
@@ -191,26 +206,6 @@ export class LocationIntController {
         integrationUser,
         snapshotId,
         body,
-      ),
-    );
-  }
-
-  @ApiOperation({
-    description: 'Update an existing map snapshot description',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Put('snapshot/:id/description')
-  async updateSnapshotDescription(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('id') snapshotId: string,
-    @Body() { description }: { description: string },
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    return mapSnapshotToEmbeddableMap(
-      integrationUser,
-      await this.locationService.updateSnapshotDescription(
-        integrationUser,
-        snapshotId,
-        description,
       ),
     );
   }

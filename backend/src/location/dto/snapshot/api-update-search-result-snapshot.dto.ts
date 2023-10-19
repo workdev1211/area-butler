@@ -1,4 +1,9 @@
-import { IsNotEmpty, ValidateNested } from 'class-validator';
+import {
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 import {
@@ -12,15 +17,21 @@ import ApiSearchResultSnapshotDto from './api-search-result-snapshot.dto';
 class ApiUpdateSearchResultSnapshotDto
   implements ApiUpdateSearchResultSnapshot
 {
-  @IsNotEmpty()
-  @ValidateNested()
-  @Type(() => ApiSearchResultSnapshotConfigDto)
-  config: ApiSearchResultSnapshotConfig;
-
-  @IsNotEmpty()
+  @IsOptional()
+  @IsObject()
   @ValidateNested()
   @Type(() => ApiSearchResultSnapshotDto)
-  snapshot: ApiSearchResultSnapshot;
+  snapshot?: ApiSearchResultSnapshot;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiSearchResultSnapshotConfigDto)
+  config?: ApiSearchResultSnapshotConfig;
+
+  @IsOptional()
+  @IsString()
+  description?: string;
 }
 
 export default ApiUpdateSearchResultSnapshotDto;

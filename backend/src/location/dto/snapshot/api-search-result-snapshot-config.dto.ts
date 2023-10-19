@@ -1,5 +1,4 @@
 import {
-  IsNotEmpty,
   ValidateNested,
   IsOptional,
   IsArray,
@@ -20,21 +19,21 @@ import {
   IApiSnapshotPoiFilter,
   MeansOfTransportation,
 } from '@area-butler-types/types';
-import ApiSnippetEntityVisibilityDto from './api-snippet-entity-visiblity.dto';
+import ApiSnippetEntityVisibilityDto from '../../../dto/api-snippet-entity-visiblity.dto';
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
-import ApiSnapshotIconSizesDto from './api-snapshot-icon-sizes.dto';
-import ApiSnapshotPoiFilterDto from './api-snapshot-poi-filter.dto';
+import ApiSnapshotIconSizesDto from '../../../dto/api-snapshot-icon-sizes.dto';
+import ApiSnapshotPoiFilterDto from '../../../dto/api-snapshot-poi-filter.dto';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
-  showLocation: boolean;
+  showLocation?: boolean;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsBoolean()
-  groupItems: boolean;
+  groupItems?: boolean;
 
   @IsOptional()
   @IsBoolean()

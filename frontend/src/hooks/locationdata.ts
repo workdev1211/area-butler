@@ -84,12 +84,17 @@ export const useLocationData = () => {
     return (await get<IApiLateSnapConfigOption[]>(url)).data;
   };
 
-  const createSnapshot = async (
-    items: IBusyModalItem[],
-    setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>,
-    searchResponse: ApiSearchResponse,
-    userEmail?: string
-  ): Promise<ApiSearchResultSnapshotResponse> => {
+  const createSnapshot = async ({
+    busyModalItems,
+    setBusyModalItems,
+    searchResponse,
+    userEmail,
+  }: {
+    busyModalItems: IBusyModalItem[];
+    setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>;
+    searchResponse: ApiSearchResponse;
+    userEmail?: string;
+  }): Promise<ApiSearchResultSnapshotResponse> => {
     const routes: EntityRoute[] = [];
     const transitRoutes: EntityTransitRoute[] = [];
     const location = searchContextState.location!;
@@ -100,10 +105,10 @@ export const useLocationData = () => {
 
     // TODO think about moving this logic to the backend
     for (const preferredLocation of preferredLocations) {
-      items.push({
+      busyModalItems.push({
         key: `fetch-routes-${preferredLocation.title}-${index}`,
       });
-      setBusyModalItems([...items]);
+      setBusyModalItems([...busyModalItems]);
 
       const routesResult = await fetchRoutes({
         userEmail,
@@ -126,10 +131,10 @@ export const useLocationData = () => {
         coordinates: preferredLocation.coordinates!,
       });
 
-      items.push({
+      busyModalItems.push({
         key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
       });
-      setBusyModalItems([...items]);
+      setBusyModalItems([...busyModalItems]);
 
       const transitRoutesResult = await fetchTransitRoutes({
         userEmail,
@@ -154,10 +159,10 @@ export const useLocationData = () => {
       index += 1;
     }
 
-    items.push({
+    busyModalItems.push({
       key: "save-map-snapshot",
     });
-    setBusyModalItems([...items]);
+    setBusyModalItems([...busyModalItems]);
 
     return (
       await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
@@ -194,24 +199,9 @@ export const useLocationData = () => {
     ).data;
   };
 
-  const updateSnapshotDesc = async (
-    snapshotId: string,
-    description?: string
-  ): Promise<ApiSearchResultSnapshotResponse> => {
-    return (
-      await put<ApiSearchResultSnapshotResponse>(
-        isIntegration
-          ? `/api/location-int/snapshot/${snapshotId}/description`
-          : `/api/location/snapshot/${snapshotId}/description`,
-        { description }
-      )
-    ).data;
-  };
-
   const saveSnapshotConfig = async (
     mapRef: RefObject<ICurrentMapRef>,
-    snapshotId: string,
-    snapshot: ApiSearchResultSnapshot
+    snapshotId: string
   ): Promise<ApiSearchResultSnapshotResponse | undefined> => {
     if (!mapRef.current || !searchContextState.responseConfig) {
       return;
@@ -248,8 +238,7 @@ export const useLocationData = () => {
 
     try {
       const snapshotResponse = await updateSnapshot(snapshotId, {
-        snapshot,
-        config: config as ApiSearchResultSnapshotConfig,
+        config,
       });
 
       toastSuccess("Einstellungen gespeichert!");
@@ -277,7 +266,6 @@ export const useLocationData = () => {
     fetchLateSnapConfigs,
     createSnapshot,
     updateSnapshot,
-    updateSnapshotDesc,
     saveSnapshotConfig,
     deleteSnapshot,
   };

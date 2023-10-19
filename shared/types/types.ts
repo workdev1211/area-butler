@@ -302,8 +302,9 @@ export enum OsmName {
 }
 
 export interface ApiUpdateSearchResultSnapshot {
-  snapshot: ApiSearchResultSnapshot;
-  config: ApiSearchResultSnapshotConfig;
+  snapshot?: ApiSearchResultSnapshot;
+  config?: ApiSearchResultSnapshotConfig;
+  description?: string;
 }
 
 export interface ApiSearchResultSnapshot {
@@ -359,8 +360,8 @@ export interface IApiSnapshotIconSizes {
 }
 
 export interface ApiSearchResultSnapshotConfig {
-  showLocation: boolean;
-  groupItems: boolean;
+  showLocation?: boolean;
+  groupItems?: boolean;
   showAddress?: boolean;
   showStreetViewLink?: boolean;
   showDetailsInOnePage?: boolean;

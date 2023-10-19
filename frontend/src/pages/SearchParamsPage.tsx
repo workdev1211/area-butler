@@ -451,56 +451,32 @@ const SearchParamsPage: FunctionComponent = () => {
         payload: [...activeMeans],
       });
 
-      // TODO unite createSnapshot and the put requests
-      const createdSnapshotResponse = await createSnapshot(
-        items,
+      const createdSnapshotResponse = await createSnapshot({
         setBusyModalItems,
         searchResponse,
-        user?.email
-      );
+        busyModalItems: items,
+        userEmail: user?.email,
+      });
 
       items.push({
         key: "create-snapshot",
       });
       setBusyModalItems([...items]);
 
-      const { config: snapshotConfig } = createdSnapshotResponse;
-
-      snapshotConfig!.primaryColor =
-        snapshotConfig!.primaryColor ||
-        user?.color ||
-        integrationUser?.config?.color;
-
-      snapshotConfig!.mapIcon =
-        snapshotConfig!.mapIcon ||
-        user?.mapIcon ||
-        integrationUser?.config?.mapIcon ||
-        integrationUser?.config?.logo;
-
-      const updatedSnapshotResponse = await updateSnapshot(
-        createdSnapshotResponse.id,
-        {
-          config: snapshotConfig!,
-          snapshot: {
-            ...createdSnapshotResponse?.snapshot,
-          },
-        }
-      );
-
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: updatedSnapshotResponse.config,
+        payload: createdSnapshotResponse.config,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-        payload: updatedSnapshotResponse.snapshot.transportationParams,
+        payload: createdSnapshotResponse.snapshot.transportationParams,
       });
 
-      if (updatedSnapshotResponse.snapshot.realEstateListing) {
+      if (createdSnapshotResponse.snapshot.realEstateListing) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-          payload: updatedSnapshotResponse.snapshot.realEstateListing,
+          payload: createdSnapshotResponse.snapshot.realEstateListing,
         });
       }
 

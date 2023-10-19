@@ -412,7 +412,6 @@ const MapPage: FunctionComponent = () => {
           await saveSnapshotConfig(
             mapRef,
             snapshotId,
-            snapshotResponse?.snapshot!
           );
         }}
         isTrial={false}

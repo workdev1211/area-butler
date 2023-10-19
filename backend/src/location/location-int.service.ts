@@ -88,6 +88,15 @@ export class LocationIntService {
       ({ type }) => type,
     );
 
+    if (!snapshotConfig.primaryColor) {
+      snapshotConfig.primaryColor = integrationUser.config.color;
+    }
+
+    if (!snapshotConfig.mapIcon) {
+      snapshotConfig.mapIcon =
+        integrationUser.config.mapIcon || integrationUser.config.logo;
+    }
+
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
       token,
@@ -118,13 +127,13 @@ export class LocationIntService {
     ).save();
 
     return {
-      mapboxAccessToken,
-      token,
-      snapshot,
       id: savedSnapshotDoc.id,
-      config: snapshotConfig,
+      config: savedSnapshotDoc.config,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
+      mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
+      token: savedSnapshotDoc.token,
+      snapshot: savedSnapshotDoc.snapshot,
     };
   }
 

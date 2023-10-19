@@ -93,7 +93,11 @@ export class SnapshotExtService {
       snapshotConfig = config;
     }
 
-    return this.locationService.createSnapshot(user, snapshot, snapshotConfig);
+    return this.locationService.createSnapshot({
+      user,
+      snapshot,
+      config: snapshotConfig,
+    });
   }
 
   async createSnapshotFromTemplate(
@@ -192,6 +196,6 @@ export class SnapshotExtService {
       });
     }
 
-    return this.locationService.createSnapshot(user, snapshot, config);
+    return this.locationService.createSnapshot({ user, snapshot, config });
   }
 }

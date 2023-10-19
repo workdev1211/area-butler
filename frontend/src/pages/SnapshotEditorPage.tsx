@@ -403,7 +403,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
             searchAddress={snapshot.placesLocation.label}
             location={snapshot.location}
             saveConfig={async () => {
-              await saveSnapshotConfig(mapRef, snapshotId, snapshot);
+              await saveSnapshotConfig(mapRef, snapshotId);
             }}
             mapDisplayMode={MapDisplayModesEnum.EDITOR}
             onPoiAdd={onPoiAdd}

@@ -16,22 +16,20 @@ import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import ApiSearchDto from '../dto/api-search.dto';
 import ApiSearchResponseDto from '../dto/api-search-response.dto';
-import ApiSearchResultSnapshotDto from '../dto/api-search-result-snapshot.dto';
-import ApiSearchResultSnapshotResponseDto from '../dto/api-search-result-snapshot-response.dto';
-import ApiUpdateSearchResultSnapshotDto from '../dto/api-update-search-result-snapshot.dto';
+import ApiUpdateSearchResultSnapshotDto from './dto/snapshot/api-update-search-result-snapshot.dto';
 import ApiUserRequestsDto from '../dto/api-user-requests.dto';
 import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { SubscriptionService } from '../user/subscription.service';
-import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { SnapshotExtService } from './snapshot-ext.service';
 import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
+import ApiSearchResultSnapshotDto from "./dto/snapshot/api-search-result-snapshot.dto";
+import {ApiSearchResultSnapshotResponse} from "@area-butler-types/types";
 
 @ApiTags('location')
 @Controller('api/location')
@@ -62,22 +60,13 @@ export class LocationController extends AuthenticatedController {
   async createSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.locationService.createSnapshot(user, snapshot);
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return this.locationService.createSnapshot({
+      user,
+      snapshot,
+    });
   }
 
-  @ApiOperation({
-    description: 'Create a new embeddable map with route fetching',
-  })
-  @Post('route-snapshot')
-  async createRouteSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() snapshot: ApiCreateRouteSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return this.snapshotExtService.createRouteSnapshot(user, snapshot);
-  }
-
-  // TODO think about merging updateSnapshot and updateSnapshotDescription
   // TODO think about using class-transformer instead of a mapper
   @ApiOperation({ description: 'Update an existing map snapshot' })
   @Put('snapshot/:id')
@@ -85,29 +74,10 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
     @Body() body: ApiUpdateSearchResultSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
-    return mapSnapshotToEmbeddableMap(
-      user,
-      await this.locationService.updateSnapshot(user, id, body),
-    );
-  }
-
-  @ApiOperation({
-    description: 'Update an existing map snapshot description',
-  })
-  @Put('snapshot/:id/description')
-  async updateSnapshotDescription(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Param('id') id: string,
-    @Body() { description }: { description: string },
   ): Promise<ApiSearchResultSnapshotResponse> {
     return mapSnapshotToEmbeddableMap(
       user,
-      await this.locationService.updateSnapshotDescription(
-        user,
-        id,
-        description,
-      ),
+      await this.locationService.updateSnapshot(user, id, body),
     );
   }
 
@@ -135,7 +105,7 @@ export class LocationController extends AuthenticatedController {
   async fetchSnapshots(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Query() fetchSnapshotsReq: ApiFetchSnapshotsReqDto,
-  ): Promise<ApiSearchResultSnapshotResponseDto[]> {
+  ): Promise<ApiSearchResultSnapshotResponse[]> {
     const {
       skip: skipNumber,
       limit: limitNumber,
@@ -174,7 +144,7 @@ export class LocationController extends AuthenticatedController {
   async fetchSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Param('id') id: string,
-  ): Promise<ApiSearchResultSnapshotResponseDto> {
+  ): Promise<ApiSearchResultSnapshotResponse> {
     const snapshotDoc = await this.locationService.fetchSnapshotByIdOrFail(
       user,
       id,

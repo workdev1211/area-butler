@@ -9,7 +9,7 @@ import {
   IApiPlacesLocation,
 } from '@area-butler-types/types';
 import ApiSearchDto from './api-search.dto';
-import ApiSearchResultSnapshotConfigDto from './api-search-result-snapshot-config.dto';
+import ApiSearchResultSnapshotConfigDto from '../location/dto/snapshot/api-search-result-snapshot-config.dto';
 import ApiPlacesLocationDto from './api-places-location.dto';
 import ApiSearchResponseDto from './api-search-response.dto';
 

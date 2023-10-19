@@ -16,6 +16,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiCoordinates,
   ApiRequestStatusesEnum,
+  ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
@@ -37,6 +38,7 @@ import {
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
 import { createDirectLink } from '../shared/shared.functions';
+import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -113,6 +115,17 @@ export class LocationExtController extends ApiKeyAuthController {
         requestStatus,
       );
     }
+  }
+
+  @ApiOperation({
+    description: 'Create a new embeddable map with route fetching',
+  })
+  @Post('route-snapshot')
+  async createRouteSnapshot(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() snapshot: ApiCreateRouteSnapshotDto,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return this.snapshotExtService.createRouteSnapshot(user, snapshot);
   }
 
   @ApiOperation({

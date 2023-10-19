@@ -298,11 +298,15 @@ export class LocationService {
     };
   }
 
-  async createSnapshot(
-    user: UserDocument,
-    snapshot: ApiSearchResultSnapshot,
-    config?: ApiSearchResultSnapshotConfig,
-  ): Promise<ApiSearchResultSnapshotResponse> {
+  async createSnapshot({
+    user,
+    snapshot,
+    config,
+  }: {
+    user: UserDocument;
+    snapshot: ApiSearchResultSnapshot;
+    config?: ApiSearchResultSnapshotConfig;
+  }): Promise<ApiSearchResultSnapshotResponse> {
     const token = randomBytes(60).toString('hex');
 
     const mapboxAccessToken = (
@@ -354,6 +358,14 @@ export class LocationService {
       ({ type }) => type,
     );
 
+    if (!snapshotConfig.primaryColor) {
+      snapshotConfig.primaryColor = user.color;
+    }
+
+    if (!snapshotConfig.mapIcon) {
+      snapshotConfig.mapIcon = user.mapIcon;
+    }
+
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
       token,
@@ -393,13 +405,13 @@ export class LocationService {
     ).save();
 
     return {
-      mapboxAccessToken,
-      token,
-      snapshot,
       id: savedSnapshotDoc.id,
-      config: snapshotConfig,
+      config: savedSnapshotDoc.config,
       createdAt: savedSnapshotDoc.createdAt,
       endsAt: savedSnapshotDoc.endsAt,
+      mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
+      token: savedSnapshotDoc.token,
+      snapshot: savedSnapshotDoc.snapshot,
     };
   }
 
@@ -432,7 +444,7 @@ export class LocationService {
   async updateSnapshot(
     user: UserDocument | TIntegrationUserDocument,
     snapshotId: string,
-    { snapshot, config }: ApiUpdateSearchResultSnapshot,
+    { snapshot, config, description }: ApiUpdateSearchResultSnapshot,
   ): Promise<SearchResultSnapshotDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -446,35 +458,23 @@ export class LocationService {
       );
     }
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchSnapshotByIdOrFail(user, snapshotId);
+    const snapshotDoc = await this.fetchSnapshotByIdOrFail(user, snapshotId);
 
-    Object.assign(snapshotDoc, { snapshot, config, updatedAt: new Date() });
-
-    return snapshotDoc.save();
-  }
-
-  async updateSnapshotDescription(
-    user: UserDocument | TIntegrationUserDocument,
-    id: string,
-    description: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-      );
+    if (!snapshot && !config && !description) {
+      return snapshotDoc;
     }
 
-    const snapshotDoc: SearchResultSnapshotDocument =
-      await this.fetchSnapshotByIdOrFail(user, id);
+    if (snapshot) {
+      snapshotDoc.set('snapshot', snapshot);
+    }
 
-    snapshotDoc.description = description;
+    if (config) {
+      snapshotDoc.set('config', config);
+    }
+
+    if (description) {
+      snapshotDoc.description = description;
+    }
 
     return snapshotDoc.save();
   }

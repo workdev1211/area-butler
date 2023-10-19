@@ -31,7 +31,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
 }) => {
   const { userDispatch } = useContext(UserContext);
 
-  const { updateSnapshotDesc } = useLocationData();
+  const { updateSnapshot } = useLocationData();
 
   const [description, setDescription] = useState(snapshot?.description);
 
@@ -52,7 +52,7 @@ const CodeSnippetModal: FunctionComponent<CodeSnippetModalProps> = ({
       snapshot.description !== description
     ) {
       try {
-        await updateSnapshotDesc(snapshot.id, description); //1
+        await updateSnapshot(snapshot.id, { description });
 
         userDispatch({
           type: UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION,
