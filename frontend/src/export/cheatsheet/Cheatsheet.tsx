@@ -6,7 +6,7 @@ import { ISelectableMapClipping } from "export/MapClippingSelection";
 import ParticlePollutionSummary from "export/ParticlePollutionSummary";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import {
-  allFurnishing,
+  // allFurnishing,
   allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -123,13 +123,17 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           {!props.realEstateListing && (
             <>
               <div className="text-2xl font-bold">{props.listingAddress}</div>
-              <div className="text-xl font-bold mt-1">Lage Überblick</div>
+              <div className="text-xl font-bold mt-1 text-black">
+                Lage Überblick
+              </div>
             </>
           )}
 
           {props.realEstateListing && (
             <>
-              <h3 className="text-2xl w-56 font-bold">Lage Überblick</h3>
+              <h3 className="text-2xl w-56 font-bold text-black">
+                Lage Überblick
+              </h3>
               <div className="font-bold">{props.realEstateListing.address}</div>
               {props.realEstateListing?.costStructure && (
                 <div>
@@ -145,19 +149,20 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
                 </div>
               )}
 
-              {props.realEstateListing.characteristics?.furnishing && (
-                <div>
-                  <strong>Ausstattung:</strong>{" "}
-                  {allFurnishing
-                    .filter((f) =>
-                      props.realEstateListing.characteristics?.furnishing.includes(
-                        f.type
-                      )
-                    )
-                    .map((f) => f.label)
-                    .join(", ")}
-                </div>
-              )}
+              {/* Furnishing */}
+              {/*{props.realEstateListing.characteristics?.furnishing && (*/}
+              {/*  <div>*/}
+              {/*    <strong>Ausstattung:</strong>{" "}*/}
+              {/*    {allFurnishing*/}
+              {/*      .filter((f) =>*/}
+              {/*        props.realEstateListing.characteristics?.furnishing.includes(*/}
+              {/*          f.type*/}
+              {/*        )*/}
+              {/*      )*/}
+              {/*      .map((f) => f.label)*/}
+              {/*      .join(", ")}*/}
+              {/*  </div>*/}
+              {/*)}*/}
             </>
           )}
         </div>

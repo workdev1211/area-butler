@@ -132,7 +132,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
             )
           : undefined;
 
-        const furnishing = listing.characteristics?.furnishing.map(
+        const furnishing = listing.characteristics?.furnishing?.map(
           (furnishName) =>
             allFurnishing.find(({ type }) => type === furnishName)!.label
         );
@@ -227,8 +227,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       columnHelper.display({
         id: "furnishing",
         header: "ausstattung",
-        cell: (props) =>
-          props.getValue() ? props.getValue<string[]>().join(", ") : null,
+        cell: (props) => props.row.original.furnishing?.join(", ") || null,
         size: 300,
         meta: {
           cellStyles: { whiteSpace: "normal" },

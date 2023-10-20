@@ -185,7 +185,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
           resultingEnergyClass.toUpperCase() as ApiEnergyEfficiency;
       }
 
-      if (anzahl_balkone || +balkon) {
+      if (+anzahl_balkone || +balkon) {
         characteristics.furnishing.push(ApiFurnishing.BALCONY);
       }
 

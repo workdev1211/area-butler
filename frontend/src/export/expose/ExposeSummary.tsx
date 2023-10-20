@@ -7,7 +7,7 @@ import {
   unitsOfTransportation,
 } from "../../../../shared/constants/constants";
 import {
-  allFurnishing,
+  // allFurnishing,
   allRealEstateCostTypes,
 } from "../../../../shared/constants/real-estate";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
@@ -60,12 +60,9 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
           >
             {/* Column 1 */}
             <div className="flex flex-col gap-5">
+              <div className="text-2xl font-bold">{listingAddress}</div>
               <div>
-                <div className="text-2xl font-bold">{listingAddress}</div>
-                <div className="text-xl font-bold mt-1">Umfeldanalyse</div>
-              </div>
-              <div>
-                <h3 className="text-xl w-96 font-bold">
+                <h3 className="text-xl w-96 font-bold text-black">
                   Ihre Mobilitätskriterien
                 </h3>
                 <div className="flex gap-2">
@@ -101,7 +98,9 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
             <div className="flex flex-col gap-2">
               {realEstateListing && (
                 <>
-                  <h3 className="text-xl w-96 font-bold">Unser Objekt</h3>
+                  <h3 className="text-xl w-96 font-bold text-black">
+                    Ihre neue Immobilie
+                  </h3>
                   <div className="font-bold">{realEstateListing.address}</div>
 
                   {realEstateListing?.costStructure && (
@@ -118,19 +117,20 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                     </div>
                   )}
 
-                  {realEstateListing.characteristics?.furnishing && (
-                    <div className="text-justify">
-                      <strong>Ausstattung:</strong>{" "}
-                      {allFurnishing
-                        .filter((f) =>
-                          realEstateListing.characteristics?.furnishing.includes(
-                            f.type
-                          )
-                        )
-                        .map((f) => f.label)
-                        .join(", ")}
-                    </div>
-                  )}
+                  {/* Furnishing */}
+                  {/*{realEstateListing.characteristics?.furnishing && (*/}
+                  {/*  <div className="text-justify">*/}
+                  {/*    <strong>Ausstattung:</strong>{" "}*/}
+                  {/*    {allFurnishing*/}
+                  {/*      .filter((f) =>*/}
+                  {/*        realEstateListing.characteristics?.furnishing.includes(*/}
+                  {/*          f.type*/}
+                  {/*        )*/}
+                  {/*      )*/}
+                  {/*      .map((f) => f.label)*/}
+                  {/*      .join(", ")}*/}
+                  {/*  </div>*/}
+                  {/*)}*/}
                 </>
               )}
 
@@ -147,7 +147,9 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
       )}
 
       <div className={!isFirstPage ? "pt-5" : ""}>
-        <h3 className="text-xl w-96 font-bold mx-10">Die Umgebung</h3>
+        <h3 className="text-xl w-96 font-bold mx-10 text-black">
+          Die Umgebung
+        </h3>
         <EntityGridSummary
           groupedEntries={groupedEntries}
           activeMeans={activeMeans}

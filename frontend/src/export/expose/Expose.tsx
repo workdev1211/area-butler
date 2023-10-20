@@ -111,7 +111,7 @@ export const Expose = forwardRef(
             nextPageNumber={nextPageNumber}
             logo={props.logo}
             leftHeaderElement={
-              <div className="text-2xl font-bold">Überblick</div>
+              <div className="text-2xl font-bold">Umfeldanalyse</div>
             }
             key={`entity-group-chunk-${i}`}
           >

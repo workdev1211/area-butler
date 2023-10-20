@@ -118,7 +118,11 @@ export const createQrCodeHeader = async (
                                     new Paragraph({
                                       children: [
                                         new TextRun({
-                                          text: "Scannen für interaktive Karte",
+                                          text: "Scannen und neue",
+                                          font: "Arial",
+                                        }),
+                                        new TextRun({
+                                          text: "Wohnlage entdecken",
                                           font: "Arial",
                                         }),
                                       ],

@@ -130,17 +130,31 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     intUserLinkExportType = responseConfig?.showAddress
       ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
       : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-  } else {
-    intUserLinkExportType =
-      integrationUser?.config.exportMatching &&
-      (responseConfig?.showAddress
-        ? integrationUser?.config.exportMatching[
-            AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-          ] && AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-        : integrationUser?.config.exportMatching[
-            AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-          ]) &&
-      AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+  }
+
+  if (
+    !integrationUser?.config.isFileLink &&
+    integrationUser?.config.exportMatching
+  ) {
+    if (
+      responseConfig?.showAddress &&
+      integrationUser?.config.exportMatching[
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+      ]
+    ) {
+      intUserLinkExportType =
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+    }
+
+    if (
+      !responseConfig?.showAddress &&
+      integrationUser?.config.exportMatching[
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+      ]
+    ) {
+      intUserLinkExportType =
+        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+    }
   }
 
   return (

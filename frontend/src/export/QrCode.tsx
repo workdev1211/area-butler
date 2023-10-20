@@ -44,7 +44,10 @@ export const QrCode: FunctionComponent<QrCodeProps> = ({
   return (
     <div className={`flex flex-row items-center gap-2 ${containerClasses}`}>
       <img className={`${imageClasses} w-auto`} src={qrCode} alt="qr-code" />
-      <div>Scannen für interaktive Karte</div>
+      <div className="flex flex-col">
+        <div>Scannen und neue</div>
+        <div>Wohnlage entdecken</div>
+      </div>
     </div>
   );
 };

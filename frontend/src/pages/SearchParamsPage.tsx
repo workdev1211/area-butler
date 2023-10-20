@@ -93,7 +93,7 @@ const SearchParamsPage: FunctionComponent = () => {
   const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
-  const { createLocation, createSnapshot, updateSnapshot } = useLocationData();
+  const { createLocation, createSnapshot } = useLocationData();
 
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);

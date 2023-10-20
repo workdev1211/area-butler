@@ -141,9 +141,10 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
   const resultingColor =
     searchContextState.responseConfig?.primaryColor ||
-    (!isIntegrationUser && user?.color) ||
+    (isIntegrationUser ? user.config.color : user?.color) ||
     "#aa0c54";
-  const resultingLogo = (!isIntegrationUser && user?.logo) || areaButlerLogo;
+  const resultingLogo =
+    (isIntegrationUser ? user.config.logo : user?.logo) || areaButlerLogo;
   const isTrial = !isIntegrationUser
     ? user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
     : false;

@@ -313,8 +313,11 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           <div className="flex flex-col gap-2">
             <textarea
               className="textarea textarea-bordered w-full"
-              value={fetchedResponse}
               rows={7}
+              value={fetchedResponse}
+              onChange={({ target: { value } }) => {
+                setFetchedResponse(value);
+              }}
             />
             <div
               className="flex gap-2 cursor-pointer items-center"
