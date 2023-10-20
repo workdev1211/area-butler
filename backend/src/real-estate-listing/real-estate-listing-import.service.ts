@@ -81,6 +81,7 @@ export class RealEstateListingImportService {
     file: Buffer,
     fromLine?: number, // 2 to skip the column names
   ): Promise<number[]> {
+    // TODO implement automatic delimiter identification - there is a package for that
     const delimiter = fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? ',' : ';';
     const chunkSize = 1000;
     const resultingFromLine =
@@ -132,18 +133,18 @@ export class RealEstateListingImportService {
       }),
     );
 
-    await Promise.allSettled(
+    const debugData = await Promise.allSettled(
       processedChunks.map(async (processedChunk) => {
         if (processedChunk.status !== 'fulfilled') {
           return;
         }
 
-        let realEstates;
+        let bulkWriteRecords;
 
         switch (fileFormat) {
           case CsvFileFormatsEnum.AREA_BUTLER:
           case CsvFileFormatsEnum.ON_OFFICE: {
-            realEstates = processedChunk.value.map(
+            bulkWriteRecords = processedChunk.value.map(
               ([
                 name,
                 address,
@@ -208,17 +209,19 @@ export class RealEstateListingImportService {
                   status,
                 } as IApiRealEstateListingSchema;
 
-                if (fileFormat === CsvFileFormatsEnum.ON_OFFICE) {
-                  return {
-                    updateOne: {
-                      filter: { externalId: listingDocument.externalId },
-                      update: listingDocument,
-                      upsert: true,
-                    },
-                  };
-                }
-
-                return listingDocument;
+                return listingDocument.externalId
+                  ? {
+                      updateOne: {
+                        filter: { externalId: listingDocument.externalId },
+                        update: listingDocument,
+                        upsert: true,
+                      },
+                    }
+                  : {
+                      insertOne: {
+                        document: listingDocument,
+                      },
+                    };
               },
             );
 
@@ -227,22 +230,33 @@ export class RealEstateListingImportService {
 
           case CsvFileFormatsEnum.PADERBORN:
           default: {
-            realEstates = processedChunk.value.map((listingDocument) => ({
-              updateOne: {
-                filter: { externalId: listingDocument.externalId },
-                update: listingDocument,
-                upsert: true,
-              },
-            }));
+            bulkWriteRecords = processedChunk.value.map((listingDocument) => {
+              return listingDocument.externalId
+                ? {
+                    updateOne: {
+                      filter: { externalId: listingDocument.externalId },
+                      update: listingDocument,
+                      upsert: true,
+                    },
+                  }
+                : {
+                    insertOne: {
+                      document: listingDocument,
+                    },
+                  };
+            });
           }
         }
 
-        for await (const realEstate of realEstates) {
+        for await (const record of bulkWriteRecords) {
+          const document =
+            record.updateOne?.update || record.insertOne.document;
+
           const resultLocation: ApiGeometry = {
             type: 'Point',
             coordinates: [
-              realEstate.location.coordinates[1],
-              realEstate.location.coordinates[0],
+              document.location.coordinates[1],
+              document.location.coordinates[0],
             ],
           };
 
@@ -251,13 +265,15 @@ export class RealEstateListingImportService {
           );
 
           if (locationIndexData[0]) {
-            realEstate.locationIndices = locationIndexData[0].properties;
+            document.locationIndices = locationIndexData[0].properties;
           }
         }
 
-        await this.realEstateListingModel.bulkWrite(realEstates);
+        await this.realEstateListingModel.bulkWrite(bulkWriteRecords);
       }),
     );
+
+    this.logger.debug(this.importCsvFile.name, debugData);
 
     return errorLineNumbers.sort();
   }
