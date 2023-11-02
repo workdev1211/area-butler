@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -22,6 +22,8 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 
 @Injectable()
 export class LocationIntService {
+  private readonly logger = new Logger(LocationIntService.name);
+
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
@@ -88,14 +90,25 @@ export class LocationIntService {
       ({ type }) => type,
     );
 
-    if (!snapshotConfig.primaryColor) {
+    if (!snapshotConfig.primaryColor && integrationUser.config.color) {
       snapshotConfig.primaryColor = integrationUser.config.color;
     }
+
+    this.logger.debug(
+      `${this.createSnapshot.name} 1`,
+      integrationUser.integrationUserId,
+      snapshotConfig.mapIcon?.slice(0, 100),
+    );
 
     if (!snapshotConfig.mapIcon) {
       snapshotConfig.mapIcon =
         integrationUser.config.mapIcon || integrationUser.config.logo;
     }
+
+    this.logger.debug(
+      `${this.createSnapshot.name} 2`,
+      snapshotConfig.mapIcon?.slice(0, 100),
+    );
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
@@ -125,6 +138,11 @@ export class LocationIntService {
     const savedSnapshotDoc = await new this.searchResultSnapshotModel(
       snapshotDoc,
     ).save();
+
+    this.logger.debug(
+      `${this.createSnapshot.name} 3`,
+      snapshotConfig.mapIcon?.slice(0, 100),
+    );
 
     return {
       id: savedSnapshotDoc.id,

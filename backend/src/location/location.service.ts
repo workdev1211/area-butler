@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
@@ -76,6 +76,8 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 
 @Injectable()
 export class LocationService {
+  private readonly logger = new Logger(LocationService.name);
+
   constructor(
     private readonly overpassService: OverpassService,
     private readonly isochroneService: IsochroneService,
@@ -358,11 +360,11 @@ export class LocationService {
       ({ type }) => type,
     );
 
-    if (!snapshotConfig.primaryColor) {
+    if (!snapshotConfig.primaryColor && user.color) {
       snapshotConfig.primaryColor = user.color;
     }
 
-    if (!snapshotConfig.mapIcon) {
+    if (!snapshotConfig.mapIcon && user.mapIcon) {
       snapshotConfig.mapIcon = user.mapIcon;
     }
 
@@ -765,6 +767,14 @@ export class LocationService {
     } else {
       filterQuery.userId = user.id;
     }
+
+    this.logger.debug(
+      this.fetchSnapshot.name,
+      isIntegrationUser ? user.integrationUserId : user.id,
+      filterQuery,
+      projectParams,
+      sortParams,
+    );
 
     return this.searchResultSnapshotModel
       .findOne(filterQuery, projectParams)
