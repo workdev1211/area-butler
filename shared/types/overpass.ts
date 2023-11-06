@@ -7,4 +7,4 @@ export interface IApiOverpassFetchNodes {
   limit?: number;
 }
 
-export type TOverpassAvailCountries = "de" | "es" | "cy";
+export type TOverpassAvailCountries = "de" | "es" | "cy" | "gcc";

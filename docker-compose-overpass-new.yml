@@ -1,4 +1,4 @@
-# An example file which should be lunched via the Portainer
+# An example file which should be launched via the Portainer
 version: "3.4"
 
 x-logging: &default-logging
