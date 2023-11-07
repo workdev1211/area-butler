@@ -657,7 +657,7 @@ export const deriveInitialEntityGroups = ({
 
     return config?.defaultActiveGroups
       ? config.defaultActiveGroups.includes(title)
-      : true;
+      : ![realEstateListingsTitle].includes(title);
   };
 
   if (!!locations && !!centerOfSearch) {
@@ -705,12 +705,13 @@ export const deriveInitialEntityGroups = ({
   ).reduce((result, resultEntity) => {
     const foundEntityGroupItems = result.find(
       ({ title }) => title === resultEntity.label
-    )!.items;
+    )?.items;
 
     if (
-      !ignorePoiFilter &&
-      config?.poiFilter?.type === PoiFilterTypesEnum.BY_AMOUNT &&
-      config?.poiFilter?.value! === foundEntityGroupItems.length
+      !foundEntityGroupItems ||
+      (!ignorePoiFilter &&
+        config?.poiFilter?.type === PoiFilterTypesEnum.BY_AMOUNT &&
+        config?.poiFilter?.value! === foundEntityGroupItems.length)
     ) {
       return result;
     }

@@ -59,6 +59,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const [selectedSnippetConfigId, setSelectedSnippetConfigId] = useState(
     currentSnippetConfigLabel.toLowerCase()
   );
+  const [isReferenceMap, setIsReferenceMap] = useState<boolean>(
+    !!(config.hideMeanToggles && config.hideMapMenu && config.hidePoiIcons)
+  );
 
   useEffect(() => {
     if (!config.defaultActiveGroups && groupedEntries?.length) {
@@ -206,6 +209,17 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     changeConfigParam("entityVisibility", [
       ...toggleEntityVisibility(entity, config),
     ]);
+  };
+
+  const handleSetIsRefMap = (): void => {
+    onConfigChange({
+      ...config,
+      hideMeanToggles: !isReferenceMap,
+      hideMapMenu: !isReferenceMap,
+      hidePoiIcons: !isReferenceMap,
+    });
+
+    setIsReferenceMap(!isReferenceMap);
   };
 
   const backgroundColor = config?.primaryColor || "var(--primary-gradient)";
@@ -670,48 +684,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   <input
                     type="checkbox"
                     name="isMapMenuCollapsed"
-                    checked={!!config?.hideMeanToggles}
-                    onChange={() => {
-                      changeConfigParam(
-                        "hideMeanToggles",
-                        !config?.hideMeanToggles
-                      );
-                    }}
+                    checked={isReferenceMap}
+                    onChange={handleSetIsRefMap}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
-                  <span className="label-text">Isochronen ausblenden</span>
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center gap-6 py-1">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
-                    name="isMapMenuCollapsed"
-                    checked={!!config?.hideMapMenu}
-                    onChange={() => {
-                      changeConfigParam("hideMapMenu", !config?.hideMapMenu);
-                    }}
-                    className="checkbox checkbox-xs checkbox-primary mr-2"
-                  />
-                  <span className="label-text">Kartenmenü ausblenden</span>
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center gap-6 py-1">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
-                    name="isMapMenuCollapsed"
-                    checked={!!config?.hidePoiIcons}
-                    onChange={() => {
-                      changeConfigParam("hidePoiIcons", !config?.hidePoiIcons);
-                    }}
-                    className="checkbox checkbox-xs checkbox-primary mr-2"
-                  />
-                  <span className="label-text">POI-Symbole ausblenden</span>
+                  <span className="label-text">Referenzkarte</span>
                 </label>
               </div>
             </li>

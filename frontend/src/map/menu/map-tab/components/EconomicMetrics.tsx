@@ -49,9 +49,10 @@ const EconomicMetrics: FunctionComponent = () => {
               "var(--menu-item-pt) var(--menu-item-pr) var(--menu-item-pb) var(--menu-item-pl)",
           }}
         >
-          Hier finden Sie ab August 2023 Daten zu den Themen Arbeitskräfte,
+          Gerne liefern wir tiefergehende Daten zu den Themen Arbeitskräfte,
           Arbeitslosenquote, Beschäftigte nach Anforderungsniveau, BIP pro Kopf,
-          Gewerbesteuereinnahmen, Logistikcluster-Daten, Logistik-Attraktivität.
+          Gewerbesteuereinnahmen, Logistik-Attraktivität u.v.m. Sprechen Sie uns
+          hierzu einfach direkt an.
         </div>
       </div>
     </div>

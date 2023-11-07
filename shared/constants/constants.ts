@@ -58,7 +58,7 @@ export const osmEntityTypes: ApiOsmEntity[] = [
   {
     type: OsmType.public_transport,
     name: OsmName.station,
-    label: "S/U-Bahn",
+    label: "Schienenverkehr",
     category: ApiOsmEntityCategory.TRAFFIC,
     uniqueRadius: 200,
     uniqueThreshold: 0.4,
@@ -207,16 +207,16 @@ export const osmEntityTypes: ApiOsmEntity[] = [
     uniqueRadius: 100,
     uniqueThreshold: 0.5,
   },
-  {
-    type: OsmType.leisure,
-    name: OsmName.swimming_pool,
-    label: "Schwimmbad",
-    category: ApiOsmEntityCategory.SPORT,
-    uniqueRadius: 100,
-    uniqueThreshold: 0.5,
-    // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
-    replacementQuery: `["${OsmType.leisure}"="${OsmName.sports_centre}"]["sport"="swimming"]`,
-  },
+  // {
+  //   type: OsmType.leisure,
+  //   name: OsmName.swimming_pool,
+  //   label: "Schwimmbad",
+  //   category: ApiOsmEntityCategory.SPORT,
+  //   uniqueRadius: 100,
+  //   uniqueThreshold: 0.5,
+  //   // It's a temporary workaround (a hack) to prevent the addition the third Osm parameter
+  //   replacementQuery: `["${OsmType.leisure}"="${OsmName.sports_centre}"]["sport"="swimming"]`,
+  // },
   {
     type: OsmType.leisure,
     name: OsmName.sports_centre,
