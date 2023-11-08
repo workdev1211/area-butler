@@ -36,8 +36,8 @@ export class SnapshotExtService {
     user,
     location,
     templateSnapshotId,
-    transportParams = defaultTransportParams,
-    poiTypes = defaultPoiTypes,
+    transportParams = { ...defaultTransportParams },
+    poiTypes = [...defaultPoiTypes],
   }: {
     user: UserDocument;
     location: string | ApiCoordinates;

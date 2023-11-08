@@ -41,7 +41,7 @@ export class VerifyOnOfficeActSignInterceptor implements NestInterceptor {
         `https://${req.get('host')}${req.route.path}`,
       );
     } catch {
-      this.logger.debug(queryParams, req.query);
+      this.logger.error(queryParams, req.query);
 
       return scheduled(
         [res.render('on-office/activation-iframe-wrong-signature')],

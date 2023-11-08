@@ -224,7 +224,7 @@ export class BillingService {
   ): Promise<string> {
     const capturedPayment = await this.paypalService.capturePayment(orderId);
 
-    this.logger.debug(
+    this.logger.log(
       `Captured PayPal payment from the user ${capturedPayment.payer.payer_id} with the status ${capturedPayment.status}`,
     );
 

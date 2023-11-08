@@ -1,4 +1,5 @@
-import React, { Dispatch } from "react";
+import { FunctionComponent, useReducer, Dispatch, createContext } from "react";
+
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
 export interface RealEstateState {
@@ -6,13 +7,13 @@ export interface RealEstateState {
 }
 
 export const initialState: RealEstateState = {
-  listings: []
+  listings: [],
 };
 
 export enum RealEstateActionTypes {
   SET_REAL_ESTATES = "SET_REAL_ESTATES",
   PUT_REAL_ESTATE = "PUT_REAL_ESTATE",
-  DELETE_REAL_ESTATE = "DELETE_REAL"
+  DELETE_REAL_ESTATE = "DELETE_REAL",
 }
 
 type RealEstateActionsPayload = {
@@ -21,9 +22,8 @@ type RealEstateActionsPayload = {
   [RealEstateActionTypes.DELETE_REAL_ESTATE]: Partial<ApiRealEstateListing>;
 };
 
-export type RealEstateActions = ActionMap<
-  RealEstateActionsPayload
->[keyof ActionMap<RealEstateActionsPayload>];
+export type RealEstateActions =
+  ActionMap<RealEstateActionsPayload>[keyof ActionMap<RealEstateActionsPayload>];
 
 const realEstateReducer = (
   state: RealEstateState,
@@ -36,17 +36,20 @@ const realEstateReducer = (
     case RealEstateActionTypes.PUT_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
       const listings = [...state.listings];
-      const listingIndex = listings.map(l => l.id).indexOf(listing.id);
+      const listingIndex = listings.map((l) => l.id).indexOf(listing.id);
+
       if (listingIndex !== -1) {
         listings[listingIndex] = listing;
       } else {
         listings.push(listing);
       }
+
       return { ...state, listings };
     }
     case RealEstateActionTypes.DELETE_REAL_ESTATE: {
       const listing = action.payload as ApiRealEstateListing;
-      const listings = [...state.listings].filter(l => l.id !== listing.id);
+      const listings = [...state.listings].filter((l) => l.id !== listing.id);
+
       return { ...state, listings };
     }
     default:
@@ -54,18 +57,16 @@ const realEstateReducer = (
   }
 };
 
-export const RealEstateContext = React.createContext<{
+export const RealEstateContext = createContext<{
   realEstateState: RealEstateState;
   realEstateDispatch: Dispatch<RealEstateActions>;
 }>({
   realEstateState: initialState,
-  realEstateDispatch: () => undefined
+  realEstateDispatch: () => undefined,
 });
 
-export const RealEstateContextProvider: React.FunctionComponent = ({
-  children
-}) => {
-  const [state, dispatch] = React.useReducer(realEstateReducer, initialState);
+export const RealEstateContextProvider: FunctionComponent = ({ children }) => {
+  const [state, dispatch] = useReducer(realEstateReducer, initialState);
 
   return (
     <RealEstateContext.Provider

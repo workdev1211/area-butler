@@ -82,7 +82,9 @@ export class LocationIntService {
         });
       }
 
-      snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
+      snapshotConfig = templateSnapshot?.config
+        ? { ...templateSnapshot.config }
+        : { ...defaultSnapshotConfig };
     }
 
     // because of the different transportation params in the new snapshot and the template one
@@ -94,21 +96,10 @@ export class LocationIntService {
       snapshotConfig.primaryColor = integrationUser.config.color;
     }
 
-    this.logger.debug(
-      `${this.createSnapshot.name} 1`,
-      integrationUser.integrationUserId,
-      snapshotConfig.mapIcon?.slice(0, 100),
-    );
-
     if (!snapshotConfig.mapIcon) {
       snapshotConfig.mapIcon =
         integrationUser.config.mapIcon || integrationUser.config.logo;
     }
-
-    this.logger.debug(
-      `${this.createSnapshot.name} 2`,
-      snapshotConfig.mapIcon?.slice(0, 100),
-    );
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
@@ -138,11 +129,6 @@ export class LocationIntService {
     const savedSnapshotDoc = await new this.searchResultSnapshotModel(
       snapshotDoc,
     ).save();
-
-    this.logger.debug(
-      `${this.createSnapshot.name} 3`,
-      snapshotConfig.mapIcon?.slice(0, 100),
-    );
 
     return {
       id: savedSnapshotDoc.id,

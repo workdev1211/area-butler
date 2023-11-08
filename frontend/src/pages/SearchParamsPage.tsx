@@ -52,9 +52,7 @@ import ImportantAddresses from "../components/ImportantAddresses";
 import LocalityParams from "../components/LocalityParams";
 import LocationAutocomplete from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";
-import TransportationParams, {
-  defaultTransportParams,
-} from "../components/TransportationParams";
+import TransportationParams from "../components/TransportationParams";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -72,6 +70,7 @@ import { ISearchParamsHistoryState } from "../shared/shared.types";
 import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
 import { snapshotEditorPath } from "../shared/shared.constants";
+import { defaultTransportParams } from "../../../shared/constants/location";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -131,7 +130,7 @@ const SearchParamsPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-      payload: defaultTransportParams,
+      payload: [...defaultTransportParams],
     });
 
     searchContextDispatch({

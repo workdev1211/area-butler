@@ -34,7 +34,7 @@ export const camelize = (str: string): string =>
   str.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
 
 export const getCombinedOsmEntityTypes = (
-  osmEntities = osmEntityTypes
+  osmEntities = [...osmEntityTypes]
 ): ApiOsmEntity[] => {
   return osmEntities.reduce<ApiOsmEntity[]>((result, entity) => {
     const hasEntity = result.some(({ label }) => label === entity.label);

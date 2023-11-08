@@ -25,7 +25,7 @@ export class VerifyOnOfficeSignatureInterceptor implements NestInterceptor {
     try {
       this.onOfficeService.verifySignature(onOfficeQueryParams, req.body.url);
     } catch (e) {
-      this.logger.debug(onOfficeQueryParams, req.body);
+      this.logger.error(onOfficeQueryParams, req.body);
       throw e;
     }
 

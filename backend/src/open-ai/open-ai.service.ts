@@ -86,7 +86,7 @@ export class OpenAiService {
     {
       searchResultSnapshot: {
         snapshot,
-        config: snapshotConfig = defaultSnapshotConfig,
+        config: snapshotConfig = { ...defaultSnapshotConfig },
       },
       tonality,
       customText,

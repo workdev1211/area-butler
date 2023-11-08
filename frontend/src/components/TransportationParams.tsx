@@ -1,17 +1,19 @@
 import { FunctionComponent } from "react";
 
+import "./TransportationParams.scss";
+
 import {
   MeansOfTransportation,
   TransportationParam,
   UnitsOfTransportation,
 } from "../../../shared/types/types";
 import { meansOfTransportations } from "../../../shared/constants/constants";
-import "./TransportationParams.scss";
 import walkIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-walk.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
 import carIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-car.svg";
 import Input from "./inputs/formik/Input";
 import distanceIcon from "../assets/icons/icons-16-x-16-outline-ic-distance.svg";
+import { defaultTransportParams } from "../../../shared/constants/location";
 
 export const transportationParamIcons = [
   {
@@ -28,31 +30,13 @@ export const transportationParamIcons = [
   },
 ];
 
-export const defaultTransportParams = [
-  {
-    type: MeansOfTransportation.WALK,
-    amount: 5,
-    unit: UnitsOfTransportation.MINUTES,
-  },
-  {
-    type: MeansOfTransportation.BICYCLE,
-    amount: 15,
-    unit: UnitsOfTransportation.MINUTES,
-  },
-  {
-    type: MeansOfTransportation.CAR,
-    amount: 30,
-    unit: UnitsOfTransportation.MINUTES,
-  },
-];
-
 interface ITransportationParamsProps {
   values: TransportationParam[];
   onChange: (newValue: TransportationParam[]) => void;
 }
 
 const TransportationParams: FunctionComponent<ITransportationParamsProps> = ({
-  values = defaultTransportParams,
+  values = [...defaultTransportParams],
   onChange = () => {},
 }) => {
   const handleOnChange = (newValue: TransportationParam[]) => {

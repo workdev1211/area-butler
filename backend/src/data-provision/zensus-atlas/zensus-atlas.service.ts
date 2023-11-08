@@ -47,7 +47,7 @@ export class ZensusAtlasService {
     const chunkSize = 1000;
 
     try {
-      this.logger.debug('Dropping existing collection');
+      this.logger.log('Dropping existing collection');
       await collection.drop();
     } catch (e) {}
 
@@ -56,7 +56,7 @@ export class ZensusAtlasService {
       chunkSize,
     );
 
-    this.logger.debug(
+    this.logger.log(
       `Inserting ${chunks.length} chunks of ${chunkSize} datasets.`,
     );
 

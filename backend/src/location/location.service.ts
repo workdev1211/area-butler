@@ -352,7 +352,9 @@ export class LocationService {
         });
       }
 
-      snapshotConfig = templateSnapshot?.config || defaultSnapshotConfig;
+      snapshotConfig = templateSnapshot?.config
+        ? { ...templateSnapshot.config }
+        : { ...defaultSnapshotConfig };
     }
 
     // because of the different transportation params in the new snapshot and the template one
@@ -767,14 +769,6 @@ export class LocationService {
     } else {
       filterQuery.userId = user.id;
     }
-
-    this.logger.debug(
-      this.fetchSnapshot.name,
-      isIntegrationUser ? user.integrationUserId : user.id,
-      filterQuery,
-      projectParams,
-      sortParams,
-    );
 
     return this.searchResultSnapshotModel
       .findOne(filterQuery, projectParams)

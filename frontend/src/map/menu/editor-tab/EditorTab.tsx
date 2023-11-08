@@ -146,9 +146,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({ ...config, primaryColor: color });
   };
 
-  const changeMapIcon = (mapIcon: string | undefined): void => {
-    setMapIcon(mapIcon);
-    onConfigChange({ ...config, mapIcon: mapIcon });
+  const changeMapIcon = (newMapIcon: string | undefined): void => {
+    setMapIcon(newMapIcon);
+    onConfigChange({ ...config, mapIcon: newMapIcon });
   };
 
   const changeDefaultActiveMeans = (
@@ -722,8 +722,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   inputId="map-icon-upload-button"
                   image={mapIcon}
                   setImage={setMapIcon}
-                  onChange={(mapIcon) => {
-                    changeMapIcon(mapIcon);
+                  onChange={(newMapIcon) => {
+                    changeMapIcon(newMapIcon);
                   }}
                 />
                 {config?.mapIcon && (

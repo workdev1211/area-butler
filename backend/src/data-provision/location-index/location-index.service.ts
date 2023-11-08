@@ -36,11 +36,11 @@ export class LocationIndexService {
     );
 
     try {
-      this.logger.debug('Dropping existing collection');
+      this.logger.log('Dropping existing collection');
       await collection.drop();
     } catch (e) {}
 
-    this.logger.debug(
+    this.logger.log(
       `Inserting ${locationIndexFeatures.length} location indices data`,
     );
 

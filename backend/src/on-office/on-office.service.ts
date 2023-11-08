@@ -217,13 +217,6 @@ export class OnOfficeService {
     let integrationUser: TIntegrationUserDocument;
 
     if (existingUser) {
-      this.logger.debug(
-        this.login.name,
-        11,
-        integrationUserId,
-        existingUser.integrationUserId,
-      );
-
       const { userName, email } = await this.fetchUserData({
         ...existingUser.parameters,
         extendedClaim,
@@ -261,8 +254,6 @@ export class OnOfficeService {
     }
 
     if (!integrationUser && existingUser) {
-      this.logger.debug(this.login.name, 22, existingUser.integrationUserId);
-
       const { userName, email } = await this.fetchUserData({
         ...existingUser.parameters,
         extendedClaim,
@@ -323,15 +314,6 @@ export class OnOfficeService {
       integrationUser,
       estateId,
       this.integrationType,
-    );
-
-    this.logger.debug(
-      this.login.name,
-      33,
-      integrationUser.integrationUserId,
-      integrationUser.config.logo?.slice(0, 100),
-      integrationUser.config.color,
-      integrationUser.config.mapIcon?.slice(0, 100),
     );
 
     return {
@@ -949,16 +931,6 @@ export class OnOfficeService {
       "User color and logo haven't been retrieved!",
       request,
       response,
-    );
-
-    this.logger.debug(
-      this.fetchLogoAndColor.name,
-      response.response.results[0].data.records[0].elements.basicData.characteristicsCi?.logo?.slice(
-        0,
-        100,
-      ),
-      response.response.results[0].data.records[0].elements.basicData
-        .characteristicsCi?.color,
     );
 
     return response.response.results[0].data.records[0].elements.basicData

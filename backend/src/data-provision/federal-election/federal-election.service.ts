@@ -45,11 +45,11 @@ export class FederalElectionService {
       augsburg.geometry.coordinates[0].filter(distinctValues);
 
     try {
-      this.logger.debug('Dropping existing collection');
+      this.logger.log('Dropping existing collection');
       await collection.drop();
     } catch (e) {}
 
-    this.logger.debug(
+    this.logger.log(
       `Inserting ${federalElectionFeatures.length} federal election districts`,
     );
 

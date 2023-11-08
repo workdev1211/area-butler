@@ -13,13 +13,13 @@ import {
   OsmName,
   TransportationParam,
 } from "../../../shared/types/types";
-import { defaultTransportParams } from "../components/TransportationParams";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { EntityGroup } from "../components/SearchResultContainer";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
+import { defaultTransportParams } from "../../../shared/constants/location";
 
 export interface MapClipping {
   zoomLevel: number;
