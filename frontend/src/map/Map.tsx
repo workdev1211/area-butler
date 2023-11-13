@@ -325,7 +325,7 @@ interface IMapMemoProps extends IMapProps {
   ref: ForwardedRef<ICurrentMapRef>;
 }
 
-const areMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
+const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
   const mapboxKeyEqual =
     prevProps.mapBoxAccessToken === nextProps.mapBoxAccessToken;
   const responseEqual =
@@ -334,7 +334,7 @@ const areMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
   const searchAddressEqual =
     JSON.stringify(prevProps.searchAddress) ===
     JSON.stringify(nextProps.searchAddress);
-  const entityGroupsEqual =
+  const groupedEntitiesEqual =
     JSON.stringify(prevProps.groupedEntities) ===
     JSON.stringify(nextProps.groupedEntities);
   const meansEqual =
@@ -361,7 +361,7 @@ const areMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     mapboxKeyEqual &&
     responseEqual &&
     searchAddressEqual &&
-    entityGroupsEqual &&
+    groupedEntitiesEqual &&
     meansEqual &&
     mapZoomLevelEqual &&
     highlightIdEqual &&
@@ -1112,7 +1112,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
                 ? "locality-marker-wrapper-custom"
                 : ""
-            } icon-${entity.osmName}`,
+            } icon-${entity.osmName} ${
+              entity.isFiltered ? "grayscale bg-gray-300" : ""
+            }`,
             html:
               (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
                 ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.osmName} locality-icon-custom" style="${iconStyle}" />`
@@ -1559,4 +1561,4 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
   }
 );
 
-export default memo<IMapMemoProps>(Map, areMapPropsEqual);
+export default memo<IMapMemoProps>(Map, isMapPropsEqual);

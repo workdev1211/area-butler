@@ -2,11 +2,10 @@
   @apply flex relative w-full h-full;
 }
 
-.show-map-menu-btn {
+.show-menu-btn {
   width: 46px !important;
   height: 46px !important;
   top: calc((112px - 46px) / 2);
-  right: 8px;
   z-index: 2499;
   background-color: var(--primary) !important;
   @apply btn absolute;
@@ -18,6 +17,14 @@
 
   &.embed-mode {
     top: 5px;
+  }
+
+  &.map-menu-btn {
+    right: 8px;
+  }
+
+  &.filter-menu-btn {
+    left: 8px;
   }
 }
 

@@ -56,6 +56,10 @@ import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
+import {
+  LocIndexPropsEnum,
+  TApiLocIndexProps,
+} from "../../../shared/types/location-index";
 
 const tinyColor = require("tinycolor2");
 
@@ -533,6 +537,20 @@ export const buildEntDataFromRealEstates = ({
         return result;
       }
 
+      const locationIndices = realEstate.locationIndices
+        ? Object.keys(realEstate.locationIndices).reduce<TApiLocIndexProps>(
+            (result, locationIndex) => {
+              result[locationIndex as LocIndexPropsEnum] =
+                realEstate.locationIndices![
+                  locationIndex as LocIndexPropsEnum
+                ]?.value;
+
+              return result;
+            },
+            {} as TApiLocIndexProps
+          )
+        : undefined;
+
       result.push({
         id: realEstate.id ?? v4(),
         name: deriveName(realEstate),
@@ -543,6 +561,7 @@ export const buildEntDataFromRealEstates = ({
           realEstate.coordinates!
         ), // Calc distance
         realEstateData: {
+          locationIndices,
           costStructure: realEstate.costStructure,
           characteristics: realEstate.characteristics,
         },

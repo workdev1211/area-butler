@@ -55,6 +55,8 @@ import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
 import { TUnlockIntProduct } from "../../../shared/types/integration";
 import { useTools } from "../hooks/tools";
 import { LoadingMessage } from "../on-office/OnOfficeContainer";
+import FilterMenu from "../map/menu/FilterMenu";
+import { TApiLocIndexProps } from "../../../shared/types/location-index";
 
 export interface ICurrentMapRef {
   getZoom: () => number | undefined;
@@ -85,9 +87,11 @@ export interface ResultEntity {
   realEstateData?: {
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
+    locationIndices?: TApiLocIndexProps;
   };
   selected?: boolean;
   externalUrl?: string;
+  isFiltered?: boolean;
 }
 
 export interface EntityGroup {
@@ -190,7 +194,7 @@ const SearchResultContainer = forwardRef<
 
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
 
-    const isMapMenuShown =
+    const isMapMenuPresent =
       !isEmbeddedMode ||
       (searchContextState.responseConfig?.hideMapMenu
         ? false
@@ -210,8 +214,9 @@ const SearchResultContainer = forwardRef<
     const [isMapMenuOpen, setIsMapMenuOpen] = useState(
       isEmbeddedMode && searchContextState.responseConfig?.isMapMenuCollapsed
         ? false
-        : isMapMenuShown
+        : isMapMenuPresent
     );
+    const [isFilterMenuOpen, setIsFilterMenuOpen] = useState(false);
     const [availableMeans, setAvailableMeans] = useState<
       MeansOfTransportation[]
     >([]);
@@ -528,7 +533,9 @@ const SearchResultContainer = forwardRef<
       return (
         <button
           type="button"
-          className={`show-map-menu-btn ${!isEditorMode ? "embed-mode" : ""}`}
+          className={`show-menu-btn map-menu-btn ${
+            !isEditorMode ? "embed-mode" : ""
+          }`}
           data-tour="ShowMapMenuButton"
           onMouseDown={() => {
             setIsMapMenuOpen(!isMapMenuOpen);
@@ -544,6 +551,23 @@ const SearchResultContainer = forwardRef<
               }}
             />
           )}
+        </button>
+      );
+    };
+
+    const ShowFilterMenuButton: FunctionComponent = () => {
+      return (
+        <button
+          type="button"
+          className={`show-menu-btn filter-menu-btn ${
+            !isEditorMode ? "embed-mode" : ""
+          }`}
+          data-tour="ShowFilterMenuButton"
+          onMouseDown={() => {
+            setIsFilterMenuOpen(!isFilterMenuOpen);
+          }}
+        >
+          <img src={openMenuIcon} alt="icon-menu" />
         </button>
       );
     };
@@ -635,7 +659,7 @@ const SearchResultContainer = forwardRef<
     const resUserPoiIcons =
       userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
 
-    const isMapMenuKarlaFrickeShown =
+    const isMapMenuKFPresent =
       isThemeKf &&
       (!isEmbeddedMode || !searchContextState.responseConfig?.hideMapMenu);
 
@@ -749,8 +773,9 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          {isMapMenuShown && <ShowMapMenuButton />}
-          {isMapMenuKarlaFrickeShown && (
+          {isMapMenuPresent && <ShowMapMenuButton />}
+          <ShowFilterMenuButton />
+          {isMapMenuKFPresent && (
             <MapMenuKarlaFricke
               groupedEntries={(resultGroupEntities ?? [])
                 .filter(
@@ -764,7 +789,7 @@ const SearchResultContainer = forwardRef<
               userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
             />
           )}
-          {isMapMenuShown && (
+          {isMapMenuPresent && (
             <MapMenu
               isMapMenuOpen={isMapMenuOpen}
               censusData={searchContextState.censusData}
@@ -808,6 +833,12 @@ const SearchResultContainer = forwardRef<
               exportTabProps={exportTabProps}
             />
           )}
+          <FilterMenu
+            isFilterMenuOpen={isFilterMenuOpen}
+            isEditorMode={isEditorMode}
+            groupEntities={resultGroupEntities}
+            setGroupEntities={setResultGroupEntities}
+          />
           {isThemeKf &&
             preferredLocationsGroup &&
             isShownPreferredLocationsModal && (
