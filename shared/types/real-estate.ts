@@ -14,7 +14,8 @@ export interface IApiRealEstateListingSchema {
   characteristics?: ApiRealEstateCharacteristics;
   location: GeoJsonPoint;
   locationIndices?: TApiLocIndexProps;
-  status?: ApiRealEstateStatusEnum;
+  status?: string;
+  status2?: string;
   externalId?: string;
   integrationParams?: IApiIntegrationParams;
 }
@@ -28,8 +29,9 @@ export interface ApiRealEstateListing {
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
   coordinates: ApiCoordinates;
-  status: ApiRealEstateStatusEnum;
   isFromParent: boolean;
+  status?: string;
+  status2?: string;
   integrationId?: string; // only for integration users
   openAiRequestQuantity?: number;
   iframeEndsAt?: string;
@@ -47,8 +49,9 @@ export interface ApiUpsertRealEstateListing {
   externalUrl?: string;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
-  status: ApiRealEstateStatusEnum;
   showInSnippet: boolean;
+  status?: string;
+  status2?: string;
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
 }
@@ -98,21 +101,26 @@ export enum ApiEnergyEfficiency {
 }
 
 export enum ApiRealEstateStatusEnum {
-  ALL = "ALL",
-  IN_PREPARATION = "IN_PREPARATION",
-  FOR_RENT = "FOR_RENT", // Miete
-  FOR_SALE = "FOR_SALE", // Kauf
-  RENTED = "RENTED",
-  SOLD = "SOLD",
-  NEW_CONSTRUCTION = "NEW_CONSTRUCTION",
-  ARCHIVED = "ARCHIVED",
-  RESERVED = "RESERVED",
-  MARKET_OBSERVATION = "MARKET_OBSERVATION",
+  ALL = "Alle",
+  IN_PREPARATION = "In Vorbereitung",
+  FOR_RENT = "Miete", // Miete
+  FOR_SALE = "Kauf", // Kauf
+  RENTED = "Vermietet",
+  SOLD = "Verkauft",
+  NEW_CONSTRUCTION = "Neubau",
+  ARCHIVED = "Archiviert",
+  RESERVED = "Reserviert",
+  MARKET_OBSERVATION = "Marktbeobachtung",
+}
+
+export enum ApiRealEstateStatus2Enum {
+  ACTIVE = "Aktiv",
+  INACTIVE = "Inaktiv",
 }
 
 export interface IApiRealEstateStatus {
   label: string;
-  status: ApiRealEstateStatusEnum;
+  status: string;
 }
 
 export enum ApiExampleFileTypeEnum {

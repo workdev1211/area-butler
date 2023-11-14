@@ -1,6 +1,5 @@
 import {
   IsDate,
-  IsEnum,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -15,7 +14,6 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateCostType,
-  ApiRealEstateStatusEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
@@ -27,10 +25,8 @@ import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
 import { parseCommaFloat } from '../../../../shared/functions/shared.functions';
 import {
   ApiOnOfficeEstateBasementEnum,
-  ApiOnOfficeEstateMarketTypesEnum,
   IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
-import { areaButlerEstateStatusMapping } from '../../../../shared/constants/real-estate';
 
 export interface IApiOnOfficeProcessedRealEstate
   extends IApiOnOfficeRealEstate {
@@ -42,7 +38,8 @@ export interface IApiOnOfficeProcessedRealEstate
   grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
   energieeffizienzklasse: string; // the label for 'energyClass' field
   immonr: string; // the label for 'objektnr_extern' field
-  areaButlerStatus?: ApiRealEstateStatusEnum; // this field comes from our side
+  areaButlerStatus?: string; // this field comes from our side
+  areaButlerStatus2?: string; // this field comes from our side
 }
 
 @Exclude()
@@ -218,61 +215,28 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   location: GeoJsonPoint;
 
   @Expose()
-  @IsOptional()
-  @IsEnum(ApiRealEstateStatusEnum)
+  @IsNotEmpty()
+  @IsString()
   @Transform(
     ({
-      obj: {
-        vermarktungsart,
-        kaufpreis,
-        warmmiete,
-        kaltmiete,
-        status2,
-        status,
-        areaButlerStatus,
-      },
+      obj: { areaButlerStatus, vermarktungsart },
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
-    }): ApiRealEstateStatusEnum => {
-      if (areaButlerStatus) {
-        return areaButlerStatus;
-      }
-
-      const resultingOnOfficeStatus = status2 || status;
-
-      if (typeof resultingOnOfficeStatus === 'string') {
-        const resultingStatus = areaButlerEstateStatusMapping.get(
-          resultingOnOfficeStatus.toUpperCase(),
-        );
-
-        if (resultingStatus) {
-          return resultingStatus;
-        }
-      }
-
-      if (
-        (typeof vermarktungsart === 'string' &&
-          vermarktungsart.toUpperCase() ===
-            ApiOnOfficeEstateMarketTypesEnum.KAUF) ||
-        parseCommaFloat(kaufpreis)
-      ) {
-        return ApiRealEstateStatusEnum.FOR_SALE;
-      }
-
-      if (
-        (typeof vermarktungsart === 'string' &&
-          vermarktungsart.toUpperCase() ===
-            ApiOnOfficeEstateMarketTypesEnum.MIETE) ||
-        parseCommaFloat(warmmiete) ||
-        parseCommaFloat(kaltmiete)
-      ) {
-        return ApiRealEstateStatusEnum.FOR_RENT;
-      }
-
-      return ApiRealEstateStatusEnum.IN_PREPARATION;
-    },
+    }): string => areaButlerStatus || vermarktungsart,
   )
-  status?: ApiRealEstateStatusEnum;
+  status?: string;
+
+  @Expose()
+  @IsNotEmpty()
+  @IsString()
+  @Transform(
+    ({
+      obj: { areaButlerStatus2, status2, status },
+    }: {
+      obj: IApiOnOfficeProcessedRealEstate;
+    }): string => areaButlerStatus2 || status2 || status,
+  )
+  status2?: string;
 
   @Expose()
   @IsOptional()

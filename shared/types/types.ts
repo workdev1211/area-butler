@@ -4,7 +4,6 @@ import { ApiRequestContingent, ApiUserSubscription } from "./subscription-plan";
 import {
   ApiRealEstateExtSourcesEnum,
   ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
   IApiOnOfficeConSettings,
   IApiPropstackConSettings,
 } from "./real-estate";
@@ -378,7 +377,7 @@ export interface ApiSearchResultSnapshotConfig {
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
   fixedRealEstates?: boolean;
-  realEstateStatus?: ApiRealEstateStatusEnum;
+  realEstateStatus?: string;
   poiFilter?: IApiSnapshotPoiFilter;
   iconSizes?: IApiSnapshotIconSizes;
   isMapMenuCollapsed?: boolean;

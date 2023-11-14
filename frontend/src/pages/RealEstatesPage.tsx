@@ -46,7 +46,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
 
-  const [realEstateStatus, setRealEstateStatus] = useState(
+  const [realEstateStatus, setRealEstateStatus] = useState<string>(
     ApiRealEstateStatusEnum.ALL
   );
   const [realEstateSnapshots, setRealEstateSnapshots] = useState<

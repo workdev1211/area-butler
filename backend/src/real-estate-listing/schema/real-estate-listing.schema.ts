@@ -5,7 +5,6 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateExtSourcesEnum,
-  ApiRealEstateStatusEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
@@ -49,10 +48,13 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
 
   @Prop({
     type: String,
-    enum: ApiRealEstateStatusEnum,
-    default: ApiRealEstateStatusEnum.IN_PREPARATION,
   })
-  status: ApiRealEstateStatusEnum;
+  status: string;
+
+  @Prop({
+    type: String,
+  })
+  status2: string;
 
   @Prop({
     type: String,

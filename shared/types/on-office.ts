@@ -198,7 +198,7 @@ export interface IApiOnOfficeRealEstate {
   balkon: string; // is a balcony present - 0 or 1 - boolean
   anzahl_balkone: string; // number of balconies
   unterkellert: ApiOnOfficeEstateBasementEnum; // basement
-  vermarktungsart: ApiOnOfficeEstateMarketTypesEnum; // marketing type - sell, rent, etc
+  vermarktungsart: string; // ApiOnOfficeEstateMarketTypesEnum // marketing type - sell, rent, etc
   objektnr_extern: string; // the label is "ImmoNr"
   lage: string; // description
 }
@@ -217,11 +217,11 @@ export enum ApiOnOfficeEstateBasementEnum {
   TEILWEISE = "TEILWEISE", // the label for 'TEIL' option
 }
 
-export enum ApiOnOfficeEstateStatusesEnum {
-  INAKTIV = "INAKTIV",
-  AKTIV = "AKTIV",
-  ARCHIVIERT = "ARCHIVIERT",
-}
+// export enum ApiOnOfficeEstateStatusesEnum {
+//   INAKTIV = "INAKTIV",
+//   AKTIV = "AKTIV",
+//   ARCHIVIERT = "ARCHIVIERT",
+// }
 
 export interface IApiOnOfficeLoginQueryParams {
   apiClaim: string; // extendedClaim

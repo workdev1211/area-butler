@@ -12,7 +12,7 @@ export enum PropstackCustomUserEmailsEnum {
 export const propstackCustomSyncStatuses: Record<
   PropstackCustomUserEmailsEnum,
   Array<
-    IPropstackRealEstateStatus & { areaButlerStatus: ApiRealEstateStatusEnum }
+    IPropstackRealEstateStatus & { areaButlerStatus: string }
   >
 > = {
   [PropstackCustomUserEmailsEnum.NADINE]: [

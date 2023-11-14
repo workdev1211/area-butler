@@ -29,7 +29,6 @@ import {
   ApiExampleFileTypeEnum,
   ApiRealEstateExtSourcesEnum,
   ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
@@ -67,7 +66,7 @@ export class RealEstateListingController extends AuthenticatedController {
   @ApiOperation({ description: 'Get real estate listings for current user' })
   @Get('listings')
   async fetchRealEstateListings(
-    @Query('status') status: ApiRealEstateStatusEnum,
+    @Query('status') status: string,
     @InjectUser() user: UserDocument,
   ): Promise<ApiRealEstateListing[]> {
     return (

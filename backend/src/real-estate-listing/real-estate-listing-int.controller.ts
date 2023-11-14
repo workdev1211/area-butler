@@ -21,10 +21,7 @@ import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
-import {
-  ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
-} from '@area-butler-types/real-estate';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 
@@ -41,7 +38,7 @@ export class RealEstateListingIntController {
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('listings')
   async fetchRealEstateListings(
-    @Query('status') status: ApiRealEstateStatusEnum,
+    @Query('status') status: string,
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<ApiRealEstateListing[]> {
     return (

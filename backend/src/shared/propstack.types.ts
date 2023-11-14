@@ -1,5 +1,4 @@
 // obtained via the 'GET' request from Propstack
-import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
 
 export interface IPropstackRealEstate {
   id: number;
@@ -26,7 +25,8 @@ export interface IPropstackRealEstate {
 }
 
 export interface IPropstackProcessedRealEstate extends IPropstackRealEstate {
-  areaButlerStatus?: ApiRealEstateStatusEnum;
+  areaButlerStatus?: string;
+  areaButlerStatus2?: string;
 }
 
 export interface IPropstackRealEstateStatus {

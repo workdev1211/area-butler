@@ -42,6 +42,7 @@ export const mapRealEstateListingToApiRealEstateListing = (
     costStructure: realEstateListing.costStructure,
     characteristics: realEstateListing.characteristics,
     status: realEstateListing.status,
+    status2: realEstateListing.status2,
     integrationId: realEstateListing.integrationParams?.integrationId,
     openAiRequestQuantity:
       realEstateListing.integrationParams?.openAiRequestQuantity,

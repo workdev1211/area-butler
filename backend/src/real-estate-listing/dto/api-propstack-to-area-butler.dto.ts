@@ -153,7 +153,7 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
       },
     }: {
       obj: IPropstackProcessedRealEstate;
-    }): ApiRealEstateStatusEnum => {
+    }): string => {
       if (areaButlerStatus) {
         return areaButlerStatus;
       }
@@ -174,10 +174,11 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
         case PropstackRealEstStatusesEnum.INAKTIV: {
           return ApiRealEstateStatusEnum.ARCHIVED;
         }
-
-        case PropstackRealEstStatusesEnum.IN_VORBEREITUNG:
-        default: {
+        case PropstackRealEstStatusesEnum.IN_VORBEREITUNG: {
           return ApiRealEstateStatusEnum.IN_PREPARATION;
+        }
+        default: {
+          return name;
         }
       }
     },
@@ -185,7 +186,20 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
       toClassOnly: true,
     },
   )
-  status: ApiRealEstateStatusEnum;
+  status?: string;
+
+  @Expose()
+  @Transform(
+    ({
+      obj: { areaButlerStatus2 },
+    }: {
+      obj: IPropstackProcessedRealEstate;
+    }): string => areaButlerStatus2,
+    {
+      toClassOnly: true,
+    },
+  )
+  status2?: string;
 
   showInSnippet = true;
 }

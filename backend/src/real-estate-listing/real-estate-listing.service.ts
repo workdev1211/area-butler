@@ -97,7 +97,7 @@ export class RealEstateListingService {
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    status = ApiRealEstateStatusEnum.ALL,
+    status: string = ApiRealEstateStatusEnum.ALL,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     let filter;

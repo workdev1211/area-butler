@@ -3,7 +3,6 @@ import {
   ValidateNested,
   IsOptional,
   IsBoolean,
-  IsEnum,
   IsString,
   NotEquals,
   IsObject,
@@ -55,9 +54,9 @@ class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
   showInSnippet: boolean;
 
   @IsNotEmpty()
-  @IsEnum(ApiRealEstateStatusEnum)
+  @IsString()
   @NotEquals(ApiRealEstateStatusEnum.ALL)
-  status: ApiRealEstateStatusEnum;
+  status: string;
 }
 
 export default ApiUpsertRealEstateListingDto;

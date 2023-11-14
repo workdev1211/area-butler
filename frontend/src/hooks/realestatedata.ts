@@ -36,7 +36,7 @@ export const useRealEstateData = () => {
   };
 
   const fetchRealEstates = async (
-    realEstateStatus = ApiRealEstateStatusEnum.ALL
+    realEstateStatus: string = ApiRealEstateStatusEnum.ALL
   ): Promise<void> => {
     let url = isIntegration
       ? "/api/real-estate-listing-int/listings"

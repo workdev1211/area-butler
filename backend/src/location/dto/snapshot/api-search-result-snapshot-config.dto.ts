@@ -103,9 +103,9 @@ class ApiSearchResultSnapshotConfigDto
   fixedRealEstates?: boolean;
 
   @IsOptional()
-  @IsEnum(ApiRealEstateStatusEnum)
+  @IsString()
   @NotEquals(ApiRealEstateStatusEnum.ALL)
-  realEstateStatus?: ApiRealEstateStatusEnum;
+  realEstateStatus?: string;
 
   @IsOptional()
   @IsObject()

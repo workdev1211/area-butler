@@ -57,7 +57,7 @@ type TListingDocumentData = [
   propertySizeInSquareMeters: string,
   energyEfficiency: ApiEnergyEfficiency,
   externalUrl: string,
-  status: ApiRealEstateStatusEnum,
+  status: string,
   externalId: string,
   coordinates: ApiCoordinates,
 ];
@@ -535,7 +535,7 @@ export class RealEstateListingImportService {
   }
 
   // TODO remove after refactoring
-  private convertRealEstateStatus(status: string): ApiRealEstateStatusEnum {
+  private convertRealEstateStatus(status: string): string {
     switch (status.toUpperCase()) {
       case ApiOnOfficeEstateMarketTypesEnum.MIETE: {
         return ApiRealEstateStatusEnum.FOR_RENT;

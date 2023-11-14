@@ -1,7 +1,6 @@
 import {
   IsBoolean,
   IsDateString,
-  IsEnum,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -56,9 +55,9 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   coordinates: ApiCoordinatesDto;
 
   @IsNotEmpty()
-  @IsEnum(ApiRealEstateStatusEnum)
+  @IsString()
   @NotEquals(ApiRealEstateStatusEnum.ALL)
-  status: ApiRealEstateStatusEnum;
+  status: string;
 
   @IsNotEmpty()
   @IsBoolean()
