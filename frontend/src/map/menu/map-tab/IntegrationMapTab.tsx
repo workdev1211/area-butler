@@ -5,7 +5,7 @@ import { FunctionComponent } from "react";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../components/SearchResultContainer";
+} from "../../../shared/search-result.types";
 import {
   MapDisplayModesEnum,
   MeansOfTransportation,

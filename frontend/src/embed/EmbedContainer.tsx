@@ -20,9 +20,8 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
-import SearchResultContainer, {
-  ICurrentMapRef,
-} from "../components/SearchResultContainer";
+import SearchResultContainer from "../components/search-result-container/SearchResultContainer";
+import { ICurrentMapRef } from "../shared/search-result.types";
 import { deriveInitialEntityGroups } from "../shared/shared.functions";
 import {
   RealEstateActionTypes,

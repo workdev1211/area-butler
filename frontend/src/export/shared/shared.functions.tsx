@@ -1,4 +1,4 @@
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { deriveIconForOsmName } from "../../shared/shared.functions";
 import { IApiUserPoiIcon } from "../../../../shared/types/types";

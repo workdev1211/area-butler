@@ -20,7 +20,7 @@ import {
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
-import { ICurrentMapRef } from "../components/SearchResultContainer";
+import { ICurrentMapRef } from "../shared/search-result.types";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../shared/types/location";
 import { ConfigContext } from "../context/ConfigContext";

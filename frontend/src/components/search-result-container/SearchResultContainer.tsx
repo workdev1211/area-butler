@@ -1,6 +1,5 @@
 import {
   forwardRef,
-  FunctionComponent,
   useContext,
   useEffect,
   useImperativeHandle,
@@ -12,113 +11,49 @@ import {
   IGotoMapCenter,
   SearchContext,
   SearchContextActionTypes,
-} from "../context/SearchContext";
+} from "../../context/SearchContext";
 import {
-  ApiAddress,
   ApiCoordinates,
   ApiOsmLocation,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
-  IApiMapboxStyle,
   IApiUserPoiIcons,
   MapDisplayModesEnum,
   MeansOfTransportation,
-  OsmName,
-} from "../../../shared/types/types";
+} from "../../../../shared/types/types";
 import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
   preferredLocationsTitle,
   realEstateListingsTitle,
   toggleEntityVisibility,
-} from "../shared/shared.functions";
-import openMenuIcon from "../assets/icons/icons-16-x-16-outline-ic-menu.svg";
-import closeMenuIcon from "../assets/icons/icons-12-x-12-outline-ic-caret.svg";
-import Map from "../map/Map";
-import { UserActionTypes, UserContext } from "../context/UserContext";
-import { useRouting } from "../hooks/routing";
+} from "../../shared/shared.functions";
+import Map from "../../map/Map";
+import { UserActionTypes, UserContext } from "../../context/UserContext";
+import { useRouting } from "../../hooks/routing";
 import "./SearchResultContainer.scss";
-import {
-  ApiRealEstateCharacteristics,
-  ApiRealEstateCost,
-} from "../../../shared/types/real-estate";
-import MeansToggle from "../map/means-toggle/MeansToggle";
-import MapMenu from "../map/menu/MapMenu";
-import { defaultColor } from "../../../shared/constants/constants";
-import PreferredLocationsModal from "../map/menu/karla-fricke/PreferredLocationsModal";
+import MeansToggle from "../../map/means-toggle/MeansToggle";
+import MapMenu from "../../map/menu/MapMenu";
+import { defaultColor } from "../../../../shared/constants/constants";
+import PreferredLocationsModal from "../../map/menu/karla-fricke/PreferredLocationsModal";
 import {
   defaultMapboxStyles,
   defaultMapZoom,
   MapboxStyleLabelsEnum,
-} from "../shared/shared.constants";
-import MapMenuKarlaFricke from "../map/menu/karla-fricke/MapMenuKarlaFricke";
-import { TUnlockIntProduct } from "../../../shared/types/integration";
-import { useTools } from "../hooks/tools";
-import { LoadingMessage } from "../on-office/OnOfficeContainer";
-import FilterMenu from "../map/menu/FilterMenu";
-import { TApiLocIndexProps } from "../../../shared/types/location-index";
-
-export interface ICurrentMapRef {
-  getZoom: () => number | undefined;
-  getCenter: () => ApiCoordinates | undefined;
-  handleScrollWheelZoom: {
-    isScrollWheelZoomEnabled: () => boolean;
-    enableScrollWheelZoom: () => void;
-    disableScrollWheelZoom: () => void;
-  };
-  handleDragging: {
-    isDraggingEnabled: () => boolean;
-    enableDragging: () => void;
-    disableDragging: () => void;
-  };
-}
-
-export interface ResultEntity {
-  name?: string;
-  osmName: OsmName;
-  label: string;
-  id: string;
-  coordinates: ApiCoordinates;
-  address: ApiAddress;
-  byFoot: boolean;
-  byBike: boolean;
-  byCar: boolean;
-  distanceInMeters: number;
-  realEstateData?: {
-    costStructure?: ApiRealEstateCost;
-    characteristics?: ApiRealEstateCharacteristics;
-    locationIndices?: TApiLocIndexProps;
-  };
-  selected?: boolean;
-  externalUrl?: string;
-  isFiltered?: boolean;
-}
-
-export interface EntityGroup {
-  title: string;
-  active: boolean;
-  items: ResultEntity[];
-}
-
-export const poiSearchContainerId = "poi-search-container";
-
-export interface IEditorTabProps {
-  availableMeans: MeansOfTransportation[];
-  groupedEntries?: EntityGroup[];
-  config: ApiSearchResultSnapshotConfig;
-  onConfigChange: (config: ApiSearchResultSnapshotConfig) => void;
-  snapshotId: string;
-  extraMapboxStyles?: IApiMapboxStyle[];
-  isNewSnapshot: boolean;
-}
-
-export interface IExportTabProps {
-  codeSnippet: string;
-  directLink: string;
-  searchAddress: string;
-  snapshotId: string;
-  performUnlock?: TUnlockIntProduct;
-}
+} from "../../shared/shared.constants";
+import MapMenuKarlaFricke from "../../map/menu/karla-fricke/MapMenuKarlaFricke";
+import { useTools } from "../../hooks/tools";
+import { LoadingMessage } from "../../on-office/OnOfficeContainer";
+import FilterMenu from "../../map/menu/FilterMenu";
+import FilterMenuButton from "./FilterMenuButton";
+import {
+  EntityGroup,
+  ICurrentMapRef,
+  IEditorTabProps,
+  IExportTabProps,
+  ResultEntity,
+} from "../../shared/search-result.types";
+import MapMenuButton from "./MapMenuButton";
 
 interface ISearchResultContainerProps {
   mapboxToken: string;
@@ -529,49 +464,6 @@ const SearchResultContainer = forwardRef<
 
     const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
 
-    const ShowMapMenuButton: FunctionComponent = () => {
-      return (
-        <button
-          type="button"
-          className={`show-menu-btn map-menu-btn ${
-            !isEditorMode ? "embed-mode" : ""
-          }`}
-          data-tour="ShowMapMenuButton"
-          onMouseDown={() => {
-            setIsMapMenuOpen(!isMapMenuOpen);
-          }}
-        >
-          {!isMapMenuOpen && <img src={openMenuIcon} alt="icon-menu" />}
-          {isMapMenuOpen && (
-            <img
-              src={closeMenuIcon}
-              alt="icon-menu-close"
-              style={{
-                transform: "rotate(270deg)",
-              }}
-            />
-          )}
-        </button>
-      );
-    };
-
-    const ShowFilterMenuButton: FunctionComponent = () => {
-      return (
-        <button
-          type="button"
-          className={`show-menu-btn filter-menu-btn ${
-            !isEditorMode ? "embed-mode" : ""
-          }`}
-          data-tour="ShowFilterMenuButton"
-          onMouseDown={() => {
-            setIsFilterMenuOpen(!isFilterMenuOpen);
-          }}
-        >
-          <img src={openMenuIcon} alt="icon-menu" />
-        </button>
-      );
-    };
-
     const hideEntity = (item: ResultEntity): void => {
       if (!searchContextState.responseConfig) {
         return;
@@ -773,8 +665,21 @@ const SearchResultContainer = forwardRef<
               ref={mapRef}
             />
           </div>
-          {isMapMenuPresent && <ShowMapMenuButton />}
-          <ShowFilterMenuButton />
+          {isMapMenuPresent && (
+            <MapMenuButton
+              isEditorMode={isEditorMode}
+              isMenuOpen={isMapMenuOpen}
+              setIsMenuOpen={setIsMapMenuOpen}
+            />
+          )}
+          {searchContextState.responseConfig?.isFilterMenuAvail && (
+            <FilterMenuButton
+              isEditorMode={isEditorMode}
+              toggleIsMenuOpen={() => {
+                setIsFilterMenuOpen(!isFilterMenuOpen);
+              }}
+            />
+          )}
           {isMapMenuKFPresent && (
             <MapMenuKarlaFricke
               groupedEntries={(resultGroupEntities ?? [])
@@ -833,12 +738,14 @@ const SearchResultContainer = forwardRef<
               exportTabProps={exportTabProps}
             />
           )}
-          <FilterMenu
-            isFilterMenuOpen={isFilterMenuOpen}
-            isEditorMode={isEditorMode}
-            groupEntities={resultGroupEntities}
-            setGroupEntities={setResultGroupEntities}
-          />
+          {searchContextState.responseConfig?.isFilterMenuAvail && (
+            <FilterMenu
+              isFilterMenuOpen={isFilterMenuOpen}
+              isEditorMode={isEditorMode}
+              groupEntities={resultGroupEntities}
+              setGroupEntities={setResultGroupEntities}
+            />
+          )}
           {isThemeKf &&
             preferredLocationsGroup &&
             isShownPreferredLocationsModal && (

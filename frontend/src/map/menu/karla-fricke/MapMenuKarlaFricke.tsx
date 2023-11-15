@@ -1,6 +1,6 @@
 import { FunctionComponent, memo, useContext, useState } from "react";
 
-import { EntityGroup } from "../../../components/SearchResultContainer";
+import { EntityGroup } from "../../../shared/search-result.types";
 import "./MapMenuKarlaFricke.scss";
 import {
   deriveIconForOsmName,

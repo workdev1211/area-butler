@@ -13,7 +13,7 @@ import {
   deriveColorPalette,
   distanceToHumanReadable,
 } from "shared/shared.functions";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 
 interface IEntityGridSummaryProps {
   groupedEntries: EntityGroup[];

@@ -11,7 +11,7 @@ import {
 import { UserContext } from "context/UserContext";
 import { ApiUser } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import {
   realEstateListingsTitle,
   preferredLocationsTitle,

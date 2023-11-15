@@ -1,6 +1,8 @@
 import { render } from "@testing-library/react";
+
 import MapMenuKarlaFricke from "./MapMenuKarlaFricke";
-import { EntityGroup } from "../../../components/SearchResultContainer";
+import { EntityGroup } from "../../../shared/search-result.types";
+import { OsmName } from "../../../../../shared/types/types";
 
 describe("MapMenuKarlaFricke", () => {
   const groupedEntries: EntityGroup[] = [
@@ -10,10 +12,10 @@ describe("MapMenuKarlaFricke", () => {
       items: [
         {
           id: "test-id",
-          type: "test",
+          osmName: OsmName.bus_stop,
           label: "Park-Item",
           address: {
-            city: "TestCity"
+            city: "TestCity",
           },
           byFoot: true,
           byBike: true,
@@ -21,17 +23,22 @@ describe("MapMenuKarlaFricke", () => {
           realEstateData: {},
           coordinates: {
             lat: 2,
-            lng: 5
+            lng: 5,
           },
-          distanceInMeters: 5
-        }
-      ]
-    }
+          distanceInMeters: 5,
+        },
+      ],
+    },
   ];
 
   test("should mount", async () => {
     const component = render(
-      <MapMenuKarlaFricke groupedEntries={[]} mobileMenuOpen={false} />
+      <MapMenuKarlaFricke
+        groupedEntries={[]}
+        isMapMenuOpen={false}
+        isShownPreferredLocationsModal={false}
+        togglePreferredLocationsModal={() => {}}
+      />
     );
     expect(component).toBeDefined();
   });
@@ -40,7 +47,9 @@ describe("MapMenuKarlaFricke", () => {
     const component = render(
       <MapMenuKarlaFricke
         groupedEntries={groupedEntries}
-        mobileMenuOpen={false}
+        isMapMenuOpen={false}
+        isShownPreferredLocationsModal={false}
+        togglePreferredLocationsModal={() => {}}
       />
     );
     expect(component).toBeDefined();

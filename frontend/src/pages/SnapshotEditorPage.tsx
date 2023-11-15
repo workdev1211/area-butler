@@ -10,9 +10,8 @@ import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import "./SnapshotEditorPage.scss";
 
-import SearchResultContainer, {
-  ICurrentMapRef,
-} from "components/SearchResultContainer";
+import SearchResultContainer from "components/search-result-container/SearchResultContainer";
+import { ICurrentMapRef } from "shared/search-result.types";
 import { ConfigContext } from "context/ConfigContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { UserContext } from "context/UserContext";

@@ -42,11 +42,7 @@
   display: flex !important;
   border-radius: 100%;
   padding: 2px;
-  @apply bg-white justify-center items-center;
-
-  &.locality-marker-wrapper-custom {
-    @apply bg-transparent;
-  }
+  @apply justify-center items-center;
 }
 
 .leaflet-container.no-group {

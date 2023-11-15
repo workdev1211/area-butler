@@ -10,7 +10,7 @@ import {
   TransportationParam,
 } from "../../../../shared/types/types";
 import Expose from "./Expose";
-import { ResultEntity } from "../../components/SearchResultContainer";
+import { ResultEntity } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";

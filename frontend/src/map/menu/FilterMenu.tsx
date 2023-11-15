@@ -7,7 +7,7 @@ import {
   TApiLocIndexProps,
 } from "../../../../shared/types/location-index";
 import { locationIndexNames } from "../../../../shared/constants/location-index";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import { realEstateListingsTitle } from "../../shared/shared.functions";
 
 interface IFilterMenuProps {
@@ -82,7 +82,7 @@ const FilterMenu: FunctionComponent<IFilterMenuProps> = ({
             height: `${isEditorMode ? "calc(67px + 0.5rem + 1rem)" : "auto"}`,
           }}
         >
-          Filter Menu
+          Bedürfnisfilter
         </div>
       </div>
       <div

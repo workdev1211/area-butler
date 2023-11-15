@@ -34,7 +34,7 @@ import {
   mapTableDataFromParticlePollutionData,
 } from "./creator/table.creator";
 import areaButlerIcon from "../../assets/icons/ab.png";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import { base64PrefixRegex } from "../../shared/shared.constants";
 import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";

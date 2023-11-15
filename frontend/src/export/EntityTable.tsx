@@ -8,7 +8,7 @@ import {
   distanceToHumanReadable,
   timeToHumanReadable,
 } from "shared/shared.functions";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 import { convertMetersToMinutes } from "../../../shared/functions/shared.functions";
 
 export interface EntityTableProps {

@@ -366,9 +366,9 @@ export interface ApiSearchResultSnapshotConfig {
   showStreetViewLink?: boolean;
   showDetailsInOnePage?: boolean;
   hideIsochrones?: boolean;
-  hideMeanToggles?: boolean; // 'MeansToggle' component used to turn on and off the isochrones
-  hideMapMenu?: boolean;
-  hidePoiIcons?: boolean;
+  hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
+  hideMapMenu?: boolean; // for reference map
+  hidePoiIcons?: boolean; // for reference map
   mapBoxMapId?: string;
   theme?: ApiSearchResultSnapshotConfigTheme;
   mapIcon?: string;
@@ -382,6 +382,7 @@ export interface ApiSearchResultSnapshotConfig {
   poiFilter?: IApiSnapshotPoiFilter;
   iconSizes?: IApiSnapshotIconSizes;
   isMapMenuCollapsed?: boolean;
+  isFilterMenuAvail?: boolean;
 }
 
 export interface ApiSearchResultSnapshotResponse {

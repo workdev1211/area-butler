@@ -10,7 +10,7 @@ import {
 import Cheatsheet from "./Cheatsheet";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
-import { ResultEntity } from "../../components/SearchResultContainer";
+import { ResultEntity } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";

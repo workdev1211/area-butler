@@ -1,7 +1,7 @@
 import { render } from "@testing-library/react";
 
 import MapMenuListItem from "./MapMenuListItem";
-import { EntityGroup } from "../../../../components/SearchResultContainer";
+import { EntityGroup } from "../../../../shared/search-result.types";
 
 describe("MapMenuListItem", () => {
   const entityGroup = {

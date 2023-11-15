@@ -52,7 +52,7 @@ import {
   meansOfTransportations,
   osmEntityTypes,
 } from "../../../shared/constants/constants";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "./search-result.types";
 import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";

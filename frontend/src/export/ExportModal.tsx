@@ -18,7 +18,7 @@ import InsightsSelection from "./InsightsSelection";
 import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 import { realEstateListingsTitle } from "../shared/shared.functions";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";

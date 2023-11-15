@@ -2,7 +2,7 @@ import { FunctionComponent, useContext } from "react";
 
 import "./ExportTab.scss";
 
-import { IExportTabProps } from "components/SearchResultContainer";
+import { IExportTabProps } from "shared/search-result.types";
 import { SearchContext } from "../../../context/SearchContext";
 import { useTools } from "../../../hooks/tools";
 import DigitalMedia from "./components/DigitalMedia";

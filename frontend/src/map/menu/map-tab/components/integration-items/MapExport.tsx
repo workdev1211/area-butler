@@ -13,7 +13,7 @@ import {
 } from "../../../../../context/SearchContext";
 import reportsIcon from "../../../../../assets/icons/map-menu/09-reporte.svg";
 import pdfIcon from "../../../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
-import { EntityGroup } from "../../../../../components/SearchResultContainer";
+import { EntityGroup } from "../../../../../shared/search-result.types";
 import OnePageExportModal from "../../../../../export/one-page/OnePageExportModal";
 import { OnOfficeIntActTypesEnum } from "../../../../../../../shared/types/on-office";
 import ConfirmationModal from "../../../../../components/ConfirmationModal";

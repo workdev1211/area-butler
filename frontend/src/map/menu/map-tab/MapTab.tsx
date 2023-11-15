@@ -3,7 +3,7 @@ import { FunctionComponent, ReactNode, useContext } from "react";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../components/SearchResultContainer";
+} from "../../../shared/search-result.types";
 import {
   ApiGeojsonFeature,
   MapDisplayModesEnum,

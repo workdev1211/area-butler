@@ -4,7 +4,7 @@ import {
   distanceToHumanReadable
 } from "shared/shared.functions";
 import "./EntityList.scss";
-import { EntityGroup } from "../components/SearchResultContainer";
+import { EntityGroup } from "../shared/search-result.types";
 
 export interface EntityListProps {
   entityGroup: EntityGroup;

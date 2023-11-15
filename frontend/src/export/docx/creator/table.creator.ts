@@ -35,7 +35,7 @@ import {
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../components/SearchResultContainer";
+} from "../../../shared/search-result.types";
 import { convertMetersToMinutes } from "../../../../../shared/functions/shared.functions";
 import { averageCensusData } from "../../../../../shared/constants/data-provision";
 

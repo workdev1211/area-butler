@@ -6,7 +6,7 @@ import {
   EntityGroup,
   IEditorTabProps,
   ResultEntity,
-} from "components/SearchResultContainer";
+} from "shared/search-result.types";
 import {
   ApiSearchResultSnapshotConfigTheme,
   MeansOfTransportation,
@@ -689,6 +689,27 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">Referenzkarte</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isFilterMenuAvail"
+                    checked={!!config?.isFilterMenuAvail}
+                    onChange={() => {
+                      changeConfigParam(
+                        "isFilterMenuAvail",
+                        !config?.isFilterMenuAvail
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Bedürfnisfilter für Immobilien
+                  </span>
                 </label>
               </div>
             </li>

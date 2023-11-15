@@ -22,7 +22,7 @@ import areaButlerLogo from "../../assets/img/logo.svg";
 import {
   EntityGroup,
   ResultEntity,
-} from "../../components/SearchResultContainer";
+} from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";

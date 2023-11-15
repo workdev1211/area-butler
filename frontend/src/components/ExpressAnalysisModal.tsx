@@ -27,7 +27,7 @@ import copyIcon from "../assets/icons/copy.svg";
 import screenshotIcon from "../assets/icons/screenshot.svg";
 import closeIcon from "../assets/icons/icons-16-x-16-outline-ic-close.svg";
 import aiIcon from "../assets/icons/ai.svg";
-import SearchResultContainer from "./SearchResultContainer";
+import SearchResultContainer from "./search-result-container/SearchResultContainer";
 import { getQrCodeBase64 } from "../export/QrCode";
 import downloadIcon from "../assets/icons/download.svg";
 import { ApiSubscriptionPlanType } from "../../../shared/types/subscription-plan";

@@ -17,7 +17,7 @@ import {
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../../../components/SearchResultContainer";
+} from "../../../../../shared/search-result.types";
 import { convertMetersToMinutes } from "../../../../../../../shared/functions/shared.functions";
 
 interface ILocalityItemProps {

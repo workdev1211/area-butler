@@ -1,6 +1,6 @@
 import { FunctionComponent, useEffect, useState } from "react";
 
-import { EntityGroup, ResultEntity } from "../components/SearchResultContainer";
+import { EntityGroup, ResultEntity } from "../shared/search-result.types";
 
 interface IEntitySelectionProps {
   groupedEntries: EntityGroup[];

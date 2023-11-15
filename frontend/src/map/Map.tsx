@@ -64,7 +64,7 @@ import {
   ICurrentMapRef,
   poiSearchContainerId,
   ResultEntity,
-} from "../components/SearchResultContainer";
+} from "../shared/search-result.types";
 import {
   deriveAddressFromCoordinates,
   deriveIconForOsmName,
@@ -1102,6 +1102,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               ? resultingIconSize
               : Math.floor(resultingIconSize / 2);
           const iconStyle = `width: auto; height: ${resultingIconStyleSize}px;`;
+          const backColorClass = entity.isFiltered
+            ? "bg-gray-200"
+            : markerIcon.isCustom
+            ? "bg-transparent"
+            : "bg-white";
 
           const icon = L.divIcon({
             iconUrl: markerIcon.icon,
@@ -1112,13 +1117,27 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               (isRealEstateListing && config?.mapIcon) || markerIcon.isCustom
                 ? "locality-marker-wrapper-custom"
                 : ""
-            } icon-${entity.osmName} ${
-              entity.isFiltered ? "grayscale bg-gray-300" : ""
-            }`,
+            } icon-${entity.osmName}`,
             html:
               (config?.mapIcon && isRealEstateListing) || markerIcon.isCustom
-                ? `<img src="${markerIcon.icon}" alt="marker-icon-custom" class="${entity.osmName} locality-icon-custom" style="${iconStyle}" />`
-                : `<div class="locality-marker" style="border-color: ${markerIcon.color}"><img src="${markerIcon.icon}" alt="marker-icon" class="${entity.osmName} locality-icon" style="${iconStyle}" /></div>`,
+                ? `<img src="${
+                    markerIcon.icon
+                  }" alt="marker-icon-custom" class="${
+                    entity.osmName
+                  } locality-icon-custom ${backColorClass}" style="${iconStyle}${
+                    entity.isFiltered
+                      ? "filter: brightness(75%) grayscale(100%);"
+                      : ""
+                  }" />`
+                : `<div class="locality-marker ${backColorClass}" style="border-color: ${
+                    markerIcon.color
+                  };${
+                    entity.isFiltered
+                      ? "filter: brightness(75%) grayscale(100%);"
+                      : ""
+                  }"><img src="${markerIcon.icon}" alt="marker-icon" class="${
+                    entity.osmName
+                  } locality-icon" style="${iconStyle}" /></div>`,
           });
 
           const hideEntityFunction = isEditorMode ? hideEntity : undefined;

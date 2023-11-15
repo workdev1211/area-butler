@@ -31,7 +31,7 @@ import { TUnlockIntProduct } from "../../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../../shared/types/integration-user";
 import { UserContext } from "../../../../context/UserContext";
 import UnlockProductButton from "../../components/UnlockProductButton";
-import { EntityGroup } from "../../../../components/SearchResultContainer";
+import { EntityGroup } from "../../../../shared/search-result.types";
 import { getFilteredLegend } from "../../../../export/shared/shared.functions";
 import { getRenderedLegend } from "../../../../export/RenderedLegend";
 

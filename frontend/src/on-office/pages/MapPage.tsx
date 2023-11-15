@@ -34,10 +34,8 @@ import {
   ApiTourNamesEnum,
   MapDisplayModesEnum,
 } from "../../../../shared/types/types";
-import SearchResultContainer, {
-  EntityGroup,
-  ICurrentMapRef,
-} from "../../components/SearchResultContainer";
+import SearchResultContainer from "../../components/search-result-container/SearchResultContainer";
+import { EntityGroup, ICurrentMapRef } from "../../shared/search-result.types";
 import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
 import { SnapshotEditorRouterProps } from "../../pages/SnapshotEditorPage";
@@ -409,10 +407,7 @@ const MapPage: FunctionComponent = () => {
         mapDisplayMode={MapDisplayModesEnum.EDITOR}
         onPoiAdd={onPoiAdd}
         saveConfig={async () => {
-          await saveSnapshotConfig(
-            mapRef,
-            snapshotId,
-          );
+          await saveSnapshotConfig(mapRef, snapshotId);
         }}
         isTrial={false}
         isNewSnapshot={!!state?.isNewSnapshot}

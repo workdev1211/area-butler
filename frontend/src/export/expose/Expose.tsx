@@ -15,7 +15,7 @@ import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import ExposeSummary from "./ExposeSummary";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import { ILegendItem, Legend } from "../Legend";
 import areaButlerLogo from "../../assets/img/logo.svg";
 import { preferredLocationsTitle } from "../../shared/shared.functions";

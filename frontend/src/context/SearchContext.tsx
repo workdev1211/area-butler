@@ -14,7 +14,7 @@ import {
   TransportationParam,
 } from "../../../shared/types/types";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { EntityGroup } from "../components/SearchResultContainer";
+import { EntityGroup } from "../shared/search-result.types";
 import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { TCensusData } from "../../../shared/types/data-provision";

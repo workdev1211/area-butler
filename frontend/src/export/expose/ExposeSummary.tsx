@@ -16,7 +16,7 @@ import {
   TransportationParam,
 } from "../../../../shared/types/types";
 import "./ExposeSummary.scss";
-import { EntityGroup } from "../../components/SearchResultContainer";
+import { EntityGroup } from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../../../../shared/types/export";

@@ -9,7 +9,7 @@ import carIcon from "../../../../assets/icons/means/icons-32-x-32-illustrated-ic
 import {
   EntityGroup,
   ResultEntity,
-} from "../../../../components/SearchResultContainer";
+} from "../../../../shared/search-result.types";
 import LocalityItem from "./locality-item/LocalityItem";
 import { MeansOfTransportation } from "../../../../../../shared/types/types";
 import {

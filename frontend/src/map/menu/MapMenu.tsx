@@ -7,7 +7,7 @@ import {
   IEditorTabProps,
   IExportTabProps,
   ResultEntity,
-} from "../../components/SearchResultContainer";
+} from "../../shared/search-result.types";
 import positionIcon from "../../assets/icons/icons-16-x-16-outline-ic-position.svg";
 import {
   ApiGeojsonFeature,
