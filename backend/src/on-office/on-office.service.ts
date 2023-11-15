@@ -55,7 +55,6 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import {
   AreaButlerExportTypesEnum,
   IApiIntUserOnOfficeParams,
-  IIntUserExpMatchParams,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
@@ -500,24 +499,39 @@ export class OnOfficeService {
 
     const defaultMaxTextLength = 2000;
 
-    const resExportMatching =
-      exportMatching || parentUser?.config.exportMatching;
+    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
 
-    const exportMatchingParams: IIntUserExpMatchParams =
-      resExportMatching && resExportMatching[exportType]
-        ? resExportMatching[exportType]
-        : {
+    let expMatchParams = resultExpMatch && resultExpMatch[exportType];
+
+    if (!expMatchParams) {
+      switch (exportType) {
+        case AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS: {
+          expMatchParams = {
+            fieldId: 'MPAreaButlerUrlWithAddress',
+          };
+          break;
+        }
+
+        case AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS: {
+          expMatchParams = {
+            fieldId: 'MPAreaButlerUrlNoAddress',
+          };
+          break;
+        }
+
+        default: {
+          expMatchParams = {
             fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
             maxTextLength: defaultMaxTextLength,
           };
+        }
+      }
+    }
 
     const processedText =
-      exportMatchingParams.maxTextLength === 0
+      expMatchParams.maxTextLength === 0
         ? text
-        : text.slice(
-            0,
-            exportMatchingParams.maxTextLength || defaultMaxTextLength,
-          );
+        : text.slice(0, expMatchParams.maxTextLength || defaultMaxTextLength);
 
     const request: IApiOnOfficeRequest = {
       token,
@@ -534,7 +548,7 @@ export class OnOfficeService {
             parameters: {
               extendedclaim: extendedClaim,
               data: {
-                [exportMatchingParams.fieldId]: processedText,
+                [expMatchParams.fieldId]: processedText,
               },
             },
           },

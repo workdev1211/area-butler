@@ -58,21 +58,21 @@ export interface IApiOnOfficeRequest {
 }
 
 export enum ApiOnOfficeActionIdsEnum {
-  "READ" = "urn:onoffice-de-ns:smart:2.5:smartml:action:read",
-  "CREATE" = "urn:onoffice-de-ns:smart:2.5:smartml:action:create",
-  "MODIFY" = "urn:onoffice-de-ns:smart:2.5:smartml:action:modify",
-  "GET" = "urn:onoffice-de-ns:smart:2.5:smartml:action:get",
-  "DO" = "urn:onoffice-de-ns:smart:2.5:smartml:action:do",
-  "DELETE" = "urn:onoffice-de-ns:smart:2.5:smartml:action:delete",
+  READ = "urn:onoffice-de-ns:smart:2.5:smartml:action:read",
+  CREATE = "urn:onoffice-de-ns:smart:2.5:smartml:action:create",
+  MODIFY = "urn:onoffice-de-ns:smart:2.5:smartml:action:modify",
+  GET = "urn:onoffice-de-ns:smart:2.5:smartml:action:get",
+  DO = "urn:onoffice-de-ns:smart:2.5:smartml:action:do",
+  DELETE = "urn:onoffice-de-ns:smart:2.5:smartml:action:delete",
 }
 
 export enum ApiOnOfficeResourceTypesEnum {
-  "UNLOCK_PROVIDER" = "unlockProvider",
-  "ESTATE" = "estate",
-  "FIELDS" = "fields", // field description - get all info about entity fields ("address", "estate", etc)
-  "BASIC_SETTINGS" = "basicsettings",
-  "UPLOAD_FILE" = "uploadfile",
-  "USER" = "user",
+  UNLOCK_PROVIDER = "unlockProvider",
+  ESTATE = "estate",
+  FIELDS = "fields", // field description - get all info about entity fields ("address", "estate", etc)
+  BASIC_SETTINGS = "basicsettings",
+  UPLOAD_FILE = "uploadfile",
+  USER = "user",
 }
 
 interface IApiOnOfficeRequestAction {
