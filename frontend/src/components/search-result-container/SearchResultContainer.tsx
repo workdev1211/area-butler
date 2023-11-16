@@ -191,7 +191,8 @@ const SearchResultContainer = forwardRef<
 
     useEffect(() => {
       setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
-    }, [searchContextState.responseConfig?.hideIsochrones, setHideIsochrones]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchContextState.responseConfig?.hideIsochrones]);
 
     // Customize primary color
     useEffect(() => {

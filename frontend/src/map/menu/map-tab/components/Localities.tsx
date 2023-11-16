@@ -138,7 +138,6 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                   toggleRoute={toggleRoute}
                   transitRoutes={transitRoutes}
                   toggleTransitRoute={toggleTransitRoute}
-                  config={config}
                   key={`${ge.title}-${geIndex}-map-menu-list-item-top`}
                 />
               );
@@ -191,7 +190,6 @@ const Localities: FunctionComponent<ILocalitiesProps> = ({
                         groupIcon={groupIconInfo}
                         isCustomIcon={groupIconInfo.isCustom}
                         entityGroupIndex={geIndex}
-                        config={config}
                         routes={routes}
                         toggleRoute={toggleRoute}
                         transitRoutes={transitRoutes}

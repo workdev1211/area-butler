@@ -330,7 +330,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
-    searchContextState.responseConfig?.defaultActiveGroups,
     searchContextState.responseConfig?.entityVisibility,
     searchContextState.responseConfig?.realEstateStatus,
     searchContextState.responseConfig?.poiFilter,

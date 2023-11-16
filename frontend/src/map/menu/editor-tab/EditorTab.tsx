@@ -72,7 +72,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
         defaultActiveGroups: groupedEntries.map((g) => g.title),
       });
     }
-  }, [config, groupedEntries, onConfigChange]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [config, groupedEntries]);
 
   useEffect(() => {
     const fetchEmbeddableMaps = async (): Promise<void> => {

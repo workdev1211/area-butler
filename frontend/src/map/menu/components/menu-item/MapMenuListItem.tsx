@@ -4,10 +4,7 @@ import {
   EntityGroup,
   ResultEntity,
 } from "../../../../shared/search-result.types";
-import {
-  ApiSearchResultSnapshotConfig,
-  MeansOfTransportation,
-} from "../../../../../../shared/types/types";
+import { MeansOfTransportation } from "../../../../../../shared/types/types";
 import {
   EntityRoute,
   EntityTransitRoute,
@@ -32,7 +29,6 @@ export interface MapMenuListItemProps {
   toggleRoute: (item: ResultEntity, mean: MeansOfTransportation) => void;
   transitRoutes: EntityTransitRoute[];
   toggleTransitRoute: (item: ResultEntity) => void;
-  config?: ApiSearchResultSnapshotConfig | undefined;
 }
 
 const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
@@ -44,10 +40,12 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
   toggleRoute,
   transitRoutes,
   toggleTransitRoute,
-  config,
 }) => {
   const [isListOpen, setIsListOpen] = useState(false);
-  const { searchContextDispatch } = useContext(SearchContext);
+  const {
+    searchContextState: { responseConfig: config },
+    searchContextDispatch,
+  } = useContext(SearchContext);
   const imgClass = isCustomIcon ? "item-custom" : "item";
 
   const checkboxPrimaryClasses = !!config?.primaryColor
@@ -95,12 +93,32 @@ const MapMenuListItem: FunctionComponent<MapMenuListItemProps> = ({
               type="checkbox"
               checked={entityGroup.active}
               className={checkboxPrimaryClasses}
-              onChange={() =>
+              onChange={() => {
+                if (config?.defaultActiveGroups?.length) {
+                  const isGroupFound = config.defaultActiveGroups.some(
+                    (groupName) => groupName === entityGroup.title
+                  );
+
+                  if (isGroupFound) {
+                    config.defaultActiveGroups =
+                      config.defaultActiveGroups.filter(
+                        (groupName) => groupName !== entityGroup.title
+                      );
+                  } else {
+                    config.defaultActiveGroups.push(entityGroup.title);
+                  }
+                }
+
                 searchContextDispatch({
                   type: SearchContextActionTypes.TOGGLE_RESPONSE_GROUP,
                   payload: entityGroup.title,
-                })
-              }
+                });
+
+                searchContextDispatch({
+                  type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
+                  payload: config,
+                });
+              }}
             />
           </label>
         </div>
