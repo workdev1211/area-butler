@@ -16,10 +16,9 @@ import {
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUserProductContingent,
+  IApiIntegrationUserSchema,
   IApiIntUserCreate,
-  // IApiIntUserUpdateParamsAndConfig,
   TApiIntegrationUserConfig,
-  TApiIntegrationUserParameters,
   TApiIntegrationUserProduct,
   TApiIntUserAvailProdContingents,
 } from '@area-butler-types/integration-user';
@@ -50,6 +49,7 @@ export class IntegrationUserService {
     accessToken,
     parameters,
     config,
+    parentId,
   }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
     const processedConfig = config
       ? { ...config }
@@ -65,6 +65,7 @@ export class IntegrationUserService {
       accessToken,
       parameters,
       config: processedConfig,
+      parentId,
     });
 
     void this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
@@ -74,49 +75,41 @@ export class IntegrationUserService {
     return integrationUser;
   }
 
-  async upsert(
-    integrationUserId: string,
-    integrationType: IntegrationTypesEnum,
-    accessToken: string,
-    parameters: TApiIntegrationUserParameters,
-  ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.integrationUserModel.findOneAndUpdate(
-      { integrationUserId, integrationType },
-      { accessToken, parameters },
-      { new: true },
-    );
-
-    return (
-      existingUser ||
-      this.create({
-        integrationUserId,
-        integrationType,
-        accessToken,
-        parameters,
-      })
-    );
-  }
-
   async findOne(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
+    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
     integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel
       .findOne({
-        ...findQuery,
+        ...filterQuery,
         integrationType,
       })
       .sort({ updatedAt: -1 });
   }
 
-  async findOneOrFail(
-    findQuery: FilterQuery<TIntegrationUserDocument>,
+  async findOneAndUpdate(
+    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
+    updateQuery: UpdateQuery<IApiIntegrationUserSchema>,
     integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.findOne(findQuery, integrationType);
+    return this.integrationUserModel.findOneAndUpdate(
+      {
+        ...filterQuery,
+        integrationType,
+      },
+      updateQuery,
+      { new: true },
+    );
+  }
+
+  async findOneOrFail(
+    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
+    integrationType: IntegrationTypesEnum,
+  ): Promise<TIntegrationUserDocument> {
+    const existingUser = await this.findOne(filterQuery, integrationType);
 
     if (!existingUser) {
-      this.logger.error(findQuery, integrationType);
+      this.logger.error(filterQuery, integrationType);
       throw new HttpException('Unknown user!', 400);
     }
 
@@ -140,17 +133,17 @@ export class IntegrationUserService {
 
   async findByDbId(
     integrationUserDbId: string,
-    projectParams?: IApiMongoProjectSortParams,
+    projectQuery?: IApiMongoProjectSortParams,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel.findById(
       integrationUserDbId,
-      projectParams,
+      projectQuery,
     );
   }
 
   async findByDbIdAndUpdate(
     integrationUserDbId: string,
-    updateQuery: UpdateQuery<unknown>,
+    updateQuery: UpdateQuery<IApiIntegrationUserSchema>,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel.findByIdAndUpdate(
       integrationUserDbId,

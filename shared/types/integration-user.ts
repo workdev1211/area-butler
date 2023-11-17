@@ -87,6 +87,7 @@ export interface IApiIntUserUpdateParamsAndConfig {
 export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
+  parentId?: string;
 }
 
 export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;

@@ -86,12 +86,44 @@ export class OnOfficeService {
     apiClaim: extendedClaim,
     apiToken: token,
   }: IApiOnOfficeActivationReq): Promise<IApiOnOfficeActivationRes> {
-    await this.integrationUserService.upsert(
-      `${customerWebId}-${userId}`,
-      this.integrationType,
+    const integrationUserId = `${customerWebId}-${userId}`;
+
+    const parameters = {
+      parameterCacheId,
       extendedClaim,
-      { parameterCacheId, extendedClaim, token, customerWebId, userId },
+      token,
+      customerWebId,
+      userId,
+    };
+
+    const integrationUser = await this.integrationUserService.findOneAndUpdate(
+      { integrationUserId },
+      {
+        parameters,
+        accessToken: extendedClaim,
+      },
+      this.integrationType,
     );
+
+    if (!integrationUser) {
+      const childUser = await this.integrationUserService.findOne(
+        {
+          'parameters.customerWebId': customerWebId,
+          'parameters.token': { $exists: true },
+          'parameters.apiKey': { $exists: true },
+          parentId: { $exists: true },
+        },
+        this.integrationType,
+      );
+
+      await this.integrationUserService.create({
+        integrationUserId,
+        parameters,
+        accessToken: extendedClaim,
+        integrationType: this.integrationType,
+        parentId: childUser?.parentId,
+      });
+    }
 
     const scripts = [{ script: `${this.apiUrl}/on-office/unlockProvider.js` }];
 
@@ -208,26 +240,24 @@ export class OnOfficeService {
 
     // '$or' clause doesn't have a clear ordering so two 'find' requests are used
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
-    let existingUser = await this.integrationUserService.findOne(
+    let integrationUser = await this.integrationUserService.findOne(
       { integrationUserId },
       this.integrationType,
     );
 
-    let integrationUser: TIntegrationUserDocument;
-
-    if (existingUser) {
+    if (integrationUser) {
       const { userName, email } = await this.fetchUserData({
-        ...existingUser.parameters,
+        ...integrationUser.parameters,
         extendedClaim,
       });
 
       const { color, logo } = await this.fetchLogoAndColor({
-        ...existingUser.parameters,
+        ...integrationUser.parameters,
         extendedClaim,
       });
 
       integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
-        existingUser.id,
+        integrationUser.id,
         {
           accessToken: extendedClaim,
           'parameters.extendedClaim': extendedClaim,
@@ -241,25 +271,39 @@ export class OnOfficeService {
       );
     }
 
-    if (!existingUser) {
-      existingUser = await this.integrationUserService.findOne(
+    let groupUser: TIntegrationUserDocument;
+
+    if (!integrationUser) {
+      groupUser = await this.integrationUserService.findOne(
         {
           'parameters.customerWebId': customerWebId,
           'parameters.token': { $exists: true },
           'parameters.apiKey': { $exists: true },
+          parentId: { $exists: true },
         },
         this.integrationType,
       );
+
+      if (!groupUser) {
+        groupUser = await this.integrationUserService.findOne(
+          {
+            'parameters.customerWebId': customerWebId,
+            'parameters.token': { $exists: true },
+            'parameters.apiKey': { $exists: true },
+          },
+          this.integrationType,
+        );
+      }
     }
 
-    if (!integrationUser && existingUser) {
+    if (!integrationUser && groupUser) {
       const { userName, email } = await this.fetchUserData({
-        ...existingUser.parameters,
+        ...groupUser.parameters,
         extendedClaim,
       });
 
       const { color, logo } = await this.fetchLogoAndColor({
-        ...existingUser.parameters,
+        ...groupUser.parameters,
         extendedClaim,
       });
 
@@ -275,13 +319,14 @@ export class OnOfficeService {
           userName,
           email,
           extendedClaim,
-          apiKey: existingUser.parameters.apiKey,
-          token: existingUser.parameters.token,
+          apiKey: groupUser.parameters.apiKey,
+          token: groupUser.parameters.token,
         },
         config: {
           color: color ? `#${color}` : undefined,
           logo: logo ? convertBase64ContentToUri(logo) : undefined,
         } as TApiIntegrationUserConfig,
+        parentId: groupUser.parentId,
       });
     }
 
