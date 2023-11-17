@@ -58,3 +58,6 @@ export const apiConnectionTypeNames: Record<
   [ApiRealEstateExtSourcesEnum.PROPSTACK]: "Propstack",
   [ApiRealEstateExtSourcesEnum.ON_OFFICE]: "onOffice",
 };
+
+export const realEstateListingsTitle = "Meine Objekte";
+export const realEstateListingsTitleEmbed = "Weitere Objekte";

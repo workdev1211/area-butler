@@ -70,7 +70,6 @@ import {
   deriveIconForOsmName,
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
-  realEstateListingsTitle,
   timeToHumanReadable,
   toastSuccess,
 } from "../shared/shared.functions";
@@ -86,6 +85,7 @@ import {
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
+import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;

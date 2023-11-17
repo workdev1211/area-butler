@@ -21,7 +21,6 @@ import iframeIcon from "../../../../assets/icons/map-menu/editor-tab/iframe.svg"
 import {
   copyTextToClipboard,
   deriveEntityGroupsByActiveMeans,
-  realEstateListingsTitle,
   sanitizeFilename,
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
@@ -34,6 +33,7 @@ import UnlockProductButton from "../../components/UnlockProductButton";
 import { EntityGroup } from "../../../../shared/search-result.types";
 import { getFilteredLegend } from "../../../../export/shared/shared.functions";
 import { getRenderedLegend } from "../../../../export/RenderedLegend";
+import { realEstateListingsTitle } from "../../../../../../shared/constants/real-estate";
 
 interface IDigitalMediaProps {
   codeSnippet: string;

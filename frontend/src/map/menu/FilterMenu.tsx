@@ -8,7 +8,7 @@ import {
 } from "../../../../shared/types/location-index";
 import { locationIndexNames } from "../../../../shared/constants/location-index";
 import { EntityGroup } from "../../shared/search-result.types";
-import { realEstateListingsTitle } from "../../shared/shared.functions";
+import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 
 interface IFilterMenuProps {
   isFilterMenuOpen: boolean;

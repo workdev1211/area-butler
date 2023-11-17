@@ -19,13 +19,13 @@ import MapClippingSelection, {
   ISelectableMapClipping,
 } from "./MapClippingSelection";
 import { EntityGroup, ResultEntity } from "../shared/search-result.types";
-import { realEstateListingsTitle } from "../shared/shared.functions";
 import { ILegendItem } from "./Legend";
 import { getFilteredLegend } from "./shared/shared.functions";
 import areaButlerLogo from "../assets/img/logo.svg";
 import { useTools } from "../hooks/tools";
 import { ExportTypeEnum, IQrCodeState } from "../../../shared/types/export";
 import { TCensusData } from "../../../shared/types/data-provision";
+import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 interface IExportModalProps {
   entities: ResultEntity[];

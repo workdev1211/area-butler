@@ -13,7 +13,6 @@ import { ApiUser } from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "../MapClippingSelection";
 import { EntityGroup } from "../../shared/search-result.types";
 import {
-  realEstateListingsTitle,
   preferredLocationsTitle,
   setBackgroundColor,
 } from "../../shared/shared.functions";
@@ -41,6 +40,7 @@ import { IPoiIcon } from "../../shared/shared.types";
 import { IQrCodeState } from "../../../../shared/types/export";
 import OnePageMediaFormat from "./components/OnePageMediaFormat";
 import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
+import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;

@@ -60,6 +60,7 @@ import {
   LocIndexPropsEnum,
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
+import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 const tinyColor = require("tinycolor2");
 
@@ -216,8 +217,6 @@ export const getPreferredLocationsIcon = (
     : { icon: preferredLocationIcon, color: "#c91444" };
 };
 
-export const realEstateListingsTitle = "Meine Objekte";
-export const realEstateListingsTitleEmbed = "Weitere Objekte";
 export const getRealEstateListingsIcon = (
   userPoiIcons?: IApiUserPoiIcon[]
 ): IPoiIcon => {
@@ -676,7 +675,7 @@ export const deriveInitialEntityGroups = ({
 
     return config?.defaultActiveGroups
       ? config.defaultActiveGroups.includes(title)
-      : ![realEstateListingsTitle].includes(title);
+      : true;
   };
 
   if (!!locations && !!centerOfSearch) {

@@ -73,6 +73,7 @@ import {
   IApiMongoProjectSortParams,
 } from '../shared/shared.types';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
 
 @Injectable()
 export class LocationService {
@@ -315,7 +316,7 @@ export class LocationService {
       await this.userService.createMapboxAccessToken(user)
     ).mapboxAccessToken;
 
-    let snapshotConfig = config;
+    let snapshotConfig = config ? { ...config } : undefined;
 
     if (!snapshotConfig) {
       let templateSnapshot: SearchResultSnapshotDocument;
@@ -370,17 +371,37 @@ export class LocationService {
       snapshotConfig.mapIcon = user.mapIcon;
     }
 
+    const realEstateListings = (
+      await this.realEstateListingService.fetchRealEstateListings(user)
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(user, realEstate),
+    );
+
+    if (
+      realEstateListings.length &&
+      (!snapshotConfig.defaultActiveGroups ||
+        (snapshotConfig.defaultActiveGroups &&
+          !snapshotConfig.defaultActiveGroups.includes(
+            realEstateListingsTitle,
+          )))
+    ) {
+      snapshotConfig.entityVisibility = [
+        ...(snapshotConfig.entityVisibility || []),
+        ...realEstateListings.map(({ id }) => ({
+          id,
+          osmName: OsmName.property,
+          excluded: true,
+        })),
+      ];
+    }
+
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
       token,
       config: snapshotConfig,
       snapshot: {
         ...snapshot,
-        realEstateListings: (
-          await this.realEstateListingService.fetchRealEstateListings(user)
-        ).map((realEstate) =>
-          mapRealEstateListingToApiRealEstateListing(user, realEstate),
-        ),
+        realEstateListings,
       },
     };
 

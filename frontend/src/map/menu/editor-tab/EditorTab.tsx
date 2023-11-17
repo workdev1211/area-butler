@@ -16,13 +16,15 @@ import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {
   isEntityHidden,
-  realEstateListingsTitle,
-  realEstateListingsTitleEmbed,
   setBackgroundColor,
   toggleEntityVisibility,
 } from "../../../shared/shared.functions";
 import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
-import { allRealEstateStatuses } from "../../../../../shared/constants/real-estate";
+import {
+  allRealEstateStatuses,
+  realEstateListingsTitle,
+  realEstateListingsTitleEmbed,
+} from "../../../../../shared/constants/real-estate";
 import configOptionsIcon from "../../../assets/icons/map-menu/04-konfiguration.svg";
 import poiVisibilityIcon from "../../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 import {

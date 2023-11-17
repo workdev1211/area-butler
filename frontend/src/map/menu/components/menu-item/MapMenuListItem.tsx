@@ -5,10 +5,6 @@ import {
   ResultEntity,
 } from "../../../../shared/search-result.types";
 import {
-  realEstateListingsTitle,
-  realEstateListingsTitleEmbed,
-} from "../../../../shared/shared.functions";
-import {
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
 } from "../../../../../../shared/types/types";
@@ -22,6 +18,10 @@ import {
 } from "../../../../context/SearchContext";
 import CategoryContent from "./CategoryContent";
 import { IPoiIcon } from "../../../../shared/shared.types";
+import {
+  realEstateListingsTitle,
+  realEstateListingsTitleEmbed,
+} from "../../../../../../shared/constants/real-estate";
 
 export interface MapMenuListItemProps {
   entityGroup: EntityGroup;

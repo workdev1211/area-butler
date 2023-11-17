@@ -7,13 +7,13 @@ import {
   getPreferredLocationsIcon,
   preferredLocationsTitle,
   getRealEstateListingsIcon,
-  realEstateListingsTitle,
 } from "../../../shared/shared.functions";
 import { IApiUserPoiIcon } from "../../../../../shared/types/types";
 import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
+import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
 
 interface IMapMenuKarlaFrickeProps {
   isMapMenuOpen: boolean;

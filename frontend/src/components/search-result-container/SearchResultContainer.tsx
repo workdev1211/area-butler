@@ -25,7 +25,6 @@ import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
   preferredLocationsTitle,
-  realEstateListingsTitle,
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
 import Map from "../../map/Map";
@@ -54,6 +53,7 @@ import {
   ResultEntity,
 } from "../../shared/search-result.types";
 import MapMenuButton from "./MapMenuButton";
+import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 
 interface ISearchResultContainerProps {
   mapboxToken: string;

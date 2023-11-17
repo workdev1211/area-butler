@@ -15,7 +15,6 @@ import {
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   preferredLocationsTitle,
-  realEstateListingsTitle,
   setBackgroundColor,
 } from "../../../../shared/shared.functions";
 import {
@@ -28,6 +27,7 @@ import localitiesIcon from "../../../../assets/icons/map-menu/01-lokalitäten.sv
 import { getCombinedOsmEntityTypes } from "../../../../../../shared/functions/shared.functions";
 import { SearchContext } from "../../../../context/SearchContext";
 import { UserContext } from "../../../../context/UserContext";
+import { realEstateListingsTitle } from "../../../../../../shared/constants/real-estate";
 
 interface ILocalitiesProps {
   groupedEntries: EntityGroup[];
