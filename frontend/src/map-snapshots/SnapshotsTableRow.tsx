@@ -25,10 +25,10 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
   openCodeSnippetModal,
   templateSnapshotId,
 }) => {
-  const { userDispatch } = useContext(UserContext);
+  const { userState, userDispatch } = useContext(UserContext);
 
   const history = useHistory();
-  const { deleteSnapshot } = useLocationData();
+  const { duplicateSnapshot, deleteSnapshot } = useLocationData();
   const { createDirectLink, updateUserSettings } = useTools();
 
   const copyCodeToClipBoard = (codeSnippet: string) => {
@@ -39,7 +39,27 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
     }
   };
 
-  const handleSnapshotDelete = async (snapshotId: string): Promise<void> => {
+  const handleDuplicate = async (snapshotId: string): Promise<void> => {
+    try {
+      const isDuplicateConfirmed = window.confirm(
+        "Wollen Sie wirklich das Kartensnippet duplizieren?"
+      );
+
+      if (isDuplicateConfirmed) {
+        const duplicatedSnapshot = await duplicateSnapshot(snapshotId);
+
+        userDispatch({
+          type: UserActionTypes.SET_EMBEDDABLE_MAPS,
+          payload: [...userState.embeddableMaps, duplicatedSnapshot],
+        });
+      }
+    } catch (err) {
+      toastError("Fehler beim Duplizieren eines Kartensnippet!");
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (snapshotId: string): Promise<void> => {
     try {
       const confirmDeleteRequest = window.confirm(
         "Wollen Sie wirklich das Kartensnippet löschen?"
@@ -54,7 +74,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
         });
       }
     } catch (err) {
-      toastError("Fehler beim Löschen eines Snippets");
+      toastError("Fehler beim Löschen eines Kartensnippet!");
       console.error(err);
     }
   };
@@ -135,8 +155,8 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
       <td>{snapshot.visitAmount || "Keine Besuche"}</td>
       <td>
         <div
-          className="grid"
-          style={{ gridTemplateColumns: "1fr 1fr 2fr 1fr" }}
+          className="grid gap-y-3"
+          style={{ gridTemplateColumns: "1fr 1fr 1fr" }}
         >
           {!snapshot.endsAt || dayjs().isBefore(snapshot.endsAt) ? (
             <OpenMapEditorButton embeddableMap={snapshot} />
@@ -165,19 +185,29 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
           ) : (
             <button
               className="ml-5 rounded btn-xs btn-primary"
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.stopPropagation();
-                void updateTemplateSnapshotId(snapshot.id);
+                await updateTemplateSnapshotId(snapshot.id);
               }}
             >
               Als Vorlage festlegen
             </button>
           )}
+          <div />
           <button
             className="ml-5 rounded btn-xs btn-primary"
-            onClick={(e) => {
+            onClick={async (e) => {
               e.stopPropagation();
-              void handleSnapshotDelete(snapshot.id);
+              await handleDuplicate(snapshot.id);
+            }}
+          >
+            Karte duplizieren
+          </button>
+          <button
+            className="ml-5 rounded btn-xs btn-primary"
+            onClick={async (e) => {
+              e.stopPropagation();
+              await handleDelete(snapshot.id);
             }}
           >
             Löschen

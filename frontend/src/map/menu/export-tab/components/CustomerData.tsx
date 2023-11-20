@@ -7,24 +7,29 @@ import {
 } from "../../../../shared/shared.functions";
 import fileIcon from "../../../../assets/icons/file.svg";
 import editIcon from "../../../../assets/icons/icons-16-x-16-outline-ic-edit.svg";
+import copyIcon from "../../../../assets/icons/copy.svg";
 import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../../context/SearchContext";
 import { ConfigContext } from "../../../../context/ConfigContext";
+import { useLocationData } from "../../../../hooks/locationdata";
 
 interface ICustomerDataProps {
   backgroundColor: string;
+  snapshotId: string;
 }
 
 const CustomerData: FunctionComponent<ICustomerDataProps> = ({
   backgroundColor,
+  snapshotId,
 }) => {
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
   const { push: historyPush } = useHistory();
+  const { duplicateSnapshot } = useLocationData();
 
   const [isCustomerDataOpen, setIsCustomerDataOpen] = useState(false);
 
@@ -108,6 +113,17 @@ const CustomerData: FunctionComponent<ICustomerDataProps> = ({
               </h3>
             </li>
           )}
+          <li>
+            <h3
+              className="max-w-fit items-center cursor-pointer"
+              onClick={async () => {
+                await duplicateSnapshot(snapshotId);
+              }}
+            >
+              <img className="w-6 h-6" src={copyIcon} alt="pdf" />
+              Karte duplizieren
+            </h3>
+          </li>
         </ul>
       </div>
     </div>

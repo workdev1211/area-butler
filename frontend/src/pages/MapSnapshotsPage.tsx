@@ -29,18 +29,6 @@ const MapSnapshotsPage: FunctionComponent = () => {
       return;
     }
 
-    // TODO REMOVE IN THE FUTURE
-    // let queryParams: string;
-    //
-    // if (isIntegrationUser) {
-    //   queryParams = new URLSearchParams({
-    //     filter: JSON.stringify({
-    //       "integrationParams.integrationId":
-    //         searchContextState.realEstateListing?.integrationId,
-    //     }),
-    //   }).toString();
-    // }
-
     const fetchEmbeddableMaps = async (): Promise<void> => {
       const embeddableMaps = await fetchSnapshots();
 

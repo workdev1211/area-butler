@@ -84,6 +84,22 @@ export const useLocationData = () => {
     return (await get<IApiLateSnapConfigOption[]>(url)).data;
   };
 
+  const duplicateSnapshot = async (
+    snapshotId: string
+  ): Promise<ApiSearchResultSnapshotResponse> => {
+    const duplicatedSnapshot = (
+      await post<ApiSearchResultSnapshotResponse>(
+        isIntegration
+          ? `/api/location-int/snapshot/${snapshotId}`
+          : `/api/location/snapshot/${snapshotId}`
+      )
+    ).data;
+
+    toastSuccess("Das Duplizieren der Karte war erfolgreich.");
+
+    return duplicatedSnapshot;
+  };
+
   const createSnapshot = async ({
     busyModalItems,
     setBusyModalItems,
@@ -264,6 +280,7 @@ export const useLocationData = () => {
     fetchSnapshot,
     fetchSnapshots,
     fetchLateSnapConfigs,
+    duplicateSnapshot,
     createSnapshot,
     updateSnapshot,
     saveSnapshotConfig,

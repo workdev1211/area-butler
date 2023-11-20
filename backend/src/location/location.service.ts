@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { FilterQuery, Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -77,7 +77,7 @@ import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
 
 @Injectable()
 export class LocationService {
-  private readonly logger = new Logger(LocationService.name);
+  // private readonly logger = new Logger(LocationService.name);
 
   constructor(
     private readonly overpassService: OverpassService,
@@ -440,6 +440,18 @@ export class LocationService {
     };
   }
 
+  async duplicateSnapshot(
+    user: UserDocument | TIntegrationUserDocument,
+    snapshotId: string,
+  ): Promise<SearchResultSnapshotDocument> {
+    const snapshot = await this.fetchSnapshotByIdOrFail(user, snapshotId);
+    const snapshotObject = snapshot.toObject();
+    delete snapshotObject._id;
+    snapshotObject.token = randomBytes(60).toString('hex');
+
+    return new this.searchResultSnapshotModel(snapshotObject).save();
+  }
+
   async fetchEmbeddedMap(token: string): Promise<SearchResultSnapshotDocument> {
     const snapshotDoc = await this.searchResultSnapshotModel.findOne({
       token,
@@ -697,7 +709,7 @@ export class LocationService {
 
   async fetchSnapshotByIdOrFail(
     user: UserDocument | TIntegrationUserDocument,
-    id: string,
+    snapshotId: string,
   ): Promise<SearchResultSnapshotDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -711,18 +723,20 @@ export class LocationService {
       );
     }
 
-    const filter = {
-      _id: id,
+    const filterQuery: FilterQuery<SearchResultSnapshotDocument> = {
+      _id: new Types.ObjectId(snapshotId),
     };
 
     Object.assign(
-      filter,
+      filterQuery,
       isIntegrationUser
         ? { 'integrationParams.integrationUserId': user.integrationUserId }
         : { userId: user.id },
     );
 
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne(filter);
+    const snapshotDoc = await this.searchResultSnapshotModel.findOne(
+      filterQuery,
+    );
 
     if (!snapshotDoc) {
       throw new HttpException('Unknown snapshot id', 400);

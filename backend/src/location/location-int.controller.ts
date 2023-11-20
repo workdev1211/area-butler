@@ -57,6 +57,19 @@ export class LocationIntController {
     return this.locationService.searchLocation(integrationUser, searchData);
   }
 
+  @ApiOperation({ description: 'Duplicate an existing map snapshot' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('snapshot/:id')
+  async duplicateSnapshot(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('id') snapshotId: string,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return mapSnapshotToEmbeddableMap(
+      integrationUser,
+      await this.locationService.duplicateSnapshot(integrationUser, snapshotId),
+    );
+  }
+
   @ApiOperation({ description: 'Create a new map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('snapshot')

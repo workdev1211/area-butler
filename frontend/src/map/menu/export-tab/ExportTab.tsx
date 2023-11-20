@@ -65,7 +65,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
       {/* TODO waits for the customer */}
       {/*<CustomerLinks backgroundColor={backgroundColor} />*/}
 
-      <CustomerData backgroundColor={backgroundColor} />
+      <CustomerData backgroundColor={backgroundColor} snapshotId={snapshotId} />
     </div>
   );
 };

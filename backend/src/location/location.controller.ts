@@ -28,8 +28,8 @@ import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
-import ApiSearchResultSnapshotDto from "./dto/snapshot/api-search-result-snapshot.dto";
-import {ApiSearchResultSnapshotResponse} from "@area-butler-types/types";
+import ApiSearchResultSnapshotDto from './dto/snapshot/api-search-result-snapshot.dto';
+import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -37,8 +37,6 @@ export class LocationController extends AuthenticatedController {
   constructor(
     private readonly locationService: LocationService,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly subscriptionService: SubscriptionService,
-    private readonly snapshotExtService: SnapshotExtService,
   ) {
     super();
   }
@@ -53,6 +51,18 @@ export class LocationController extends AuthenticatedController {
     @Body() searchData: ApiSearchDto,
   ): Promise<ApiSearchResponseDto> {
     return this.locationService.searchLocation(user, searchData);
+  }
+
+  @ApiOperation({ description: 'Duplicate an existing map snapshot' })
+  @Post('snapshot/:id')
+  async duplicateSnapshot(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Param('id') snapshotId: string,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    return mapSnapshotToEmbeddableMap(
+      user,
+      await this.locationService.duplicateSnapshot(user, snapshotId),
+    );
   }
 
   @ApiOperation({ description: 'Create a new map snapshot' })
