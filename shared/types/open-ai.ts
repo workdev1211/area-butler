@@ -13,6 +13,7 @@ export enum OpenAiCustomTextEnum {
   OFFICE = "OFFICE",
   COMMERCIAL = "COMMERCIAL",
   RESIDENTIAL = "RESIDENTIAL",
+  TEASER = "TEASER",
   CUSTOM = "CUSTOM",
   NONE = "NONE",
 }

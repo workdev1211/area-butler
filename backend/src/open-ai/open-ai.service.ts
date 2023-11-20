@@ -115,7 +115,11 @@ export class OpenAiService {
     queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
 
     if (customText) {
-      queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
+      queryText +=
+        customText ===
+        'Teaser Text für Portale und aufbauenden Text generieren.'
+          ? ' Generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt.'
+          : ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
     }
 
     queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen. Erwähne vor allem POI-Kategorien die der Zielgruppe "${targetGroupName}" gefallen und lege dar warum diese Lage gerade für diese Zielgruppe optimal ist.`;
@@ -242,7 +246,11 @@ export class OpenAiService {
     queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
 
     if (customText) {
-      queryText += ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
+      queryText +=
+        customText ===
+        'Teaser Text für Portale und aufbauenden Text generieren.'
+          ? ' Generiere zwei aufeinander aufbauende Texte. 1) Teaser Text für Immobilienportale der am Ende einen Cliffhanger hat und 2) Ausführlichen Text der auf dem ersten aufbaut, auf die Details eingeht und die Teaser des ersten Texts aufnimmt.'
+          : ` Bitte Beachte folgenden Wunsch bei der Erstellung: ${customText}.`;
     }
 
     queryText += ` Der Text soll die Zielgruppe "${targetGroupName}" ansprechen.`;

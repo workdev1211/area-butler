@@ -102,6 +102,10 @@ export const openAiCustomTextOptions: Array<{
     value: OpenAiCustomTextEnum.RESIDENTIAL,
     text: "Der Text soll für eine Wohnimmobilie optimiert sein.",
   },
+  {
+    value: OpenAiCustomTextEnum.TEASER,
+    text: "Teaser Text für Portale und aufbauenden Text generieren.",
+  },
   { value: OpenAiCustomTextEnum.CUSTOM, text: "Eigenen Text eingeben." },
 ];
 

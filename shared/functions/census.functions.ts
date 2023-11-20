@@ -17,7 +17,7 @@ export const cleanCensusProperties = (
     Alter_D: { label: "Ø Alter", unit: "Jahre" },
     unter18_A: { label: "Anteil, Bev. unter 18", unit: "%" },
     ab65_A: { label: "Anteil, Bev. ab 65", unit: "%" },
-    Auslaender_A: { label: "Anteil, Ausländer", unit: "%" },
+    // Auslaender_A: { label: "Anteil, Ausländer", unit: "%" },
     HHGroesse_D: {
       label: "Ø Pers. pro HH",
       unit: "Personen",
