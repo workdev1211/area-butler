@@ -111,9 +111,8 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 
   switch (mapDisplayMode) {
     case MapDisplayModesEnum.EDITOR: {
-      mapMenuContentHeight = `calc(100% - calc(var(--menu-item-h) * ${
-        isShownAddress ? 3 : 2
-      }) - var(--menu-footer-h))`;
+      mapMenuContentHeight =
+        "calc(100% - calc(var(--menu-item-h) * 3) - var(--menu-footer-h))";
       break;
     }
 
@@ -188,30 +187,28 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
         </div>
       )}
 
-      {((isShownAddress && isEditorMode) || !isEditorMode) && (
-        <div className="map-menu-header" data-tour="reset-position">
-          <button
-            type="button"
-            className="btn btn-link flex gap-3"
-            onClick={() => {
-              if (isShownAddress) {
-                resetPosition();
-              }
-            }}
-          >
-            <img
-              className="w-[20px] h-[20px]"
-              src={positionIcon}
-              alt="position-icon"
-            />
-            <div className="map-menu-header-text">
-              {isShownAddress
-                ? searchAddress
-                : "Genaue Adresse nicht veröffentlicht"}
-            </div>
-          </button>
-        </div>
-      )}
+      <div className="map-menu-header" data-tour="reset-position">
+        <button
+          type="button"
+          className="btn btn-link flex gap-3"
+          onClick={() => {
+            if (isShownAddress) {
+              resetPosition();
+            }
+          }}
+        >
+          <img
+            className="w-[20px] h-[20px]"
+            src={positionIcon}
+            alt="position-icon"
+          />
+          <div className="map-menu-header-text">
+            {isShownAddress
+              ? searchAddress
+              : "Genaue Adresse nicht veröffentlicht"}
+          </div>
+        </button>
+      </div>
 
       <div
         className="map-menu-content"

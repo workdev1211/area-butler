@@ -78,6 +78,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
             <th>Erstellt am</th>
             <th>Letzter Aufruf</th>
             <th>Anzahl der Besuche</th>
+            <th>Adresse angezeigt</th>
             <th />
           </tr>
         </thead>

@@ -153,6 +153,7 @@ const SnapshotsTableRow: FunctionComponent<ISnapshotsTableRowProps> = ({
           : "Kein Aufruf"}
       </td>
       <td>{snapshot.visitAmount || "Keine Besuche"}</td>
+      <td>{snapshot.config?.showAddress ? "Ja" : "Nein"}</td>
       <td>
         <div
           className="grid gap-y-3"
