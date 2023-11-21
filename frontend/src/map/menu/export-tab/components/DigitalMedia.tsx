@@ -112,6 +112,38 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     }
   };
 
+  const getIntUserLinkExpType = (): AreaButlerExportTypesEnum | undefined => {
+    if (integrationUser?.config.isFileLink) {
+      return responseConfig?.showAddress
+        ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+        : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+    }
+
+    if (integrationUser?.config?.exportMatching) {
+      if (
+        responseConfig?.showAddress &&
+        integrationUser.config.exportMatching[
+          AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+        ]
+      ) {
+        return AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+      }
+
+      if (
+        !responseConfig?.showAddress &&
+        integrationUser.config.exportMatching[
+          AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+        ]
+      ) {
+        return AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+      }
+    }
+
+    return responseConfig?.showAddress
+      ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
+      : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
+  };
+
   const isNotIntOrNotExpForIntUser =
     !integrationUser ||
     (!!realEstateListing?.iframeEndsAt &&
@@ -124,38 +156,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     ]
   );
 
-  let intUserLinkExportType: AreaButlerExportTypesEnum | undefined;
-
-  if (integrationUser?.config.isFileLink) {
-    intUserLinkExportType = responseConfig?.showAddress
-      ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-      : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-  }
-
-  if (
-    !integrationUser?.config.isFileLink &&
-    integrationUser?.config.exportMatching
-  ) {
-    if (
-      responseConfig?.showAddress &&
-      integrationUser?.config.exportMatching[
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
-      ]
-    ) {
-      intUserLinkExportType =
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
-    }
-
-    if (
-      !responseConfig?.showAddress &&
-      integrationUser?.config.exportMatching[
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-      ]
-    ) {
-      intUserLinkExportType =
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
-    }
-  }
+  const intUserLinkExpType = getIntUserLinkExpType();
 
   return (
     <div
@@ -201,28 +202,28 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={copyIcon} alt="copy" />
                 <span>Kopieren</span>
               </div>
-              {!!intUserLinkExportType && (
+              {!!intUserLinkExpType && (
                 <div
                   onClick={() => {
-                    if (integrationUser?.config.isFileLink) {
-                      const fileTitle =
-                        intUserLinkExportType ===
-                        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
-                          ? "Anonym - AreaButler Link ohne Adresse"
-                          : "Mit Adresse - AreaButler Link";
-
+                    if (!integrationUser?.config.isFileLink) {
                       void sendToOnOffice({
-                        fileTitle,
-                        exportType: intUserLinkExportType!,
-                        url: directLink,
+                        exportType: intUserLinkExpType!,
+                        text: directLink,
                       });
 
                       return;
                     }
 
+                    const fileTitle =
+                      intUserLinkExpType ===
+                      AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+                        ? "Anonym - AreaButler Link ohne Adresse"
+                        : "Mit Adresse - AreaButler Link";
+
                     void sendToOnOffice({
-                      exportType: intUserLinkExportType!,
-                      text: directLink,
+                      fileTitle,
+                      exportType: intUserLinkExpType!,
+                      url: directLink,
                     });
                   }}
                 >
