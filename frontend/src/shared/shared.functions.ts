@@ -667,10 +667,9 @@ export const deriveInitialEntityGroups = ({
     if (config?.theme === "KF") {
       const activeGroups = config?.defaultActiveGroups ?? [];
 
-      return (
-        [realEstateListingsTitle].includes(title) ||
-        (activeGroups.length < 1 ? index === 0 : activeGroups.includes(title))
-      );
+      return activeGroups.length < 1
+        ? index === 0
+        : activeGroups.includes(title);
     }
 
     return config?.defaultActiveGroups

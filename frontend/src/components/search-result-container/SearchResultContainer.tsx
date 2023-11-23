@@ -236,19 +236,17 @@ const SearchResultContainer = forwardRef<
     useEffect(() => {
       setPreferredLocationsGroup(undefined);
 
-      const groupsFilteredByActiveMeans = deriveEntityGroupsByActiveMeans(
+      const groupsByActMeans = deriveEntityGroupsByActiveMeans(
         searchContextState.responseGroupedEntities,
         searchContextState.responseActiveMeans
       );
 
-      const foundPreferredLocationsGroup = groupsFilteredByActiveMeans.find(
-        (group) => {
-          return group.items[0]?.label === preferredLocationsTitle;
-        }
+      const foundPrefLocGroup = groupsByActMeans.find(
+        (group) => group.items[0]?.label === preferredLocationsTitle
       );
 
-      setPreferredLocationsGroup(foundPreferredLocationsGroup);
-      setResultGroupEntities(groupsFilteredByActiveMeans);
+      setPreferredLocationsGroup(foundPrefLocGroup);
+      setResultGroupEntities(groupsByActMeans);
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [

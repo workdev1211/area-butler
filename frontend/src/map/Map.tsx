@@ -85,7 +85,7 @@ import {
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
-import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
+// import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
@@ -1047,15 +1047,15 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         });
 
         // set realEstateListing to active if theme is KF and group is real estate listings
-        if (config?.theme === "KF") {
-          parsedEntityGroups = parsedEntityGroups.map((peg) => ({
-            ...peg,
-            active:
-              config.theme === "KF" && peg.title === realEstateListingsTitle
-                ? true
-                : peg.active,
-          }));
-        }
+        // if (config?.theme === "KF") {
+        //   parsedEntityGroups = parsedEntityGroups.map((peg) => ({
+        //     ...peg,
+        //     active:
+        //       config.theme === "KF" && peg.title === realEstateListingsTitle
+        //         ? true
+        //         : peg.active,
+        //   }));
+        // }
 
         // Add each POI to the marker cluster group
         parsedEntities?.every((entity) => {

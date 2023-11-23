@@ -81,9 +81,7 @@ const MapMenuKarlaFricke: FunctionComponent<IMapMenuKarlaFrickeProps> = ({
   const listItemPropsAreEqual = (
     prevItem: IListItemProps,
     nextItem: IListItemProps
-  ) => {
-    return prevItem.group.active === nextItem.group.active;
-  };
+  ) => prevItem.group.active === nextItem.group.active;
 
   const ListItemMemo = memo(ListItem, listItemPropsAreEqual);
 
