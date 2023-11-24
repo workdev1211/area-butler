@@ -1084,6 +1084,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                   icon: config?.mapIcon,
                   color:
                     config.primaryColor ?? getRealEstateListingsIcon().color,
+                  isCustom: true,
                 }
               : getRealEstateListingsIcon(userMapPoiIcons)
             : isPreferredLocation
