@@ -4,7 +4,6 @@ import { useHistory, useLocation } from "react-router-dom";
 import {
   allFurnishing,
   allRealEstateCostTypes,
-  allRealEstateStatuses,
 } from "../../../shared/constants/real-estate";
 import editIcon from "../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
@@ -89,11 +88,7 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
           >
             <th>
               {/* TODO move all such text table things to the useEffect and a specific table entity */}
-              {
-                allRealEstateStatuses.find(
-                  (estate) => estate.status === realEstate.status
-                )?.label
-              }
+              {realEstate.status}
             </th>
             <th>{realEstate.name}</th>
             <td>{realEstate.address}</td>

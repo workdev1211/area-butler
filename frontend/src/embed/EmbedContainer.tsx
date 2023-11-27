@@ -31,9 +31,9 @@ import {
   addressExpiredMessage,
   subscriptionExpiredMessage,
 } from "../../../shared/messages/error.message";
-import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../shared/shared.constants";
+import { realEstateAllStatus } from "../../../shared/constants/real-estate";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -162,7 +162,7 @@ const EmbedContainer: FunctionComponent = () => {
     const filteredRealEstateListings = searchConfig.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            searchConfig.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
+            searchConfig.realEstateStatus === realEstateAllStatus ||
             status === searchConfig.realEstateStatus
         )
       : realEstateListings;

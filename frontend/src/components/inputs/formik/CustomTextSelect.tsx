@@ -13,7 +13,7 @@ interface ICustomTextSelectProps {
   textLengthLimit?: number;
   placeholder?: string;
   isDisabled?: boolean;
-  isSimple?: boolean;
+  isInput?: boolean;
 }
 
 const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
@@ -26,7 +26,7 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
   textLengthLimit,
   placeholder,
   isDisabled,
-  isSimple,
+  isInput,
 }) => {
   const [, meta, helpers] = useField<string>(name);
   const { value: textValue } = meta;
@@ -46,7 +46,7 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
 
   return (
     <div
-      className={`rounded-lg p-2 ${isCustomText && !isSimple ? "pb-0" : ""}`}
+      className={`rounded-lg p-2 ${isCustomText && !isInput ? "pb-0" : ""}`}
       style={{ border: "1px solid lightgray" }}
     >
       <select
@@ -85,7 +85,7 @@ const CustomTextSelect: FunctionComponent<ICustomTextSelectProps> = ({
             <span className="label-text">{label}</span>
           </label>
 
-          {isSimple ? (
+          {isInput ? (
             <input
               className="input input-bordered w-full"
               type="text"

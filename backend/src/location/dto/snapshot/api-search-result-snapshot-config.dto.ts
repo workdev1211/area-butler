@@ -20,9 +20,9 @@ import {
   MeansOfTransportation,
 } from '@area-butler-types/types';
 import ApiSnippetEntityVisibilityDto from '../../../dto/api-snippet-entity-visiblity.dto';
-import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
 import ApiSnapshotIconSizesDto from '../../../dto/api-snapshot-icon-sizes.dto';
 import ApiSnapshotPoiFilterDto from '../../../dto/api-snapshot-poi-filter.dto';
+import { realEstateAllStatus } from '../../../../../shared/constants/real-estate';
 
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
@@ -104,8 +104,12 @@ class ApiSearchResultSnapshotConfigDto
 
   @IsOptional()
   @IsString()
-  @NotEquals(ApiRealEstateStatusEnum.ALL)
+  @NotEquals(realEstateAllStatus)
   realEstateStatus?: string;
+
+  @IsOptional()
+  @IsString()
+  realEstateStatus2?: string;
 
   @IsOptional()
   @IsObject()

@@ -25,7 +25,6 @@ import "./RealEstatesTableV2.scss";
 import {
   allFurnishing,
   allRealEstateCostTypes,
-  allRealEstateStatuses,
 } from "../../../../shared/constants/real-estate";
 import editIcon from "../../assets/icons/icons-16-x-16-outline-ic-edit.svg";
 import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
@@ -55,7 +54,8 @@ declare module "@tanstack/table-core" {
 }
 
 export interface IRealEstateTableItem {
-  status: string;
+  status?: string;
+  status2?: string;
   listing: ApiRealEstateListing;
   cost?: string;
   locationIndices?: Record<string, number>;
@@ -141,9 +141,8 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
           listing,
           locationIndices,
           furnishing,
-          status: allRealEstateStatuses.find(
-            (estate) => estate.status === listing.status
-          )!.label,
+          status: listing.status,
+          status2: listing.status2,
           cost: listing.costStructure
             ? `${getRealEstateCost(listing.costStructure)} (${
                 allRealEstateCostTypes.find(
@@ -162,7 +161,12 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
     () => [
       columnHelper.accessor("status", {
         header: "typ",
-        cell: (props) => props.getValue(),
+        cell: (props) => props.getValue() || null,
+        size: 150,
+      }),
+      columnHelper.accessor("status2", {
+        header: "extra-typ",
+        cell: (props) => props.getValue() || null,
         size: 150,
       }),
       columnHelper.accessor((row) => row.listing.name, {

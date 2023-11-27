@@ -42,10 +42,10 @@ import {
   defaultMapZoom,
   googleMapsApiOptions,
 } from "../shared/shared.constants";
-import { ApiRealEstateStatusEnum } from "../../../shared/types/real-estate";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
+import { realEstAllTextStatus } from "../../../shared/constants/real-estate";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -155,20 +155,29 @@ const SnapshotEditorPage: FunctionComponent = () => {
       const { searchResponse, realEstateListings, preferredLocations } =
         snapshotResponse.snapshot;
 
-      const filteredRealEstateListings = snapshotConfig.realEstateStatus
-        ? realEstateListings.filter(
-            ({ status }) =>
-              snapshotConfig.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
-              status === snapshotConfig.realEstateStatus
-          )
-        : realEstateListings;
+      const filteredRealEstates =
+        snapshotConfig.realEstateStatus || snapshotConfig.realEstateStatus2
+          ? realEstateListings.filter(({ name, status, status2 }) => {
+              const filter1 = snapshotConfig.realEstateStatus
+                ? snapshotConfig.realEstateStatus === realEstAllTextStatus ||
+                  status === snapshotConfig.realEstateStatus
+                : true;
+
+              const filter2 = snapshotConfig.realEstateStatus2
+                ? snapshotConfig.realEstateStatus2 === realEstAllTextStatus ||
+                  status2 === snapshotConfig.realEstateStatus2
+                : true;
+
+              return filter1 && filter2;
+            })
+          : realEstateListings;
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups({
           searchResponse,
           config: enhancedConfig,
-          listings: filteredRealEstateListings,
+          listings: filteredRealEstates,
           locations: preferredLocations,
         }),
       });
@@ -219,7 +228,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
         payload: deriveInitialEntityGroups({
           searchResponse,
           config: enhancedConfig,
-          listings: filteredRealEstateListings,
+          listings: filteredRealEstates,
           locations: preferredLocations,
           ignoreVisibility: true,
           ignorePoiFilter: true,
@@ -307,23 +316,34 @@ const SnapshotEditorPage: FunctionComponent = () => {
       return;
     }
 
-    const configRealEstateStatus =
+    const confRealEstStatus =
       searchContextState.responseConfig?.realEstateStatus;
+    const confRealEstStatus2 =
+      searchContextState.responseConfig?.realEstateStatus2;
 
-    const filteredRealEstateListings = configRealEstateStatus
-      ? snapshot.realEstateListings.filter(
-          ({ status }) =>
-            configRealEstateStatus === ApiRealEstateStatusEnum.ALL ||
-            status === configRealEstateStatus
-        )
-      : snapshot.realEstateListings;
+    const filteredRealEstates =
+      confRealEstStatus || confRealEstStatus2
+        ? snapshot.realEstateListings.filter(({ name, status, status2 }) => {
+            const filter1 = confRealEstStatus
+              ? confRealEstStatus === realEstAllTextStatus ||
+                status === confRealEstStatus
+              : true;
+
+            const filter2 = confRealEstStatus2
+              ? confRealEstStatus2 === realEstAllTextStatus ||
+                status2 === confRealEstStatus2
+              : true;
+
+            return filter1 && filter2;
+          })
+        : snapshot.realEstateListings;
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
         searchResponse: snapshot?.searchResponse!,
         config: searchContextState.responseConfig,
-        listings: filteredRealEstateListings,
+        listings: filteredRealEstates,
         locations: snapshot.preferredLocations,
       }),
     });
@@ -332,6 +352,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
   }, [
     searchContextState.responseConfig?.entityVisibility,
     searchContextState.responseConfig?.realEstateStatus,
+    searchContextState.responseConfig?.realEstateStatus2,
     searchContextState.responseConfig?.poiFilter,
   ]);
 

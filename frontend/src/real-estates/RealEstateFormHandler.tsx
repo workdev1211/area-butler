@@ -73,6 +73,7 @@ const mapFormToApiUpsertRealEstateListing = async (
       furnishing,
     },
     status: values.status,
+    status2: values.status2,
   };
 };
 

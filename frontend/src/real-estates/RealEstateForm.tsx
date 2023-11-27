@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   FunctionComponent,
-  ReactNode,
   useEffect,
   useState,
 } from "react";
@@ -11,19 +10,20 @@ import * as Yup from "yup";
 import {
   allFurnishing,
   allRealEstateCostTypes,
-  allRealEstateStatuses,
 } from "../../../shared/constants/real-estate";
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
   ApiRealEstateListing,
+  ApiRealEstateStatus2Enum,
   ApiRealEstateStatusEnum,
 } from "../../../shared/types/real-estate";
 import Input from "../components/inputs/formik/Input";
 import Select from "../components/inputs/formik/Select";
 import Checkbox from "../components/inputs/formik/Checkbox";
-
 import LocationAutocomplete from "../components/LocationAutocomplete";
+import CustomTextSelect from "../components/inputs/formik/CustomTextSelect";
+import { ISelectTextValue } from "../../../shared/types/types";
 
 export interface RealEstateFormProps {
   formId: string;
@@ -69,6 +69,24 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
 
   const minPrice = localRealEstate?.costStructure?.minPrice?.amount;
   const maxPrice = localRealEstate?.costStructure?.price?.amount;
+
+  const status1SelectOptions = Object.values(
+    ApiRealEstateStatusEnum
+  ).map<ISelectTextValue>((status) => ({ text: status, value: status }));
+
+  const statusCustTextValue = "custom";
+  const statusCustOption = {
+    text: "Geben Sie Ihren Extra Status ein",
+    value: statusCustTextValue,
+  };
+
+  status1SelectOptions.push(statusCustOption);
+
+  const status2SelectOptions = Object.values(
+    ApiRealEstateStatus2Enum
+  ).map<ISelectTextValue>((status) => ({ text: status, value: status }));
+
+  status2SelectOptions.push(statusCustOption);
 
   return (
     <Formik
@@ -133,22 +151,22 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
               </Checkbox>
             </div>
             <div className="form-control">
-              <Select label="Typ" name="status" placeholder="Typ">
-                {allRealEstateStatuses.reduce(
-                  (result: ReactNode[], { label, status }) => {
-                    if (status !== ApiRealEstateStatusEnum.ALL) {
-                      result.push(
-                        <option value={status} key={status}>
-                          {label}
-                        </option>
-                      );
-                    }
-
-                    return result;
-                  },
-                  []
-                )}
-              </Select>
+              <CustomTextSelect
+                label="Typ"
+                name="status"
+                selectOptions={status1SelectOptions}
+                customTextValue={statusCustTextValue}
+                isInput={true}
+              />
+            </div>
+            <div className="form-control">
+              <CustomTextSelect
+                label="Extra-Typ"
+                name="status2"
+                selectOptions={status2SelectOptions}
+                customTextValue={statusCustTextValue}
+                isInput={true}
+              />
             </div>
             <div className="form-control">
               <Input

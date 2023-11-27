@@ -19,9 +19,9 @@ import {
   setBackgroundColor,
   toggleEntityVisibility,
 } from "../../../shared/shared.functions";
-import { ApiRealEstateStatusEnum } from "../../../../../shared/types/real-estate";
+import { IApiRealEstStatusByUser } from "../../../../../shared/types/real-estate";
 import {
-  allRealEstateStatuses,
+  realEstAllTextStatus,
   realEstateListingsTitle,
   realEstateListingsTitleEmbed,
 } from "../../../../../shared/constants/real-estate";
@@ -36,6 +36,7 @@ import IconSizes from "./components/IconSizes";
 import { useLocationData } from "../../../hooks/locationdata";
 import { truncateText } from "../../../../../shared/functions/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../../../shared/types/location";
+import { useRealEstateData } from "../../../hooks/realestatedata";
 
 const currentSnippetConfigLabel = "Aktuell";
 
@@ -49,6 +50,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   isNewSnapshot = false,
 }) => {
   const { fetchLateSnapConfigs } = useLocationData();
+  const { fetchRealEstStatuses } = useRealEstateData();
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
@@ -64,6 +66,8 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const [isReferenceMap, setIsReferenceMap] = useState<boolean>(
     !!(config.hideMeanToggles && config.hideMapMenu && config.hidePoiIcons)
   );
+  const [realEstStatuses, setRealEstStatuses] =
+    useState<IApiRealEstStatusByUser>({ status: [], status2: [] });
 
   useEffect(() => {
     if (!config.defaultActiveGroups && groupedEntries?.length) {
@@ -104,6 +108,17 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     };
 
     void fetchEmbeddableMaps();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const getRealEstStatuses = async (): Promise<void> => {
+      const fetchedStatuses = await fetchRealEstStatuses();
+      setRealEstStatuses(fetchedStatuses);
+    };
+
+    void getRealEstStatuses();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -410,19 +425,42 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <h4 className="w-[6.5rem] font-bold">Status</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
-                  value={config?.realEstateStatus}
+                  value={config?.realEstateStatus || realEstAllTextStatus}
                   onChange={(event) => {
                     changeConfigParam(
                       "realEstateStatus",
-                      event.target.value !== ApiRealEstateStatusEnum.ALL
-                        ? (event.target.value as ApiRealEstateStatusEnum)
+                      event.target.value !== realEstAllTextStatus
+                        ? event.target.value
                         : undefined
                     );
                   }}
                 >
-                  {allRealEstateStatuses.map(({ label, status }) => (
-                    <option value={status} key={`${status ? status : "alle"}`}>
-                      {label}
+                  {realEstStatuses.status.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1 w-full">
+                <h4 className="w-[6.5rem] font-bold">Extra-Status</h4>
+                <select
+                  className="select select-bordered select-sm flex-1 w-full"
+                  value={config?.realEstateStatus2 || realEstAllTextStatus}
+                  onChange={(event) => {
+                    changeConfigParam(
+                      "realEstateStatus2",
+                      event.target.value !== realEstAllTextStatus
+                        ? event.target.value
+                        : undefined
+                    );
+                  }}
+                >
+                  {realEstStatuses.status2.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
                     </option>
                   ))}
                 </select>

@@ -29,6 +29,7 @@ import {
   ApiExampleFileTypeEnum,
   ApiRealEstateExtSourcesEnum,
   ApiRealEstateListing,
+  IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
@@ -76,6 +77,40 @@ export class RealEstateListingController extends AuthenticatedController {
     );
   }
 
+  @ApiOperation({ description: 'Get real estate statuses of the current user' })
+  @Get('status')
+  async fetchStatusesByUser(
+    @InjectUser() user: UserDocument,
+  ): Promise<IApiRealEstStatusByUser> {
+    return this.realEstateListingService.fetchStatusesByUser(user);
+  }
+
+  @ApiOperation({ description: 'Update real estate location indices' })
+  @Patch('location-indices')
+  @Roles(Role.Admin)
+  async updateLocationIndices(): Promise<string> {
+    await this.realEstateListingService.updateLocationIndices();
+    return 'done';
+  }
+
+  // TODO should be removed after implementing of new statuses
+  @ApiOperation({ description: 'Reverse an update of real estate statuses' })
+  @Patch('status/reverse')
+  @Roles(Role.Admin)
+  async reverseStatusUpdate(): Promise<string> {
+    await this.realEstateListingService.reverseStatusUpdate();
+    return 'done';
+  }
+
+  // TODO should be removed after implementing of new statuses
+  @ApiOperation({ description: 'Update real estate statuses' })
+  @Patch('status')
+  @Roles(Role.Admin)
+  async updateStatuses(): Promise<string> {
+    await this.realEstateListingService.updateStatuses();
+    return 'done';
+  }
+
   @ApiOperation({ description: 'Update a real estate listing' })
   @Put(':id')
   async updateRealEstateListing(
@@ -93,15 +128,6 @@ export class RealEstateListingController extends AuthenticatedController {
     );
   }
 
-  @ApiOperation({ description: 'Update real estate location indices' })
-  @Patch()
-  @Roles(Role.Admin)
-  async updateLocationIndices(): Promise<string> {
-    await this.realEstateListingService.updateLocationIndices();
-
-    return 'done';
-  }
-
   @ApiOperation({ description: 'Delete a real estate listing' })
   @Delete(':id')
   async deleteRealEstateListing(
@@ -110,6 +136,8 @@ export class RealEstateListingController extends AuthenticatedController {
   ): Promise<void> {
     return this.realEstateListingService.deleteRealEstateListing(user, id);
   }
+
+  // -----------------------------------------------------------------------------------
 
   @ApiOperation({ description: 'Import a csv file' })
   @ApiConsumes('multipart/form-data')

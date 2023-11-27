@@ -3,8 +3,8 @@ import { useContext } from "react";
 import { useHttp } from "./http";
 import {
   ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
+  IApiRealEstStatusByUser,
 } from "../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
@@ -15,6 +15,10 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
+import {
+  realEstAllTextStatus,
+  realEstateAllStatus,
+} from "../../../shared/constants/real-estate";
 
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -36,16 +40,13 @@ export const useRealEstateData = () => {
   };
 
   const fetchRealEstates = async (
-    realEstateStatus: string = ApiRealEstateStatusEnum.ALL
+    realEstateStatus: string = realEstateAllStatus
   ): Promise<void> => {
     let url = isIntegration
       ? "/api/real-estate-listing-int/listings"
       : "/api/real-estate-listing/listings";
 
-    if (realEstateStatus) {
-      url += `?status=${realEstateStatus}`;
-    }
-
+    url += `?status=${realEstateStatus}`;
     const realEstates = (await get<ApiRealEstateListing[]>(url)).data;
 
     realEstateDispatch({
@@ -69,6 +70,18 @@ export const useRealEstateData = () => {
     });
   };
 
+  const fetchRealEstStatuses = async (): Promise<IApiRealEstStatusByUser> => {
+    let url = isIntegration
+      ? "/api/real-estate-listing-int/status"
+      : "/api/real-estate-listing/status";
+
+    const realEstStatuses = (await get<IApiRealEstStatusByUser>(url)).data;
+    realEstStatuses.status.unshift(realEstAllTextStatus);
+    realEstStatuses.status2.unshift(realEstAllTextStatus);
+
+    return realEstStatuses;
+  };
+
   const updateRealEstate = async (
     realEstateId: string,
     updatedData: Partial<ApiUpsertRealEstateListing>
@@ -87,6 +100,7 @@ export const useRealEstateData = () => {
     createRealEstate,
     fetchRealEstates,
     fetchRealEstateByIntId,
+    fetchRealEstStatuses,
     updateRealEstate,
   };
 };

@@ -2,8 +2,6 @@ import {
   ApiFurnishing,
   ApiRealEstateCostType,
   ApiRealEstateExtSourcesEnum,
-  ApiRealEstateStatusEnum,
-  IApiRealEstateStatus,
 } from "../types/real-estate";
 
 export const allFurnishing = [
@@ -23,34 +21,6 @@ export const allRealEstateCostTypes = [
   { label: "Monatl. Kaltmiete", type: ApiRealEstateCostType.RENT_MONTHLY_COLD },
 ];
 
-export const allRealEstateStatuses: IApiRealEstateStatus[] = [
-  { label: "Alle", status: ApiRealEstateStatusEnum.ALL },
-  { label: "In Vorbereitung", status: ApiRealEstateStatusEnum.IN_PREPARATION },
-  { label: "Miete", status: ApiRealEstateStatusEnum.FOR_RENT },
-  { label: "Kauf", status: ApiRealEstateStatusEnum.FOR_SALE },
-  { label: "Vermietet", status: ApiRealEstateStatusEnum.RENTED },
-  { label: "Verkauft", status: ApiRealEstateStatusEnum.SOLD },
-  { label: "Neubau", status: ApiRealEstateStatusEnum.NEW_CONSTRUCTION },
-  { label: "Archiviert", status: ApiRealEstateStatusEnum.ARCHIVED },
-  { label: "Reserviert", status: ApiRealEstateStatusEnum.RESERVED },
-  {
-    label: "Marktbeobachtung",
-    status: ApiRealEstateStatusEnum.MARKET_OBSERVATION,
-  },
-];
-
-export const areaButlerEstateStatusMapping = new Map([
-  ["IN VORBEREITUNG", ApiRealEstateStatusEnum.IN_PREPARATION],
-  ["MIETE", ApiRealEstateStatusEnum.FOR_RENT],
-  ["KAUF", ApiRealEstateStatusEnum.FOR_SALE],
-  ["VERMIETET", ApiRealEstateStatusEnum.RENTED],
-  ["VERKAUFT", ApiRealEstateStatusEnum.SOLD],
-  ["NEUBAU", ApiRealEstateStatusEnum.NEW_CONSTRUCTION],
-  ["ARCHIVIERT", ApiRealEstateStatusEnum.ARCHIVED],
-  ["RESERVIERT", ApiRealEstateStatusEnum.RESERVED],
-  ["MARKTBEOBACHTUNG", ApiRealEstateStatusEnum.MARKET_OBSERVATION],
-]);
-
 export const apiConnectionTypeNames: Record<
   ApiRealEstateExtSourcesEnum,
   string
@@ -61,3 +31,6 @@ export const apiConnectionTypeNames: Record<
 
 export const realEstateListingsTitle = "Meine Objekte";
 export const realEstateListingsTitleEmbed = "Weitere Objekte";
+
+export const realEstateAllStatus = "all";
+export const realEstAllTextStatus = "Alle";

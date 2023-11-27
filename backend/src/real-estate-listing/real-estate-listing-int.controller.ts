@@ -21,7 +21,10 @@ import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import {
+  ApiRealEstateListing,
+  IApiRealEstStatusByUser,
+} from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
 
@@ -86,6 +89,14 @@ export class RealEstateListingIntController {
       realEstateDescriptionQuery,
       realEstateListing,
     );
+  }
+
+  @ApiOperation({ description: 'Get real estate statuses of the current user' })
+  @Get('status')
+  async fetchStatusesByUser(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiRealEstStatusByUser> {
+    return this.realEstateListingService.fetchStatusesByUser(integrationUser);
   }
 
   @ApiOperation({ description: 'Update a real estate listing' })

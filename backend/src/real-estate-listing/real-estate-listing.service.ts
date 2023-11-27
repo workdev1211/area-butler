@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { FilterQuery, Model, Types } from 'mongoose';
 
@@ -11,6 +11,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
+  IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
@@ -19,9 +20,12 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { ApiGeometry } from '@area-butler-types/types';
+import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 
 @Injectable()
 export class RealEstateListingService {
+  private readonly logger = new Logger(RealEstateListingService.name);
+
   constructor(
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
@@ -97,7 +101,7 @@ export class RealEstateListingService {
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    status: string = ApiRealEstateStatusEnum.ALL,
+    status: string = realEstateAllStatus,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     let filter;
@@ -121,11 +125,50 @@ export class RealEstateListingService {
       };
     }
 
-    if (status !== ApiRealEstateStatusEnum.ALL) {
+    if (status !== realEstateAllStatus) {
       filter.status = status;
     }
 
     return this.realEstateListingModel.find(filter);
+  }
+
+  async fetchStatusesByUser(
+    user: UserDocument | TIntegrationUserDocument,
+  ): Promise<IApiRealEstStatusByUser> {
+    const isIntegrationUser = 'integrationUserId' in user;
+    let filter;
+
+    if (isIntegrationUser) {
+      filter = {
+        'integrationParams.integrationUserId': user.integrationUserId,
+        'integrationParams.integrationType': user.integrationType,
+      };
+    }
+
+    if (!isIntegrationUser) {
+      const userIds: string[] = [user.id];
+
+      if (user.parentId) {
+        userIds.push(user.parentId);
+      }
+
+      filter = {
+        userId: { $in: userIds },
+      };
+    }
+
+    // TODO think about refactoring to the aggregation pipelines
+
+    const status = await this.realEstateListingModel.distinct<string>(
+      'status',
+      filter,
+    );
+    const status2 = await this.realEstateListingModel.distinct<string>(
+      'status2',
+      filter,
+    );
+
+    return { status, status2 };
   }
 
   async updateRealEstateListing(
@@ -162,6 +205,7 @@ export class RealEstateListingService {
   async updateLocationIndices(): Promise<void> {
     const total = await this.realEstateListingModel.find().count();
     const limit = 100;
+    this.logger.debug('Location index update starting!');
 
     for (let skip = 0; skip < total; skip += limit) {
       const realEstates = await this.realEstateListingModel
@@ -191,6 +235,72 @@ export class RealEstateListingService {
         }
       }
     }
+
+    this.logger.debug('Location index update finished!');
+  }
+
+  // TODO should be removed after implementing of new statuses
+  async reverseStatusUpdate(): Promise<void> {
+    const oldStatuses = Object.keys(ApiRealEstateStatusEnum);
+    const newStatuses = Object.values<string>(ApiRealEstateStatusEnum);
+    const total = await this.realEstateListingModel.find().count();
+    const limit = 100;
+    this.logger.debug('Reverse status update starting!');
+
+    for (let skip = 0; skip < total; skip += limit) {
+      const realEstates = await this.realEstateListingModel
+        .find()
+        .skip(skip)
+        .limit(limit);
+
+      for await (const realEstate of realEstates) {
+        const newStatus = realEstate.status;
+
+        if (newStatuses.includes(newStatus)) {
+          realEstate.status = oldStatuses.find(
+            (status) => ApiRealEstateStatusEnum[status] === newStatus,
+          );
+
+          await realEstate.save();
+
+          this.logger.debug(
+            `Status of ${realEstate.id} has been updated from "${newStatus}" to "${realEstate.status}".`,
+          );
+        }
+      }
+    }
+
+    this.logger.debug('Reverse status update finished!');
+  }
+
+  // TODO should be removed after implementing of new statuses
+  async updateStatuses(): Promise<void> {
+    const oldStatuses = Object.keys(ApiRealEstateStatusEnum);
+    const total = await this.realEstateListingModel.find().count();
+    const limit = 100;
+    this.logger.debug('Status update starting!');
+
+    for (let skip = 0; skip < total; skip += limit) {
+      const realEstates = await this.realEstateListingModel
+        .find()
+        .skip(skip)
+        .limit(limit);
+
+      for await (const realEstate of realEstates) {
+        const oldStatus = realEstate.status;
+
+        if (oldStatuses.includes(oldStatus)) {
+          realEstate.status = ApiRealEstateStatusEnum[oldStatus];
+          await realEstate.save();
+
+          this.logger.debug(
+            `Status of ${realEstate.id} has been updated from "${oldStatus}" to "${realEstate.status}".`,
+          );
+        }
+      }
+    }
+
+    this.logger.debug('Status update finished!');
   }
 
   async deleteRealEstateListing(

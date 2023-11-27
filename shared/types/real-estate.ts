@@ -101,7 +101,6 @@ export enum ApiEnergyEfficiency {
 }
 
 export enum ApiRealEstateStatusEnum {
-  ALL = "Alle",
   IN_PREPARATION = "In Vorbereitung",
   FOR_RENT = "Miete", // Miete
   FOR_SALE = "Kauf", // Kauf
@@ -140,4 +139,9 @@ export interface IApiPropstackConSettings {
 export interface IApiOnOfficeConSettings {
   token: string;
   secret: string;
+}
+
+export interface IApiRealEstStatusByUser {
+  status: string[];
+  status2: string[];
 }

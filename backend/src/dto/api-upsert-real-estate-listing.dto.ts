@@ -9,14 +9,12 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import {
-  ApiRealEstateStatusEnum,
-  ApiUpsertRealEstateListing,
-} from '@area-butler-types/real-estate';
+import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiGeoJsonPointDto from './api-geo-json-point.dto';
+import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 
 class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
   @IsNotEmpty()
@@ -53,10 +51,14 @@ class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
   @IsBoolean()
   showInSnippet: boolean;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @NotEquals(ApiRealEstateStatusEnum.ALL)
-  status: string;
+  @NotEquals(realEstateAllStatus)
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  status2?: string;
 }
 
 export default ApiUpsertRealEstateListingDto;

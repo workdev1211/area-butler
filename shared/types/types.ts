@@ -378,6 +378,7 @@ export interface ApiSearchResultSnapshotConfig {
   entityVisibility?: ApiSnippetEntityVisibility[];
   fixedRealEstates?: boolean;
   realEstateStatus?: string;
+  realEstateStatus2?: string;
   poiFilter?: IApiSnapshotPoiFilter;
   iconSizes?: IApiSnapshotIconSizes;
   isMapMenuCollapsed?: boolean;

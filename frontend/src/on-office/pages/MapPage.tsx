@@ -9,10 +9,7 @@ import { useLocation, useParams } from "react-router-dom";
 
 import "./MapPage.scss";
 
-import {
-  ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
-} from "../../../../shared/types/real-estate";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import {
   SearchContext,
   SearchContextActionTypes,
@@ -48,6 +45,7 @@ import { useLocationIndexData } from "../../hooks/locationindexdata";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
 import { useRealEstateData } from "../../hooks/realestatedata";
+import { realEstateAllStatus } from "../../../../shared/constants/real-estate";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -153,7 +151,7 @@ const MapPage: FunctionComponent = () => {
     const filteredRealEstates = config.realEstateStatus
       ? realEstateListings.filter(
           ({ status }) =>
-            config.realEstateStatus === ApiRealEstateStatusEnum.ALL ||
+            config.realEstateStatus === realEstateAllStatus ||
             status === config.realEstateStatus
         )
       : realEstateListings;

@@ -130,7 +130,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
                 customTextValue={custTargetGroupOption.value}
                 initialText={initialValues?.targetGroupName}
                 textLengthLimit={250}
-                isSimple={true}
+                isInput={true}
               />
             </div>
 

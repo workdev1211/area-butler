@@ -1,24 +1,11 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import Select, {
-  ActionMeta,
-  ControlProps,
-  CSSObjectWithLabel,
-  GroupBase,
-  MenuProps,
-  SingleValue,
-} from "react-select";
 import { Loader } from "@googlemaps/js-api-loader";
 
 import DefaultLayout from "../layout/defaultLayout";
-import { allRealEstateStatuses } from "../../../shared/constants/real-estate";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import uploadIcon from "../assets/icons/upload_file.svg";
-import {
-  ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
-  IApiRealEstateStatus,
-} from "../../../shared/types/real-estate";
+import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
 import {
@@ -32,7 +19,6 @@ import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useRealEstateData } from "../hooks/realestatedata";
 import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
-// import RealEstatesTable from "./RealEstatesTable";
 import RealEstatesTableV2 from "../real-estates/table/RealEstatesTableV2";
 import { RealEstateContext } from "../context/RealEstateContext";
 
@@ -46,9 +32,6 @@ const RealEstatesPage: FunctionComponent = () => {
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
 
-  const [realEstateStatus, setRealEstateStatus] = useState<string>(
-    ApiRealEstateStatusEnum.ALL
-  );
   const [realEstateSnapshots, setRealEstateSnapshots] = useState<
     ApiSearchResultSnapshotResponse[]
   >([]);
@@ -93,9 +76,9 @@ const RealEstatesPage: FunctionComponent = () => {
   }, [user]);
 
   useEffect(() => {
-    void fetchRealEstates(realEstateStatus);
+    void fetchRealEstates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [realEstateStatus]);
+  }, []);
 
   const openSnapshotsModal = (realEstate: ApiRealEstateListing): void => {
     const { lat, lng } = realEstate.coordinates!;
@@ -158,42 +141,6 @@ const RealEstatesPage: FunctionComponent = () => {
     );
   };
 
-  const customStyles = {
-    menu: (
-      provided: CSSObjectWithLabel,
-      state: MenuProps<
-        IApiRealEstateStatus,
-        false,
-        GroupBase<IApiRealEstateStatus>
-      >
-    ) => ({
-      ...provided,
-      zIndex: 99,
-    }),
-    control: (
-      provided: CSSObjectWithLabel,
-      state: ControlProps<
-        IApiRealEstateStatus,
-        false,
-        GroupBase<IApiRealEstateStatus>
-      >
-    ) => ({
-      ...provided,
-      boxShadow: undefined,
-      borderWidth: "2px",
-      borderColor: "var(--primary)",
-      "&:hover": { borderColor: "var(--primary)" },
-      width: "20rem",
-    }),
-  };
-
-  const onRealEstateStatusChange = (
-    option: SingleValue<IApiRealEstateStatus>,
-    action: ActionMeta<IApiRealEstateStatus>
-  ): void => {
-    setRealEstateStatus(option!.status);
-  };
-
   return (
     <DefaultLayout
       title="Meine Immobilien"
@@ -211,7 +158,7 @@ const RealEstatesPage: FunctionComponent = () => {
         <CsvImportModal
           isShownModal={isShownCsvImportModal}
           closeModal={async () => {
-            await fetchRealEstates(realEstateStatus);
+            await fetchRealEstates();
             setIsShownCsvImportModal(false);
           }}
           fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
@@ -225,25 +172,6 @@ const RealEstatesPage: FunctionComponent = () => {
           }}
         />
       )}
-      <div
-        className="w-1/2 sm:w-1/6 flex items-center gap-2"
-        style={{ padding: "5px 5px 5px 5px" }}
-      >
-        <Select
-          styles={customStyles}
-          options={allRealEstateStatuses}
-          isSearchable={false}
-          defaultValue={allRealEstateStatuses.find(
-            ({ status }) => status === ApiRealEstateStatusEnum.ALL
-          )}
-          placeholder="Wählen Sie einen Typ..."
-          onChange={async (option, action) => {
-            await onRealEstateStatusChange(option, action);
-          }}
-          getOptionValue={(option) => option.status}
-        />
-        <span>Immobilienart</span>
-      </div>
       {listings.length > 0 && (
         <div data-tour="real-estates-table">
           {/*<RealEstatesTable openSnapshotsModal={openSnapshotsModal} />*/}

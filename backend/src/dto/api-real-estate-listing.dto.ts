@@ -10,13 +10,11 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 
-import {
-  ApiRealEstateListing,
-  ApiRealEstateStatusEnum,
-} from '@area-butler-types/real-estate';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
+import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 
 class ApiRealEstateListingDto implements ApiRealEstateListing {
   @IsNotEmpty()
@@ -54,10 +52,14 @@ class ApiRealEstateListingDto implements ApiRealEstateListing {
   @Type(() => ApiCoordinatesDto)
   coordinates: ApiCoordinatesDto;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  @NotEquals(ApiRealEstateStatusEnum.ALL)
-  status: string;
+  @NotEquals(realEstateAllStatus)
+  status?: string;
+
+  @IsOptional()
+  @IsString()
+  status2?: string;
 
   @IsNotEmpty()
   @IsBoolean()
