@@ -90,18 +90,21 @@ import { useTools } from "../hooks/tools";
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
+  isAddressShown: boolean;
   hideEntityFunction?: (entity: ResultEntity) => void;
 
   constructor(
     latLng: L.LatLngExpression,
     entity: ResultEntity,
     searchAddress: string,
+    isAddressShown: boolean,
     options?: L.MarkerOptions,
     hideEntity?: (item: ResultEntity) => void
   ) {
     super(latLng, options);
     this.entity = entity;
     this.searchAddress = searchAddress;
+    this.isAddressShown = isAddressShown;
     this.hideEntityFunction = hideEntity;
   }
 
@@ -187,7 +190,7 @@ export class IdMarker extends L.Marker {
         const realEstateData = this.entity.realEstateData;
         const realEstateInformationParts = [];
 
-        if (street) {
+        if (street && this.isAddressShown) {
           realEstateInformationParts.push(
             `<span class="font-semibold mt-2">Adresse: </span> ${street}`
           );
@@ -1147,6 +1150,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             entity.coordinates,
             entity,
             searchAddress,
+            !!config?.showAddress,
             {
               icon,
             },
