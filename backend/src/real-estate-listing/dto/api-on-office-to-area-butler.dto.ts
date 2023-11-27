@@ -32,7 +32,8 @@ import {
 } from '@area-butler-types/on-office';
 import { areaButlerEstateStatusMapping } from '../../../../shared/constants/real-estate';
 
-export interface IApiOnOfficeProcessedRealEstate extends IApiOnOfficeRealEstate {
+export interface IApiOnOfficeProcessedRealEstate
+  extends IApiOnOfficeRealEstate {
   address: string; // 'address' field comes from our side after the geocoding
   integrationParams?: IApiIntegrationParams;
   // LABELS - we need them for the csv import
@@ -56,10 +57,10 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsString()
   @Transform(
     ({
-      obj: { objekttitel, address },
+      obj: { objekttitel, objekttyp, address },
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
-    }): string => objekttitel || address,
+    }): string => objekttitel || objekttyp || address,
     {
       toClassOnly: true,
     },

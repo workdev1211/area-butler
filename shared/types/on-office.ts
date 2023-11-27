@@ -178,6 +178,7 @@ export interface IApiOnOfficeRealEstate {
   // status2: ApiOnOfficeEstateStatusesEnum; // the old definition
   status2: string; // the label is "Status"
   objekttitel: string; // estate title
+  objekttyp: string; // estate type
   strasse: string; // street name
   hausnummer: string; // building no
   plz: string; // zip code
