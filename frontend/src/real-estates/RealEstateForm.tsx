@@ -1,9 +1,4 @@
-import {
-  ChangeEvent,
-  FunctionComponent,
-  useEffect,
-  useState,
-} from "react";
+import { ChangeEvent, FunctionComponent, useEffect, useState } from "react";
 import { Form, Formik } from "formik";
 import * as Yup from "yup";
 
@@ -152,16 +147,16 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
             </div>
             <div className="form-control">
               <CustomTextSelect
-                label="Typ"
+                label="Vermarktungsart"
                 name="status"
                 selectOptions={status1SelectOptions}
                 customTextValue={statusCustTextValue}
                 isInput={true}
               />
             </div>
-            <div className="form-control">
+            <div className="form-control mt-3">
               <CustomTextSelect
-                label="Extra-Typ"
+                label="Status"
                 name="status2"
                 selectOptions={status2SelectOptions}
                 customTextValue={statusCustTextValue}

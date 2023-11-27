@@ -866,6 +866,7 @@ export class OnOfficeService {
                 'anzahl_balkone',
                 'unterkellert',
                 'vermarktungsart',
+                'status2',
               ],
               extendedclaim: extendedClaim,
             },

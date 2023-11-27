@@ -45,7 +45,7 @@ import { useLocationIndexData } from "../../hooks/locationindexdata";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
 import { useRealEstateData } from "../../hooks/realestatedata";
-import { realEstateAllStatus } from "../../../../shared/constants/real-estate";
+import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
@@ -148,13 +148,22 @@ const MapPage: FunctionComponent = () => {
       config,
     } = snapshotResponse;
 
-    const filteredRealEstates = config.realEstateStatus
-      ? realEstateListings.filter(
-          ({ status }) =>
-            config.realEstateStatus === realEstateAllStatus ||
-            status === config.realEstateStatus
-        )
-      : realEstateListings;
+    const filteredRealEstates =
+      config.realEstateStatus || config.realEstateStatus2
+        ? realEstateListings.filter(({ name, status, status2 }) => {
+            const filter1 = config.realEstateStatus
+              ? config.realEstateStatus === realEstAllTextStatus ||
+                status === config.realEstateStatus
+              : true;
+
+            const filter2 = config.realEstateStatus2
+              ? config.realEstateStatus2 === realEstAllTextStatus ||
+                status2 === config.realEstateStatus2
+              : true;
+
+            return filter1 && filter2;
+          })
+        : realEstateListings;
 
     setProcessedRealEstates(filteredRealEstates);
 
@@ -257,12 +266,36 @@ const MapPage: FunctionComponent = () => {
       return;
     }
 
+    const confRealEstStatus =
+      searchContextState.responseConfig?.realEstateStatus;
+    const confRealEstStatus2 =
+      searchContextState.responseConfig?.realEstateStatus2;
+
+    const filteredRealEstates =
+      confRealEstStatus || confRealEstStatus2
+        ? snapshotResponse.snapshot.realEstateListings.filter(
+            ({ name, status, status2 }) => {
+              const filter1 = confRealEstStatus
+                ? confRealEstStatus === realEstAllTextStatus ||
+                  status === confRealEstStatus
+                : true;
+
+              const filter2 = confRealEstStatus2
+                ? confRealEstStatus2 === realEstAllTextStatus ||
+                  status2 === confRealEstStatus2
+                : true;
+
+              return filter1 && filter2;
+            }
+          )
+        : snapshotResponse.snapshot.realEstateListings;
+
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
         searchResponse: snapshotResponse.snapshot.searchResponse,
         config: searchContextState.responseConfig,
-        listings: processedRealEstates,
+        listings: filteredRealEstates,
         locations: snapshotResponse?.snapshot.preferredLocations,
       }),
     });
@@ -271,6 +304,7 @@ const MapPage: FunctionComponent = () => {
   }, [
     searchContextState.responseConfig?.entityVisibility,
     searchContextState.responseConfig?.realEstateStatus,
+    searchContextState.responseConfig?.realEstateStatus2,
     searchContextState.responseConfig?.poiFilter,
     snapshotResponse,
     processedRealEstates,

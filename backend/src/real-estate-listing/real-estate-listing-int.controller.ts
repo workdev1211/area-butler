@@ -92,6 +92,7 @@ export class RealEstateListingIntController {
   }
 
   @ApiOperation({ description: 'Get real estate statuses of the current user' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('status')
   async fetchStatusesByUser(
     @InjectUser() integrationUser: TIntegrationUserDocument,
