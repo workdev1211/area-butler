@@ -57,14 +57,17 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
           <div className="card-actions flex flex-col items-center gap-2">
             {price !== 0 ? (
               <>
-                <div className="grid grid-cols-3 items-center gap-2">
-                  <div className="text-left">Einzeladressen:</div>
+                <div
+                  className="grid items-center gap-2"
+                  style={{ gridTemplateColumns: "2fr 0.5fr 3fr" }}
+                >
+                  <div className="pl-1 text-left">Einzeladressen:</div>
                   <input
-                    className="input input-bordered h-auto"
+                    className="input input-bordered h-auto pr-0"
                     type="text"
                     placeholder="XX"
                     size={4}
-                    maxLength={5}
+                    maxLength={4}
                     disabled={isCardDisabled}
                     value={productQuantity.ordinary}
                     onChange={({ target: { value } }) => {
@@ -75,16 +78,21 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                       setProductQuantity({ ordinary: +value, tenfold: 0 });
                     }}
                   />
-                  <div className="font-bold text-xl">
-                    x {convertPriceToHuman(price)}
+                  <div className="flex items-center font-bold">
+                    <div className="text-xl whitespace-nowrap">
+                      x {convertPriceToHuman(price)}
+                    </div>
+                    {/*{type !== OnOfficeProductTypesEnum.STATS_EXPORT && (*/}
+                    {/*  <div className="badge badge-primary ml-1">-20%</div>*/}
+                    {/*)}*/}
                   </div>
-                  <span className="text-left">10er Karten:</span>
+                  <div className="pl-1 text-left">10er Karten:</div>
                   <input
-                    className="input input-bordered h-auto"
+                    className="input input-bordered h-auto pr-0"
                     type="text"
                     placeholder="XX"
                     size={4}
-                    maxLength={5}
+                    maxLength={4}
                     disabled={isCardDisabled}
                     value={productQuantity.tenfold}
                     onChange={({ target: { value } }) => {
@@ -95,8 +103,13 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                       setProductQuantity({ ordinary: 0, tenfold: +value });
                     }}
                   />
-                  <div className="font-bold text-xl">
-                    x {convertPriceToHuman(tenfoldProduct.price)}
+                  <div className="flex items-center font-bold">
+                    <div className="text-xl whitespace-nowrap">
+                      x {convertPriceToHuman(tenfoldProduct.price)}
+                    </div>
+                    {/*{type !== OnOfficeProductTypesEnum.STATS_EXPORT && (*/}
+                    {/*  <div className="badge badge-primary ml-1">-20%</div>*/}
+                    {/*)}*/}
                   </div>
                 </div>
                 <button

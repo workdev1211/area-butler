@@ -9,6 +9,7 @@ import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/in
 import { getProductNameByType } from "../../shared/integration.functions";
 import { copyTextToClipboard } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
+import fireIcon from "../../assets/icons/fire.svg";
 
 export const ProductPage: FunctionComponent = () => {
   const {
@@ -90,10 +91,45 @@ export const ProductPage: FunctionComponent = () => {
           </h1>
         </div>
 
+        {/* Cyberweek sales */}
+
+        {/*<div*/}
+        {/*  className="flex items-center justify-center text-center w-full py-10 text-4xl font-bold rounded-2xl bg-primary-gradient"*/}
+        {/*  style={{*/}
+        {/*    color: "white",*/}
+        {/*    filter: "drop-shadow(0 0 0.5rem var(--primary));",*/}
+        {/*  }}*/}
+        {/*>*/}
+        {/*  <img*/}
+        {/*    className="w-[50px] h-[50px] mx-3"*/}
+        {/*    style={{*/}
+        {/*      left: "calc(var(--content-padding-x) + 10px)",*/}
+        {/*    }}*/}
+        {/*    src={fireIcon}*/}
+        {/*    alt="fire-icon"*/}
+        {/*  />*/}
+        {/*  <div*/}
+        {/*    style={{*/}
+        {/*      textShadow: "1px 2px 3px white, 0px 1px 0px white",*/}
+        {/*    }}*/}
+        {/*  >*/}
+        {/*    Cyberweek Angebot am 01.12. Sichern Sie sich jetzt die bereits*/}
+        {/*    reduzierten Preise im Shop.*/}
+        {/*  </div>*/}
+        {/*  <img*/}
+        {/*    className="w-[50px] h-[50px] mx-3"*/}
+        {/*    style={{*/}
+        {/*      right: "calc(var(--content-padding-x) + 10px)",*/}
+        {/*    }}*/}
+        {/*    src={fireIcon}*/}
+        {/*    alt="fire-icon"*/}
+        {/*  />*/}
+        {/*</div>*/}
+
         {/* Product list */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-          {onOfficeProducts.map((groupedProducts, i) => (
+          {onOfficeProducts.map((groupedProducts) => (
             <ProductCard
               key={groupedProducts[0].type}
               products={groupedProducts}

@@ -129,7 +129,7 @@ export const convertOnOfficeProdToIntUserProd = ({
     }
 
     case OnOfficeProductTypesEnum.STATS_EXPORT_10: {
-      const resultingQuantity = quantity * 10;
+      const resultingQuantity = quantity * 15;
 
       integrationUserProducts.push(
         {
