@@ -12,37 +12,37 @@ export const mapSnapshotOnOfficeProduct: IOnOfficeProduct = {
 export const openAiOnOfficeProduct: IOnOfficeProduct = {
   name: "P2: KI-Texte",
   type: OnOfficeProductTypesEnum.OPEN_AI,
-  price: 0.99,
+  price: 0.79,
 };
 
 export const openAi10OnOfficeProduct: IOnOfficeProduct = {
   name: "P2: KI-Texte x10",
   type: OnOfficeProductTypesEnum.OPEN_AI_10,
-  price: 8.91,
+  price: 7.13,
 };
 
 export const mapIframeOnOfficeProduct: IOnOfficeProduct = {
   name: "P3: Interaktive Karten",
   type: OnOfficeProductTypesEnum.MAP_IFRAME,
-  price: 7.99,
+  price: 6.39,
 };
 
 export const mapIframe10OnOfficeProduct: IOnOfficeProduct = {
   name: "P3: Interaktive Karten x10",
   type: OnOfficeProductTypesEnum.MAP_IFRAME_10,
-  price: 71.91,
+  price: 57.53,
 };
 
 export const onePageOnOfficeProduct: IOnOfficeProduct = {
   name: "P4: Lage-Exposé",
   type: OnOfficeProductTypesEnum.ONE_PAGE,
-  price: 9.99,
+  price: 7.99,
 };
 
 export const onePage10OnOfficeProduct: IOnOfficeProduct = {
   name: "P4: Lage-Exposé x10",
   type: OnOfficeProductTypesEnum.ONE_PAGE_10,
-  price: 89.91,
+  price: 71.93,
 };
 
 export const statsExportOnOfficeProduct: IOnOfficeProduct = {
