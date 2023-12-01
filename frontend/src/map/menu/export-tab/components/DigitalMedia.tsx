@@ -113,6 +113,10 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   };
 
   const getIntUserLinkExpType = (): AreaButlerExportTypesEnum | undefined => {
+    if (!integrationUser) {
+      return;
+    }
+
     if (integrationUser?.config.isFileLink) {
       return responseConfig?.showAddress
         ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
