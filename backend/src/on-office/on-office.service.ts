@@ -869,6 +869,7 @@ export class OnOfficeService {
                 'status2',
               ],
               extendedclaim: extendedClaim,
+              formatoutput: true,
             },
           },
         ],

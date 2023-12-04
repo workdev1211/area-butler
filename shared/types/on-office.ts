@@ -96,6 +96,7 @@ interface IApiOnOfficeRequestActionParameters {
   modules?: string[]; // enum[]
   listlimit?: number; // 20 by default
   listoffset?: number;
+  formatoutput?: boolean;
   // file upload start
   module?: "estate"; // enum
   freetext?: string; // file description
