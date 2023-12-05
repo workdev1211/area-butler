@@ -1,11 +1,12 @@
 import { IsInt, IsObject, IsOptional, IsPositive } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { FilterQuery, ProjectionFields } from 'mongoose';
 
 import {
   IApiFetchSnapshotsReq,
-  IApiMongoFilterParams,
-  IApiMongoProjectSortParams,
+  TApiMongoSortQuery,
 } from '../../shared/shared.types';
+import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 
 class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {
   @IsOptional()
@@ -26,15 +27,20 @@ class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {
 
   @IsOptional()
   @Transform(
-    ({ value }: { value: string }): IApiMongoFilterParams => JSON.parse(value),
+    ({ value }: { value: string }): FilterQuery<SearchResultSnapshotDocument> =>
+      JSON.parse(value),
     { toClassOnly: true },
   )
   @IsObject()
-  filter?: IApiMongoFilterParams;
+  filter?: FilterQuery<SearchResultSnapshotDocument>;
 
   @IsOptional()
   @Transform(
-    ({ value }: { value: string }): IApiMongoProjectSortParams => {
+    ({
+      value,
+    }: {
+      value: string;
+    }): ProjectionFields<SearchResultSnapshotDocument> => {
       const parsedProject = JSON.parse(value);
 
       Object.keys(parsedProject).forEach((key) => {
@@ -46,11 +52,11 @@ class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {
     { toClassOnly: true },
   )
   @IsObject()
-  project?: IApiMongoProjectSortParams;
+  project?: ProjectionFields<SearchResultSnapshotDocument>;
 
   @IsOptional()
   @Transform(
-    ({ value }: { value: string }): IApiMongoProjectSortParams => {
+    ({ value }: { value: string }): TApiMongoSortQuery => {
       const parsedSort = JSON.parse(value);
 
       Object.keys(parsedSort).forEach((key) => {
@@ -62,7 +68,7 @@ class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {
     { toClassOnly: true },
   )
   @IsObject()
-  sort?: IApiMongoProjectSortParams;
+  sort?: TApiMongoSortQuery;
 }
 
 export default ApiFetchSnapshotsReqDto;

@@ -30,6 +30,7 @@ import { LocationExtService } from './location-ext.service';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { PropstackWebhookController } from './propstack-webhook.controller';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
+import { SnapshotService } from './snapshot.service';
 
 @Module({
   imports: [
@@ -58,11 +59,17 @@ import { RealEstateListingModule } from '../real-estate-listing/real-estate-list
     LocationService,
     LocationListener,
     RoutingService,
+    SnapshotService,
     SnapshotExtService,
     AddressesInRangeExtService,
     LocationIntService,
     LocationExtService,
   ],
-  exports: [LocationService, LocationIntService, LocationExtService],
+  exports: [
+    LocationService,
+    LocationIntService,
+    LocationExtService,
+    SnapshotService,
+  ],
 })
 export class LocationModule {}

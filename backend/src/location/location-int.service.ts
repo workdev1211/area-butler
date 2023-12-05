@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { randomBytes } from 'crypto';
+import { Model } from 'mongoose';
 
 import {
   SearchResultSnapshot,
@@ -9,16 +8,6 @@ import {
 } from './schema/search-result-snapshot.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
-import {
-  ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-} from '@area-butler-types/types';
-import { defaultSnapshotConfig } from '../../../shared/constants/location';
-import { LocationService } from './location.service';
-import { IntegrationUserService } from '../user/integration-user.service';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 @Injectable()
 export class LocationIntService {
@@ -27,119 +16,9 @@ export class LocationIntService {
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
-    private readonly integrationUserService: IntegrationUserService,
-    private readonly locationService: LocationService,
-    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
-  async createSnapshot(
-    integrationUser: TIntegrationUserDocument,
-    snapshot: ApiSearchResultSnapshot,
-    config?: ApiSearchResultSnapshotConfig,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    const token = randomBytes(60).toString('hex');
-
-    const mapboxAccessToken = (
-      await this.integrationUserService.createMapboxAccessToken(integrationUser)
-    ).config.mapboxAccessToken;
-
-    let snapshotConfig = config;
-
-    if (!snapshotConfig) {
-      let templateSnapshot: SearchResultSnapshotDocument;
-      const userTemplateId = integrationUser.config.templateSnapshotId;
-      let parentUser;
-      let parentTemplateId;
-
-      if (!userTemplateId && integrationUser.parentId) {
-        parentUser = await this.integrationUserService.findByDbId(
-          integrationUser.parentId,
-          {
-            integrationUserId: 1,
-            integrationType: 1,
-            'config.templateSnapshotId': 1,
-          },
-        );
-
-        parentTemplateId = parentUser?.config.templateSnapshotId;
-      }
-
-      const templateSnapshotId = userTemplateId || parentTemplateId;
-
-      if (templateSnapshotId) {
-        templateSnapshot = await this.locationService.fetchSnapshot({
-          user: userTemplateId ? integrationUser : parentUser,
-          filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
-          projectParams: { config: 1 },
-        });
-      }
-
-      if (!templateSnapshot) {
-        templateSnapshot = await this.locationService.fetchSnapshot({
-          user: integrationUser,
-          projectParams: { config: 1 },
-          sortParams: { updatedAt: -1 },
-        });
-      }
-
-      snapshotConfig = templateSnapshot?.config
-        ? { ...templateSnapshot.config }
-        : { ...defaultSnapshotConfig };
-    }
-
-    // because of the different transportation params in the new snapshot and the template one
-    snapshotConfig.defaultActiveMeans = snapshot.transportationParams.map(
-      ({ type }) => type,
-    );
-
-    if (!snapshotConfig.primaryColor && integrationUser.config.color) {
-      snapshotConfig.primaryColor = integrationUser.config.color;
-    }
-
-    if (!snapshotConfig.mapIcon) {
-      snapshotConfig.mapIcon =
-        integrationUser.config.mapIcon || integrationUser.config.logo;
-    }
-
-    const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
-      mapboxAccessToken,
-      token,
-      config: snapshotConfig,
-      snapshot: {
-        ...snapshot,
-        realEstateListings: (
-          await this.realEstateListingService.fetchRealEstateListings(
-            integrationUser,
-          )
-        ).map((realEstate) =>
-          mapRealEstateListingToApiRealEstateListing(
-            integrationUser,
-            realEstate,
-          ),
-        ),
-      },
-    };
-
-    snapshotDoc.integrationParams = {
-      integrationUserId: integrationUser.integrationUserId,
-      integrationType: integrationUser.integrationType,
-      integrationId: snapshot.integrationId,
-    };
-
-    const savedSnapshotDoc = await new this.searchResultSnapshotModel(
-      snapshotDoc,
-    ).save();
-
-    return {
-      id: savedSnapshotDoc.id,
-      config: savedSnapshotDoc.config,
-      createdAt: savedSnapshotDoc.createdAt,
-      endsAt: savedSnapshotDoc.endsAt,
-      mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
-      token: savedSnapshotDoc.token,
-      snapshot: savedSnapshotDoc.snapshot,
-    };
-  }
+  // TODO refactor snapshot methods
 
   async fetchLatestSnapByIntId(
     {

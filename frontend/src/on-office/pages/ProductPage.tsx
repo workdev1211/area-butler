@@ -9,7 +9,7 @@ import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/in
 import { getProductNameByType } from "../../shared/integration.functions";
 import { copyTextToClipboard } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
-import fireIcon from "../../assets/icons/fire.svg";
+// import fireIcon from "../../assets/icons/fire.svg";
 
 export const ProductPage: FunctionComponent = () => {
   const {

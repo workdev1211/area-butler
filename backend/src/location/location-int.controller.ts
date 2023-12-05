@@ -33,6 +33,7 @@ import {
 } from '@area-butler-types/types';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import { SnapshotService } from './snapshot.service';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -41,6 +42,7 @@ export class LocationIntController {
   constructor(
     private readonly locationService: LocationService,
     private readonly locationIntService: LocationIntService,
+    private readonly snapshotService: SnapshotService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
@@ -77,7 +79,7 @@ export class LocationIntController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.locationIntService.createSnapshot(integrationUser, snapshot);
+    return this.snapshotService.createSnapshot(integrationUser, snapshot);
   }
 
   @ApiOperation({
@@ -92,12 +94,12 @@ export class LocationIntController {
     const {
       skip: skipNumber,
       limit: limitNumber,
-      filter: filterParams,
-      project: projectParams,
-      sort: sortParams,
+      filter: filterQuery,
+      project: projectQuery,
+      sort: sortQuery,
     } = fetchSnapshotsReq;
 
-    const resultProjectParams = projectParams || {
+    const resProjectQuery = projectQuery || {
       token: 1,
       description: 1,
       config: 1,
@@ -115,9 +117,9 @@ export class LocationIntController {
       await this.locationService.fetchSnapshots({
         skipNumber,
         limitNumber,
-        sortParams,
-        filterParams,
-        projectParams: resultProjectParams,
+        sortQuery,
+        filterQuery,
+        projectQuery: resProjectQuery,
         user: integrationUser,
       })
     ).map((snapshotDoc) =>

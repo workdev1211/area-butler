@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
-import { Model } from 'mongoose';
+import { Model, ProjectionFields } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { readdir, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
@@ -35,7 +35,6 @@ import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { getImageTypeFromFileType } from '../shared/shared.functions';
-import { IApiMongoProjectSortParams } from '../shared/shared.types';
 
 @Injectable()
 export class UserService {
@@ -207,9 +206,9 @@ export class UserService {
 
   async findById(
     userId: string,
-    projectParams?: IApiMongoProjectSortParams,
+    projectQuery?: ProjectionFields<UserDocument>,
   ): Promise<UserDocument> {
-    return this.userModel.findById(userId, projectParams);
+    return this.userModel.findById(userId, projectQuery);
   }
 
   async findByIdWithSubscription(id: string): Promise<UserDocument> {

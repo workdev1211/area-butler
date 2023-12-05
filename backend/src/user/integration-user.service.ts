@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, UpdateQuery } from 'mongoose';
+import { Model, UpdateQuery, FilterQuery, ProjectionFields } from 'mongoose';
 import { BulkWriteResult } from 'mongodb';
 import * as dayjs from 'dayjs';
 import { EventEmitter2 } from 'eventemitter2';
@@ -30,7 +30,6 @@ import {
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
-import { IApiMongoProjectSortParams } from '../shared/shared.types';
 
 @Injectable()
 export class IntegrationUserService {
@@ -133,7 +132,7 @@ export class IntegrationUserService {
 
   async findByDbId(
     integrationUserDbId: string,
-    projectQuery?: IApiMongoProjectSortParams,
+    projectQuery?: ProjectionFields<IApiIntegrationUserSchema>,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel.findById(
       integrationUserDbId,

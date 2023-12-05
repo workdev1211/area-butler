@@ -22,11 +22,13 @@ import {
   defaultPoiTypes,
   defaultTransportParams,
 } from '../../../shared/constants/location';
+import { SnapshotService } from './snapshot.service';
 
 @Injectable()
 export class SnapshotExtService {
   constructor(
     private readonly locationService: LocationService,
+    private readonly snapshotService: SnapshotService,
     private readonly routingService: RoutingService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly googleGeocodeService: GoogleGeocodeService,
@@ -93,11 +95,7 @@ export class SnapshotExtService {
       snapshotConfig = config;
     }
 
-    return this.locationService.createSnapshot({
-      user,
-      snapshot,
-      config: snapshotConfig,
-    });
+    return this.snapshotService.createSnapshot(user, snapshot, snapshotConfig);
   }
 
   async createSnapshotFromTemplate(
@@ -196,6 +194,6 @@ export class SnapshotExtService {
       });
     }
 
-    return this.locationService.createSnapshot({ user, snapshot, config });
+    return this.snapshotService.createSnapshot(user, snapshot, config);
   }
 }

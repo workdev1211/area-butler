@@ -31,6 +31,7 @@ import { RoutingService } from '../routing/routing.service';
 import { ZensusAtlasService } from '../data-provision/zensus-atlas/zensus-atlas.service';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { DataProvisionModule } from '../data-provision/data-provision.module';
+import { SnapshotService } from '../location/snapshot.service';
 
 @Module({
   imports: [
@@ -50,6 +51,7 @@ import { DataProvisionModule } from '../data-provision/data-provision.module';
     RealEstateListingIntService,
     LocationService,
     LocationExtService,
+    SnapshotService,
     OverpassService,
     OverpassDataService,
     SnapshotExtService,

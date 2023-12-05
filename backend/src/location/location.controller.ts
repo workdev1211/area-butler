@@ -22,20 +22,20 @@ import { UserDocument } from '../user/schema/user.schema';
 import { InjectUser } from '../user/inject-user.decorator';
 import { AuthenticatedController } from '../shared/authenticated.controller';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { SubscriptionService } from '../user/subscription.service';
-import { SnapshotExtService } from './snapshot-ext.service';
 import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import ApiSearchResultSnapshotDto from './dto/snapshot/api-search-result-snapshot.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
+import { SnapshotService } from './snapshot.service';
 
 @ApiTags('location')
 @Controller('api/location')
 export class LocationController extends AuthenticatedController {
   constructor(
     private readonly locationService: LocationService,
+    private readonly snapshotService: SnapshotService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {
     super();
@@ -71,10 +71,7 @@ export class LocationController extends AuthenticatedController {
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.locationService.createSnapshot({
-      user,
-      snapshot,
-    });
+    return this.snapshotService.createSnapshot(user, snapshot);
   }
 
   // TODO think about using class-transformer instead of a mapper
@@ -119,12 +116,12 @@ export class LocationController extends AuthenticatedController {
     const {
       skip: skipNumber,
       limit: limitNumber,
-      filter: filterParams,
-      project: projectParams,
-      sort: sortParams,
+      filter: filterQuery,
+      project: projectQuery,
+      sort: sortQuery,
     } = fetchSnapshotsReq;
 
-    const resultProjectParams = projectParams || {
+    const resProjectQuery = projectQuery || {
       token: 1,
       description: 1,
       config: 1,
@@ -142,9 +139,9 @@ export class LocationController extends AuthenticatedController {
         user,
         skipNumber,
         limitNumber,
-        filterParams,
-        sortParams,
-        projectParams: resultProjectParams,
+        filterQuery,
+        sortQuery,
+        projectQuery: resProjectQuery,
       })
     ).map((snapshot) => mapSnapshotToEmbeddableMap(user, snapshot));
   }

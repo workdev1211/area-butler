@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, Types } from 'mongoose';
+import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -26,9 +26,6 @@ import {
   ApiOsmLocation,
   ApiSearch,
   ApiSearchResponse,
-  ApiSearchResultSnapshot,
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
   MeansOfTransportation,
@@ -51,7 +48,6 @@ import {
 } from '@area-butler-types/subscription-plan';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
-import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
   IApiOpenAiLocDescQuery,
@@ -68,16 +64,11 @@ import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
-import {
-  IApiMongoFilterParams,
-  IApiMongoProjectSortParams,
-} from '../shared/shared.types';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
+import { TApiMongoSortQuery } from '../shared/shared.types';
 
 @Injectable()
 export class LocationService {
-  // private readonly logger = new Logger(LocationService.name);
+  private readonly logger = new Logger(LocationService.name);
 
   constructor(
     private readonly overpassService: OverpassService,
@@ -301,144 +292,7 @@ export class LocationService {
     };
   }
 
-  async createSnapshot({
-    user,
-    snapshot,
-    config,
-  }: {
-    user: UserDocument;
-    snapshot: ApiSearchResultSnapshot;
-    config?: ApiSearchResultSnapshotConfig;
-  }): Promise<ApiSearchResultSnapshotResponse> {
-    const token = randomBytes(60).toString('hex');
-
-    const mapboxAccessToken = (
-      await this.userService.createMapboxAccessToken(user)
-    ).mapboxAccessToken;
-
-    let snapshotConfig = config ? { ...config } : undefined;
-
-    if (!snapshotConfig) {
-      let templateSnapshot: SearchResultSnapshotDocument;
-      const userTemplateId = user.templateSnapshotId;
-      let parentUser;
-      let parentTemplateId;
-
-      if (!userTemplateId && user.parentId) {
-        parentUser = await this.userService.findById(user.parentId, {
-          templateSnapshotId: 1,
-        });
-
-        if (parentUser) {
-          parentUser.subscription = user.subscription;
-          parentTemplateId = parentUser.templateSnapshotId;
-        }
-      }
-
-      const templateSnapshotId = userTemplateId || parentTemplateId;
-
-      if (templateSnapshotId) {
-        templateSnapshot = await this.fetchSnapshot({
-          user: userTemplateId ? user : parentUser,
-          filterParams: { _id: new Types.ObjectId(templateSnapshotId) },
-          projectParams: { config: 1 },
-        });
-      }
-
-      if (!templateSnapshot) {
-        templateSnapshot = await this.fetchSnapshot({
-          user,
-          projectParams: { config: 1 },
-          sortParams: { updatedAt: -1 },
-        });
-      }
-
-      snapshotConfig = templateSnapshot?.config
-        ? { ...templateSnapshot.config }
-        : { ...defaultSnapshotConfig };
-    }
-
-    // because of the different transportation params in the new snapshot and the template one
-    snapshotConfig.defaultActiveMeans = snapshot.transportationParams.map(
-      ({ type }) => type,
-    );
-
-    if (!snapshotConfig.primaryColor && user.color) {
-      snapshotConfig.primaryColor = user.color;
-    }
-
-    if (!snapshotConfig.mapIcon && user.mapIcon) {
-      snapshotConfig.mapIcon = user.mapIcon;
-    }
-
-    const realEstateListings = (
-      await this.realEstateListingService.fetchRealEstateListings(user)
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(user, realEstate),
-    );
-
-    if (
-      realEstateListings.length &&
-      (!snapshotConfig.defaultActiveGroups ||
-        (snapshotConfig.defaultActiveGroups &&
-          !snapshotConfig.defaultActiveGroups.includes(
-            realEstateListingsTitle,
-          )))
-    ) {
-      snapshotConfig.entityVisibility = [
-        ...(snapshotConfig.entityVisibility || []),
-        ...realEstateListings.map(({ id }) => ({
-          id,
-          osmName: OsmName.property,
-          excluded: true,
-        })),
-      ];
-    }
-
-    const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
-      mapboxAccessToken,
-      token,
-      config: snapshotConfig,
-      snapshot: {
-        ...snapshot,
-        realEstateListings,
-      },
-    };
-
-    snapshotDoc.userId = user.id;
-
-    if (user.subscription.type === ApiSubscriptionPlanType.TRIAL) {
-      snapshotDoc.isTrial = true;
-    }
-
-    const addressExpiration = this.subscriptionService.getLimitAmount(
-      user.subscription.stripePriceId,
-      ApiSubscriptionLimitsEnum.ADDRESS_EXPIRATION,
-    );
-
-    if (addressExpiration) {
-      const createdAt = dayjs();
-      const endsAt = dayjs(createdAt)
-        .add(addressExpiration.value, addressExpiration.unit as ManipulateType)
-        .toDate();
-
-      Object.assign(snapshotDoc, { createdAt, endsAt });
-    }
-
-    const savedSnapshotDoc = await new this.searchResultSnapshotModel(
-      snapshotDoc,
-    ).save();
-
-    return {
-      id: savedSnapshotDoc.id,
-      config: savedSnapshotDoc.config,
-      createdAt: savedSnapshotDoc.createdAt,
-      endsAt: savedSnapshotDoc.endsAt,
-      mapboxAccessToken: savedSnapshotDoc.mapboxAccessToken,
-      token: savedSnapshotDoc.token,
-      snapshot: savedSnapshotDoc.snapshot,
-    };
-  }
+  // TODO refactor snapshot methods
 
   async duplicateSnapshot(
     user: UserDocument | TIntegrationUserDocument,
@@ -544,16 +398,16 @@ export class LocationService {
     user,
     skipNumber = 0,
     limitNumber = 0,
-    projectParams,
-    sortParams,
-    filterParams,
+    filterQuery,
+    projectQuery,
+    sortQuery,
   }: {
     user: UserDocument | TIntegrationUserDocument;
     skipNumber: number;
     limitNumber: number;
-    projectParams?: IApiMongoProjectSortParams;
-    sortParams?: IApiMongoProjectSortParams;
-    filterParams?: IApiMongoFilterParams;
+    filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
+    projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
+    sortQuery?: TApiMongoSortQuery;
   }): Promise<SearchResultSnapshotDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -567,20 +421,21 @@ export class LocationService {
       );
     }
 
-    const filterQuery = filterParams ? { ...filterParams } : {};
+    const resFilterQuery = filterQuery ? { ...filterQuery } : {};
 
     if (isIntegrationUser) {
-      filterQuery['integrationParams.integrationUserId'] =
+      resFilterQuery['integrationParams.integrationUserId'] =
         user.integrationUserId;
 
-      filterQuery['integrationParams.integrationType'] = user.integrationType;
+      resFilterQuery['integrationParams.integrationType'] =
+        user.integrationType;
     } else {
-      filterQuery.userId = user.id;
+      resFilterQuery.userId = user.id;
     }
 
     return this.searchResultSnapshotModel
-      .find(filterQuery, projectParams)
-      .sort(sortParams)
+      .find(resFilterQuery, projectQuery)
+      .sort(sortQuery)
       .skip(skipNumber)
       .limit(limitNumber);
   }
@@ -769,45 +624,6 @@ export class LocationService {
     }
 
     return snapshotDoc;
-  }
-
-  async fetchSnapshot({
-    user,
-    filterParams,
-    projectParams,
-    sortParams,
-  }: {
-    user: UserDocument | TIntegrationUserDocument;
-    filterParams?: IApiMongoFilterParams;
-    projectParams?: IApiMongoProjectSortParams;
-    sortParams?: IApiMongoProjectSortParams;
-  }): Promise<SearchResultSnapshotDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const filterQuery = filterParams ? { ...filterParams } : {};
-
-    if (isIntegrationUser) {
-      filterQuery['integrationParams.integrationUserId'] =
-        user.integrationUserId;
-
-      filterQuery['integrationParams.integrationType'] = user.integrationType;
-    } else {
-      filterQuery.userId = user.id;
-    }
-
-    return this.searchResultSnapshotModel
-      .findOne(filterQuery, projectParams)
-      .sort(sortParams);
   }
 
   private checkLocationExpiration(

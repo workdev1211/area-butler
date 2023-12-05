@@ -1,17 +1,13 @@
-import { Types } from 'mongoose';
+import { FilterQuery, ProjectionFields, SortValues } from 'mongoose';
 
-export interface IApiMongoProjectSortParams {
-  [key: string]: number;
-}
+import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 
-export interface IApiMongoFilterParams {
-  [key: string]: string | Types.ObjectId;
-}
+export type TApiMongoSortQuery = Record<string, SortValues>;
 
 export interface IApiFetchSnapshotsReq {
   skip?: number;
   limit?: number;
-  filter?: IApiMongoFilterParams;
-  project?: IApiMongoProjectSortParams;
-  sort?: IApiMongoProjectSortParams;
+  filter?: FilterQuery<SearchResultSnapshotDocument>;
+  project?: ProjectionFields<SearchResultSnapshotDocument>;
+  sort?: TApiMongoSortQuery;
 }

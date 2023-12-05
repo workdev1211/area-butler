@@ -11,6 +11,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
@@ -177,7 +178,7 @@ export class RealEstateListingService {
     updatedData: Partial<ApiUpsertRealEstateListing>,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
-    const filterQuery: FilterQuery<RealEstateListingDocument> = {
+    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
       _id: new Types.ObjectId(realEstateId),
     };
 
