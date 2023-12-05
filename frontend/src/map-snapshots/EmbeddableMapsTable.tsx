@@ -58,7 +58,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
 
   return (
     // TODO data tour
-    <div className="overflow-x-auto" data-tour="real-estates-table">
+    <div className="overflow-x-auto" data-tour="map-snapshot-table">
       {isShownModal && (
         <CodeSnippetModal
           codeSnippet={codeSnippet}
@@ -95,7 +95,7 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
             curEstSnapshots.length > 0 &&
             otherSnapshots.length > 0 && (
               <tr className="cursor-none">
-                <td colSpan={6}>
+                <td colSpan={7}>
                   <div className="divider my-0" />
                 </td>
               </tr>
