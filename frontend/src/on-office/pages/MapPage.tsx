@@ -250,7 +250,7 @@ const MapPage: FunctionComponent = () => {
       payload: deriveInitialEntityGroups({
         searchResponse,
         config: enhancedConfig,
-        listings: processedRealEstates,
+        listings: filteredRealEstates,
         locations: preferredLocations,
         ignoreVisibility: true,
         ignorePoiFilter: true,
