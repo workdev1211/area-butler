@@ -1,44 +1,23 @@
 import { FunctionComponent, useRef } from "react";
 import ReactToPrint from "react-to-print";
 
-import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import { ApiSearchResultSnapshotConfig } from "../../../../shared/types/types";
 import OnePage from "./OnePage";
-import { ISelectableMapClipping } from "export/MapClippingSelection";
-import { ILegendItem } from "../Legend";
-import { ISortableEntityGroup } from "./OnePageExportModal";
-import { IQrCodeState } from "../../../../shared/types/export";
+import { IOnePagePdfDownProps } from "../../shared/one-page.types";
 
-interface IOnePageDownloadProps {
-  addressDescription: string;
-  entityGroups: ISortableEntityGroup[];
-  listingAddress: string;
-  realEstateListing: ApiRealEstateListing;
-  downloadButtonDisabled: boolean;
-  onAfterPrint: () => void;
-  color: string;
-  logo: string;
-  legend: ILegendItem[];
-  mapClippings: ISelectableMapClipping[];
-  qrCode: IQrCodeState;
-  snapshotConfig: ApiSearchResultSnapshotConfig;
-  isTrial: boolean;
-}
-
-export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
+export const OnePageDownload: FunctionComponent<IOnePagePdfDownProps> = ({
   addressDescription,
   entityGroups,
   listingAddress,
   realEstateListing,
-  downloadButtonDisabled,
   color,
   logo,
   onAfterPrint,
   legend,
   mapClippings,
-  qrCode,
   snapshotConfig,
   isTrial,
+  downloadButtonDisabled,
+  qrCodeImage,
 }) => {
   const componentRef = useRef(null);
 
@@ -94,7 +73,7 @@ export const OnePageDownload: FunctionComponent<IOnePageDownloadProps> = ({
         logo={logo}
         legend={legend}
         mapClippings={mapClippings}
-        qrCode={qrCode}
+        qrCodeImage={qrCodeImage}
         snapshotConfig={snapshotConfig}
         isTrial={isTrial}
       />

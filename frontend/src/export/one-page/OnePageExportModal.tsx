@@ -1,4 +1,10 @@
-import { FunctionComponent, useContext, useRef, useState } from "react";
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { FormikProps } from "formik/dist/types";
 
 import "./OnePageExportModal.scss";
@@ -41,6 +47,8 @@ import { IQrCodeState } from "../../../../shared/types/export";
 import OnePageMediaFormat from "./components/OnePageMediaFormat";
 import OpenAiGeneralForm from "../../components/open-ai/OpenAiGeneralForm";
 import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
+import { getQrCodeBase64 } from "../QrCode";
+import { useTools } from "../../hooks/tools";
 
 const SCREENSHOT_LIMIT = 2;
 export const ENTITY_GROUP_LIMIT = 8;
@@ -88,6 +96,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   const locDescFormRef = useRef<FormikProps<IOpenAiLocDescFormValues>>(null);
 
   const { fetchOpenAiResponse } = useOpenAi();
+  const { createDirectLink } = useTools();
 
   const user = userState.user as ApiUser;
   const integrationUser = userState.integrationUser as IApiIntegrationUser;
@@ -153,6 +162,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
   );
   const [filteredGroups, setFilteredGroups] =
     useState<ISortableEntityGroup[]>(sortableGroups);
+  const [resultGroups, setResultGroups] = useState<ISortableEntityGroup[]>([]);
   const [isPng, setIsPng] = useState(cachedOnePage.isPng || false);
   const [isTransparentBackground, setIsTransparentBackground] = useState(
     cachedOnePage.isTransparentBackground || false
@@ -163,13 +173,56 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
       isShownQrCode: true,
     }
   );
-  const [selectableMapClippings, setSelectableMapClippings] = useState<
+  const [qrCodeImage, setQrCodeImage] = useState<string>();
+  const [selectMapClippings, setSelectMapClippings] = useState<
     ISelectableMapClipping[]
   >(initSelectMapClippings);
   const [legend, setLegend] = useState<ILegendItem[]>(() =>
     getFilteredLegend(sortableGroups)
   );
   const [isOpenAiBusy, setIsOpenAiBusy] = useState(false);
+
+  useEffect(() => {
+    if (!qrCodeState.isShownQrCode || !qrCodeState.snapshotToken) {
+      setQrCodeImage(undefined);
+      return;
+    }
+
+    const createQrCode = async () => {
+      setQrCodeImage(
+        await getQrCodeBase64(createDirectLink(qrCodeState.snapshotToken!))
+      );
+    };
+
+    void createQrCode();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [qrCodeState.isShownQrCode]);
+
+  useEffect(() => {
+    if (!legend || !filteredGroups.length) {
+      return;
+    }
+
+    setResultGroups(
+      filteredGroups.reduce<ISortableEntityGroup[]>((result, group) => {
+        if (
+          group.title !== preferredLocationsTitle &&
+          group.active &&
+          group.items.length > 0
+        ) {
+          const groupIcon = legend.find(
+            ({ title }) => title === group.title
+          )?.icon;
+
+          const items = [...group.items].slice(0, 3);
+
+          result.push({ ...group, items, icon: groupIcon });
+        }
+
+        return result;
+      }, [])
+    );
+  }, [legend, filteredGroups]);
 
   const fetchOpenAiLocDesc = async (): Promise<void> => {
     setIsOpenAiBusy(true);
@@ -380,8 +433,8 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           </div>
 
           <OnePageMediaFormat
-            selectableMapClippings={selectableMapClippings}
-            setSelectableMapClippings={setSelectableMapClippings}
+            selectableMapClippings={selectMapClippings}
+            setSelectableMapClippings={setSelectMapClippings}
             isPng={isPng}
             setIsPng={setIsPng}
             isTransparentBackground={isTransparentBackground}
@@ -423,44 +476,47 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
           {!isPng && (
             <OnePageDownload
               addressDescription={locationDescription}
-              entityGroups={filteredGroups!}
+              entityGroups={resultGroups}
               listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
+              color={color}
+              logo={logo}
+              legend={legend}
+              mapClippings={selectMapClippings.filter(
+                ({ isSelected }) => isSelected
+              )}
+              qrCodeImage={qrCodeImage}
+              snapshotConfig={snapshotConfig}
+              isTrial={isTrial}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
                 ) || locationDescription.length > onePageCharacterLimit
               }
               onAfterPrint={onClose}
-              color={color}
-              logo={logo}
-              legend={legend}
-              mapClippings={selectableMapClippings}
-              qrCode={qrCodeState}
-              snapshotConfig={snapshotConfig}
-              isTrial={isTrial}
             />
           )}
 
           {isPng && (
             <OnePagePngDownload
               addressDescription={locationDescription}
-              entityGroups={filteredGroups!}
+              entityGroups={resultGroups}
               listingAddress={searchContextState.placesLocation?.label}
               realEstateListing={searchContextState.realEstateListing!}
+              color={color}
+              logo={logo}
+              mapClippings={selectMapClippings.filter(
+                ({ isSelected }) => isSelected
+              )}
+              qrCodeImage={qrCodeImage}
+              snapshotConfig={snapshotConfig}
+              isTrial={isTrial}
               downloadButtonDisabled={
                 !Object.keys(exportFlow).every(
                   (key) => exportFlow[key as keyof IExportFlowState]
                 ) || locationDescription.length > onePageCharacterLimit
               }
-              color={color}
-              logo={logo}
-              legend={legend}
-              mapClippings={selectableMapClippings}
-              qrCode={qrCodeState}
               isTransparentBackground={isTransparentBackground}
-              snapshotConfig={snapshotConfig}
-              isTrial={isTrial}
               exportFonts={exportFonts}
             />
           )}

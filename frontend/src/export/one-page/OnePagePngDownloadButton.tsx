@@ -3,64 +3,33 @@ import { renderToStaticMarkup } from "react-dom/server";
 import { saveAs } from "file-saver";
 import { toPng } from "html-to-image";
 
-import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
-import {
-  ApiSearchResultSnapshotConfig,
-  IApiUserExportFont,
-} from "../../../../shared/types/types";
 import { ISelectableMapClipping } from "export/MapClippingSelection";
-import { ILegendItem } from "../Legend";
 import OnePagePng from "./OnePagePng";
-import { getQrCodeBase64 } from "../QrCode";
-import { preferredLocationsTitle } from "../../shared/shared.functions";
-import { IPoiIcon } from "../../shared/shared.types";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integrationtools";
-import { ISortableEntityGroup } from "./OnePageExportModal";
-import { useTools } from "../../hooks/tools";
-import { IQrCodeState } from "../../../../shared/types/export";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
+import { IOnePagePngDownProps } from "../../shared/one-page.types";
 
-interface IOnePageDownloadProps {
-  addressDescription: string;
-  entityGroups: ISortableEntityGroup[];
-  listingAddress: string;
-  realEstateListing: ApiRealEstateListing;
-  downloadButtonDisabled: boolean;
-  color: string;
-  logo: string;
-  legend: ILegendItem[];
-  mapClippings: ISelectableMapClipping[];
-  qrCode: IQrCodeState;
-  isTransparentBackground: boolean;
-  snapshotConfig: ApiSearchResultSnapshotConfig;
-  isTrial: boolean;
-  exportFonts?: IApiUserExportFont[];
-}
-
-export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
+export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
   addressDescription,
   entityGroups,
   listingAddress,
   realEstateListing,
-  downloadButtonDisabled,
   color,
   logo,
-  legend,
   mapClippings,
-  qrCode,
   isTransparentBackground,
   snapshotConfig,
   isTrial,
+  downloadButtonDisabled,
+  qrCodeImage,
   exportFonts,
 }) => {
   const { integrationType } = useContext(ConfigContext);
 
   const { sendToOnOffice } = useIntegrationTools();
-  const { createDirectLink } = useTools();
 
-  const [qrCodeImage, setQrCodeImage] = useState<string>();
   const [selectedMapClippings, setSelectedMapClippings] = useState<
     ISelectableMapClipping[]
   >([]);
@@ -72,12 +41,8 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     }
 
     const processMapClippings = async () => {
-      const filteredMapClippings = mapClippings.filter(
-        (mapClipping) => mapClipping.isSelected
-      );
-
       const processedMapClippings = await Promise.all(
-        filteredMapClippings.map(
+        mapClippings.map(
           async (mapClipping): Promise<ISelectableMapClipping> => {
             const image = new Image();
             image.src = mapClipping.mapClippingDataUrl;
@@ -116,38 +81,6 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     void processMapClippings();
   }, [mapClippings]);
 
-  useEffect(() => {
-    if (!qrCode.isShownQrCode || !qrCode.snapshotToken) {
-      setQrCodeImage(undefined);
-      return;
-    }
-
-    const createQrCode = async () => {
-      setQrCodeImage(
-        await getQrCodeBase64(createDirectLink(qrCode.snapshotToken!))
-      );
-    };
-
-    void createQrCode();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [qrCode.isShownQrCode]);
-
-  const filteredGroups = entityGroups.reduce<
-    (ISortableEntityGroup & { icon?: IPoiIcon })[]
-  >((result, group) => {
-    if (
-      group.title !== preferredLocationsTitle &&
-      group.active &&
-      group.items.length > 0
-    ) {
-      const groupIcon = legend.find(({ title }) => title === group.title)?.icon;
-      const items = [...group.items].slice(0, 3);
-      result.push({ ...group, items, icon: groupIcon });
-    }
-
-    return result;
-  }, []);
-
   let documentTitle = "MeinStandort_AreaButler";
 
   if (realEstateListing?.name) {
@@ -178,18 +111,17 @@ export const OnePagePngDownload: FunctionComponent<IOnePageDownloadProps> = ({
     const renderedOnePagePng = renderToStaticMarkup(
       <OnePagePng
         addressDescription={addressDescription}
-        entityGroups={filteredGroups}
+        entityGroups={entityGroups}
         listingAddress={listingAddress}
         realEstateListing={realEstateListing}
         color={color}
         logo={logo}
-        legend={legend}
         mapClippings={selectedMapClippings}
         qrCodeImage={qrCodeImage}
-        isTransparentBackground={isTransparentBackground}
-        style={onePagePngStyle}
         snapshotConfig={snapshotConfig}
         isTrial={isTrial}
+        isTransparentBackground={isTransparentBackground}
+        style={onePagePngStyle}
       />
     );
 
