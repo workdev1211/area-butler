@@ -569,7 +569,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       const zoomControl = L.control.zoom({ position: "bottomleft" });
       zoomControl.addTo(localMap);
 
-      localMap.on("zoomend", function () {
+      localMap.on("zoomend", () => {
         if (!config) {
           return;
         }
@@ -685,29 +685,17 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         return;
       }
 
-      const drawMapIcon = async () => {
+      const drawMapIcon = async (): Promise<void> => {
+        if (mapIconMarker) {
+          mapIconMarker.remove();
+        }
+
         const mapIconImage = new Image();
         mapIconImage.src = config?.mapIcon ?? resultingMyLocationIcon;
         await mapIconImage.decode();
         const mapIconImageRatio =
           Math.round((mapIconImage.width / mapIconImage.height) * 10) / 10;
         setMapIconRatio(mapIconImageRatio);
-
-        let detailContent = `${searchAddress}`;
-
-        if (!isEmbedMode || config?.showStreetViewLink) {
-          const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
-
-          const streetViewContent = `
-            <br/><br/>
-            <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
-              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
-               <span>Street View</span>
-            </a>
-          `;
-
-          detailContent = `${detailContent}${streetViewContent}`;
-        }
 
         const resultingSize =
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
@@ -738,7 +726,23 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         setMapIconMarker(myLocationMarker);
 
         if (config?.showAddress || !isEmbedMode) {
-          myLocationMarker.on("click", function (event) {
+          let detailContent = `${searchAddress}`;
+
+          if (config?.showStreetViewLink || !isEmbedMode) {
+            const googleStreetViewUrl = `https://www.google.com/maps?q&layer=c&cbll=${mapCenter.lat},${mapCenter.lng}&cbp=11,0,0,0,0`;
+
+            const streetViewContent = `
+            <br/><br/>
+            <a href="${googleStreetViewUrl}" target="_blank" class="flex gap-2">
+              <img class="w-4 h-4" src=${googleIcon} alt="icon" /> 
+               <span>Street View</span>
+            </a>
+          `;
+
+            detailContent = `${detailContent}${streetViewContent}`;
+          }
+
+          myLocationMarker.on("click", (event) => {
             const marker = event.target;
             marker.unbindPopup();
             marker.bindPopup(detailContent);
@@ -910,9 +914,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                   .map((s) => s.duration)
                   .reduce((p, c) => p + c);
                 const line = L.geoJSON(s.geometry, {
-                  style: function () {
-                    return { color: MEAN_COLORS[r.meansOfTransportation] };
-                  },
+                  style: () => ({
+                    color: MEAN_COLORS[r.meansOfTransportation],
+                  }),
                 })
                   .bindPopup(
                     `<h4 class="font-semibold">Route zu ${
@@ -957,12 +961,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
             route.sections.forEach((s) => {
               const line = L.geoJSON(s.geometry, {
-                style: function () {
-                  return {
-                    color: "#fcba03",
-                    dashArray: getDashArray(s.transportMode),
-                  };
-                },
+                style: () => ({
+                  color: "#fcba03",
+                  dashArray: getDashArray(s.transportMode),
+                }),
               })
                 .bindPopup(
                   `<h4 class="font-semibold">ÖPNV Route zu ${
@@ -1012,7 +1014,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         currentMap!.removeLayer(amenityMarkerGroup);
 
         amenityMarkerGroup = L.markerClusterGroup({
-          iconCreateFunction: function (cluster) {
+          iconCreateFunction: (cluster) => {
             const groupedMarkers = groupBy(
               cluster.getAllChildMarkers().map((m) => m.getIcon().options),
               (i: any) => i.className
@@ -1155,7 +1157,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               icon,
             },
             hideEntityFunction
-          ).on("click", function (e) {
+          ).on("click", (e) => {
             const marker = e.target;
             marker.createOpenPopup();
           });
@@ -1166,7 +1168,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         });
 
         // react on the marker group click
-        amenityMarkerGroup.on("clusterclick", function (a) {
+        amenityMarkerGroup.on("clusterclick", (a) => {
+          // TODO deprecated property
           const centerOfGroup = center(a.layer.toGeoJSON());
           const lat = centerOfGroup.geometry.coordinates[1];
           const lng = centerOfGroup.geometry.coordinates[0];
