@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { forwardRef, useContext } from "react";
 
 import { EntityList } from "export/EntityList";
 import FederalElectionSummary from "export/FederalElectionSummary";
@@ -19,16 +19,14 @@ import { CensusSummary } from "../CensusSummary";
 import MapClippings from "../MapClippings";
 import { PdfPage } from "../PdfPage";
 import areaButlerLogo from "../../assets/img/logo.svg";
-import {
-  EntityGroup,
-  ResultEntity,
-} from "../../shared/search-result.types";
+import { EntityGroup, ResultEntity } from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { ILegendItem, Legend } from "../Legend";
 import { QrCode } from "../QrCode";
 import { preferredLocationsTitle } from "../../shared/shared.functions";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
+import { SearchContext } from "../../context/SearchContext";
 
 interface ICheatsheetProps {
   searchResponse: ApiSearchResponse;
@@ -53,6 +51,10 @@ interface ICheatsheetProps {
 const chunkSize = 25;
 
 export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
+  const {
+    searchContextState: { responseConfig },
+  } = useContext(SearchContext);
+
   const qrCodeElement = props.qrCode.isShownQrCode ? (
     <QrCode snapshotToken={props.qrCode.snapshotToken} />
   ) : (
@@ -101,6 +103,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
       ref={ref as any}
     >
       <style>{props.style}</style>
+
       {props.isTrial && (
         <img
           className="fixed w-0 h-0 print:w-full print:h-full top-1/2 left-1/2 opacity-40"
@@ -113,6 +116,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
           }}
         />
       )}
+
       <PdfPage
         title="Zusammenfassung"
         logo={props.logo}
@@ -134,20 +138,24 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
               <h3 className="text-2xl w-56 font-bold text-black">
                 Lage Überblick
               </h3>
+
               <div className="font-bold">{props.realEstateListing.address}</div>
-              {props.realEstateListing?.costStructure && (
-                <div>
-                  <strong>Kosten:</strong>{" "}
-                  {getRealEstateCost(props.realEstateListing?.costStructure)} (
-                  {
-                    allRealEstateCostTypes.find(
-                      (t) =>
-                        t.type === props.realEstateListing.costStructure?.type
-                    )?.label
-                  }
-                  )
-                </div>
-              )}
+
+              {responseConfig?.showDetailsInOnePage &&
+                props.realEstateListing?.costStructure && (
+                  <div>
+                    <strong>Kosten:</strong>{" "}
+                    {getRealEstateCost(props.realEstateListing?.costStructure)}{" "}
+                    (
+                    {
+                      allRealEstateCostTypes.find(
+                        (t) =>
+                          t.type === props.realEstateListing.costStructure?.type
+                      )?.label
+                    }
+                    )
+                  </div>
+                )}
 
               {/* Furnishing */}
               {/*{props.realEstateListing.characteristics?.furnishing && (*/}

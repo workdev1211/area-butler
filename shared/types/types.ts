@@ -363,7 +363,7 @@ export interface ApiSearchResultSnapshotConfig {
   groupItems?: boolean;
   showAddress?: boolean;
   showStreetViewLink?: boolean;
-  showDetailsInOnePage?: boolean;
+  showDetailsInOnePage?: boolean; // extended to other types of export
   hideIsochrones?: boolean;
   hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
   hideMapMenu?: boolean; // for reference map

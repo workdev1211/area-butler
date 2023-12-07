@@ -1,4 +1,4 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useContext } from "react";
 
 import EntityGridSummary from "export/EntityGridSummary";
 import { deriveColorPalette } from "shared/shared.functions";
@@ -20,6 +20,7 @@ import { EntityGroup } from "../../shared/search-result.types";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
 import { QrCode } from "../QrCode";
 import { IQrCodeState } from "../../../../shared/types/export";
+import { SearchContext } from "../../context/SearchContext";
 
 export interface ExposeSummaryProps {
   groupedEntries: EntityGroup[];
@@ -42,6 +43,10 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
   qrCode,
   isFirstPage,
 }) => {
+  const {
+    searchContextState: { responseConfig },
+  } = useContext(SearchContext);
+
   const colorPalette = deriveColorPalette(primaryColor);
 
   const mobilityTypeStyle = {
@@ -103,19 +108,20 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                   </h3>
                   <div className="font-bold">{realEstateListing.address}</div>
 
-                  {realEstateListing?.costStructure && (
-                    <div className="text-justify">
-                      <strong>Kosten:</strong>{" "}
-                      {getRealEstateCost(realEstateListing?.costStructure)} (
-                      {
-                        allRealEstateCostTypes.find(
-                          (t) =>
-                            t.type === realEstateListing.costStructure?.type
-                        )?.label
-                      }
-                      )
-                    </div>
-                  )}
+                  {responseConfig?.showDetailsInOnePage &&
+                    realEstateListing?.costStructure && (
+                      <div className="text-justify">
+                        <strong>Kosten:</strong>{" "}
+                        {getRealEstateCost(realEstateListing?.costStructure)} (
+                        {
+                          allRealEstateCostTypes.find(
+                            (t) =>
+                              t.type === realEstateListing.costStructure?.type
+                          )?.label
+                        }
+                        )
+                      </div>
+                    )}
 
                   {/* Furnishing */}
                   {/*{realEstateListing.characteristics?.furnishing && (*/}
