@@ -37,7 +37,7 @@ export interface IApiOnOfficeProcessedRealEstate
   status: string; // the label for 'status2' field
   grundstuecksgroesse: string; // the label for 'grundstuecksflaeche' field
   energieeffizienzklasse: string; // the label for 'energyClass' field
-  immonr: string; // the label for 'objektnr_extern' field
+  // immonr: string; // the label for 'objektnr_extern' field
   areaButlerStatus?: string; // this field comes from our side
   areaButlerStatus2?: string; // this field comes from our side
 }
@@ -183,7 +183,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
           resultingEnergyClass.toUpperCase() as ApiEnergyEfficiency;
       }
 
-      if (+anzahl_balkone || +balkon) {
+      if (balkon === 'true' || +anzahl_balkone) {
         characteristics.furnishing.push(ApiFurnishing.BALCONY);
       }
 
@@ -243,10 +243,11 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @IsString()
   @Transform(
     ({
-      obj: { objektnr_extern, immonr, Id, datensatznr },
+      obj: { Id, datensatznr },
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
-    }): string => objektnr_extern || immonr || Id || datensatznr,
+    }): string =>
+      Id || datensatznr ? `on-office-${Id || datensatznr}` : undefined,
   )
   externalId?: string;
 

@@ -50,12 +50,13 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
   address: string;
 
   @Expose()
-  @Transform(
-    ({ obj: { lat, lng } }: { obj: IPropstackRealEstate }): GeoJsonPoint => ({
-      type: 'Point',
-      coordinates: [lat, lng],
-    }),
-  )
+  // currently we obtain and assign it by ourselves based on the provided address
+  // @Transform(
+  //   ({ obj: { lat, lng } }: { obj: IPropstackRealEstate }): GeoJsonPoint => ({
+  //     type: 'Point',
+  //     coordinates: [lat, lng],
+  //   }),
+  // )
   location: GeoJsonPoint;
 
   @Expose()
@@ -135,7 +136,8 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
 
   @Expose()
   @Transform(
-    ({ obj: { id } }: { obj: IPropstackRealEstate }): string => `${id}`,
+    ({ obj: { id } }: { obj: IPropstackRealEstate }): string =>
+      id ? `propstack-${id}` : undefined,
     {
       toClassOnly: true,
     },

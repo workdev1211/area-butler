@@ -341,7 +341,7 @@ export class RealEstateCrmImportService {
               listlimit: ON_OFFICE_ESTATES_PER_PAGE,
               listoffset: 0,
               data: [
-                'Id',
+                'Id', // external id
                 'objekttitel',
                 'strasse',
                 'hausnummer',
@@ -361,7 +361,6 @@ export class RealEstateCrmImportService {
                 'anzahl_balkone',
                 'unterkellert',
                 'vermarktungsart',
-                'objektnr_extern', // external id
                 'status2', // used by ReMax
               ],
             },
@@ -469,7 +468,7 @@ export class RealEstateCrmImportService {
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(
-        //   `${realEstate.objektnr_extern || realEstate.Id}: ${
+        //   `${realEstate.Id}: ${
         //     realEstate.status2
         //   }, ${realEstate.vermarktungsart}, ${
         //     (realEstate as IApiOnOfficeProcessedRealEstate).areaButlerStatus
