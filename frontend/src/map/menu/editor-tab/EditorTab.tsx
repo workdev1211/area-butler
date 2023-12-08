@@ -37,6 +37,7 @@ import { useLocationData } from "../../../hooks/locationdata";
 import { truncateText } from "../../../../../shared/functions/shared.functions";
 import { IApiLateSnapConfigOption } from "../../../../../shared/types/location";
 import { useRealEstateData } from "../../../hooks/realestatedata";
+import { useTools } from "../../../hooks/tools";
 
 const currentSnippetConfigLabel = "Aktuell";
 
@@ -49,8 +50,11 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   extraMapboxStyles = [],
   isNewSnapshot = false,
 }) => {
+  const { getActualUser } = useTools();
   const { fetchLateSnapConfigs } = useLocationData();
   const { fetchRealEstStatuses } = useRealEstateData();
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [isConfigOptionsOpen, setIsConfigOptionsOpen] = useState(false);
   const [isPoiVisibilityOpen, setIsPoiVisibilityOpen] = useState(false);
@@ -734,27 +738,39 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 </label>
               </div>
             </li>
-            {/*<li>*/}
-            {/*  <div className="flex items-center gap-6 py-1">*/}
-            {/*    <label className="cursor-pointer label">*/}
-            {/*      <input*/}
-            {/*        type="checkbox"*/}
-            {/*        name="isFilterMenuAvail"*/}
-            {/*        checked={!!config?.isFilterMenuAvail}*/}
-            {/*        onChange={() => {*/}
-            {/*          changeConfigParam(*/}
-            {/*            "isFilterMenuAvail",*/}
-            {/*            !config?.isFilterMenuAvail*/}
-            {/*          );*/}
-            {/*        }}*/}
-            {/*        className="checkbox checkbox-xs checkbox-primary mr-2"*/}
-            {/*      />*/}
-            {/*      <span className="label-text">*/}
-            {/*        Bedürfnisfilter für Immobilien*/}
-            {/*      </span>*/}
-            {/*    </label>*/}
-            {/*  </div>*/}
-            {/*</li>*/}
+
+            {isIntegrationUser
+              ? ["web89711-21", "web89711-31", "web91649-21"].includes(
+                  user.integrationUserId
+                )
+              : [
+                  "atr@areabutler.de",
+                  "a.timper@area-butler.de",
+                  "vladimir.kuznetsov@brocoders.team",
+                ].includes(user.email) && (
+                  <li>
+                    <div className="flex items-center gap-6 py-1">
+                      <label className="cursor-pointer label">
+                        <input
+                          type="checkbox"
+                          name="isFilterMenuAvail"
+                          checked={!!config?.isFilterMenuAvail}
+                          onChange={() => {
+                            changeConfigParam(
+                              "isFilterMenuAvail",
+                              !config?.isFilterMenuAvail
+                            );
+                          }}
+                          className="checkbox checkbox-xs checkbox-primary mr-2"
+                        />
+                        <span className="label-text">
+                          Bedürfnisfilter für Immobilien
+                        </span>
+                      </label>
+                    </div>
+                  </li>
+                )}
+
             <li>
               <div className="flex items-center gap-6 py-1">
                 <ColorPicker
