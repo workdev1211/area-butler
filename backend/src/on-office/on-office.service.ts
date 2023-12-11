@@ -867,6 +867,7 @@ export class OnOfficeService {
                 'unterkellert',
                 'vermarktungsart',
                 'status2',
+                'objektnr_extern',
               ],
               extendedclaim: extendedClaim,
               formatoutput: true,

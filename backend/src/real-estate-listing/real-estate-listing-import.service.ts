@@ -133,7 +133,7 @@ export class RealEstateListingImportService {
       }),
     );
 
-    const debugData = await Promise.allSettled(
+    await Promise.allSettled(
       processedChunks.map(async (processedChunk) => {
         if (processedChunk.status !== 'fulfilled') {
           return;
@@ -272,8 +272,6 @@ export class RealEstateListingImportService {
         await this.realEstateListingModel.bulkWrite(bulkWriteRecords);
       }),
     );
-
-    this.logger.debug(this.importCsvFile.name, debugData);
 
     return errorLineNumbers.sort();
   }
@@ -508,6 +506,12 @@ export class RealEstateListingImportService {
     const place = await this.googleGeocodeService.fetchPlace(locationAddress);
 
     if (!place) {
+      this.logger.debug(
+        this.processObjectListingData.name,
+        realEstateData,
+        JSON.stringify(realEstateData),
+      );
+
       errorLineNumbers.push(
         (realEstateChunkIndex > 0 ? realEstateChunkIndex * chunkSize : 0) +
           realEstateIndex +

@@ -341,7 +341,7 @@ export class RealEstateCrmImportService {
               listlimit: ON_OFFICE_ESTATES_PER_PAGE,
               listoffset: 0,
               data: [
-                'Id', // external id
+                'Id', // onOffice estate id
                 'objekttitel',
                 'strasse',
                 'hausnummer',
@@ -361,7 +361,8 @@ export class RealEstateCrmImportService {
                 'anzahl_balkone',
                 'unterkellert',
                 'vermarktungsart',
-                'status2', // used by ReMax
+                'status2',
+                'objektnr_extern', // external id
               ],
             },
           },
