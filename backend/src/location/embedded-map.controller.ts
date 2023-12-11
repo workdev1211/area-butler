@@ -67,10 +67,10 @@ export class EmbeddedMapController {
 
     if (isIntegrationSnapshot) {
       user = await this.integrationUserService.findOne(
+        integrationParams.integrationType,
         {
           integrationUserId: integrationParams.integrationUserId,
         },
-        integrationParams.integrationType,
       );
     }
 

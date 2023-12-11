@@ -11,6 +11,7 @@ export interface IApiIntegrationUserSchema {
   productsUsed?: TApiIntegrationUserProductsUsed;
   productContingents?: TApiIntegrationUserProductContingents;
   parentId?: string;
+  isParent?: boolean;
   // obsolete, moved to a separate collection
   usageStatistics?: TApiIntegrationUserUsageStatistics;
 }

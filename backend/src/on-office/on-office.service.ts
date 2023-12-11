@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { plainToInstance } from 'class-transformer';
 
@@ -54,6 +54,7 @@ import { convertBase64ContentToUri } from '../../../shared/functions/image.funct
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
   AreaButlerExportTypesEnum,
+  IApiIntegrationUserSchema,
   IApiIntUserOnOfficeParams,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
@@ -97,23 +98,24 @@ export class OnOfficeService {
     };
 
     const integrationUser = await this.integrationUserService.findOneAndUpdate(
+      this.integrationType,
       { integrationUserId },
       {
         parameters,
         accessToken: extendedClaim,
       },
-      this.integrationType,
     );
 
     if (!integrationUser) {
-      const childUser = await this.integrationUserService.findOne(
+      const parentUser = await this.integrationUserService.findOne(
+        this.integrationType,
         {
           'parameters.customerWebId': customerWebId,
           'parameters.token': { $exists: true },
           'parameters.apiKey': { $exists: true },
-          parentId: { $exists: true },
+          isParent: true,
         },
-        this.integrationType,
+        { _id: 1 },
       );
 
       await this.integrationUserService.create({
@@ -121,7 +123,7 @@ export class OnOfficeService {
         parameters,
         accessToken: extendedClaim,
         integrationType: this.integrationType,
-        parentId: childUser?.parentId,
+        parentId: parentUser?.id,
       });
     }
 
@@ -238,11 +240,21 @@ export class OnOfficeService {
   }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
-    // '$or' clause doesn't have a clear ordering so two 'find' requests are used
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
     let integrationUser = await this.integrationUserService.findOne(
-      { integrationUserId },
       this.integrationType,
+      { integrationUserId },
+    );
+
+    const parentUser = await this.integrationUserService.findOne(
+      this.integrationType,
+      {
+        'parameters.customerWebId': customerWebId,
+        'parameters.token': { $exists: true },
+        'parameters.apiKey': { $exists: true },
+        isParent: true,
+      },
+      { parameters: 1, isParent: 1 },
     );
 
     if (integrationUser) {
@@ -256,9 +268,8 @@ export class OnOfficeService {
         extendedClaim,
       });
 
-      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
-        integrationUser.id,
-        {
+      const updateQuery: UpdateQuery<IApiIntegrationUserSchema> = {
+        $set: {
           accessToken: extendedClaim,
           'parameters.extendedClaim': extendedClaim,
           'parameters.parameterCacheId': parameterCacheId,
@@ -267,67 +278,67 @@ export class OnOfficeService {
           'parameters.email': email,
           'config.color': color ? `#${color}` : undefined,
           'config.logo': logo ? convertBase64ContentToUri(logo) : undefined,
+          parentId: parentUser?.id,
         },
+      };
+
+      if (!parentUser) {
+        delete updateQuery.$set.parentId;
+        updateQuery.$unset = { parentId: 1 };
+      }
+
+      integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
+        integrationUser.id,
+        updateQuery,
       );
     }
 
-    let groupUser: TIntegrationUserDocument;
-
     if (!integrationUser) {
-      groupUser = await this.integrationUserService.findOne(
-        {
-          'parameters.customerWebId': customerWebId,
-          'parameters.token': { $exists: true },
-          'parameters.apiKey': { $exists: true },
-          parentId: { $exists: true },
-        },
-        this.integrationType,
-      );
-
-      if (!groupUser) {
-        groupUser = await this.integrationUserService.findOne(
+      const groupUser =
+        parentUser ||
+        (await this.integrationUserService.findOne(
+          this.integrationType,
           {
             'parameters.customerWebId': customerWebId,
             'parameters.token': { $exists: true },
             'parameters.apiKey': { $exists: true },
           },
-          this.integrationType,
-        );
-      }
-    }
+          { parameters: 1 },
+        ));
 
-    if (!integrationUser && groupUser) {
-      const { userName, email } = await this.fetchUserData({
-        ...groupUser.parameters,
-        extendedClaim,
-      });
-
-      const { color, logo } = await this.fetchLogoAndColor({
-        ...groupUser.parameters,
-        extendedClaim,
-      });
-
-      integrationUser = await this.integrationUserService.create({
-        integrationUserId,
-        integrationType: this.integrationType,
-        accessToken: extendedClaim,
-        parameters: {
-          parameterCacheId,
-          customerName,
-          customerWebId,
-          userId,
-          userName,
-          email,
+      if (groupUser) {
+        const { userName, email } = await this.fetchUserData({
+          ...groupUser.parameters,
           extendedClaim,
-          apiKey: groupUser.parameters.apiKey,
-          token: groupUser.parameters.token,
-        },
-        config: {
-          color: color ? `#${color}` : undefined,
-          logo: logo ? convertBase64ContentToUri(logo) : undefined,
-        } as TApiIntegrationUserConfig,
-        parentId: groupUser.parentId,
-      });
+        });
+
+        const { color, logo } = await this.fetchLogoAndColor({
+          ...groupUser.parameters,
+          extendedClaim,
+        });
+
+        integrationUser = await this.integrationUserService.create({
+          integrationUserId,
+          integrationType: this.integrationType,
+          accessToken: extendedClaim,
+          parameters: {
+            parameterCacheId,
+            customerName,
+            customerWebId,
+            userId,
+            userName,
+            email,
+            extendedClaim,
+            apiKey: groupUser.parameters.apiKey,
+            token: groupUser.parameters.token,
+          },
+          config: {
+            color: color ? `#${color}` : undefined,
+            logo: logo ? convertBase64ContentToUri(logo) : undefined,
+          } as TApiIntegrationUserConfig,
+          parentId: groupUser?.isParent ? groupUser.id : undefined,
+        });
+      }
     }
 
     if (!integrationUser) {
@@ -450,8 +461,8 @@ export class OnOfficeService {
 
     // Integration user is fetched here on purpose to skip next steps on failure
     let integrationUser = await this.integrationUserService.findOneOrFail(
-      { accessToken },
       this.integrationType,
+      { accessToken },
     );
 
     const [product]: [IApiOnOfficeCreateOrderProduct] = JSON.parse(

@@ -75,21 +75,25 @@ export class IntegrationUserService {
   }
 
   async findOne(
-    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
     integrationType: IntegrationTypesEnum,
+    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
+    projectQuery?: ProjectionFields<IApiIntegrationUserSchema>,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel
-      .findOne({
-        ...filterQuery,
-        integrationType,
-      })
+      .findOne(
+        {
+          ...filterQuery,
+          integrationType,
+        },
+        projectQuery,
+      )
       .sort({ updatedAt: -1 });
   }
 
   async findOneAndUpdate(
+    integrationType: IntegrationTypesEnum,
     filterQuery: FilterQuery<IApiIntegrationUserSchema>,
     updateQuery: UpdateQuery<IApiIntegrationUserSchema>,
-    integrationType: IntegrationTypesEnum,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserModel.findOneAndUpdate(
       {
@@ -102,10 +106,10 @@ export class IntegrationUserService {
   }
 
   async findOneOrFail(
-    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
     integrationType: IntegrationTypesEnum,
+    filterQuery: FilterQuery<IApiIntegrationUserSchema>,
   ): Promise<TIntegrationUserDocument> {
-    const existingUser = await this.findOne(filterQuery, integrationType);
+    const existingUser = await this.findOne(integrationType, filterQuery);
 
     if (!existingUser) {
       this.logger.error(filterQuery, integrationType);

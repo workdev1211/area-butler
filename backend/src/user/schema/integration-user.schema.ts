@@ -8,7 +8,6 @@ import {
   TApiIntegrationUserParameters,
   TApiIntegrationUserProductContingents,
   TApiIntegrationUserProductsUsed,
-  TApiIntegrationUserUsageStatistics,
 } from '@area-butler-types/integration-user';
 
 export type TIntegrationUserDocument = IntegrationUser &
@@ -40,9 +39,8 @@ export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ type: String })
   parentId: string;
 
-  // Obsolete, moved to a separate collection
-  @Prop({ type: Object })
-  usageStatistics: TApiIntegrationUserUsageStatistics;
+  @Prop({ type: Boolean })
+  isParent: boolean;
 }
 
 export const IntegrationUserSchema =
