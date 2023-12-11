@@ -756,6 +756,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       config?.mapIcon,
+      config?.groupItems,
       config?.showAddress,
       config?.showLocation,
       config?.showStreetViewLink,
