@@ -286,7 +286,6 @@ const EmbedContainer: FunctionComponent = () => {
     <div onClick={handleClick} onContextMenu={handleContextMenu}>
       <SearchResultContainer
         mapboxToken={mapboxToken}
-        mapboxMapId={searchConfig?.mapBoxMapId}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

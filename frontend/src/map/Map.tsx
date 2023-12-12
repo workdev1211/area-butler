@@ -285,14 +285,14 @@ const MEAN_COLORS: { [key in keyof typeof MeansOfTransportation]: string } = {
 };
 
 interface IMapProps {
-  mapBoxAccessToken: string;
+  mapboxAccessToken: string;
+  mapboxMapId: string;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   groupedEntities: EntityGroup[];
   mapCenter: ApiCoordinates;
   mapZoomLevel?: number;
   leafletMapId?: string;
-  mapboxMapId?: string;
   means: {
     byFoot: boolean;
     byBike: boolean;
@@ -329,8 +329,9 @@ interface IMapMemoProps extends IMapProps {
 }
 
 const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
-  const mapboxKeyEqual =
-    prevProps.mapBoxAccessToken === nextProps.mapBoxAccessToken;
+  const mapboxTokenEqual =
+    prevProps.mapboxAccessToken === nextProps.mapboxAccessToken;
+  const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
   const responseEqual =
     JSON.stringify(prevProps.searchResponse) ===
     JSON.stringify(nextProps.searchResponse);
@@ -349,7 +350,6 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     prevProps.transitRoutes === nextProps.transitRoutes;
   const configEqual =
     JSON.stringify(prevProps.config) === JSON.stringify(nextProps.config);
-  const mapboxMapIdEqual = prevProps.mapboxMapId === nextProps.mapboxMapId;
   const hideIsochronesEqual =
     prevProps.hideIsochrones === nextProps.hideIsochrones;
   const gotoMapCenterEqual =
@@ -361,7 +361,8 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     JSON.stringify(nextProps.userMapPoiIcons);
 
   return (
-    mapboxKeyEqual &&
+    mapboxTokenEqual &&
+    mapboxMapIdEqual &&
     responseEqual &&
     searchAddressEqual &&
     groupedEntitiesEqual &&
@@ -371,7 +372,6 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
     routesEqual &&
     transitRoutesEqual &&
     configEqual &&
-    mapboxMapIdEqual &&
     hideIsochronesEqual &&
     gotoMapCenterEqual &&
     isTrialEqual &&
@@ -382,7 +382,8 @@ const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
 const Map = forwardRef<ICurrentMapRef, IMapProps>(
   (
     {
-      mapBoxAccessToken,
+      mapboxAccessToken,
+      mapboxMapId,
       searchResponse,
       searchAddress,
       groupedEntities,
@@ -396,7 +397,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       transitRoutes,
       mapDisplayMode,
       config,
-      mapboxMapId,
       onPoiAdd,
       hideEntity,
       setMapCenterZoom,
@@ -478,7 +478,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       MapDisplayModesEnum.EMBED_INTEGRATION,
     ].includes(mapDisplayMode!);
 
-    const resultingMyLocationIcon =
+    const resultMapIcon =
       mapDisplayMode === MapDisplayModesEnum.EMBED_INTEGRATION
         ? integrationMyLocationIcon
         : myLocationIcon;
@@ -610,7 +610,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         attribution: isEmbedMode ? attributionEmbedded : attribution,
         id: mapboxMapId,
         zoomOffset: -1,
-        accessToken: mapBoxAccessToken,
+        accessToken: mapboxAccessToken,
         tileSize: 512,
         maxZoom: 18,
       }).addTo(localMap);
@@ -620,16 +620,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
+      isEmbedMode,
       initialMapCenter,
       leafletMapId,
-      mapBoxAccessToken,
-      searchAddress,
-      isEmbedMode,
+      mapboxAccessToken,
       mapboxMapId,
-      config?.mapIcon,
-      config?.showLocation,
-      config?.showAddress,
+      searchAddress,
       config?.groupItems,
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
     ]);
 
     // draw trial logos
@@ -667,19 +667,19 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
       initialMapCenter,
-      leafletMapId,
-      mapBoxAccessToken,
-      searchAddress,
       isEmbedMode,
-      mapboxMapId,
-      config?.mapIcon,
-      config?.showLocation,
-      config?.showAddress,
-      config?.groupItems,
       isTrial,
+      leafletMapId,
+      mapboxAccessToken,
+      mapboxMapId,
+      searchAddress,
+      config?.groupItems,
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
     ]);
 
-    // draw my location (map) icon
+    // draw map icon (my location)
     useEffect(() => {
       if (!currentMap || !config?.showLocation) {
         return;
@@ -691,7 +691,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         }
 
         const mapIconImage = new Image();
-        mapIconImage.src = config?.mapIcon ?? resultingMyLocationIcon;
+        mapIconImage.src = config?.mapIcon ?? resultMapIcon;
         await mapIconImage.decode();
         const mapIconImageRatio =
           Math.round((mapIconImage.width / mapIconImage.height) * 10) / 10;
@@ -701,16 +701,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           config?.iconSizes?.mapIconSize || defaultMyLocationIconSize;
 
         const myLocationLeafletIcon = L.divIcon({
-          iconUrl: config?.mapIcon ?? resultingMyLocationIcon,
+          iconUrl: config?.mapIcon ?? resultMapIcon,
           shadowUrl: leafletShadow,
           shadowSize: [0, 0],
           iconSize: new L.Point(
             resultingSize * mapIconImageRatio,
             resultingSize
           ),
-          className: "my-location-icon-wrapper",
+          className: "map-icon-wrapper",
           html: `<img src="${
-            config?.mapIcon ?? resultingMyLocationIcon
+            config?.mapIcon ?? resultMapIcon
           }" alt="marker-icon-address" style="width: auto; height: ${resultingSize}px;" />`,
         });
 
@@ -755,16 +755,17 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
 
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [
-      config?.mapIcon,
-      config?.groupItems,
-      config?.showAddress,
-      config?.showLocation,
-      config?.showStreetViewLink,
       isEmbedMode,
+      mapboxMapId,
       mapCenter.lat,
       mapCenter.lng,
       searchAddress,
       searchResponse.centerOfInterest.coordinates,
+      config?.groupItems,
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
+      config?.showStreetViewLink,
     ]);
 
     const meansStringified = JSON.stringify(means);
@@ -842,15 +843,15 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         }
       }
     }, [
-      meansStringified,
-      searchResponse.routingProfiles,
-      config?.mapIcon,
-      config?.showLocation,
-      config?.showAddress,
-      config?.groupItems,
-      config?.hideIsochrones,
       hideIsochrones,
       mapboxMapId,
+      meansStringified,
+      searchResponse.routingProfiles,
+      config?.groupItems,
+      config?.hideIsochrones,
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
     ]);
 
     // draw routes
@@ -984,12 +985,12 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           }
         });
     }, [
+      groupedEntities,
+      mapboxMapId,
+      meansStringified,
       routes,
       transitRoutes,
-      meansStringified,
-      groupedEntities,
       config?.mapIcon,
-      mapboxMapId,
     ]);
 
     const entitiesStringified = JSON.stringify(
@@ -1188,11 +1189,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     }, [
       entitiesStringified,
       groupedEntitiesStringified,
-      config?.mapIcon,
-      config?.groupItems,
-      config?.showLocation,
-      config?.showAddress,
       mapboxMapId,
+      config?.groupItems,
+      config?.mapIcon,
+      config?.showAddress,
+      config?.showLocation,
     ]);
 
     // change icon sizes

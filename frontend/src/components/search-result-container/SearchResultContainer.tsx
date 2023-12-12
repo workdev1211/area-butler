@@ -57,7 +57,6 @@ import { realEstateListingsTitle } from "../../../../shared/constants/real-estat
 
 interface ISearchResultContainerProps {
   mapboxToken: string;
-  mapboxMapId?: string;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   location: ApiCoordinates;
@@ -77,7 +76,6 @@ const SearchResultContainer = forwardRef<
   (
     {
       mapboxToken,
-      mapboxMapId,
       searchResponse,
       searchAddress,
       location,
@@ -135,15 +133,15 @@ const SearchResultContainer = forwardRef<
         ? false
         : isEmbeddedMode && !isThemeKf);
 
-    const initialMapBoxMapIds = {
+    const initMapboxMapIds = {
       current:
-        mapboxMapId ||
+        searchContextState.responseConfig?.mapBoxMapId ||
         defaultMapboxStyles.find(
           ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
-        )?.key,
+        )!.key,
       previous: defaultMapboxStyles.find(
         ({ label }) => label === MapboxStyleLabelsEnum.SATELLITE
-      )?.key,
+      )!.key,
     };
 
     const [isMapMenuOpen, setIsMapMenuOpen] = useState(
@@ -161,7 +159,7 @@ const SearchResultContainer = forwardRef<
     const [hideIsochrones, setHideIsochrones] = useState(
       searchContextState.responseConfig?.hideIsochrones
     );
-    const [mapBoxMapIds, setMapBoxMapIds] = useState(initialMapBoxMapIds);
+    const [mapboxMapIds, setMapboxMapIds] = useState(initMapboxMapIds);
     const [preferredLocationsGroup, setPreferredLocationsGroup] =
       useState<EntityGroup>();
     const [isShownPreferredLocationsModal, setIsShownPreferredLocationsModal] =
@@ -185,9 +183,9 @@ const SearchResultContainer = forwardRef<
     }, [containerRef]);
 
     useEffect(() => {
-      setMapBoxMapIds(initialMapBoxMapIds);
+      setMapboxMapIds(initMapboxMapIds);
       // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [mapboxMapId]);
+    }, [searchContextState.responseConfig?.mapBoxMapId]);
 
     useEffect(() => {
       setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
@@ -485,9 +483,9 @@ const SearchResultContainer = forwardRef<
     };
 
     const toggleSatelliteMapMode = (): void => {
-      setMapBoxMapIds({
-        current: mapBoxMapIds.previous,
-        previous: mapBoxMapIds.current,
+      setMapboxMapIds({
+        current: mapboxMapIds.previous,
+        previous: mapboxMapIds.current,
       });
     };
 
@@ -586,8 +584,8 @@ const SearchResultContainer = forwardRef<
               )}
             </div>
             <Map
-              mapBoxAccessToken={mapboxToken}
-              mapboxMapId={mapBoxMapIds.current}
+              mapboxAccessToken={mapboxToken}
+              mapboxMapId={mapboxMapIds.current}
               searchResponse={searchResponse}
               searchAddress={searchAddress}
               groupedEntities={resultGroupEntities ?? []}

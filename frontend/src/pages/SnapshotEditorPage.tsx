@@ -417,7 +417,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
         <div className="editor-container">
           <SearchResultContainer
             mapboxToken={mapBoxAccessToken}
-            mapboxMapId={searchContextState.responseConfig?.mapBoxMapId}
             searchResponse={snapshot.searchResponse}
             searchAddress={snapshot.placesLocation.label}
             location={snapshot.location}
