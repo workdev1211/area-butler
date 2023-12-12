@@ -2,6 +2,7 @@ import {
   ApiSearchResultSnapshotConfig,
   MeansOfTransportation,
   OsmName,
+  PoiFilterTypesEnum,
   TransportationParam,
   UnitsOfTransportation,
 } from "../types/types";
@@ -17,6 +18,10 @@ export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
   showStreetViewLink: false,
   fixedRealEstates: true,
   showDetailsInOnePage: true,
+  poiFilter: {
+    type: PoiFilterTypesEnum.BY_AMOUNT,
+    value: 10,
+  },
 };
 
 export const defaultTransportParams: TransportationParam[] = [
