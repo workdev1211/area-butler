@@ -18,7 +18,7 @@ import {
 import {
   averageParticlePollution,
   PollutionData,
-} from "map/menu/map-tab/components/data/ParticlePollutionTable";
+} from "map-menu/map-tab/components/data/ParticlePollutionTable";
 import {
   distanceToHumanReadable,
   timeToHumanReadable,
@@ -32,10 +32,7 @@ import {
   MeansOfTransportation,
   TransportationParam,
 } from "../../../../../shared/types/types";
-import {
-  EntityGroup,
-  ResultEntity,
-} from "../../../shared/search-result.types";
+import { EntityGroup, ResultEntity } from "../../../shared/search-result.types";
 import { convertMetersToMinutes } from "../../../../../shared/functions/shared.functions";
 import { averageCensusData } from "../../../../../shared/constants/data-provision";
 

@@ -1,3 +1,5 @@
+// NOT USED FOR THE MOMENT
+
 import { FunctionComponent } from "react";
 import { Radar } from "react-chartjs-2";
 import type * as Chart from "chart.js";

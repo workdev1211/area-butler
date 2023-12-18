@@ -73,7 +73,7 @@ import {
   timeToHumanReadable,
   toastSuccess,
 } from "../shared/shared.functions";
-import AddPoiFormHandler from "./add-poi/AddPoiFormHandler";
+import AddPoiFormHandler from "./components/add-poi/AddPoiFormHandler";
 import satelliteIcon from "../assets/icons/satellite.svg";
 import { getRealEstateCost } from "../shared/real-estate.functions";
 import { IPoiIcon } from "../shared/shared.types";
@@ -1301,7 +1301,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [gotoMapCenter]);
 
-    const takeScreenshot = () => {
+    const takeScreenshot = (): void => {
       if (isShownPreferredLocationsModal) {
         togglePreferredLocationsModal(false);
       }
@@ -1358,7 +1358,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       });
     };
 
-    const toggleFullscreen = () => {
+    const toggleFullscreen = (): void => {
       setFullscreen(!fullscreen);
 
       if (currentMap) {
@@ -1368,12 +1368,12 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       }
     };
 
-    const zoomToMeanBounds = (mean: MeansOfTransportation) => {
+    const zoomToMeanBounds = (mean: MeansOfTransportation): void => {
       if (!currentMap) {
         return;
       }
 
-      const derivePolygonForMean = (mean: MeansOfTransportation) => {
+      const derivePolygonForMean = (mean: MeansOfTransportation): L.Polygon => {
         const derivePositionForTransportationMean = (
           profile: MeansOfTransportation
         ) => {
@@ -1448,6 +1448,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             />
           </FormModal>
         )}
+
         <div className="leaflet-bottom leaflet-left mb-20 cursor-pointer">
           <div
             data-tour="zoom-to-bounds"
@@ -1462,6 +1463,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             >
               <img src={eyeIcon} alt="toggle isochrones" />
             </a>
+
             {means.byFoot && (
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
@@ -1475,6 +1477,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 <img src={walkIcon} alt="zoom to walk" />
               </a>
             )}
+
             {means.byBike && (
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
@@ -1488,6 +1491,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                 <img src={bikeIcon} alt="zoom to bicycle" />
               </a>
             )}
+
             {means.byCar && (
               // eslint-disable-next-line jsx-a11y/anchor-is-valid
               <a
@@ -1502,6 +1506,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               </a>
             )}
           </div>
+
           <div className={`leaflet-control-zoom leaflet-bar leaflet-control`}>
             {!isIntegration &&
               (!isEmbedMode ? (
@@ -1548,6 +1553,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                   </svg>
                 </a>
               ))}
+
             <a
               href="/"
               className="leaflet-control-zoom-in cursor-pointer"
@@ -1566,6 +1572,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
             >
               <img src={satelliteIcon} alt="" />
             </a>
+
             {(!isEmbedMode || isEditorMode) && (
               <a
                 href="/"

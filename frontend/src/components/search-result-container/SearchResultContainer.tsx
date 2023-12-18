@@ -31,19 +31,19 @@ import Map from "../../map/Map";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { useRouting } from "../../hooks/routing";
 import "./SearchResultContainer.scss";
-import MeansToggle from "../../map/means-toggle/MeansToggle";
-import MapMenu from "../../map/menu/MapMenu";
+import MeansToggle from "./means-toggle/MeansToggle";
+import MapMenu from "../../map-menu/MapMenu";
 import { defaultColor } from "../../../../shared/constants/constants";
-import PreferredLocationsModal from "../../map/menu/karla-fricke/PreferredLocationsModal";
+import PreferredLocationsModal from "../../map-menu/karla-fricke/PreferredLocationsModal";
 import {
   defaultMapboxStyles,
   defaultMapZoom,
   MapboxStyleLabelsEnum,
 } from "../../shared/shared.constants";
-import MapMenuKarlaFricke from "../../map/menu/karla-fricke/MapMenuKarlaFricke";
+import MapMenuKarlaFricke from "../../map-menu/karla-fricke/MapMenuKarlaFricke";
 import { useTools } from "../../hooks/tools";
 import { LoadingMessage } from "../../on-office/OnOfficeContainer";
-import FilterMenu from "../../map/menu/FilterMenu";
+import FilterMenu from "../../map-menu/FilterMenu";
 import FilterMenuButton from "./FilterMenuButton";
 import {
   EntityGroup,
@@ -583,6 +583,7 @@ const SearchResultContainer = forwardRef<
                 />
               )}
             </div>
+
             <Map
               mapboxAccessToken={mapboxToken}
               mapboxMapId={mapboxMapIds.current}
