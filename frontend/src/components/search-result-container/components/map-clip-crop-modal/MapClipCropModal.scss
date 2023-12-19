@@ -6,6 +6,24 @@
     .react-image-crop {
       max-height: calc(98vh - var(--nav-height) * 2.5);
     }
+
+    .modal-action {
+      .form-control.indicator {
+        .indicator-item.badge {
+          .tooltip {
+            &:after,
+            &:before {
+              transition: opacity 1s ease;
+            }
+
+            &:hover:after,
+            &:hover:before {
+              transition: opacity 1s ease;
+            }
+          }
+        }
+      }
+    }
   }
 }
 
