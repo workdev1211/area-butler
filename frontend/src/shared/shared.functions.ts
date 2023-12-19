@@ -203,6 +203,10 @@ export const toastError = (
   });
 };
 
+export const toastDefaultError = (): void => {
+  toastError("Ein Fehler ist aufgetreten!");
+};
+
 // TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method
 export const preferredLocationsTitle = "Wichtige Adressen";
 export const getPreferredLocationsIcon = (

@@ -3919,9 +3919,9 @@ cliui@^6.0.0:
     wrap-ansi "^6.2.0"
 
 clsx@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.npmjs.org/clsx/-/clsx-1.1.1.tgz"
-  integrity sha512-6/bPho624p3S2pMyvP5kKBPXnI3ufHLObBFCfgx+LkeR5lg2XYy2hqZqUf45ypD8COn2bhgGJSUE+l5dhNBieA==
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/clsx/-/clsx-1.2.1.tgz#0ddc4a20a549b59c93a4116bb26f5294ca17dc12"
+  integrity sha512-EcR6r5a8bj6pu3ycsa/E/cKVGuTgZJZdsyUYHOksG/UHIiKfjxzRxYJpyVBwYaQeOvghal9fcc4PidlgzugAQg==
 
 co@^4.6.0:
   version "4.6.0"
@@ -10239,12 +10239,10 @@ react-google-places-autocomplete@^3.3.2:
     typescript "^3.9.7"
     use-debounce "^3.4.3"
 
-react-image-crop@^9.0.4:
-  version "9.0.4"
-  resolved "https://registry.npmjs.org/react-image-crop/-/react-image-crop-9.0.4.tgz"
-  integrity sha512-+pdmTxZaYrf0HBrmkmVYOW3TeeEh/pPxIcXYjDmmx1IblxiLbuRTlEUG9o7fTxsNwWL1i5ZazBjxrNUK13ji+w==
-  dependencies:
-    clsx "^1.1.1"
+react-image-crop@^11.0.1:
+  version "11.0.1"
+  resolved "https://registry.yarnpkg.com/react-image-crop/-/react-image-crop-11.0.1.tgz#fffb7bad14042a820c1c18fea2fc8ba8ac65d567"
+  integrity sha512-rPXi9iJWoSZP0RWNhevoyAHvNz2ZElQilWE89AWXXRM9MKQUws5J9D0gfpuDOJBtUocirbWUyDcdNPAggP2AYQ==
 
 react-input-autosize@^3.0.0:
   version "3.0.0"

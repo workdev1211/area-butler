@@ -9,7 +9,7 @@ import {
   useState,
 } from "react";
 import center from "@turf/center";
-import { toJpeg } from "html-to-image";
+import { toPng } from "html-to-image";
 
 import * as L from "leaflet";
 // LEFT JUST IN CASE - the old touch screen solution
@@ -71,7 +71,6 @@ import {
   getPreferredLocationsIcon,
   getRealEstateListingsIcon,
   timeToHumanReadable,
-  toastSuccess,
 } from "../shared/shared.functions";
 import AddPoiFormHandler from "./components/add-poi/AddPoiFormHandler";
 import satelliteIcon from "../assets/icons/satellite.svg";
@@ -268,7 +267,6 @@ export class IdMarker extends L.Marker {
   }
 }
 
-let zoom = defaultMapZoom;
 let currentMap: L.Map | undefined;
 let meansGroup = L.layerGroup();
 let routesGroup = L.layerGroup();
@@ -300,7 +298,7 @@ interface IMapProps {
   };
   highlightId?: string;
   setHighlightId: (highlightId?: string) => void;
-  addMapClipping: (zoom: number, dataUrl: string) => void;
+  addMapClipping: (dataUrl: string) => void;
   routes: EntityRoute[];
   transitRoutes: EntityTransitRoute[];
   snippetToken?: string;
@@ -1327,12 +1325,11 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         bottomElements[i].className = `${bottomElements[i].className} hidden`;
       }
 
-      toJpeg(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {
+      toPng(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {
         quality: 1,
         pixelRatio: 2,
-      }).then((mapClippingDataUrl) => {
-        addMapClipping(mapZoomLevel || zoom, mapClippingDataUrl);
-        toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+      }).then((mapClipping) => {
+        addMapClipping(mapClipping);
 
         if (isShownPreferredLocationsModal) {
           togglePreferredLocationsModal(true);
@@ -1459,7 +1456,9 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
               data-tour="toggle-bounds"
               className="leaflet-control-zoom-in cursor-pointer p-2"
               role="button"
-              onClick={() => setHideIsochrones(!hideIsochrones)}
+              onClick={() => {
+                setHideIsochrones(!hideIsochrones);
+              }}
             >
               <img src={eyeIcon} alt="toggle isochrones" />
             </a>

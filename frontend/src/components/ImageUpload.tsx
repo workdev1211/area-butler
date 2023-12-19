@@ -1,9 +1,10 @@
 import { FunctionComponent, ChangeEvent } from "react";
 
 import "./ImageUpload.scss";
+
 import { toastError } from "../shared/shared.functions";
 
-export interface ImageUploadProps {
+interface IImageUploadProps {
   label?: string;
   uploadLabel?: string;
   image: string | undefined;
@@ -12,7 +13,7 @@ export interface ImageUploadProps {
   onChange: (logo: string) => void;
 }
 
-const ImageUpload: FunctionComponent<ImageUploadProps> = ({
+const ImageUpload: FunctionComponent<IImageUploadProps> = ({
   image,
   setImage,
   label = "Dein Logo",
@@ -20,7 +21,7 @@ const ImageUpload: FunctionComponent<ImageUploadProps> = ({
   inputId = "upload-button",
   onChange,
 }) => {
-  const getBase64 = (event: ChangeEvent<HTMLInputElement>) => {
+  const getBase64 = (event: ChangeEvent<HTMLInputElement>): void => {
     let file = event.target.files![0];
 
     if (file.size > 5242880) {
@@ -28,14 +29,16 @@ const ImageUpload: FunctionComponent<ImageUploadProps> = ({
       return;
     }
 
-    let reader = new FileReader();
+    const reader = new FileReader();
     reader.readAsDataURL(file);
-    reader.onload = function () {
+
+    reader.onload = () => {
       setImage(`${reader.result}`);
       onChange(`${reader.result}`);
     };
-    reader.onerror = function (error) {
-      console.error("Error: ", error);
+
+    reader.onerror = (e) => {
+      console.error("Error: ", e);
     };
   };
 

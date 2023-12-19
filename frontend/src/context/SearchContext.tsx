@@ -21,8 +21,9 @@ import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
 import { defaultTransportParams } from "../../../shared/constants/location";
 
+// TODO should be refactored in the future, it seems to be that 'zoomLevel' is not needed anymore
 export interface MapClipping {
-  zoomLevel: number;
+  zoomLevel?: number;
   mapClippingDataUrl: string;
 }
 

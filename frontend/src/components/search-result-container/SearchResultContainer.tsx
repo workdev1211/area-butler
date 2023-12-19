@@ -25,13 +25,14 @@ import {
   deriveAvailableMeansFromResponse,
   deriveEntityGroupsByActiveMeans,
   preferredLocationsTitle,
+  toastSuccess,
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
 import Map from "../../map/Map";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { useRouting } from "../../hooks/routing";
 import "./SearchResultContainer.scss";
-import MeansToggle from "./means-toggle/MeansToggle";
+import MeansToggle from "./components/means-toggle/MeansToggle";
 import MapMenu from "../../map-menu/MapMenu";
 import { defaultColor } from "../../../../shared/constants/constants";
 import PreferredLocationsModal from "../../map-menu/karla-fricke/PreferredLocationsModal";
@@ -44,7 +45,7 @@ import MapMenuKarlaFricke from "../../map-menu/karla-fricke/MapMenuKarlaFricke";
 import { useTools } from "../../hooks/tools";
 import { LoadingMessage } from "../../on-office/OnOfficeContainer";
 import FilterMenu from "../../map-menu/FilterMenu";
-import FilterMenuButton from "./FilterMenuButton";
+import FilterMenuButton from "./components/FilterMenuButton";
 import {
   EntityGroup,
   ICurrentMapRef,
@@ -52,8 +53,9 @@ import {
   IExportTabProps,
   ResultEntity,
 } from "../../shared/search-result.types";
-import MapMenuButton from "./MapMenuButton";
+import MapMenuButton from "./components/MapMenuButton";
 import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
+import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
 
 interface ISearchResultContainerProps {
   mapboxToken: string;
@@ -156,8 +158,8 @@ const SearchResultContainer = forwardRef<
     const [resultGroupEntities, setResultGroupEntities] = useState<
       EntityGroup[]
     >([]);
-    const [hideIsochrones, setHideIsochrones] = useState(
-      searchContextState.responseConfig?.hideIsochrones
+    const [hideIsochrones, setHideIsochrones] = useState<boolean>(
+      !!searchContextState.responseConfig?.hideIsochrones
     );
     const [mapboxMapIds, setMapboxMapIds] = useState(initMapboxMapIds);
     const [preferredLocationsGroup, setPreferredLocationsGroup] =
@@ -166,6 +168,7 @@ const SearchResultContainer = forwardRef<
       useState(false);
     const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
     const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
+    const [mapClipping, setMapClipping] = useState<string>();
 
     const user = getActualUser();
     const isIntegrationUser = "integrationUserId" in user;
@@ -188,7 +191,7 @@ const SearchResultContainer = forwardRef<
     }, [searchContextState.responseConfig?.mapBoxMapId]);
 
     useEffect(() => {
-      setHideIsochrones(searchContextState.responseConfig?.hideIsochrones);
+      setHideIsochrones(!!searchContextState.responseConfig?.hideIsochrones);
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [searchContextState.responseConfig?.hideIsochrones]);
 
@@ -562,6 +565,26 @@ const SearchResultContainer = forwardRef<
           className={containerClasses}
           ref={containerRef}
         >
+          {mapClipping && (
+            <MapClipCropModal
+              closeModal={(croppedMapClipping?: string) => {
+                if (croppedMapClipping) {
+                  toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+
+                  searchContextDispatch({
+                    type: SearchContextActionTypes.ADD_MAP_CLIPPING,
+                    payload: {
+                      mapClippingDataUrl: croppedMapClipping,
+                    },
+                  });
+                }
+
+                setMapClipping(undefined);
+              }}
+              mapClipping={mapClipping}
+            />
+          )}
+
           <div className="relative flex-1" id={mapWithLegendId}>
             <div
               className={`map-nav-bar-container ${
@@ -579,7 +602,7 @@ const SearchResultContainer = forwardRef<
                       payload: [...newValues],
                     });
                   }}
-                  hideIsochrones={!!hideIsochrones} // don't remove the !! operators
+                  hideIsochrones={hideIsochrones}
                 />
               )}
             </div>
@@ -635,16 +658,10 @@ const SearchResultContainer = forwardRef<
                   },
                 });
               }}
-              addMapClipping={(zoomLevel, mapClippingDataUrl) => {
-                searchContextDispatch({
-                  type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-                  payload: {
-                    zoomLevel,
-                    mapClippingDataUrl,
-                  },
-                });
+              addMapClipping={(mapClippingDataUrl) => {
+                setMapClipping(mapClippingDataUrl);
               }}
-              hideIsochrones={!!hideIsochrones} // don't remove the !! operators
+              hideIsochrones={hideIsochrones}
               setHideIsochrones={setHideIsochrones}
               mapWithLegendId={mapWithLegendId}
               toggleSatelliteMapMode={toggleSatelliteMapMode}

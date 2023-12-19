@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
-import openMenuIcon from "../../assets/icons/icons-16-x-16-outline-ic-menu.svg";
-import closeMenuIcon from "../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
+import openMenuIcon from "../../../assets/icons/icons-16-x-16-outline-ic-menu.svg";
+import closeMenuIcon from "../../../assets/icons/icons-12-x-12-outline-ic-caret.svg";
 
 interface IMapMenuButtonProps {
   isEditorMode: boolean;

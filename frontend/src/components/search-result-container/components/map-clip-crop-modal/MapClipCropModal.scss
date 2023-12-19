@@ -1,0 +1,20 @@
+.modal {
+  .modal-box {
+    max-width: fit-content;
+    max-height: 98vh;
+
+    .react-image-crop {
+      max-height: calc(98vh - var(--nav-height) * 2.5);
+    }
+  }
+}
+
+@media (min-width: 640px) {
+  .modal {
+    .modal-box {
+      .react-image-crop {
+        max-height: calc(98vh - var(--nav-height) * 2);
+      }
+    }
+  }
+}

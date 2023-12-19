@@ -4,7 +4,7 @@ import {
   MeansOfTransportation,
   TransportationParam,
   UnitsOfTransportation
-} from "../../../../../shared/types/types";
+} from "../../../../../../shared/types/types";
 
 describe("MeansToggle", () => {
   const transportationParams: TransportationParam[] = [

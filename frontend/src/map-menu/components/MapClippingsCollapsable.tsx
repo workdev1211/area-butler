@@ -46,7 +46,7 @@ const MapClippingsCollapsable: FunctionComponent<
   const downloadClipping = (clipping: MapClipping, i: number): void => {
     saveAs(
       clipping.mapClippingDataUrl,
-      `${parsedAddress}-Kartenausschnitt-${i + 1}.jpg`
+      `${parsedAddress}-Kartenausschnitt-${i + 1}.png`
     );
   };
 
@@ -62,6 +62,7 @@ const MapClippingsCollapsable: FunctionComponent<
             className="lg:w-96 w-80 cursor-pointer"
             alt="img-clipping"
           />
+
           <div className="flex gap-5 flex-wrap">
             <button
               className="w-6 h-6 cursor-pointer border-b-2 border-b-black"
@@ -71,6 +72,7 @@ const MapClippingsCollapsable: FunctionComponent<
             >
               ↓
             </button>
+
             <img
               src={deleteIcon}
               className="w-6 h-6 cursor-pointer"
@@ -79,13 +81,14 @@ const MapClippingsCollapsable: FunctionComponent<
                 removeClipping(clipping);
               }}
             />
+
             {integrationType === IntegrationTypesEnum.ON_OFFICE && (
               <div
                 className="flex cursor-pointer"
-                onClick={async () => {
-                  await sendToOnOffice({
+                onClick={() => {
+                  void sendToOnOffice({
                     exportType: AreaButlerExportTypesEnum.SCREENSHOT,
-                    filename: `${parsedAddress}-Kartenausschnitt-${i + 1}.jpg`,
+                    filename: `${parsedAddress}-Kartenausschnitt-${i + 1}.png`,
                     base64Content: clipping.mapClippingDataUrl.replace(
                       /^data:.*;base64,/,
                       ""
@@ -105,6 +108,7 @@ const MapClippingsCollapsable: FunctionComponent<
           </div>
         </div>
       ))}
+
       <button
         onClick={() => {
           removeAllClippings();

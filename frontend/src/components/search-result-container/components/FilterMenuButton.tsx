@@ -1,6 +1,6 @@
 import { FunctionComponent } from "react";
 
-import filterMenuIcon from "../../assets/icons/icons-16-x-16-outline-ic-search.svg";
+import filterMenuIcon from "../../../assets/icons/icons-16-x-16-outline-ic-search.svg";
 
 interface IFilterMenuButtonProps {
   isEditorMode: boolean;
