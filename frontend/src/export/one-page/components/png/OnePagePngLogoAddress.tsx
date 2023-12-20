@@ -23,7 +23,7 @@ const OnePagePngLogoAddress: FunctionComponent<IOnePagePngLogoAddressProps> = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "0.75rem",
+        gap: "0.375rem",
       }}
     >
       <img

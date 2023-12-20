@@ -18,7 +18,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "0.75rem",
+        gap: "0.375rem",
       }}
     >
       <div
@@ -31,7 +31,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
         Überblick
       </div>
 
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1.25rem" }}>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
         {entityGroups.map((group) => (
           <div
             key={`one-page-group-${group.title}`}
@@ -40,14 +40,14 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
               flexDirection: "column",
               flexWrap: "wrap",
               flex: "0 0 21vw",
-              gap: "0.25rem",
+              gap: "0.375rem",
             }}
           >
             <div
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
+                gap: "0.375rem",
               }}
             >
               {group.icon && <OnePageLegendIcon icon={group.icon} />}
@@ -67,7 +67,7 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                 display: "flex",
                 flexDirection: "column",
                 marginLeft: "12px",
-                gap: "0.25rem",
+                gap: "0.375rem",
               }}
             >
               {group.items.map((item, i) => (
@@ -78,6 +78,8 @@ const OnePagePngPoiList: FunctionComponent<IOnePagePngPoiListProps> = ({
                   }}
                   key={`one-page-group-item-${i}-${item.name || group.title}`}
                 >
+                  {/* Test string */}
+                  {/*(750m) Lorem ipsum dolor sit amet, consect*/}
                   {`(${distanceToHumanReadable(
                     item.distanceInMeters
                   )}) ${truncateText(

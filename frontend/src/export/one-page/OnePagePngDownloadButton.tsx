@@ -48,28 +48,32 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
             image.src = mapClipping.mapClippingDataUrl;
             await image.decode();
 
+            // the new approach uses the 16:9 image with the width of 747px and the height of 420.2px
             const maxWidth = 747;
-            const maxHeight = 350;
+            // const maxHeight = 350;
             const sourceWidth = image.width;
             const sourceHeight = image.height;
             const widthRatio = sourceWidth / maxWidth;
-            const heightRatio = sourceHeight / maxHeight;
-            let resultingWidth = sourceWidth;
-            let resultingHeight = sourceHeight;
+            // const heightRatio = sourceHeight / maxHeight;
+            // let resultingWidth = sourceWidth;
+            // let resultingHeight = sourceHeight;
 
-            if (widthRatio > heightRatio || widthRatio === heightRatio) {
-              resultingWidth = maxWidth;
-              resultingHeight = Math.round(sourceHeight / widthRatio);
-            }
-
-            if (heightRatio > widthRatio) {
-              resultingWidth = Math.round(sourceWidth / heightRatio);
-              resultingHeight = maxHeight;
-            }
+            // if (widthRatio > heightRatio || widthRatio === heightRatio) {
+            //   resultingWidth = maxWidth;
+            //   resultingHeight = Math.round(sourceHeight / widthRatio);
+            // }
+            //
+            // if (heightRatio > widthRatio) {
+            //   resultingWidth = Math.round(sourceWidth / heightRatio);
+            //   resultingHeight = maxHeight;
+            // }
 
             return {
               ...mapClipping,
-              dimensions: { width: resultingWidth, height: resultingHeight },
+              dimensions: {
+                width: maxWidth,
+                height: sourceHeight / widthRatio,
+              },
             };
           }
         )

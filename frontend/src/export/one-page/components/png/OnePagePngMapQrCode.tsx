@@ -19,7 +19,7 @@ const OnePagePngMapQrCode: FunctionComponent<IOnePagePngMapQrCodeProps> = ({
       style={{
         display: "flex",
         flexDirection: "column",
-        gap: "0.75rem",
+        gap: "0.375rem",
       }}
     >
       <div

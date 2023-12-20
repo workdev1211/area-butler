@@ -9,10 +9,10 @@ const OnePageMapQrCode: FunctionComponent<IOnePageMapQrCodeProps> = ({
   qrCodeImage,
 }) => {
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col gap-1.5">
       <div className="text-2xl font-bold">Interaktive Karte</div>
 
-      <div className="relative mt-5" style={{ width: "auto", height: "400px" }}>
+      <div className="relative" style={{ width: "auto", height: "400px" }}>
         {/* Main image */}
         <img
           style={{

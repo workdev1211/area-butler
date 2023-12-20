@@ -20,7 +20,7 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
         {filteredGroups.map((group) => {
           return (
             <div
-              className="flex flex-col gap-1 flex-wrap"
+              className="flex flex-col gap-1.5 flex-wrap"
               key={`one-page-group-${group.title}`}
               style={{ flex: "0 0 21vw" }}
             >
@@ -29,7 +29,7 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
                 <div className="text-base font-bold">{group.title}</div>
               </div>
               <div
-                className="flex flex-col gap-1"
+                className="flex flex-col gap-1.5"
                 style={{ marginLeft: "12px" }}
               >
                 {group.items.map((item, i) => {
@@ -40,6 +40,8 @@ const OnePagePoiList: FunctionComponent<IOnePagePoiListProps> = ({
                         item.name || group.title
                       }`}
                     >
+                      {/* Test string */}
+                      {/*(750m) Lorem ipsum dolor sit amet, consect*/}
                       {`(${distanceToHumanReadable(
                         item.distanceInMeters
                       )}) ${truncateText(
