@@ -386,21 +386,6 @@ export class UserService {
     );
   }
 
-  async getUserRequestContingent(
-    user: UserDocument,
-  ): Promise<ApiRequestContingent[]> {
-    let requestContingent;
-
-    if (user.parentId) {
-      const parentUser = await this.findById(user.parentId);
-      requestContingent = retrieveTotalRequestContingent(parentUser);
-    } else {
-      requestContingent = retrieveTotalRequestContingent(user);
-    }
-
-    return requestContingent;
-  }
-
   async updateSettings(
     email: string,
     settings: ApiUserSettingsDto,

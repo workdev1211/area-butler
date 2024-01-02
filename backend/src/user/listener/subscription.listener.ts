@@ -124,15 +124,17 @@ export class SubscriptionListener {
       }
     }
 
-    if (user && subscription) {
-      await this.subscriptionService.renewSubscription(
-        subscriptionId,
-        newEndDate.toDate(),
-        paymentSystemType,
-      );
-
-      await this.userService.setRequestContingents(user, newEndDate.toDate());
+    if (!user || !subscription) {
+      return;
     }
+
+    await this.subscriptionService.renewSubscription(
+      subscriptionId,
+      newEndDate.toDate(),
+      paymentSystemType,
+    );
+
+    await this.userService.setRequestContingents(user, newEndDate.toDate());
   }
 
   @OnEvent(EventType.REQUEST_CONTINGENT_INCREASE_EVENT, { async: true })
