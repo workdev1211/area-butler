@@ -1,17 +1,20 @@
 import { FunctionComponent, useEffect, useRef, useState } from "react";
 import {
   ReactCrop,
-  Crop,
   centerCrop,
   makeAspectCrop,
   convertToPixelCrop,
+  PercentCrop,
 } from "react-image-crop";
+import { renderToStaticMarkup } from "react-dom/server";
+import { toPng } from "html-to-image";
 
 import "react-image-crop/src/ReactCrop.scss";
 import "./MapClipCropModal.scss";
 
 import { toastDefaultError } from "../../../../shared/shared.functions";
-import { PercentCrop } from "react-image-crop/src/types";
+import { getQrCodeBase64 } from "../../../../export/QrCode";
+import { MapClipQrCode } from "./MapClipQrCode";
 
 interface ICropParams {
   name: string;
@@ -19,8 +22,10 @@ interface ICropParams {
 }
 
 interface IMapClipCropModalProps {
+  mapClipping: string;
   closeModal: (croppedMapClipping?: string) => void;
-  mapClipping: any;
+  color?: string;
+  directLink?: string;
 }
 
 const fullHdCropParams: ICropParams = {
@@ -38,6 +43,10 @@ const allCropParams: ICropParams[] = [
     aspect: +(4 / 3).toFixed(3),
   },
   fullHdCropParams,
+  {
+    name: "16:9 (portrait)",
+    aspect: +(9 / 16).toFixed(3),
+  },
   {
     name: "Benutzerdefinierten",
     aspect: 0,
@@ -64,44 +73,52 @@ const getAspectCrop = (
   );
 
 const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
-  closeModal,
   mapClipping,
+  closeModal,
+  color,
+  directLink,
 }) => {
   const imgRef = useRef<HTMLImageElement>(null);
 
+  const [initMapClipping, setInitMapClipping] = useState<string>(mapClipping);
+  const [resultMapClipping, setResultMapClipping] = useState<string>();
+  const [qrCodeImage, setQrCodeImage] = useState<HTMLImageElement>();
   const [cropState, setCropState] = useState<PercentCrop>();
   const [cropParams, setCropParams] = useState<ICropParams>(fullHdCropParams);
-  const [croppedMapClipping, setCroppedMapClipping] = useState<string>();
+  const [isShownQrCode, setIsShownQrCode] = useState(false);
 
   const handleCropComplete = async (
-    completedCropState: Crop
+    completedCropState: PercentCrop
   ): Promise<void> => {
     const image = imgRef?.current;
 
     if (!image || !completedCropState) {
-      setCroppedMapClipping(undefined);
+      setResultMapClipping(undefined);
       toastDefaultError();
       console.error("Crop canvas does not exist!");
       return;
     }
 
-    if (completedCropState.width === 0 || completedCropState.height === 0) {
-      setCroppedMapClipping(undefined);
+    if (completedCropState.width < 1 || completedCropState.height < 1) {
+      setResultMapClipping(undefined);
       return;
     }
 
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
+    const pixelCropState = convertToPixelCrop(
+      completedCropState,
+      image.naturalWidth,
+      image.naturalHeight
+    );
 
     const offscreen = new OffscreenCanvas(
-      completedCropState.width * scaleX,
-      completedCropState.height * scaleY
+      pixelCropState.width,
+      pixelCropState.height
     );
 
     const ctx = offscreen.getContext("2d");
 
     if (!ctx) {
-      setCroppedMapClipping(undefined);
+      setResultMapClipping(undefined);
       toastDefaultError();
       console.error("No 2d context!");
       return;
@@ -109,14 +126,14 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
 
     ctx.drawImage(
       image,
-      completedCropState.x * scaleX,
-      completedCropState.y * scaleY,
-      completedCropState.width * scaleX,
-      completedCropState.height * scaleY,
+      pixelCropState.x,
+      pixelCropState.y,
+      pixelCropState.width,
+      pixelCropState.height,
       0,
       0,
-      completedCropState.width * scaleX,
-      completedCropState.height * scaleY
+      pixelCropState.width,
+      pixelCropState.height
     );
 
     const blob = await offscreen.convertToBlob({
@@ -127,14 +144,38 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
     reader.readAsDataURL(blob);
 
     reader.onload = () => {
-      setCroppedMapClipping(`${reader.result}`);
+      setResultMapClipping(`${reader.result}`);
     };
 
     reader.onerror = (e) => {
-      setCroppedMapClipping(undefined);
+      setResultMapClipping(undefined);
       toastDefaultError();
       console.error(`Error: ${e}`);
     };
+  };
+
+  const generateQrCodeImage = async (): Promise<HTMLImageElement> => {
+    const rawQrCodeImage = await getQrCodeBase64(directLink!, color);
+    const renderedQrCode = renderToStaticMarkup(
+      <MapClipQrCode qrCodeImage={rawQrCodeImage} color={color} />
+    );
+    const qrCodeElement = document.createElement("div");
+    qrCodeElement.innerHTML = renderedQrCode;
+
+    const renderedQrCodeImage = await toPng(qrCodeElement, {
+      pixelRatio: 1,
+      width: 300,
+      height: 270,
+    });
+
+    qrCodeElement.remove();
+
+    const resQrCodeImage = new Image();
+    resQrCodeImage.src = renderedQrCodeImage;
+    await resQrCodeImage.decode();
+    setQrCodeImage(resQrCodeImage);
+
+    return resQrCodeImage;
   };
 
   // handles the initial image load and the change of the aspect ratio
@@ -145,13 +186,90 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
       return;
     }
 
-    const crop = getAspectCrop(cropParams.aspect, image.width, image.height);
-    setCropState(crop);
+    const crop: PercentCrop =
+      cropParams.aspect !== 0
+        ? getAspectCrop(cropParams.aspect, image.width, image.height)
+        : {
+            x: 0,
+            y: 0,
+            width: 100,
+            height: 100,
+            unit: "%",
+          };
 
-    void handleCropComplete(
-      convertToPixelCrop(crop, image.width, image.height)
-    );
-  }, [imgRef, cropParams]);
+    setCropState(crop);
+    void handleCropComplete(crop);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [cropParams]);
+
+  // draws QR code
+  useEffect(() => {
+    const image = imgRef?.current;
+
+    if (!image || !cropState) {
+      return;
+    }
+
+    if (!isShownQrCode) {
+      setInitMapClipping(mapClipping);
+      void handleCropComplete(cropState);
+      return;
+    }
+
+    const drawQrCode = async (): Promise<void> => {
+      const offscreen = new OffscreenCanvas(
+        image.naturalWidth,
+        image.naturalHeight
+      );
+
+      const ctx = offscreen.getContext("2d");
+
+      if (!ctx) {
+        toastDefaultError();
+        console.error("No 2d context!");
+        return;
+      }
+
+      const pixelCropState = convertToPixelCrop(
+        cropState,
+        image.naturalWidth,
+        image.naturalHeight
+      );
+
+      ctx.drawImage(image, 0, 0);
+
+      const resQrCodeImage = qrCodeImage || (await generateQrCodeImage());
+
+      ctx.drawImage(
+        resQrCodeImage,
+        pixelCropState.x + 15,
+        pixelCropState.y + pixelCropState.height - resQrCodeImage.height - 15
+      );
+
+      const blob = await offscreen.convertToBlob({
+        type: "image/png",
+      });
+
+      const reader = new FileReader();
+      reader.readAsDataURL(blob);
+
+      reader.onload = () => {
+        setInitMapClipping(`${reader.result}`);
+        void handleCropComplete(cropState);
+      };
+
+      reader.onerror = (e) => {
+        setInitMapClipping(mapClipping);
+        toastDefaultError();
+        console.error(`Error: ${e}`);
+      };
+    };
+
+    void drawQrCode();
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [isShownQrCode]);
 
   return (
     <div className="modal modal-open z-9999">
@@ -163,52 +281,70 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
           onChange={(crop, percentCrop) => {
             setCropState(percentCrop);
           }}
-          onComplete={(crop) => {
-            void handleCropComplete(crop);
+          onComplete={(crop, percentCrop) => {
+            void handleCropComplete(percentCrop);
           }}
         >
-          <img ref={imgRef} src={mapClipping} alt="To be croppped" />
+          <img ref={imgRef} src={initMapClipping} alt="To be croppped" />
         </ReactCrop>
 
         <div className="modal-action mt-0 items-end justify-between">
-          <div className="form-control indicator">
-            <div
-              className="indicator-item badge w-5 h-5 text-white"
-              style={{
-                border: "1px solid var(--primary)",
-                borderRadius: "50%",
-                backgroundColor: "var(--primary)",
-                top: "1rem",
-              }}
-            >
+          <div className="flex items-end gap-5">
+            <div className="form-control indicator">
               <div
-                className="tooltip tooltip-right tooltip-accent text-justify font-medium"
-                data-tip="Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de."
+                className="indicator-item badge w-5 h-5 text-white"
+                style={{
+                  border: "1px solid var(--primary)",
+                  borderRadius: "50%",
+                  backgroundColor: "var(--primary)",
+                  top: "1rem",
+                }}
               >
-                i
+                <div
+                  className="tooltip tooltip-right tooltip-accent text-justify font-medium"
+                  data-tip="Wähle den Kartenausschnitt und das Seitenverhältnis (1:1, 4:3, 16:9 oder ein eigenes Format). Tipp für dein Lage-Exposé: Erstelle zwei Bilder: ein großes in 16:9 der Mikrolage und ein kleineres in 1:1 der Makrolage, das in die untere linke Ecke des großen Bildes kommt. Mehr dazu in unseren FAQs unter areabutler.de."
+                >
+                  i
+                </div>
               </div>
+
+              <label className="label" htmlFor="cropParams">
+                <span className="label-text">Seitenverhältnis wählen</span>
+              </label>
+
+              <select
+                className="select select-bordered"
+                name="cropParams"
+                defaultValue={fullHdCropParams.name}
+                onChange={({ target: { value } }) => {
+                  setCropParams(
+                    allCropParams.find(({ name }) => name === value)!
+                  );
+                }}
+              >
+                {allCropParams.map(({ name }) => (
+                  <option key={name} value={name}>
+                    {name}
+                  </option>
+                ))}
+              </select>
             </div>
 
-            <label className="label" htmlFor="cropParams">
-              <span className="label-text">Seitenverhältnis wählen</span>
-            </label>
-
-            <select
-              className="select select-bordered"
-              name="cropParams"
-              defaultValue={fullHdCropParams.name}
-              onChange={({ target: { value } }) => {
-                setCropParams(
-                  allCropParams.find(({ name }) => name === value)!
-                );
-              }}
-            >
-              {allCropParams.map(({ name }) => (
-                <option key={name} value={name}>
-                  {name}
-                </option>
-              ))}
-            </select>
+            {directLink && (
+              <label className="cursor-pointer label">
+                <input
+                  type="checkbox"
+                  name="showQrCode"
+                  checked={isShownQrCode}
+                  onChange={() => {
+                    setResultMapClipping(undefined);
+                    setIsShownQrCode(!isShownQrCode);
+                  }}
+                  className="checkbox checkbox-xs checkbox-primary mr-2"
+                />
+                <span className="label-text">QR-Code anzeigen</span>
+              </label>
+            )}
           </div>
 
           <div className="flex flex-col sm:flex-row gap-2">
@@ -223,9 +359,9 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
 
             <button
               className="btn btn-primary"
-              disabled={!croppedMapClipping}
+              disabled={!resultMapClipping}
               onClick={() => {
-                closeModal(croppedMapClipping);
+                closeModal(resultMapClipping);
               }}
             >
               Zuschneiden

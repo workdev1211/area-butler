@@ -29,10 +29,10 @@
 }
 
 .map-nav-bar-container {
-  z-index: 999;
   top: 24px;
-  left: 10px;
   right: 10px;
+  left: 10px;
+  z-index: 999;
   @apply absolute flex;
 }
 

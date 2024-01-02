@@ -84,6 +84,7 @@ import {
   MapboxStyleLabelsEnum,
 } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
+import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
 // import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 export class IdMarker extends L.Marker {
@@ -309,7 +310,6 @@ interface IMapProps {
   setMapCenterZoom: (mapCenter: ApiCoordinates, mapZoomLevel: number) => void;
   hideIsochrones: boolean;
   setHideIsochrones: (value: boolean) => void;
-  mapWithLegendId: string;
   toggleSatelliteMapMode: () => void;
   isShownPreferredLocationsModal: boolean;
   togglePreferredLocationsModal: (
@@ -402,7 +402,6 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       snippetToken,
       hideIsochrones,
       setHideIsochrones,
-      mapWithLegendId,
       toggleSatelliteMapMode,
       isShownPreferredLocationsModal,
       togglePreferredLocationsModal,
@@ -1304,28 +1303,58 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         togglePreferredLocationsModal(false);
       }
 
-      const poiSearchContainer = document.getElementById(poiSearchContainerId);
-      if (poiSearchContainer) {
-        poiSearchContainer.className = `${poiSearchContainer.className} hidden`;
+      const mapMenuContainer = document.querySelector(
+        ".map-menu.map-menu-open"
+      ) as HTMLElement;
+      if (mapMenuContainer) {
+        mapMenuContainer.style.transition = "none";
+        mapMenuContainer.className = mapMenuContainer.className
+          .replace("map-menu-open", "")
+          .trim();
       }
 
-      const meansContainer = document.getElementsByClassName(
-        "map-nav-bar-container"
-      )[0];
-      const isMeansContainerMenuOpen =
-        meansContainer?.className.match("map-menu-open");
-      if (isMeansContainerMenuOpen) {
+      const mapMenuBtnContainer = document.querySelector(
+        ".show-menu-btn.map-menu-btn"
+      ) as HTMLElement;
+      if (mapMenuBtnContainer) {
+        mapMenuBtnContainer.style.display = "none";
+      }
+
+      const kfMapMenuContainer = document.querySelector(
+        ".map-menu-KF.map-menu-open"
+      ) as HTMLElement;
+      if (kfMapMenuContainer) {
+        kfMapMenuContainer.style.transition = "none";
+        kfMapMenuContainer.className = kfMapMenuContainer.className
+          .replace("map-menu-open", "")
+          .trim();
+      }
+
+      const meansContainer = document.querySelector(
+        ".map-nav-bar-container"
+      ) as HTMLElement;
+      if (meansContainer && hideIsochrones) {
+        meansContainer.style.display = "none";
+      }
+      if (meansContainer && !hideIsochrones) {
         meansContainer.className = meansContainer.className
           .replace("map-menu-open", "")
           .trim();
       }
 
-      const bottomElements = document.getElementsByClassName("leaflet-bottom");
+      const poiSearchContainer = document.querySelector(
+        `#${poiSearchContainerId}`
+      );
+      if (poiSearchContainer) {
+        poiSearchContainer.className = `${poiSearchContainer.className} hidden`;
+      }
+
+      const bottomElements = document.querySelectorAll(".leaflet-bottom");
       for (let i = 0; i < bottomElements.length; i++) {
         bottomElements[i].className = `${bottomElements[i].className} hidden`;
       }
 
-      toPng(document.querySelector(`#${mapWithLegendId}`) as HTMLElement, {
+      toPng(document.querySelector(`#${searchResContainId}`) as HTMLElement, {
         quality: 1,
         pixelRatio: 2,
       }).then((mapClipping) => {
@@ -1335,20 +1364,37 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
           togglePreferredLocationsModal(true);
         }
 
+        if (mapMenuContainer) {
+          mapMenuContainer.className = `${mapMenuContainer.className} map-menu-open`;
+          mapMenuContainer.style.transition = "width 0.2s";
+        }
+
+        if (mapMenuBtnContainer) {
+          mapMenuBtnContainer.style.display = "";
+        }
+
+        if (kfMapMenuContainer) {
+          kfMapMenuContainer.style.transition = "right 0.2s";
+          kfMapMenuContainer.className = `${kfMapMenuContainer.className} map-menu-open`;
+        }
+
+        if (meansContainer && hideIsochrones) {
+          meansContainer.style.display = "";
+        }
+        if (meansContainer && !hideIsochrones) {
+          meansContainer.className = `${meansContainer.className} map-menu-open`;
+        }
+
         if (poiSearchContainer) {
           poiSearchContainer.className = poiSearchContainer.className.replace(
-            "hidden",
+            " hidden",
             ""
           );
         }
 
-        if (isMeansContainerMenuOpen) {
-          meansContainer.className = `${meansContainer.className} map-menu-open`;
-        }
-
         for (let i = 0; i < bottomElements.length; i++) {
           bottomElements[i].className = bottomElements[i].className.replace(
-            "hidden",
+            " hidden",
             ""
           );
         }

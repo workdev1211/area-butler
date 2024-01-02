@@ -71,6 +71,9 @@ interface ISearchResultContainerProps {
   isNewSnapshot?: boolean;
 }
 
+export const searchResContainId = "search-result-container";
+const mapWithLegendId = "map-with-legend";
+
 const SearchResultContainer = forwardRef<
   ICurrentMapRef,
   ISearchResultContainerProps
@@ -169,12 +172,15 @@ const SearchResultContainer = forwardRef<
     const [editorTabProps, setEditorTabProps] = useState<IEditorTabProps>();
     const [exportTabProps, setExportTabProps] = useState<IExportTabProps>();
     const [mapClipping, setMapClipping] = useState<string>();
+    const [primaryColor, setPrimaryColor] = useState<string>();
 
     const user = getActualUser();
     const isIntegrationUser = "integrationUserId" in user;
     const extraMapboxStyles = isIntegrationUser
       ? user.config.extraMapboxStyles
       : user.additionalMapBoxStyles;
+
+    const directLink = createDirectLink(searchContextState.responseToken);
 
     useEffect(() => {
       if (
@@ -200,7 +206,11 @@ const SearchResultContainer = forwardRef<
       const primaryColor =
         searchContextState.responseConfig?.primaryColor || defaultColor;
 
-      const r = document.getElementById("search-result-container");
+      setPrimaryColor(
+        searchContextState.responseConfig?.primaryColor || defaultColor
+      );
+
+      const r = document.getElementById(searchResContainId);
       r?.style.setProperty("--primary", primaryColor);
       r?.style.setProperty("--custom-primary", primaryColor);
     }, [searchContextState.responseConfig?.primaryColor]);
@@ -307,8 +317,8 @@ const SearchResultContainer = forwardRef<
       });
 
       setExportTabProps({
+        directLink,
         codeSnippet: createCodeSnippet(searchContextState.responseToken),
-        directLink: createDirectLink(searchContextState.responseToken),
         searchAddress: searchContextState.placesLocation?.label,
         snapshotId: searchContextState.snapshotId,
       });
@@ -547,7 +557,6 @@ const SearchResultContainer = forwardRef<
     };
 
     const containerClasses = `search-result-container theme-${searchContextState.responseConfig?.theme}`;
-    const mapWithLegendId = "map-with-legend";
     const resUserPoiIcons =
       userPoiIcons || (!isIntegrationUser ? user.poiIcons : undefined);
 
@@ -561,12 +570,13 @@ const SearchResultContainer = forwardRef<
     return (
       <>
         <div
-          id="search-result-container"
+          id={searchResContainId}
           className={containerClasses}
           ref={containerRef}
         >
           {mapClipping && (
             <MapClipCropModal
+              mapClipping={mapClipping}
               closeModal={(croppedMapClipping?: string) => {
                 if (croppedMapClipping) {
                   toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
@@ -581,7 +591,8 @@ const SearchResultContainer = forwardRef<
 
                 setMapClipping(undefined);
               }}
-              mapClipping={mapClipping}
+              color={primaryColor?.slice(1)}
+              directLink={directLink}
             />
           )}
 
@@ -663,7 +674,6 @@ const SearchResultContainer = forwardRef<
               }}
               hideIsochrones={hideIsochrones}
               setHideIsochrones={setHideIsochrones}
-              mapWithLegendId={mapWithLegendId}
               toggleSatelliteMapMode={toggleSatelliteMapMode}
               isShownPreferredLocationsModal={isShownPreferredLocationsModal}
               togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
