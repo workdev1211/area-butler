@@ -34,7 +34,7 @@ export interface IApiIntUserOnOfficeParams {
   customerWebId?: string; // OnOffice account id
   userId?: string; // OnOffice account user id
   userName?: string;
-  extendedClaim: string; // used by us as access token
+  extendedClaim: string; // used by us as an access token
   apiKey?: string; // client secret
   token?: string; // client access token
   email?: string;

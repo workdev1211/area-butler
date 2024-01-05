@@ -19,7 +19,6 @@ import { RealEstateListingModule } from '../real-estate-listing/real-estate-list
     ]),
     ClientModule,
     RealEstateListingModule,
-
     UserModule,
     LocationModule,
   ],

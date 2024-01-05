@@ -40,6 +40,10 @@ import { DataProvisionModule } from '../data-provision/data-provision.module';
     RealEstateListingIntController,
     ApiRealEstateListingImportController,
   ],
-  exports: [RealEstateListingService, RealEstateListingIntService],
+  exports: [
+    RealEstateListingService,
+    RealEstateListingIntService,
+    RealEstateCrmImportService,
+  ],
 })
 export class RealEstateListingModule {}

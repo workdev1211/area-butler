@@ -5,6 +5,7 @@ import { Loader } from "@googlemaps/js-api-loader";
 import DefaultLayout from "../layout/defaultLayout";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
 import uploadIcon from "../assets/icons/upload_file.svg";
+import syncIcon from "../assets/icons/sync.svg";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import TourStarter from "tour/TourStarter";
 import { UserActionTypes, UserContext } from "context/UserContext";
@@ -21,6 +22,7 @@ import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
 import RealEstatesTableV2 from "../real-estates/table/RealEstatesTableV2";
 import { RealEstateContext } from "../context/RealEstateContext";
+import OnOfficeSyncModal from "../real-estates/OnOfficeSyncModal";
 
 const RealEstatesPage: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
@@ -38,6 +40,8 @@ const RealEstatesPage: FunctionComponent = () => {
   const [isShownSnapshotsModal, setIsShownSnapshotsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
   const [isShownCrmImportModal, setIsShownCrmImportModal] = useState(false);
+  const [isShownOnOfficeSyncModal, setIsShownOnOfficeSyncModal] =
+    useState(false);
 
   const isIntegration = !!integrationType;
   const user = userState.user!;
@@ -110,10 +114,7 @@ const RealEstatesPage: FunctionComponent = () => {
             }}
           >
             <img className="invert" src={uploadIcon} alt="upload-icon" />
-
-            <label htmlFor="file" className="cursor-pointer">
-              Import aus CSV-Datei
-            </label>
+            <div className="cursor-pointer">Import aus CSV-Datei</div>
           </button>
         </li>
 
@@ -125,11 +126,8 @@ const RealEstatesPage: FunctionComponent = () => {
                 setIsShownCrmImportModal(true);
               }}
             >
-              <img className="invert" src={uploadIcon} alt="upload-icon" />
-
-              <label htmlFor="file" className="cursor-pointer">
-                CRM synchronisieren
-              </label>
+              <img className="invert" src={uploadIcon} alt="import-icon" />
+              <div className="cursor-pointer">CRM synchronisieren</div>
             </button>
           </li>
         )}
@@ -137,11 +135,27 @@ const RealEstatesPage: FunctionComponent = () => {
     );
   };
 
+  const ActionsTopInt: FunctionComponent = () => {
+    return (
+      <li>
+        <button
+          className="btn btn-link"
+          onClick={() => {
+            setIsShownOnOfficeSyncModal(true);
+          }}
+        >
+          <img className="invert h-[16px]" src={syncIcon} alt="sync-icon" />
+          <div className="cursor-pointer">Sync-Immobilien</div>
+        </button>
+      </li>
+    );
+  };
+
   return (
     <DefaultLayout
       title="Meine Immobilien"
       withHorizontalPadding={false}
-      actionsTop={!isIntegration ? <ActionsTop /> : undefined}
+      actionsTop={isIntegration ? <ActionsTopInt /> : <ActionsTop />}
     >
       <TourStarter tour={ApiTourNamesEnum.REAL_ESTATES} />
 
@@ -167,6 +181,18 @@ const RealEstatesPage: FunctionComponent = () => {
           apiConnections={user.apiConnections!}
           closeModal={() => {
             setIsShownCrmImportModal(false);
+          }}
+        />
+      )}
+
+      {isShownOnOfficeSyncModal && (
+        <OnOfficeSyncModal
+          closeModal={(isSyncSuccessful?: boolean) => {
+            setIsShownOnOfficeSyncModal(false);
+
+            if (isSyncSuccessful) {
+              void fetchRealEstates();
+            }
           }}
         />
       )}

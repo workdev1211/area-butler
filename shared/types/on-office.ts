@@ -83,20 +83,21 @@ interface IApiOnOfficeRequestAction {
   resourceid: string;
   identifier: string;
   resourcetype: ApiOnOfficeResourceTypesEnum;
-  parameters?: IApiOnOfficeRequestActionParameters;
+  parameters?: IApiOnOfficeReqActParams;
 }
 
-interface IApiOnOfficeRequestActionParameters {
+export interface IApiOnOfficeReqActParams {
   parameterCacheId?: string;
   extendedclaim?: string;
   isRegularCustomer?: number;
-  data?: any;
+  data?: unknown;
   labels?: boolean;
   language?: string; // enum
   modules?: string[]; // enum[]
   listlimit?: number; // 20 by default
   listoffset?: number;
-  formatoutput?: boolean;
+  formatoutput?: boolean; // returns text values instead of enums
+  filter?: TApiOnOfficeReqParamFilter;
   // file upload start
   module?: "estate"; // enum
   freetext?: string; // file description
@@ -110,6 +111,11 @@ interface IApiOnOfficeRequestActionParameters {
   relatedRecordId?: string; // real estate id
   // file upload end
 }
+
+type TApiOnOfficeReqParamFilter = Record<
+  string,
+  Array<{ op: string; val: unknown }>
+>;
 
 export enum ApiOnOfficeArtTypesEnum {
   FOTO = "Foto",
@@ -269,6 +275,11 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
   accessToken: string;
   integrationId: string;
   products: string;
+}
+
+export interface IApiOnOfficeSyncEstatesFilterParams {
+  estateStatus?: ApiOnOfficeEstateStatusesEnum;
+  estateMarketType?: ApiOnOfficeEstateMarketTypesEnum;
 }
 
 export interface IApiOnOfficeConfirmOrderReq {

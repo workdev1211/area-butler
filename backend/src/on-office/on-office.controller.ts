@@ -33,13 +33,18 @@ import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-
 import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
 import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
 import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto';
+import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-estates-filter-params.dto';
+import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 
 @ApiTags('OnOffice')
 @Controller('api/on-office')
 export class OnOfficeController {
   private readonly logger = new Logger(OnOfficeController.name);
 
-  constructor(private readonly onOfficeService: OnOfficeService) {}
+  constructor(
+    private readonly onOfficeService: OnOfficeService,
+    private readonly realEstateCrmImportService: RealEstateCrmImportService,
+  ) {}
 
   // TODO think about moving this part to frontend, the user then should be created in the "unlockProvider" method
   @ApiOperation({ description: 'Renders the activation iFrame' })
@@ -136,6 +141,20 @@ export class OnOfficeController {
       integrationUser,
       integrationId,
       uploadEstateFileOrLinkData,
+    );
+  }
+
+  @ApiOperation({ description: 'Sync estate data' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('sync-estates')
+  async syncEstateData(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Query()
+    estateStatusParams: ApiOnOfficeSyncEstatesFilterParamsDto,
+  ): Promise<string[]> {
+    return this.realEstateCrmImportService.importFromOnOffice(
+      integrationUser,
+      estateStatusParams,
     );
   }
 }

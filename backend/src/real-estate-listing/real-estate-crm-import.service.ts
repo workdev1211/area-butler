@@ -34,7 +34,9 @@ import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
   IApiOnOfficeRealEstate,
+  IApiOnOfficeReqActParams,
   IApiOnOfficeRequest,
+  IApiOnOfficeSyncEstatesFilterParams,
 } from '@area-butler-types/on-office';
 import {
   ON_OFFICE_ESTATES_PER_PAGE,
@@ -310,8 +312,9 @@ export class RealEstateCrmImportService {
     return errorIds;
   }
 
-  private async importFromOnOffice(
+  async importFromOnOffice(
     user: UserDocument | TIntegrationUserDocument,
+    estateStatusParams?: IApiOnOfficeSyncEstatesFilterParams,
   ): Promise<string[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
@@ -335,11 +338,64 @@ export class RealEstateCrmImportService {
       'base64',
     );
 
+    const parameters: IApiOnOfficeReqActParams = {
+      listlimit: ON_OFFICE_ESTATES_PER_PAGE,
+      listoffset: 0,
+      formatoutput: true,
+      data: [
+        'Id', // onOffice estate id
+        'objekttitel',
+        'strasse',
+        'hausnummer',
+        'plz',
+        'ort',
+        'land',
+        'breitengrad',
+        'laengengrad',
+        'anzahl_zimmer',
+        'wohnflaeche',
+        'grundstuecksflaeche',
+        'energyClass',
+        'kaufpreis',
+        'waehrung',
+        'kaltmiete',
+        'warmmiete',
+        'anzahl_balkone',
+        'unterkellert',
+        'vermarktungsart',
+        'status2',
+        'objektnr_extern', // external id
+      ],
+    };
+
+    if (isIntegrationUser) {
+      parameters.extendedclaim = user.parameters.extendedClaim;
+    }
+
+    if (estateStatusParams) {
+      parameters.filter = {};
+
+      Object.keys(estateStatusParams).forEach((key) => {
+        const value =
+          estateStatusParams[key as keyof IApiOnOfficeSyncEstatesFilterParams];
+
+        if (value) {
+          parameters.filter[key] = [
+            {
+              op: '=',
+              val: value,
+            },
+          ];
+        }
+      });
+    }
+
     const request: IApiOnOfficeRequest = {
       token,
       request: {
         actions: [
           {
+            parameters,
             timestamp,
             hmac: signature,
             hmac_version: 2,
@@ -347,34 +403,6 @@ export class RealEstateCrmImportService {
             resourceid: '',
             identifier: '',
             resourcetype: resourceType,
-            parameters: {
-              listlimit: ON_OFFICE_ESTATES_PER_PAGE,
-              listoffset: 0,
-              data: [
-                'Id', // onOffice estate id
-                'objekttitel',
-                'strasse',
-                'hausnummer',
-                'plz',
-                'ort',
-                'land',
-                'breitengrad',
-                'laengengrad',
-                'anzahl_zimmer',
-                'wohnflaeche',
-                'grundstuecksflaeche',
-                'energyClass',
-                'kaufpreis',
-                'waehrung',
-                'kaltmiete',
-                'warmmiete',
-                'anzahl_balkone',
-                'unterkellert',
-                'vermarktungsart',
-                'status2',
-                'objektnr_extern', // external id
-              ],
-            },
           },
         ],
       },
