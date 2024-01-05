@@ -5,11 +5,11 @@ import "./UserCrmSettings.scss";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import { useHttp } from "../hooks/http";
 import {
-  IApiUserApiConnectionSettingsReq,
+  IApiUserApiConnectSettingsReq,
   TApiUserApiConnections,
 } from "../../../shared/types/types";
 import { ApiRealEstateExtSourcesEnum } from "../../../shared/types/real-estate";
-import { apiConnectionTypeNames } from "../../../shared/constants/real-estate";
+import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 
 const UserCrmSettings: FunctionComponent = () => {
@@ -40,7 +40,7 @@ const UserCrmSettings: FunctionComponent = () => {
       <div className="api-connections-grid grid items-center gap-5">
         {/* PROPSTACK */}
         <div className="font-bold pt-4">
-          {apiConnectionTypeNames[ApiRealEstateExtSourcesEnum.PROPSTACK]}
+          {apiConnectTypeNames[ApiRealEstateExtSourcesEnum.PROPSTACK]}
         </div>
         <div className="form-control">
           <label className="label">
@@ -65,21 +65,21 @@ const UserCrmSettings: FunctionComponent = () => {
               }
 
               try {
-                const connectionSettings = {
-                  connectionType: ApiRealEstateExtSourcesEnum.PROPSTACK,
+                const connectSettings = {
+                  connectType: ApiRealEstateExtSourcesEnum.PROPSTACK,
                   apiKey: propstackApiKey,
                 };
 
-                await post<void, IApiUserApiConnectionSettingsReq>(
+                await post<void, IApiUserApiConnectSettingsReq>(
                   "/api/real-estate-listing/crm-test",
-                  connectionSettings
+                  connectSettings
                 );
 
                 toastSuccess("Die Verbindung wurde erfolgreich getestet.");
 
                 userDispatch({
                   type: UserActionTypes.SET_API_CONNECTION,
-                  payload: connectionSettings,
+                  payload: connectSettings,
                 });
               } catch (e) {
                 toastError("Der Fehler ist aufgetreten!");
@@ -92,7 +92,7 @@ const UserCrmSettings: FunctionComponent = () => {
         </div>
         {/* ON_OFFICE */}
         <div className="font-bold pt-4">
-          {apiConnectionTypeNames[ApiRealEstateExtSourcesEnum.ON_OFFICE]}
+          {apiConnectTypeNames[ApiRealEstateExtSourcesEnum.ON_OFFICE]}
         </div>
         <div className="form-control">
           <label className="label">
@@ -129,22 +129,22 @@ const UserCrmSettings: FunctionComponent = () => {
               }
 
               try {
-                const connectionSettings = {
-                  connectionType: ApiRealEstateExtSourcesEnum.ON_OFFICE,
+                const connectSettings = {
+                  connectType: ApiRealEstateExtSourcesEnum.ON_OFFICE,
                   token: onOfficeToken,
                   secret: onOfficeSecret,
                 };
 
-                await post<void, IApiUserApiConnectionSettingsReq>(
+                await post<void, IApiUserApiConnectSettingsReq>(
                   "/api/real-estate-listing/crm-test",
-                  connectionSettings
+                  connectSettings
                 );
 
                 toastSuccess("Die Verbindung wurde erfolgreich getestet.");
 
                 userDispatch({
                   type: UserActionTypes.SET_API_CONNECTION,
-                  payload: connectionSettings,
+                  payload: connectSettings,
                 });
               } catch (e) {
                 toastError("Der Fehler ist aufgetreten!");

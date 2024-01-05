@@ -1,6 +1,6 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { FilterQuery, Model } from 'mongoose';
 import { plainToInstance } from 'class-transformer';
 import * as dayjs from 'dayjs';
 
@@ -17,8 +17,7 @@ import {
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import {
   ApiGeometry,
-  IApiUserApiConnectionSettingsReq,
-  TApiUserApiConnectionSettings,
+  IApiUserApiConnectSettingsReq,
 } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
 import { GeoJsonPoint } from '../shared/geo-json.types';
@@ -29,7 +28,7 @@ import {
   PropstackApiService,
 } from '../client/propstack/propstack-api.service';
 import ApiPropstackToAreaButlerDto from './dto/api-propstack-to-area-butler.dto';
-import { apiConnectionTypeNames } from '../../../shared/constants/real-estate';
+import { apiConnectTypeNames } from '../../../shared/constants/real-estate';
 import { UserService } from '../user/user.service';
 import {
   ApiOnOfficeActionIdsEnum,
@@ -51,6 +50,7 @@ import {
 } from './mapper/real-estate-propstack-import.mapper';
 import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -69,7 +69,7 @@ export class RealEstateCrmImportService {
 
   async importFromCrm(
     user: UserDocument,
-    connectionType: ApiRealEstateExtSourcesEnum,
+    connectType: ApiRealEstateExtSourcesEnum,
   ): Promise<string[]> {
     this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -77,41 +77,31 @@ export class RealEstateCrmImportService {
       'Weitere Objektimport ist im aktuellen Plan nicht mehr möglich',
     );
 
-    const connectionSettings = user.apiConnections[connectionType];
+    const connectSettings = user.apiConnections[connectType];
 
-    if (!connectionSettings) {
+    if (!connectSettings) {
       throw new HttpException('Unknown connection type is provided!', 400);
     }
 
     let errorIds: string[];
 
-    switch (connectionType) {
+    switch (connectType) {
       case ApiRealEstateExtSourcesEnum.PROPSTACK: {
-        errorIds = await this.importFromPropstack(
-          user.id,
-          user.email,
-          connectionSettings,
-        );
+        errorIds = await this.importFromPropstack(user);
         break;
       }
 
       case ApiRealEstateExtSourcesEnum.ON_OFFICE: {
-        errorIds = await this.importFromOnOffice(
-          user.id,
-          user.email,
-          connectionSettings,
-        );
+        errorIds = await this.importFromOnOffice(user);
         break;
       }
     }
 
     if (errorIds.length) {
       this.logger.debug(
-        `The following ${
-          apiConnectionTypeNames[connectionType]
-        } ids ${errorIds.join(', ')} has not been imported for the user ${
-          user.email
-        }.`,
+        `The following ${apiConnectTypeNames[connectType]} ids ${errorIds.join(
+          ', ',
+        )} has not been imported for the user ${user.email}.`,
       );
     }
 
@@ -120,7 +110,7 @@ export class RealEstateCrmImportService {
 
   async testApiConnection(
     user: UserDocument,
-    { connectionType, ...connectionSettings }: IApiUserApiConnectionSettingsReq,
+    { connectType, ...connectSettings }: IApiUserApiConnectSettingsReq,
   ): Promise<void> {
     this.subscriptionService.checkSubscriptionViolation(
       user.subscription.type,
@@ -129,11 +119,11 @@ export class RealEstateCrmImportService {
     );
 
     try {
-      switch (connectionType) {
+      switch (connectType) {
         case ApiRealEstateExtSourcesEnum.PROPSTACK: {
           try {
             await this.propstackApiService.fetchRealEstates({
-              apiKey: connectionSettings.apiKey,
+              apiKey: connectSettings.apiKey,
               isTest: true,
             });
           } catch (e) {
@@ -147,7 +137,7 @@ export class RealEstateCrmImportService {
 
         case ApiRealEstateExtSourcesEnum.ON_OFFICE: {
           const timestamp = dayjs().unix();
-          const { token, secret } = connectionSettings;
+          const { token, secret } = connectSettings;
           const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
           const actionId = ApiOnOfficeActionIdsEnum.GET;
 
@@ -192,18 +182,18 @@ export class RealEstateCrmImportService {
           } = response;
 
           if (!(code === 200 && errorcode === 0 && message === 'OK')) {
-            throw new HttpException('OnOffice authentication failed!', 401);
+            throw new HttpException('onOffice authentication failed!', 401);
           }
         }
       }
 
       await this.userService.updateApiConnections(user.id, {
-        connectionType,
-        ...connectionSettings,
+        connectType,
+        ...connectSettings,
       });
     } catch (e) {
       await this.userService.updateApiConnections(user.id, {
-        connectionType,
+        connectType,
       });
 
       throw e;
@@ -211,14 +201,23 @@ export class RealEstateCrmImportService {
   }
 
   private async importFromPropstack(
-    userId: string,
-    userEmail: string,
-    connectionSettings: TApiUserApiConnectionSettings,
+    user: UserDocument | TIntegrationUserDocument,
   ): Promise<string[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
-    const processedUserEmail = userEmail.toLowerCase();
+    const processedUserEmail = (
+      isIntegrationUser ? user.parameters.email : user.email
+    )?.toLowerCase();
     const customStatuses = propstackCustomSyncStatuses[processedUserEmail];
     const queryParams: IPropstackApiFetchEstsQueryParams = {};
+
+    const apiKey = isIntegrationUser
+      ? undefined
+      : user.apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey;
+
+    if (!apiKey) {
+      throw new HttpException('Propstack authentication failed!', 401);
+    }
 
     if (customStatuses) {
       queryParams.status = customStatuses.reduce((result, { id }) => {
@@ -234,7 +233,7 @@ export class RealEstateCrmImportService {
       meta: { total_count: totalCount },
     } = await this.propstackApiService.fetchRealEstates({
       queryParams,
-      apiKey: connectionSettings.apiKey,
+      apiKey,
     });
 
     const realEstates = [...data];
@@ -245,7 +244,7 @@ export class RealEstateCrmImportService {
       for (let i = 2; i < numberOfPages + 1; i++) {
         const { data } = await this.propstackApiService.fetchRealEstates({
           queryParams,
-          apiKey: connectionSettings.apiKey,
+          apiKey,
           pageNumber: i,
         });
 
@@ -273,12 +272,16 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        realEstate.lat = place.geometry.location.lat;
-        realEstate.lng = place.geometry.location.lng;
-
         if (customStatuses) {
           processCustomPropstackStatus(processedUserEmail, realEstate);
         }
+
+        Object.assign(realEstate, {
+          lat: place.geometry.location.lat,
+          lng: place.geometry.location.lng,
+          userId: user.id,
+          externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
+        });
 
         const areaButlerRealEstate = plainToInstance(
           ApiPropstackToAreaButlerDto,
@@ -291,9 +294,9 @@ export class RealEstateCrmImportService {
         bulkOperations.push({
           updateOne: {
             filter: {
-              userId,
-              externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
-              externalId: realEstate.id,
+              userId: areaButlerRealEstate.userId,
+              externalSource: areaButlerRealEstate.externalSource,
+              externalId: areaButlerRealEstate.externalId,
             },
             update: areaButlerRealEstate,
             upsert: true,
@@ -308,16 +311,23 @@ export class RealEstateCrmImportService {
   }
 
   private async importFromOnOffice(
-    userId: string,
-    userEmail: string,
-    connectionSettings: TApiUserApiConnectionSettings,
+    user: UserDocument | TIntegrationUserDocument,
   ): Promise<string[]> {
+    const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
-    const token = connectionSettings.token;
-    const secret = connectionSettings.secret;
+
+    const resConnectSettings = isIntegrationUser
+      ? { token: user.parameters.token, secret: user.parameters.apiKey }
+      : user.apiConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE];
+
+    const { token, secret } = resConnectSettings || {};
+
+    if (!token || !secret) {
+      throw new HttpException('onOffice authentication failed!', 401);
+    }
 
     let signature = this.onOfficeApiService.generateSignature(
       [timestamp, token, resourceType, actionId].join(''),
@@ -374,7 +384,7 @@ export class RealEstateCrmImportService {
 
     this.onOfficeApiService.checkResponseIsSuccess(
       this.importFromCrm.name,
-      'The OnOffice import failed!',
+      'The onOffice import failed!',
       request,
       initialResponse,
     );
@@ -408,7 +418,7 @@ export class RealEstateCrmImportService {
 
         this.onOfficeApiService.checkResponseIsSuccess(
           this.importFromCrm.name,
-          'The OnOffice import failed!',
+          'The onOffice import failed!',
           request,
           response,
         );
@@ -457,9 +467,12 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        const processedUserEmail = userEmail.toLowerCase();
+        const processedUserEmail = (
+          isIntegrationUser ? user.parameters.email : user.email
+        )?.toLowerCase();
 
         if (
+          !isIntegrationUser &&
           Object.values<string>(
             ApiOnOfficeRealEstStatusByUserEmailsEnum,
           ).includes(processedUserEmail)
@@ -476,8 +489,7 @@ export class RealEstateCrmImportService {
         //   }`,
         // );
 
-        Object.assign(realEstate, {
-          userId,
+        const estateData: Partial<IApiRealEstateListingSchema> = {
           address: place.formatted_address,
           location: {
             type: 'Point',
@@ -486,7 +498,22 @@ export class RealEstateCrmImportService {
               place.geometry.location.lng,
             ],
           } as GeoJsonPoint,
-        });
+        };
+
+        if (isIntegrationUser) {
+          estateData.integrationParams = {
+            integrationId: realEstate.Id,
+            integrationUserId: user.integrationUserId,
+            integrationType: user.integrationType,
+          };
+        }
+
+        if (!isIntegrationUser) {
+          estateData.userId = user.id;
+          estateData.externalSource = ApiRealEstateExtSourcesEnum.ON_OFFICE;
+        }
+
+        Object.assign(realEstate, estateData);
 
         const areaButlerRealEstate = plainToInstance(
           ApiOnOfficeToAreaButlerDto,
@@ -496,13 +523,25 @@ export class RealEstateCrmImportService {
 
         await this.addLocationIndices(areaButlerRealEstate);
 
+        const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
+          isIntegrationUser
+            ? {
+                'integrationParams.integrationId':
+                  areaButlerRealEstate.integrationParams.integrationId,
+                'integrationParams.integrationUserId':
+                  areaButlerRealEstate.integrationParams.integrationUserId,
+                'integrationParams.integrationType':
+                  areaButlerRealEstate.integrationParams.integrationType,
+              }
+            : {
+                userId: areaButlerRealEstate.userId,
+                externalSource: areaButlerRealEstate.externalSource,
+                externalId: areaButlerRealEstate.externalId,
+              };
+
         bulkOperations.push({
           updateOne: {
-            filter: {
-              userId,
-              externalSource: ApiRealEstateExtSourcesEnum.ON_OFFICE,
-              externalId: areaButlerRealEstate.externalId,
-            },
+            filter: filterQuery,
             update: areaButlerRealEstate,
             upsert: true,
           },

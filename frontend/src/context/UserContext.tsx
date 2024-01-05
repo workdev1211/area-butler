@@ -4,7 +4,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUser,
   ApiUserRequests,
-  IApiUserApiConnectionSettingsReq,
+  IApiUserApiConnectSettingsReq,
 } from "../../../shared/types/types";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
@@ -72,7 +72,7 @@ type UserActionsPayload = {
   [UserActionTypes.SET_MAP_ICON]: string | undefined;
   [UserActionTypes.SET_COLOR]: string | undefined;
   [UserActionTypes.SET_TEMPLATE_SNAPSHOT_ID]: string | undefined;
-  [UserActionTypes.SET_API_CONNECTION]: IApiUserApiConnectionSettingsReq;
+  [UserActionTypes.SET_API_CONNECTION]: IApiUserApiConnectSettingsReq;
 };
 
 export type UserActions =
@@ -179,13 +179,13 @@ export const userReducer = (
       return updateUserSetting("templateSnapshotId", action.payload);
     }
     case UserActionTypes.SET_API_CONNECTION: {
-      const { connectionType, ...connectionSettings } = action.payload;
+      const { connectType, ...connectSettings } = action.payload;
 
       const user = {
         ...state.user!,
         apiConnections: {
           ...(state.user!.apiConnections || {}),
-          [action.payload.connectionType]: { ...connectionSettings },
+          [action.payload.connectType]: { ...connectSettings },
         },
       };
 

@@ -72,17 +72,17 @@ export interface ApiUser {
   templateSnapshotId?: string;
 }
 
-export type TApiUserApiConnectionSettings = Partial<
+export type TApiUserApiConnectSettings = Partial<
   IApiPropstackConSettings & IApiOnOfficeConSettings
 >;
 
-export interface IApiUserApiConnectionSettingsReq
-  extends TApiUserApiConnectionSettings {
-  connectionType: ApiRealEstateExtSourcesEnum;
+export interface IApiUserApiConnectSettingsReq
+  extends TApiUserApiConnectSettings {
+  connectType: ApiRealEstateExtSourcesEnum;
 }
 
 export type TApiUserApiConnections = Partial<
-  Record<ApiRealEstateExtSourcesEnum, TApiUserApiConnectionSettings>
+  Record<ApiRealEstateExtSourcesEnum, TApiUserApiConnectSettings>
 >;
 
 export interface IApiUserParentSettings {

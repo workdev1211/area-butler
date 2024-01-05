@@ -5,7 +5,6 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateCostType,
-  ApiRealEstateExtSourcesEnum,
   ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
@@ -15,9 +14,15 @@ import {
   PropstackRealEstStatusesEnum,
 } from '../../shared/propstack.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { IsOptional, IsString } from 'class-validator';
 
 @Exclude()
 class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
+  @Expose()
+  @IsOptional()
+  @IsString()
+  userId?: string;
+
   @Expose()
   @Transform(
     ({ obj: { name, title } }: { obj: IPropstackRealEstate }): string =>
@@ -136,15 +141,12 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
 
   @Expose()
   @Transform(
-    ({ obj: { id } }: { obj: IPropstackRealEstate }): string =>
-      id ? `propstack-${id}` : undefined,
+    ({ obj: { id } }: { obj: IPropstackRealEstate }): string => `${id}`,
     {
       toClassOnly: true,
     },
   )
   externalId?: string;
-
-  externalSource = ApiRealEstateExtSourcesEnum.PROPSTACK;
 
   @Expose()
   @Transform(

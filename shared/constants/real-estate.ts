@@ -21,7 +21,7 @@ export const allRealEstateCostTypes = [
   { label: "Monatl. Kaltmiete", type: ApiRealEstateCostType.RENT_MONTHLY_COLD },
 ];
 
-export const apiConnectionTypeNames: Record<
+export const apiConnectTypeNames: Record<
   ApiRealEstateExtSourcesEnum,
   string
 > = {

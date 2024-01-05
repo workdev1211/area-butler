@@ -206,24 +206,24 @@ export interface IApiOnOfficeRealEstate {
 }
 
 export enum ApiOnOfficeEstateMarketTypesEnum {
-  MIETE = "MIETE",
-  KAUF = "KAUF",
-  PACHT = "PACHT",
-  ERBPACHT = "ERBPACHT",
+  KAUF = "Kauf",
+  MIETE = "Miete",
+  PACHT = "Pacht",
+  ERBPACHT = "Erbpacht",
+}
+
+export enum ApiOnOfficeEstateStatusesEnum {
+  INAKTIV = "Inaktiv",
+  AKTIV = "Aktiv",
+  ARCHIVIERT = "Archiviert",
 }
 
 export enum ApiOnOfficeEstateBasementEnum {
-  JA = "JA",
-  NEIN = "NEIN",
-  TEIL = "TEIL", // the label is "Teilweise"
-  TEILWEISE = "TEILWEISE", // the label for 'TEIL' option
+  JA = "Ja",
+  NEIN = "Nein",
+  TEIL = "Teil", // the label is "Teilweise"
+  TEILWEISE = "Teilweise", // the label for 'TEIL' option
 }
-
-// export enum ApiOnOfficeEstateStatusesEnum {
-//   INAKTIV = "INAKTIV",
-//   AKTIV = "AKTIV",
-//   ARCHIVIERT = "ARCHIVIERT",
-// }
 
 export interface IApiOnOfficeLoginQueryParams {
   apiClaim: string; // extendedClaim

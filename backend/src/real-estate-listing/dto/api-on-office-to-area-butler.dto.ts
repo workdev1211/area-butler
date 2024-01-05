@@ -50,6 +50,13 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   userId?: string;
 
   @Expose()
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiIntegrationParamsDto)
+  integrationParams?: IApiIntegrationParams;
+
+  @Expose()
   @IsNotEmpty()
   @IsString()
   @Transform(
@@ -246,22 +253,10 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       obj: { integrationParams, objektnr_extern, immonr, Id, datensatznr },
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
-    }): string => {
-      const externalId = integrationParams
-        ? objektnr_extern || immonr
-        : Id || datensatznr;
-
-      return externalId ? `on-office-${externalId}` : undefined;
-    },
+    }): string =>
+      integrationParams ? objektnr_extern || immonr : Id || datensatznr,
   )
   externalId?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiIntegrationParamsDto)
-  integrationParams?: IApiIntegrationParams;
 }
 
 export default ApiOnOfficeToAreaButlerDto;

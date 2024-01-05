@@ -13,20 +13,13 @@ import {
   fixedRequestSubscriptionTypes,
   TRIAL_PRICE_ID,
 } from '../../../shared/constants/subscription-plan';
-import {
-  retrieveTotalRequestContingent,
-  User,
-  UserDocument,
-} from './schema/user.schema';
+import { User, UserDocument } from './schema/user.schema';
 import { SubscriptionService } from './subscription.service';
 import ApiUpsertUserDto from '../dto/api-upsert-user.dto';
-import {
-  ApiRequestContingent,
-  ApiRequestContingentType,
-} from '@area-butler-types/subscription-plan';
+import { ApiRequestContingentType } from '@area-butler-types/subscription-plan';
 import {
   ApiTourNamesEnum,
-  IApiUserApiConnectionSettingsReq,
+  IApiUserApiConnectSettingsReq,
   IApiUserAssets,
   IApiUserPoiIcon,
 } from '@area-butler-types/types';
@@ -130,11 +123,11 @@ export class UserService {
 
   async updateApiConnections(
     userId: string,
-    { connectionType, ...connectionSettings }: IApiUserApiConnectionSettingsReq,
+    { connectType, ...connectSettings }: IApiUserApiConnectSettingsReq,
   ): Promise<UserDocument> {
     return this.userModel.findByIdAndUpdate(
       userId,
-      { $set: { [`apiConnections.${connectionType}`]: connectionSettings } },
+      { $set: { [`apiConnections.${connectType}`]: connectSettings } },
       { new: true },
     );
   }

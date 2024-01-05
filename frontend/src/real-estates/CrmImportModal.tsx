@@ -6,7 +6,7 @@ import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
 import { TApiUserApiConnections } from "../../../shared/types/types";
-import { apiConnectionTypeNames } from "../../../shared/constants/real-estate";
+import { apiConnectTypeNames } from "../../../shared/constants/real-estate";
 import { useRealEstateData } from "../hooks/realestatedata";
 
 interface ICrmImportModalProps {
@@ -60,9 +60,9 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
               style={{ color: "var(--primary)" }}
             />
           </div>
-          {Object.keys(apiConnections).map((connectionType) => (
+          {Object.keys(apiConnections).map((connectType) => (
             <button
-              key={connectionType}
+              key={connectType}
               className="btn btn-xs btn-primary"
               onClick={async () => {
                 setIsShownBusyModal(true);
@@ -70,7 +70,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                 try {
                   const errorIds = (
                     await get<string[]>(
-                      `/api/real-estate-listing/crm-import/${connectionType}`
+                      `/api/real-estate-listing/crm-import/${connectType}`
                     )
                   ).data;
 
@@ -78,8 +78,8 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
 
                   if (errorIds.length) {
                     const errorIdsText = `Die Daten wurden importiert, mit Ausnahme der folgenden ${
-                      apiConnectionTypeNames[
-                        connectionType as ApiRealEstateExtSourcesEnum
+                      apiConnectTypeNames[
+                        connectType as ApiRealEstateExtSourcesEnum
                       ]
                     }-IDs: ${errorIds.join(", ")}.`;
 
@@ -97,11 +97,7 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
                 closeModal();
               }}
             >
-              {
-                apiConnectionTypeNames[
-                  connectionType as ApiRealEstateExtSourcesEnum
-                ]
-              }
+              {apiConnectTypeNames[connectType as ApiRealEstateExtSourcesEnum]}
             </button>
           ))}
         </div>

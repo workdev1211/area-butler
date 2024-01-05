@@ -5,6 +5,7 @@ import { TApiLocIndexProps, TLocationIndexData } from "./location-index";
 
 export interface IApiRealEstateListingSchema {
   userId?: string;
+  integrationParams?: IApiIntegrationParams;
   name: string;
   address: string;
   externalUrl?: string;
@@ -16,8 +17,8 @@ export interface IApiRealEstateListingSchema {
   locationIndices?: TApiLocIndexProps;
   status?: string;
   status2?: string;
+  externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
-  integrationParams?: IApiIntegrationParams;
 }
 
 export interface ApiRealEstateListing {
@@ -54,6 +55,7 @@ export interface ApiUpsertRealEstateListing {
   status2?: string;
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
+  userId?: string;
 }
 
 // should be present either minPrice or price (maxPrice), or both
@@ -102,8 +104,8 @@ export enum ApiEnergyEfficiency {
 
 export enum ApiRealEstateStatusEnum {
   IN_PREPARATION = "In Vorbereitung",
-  FOR_RENT = "Miete", // Miete
-  FOR_SALE = "Kauf", // Kauf
+  FOR_RENT = "Miete",
+  FOR_SALE = "Kauf",
   RENTED = "Vermietet",
   SOLD = "Verkauft",
   NEW_CONSTRUCTION = "Neubau",
@@ -115,11 +117,6 @@ export enum ApiRealEstateStatusEnum {
 export enum ApiRealEstateStatus2Enum {
   ACTIVE = "Aktiv",
   INACTIVE = "Inaktiv",
-}
-
-export interface IApiRealEstateStatus {
-  label: string;
-  status: string;
 }
 
 export enum ApiExampleFileTypeEnum {

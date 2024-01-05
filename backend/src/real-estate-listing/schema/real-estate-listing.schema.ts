@@ -19,6 +19,9 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
   @Prop()
   userId: string;
 
+  @Prop({ type: RealEstateIntegrationParamsSchema })
+  integrationParams: IApiRealEstateIntegrationParams;
+
   @Prop({ required: true })
   name: string;
 
@@ -64,9 +67,6 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
 
   @Prop({ type: String })
   externalId: string;
-
-  @Prop({ type: RealEstateIntegrationParamsSchema })
-  integrationParams: IApiRealEstateIntegrationParams;
 }
 
 export const RealEstateListingSchema =

@@ -65,8 +65,9 @@ export const setRealEstateStatusByUserEmail = (
         break;
       }
 
+      // TODO check if it works correctly without the upper case
       if (checkIsRemaxStatus(realEstate.status2, remaxActive)) {
-        switch (realEstate.vermarktungsart.toUpperCase()) {
+        switch (realEstate.vermarktungsart) {
           case ApiOnOfficeEstateMarketTypesEnum.MIETE: {
             status = ApiRealEstateStatusEnum.FOR_RENT;
             break;

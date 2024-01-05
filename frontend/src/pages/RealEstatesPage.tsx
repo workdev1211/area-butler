@@ -101,6 +101,7 @@ const RealEstatesPage: FunctionComponent = () => {
             <img src={plusIcon} alt="pdf-icon" /> Objekt anlegen
           </Link>
         </li>
+
         <li>
           <button
             className="btn btn-link"
@@ -108,16 +109,14 @@ const RealEstatesPage: FunctionComponent = () => {
               setIsShownCsvImportModal(true);
             }}
           >
-            <img
-              src={uploadIcon}
-              alt="upload-icon"
-              style={{ filter: "invert(100%)" }}
-            />
-            <label htmlFor="file" style={{ cursor: "pointer" }}>
+            <img className="invert" src={uploadIcon} alt="upload-icon" />
+
+            <label htmlFor="file" className="cursor-pointer">
               Import aus CSV-Datei
             </label>
           </button>
         </li>
+
         {hasApiConnections && (
           <li>
             <button
@@ -126,12 +125,9 @@ const RealEstatesPage: FunctionComponent = () => {
                 setIsShownCrmImportModal(true);
               }}
             >
-              <img
-                src={uploadIcon}
-                alt="upload-icon"
-                style={{ filter: "invert(100%)" }}
-              />
-              <label htmlFor="file" style={{ cursor: "pointer" }}>
+              <img className="invert" src={uploadIcon} alt="upload-icon" />
+
+              <label htmlFor="file" className="cursor-pointer">
                 CRM synchronisieren
               </label>
             </button>
@@ -148,15 +144,16 @@ const RealEstatesPage: FunctionComponent = () => {
       actionsTop={!isIntegration ? <ActionsTop /> : undefined}
     >
       <TourStarter tour={ApiTourNamesEnum.REAL_ESTATES} />
+
       {isShownSnapshotsModal && (
         <EmbeddableMapsModal
           setShowModal={setIsShownSnapshotsModal}
           embeddableMaps={realEstateSnapshots}
         />
       )}
-      {!isIntegration && (
+
+      {isShownCsvImportModal && (
         <CsvImportModal
-          isShownModal={isShownCsvImportModal}
           closeModal={async () => {
             await fetchRealEstates();
             setIsShownCsvImportModal(false);
@@ -164,6 +161,7 @@ const RealEstatesPage: FunctionComponent = () => {
           fileFormat={user.subscription?.config.appFeatures.csvFileFormat}
         />
       )}
+
       {isShownCrmImportModal && (
         <CrmImportModal
           apiConnections={user.apiConnections!}
@@ -172,6 +170,7 @@ const RealEstatesPage: FunctionComponent = () => {
           }}
         />
       )}
+
       {listings.length > 0 && (
         <div data-tour="real-estates-table">
           {/*<RealEstatesTable openSnapshotsModal={openSnapshotsModal} />*/}

@@ -83,7 +83,7 @@ export const useTools = () => {
   return {
     createDirectLink,
     createCodeSnippet,
-    // move to the user data hook
+    // move all hooks below to the user data hook component
     getActualUser,
     updateUserSettings,
     hideTour,

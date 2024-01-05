@@ -10,13 +10,11 @@ import closeIcon from "../assets/icons/cross.svg";
 import { CsvFileFormatsEnum } from "../../../shared/types/types";
 
 interface ICsvImportModalProps {
-  isShownModal: boolean;
   closeModal: () => void;
   fileFormat?: CsvFileFormatsEnum;
 }
 
 const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
-  isShownModal,
   closeModal,
   fileFormat = CsvFileFormatsEnum.AREA_BUTLER,
 }) => {
@@ -90,11 +88,6 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
     return () => document.removeEventListener("keydown", handleEscape);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // TODO refactor to the declarative call from the parent
-  if (!isShownModal) {
-    return null;
-  }
 
   return (
     <>
