@@ -27,8 +27,8 @@ interface IFetchedAddressesInRange {
   apiRequestsNumber: number;
 }
 
-const MAXIMUM_RADIUS = 400;
-const MINIMUM_ADDRESSES_NUMBER = 200;
+// const MAXIMUM_RADIUS = 400;
+// const MINIMUM_ADDRESSES_NUMBER = 200;
 
 @Injectable()
 export class AddressesInRangeExtService {
@@ -133,11 +133,13 @@ export class AddressesInRangeExtService {
               currentAddress?.full_address === otherAddress?.full_address,
           );
 
-        const isAcceptable =
-          true ||
-          (currentAddress.distance_in_meters <= MAXIMUM_RADIUS &&
-            (currentAddress.distance_in_meters <= radius ||
-              result.length <= MINIMUM_ADDRESSES_NUMBER));
+        // const isAcceptable =
+        //   true ||
+        //   (currentAddress.distance_in_meters <= MAXIMUM_RADIUS &&
+        //     (currentAddress.distance_in_meters <= radius ||
+        //       result.length <= MINIMUM_ADDRESSES_NUMBER));
+
+        const isAcceptable = currentAddress.distance_in_meters <= radius;
 
         if (isNotDuplicate && isAcceptable) {
           result.push(currentAddress);
