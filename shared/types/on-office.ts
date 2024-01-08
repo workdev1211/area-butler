@@ -70,7 +70,7 @@ export enum ApiOnOfficeResourceTypesEnum {
   UNLOCK_PROVIDER = "unlockProvider",
   ESTATE = "estate",
   FIELDS = "fields", // field description - get all info about entity fields ("address", "estate", etc)
-  BASIC_SETTINGS = "basicsettings",
+  BASIC_SETTINGS = "basicsettings", // logo and color
   UPLOAD_FILE = "uploadfile",
   USER = "user",
 }

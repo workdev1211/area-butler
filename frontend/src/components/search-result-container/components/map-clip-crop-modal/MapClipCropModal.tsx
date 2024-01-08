@@ -72,6 +72,14 @@ const getAspectCrop = (
     height
   );
 
+const convertBlobToBase64 = (blob: Blob): Promise<string> =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(`${reader.result}`);
+    reader.onerror = (e) => reject(e);
+    reader.readAsDataURL(blob);
+  });
+
 const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   mapClipping,
   closeModal,
@@ -90,17 +98,16 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   const handleCropComplete = async (
     completedCropState: PercentCrop
   ): Promise<void> => {
+    setResultMapClipping(undefined);
     const image = imgRef?.current;
 
     if (!image || !completedCropState) {
-      setResultMapClipping(undefined);
       toastDefaultError();
       console.error("Crop canvas does not exist!");
       return;
     }
 
     if (completedCropState.width < 1 || completedCropState.height < 1) {
-      setResultMapClipping(undefined);
       return;
     }
 
@@ -114,11 +121,9 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
       pixelCropState.width,
       pixelCropState.height
     );
-
     const ctx = offscreen.getContext("2d");
 
     if (!ctx) {
-      setResultMapClipping(undefined);
       toastDefaultError();
       console.error("No 2d context!");
       return;
@@ -140,18 +145,12 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
       type: "image/png",
     });
 
-    const reader = new FileReader();
-    reader.readAsDataURL(blob);
-
-    reader.onload = () => {
-      setResultMapClipping(`${reader.result}`);
-    };
-
-    reader.onerror = (e) => {
-      setResultMapClipping(undefined);
+    try {
+      setResultMapClipping(await convertBlobToBase64(blob));
+    } catch (e) {
       toastDefaultError();
       console.error(`Error: ${e}`);
-    };
+    }
   };
 
   const generateQrCodeImage = async (): Promise<HTMLImageElement> => {
@@ -165,7 +164,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
     const renderedQrCodeImage = await toPng(qrCodeElement, {
       pixelRatio: 1,
       width: 300,
-      height: 270,
+      height: 300,
     });
 
     qrCodeElement.remove();
@@ -177,6 +176,72 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
 
     return resQrCodeImage;
   };
+
+  const drawQrCode = async (): Promise<void> => {
+    const isDrawnQrCode = !isShownQrCode;
+    setIsShownQrCode(isDrawnQrCode);
+    const image = imgRef?.current;
+
+    if (!image || !cropState) {
+      return;
+    }
+
+    if (!isDrawnQrCode) {
+      setInitMapClipping(mapClipping);
+      return;
+    }
+
+    const offscreen = new OffscreenCanvas(
+      image.naturalWidth,
+      image.naturalHeight
+    );
+    const ctx = offscreen.getContext("2d");
+
+    if (!ctx) {
+      toastDefaultError();
+      console.error("No 2d context!");
+      return;
+    }
+
+    ctx.drawImage(image, 0, 0);
+    const resQrCodeImage = qrCodeImage || (await generateQrCodeImage());
+
+    const pixelCropState = convertToPixelCrop(
+      cropState,
+      image.naturalWidth,
+      image.naturalHeight
+    );
+
+    ctx.drawImage(
+      resQrCodeImage,
+      pixelCropState.x + 15,
+      pixelCropState.y + pixelCropState.height - resQrCodeImage.height
+    );
+
+    const blob = await offscreen.convertToBlob({
+      type: "image/png",
+    });
+
+    try {
+      setInitMapClipping(await convertBlobToBase64(blob));
+    } catch (e) {
+      setInitMapClipping(mapClipping);
+      toastDefaultError();
+      console.error(`Error: ${e}`);
+    }
+  };
+
+  // handles the image redrawal
+  useEffect(() => {
+    const image = imgRef?.current;
+
+    if (!image || !cropState) {
+      return;
+    }
+
+    void handleCropComplete(cropState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initMapClipping]);
 
   // handles the initial image load and the change of the aspect ratio
   useEffect(() => {
@@ -199,77 +264,8 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
 
     setCropState(crop);
     void handleCropComplete(crop);
-
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [cropParams]);
-
-  // draws QR code
-  useEffect(() => {
-    const image = imgRef?.current;
-
-    if (!image || !cropState) {
-      return;
-    }
-
-    if (!isShownQrCode) {
-      setInitMapClipping(mapClipping);
-      void handleCropComplete(cropState);
-      return;
-    }
-
-    const drawQrCode = async (): Promise<void> => {
-      const offscreen = new OffscreenCanvas(
-        image.naturalWidth,
-        image.naturalHeight
-      );
-
-      const ctx = offscreen.getContext("2d");
-
-      if (!ctx) {
-        toastDefaultError();
-        console.error("No 2d context!");
-        return;
-      }
-
-      const pixelCropState = convertToPixelCrop(
-        cropState,
-        image.naturalWidth,
-        image.naturalHeight
-      );
-
-      ctx.drawImage(image, 0, 0);
-
-      const resQrCodeImage = qrCodeImage || (await generateQrCodeImage());
-
-      ctx.drawImage(
-        resQrCodeImage,
-        pixelCropState.x + 15,
-        pixelCropState.y + pixelCropState.height - resQrCodeImage.height - 15
-      );
-
-      const blob = await offscreen.convertToBlob({
-        type: "image/png",
-      });
-
-      const reader = new FileReader();
-      reader.readAsDataURL(blob);
-
-      reader.onload = () => {
-        setInitMapClipping(`${reader.result}`);
-        void handleCropComplete(cropState);
-      };
-
-      reader.onerror = (e) => {
-        setInitMapClipping(mapClipping);
-        toastDefaultError();
-        console.error(`Error: ${e}`);
-      };
-    };
-
-    void drawQrCode();
-
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isShownQrCode]);
 
   return (
     <div className="modal modal-open z-9999">
@@ -281,7 +277,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
           onChange={(crop, percentCrop) => {
             setCropState(percentCrop);
           }}
-          onComplete={(crop, percentCrop) => {
+          onComplete={async (crop, percentCrop) => {
             void handleCropComplete(percentCrop);
           }}
         >
@@ -336,10 +332,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
                   type="checkbox"
                   name="showQrCode"
                   checked={isShownQrCode}
-                  onChange={() => {
-                    setResultMapClipping(undefined);
-                    setIsShownQrCode(!isShownQrCode);
-                  }}
+                  onChange={drawQrCode}
                   className="checkbox checkbox-xs checkbox-primary mr-2"
                 />
                 <span className="label-text">QR-Code anzeigen</span>
