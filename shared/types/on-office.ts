@@ -98,6 +98,7 @@ export interface IApiOnOfficeReqActParams {
   listoffset?: number;
   formatoutput?: boolean; // returns text values instead of enums
   filter?: TApiOnOfficeReqParamFilter;
+  fieldList?: string[]; // enum[] IApiOnOfficeRealEstate
   // file upload start
   module?: "estate"; // enum
   freetext?: string; // file description
@@ -278,8 +279,13 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
 }
 
 export interface IApiOnOfficeSyncEstatesFilterParams {
-  estateStatus?: ApiOnOfficeEstateStatusesEnum;
-  estateMarketType?: ApiOnOfficeEstateMarketTypesEnum;
+  estateStatus?: string;
+  estateMarketType?: string;
+}
+
+export interface IApiOnOfficeEstateAvailStatuses {
+  estateStatuses?: string[];
+  estateMarketTypes?: string[];
 }
 
 export interface IApiOnOfficeConfirmOrderReq {

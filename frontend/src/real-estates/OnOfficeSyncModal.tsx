@@ -1,35 +1,55 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useEffect, useState } from "react";
 
 import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
 import { useEscape } from "../hooks/escape";
-import {
-  ApiOnOfficeEstateMarketTypesEnum,
-  ApiOnOfficeEstateStatusesEnum,
-} from "../../../shared/types/on-office";
 import { useOnOfficeSync } from "../on-office/hooks/sync";
 
 interface IOnOfficeSyncModalProps {
   closeModal: (isSyncSuccessful?: boolean) => void;
 }
 
-const allValue = "ALLE";
-const allOption = <option value={allValue}>Alle</option>;
+const allValue = "Alle";
 
 const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
   closeModal,
 }) => {
   useEscape(closeModal);
-  const { handleOnOfficeSync } = useOnOfficeSync();
+  const { handleOnOfficeSync, fetchAvailStatuses } = useOnOfficeSync();
 
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
-  const [estateStatus, setEstateStatus] = useState<
-    ApiOnOfficeEstateStatusesEnum | undefined
-  >();
+  const [isAllowedSync, setIsAllowedSync] = useState(false);
+  const [estateStatus, setEstateStatus] = useState<string | undefined>();
+  const [estateStatuses, setEstateStatuses] = useState<string[]>([allValue]);
   const [estateMarketType, setEstateMarketType] = useState<
-    ApiOnOfficeEstateMarketTypesEnum | undefined
+    string | undefined
   >();
+  const [estateMarketTypes, setEstateMarketTypes] = useState<string[]>([
+    allValue,
+  ]);
+
+  useEffect(() => {
+    const setAvailStatuses = async (): Promise<void> => {
+      const {
+        estateStatuses: fetchedStatuses,
+        estateMarketTypes: fetchedMarketTypes,
+      } = await fetchAvailStatuses();
+
+      if (fetchedStatuses) {
+        setEstateStatuses([...estateStatuses, ...fetchedStatuses]);
+      }
+
+      if (fetchedMarketTypes) {
+        setEstateMarketTypes([...estateMarketTypes, ...fetchedMarketTypes]);
+      }
+
+      setIsAllowedSync(true);
+    };
+
+    void setAvailStatuses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const syncRealEstates = async (): Promise<void> => {
     setIsShownBusyModal(true);
@@ -42,6 +62,8 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
       });
 
       if (errorLineNumbers.length) {
+        console.error(errorLineNumbers);
+
         toastError(
           `Beim Importieren von Eigenschaften mit den folgenden IDs sind Fehler aufgetreten: ${errorLineNumbers
             .sort((a, b) => a.localeCompare(b))
@@ -84,7 +106,7 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
       >
         <div className="modal-box p-0 sm:rounded-2xl">
           <div className="flex justify-between px-6 py-3 rounded-t-2xl text-white bg-primary">
-            <span className="text-lg font-medium">Zahlungsarten</span>
+            <span className="text-lg font-medium">Filter setzen:</span>
 
             <img
               className="cursor-pointer invert"
@@ -100,7 +122,7 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
             <div className="grid grid-cols-2 gap-3">
               <div className="form-control">
                 <label htmlFor="estateStatuses" className="label">
-                  <span>Vermarktungsart</span>
+                  <span>Status</span>
                 </label>
 
                 <select
@@ -108,27 +130,20 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
                   className="select select-bordered"
                   value={estateStatus}
                   onChange={({ target: { value } }) => {
-                    setEstateStatus(
-                      value === allValue
-                        ? undefined
-                        : (value as ApiOnOfficeEstateStatusesEnum)
-                    );
+                    setEstateStatus(value === allValue ? undefined : value);
                   }}
                 >
-                  {allOption}
-                  {Object.entries(ApiOnOfficeEstateStatusesEnum).map(
-                    ([key, value]) => (
-                      <option key={key} value={value}>
-                        {value}
-                      </option>
-                    )
-                  )}
+                  {estateStatuses.map((status) => (
+                    <option key={status} value={status}>
+                      {status}
+                    </option>
+                  ))}
                 </select>
               </div>
 
               <div className="form-control">
                 <label htmlFor="marketTypes" className="label">
-                  <span>Status</span>
+                  <span>Vermarktungsart</span>
                 </label>
 
                 <select
@@ -136,21 +151,14 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
                   className="select select-bordered"
                   value={estateMarketType}
                   onChange={({ target: { value } }) => {
-                    setEstateMarketType(
-                      value === allValue
-                        ? undefined
-                        : (value as ApiOnOfficeEstateMarketTypesEnum)
-                    );
+                    setEstateMarketType(value === allValue ? undefined : value);
                   }}
                 >
-                  {allOption}
-                  {Object.entries(ApiOnOfficeEstateMarketTypesEnum).map(
-                    ([key, value]) => (
-                      <option key={key} value={value}>
-                        {value}
-                      </option>
-                    )
-                  )}
+                  {estateMarketTypes.map((marketType) => (
+                    <option key={marketType} value={marketType}>
+                      {marketType}
+                    </option>
+                  ))}
                 </select>
               </div>
             </div>
@@ -159,6 +167,7 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
               <button
                 className="btn btn-lg btn-default"
                 onClick={syncRealEstates}
+                disabled={!isAllowedSync}
               >
                 Sync-Immobilien
               </button>

@@ -1,16 +1,13 @@
-import { IsEnum, IsOptional } from 'class-validator';
+import { IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
-import {
-  ApiOnOfficeEstateMarketTypesEnum,
-  ApiOnOfficeEstateStatusesEnum,
-  IApiOnOfficeSyncEstatesFilterParams,
-} from '@area-butler-types/on-office';
+import { IApiOnOfficeSyncEstatesFilterParams } from '@area-butler-types/on-office';
 
 @Exclude()
 class ApiOnOfficeSyncEstatesFilterParamsDto
   implements IApiOnOfficeSyncEstatesFilterParams
 {
+  // 'Expose' with 'Transform' are both required to rename the params
   @Expose({ name: 'status2' })
   @IsOptional()
   @Transform(
@@ -18,8 +15,8 @@ class ApiOnOfficeSyncEstatesFilterParamsDto
       estateStatus,
     { toClassOnly: true },
   )
-  @IsEnum(ApiOnOfficeEstateStatusesEnum)
-  estateStatus?: ApiOnOfficeEstateStatusesEnum;
+  @IsString()
+  estateStatus?: string;
 
   @Expose({ name: 'vermarktungsart' })
   @IsOptional()
@@ -31,8 +28,8 @@ class ApiOnOfficeSyncEstatesFilterParamsDto
     }) => estateMarketType,
     { toClassOnly: true },
   )
-  @IsEnum(ApiOnOfficeEstateMarketTypesEnum)
-  estateMarketType?: ApiOnOfficeEstateMarketTypesEnum;
+  @IsString()
+  estateMarketType?: string;
 }
 
 export default ApiOnOfficeSyncEstatesFilterParamsDto;

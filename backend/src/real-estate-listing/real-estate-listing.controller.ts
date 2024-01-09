@@ -93,24 +93,6 @@ export class RealEstateListingController extends AuthenticatedController {
     return 'done';
   }
 
-  // TODO should be removed after implementing of new statuses
-  @ApiOperation({ description: 'Reverse an update of real estate statuses' })
-  @Patch('status/reverse')
-  @Roles(Role.Admin)
-  async reverseStatusUpdate(): Promise<string> {
-    await this.realEstateListingService.reverseStatusUpdate();
-    return 'done';
-  }
-
-  // TODO should be removed after implementing of new statuses
-  @ApiOperation({ description: 'Update real estate statuses' })
-  @Patch('status')
-  @Roles(Role.Admin)
-  async updateStatuses(): Promise<string> {
-    await this.realEstateListingService.updateStatuses();
-    return 'done';
-  }
-
   @ApiOperation({ description: 'Update a real estate listing' })
   @Put(':id')
   async updateRealEstateListing(

@@ -20,6 +20,7 @@ import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
+  IApiOnOfficeEstateAvailStatuses,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
   IApiOnOfficeLoginRes,
@@ -479,12 +480,6 @@ export class OnOfficeService {
         ? decodeURIComponent(message.replace(/\+/g, ' '))
         : undefined;
 
-      this.logger.debug(
-        this.confirmOrder.name,
-        parsedMessage,
-        confirmOrderData,
-      );
-
       await this.onOfficeTransactionModel.updateOne(
         { _id: product.transactionDbId },
         { transactionId, referenceId, status, message: parsedMessage },
@@ -825,6 +820,70 @@ export class OnOfficeService {
     );
 
     throw new HttpException('Request verification failed!', 400);
+  }
+
+  async fetchAvailStatuses({
+    parameters: { token, apiKey, extendedClaim },
+  }: TIntegrationUserDocument): Promise<IApiOnOfficeEstateAvailStatuses> {
+    const actionId = ApiOnOfficeActionIdsEnum.GET;
+    const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
+
+    const timestamp = dayjs().unix();
+    const signature = this.onOfficeApiService.generateSignature(
+      [timestamp, token, resourceType, actionId].join(''),
+      apiKey,
+      'base64',
+    );
+
+    const request: IApiOnOfficeRequest = {
+      token,
+      request: {
+        actions: [
+          {
+            timestamp,
+            hmac: signature,
+            hmac_version: 2,
+            actionid: actionId,
+            resourceid: '',
+            identifier: '',
+            resourcetype: resourceType,
+            parameters: {
+              extendedclaim: extendedClaim,
+              labels: true,
+              language: 'DEU',
+              modules: ['estate'],
+              fieldList: ['vermarktungsart', 'status2'],
+            },
+          },
+        ],
+      },
+    };
+
+    const response = await this.onOfficeApiService.sendRequest(request);
+
+    this.onOfficeApiService.checkResponseIsSuccess(
+      this.uploadEstateLink.name,
+      'Link upload failed!',
+      request,
+      response,
+    );
+
+    const estateStatuses =
+      response.response.results[0].data.records[0].elements?.status2
+        .permittedvalues;
+
+    const estateMarketTypes =
+      response.response.results[0].data.records[0].elements?.vermarktungsart
+        .permittedvalues;
+
+    return {
+      estateStatuses: estateStatuses
+        ? Object.values(estateStatuses)
+        : undefined,
+      estateMarketTypes: estateMarketTypes
+        ? Object.values(estateMarketTypes)
+        : undefined,
+    };
   }
 
   private async fetchAndProcessEstateData(

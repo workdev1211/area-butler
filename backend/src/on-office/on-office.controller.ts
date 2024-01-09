@@ -6,6 +6,7 @@ import {
   Param,
   Patch,
   Post,
+  Put,
   Query,
   Render,
   UseInterceptors,
@@ -19,6 +20,7 @@ import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
+  IApiOnOfficeEstateAvailStatuses,
   IApiOnOfficeLoginRes,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
@@ -146,15 +148,24 @@ export class OnOfficeController {
 
   @ApiOperation({ description: 'Sync estate data' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get('sync-estates')
+  @Put('sync-estates')
   async syncEstateData(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Query()
+    @Body()
     estateStatusParams: ApiOnOfficeSyncEstatesFilterParamsDto,
   ): Promise<string[]> {
     return this.realEstateCrmImportService.importFromOnOffice(
       integrationUser,
       estateStatusParams,
     );
+  }
+
+  @ApiOperation({ description: 'Fetch available estate statuses' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('avail-statuses')
+  async fetchAvailStatuses(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiOnOfficeEstateAvailStatuses> {
+    return this.onOfficeService.fetchAvailStatuses(integrationUser);
   }
 }
