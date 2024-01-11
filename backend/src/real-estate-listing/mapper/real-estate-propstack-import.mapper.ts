@@ -1,3 +1,5 @@
+// TODO should be removed in the future after some testing because now the status fields are completely custom
+
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
 import {
   IPropstackProcessedRealEstate,
@@ -11,9 +13,7 @@ export enum PropstackCustomUserEmailsEnum {
 
 export const propstackCustomSyncStatuses: Record<
   PropstackCustomUserEmailsEnum,
-  Array<
-    IPropstackRealEstateStatus & { areaButlerStatus: string }
-  >
+  Array<IPropstackRealEstateStatus & { areaButlerStatus: string }>
 > = {
   [PropstackCustomUserEmailsEnum.NADINE]: [
     {

@@ -46,10 +46,11 @@ import {
   ApiOnOfficeRealEstStatusByUserEmailsEnum,
   setRealEstateStatusByUserEmail,
 } from './mapper/real-estate-on-office-import.mapper';
-import {
-  processCustomPropstackStatus,
-  propstackCustomSyncStatuses,
-} from './mapper/real-estate-propstack-import.mapper';
+// TODO should be removed in the future after some testing because now the status fields are completely custom
+// import {
+//   processCustomPropstackStatus,
+//   propstackCustomSyncStatuses,
+// } from './mapper/real-estate-propstack-import.mapper';
 import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -207,10 +208,11 @@ export class RealEstateCrmImportService {
   ): Promise<string[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
-    const processedUserEmail = (
-      isIntegrationUser ? user.parameters.email : user.email
-    )?.toLowerCase();
-    const customStatuses = propstackCustomSyncStatuses[processedUserEmail];
+    // TODO should be removed in the future after some testing because now the status fields are completely custom
+    // const processedUserEmail = (
+    //   isIntegrationUser ? user.parameters.email : user.email
+    // )?.toLowerCase();
+    // const customStatuses = propstackCustomSyncStatuses[processedUserEmail];
     const queryParams: IPropstackApiFetchEstsQueryParams = {};
 
     const apiKey = isIntegrationUser
@@ -221,14 +223,15 @@ export class RealEstateCrmImportService {
       throw new HttpException('Propstack authentication failed!', 401);
     }
 
-    if (customStatuses) {
-      queryParams.status = customStatuses.reduce((result, { id }) => {
-        result += `${id},`;
-        return result;
-      }, '');
-
-      queryParams.status = queryParams.status.slice(0, -1);
-    }
+    // TODO should be removed in the future after some testing because now the status fields are completely custom
+    // if (customStatuses) {
+    //   queryParams.status = customStatuses.reduce((result, { id }) => {
+    //     result += `${id},`;
+    //     return result;
+    //   }, '');
+    //
+    //   queryParams.status = queryParams.status.slice(0, -1);
+    // }
 
     const {
       data,
@@ -274,13 +277,19 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        if (customStatuses) {
-          processCustomPropstackStatus(processedUserEmail, realEstate);
-        }
+        // TODO should be removed in the future after some testing because now the status fields are completely custom
+        // if (customStatuses) {
+        //   processCustomPropstackStatus(processedUserEmail, realEstate);
+        // }
 
         Object.assign(realEstate, {
-          lat: place.geometry.location.lat,
-          lng: place.geometry.location.lng,
+          location: {
+            type: 'Point',
+            coordinates: [
+              place.geometry.location.lat,
+              place.geometry.location.lng,
+            ],
+          },
           userId: user.id,
           externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
         });
