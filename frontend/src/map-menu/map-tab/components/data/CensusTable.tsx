@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { ApiDataProvisionEnum } from "../../../../../../shared/types/types";
-import Loading from "../../../components/Loading";
+import { Loading } from "../../../../components/Loading";
 import { TCensusData } from "../../../../../../shared/types/data-provision";
 import { processCensusData } from "../../../../../../shared/functions/census.functions";
 

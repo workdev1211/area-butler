@@ -43,7 +43,6 @@ import {
 } from "../../shared/shared.constants";
 import MapMenuKarlaFricke from "../../map-menu/karla-fricke/MapMenuKarlaFricke";
 import { useTools } from "../../hooks/tools";
-import { LoadingMessage } from "../../on-office/OnOfficeContainer";
 import FilterMenu from "../../map-menu/FilterMenu";
 import FilterMenuButton from "./components/FilterMenuButton";
 import {
@@ -56,6 +55,7 @@ import {
 import MapMenuButton from "./components/MapMenuButton";
 import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
+import { LoadingMessage } from "../Loading";
 
 interface ISearchResultContainerProps {
   mapboxToken: string;

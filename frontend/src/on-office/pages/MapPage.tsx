@@ -33,7 +33,6 @@ import {
 } from "../../../../shared/types/types";
 import SearchResultContainer from "../../components/search-result-container/SearchResultContainer";
 import { EntityGroup, ICurrentMapRef } from "../../shared/search-result.types";
-import { LoadingMessage } from "../OnOfficeContainer";
 import { useLocationData } from "../../hooks/locationdata";
 import { SnapshotEditorRouterProps } from "../../pages/SnapshotEditorPage";
 import TourStarter from "../../tour/TourStarter";
@@ -46,6 +45,7 @@ import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { ConfigContext } from "../../context/ConfigContext";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
+import { LoadingMessage } from "../../components/Loading";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);

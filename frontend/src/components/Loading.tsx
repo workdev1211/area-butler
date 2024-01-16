@@ -1,6 +1,6 @@
-import { FunctionComponent } from "react";
+import { FC } from "react";
 
-const Loading: FunctionComponent = () => {
+export const Loading: FC = () => {
   return (
     <div className="flex justify-center items-center p-3 gap-3">
       <div
@@ -15,4 +15,4 @@ const Loading: FunctionComponent = () => {
   );
 };
 
-export default Loading;
+export const LoadingMessage: FC = () => <div>Seite wird geladen...</div>;

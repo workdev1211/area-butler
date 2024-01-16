@@ -33,6 +33,7 @@ import {
 import { CachingContextProvider } from "./context/CachingContext";
 import ScrollToTop from "./components/ScrollToTop";
 import FeedbackModal from "./components/FeedbackModal";
+import { LoadingMessage } from "./components/Loading";
 // import MaintenanceModal from "./components/MaintenanceModal";
 
 Sentry.init({
@@ -43,8 +44,6 @@ Sentry.init({
   attachStacktrace: true,
   autoSessionTracking: false,
 });
-
-const LoadingMessage = () => <div>Seite wird geladen...</div>;
 
 const LoginPage = lazy(() => import("./pages/LoginPage"));
 

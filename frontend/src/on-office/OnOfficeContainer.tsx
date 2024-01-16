@@ -21,6 +21,7 @@ import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
+import { LoadingMessage } from "../components/Loading";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -33,7 +34,6 @@ const calculateViewHeight = () => {
 
 calculateViewHeight();
 
-export const LoadingMessage = () => <div>Seite wird geladen...</div>;
 export const onOfficeRootEntries = ["/", "/search"];
 
 const PotentialCustomerPage = lazy(

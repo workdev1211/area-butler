@@ -1,7 +1,7 @@
 import { FunctionComponent } from "react";
 
 import { ApiGeojsonFeature } from "../../../../../../shared/types/types";
-import Loading from "../../../components/Loading";
+import { Loading } from "../../../../components/Loading";
 
 export interface PollutionData {
   mean: number;
