@@ -8,7 +8,6 @@ import {
   IApiOnOfficeConfirmOrderReq,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
-  IApiOnOfficeLoginRes,
   IOnOfficeHandleLogin,
   OnOfficeLoginActionTypesEnum,
   TApiOnOfficeConfirmOrderRes,
@@ -21,6 +20,7 @@ import {
 } from "../../context/SearchContext";
 import { RequestStatusTypesEnum } from "../../../../shared/types/types";
 import { IQueryParamsAndUrl } from "../../shared/shared.types";
+import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
 const loginQueryParamsSchema = Yup.object({
   apiClaim: Yup.string().required(),
@@ -109,7 +109,7 @@ export const useLogin = () => {
 
     try {
       const loginRes = (
-        await post<IApiOnOfficeLoginRes>("/api/on-office/login", loginReq)
+        await post<IApiIntUserLoginRes>("/api/on-office/login", loginReq)
       ).data;
 
       dispatchContextData(loginRes);
@@ -169,7 +169,7 @@ export const useLogin = () => {
     realEstate,
     availProdContingents,
     latestSnapshot,
-  }: IApiOnOfficeLoginRes): void => {
+  }: IApiIntUserLoginRes): void => {
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {

@@ -1,4 +1,5 @@
 import { TOnOfficeIntActTypes } from "./on-office";
+import { RequestStatusTypesEnum } from "./types";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -30,3 +31,8 @@ export type TUnlockIntProduct = (
   modalMessage?: string,
   actionType?: TOnOfficeIntActTypes
 ) => void;
+
+export interface IIntegrationHandleLogin {
+  requestStatus: RequestStatusTypesEnum;
+  message?: string;
+}

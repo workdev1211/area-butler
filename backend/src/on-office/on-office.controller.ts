@@ -21,7 +21,6 @@ import {
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
   IApiOnOfficeEstateAvailStatuses,
-  IApiOnOfficeLoginRes,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
@@ -33,7 +32,10 @@ import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-offi
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
 import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
-import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
+import {
+  AreaButlerExportTypesEnum,
+  IApiIntUserLoginRes,
+} from '@area-butler-types/integration-user';
 import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto';
 import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-estates-filter-params.dto';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
@@ -77,7 +79,7 @@ export class OnOfficeController {
   @Post('login')
   login(
     @Body() loginData: ApiOnOfficeLoginReqDto,
-  ): Promise<IApiOnOfficeLoginRes> {
+  ): Promise<IApiIntUserLoginRes> {
     this.logger.debug(this.login.name, loginData);
     return this.onOfficeService.login(loginData);
   }

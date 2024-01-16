@@ -79,7 +79,9 @@ export class RealEstateListingIntService {
     );
 
     if (locationIndexData[0]) {
-      realEstateListing.locationIndices = locationIndexData[0].properties;
+      Object.assign(realEstateListing, {
+        locationIndices: locationIndexData[0].properties,
+      });
     }
 
     return new this.realEstateListingModel(realEstateListing).save();

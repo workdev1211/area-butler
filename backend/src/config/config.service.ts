@@ -74,6 +74,10 @@ class ConfigService {
     return this.getValue('OPENAI_API_KEY');
   }
 
+  getPropstackConnectApiKey(): string {
+    return this.getValue('PROPSTACK_CONNECT_API_KEY');
+  }
+
   getFeedbackSlackWebhook(): string {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK', false);
   }

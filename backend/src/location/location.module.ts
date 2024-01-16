@@ -28,7 +28,6 @@ import { LocationIntService } from './location-int.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { LocationExtService } from './location-ext.service';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
-import { PropstackWebhookController } from './propstack-webhook.controller';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { SnapshotService } from './snapshot.service';
 
@@ -53,7 +52,6 @@ import { SnapshotService } from './snapshot.service';
     TilesController,
     LocationExtController,
     ApiAddressesInRangeController,
-    PropstackWebhookController,
   ],
   providers: [
     LocationService,
@@ -70,6 +68,7 @@ import { SnapshotService } from './snapshot.service';
     LocationIntService,
     LocationExtService,
     SnapshotService,
+    SnapshotExtService,
   ],
 })
 export class LocationModule {}

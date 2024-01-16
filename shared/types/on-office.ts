@@ -1,14 +1,9 @@
 import {
-  TApiIntegrationUserConfig,
-  TApiIntUserAvailProdContingents,
+  IApiIntUserLoginRes,
   TAreaButlerExportTypes,
 } from "./integration-user";
-import { ApiRealEstateListing } from "./real-estate";
-import {
-  ApiSearchResultSnapshotResponse,
-  RequestStatusTypesEnum,
-} from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
+import { IIntegrationHandleLogin } from "./integration";
 
 // TODO remove _10 products in the future
 export enum OnOfficeProductTypesEnum {
@@ -250,16 +245,6 @@ export interface IApiOnOfficeLoginReq {
   onOfficeQueryParams: IApiOnOfficeLoginQueryParams;
 }
 
-export interface IApiOnOfficeLoginRes {
-  integrationUserId: string;
-  accessToken: string;
-  config: TApiIntegrationUserConfig;
-  isChild: boolean;
-  realEstate: ApiRealEstateListing;
-  latestSnapshot?: ApiSearchResultSnapshotResponse;
-  availProdContingents?: TApiIntUserAvailProdContingents;
-}
-
 export interface IApiOnOfficeCreateOrderReq {
   integrationId: string;
   products: IApiOnOfficeCreateOrderProduct[];
@@ -311,7 +296,7 @@ export interface IApiOnOfficeConfirmOrderErrorRes {
 }
 
 export type TApiOnOfficeConfirmOrderRes =
-  | IApiOnOfficeLoginRes
+  | IApiIntUserLoginRes
   | IApiOnOfficeConfirmOrderErrorRes;
 
 export interface IApiOnOfficeCreateOrderProduct {
@@ -355,10 +340,8 @@ export enum OnOfficeLoginActionTypesEnum {
   "CONFIRM_ORDER" = "CONFIRM_ORDER",
 }
 
-export interface IOnOfficeHandleLogin {
-  requestStatus: RequestStatusTypesEnum;
+export interface IOnOfficeHandleLogin extends IIntegrationHandleLogin {
   actionType?: OnOfficeLoginActionTypesEnum;
-  message?: string;
 }
 
 export enum OnOfficeIntActTypesEnum {

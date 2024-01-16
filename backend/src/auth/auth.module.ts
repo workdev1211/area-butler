@@ -6,10 +6,26 @@ import { Auth0SpaStrategy } from './auth0-spa.strategy';
 import { ApiKeyStrategy } from './api-key.strategy';
 import { RolesGuard } from './roles.guard';
 import { UserModule } from '../user/user.module';
+import { PropstackConnectStrategy } from './propstack-connect.strategy';
+import { PropstackWebhookIntStrategy } from './propstack-webhook-int.strategy';
 
 @Module({
   imports: [PassportModule, UserModule],
-  providers: [Auth0SpaStrategy, Auth0ApiStrategy, ApiKeyStrategy, RolesGuard],
-  exports: [Auth0SpaStrategy, Auth0ApiStrategy, ApiKeyStrategy, RolesGuard],
+  providers: [
+    Auth0SpaStrategy,
+    Auth0ApiStrategy,
+    ApiKeyStrategy,
+    RolesGuard,
+    PropstackConnectStrategy,
+    PropstackWebhookIntStrategy,
+  ],
+  exports: [
+    Auth0SpaStrategy,
+    Auth0ApiStrategy,
+    ApiKeyStrategy,
+    RolesGuard,
+    PropstackConnectStrategy,
+    PropstackWebhookIntStrategy,
+  ],
 })
 export class AuthModule {}

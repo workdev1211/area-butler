@@ -1,5 +1,4 @@
 // obtained via the 'GET' request from Propstack
-
 export interface IPropstackRealEstate {
   id: number;
   name: string;
@@ -25,6 +24,10 @@ export interface IPropstackRealEstate {
   location_note?: string;
   description_note?: string;
   other_note?: string;
+  // should be added in the future by Propstack team
+  // shop_id (unneeded here) is an account id
+  department_id?: number; // team id
+  broker_id?: number; // user id
 }
 
 export interface IPropstackProcessedRealEstate extends IPropstackRealEstate {
@@ -52,6 +55,7 @@ export interface IPropstackWebhookRealEstate {
   lng: number;
   property_status: IPropstackRealEstateStatus;
   custom_fields: IPropstackWebhkRealEstCustFields;
+  department_id?: number;
 }
 
 export interface IPropstackWebhkRealEstCustFields {
@@ -105,4 +109,9 @@ export interface IPropstackApiFetchEstsQueryParams {
 export interface IPropstackApiFetchedEstates {
   data: IPropstackRealEstate[];
   meta: { total_count: number };
+}
+
+export interface IApiPropstackConnectReq {
+  shopId: number;
+  apiKey: string;
 }

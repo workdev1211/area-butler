@@ -49,6 +49,7 @@ export class IntegrationUserService {
     parameters,
     config,
     parentId,
+    isParent,
   }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
     const processedConfig = config
       ? { ...config }
@@ -63,8 +64,9 @@ export class IntegrationUserService {
       integrationType,
       accessToken,
       parameters,
-      config: processedConfig,
       parentId,
+      isParent,
+      config: processedConfig,
     });
 
     void this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
@@ -127,7 +129,7 @@ export class IntegrationUserService {
     });
 
     if (!existingUser) {
-      this.logger.error(accessToken);
+      this.logger.error(`${this.findByTokenOrFail.name} ${accessToken}`);
       throw new HttpException('Unknown user!', 400);
     }
 

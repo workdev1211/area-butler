@@ -1,11 +1,16 @@
 import { IntegrationTypesEnum } from "./integration";
-import { ApiShowTour, IApiMapboxStyle } from "./types";
+import {
+  ApiSearchResultSnapshotResponse,
+  ApiShowTour,
+  IApiMapboxStyle,
+} from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
+import { ApiRealEstateListing } from "./real-estate";
 
 export interface IApiIntegrationUserSchema {
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
-  accessToken: string;
+  accessToken: string; // for AreaButler internal identification purposes
   parameters?: TApiIntegrationUserParameters;
   config?: TApiIntegrationUserConfig;
   productsUsed?: TApiIntegrationUserProductsUsed;
@@ -41,7 +46,10 @@ export interface IApiIntUserOnOfficeParams {
 }
 
 export interface IApiIntUserPropstackParams {
-  apiKey?: string; // client secret
+  apiKey?: string;
+  shopId?: number;
+  departmentId?: number;
+  brokerId?: number;
 }
 
 export interface IApiIntUserOnOfficeConfig {
@@ -93,6 +101,7 @@ export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
   integrationUserId: string;
   integrationType: IntegrationTypesEnum;
   parentId?: string;
+  isParent?: boolean;
 }
 
 export type TApiIntegrationUserParameters =
@@ -135,4 +144,14 @@ export enum AreaButlerExportTypesEnum {
 export interface IIntUserExpMatchParams {
   fieldId: string;
   maxTextLength?: number;
+}
+
+export interface IApiIntUserLoginRes {
+  integrationUserId: string;
+  accessToken: string;
+  config: TApiIntegrationUserConfig;
+  isChild: boolean;
+  realEstate: ApiRealEstateListing;
+  latestSnapshot?: ApiSearchResultSnapshotResponse;
+  availProdContingents?: TApiIntUserAvailProdContingents;
 }

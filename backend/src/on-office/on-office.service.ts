@@ -23,7 +23,6 @@ import {
   IApiOnOfficeEstateAvailStatuses,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
-  IApiOnOfficeLoginRes,
   IApiOnOfficeOrderData,
   IApiOnOfficeRealEstate,
   IApiOnOfficeRequest,
@@ -56,6 +55,7 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import {
   AreaButlerExportTypesEnum,
   IApiIntegrationUserSchema,
+  IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
   TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
@@ -239,7 +239,7 @@ export class OnOfficeService {
       parameterCacheId,
       apiClaim: extendedClaim,
     },
-  }: IApiOnOfficeLoginReq): Promise<IApiOnOfficeLoginRes> {
+  }: IApiOnOfficeLoginReq): Promise<IApiIntUserLoginRes> {
     const integrationUserId = `${customerWebId}-${userId}`;
 
     // single onOffice account can have multiple users and if one of the users activates the app, it will be activated for the others
@@ -373,7 +373,6 @@ export class OnOfficeService {
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
       estateId,
-      this.integrationType,
     );
 
     return {
@@ -508,7 +507,6 @@ export class OnOfficeService {
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
       integrationId,
-      this.integrationType,
     );
 
     return {

@@ -27,9 +27,10 @@ import {
 } from '../../../shared/constants/location';
 import { SnapshotService } from './snapshot.service';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 
 interface ICreateSnapshot {
-  user: UserDocument;
+  user: UserDocument | TIntegrationUserDocument;
   location: string | ApiCoordinates;
   templateSnapshotId?: string;
   realEstateListing?: ApiRealEstateListing;

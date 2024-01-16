@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
@@ -7,12 +7,9 @@ import {
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class LocationIntService {
-  private readonly logger = new Logger(LocationIntService.name);
-
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
@@ -21,19 +18,14 @@ export class LocationIntService {
   // TODO refactor snapshot methods
 
   async fetchLatestSnapByIntId(
-    {
-      integrationUserId,
-      integrationType: userIntegrationType,
-    }: TIntegrationUserDocument,
+    { integrationUserId, integrationType }: TIntegrationUserDocument,
     integrationId: string,
-    integrationType?: IntegrationTypesEnum,
   ): Promise<SearchResultSnapshotDocument> {
     return this.searchResultSnapshotModel
       .findOne({
         'integrationParams.integrationId': integrationId,
         'integrationParams.integrationUserId': integrationUserId,
-        'integrationParams.integrationType':
-          integrationType || userIntegrationType,
+        'integrationParams.integrationType': integrationType,
       })
       .sort({ createdAt: -1 });
   }

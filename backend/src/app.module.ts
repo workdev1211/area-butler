@@ -24,6 +24,7 @@ import { HealthModule } from './health/health.module';
 import { configService } from './config/config.service';
 import { OnOfficeModule } from './on-office/on-office.module';
 import { OpenAiModule } from './open-ai/open-ai.module';
+import { PropstackModule } from './propstack/propstack.module';
 
 @Module({
   imports: [
@@ -67,6 +68,7 @@ import { OpenAiModule } from './open-ai/open-ai.module';
     BillingModule,
     HealthModule,
     OnOfficeModule,
+    PropstackModule,
     OpenAiModule,
     ThrottlerModule.forRoot(),
   ],
