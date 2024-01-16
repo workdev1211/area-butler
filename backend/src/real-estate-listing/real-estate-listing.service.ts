@@ -9,7 +9,6 @@ import {
 import { SubscriptionService } from '../user/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
 import {
-  ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
   IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
@@ -54,22 +53,9 @@ export class RealEstateListingService {
       ...upsertData,
     };
 
-    // Because in real estate DB records coordinates are stored in the malformed GeoJSON format
-    const resultLocation = JSON.parse(
-      JSON.stringify(realEstateListingDoc.location),
+    await this.assignLocationIndices(
+      realEstateListingDoc as IApiRealEstateListingSchema,
     );
-    resultLocation.coordinates = [
-      resultLocation.coordinates[1],
-      resultLocation.coordinates[0],
-    ];
-
-    const locationIndexData = await this.locationIndexService.query(
-      resultLocation,
-    );
-
-    if (locationIndexData[0]) {
-      realEstateListingDoc.locationIndices = locationIndexData[0].properties;
-    }
 
     return new this.realEstateListingModel(realEstateListingDoc).save();
   }
@@ -215,23 +201,9 @@ export class RealEstateListingService {
         .limit(limit);
 
       for await (const realEstate of realEstates) {
-        const resultLocation: ApiGeometry = {
-          type: 'Point',
-          coordinates: [
-            realEstate.location.coordinates[1],
-            realEstate.location.coordinates[0],
-          ],
-        };
+        const isAssigned = await this.assignLocationIndices(realEstate);
 
-        const locationIndexData = await this.locationIndexService.query(
-          resultLocation,
-        );
-
-        if (locationIndexData[0]) {
-          Object.assign(realEstate, {
-            locationIndices: locationIndexData[0].properties,
-          });
-
+        if (isAssigned) {
           await realEstate.save();
         }
       }
@@ -296,5 +268,32 @@ export class RealEstateListingService {
     });
 
     return this.openAiService.fetchResponse(queryText);
+  }
+
+  async assignLocationIndices(
+    realEstate: IApiRealEstateListingSchema,
+  ): Promise<boolean> {
+    const resultLocation: ApiGeometry = {
+      type: 'Point',
+      coordinates: [
+        // Because in real estate DB records coordinates are stored in the malformed GeoJSON format
+        realEstate.location.coordinates[1],
+        realEstate.location.coordinates[0],
+      ],
+    };
+
+    const locationIndexData = await this.locationIndexService.query(
+      resultLocation,
+    );
+
+    if (locationIndexData[0]) {
+      Object.assign(realEstate, {
+        locationIndices: locationIndexData[0].properties,
+      });
+
+      return true;
+    }
+
+    return false;
   }
 }

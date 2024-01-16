@@ -40,6 +40,10 @@ export interface IApiIntUserOnOfficeParams {
   email?: string;
 }
 
+export interface IApiIntUserPropstackParams {
+  apiKey?: string; // client secret
+}
+
 export interface IApiIntUserOnOfficeConfig {
   isFileLink?: boolean;
 }
@@ -91,7 +95,9 @@ export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
   parentId?: string;
 }
 
-export type TApiIntegrationUserParameters = IApiIntUserOnOfficeParams;
+export type TApiIntegrationUserParameters =
+  | IApiIntUserOnOfficeParams
+  | IApiIntUserPropstackParams;
 export type TApiIntegrationUserProductContingents = Partial<
   Record<TApiIntUserProdContTypes, IApiIntegrationUserProductContingent[]>
 >;

@@ -1,4 +1,4 @@
-import { Exclude, Expose, Transform } from 'class-transformer';
+import { Exclude, Expose, Transform, Type } from 'class-transformer';
 
 import {
   ApiFurnishing,
@@ -14,7 +14,14 @@ import {
   PropstackRealEstStatusesEnum,
 } from '../../shared/propstack.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
-import { IsOptional, IsString } from 'class-validator';
+import {
+  IsObject,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
+import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
+import { IApiIntegrationParams } from '@area-butler-types/integration';
 
 @Exclude()
 class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
@@ -22,6 +29,13 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
   @IsOptional()
   @IsString()
   userId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiIntegrationParamsDto)
+  integrationParams?: IApiIntegrationParams;
 
   @Expose()
   @Transform(

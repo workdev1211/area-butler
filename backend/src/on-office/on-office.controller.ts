@@ -38,7 +38,7 @@ import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto'
 import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-estates-filter-params.dto';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 
-@ApiTags('OnOffice')
+@ApiTags('on-office')
 @Controller('api/on-office')
 export class OnOfficeController {
   private readonly logger = new Logger(OnOfficeController.name);

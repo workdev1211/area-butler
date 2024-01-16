@@ -1,7 +1,8 @@
 import { TOnOfficeIntActTypes } from "./on-office";
 
 export enum IntegrationTypesEnum {
-  "ON_OFFICE" = "ON_OFFICE",
+  ON_OFFICE = "ON_OFFICE",
+  PROPSTACK = "PROPSTACK",
 }
 
 export interface IApiIntegrationParams {

@@ -17,12 +17,29 @@ import { LocationService } from './location.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RoutingService } from '../routing/routing.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import {
+  GoogleGeocodeService,
+  IGoogleGeocodeResult,
+} from '../client/google/google-geocode.service';
 import {
   defaultPoiTypes,
   defaultTransportParams,
 } from '../../../shared/constants/location';
 import { SnapshotService } from './snapshot.service';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+
+interface ICreateSnapshot {
+  user: UserDocument;
+  location: string | ApiCoordinates;
+  templateSnapshotId?: string;
+  realEstateListing?: ApiRealEstateListing;
+  transportParams?: TransportationParam[];
+  poiTypes?: OsmName[];
+}
+
+interface ICreateSnapshotByPlace extends Omit<ICreateSnapshot, 'location'> {
+  place: IGoogleGeocodeResult;
+}
 
 @Injectable()
 export class SnapshotExtService {
@@ -34,32 +51,18 @@ export class SnapshotExtService {
     private readonly googleGeocodeService: GoogleGeocodeService,
   ) {}
 
-  async createSnapshot({
+  async createSnapshotByPlace({
     user,
-    location,
+    place,
     templateSnapshotId,
-    transportParams = { ...defaultTransportParams },
+    realEstateListing,
+    transportParams = [...defaultTransportParams],
     poiTypes = [...defaultPoiTypes],
-  }: {
-    user: UserDocument;
-    location: string | ApiCoordinates;
-    templateSnapshotId?: string;
-    transportParams?: TransportationParam[];
-    poiTypes?: OsmName[];
-  }): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
-
-    const placesLocation: IApiPlacesLocation = {
-      label: place.formatted_address || 'Mein Standort',
-      value: { place_id: place?.place_id || '123' },
-    };
-
-    const coordinates: ApiCoordinates = { ...place.geometry.location };
-
+  }: ICreateSnapshotByPlace): Promise<ApiSearchResultSnapshotResponse> {
     const searchData: ApiSearch = {
-      coordinates,
-      preferredAmenities: poiTypes,
+      coordinates: { ...place.geometry.location },
       meansOfTransportation: transportParams,
+      preferredAmenities: poiTypes,
       searchTitle: place.formatted_address,
     };
 
@@ -72,9 +75,15 @@ export class SnapshotExtService {
       .map((name) => osmEntityTypes.find((entity) => entity.name === name))
       .filter(Boolean) as ApiOsmEntity[];
 
+    const placesLocation: IApiPlacesLocation = {
+      label: place.formatted_address || 'Mein Standort',
+      value: { place_id: place?.place_id || '123' },
+    };
+
     const snapshot: ApiSearchResultSnapshot = {
       localityParams,
       placesLocation,
+      realEstateListing,
       searchResponse,
       location: searchData.coordinates,
       preferredLocations: [],
@@ -96,6 +105,26 @@ export class SnapshotExtService {
     }
 
     return this.snapshotService.createSnapshot(user, snapshot, snapshotConfig);
+  }
+
+  async createSnapshot({
+    user,
+    location,
+    realEstateListing,
+    templateSnapshotId,
+    transportParams,
+    poiTypes,
+  }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
+    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
+
+    return this.createSnapshotByPlace({
+      user,
+      place,
+      templateSnapshotId,
+      realEstateListing,
+      transportParams,
+      poiTypes,
+    });
   }
 
   async createSnapshotFromTemplate(

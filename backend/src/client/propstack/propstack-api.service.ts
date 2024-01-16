@@ -8,6 +8,16 @@ import {
   IPropstackRealEstate,
 } from '../../shared/propstack.types';
 
+interface IPropstackRealEstLink {
+  property_id: number;
+  title: string;
+  url: string;
+  is_private?: boolean;
+  is_embedable?: boolean;
+  on_landing_page?: boolean;
+  pinned?: boolean;
+}
+
 // This value is recommended by Propstack
 export const PROPSTACK_ESTATES_PER_PAGE = 20;
 
@@ -86,6 +96,28 @@ export class PropstackApiService {
       this.http.put<IPropstackRealEstate>(
         `${this.apiUrl}/units/${realEstateId}`,
         { property: updatedParams },
+        { headers },
+      ),
+    );
+
+    return data;
+  }
+
+  async createRealEstLink(
+    apiKey: string,
+    realEstLinkData: IPropstackRealEstLink,
+  ): Promise<IPropstackRealEstate> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    };
+
+    const { data } = await firstValueFrom<{
+      data: IPropstackRealEstate;
+    }>(
+      this.http.post<IPropstackRealEstate>(
+        `${this.apiUrl}/links`,
+        realEstLinkData,
         { headers },
       ),
     );

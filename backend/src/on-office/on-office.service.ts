@@ -171,8 +171,9 @@ export class OnOfficeService {
           filter: {
             _id: { $ne: integrationUser.id },
             integrationType: this.integrationType,
-            'parameters.customerWebId':
-              integrationUser.parameters.customerWebId,
+            'parameters.customerWebId': (
+              integrationUser.parameters as IApiIntUserOnOfficeParams
+            ).customerWebId,
           },
           update: {
             'parameters.token': token,
@@ -308,6 +309,9 @@ export class OnOfficeService {
         ));
 
       if (groupUser) {
+        const groupUserParams =
+          groupUser.parameters as IApiIntUserOnOfficeParams;
+
         const { userName, email } = await this.fetchUserData({
           ...groupUser.parameters,
           extendedClaim,
@@ -330,8 +334,8 @@ export class OnOfficeService {
             userName,
             email,
             extendedClaim,
-            apiKey: groupUser.parameters.apiKey,
-            token: groupUser.parameters.token,
+            apiKey: groupUserParams.apiKey,
+            token: groupUserParams.token,
           },
           config: {
             color: color ? `#${color}` : undefined,
@@ -391,7 +395,7 @@ export class OnOfficeService {
       accessToken,
       integrationUserId,
       parentId,
-      parameters: { parameterCacheId },
+      parameters,
     }: TIntegrationUserDocument,
   ): Promise<IApiOnOfficeCreateOrderRes> {
     if (parentId) {
@@ -431,7 +435,8 @@ export class OnOfficeService {
       }/on-office/?accessToken=${accessToken}&integrationId=${integrationId}&products=${encodeURIComponent(
         JSON.stringify(products),
       )}`,
-      parametercacheid: parameterCacheId,
+      parametercacheid: (parameters as IApiIntUserOnOfficeParams)
+        .parameterCacheId,
       products: processedProducts,
       totalprice: totalPrice.toFixed(2),
       timestamp: dayjs().unix(),
@@ -531,13 +536,15 @@ export class OnOfficeService {
 
   async updateEstateTextField(
     {
-      parameters: { token, apiKey, extendedClaim },
+      parameters,
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
     integrationId: string,
     { exportType, text }: IApiOnOfficeUpdEstTextFieldReq,
   ): Promise<void> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.MODIFY;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
@@ -619,7 +626,7 @@ export class OnOfficeService {
 
   async uploadEstateFile(
     {
-      parameters: { token, apiKey, extendedClaim },
+      parameters,
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
@@ -631,6 +638,8 @@ export class OnOfficeService {
       filename,
     }: IApiOnOfficeUplEstFileOrLinkReq,
   ): Promise<void> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
@@ -732,10 +741,12 @@ export class OnOfficeService {
   }
 
   async uploadEstateLink(
-    { parameters: { token, apiKey, extendedClaim } }: TIntegrationUserDocument,
+    { parameters }: TIntegrationUserDocument,
     integrationId: string,
     { fileTitle, url }: IApiOnOfficeUplEstFileOrLinkReq,
   ): Promise<void> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.DO;
     const resourceType = ApiOnOfficeResourceTypesEnum.UPLOAD_FILE;
 
@@ -823,8 +834,10 @@ export class OnOfficeService {
   }
 
   async fetchAvailStatuses({
-    parameters: { token, apiKey, extendedClaim },
+    parameters,
   }: TIntegrationUserDocument): Promise<IApiOnOfficeEstateAvailStatuses> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.GET;
     const resourceType = ApiOnOfficeResourceTypesEnum.FIELDS;
 
@@ -888,11 +901,10 @@ export class OnOfficeService {
 
   private async fetchAndProcessEstateData(
     estateId: string,
-    {
-      integrationUserId,
-      parameters: { token, apiKey, extendedClaim },
-    }: TIntegrationUserDocument,
+    { integrationUserId, parameters }: TIntegrationUserDocument,
   ): Promise<IApiRealEstateListingSchema> {
+    const { token, apiKey, extendedClaim } =
+      parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
@@ -970,7 +982,7 @@ export class OnOfficeService {
       land: country,
     } = onOfficeEstate;
 
-    const locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
+    let locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
 
     const locationCoordinates = {
       lat: parseCommaFloat(lat),
@@ -980,6 +992,7 @@ export class OnOfficeService {
     let place = await this.googleGeocodeService.fetchPlace(locationAddress);
 
     if (!place) {
+      locationAddress = undefined;
       place = await this.googleGeocodeService.fetchPlace(locationCoordinates);
     }
 
@@ -999,7 +1012,7 @@ export class OnOfficeService {
         integrationId: estateId,
         integrationType: this.integrationType,
       },
-      address: place.formatted_address,
+      address: locationAddress || place.formatted_address,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],

@@ -238,7 +238,11 @@ export class OverpassService {
         (e) => e.name === preferredAmenity,
       );
 
-      if ([OsmName.favorite, OsmName.property].includes(preferredAmenity)) {
+      if (
+        [OsmName.favorite, OsmName.property, OsmName.swimming_pool].includes(
+          preferredAmenity,
+        )
+      ) {
         continue;
       }
 

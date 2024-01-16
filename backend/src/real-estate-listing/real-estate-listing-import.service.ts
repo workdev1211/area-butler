@@ -175,9 +175,12 @@ export class RealEstateListingImportService {
 
                 // TODO change to plainToClass via the class-transformer
                 const listingDocument = {
+                  address,
+                  externalId,
+                  externalUrl,
+                  status,
                   userId: user.id,
                   name: name || address,
-                  address,
                   characteristics: {
                     realEstateSizeInSquareMeters: convertStringToNumber(
                       realEstateSizeInSquareMeters,
@@ -204,9 +207,6 @@ export class RealEstateListingImportService {
                     type: 'Point',
                     coordinates: [coordinates.lat, coordinates.lng],
                   },
-                  externalUrl,
-                  externalId,
-                  status,
                 } as IApiRealEstateListingSchema;
 
                 return listingDocument.externalId
@@ -525,7 +525,7 @@ export class RealEstateListingImportService {
 
     Object.assign(realEstateData, {
       userId,
-      address: place.formatted_address,
+      address: locationAddress,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],

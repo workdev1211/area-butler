@@ -8,20 +8,6 @@ import { useHttp } from "../../hooks/http";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 
-const filterQueryParams = (queryParams: URLSearchParams): void => {
-  const paramsToDel: string[] = [];
-
-  queryParams.forEach((value, key) => {
-    if (["undefined", "null", ""].includes(value)) {
-      paramsToDel.push(key);
-    }
-  });
-
-  paramsToDel.forEach((key) => {
-    queryParams.delete(key);
-  });
-};
-
 export const useOnOfficeSync = () => {
   const { integrationType } = useContext(ConfigContext);
   const { get, put } = useHttp();

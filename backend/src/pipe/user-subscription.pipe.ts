@@ -3,6 +3,7 @@ import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
 import { UserDocument } from '../user/schema/user.schema';
 import { SubscriptionService } from '../user/subscription.service';
 
+// TODO think about moving the functionality to the 'InjectUser' decorator
 @Injectable()
 export class UserSubscriptionPipe implements PipeTransform {
   constructor(private readonly subscriptionService: SubscriptionService) {}

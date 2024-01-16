@@ -15,10 +15,7 @@ import {
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
-import {
-  ApiGeometry,
-  IApiUserApiConnectSettingsReq,
-} from '@area-butler-types/types';
+import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
@@ -46,14 +43,10 @@ import {
   ApiOnOfficeRealEstStatusByUserEmailsEnum,
   setRealEstateStatusByUserEmail,
 } from './mapper/real-estate-on-office-import.mapper';
-// TODO should be removed in the future after some testing because now the status fields are completely custom
-// import {
-//   processCustomPropstackStatus,
-//   propstackCustomSyncStatuses,
-// } from './mapper/real-estate-propstack-import.mapper';
 import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
-import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
+import { RealEstateListingService } from './real-estate-listing.service';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -62,12 +55,12 @@ export class RealEstateCrmImportService {
   constructor(
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
+    private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly googleGeocodeService: GoogleGeocodeService,
     private readonly propstackApiService: PropstackApiService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly userService: UserService,
-    private readonly locationIndexService: LocationIndexService,
   ) {}
 
   async importFromCrm(
@@ -259,6 +252,14 @@ export class RealEstateCrmImportService {
 
     const chunks = createChunks(realEstates, 100);
 
+    this.logger.log(
+      `User ${
+        isIntegrationUser ? user.integrationUserId : user.id
+      } is going to import ${totalCount} real estates from Propstack split into ${
+        chunks.length
+      } chunks.`,
+    );
+
     for (const chunk of chunks) {
       const bulkOperations = [];
 
@@ -283,6 +284,7 @@ export class RealEstateCrmImportService {
         // }
 
         Object.assign(realEstate, {
+          address: realEstate.address,
           location: {
             type: 'Point',
             coordinates: [
@@ -300,7 +302,9 @@ export class RealEstateCrmImportService {
           { exposeUnsetFields: false },
         ) as IApiRealEstateListingSchema;
 
-        await this.addLocationIndices(areaButlerRealEstate);
+        await this.realEstateListingService.assignLocationIndices(
+          areaButlerRealEstate,
+        );
 
         bulkOperations.push({
           updateOne: {
@@ -330,9 +334,12 @@ export class RealEstateCrmImportService {
     const actionId = ApiOnOfficeActionIdsEnum.READ;
     const resourceType = ApiOnOfficeResourceTypesEnum.ESTATE;
     const timestamp = dayjs().unix();
+    const intUserParams = isIntegrationUser
+      ? (user.parameters as IApiIntUserOnOfficeParams)
+      : undefined;
 
     const resConnectSettings = isIntegrationUser
-      ? { token: user.parameters.token, secret: user.parameters.apiKey }
+      ? { token: intUserParams.token, secret: intUserParams.apiKey }
       : user.apiConnections[ApiRealEstateExtSourcesEnum.ON_OFFICE];
 
     const { token, secret } = resConnectSettings || {};
@@ -378,7 +385,7 @@ export class RealEstateCrmImportService {
     };
 
     if (isIntegrationUser) {
-      parameters.extendedclaim = user.parameters.extendedClaim;
+      parameters.extendedclaim = intUserParams.extendedClaim;
     }
 
     if (estateStatusParams) {
@@ -472,6 +479,14 @@ export class RealEstateCrmImportService {
     // const testData = [''];
     const chunks = createChunks(realEstates, 100);
 
+    this.logger.log(
+      `User ${
+        isIntegrationUser ? user.integrationUserId : user.id
+      } is going to import ${totalCount} real estates from onOffice split into ${
+        chunks.length
+      } chunks.`,
+    );
+
     for (const chunk of chunks) {
       const bulkOperations = [];
 
@@ -505,7 +520,7 @@ export class RealEstateCrmImportService {
         }
 
         const processedUserEmail = (
-          isIntegrationUser ? user.parameters.email : user.email
+          isIntegrationUser ? intUserParams.email : user.email
         )?.toLowerCase();
 
         if (
@@ -527,7 +542,7 @@ export class RealEstateCrmImportService {
         // );
 
         const estateData: Partial<IApiRealEstateListingSchema> = {
-          address: place.formatted_address,
+          address: locationAddress,
           location: {
             type: 'Point',
             coordinates: [
@@ -558,7 +573,9 @@ export class RealEstateCrmImportService {
           { exposeUnsetFields: false },
         ) as IApiRealEstateListingSchema;
 
-        await this.addLocationIndices(areaButlerRealEstate);
+        await this.realEstateListingService.assignLocationIndices(
+          areaButlerRealEstate,
+        );
 
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
           isIntegrationUser
@@ -593,25 +610,5 @@ export class RealEstateCrmImportService {
     // this.logger.log(testData.join('\n'));
 
     return errorIds;
-  }
-
-  private async addLocationIndices(
-    realEstate: IApiRealEstateListingSchema,
-  ): Promise<void> {
-    const resultLocation: ApiGeometry = {
-      type: 'Point',
-      coordinates: [
-        realEstate.location.coordinates[1],
-        realEstate.location.coordinates[0],
-      ],
-    };
-
-    const locationIndexData = await this.locationIndexService.query(
-      resultLocation,
-    );
-
-    if (locationIndexData[0]) {
-      realEstate.locationIndices = locationIndexData[0].properties;
-    }
   }
 }

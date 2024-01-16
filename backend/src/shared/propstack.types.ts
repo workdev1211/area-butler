@@ -22,6 +22,9 @@ export interface IPropstackRealEstate {
   status: IPropstackRealEstateStatus;
   furnishings?: IPropstackRealEstFurnishings;
   custom_fields?: IPropstackRealEstCustFields;
+  location_note?: string;
+  description_note?: string;
+  other_note?: string;
 }
 
 export interface IPropstackProcessedRealEstate extends IPropstackRealEstate {
