@@ -36,6 +36,9 @@ RUN yarn build-embed
 RUN tmp=$(mktemp); jq '.homepage = "/on-office"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build-on-office
 
+RUN tmp=$(mktemp); jq '.homepage = "/propstack"' ./package.json > "$tmp" && mv "$tmp" package.json
+RUN yarn build-propstack
+
 RUN tmp=$(mktemp); jq '.homepage = "/"' ./package.json > "$tmp" && mv "$tmp" package.json
 RUN yarn build
 

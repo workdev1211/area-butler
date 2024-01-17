@@ -33,15 +33,19 @@ import { PropstackModule } from './propstack/propstack.module';
     ServeStaticModule.forRoot(
       {
         rootPath: join(__dirname, '..', '..', 'static/main'),
-        exclude: ['/on-office/*', '/embed/*'],
+        exclude: ['/embed/*', '/on-office/*', '/propstack/*'],
+      },
+      {
+        serveRoot: '/embed',
+        rootPath: join(__dirname, '..', '..', 'static/embed'),
       },
       {
         serveRoot: '/on-office',
         rootPath: join(__dirname, '..', '..', 'static/on-office'),
       },
       {
-        serveRoot: '/embed',
-        rootPath: join(__dirname, '..', '..', 'static/embed'),
+        serveRoot: '/propstack',
+        rootPath: join(__dirname, '..', '..', 'static/propstack'),
       },
     ),
     ScheduleModule.forRoot(),

@@ -2,6 +2,35 @@
   "name": "redesign",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "cross-env TAILWIND_MODE=watch PORT=3001 craco start",
+    "start-embed": "cross-env TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
+    "start-on-office": "cross-env TAILWIND_MODE=watch PORT=3003 craco start --config craco-on-office.config.js",
+    "start-propstack": "cross-env TAILWIND_MODE=watch PORT=3004 craco start --config craco-propstack.config.js",
+    "build": "craco build && mv build build-main",
+    "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
+    "build-on-office": "craco build --config craco-on-office.config.js && mv build build-on-office",
+    "build-propstack": "craco build --config craco-propstack.config.js && mv build build-propstack",
+    "test": "craco test"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
   "dependencies": {
     "@auth0/auth0-react": "^1.6.0",
     "@googlemaps/js-api-loader": "^1.14.3",
@@ -63,33 +92,6 @@
     "uuid": "^8.3.2",
     "web-vitals": "^1.0.1",
     "yup": "^0.32.9"
-  },
-  "scripts": {
-    "start": "cross-env TAILWIND_MODE=watch PORT=3001 craco start",
-    "start-embed": "cross-env TAILWIND_MODE=watch PORT=3002 craco start --config craco-embed.config.js",
-    "start-on-office": "cross-env TAILWIND_MODE=watch PORT=3003 craco start --config craco-on-office.config.js",
-    "build": "craco build && mv build build-main",
-    "build-embed": "craco build --config craco-embed.config.js && mv build build-embed",
-    "build-on-office": "craco build --config craco-on-office.config.js && mv build build-on-office",
-    "test": "craco test"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
   },
   "devDependencies": {
     "@babel/plugin-proposal-class-properties": "^7.18.6",

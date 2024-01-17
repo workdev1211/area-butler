@@ -12,6 +12,7 @@
 /build
 /build-embed
 /build-on-office
+/build-propstack
 
 # misc
 .DS_Store
