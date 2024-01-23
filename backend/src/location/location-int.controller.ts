@@ -75,7 +75,7 @@ export class LocationIntController {
   @ApiOperation({ description: 'Create a new map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('snapshot')
-  async createSnapshot(
+  createSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() snapshot: ApiSearchResultSnapshotDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
@@ -160,7 +160,7 @@ export class LocationIntController {
   })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('snapshots/configs')
-  async fetchLateSnapConfigs(
+  fetchLateSnapConfigs(
     @Query('limitNumber', ParseIntPipe) limitNumber = 5,
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiLateSnapConfigOption[]> {
@@ -176,7 +176,7 @@ export class LocationIntController {
     ProcessOpenAiIntUsageInterceptor,
   )
   @Post('open-ai-loc-desc')
-  async fetchOpenAiLocationDescription(
+  fetchOpenAiLocationDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() locationDescriptionQuery: ApiOpenAiLocDescQueryDto,
   ): Promise<string> {
@@ -194,7 +194,7 @@ export class LocationIntController {
     ProcessOpenAiIntUsageInterceptor,
   )
   @Post('open-ai-loc-real-est-desc')
-  async fetchOpenAiLocRealEstDesc(
+  fetchOpenAiLocRealEstDesc(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
     @Body()
@@ -228,7 +228,7 @@ export class LocationIntController {
   @ApiOperation({ description: 'Delete an existing map snapshot' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Delete('snapshot/:id')
-  async deleteSnapshot(
+  deleteSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('id') snapshotId: string,
   ): Promise<void> {

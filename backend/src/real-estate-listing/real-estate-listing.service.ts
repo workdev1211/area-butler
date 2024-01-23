@@ -144,18 +144,26 @@ export class RealEstateListingService {
       };
     }
 
-    // TODO think about refactoring to the aggregation pipelines
-
-    const status = await this.realEstateListingModel.distinct<string>(
-      'status',
-      filter,
-    );
-    const status2 = await this.realEstateListingModel.distinct<string>(
-      'status2',
-      filter,
-    );
-
-    return { status, status2 };
+    return (
+      await this.realEstateListingModel.aggregate([
+        { $match: filter },
+        {
+          $facet: {
+            status: [
+              { $match: { status: { $exists: true } } },
+              { $group: { _id: '$status', status: { $first: '$status' } } },
+            ],
+            status2: [
+              { $match: { status2: { $exists: true } } },
+              { $group: { _id: '$status2', status2: { $first: '$status2' } } },
+            ],
+          },
+        },
+        {
+          $project: { status: '$status.status', status2: '$status2.status2' },
+        },
+      ])
+    )[0];
   }
 
   async updateRealEstateListing(

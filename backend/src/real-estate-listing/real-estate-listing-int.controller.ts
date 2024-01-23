@@ -79,7 +79,7 @@ export class RealEstateListingIntController {
     ProcessOpenAiIntUsageInterceptor,
   )
   @Post('open-ai-real-estate-desc')
-  async fetchOpenAiRealEstateDescription(
+  fetchOpenAiRealEstateDescription(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @InjectRealEstateListing() realEstateListing: RealEstateListingDocument,
     @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
@@ -94,7 +94,7 @@ export class RealEstateListingIntController {
   @ApiOperation({ description: 'Get real estate statuses of the current user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('status')
-  async fetchStatusesByUser(
+  fetchStatusesByUser(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<IApiRealEstStatusByUser> {
     return this.realEstateListingService.fetchStatusesByUser(integrationUser);
