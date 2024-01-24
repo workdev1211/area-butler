@@ -23,7 +23,7 @@ const ExportTab: FunctionComponent<IExportTabProps> = ({
 
   const { getActualUser } = useTools();
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
 
   const hasOpenAiFeature =
     isIntegrationUser || !!user?.subscription?.config.appFeatures.openAi;

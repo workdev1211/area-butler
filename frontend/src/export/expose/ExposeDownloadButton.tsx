@@ -10,14 +10,12 @@ import {
   TransportationParam,
 } from "../../../../shared/types/types";
 import Expose from "./Expose";
-import { ResultEntity } from "../../shared/search-result.types";
 import { ILegendItem } from "../Legend";
 import { useTools } from "../../hooks/tools";
 import { IQrCodeState } from "../../../../shared/types/export";
 import { TCensusData } from "../../../../shared/types/data-provision";
 
 interface IExposeDownloadProps {
-  entities: ResultEntity[];
   groupedEntries: any;
   transportationParams: TransportationParam[];
   activeMeans: MeansOfTransportation[];
@@ -42,7 +40,6 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
   activeMeans,
   listingAddress,
   realEstateListing,
-  entities = [],
   downloadButtonDisabled,
   mapClippings = [],
   censusData,
@@ -60,7 +57,7 @@ export const ExposeDownload: FunctionComponent<IExposeDownloadProps> = ({
 
   const { getActualUser } = useTools();
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
 
   let documentTitle = "MeinStandort_AreaButler";
 

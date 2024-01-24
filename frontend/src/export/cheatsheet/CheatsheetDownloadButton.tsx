@@ -62,7 +62,7 @@ export const CheatsheetDownload: FunctionComponent<
 
   const { getActualUser } = useTools();
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
 
   let documentTitle = "MeinStandort_AreaButler";
 

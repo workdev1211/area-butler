@@ -28,7 +28,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
 }) => {
   const { getActualUser } = useTools();
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [isEnvironmentalInfoOpen, setIsEnvironmentalInfoOpen] = useState(false);
 

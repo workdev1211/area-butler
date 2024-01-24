@@ -57,7 +57,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
   const { getActualUser } = useTools();
 
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
   const subscriptionPlan = isIntegrationUser
     ? undefined
     : user.subscription?.config;
@@ -223,7 +223,6 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
 
               {exportType === ExportTypeEnum.EXPOSE && (
                 <ExposeDownload
-                  entities={entities}
                   groupedEntries={filteredEntities!}
                   censusData={showCensus ? censusData : undefined}
                   transportationParams={searchContextState.transportationParams}

@@ -64,22 +64,22 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
 }) => {
   const { getActualUser } = useTools();
   const user = getActualUser();
-  const isIntegrationUser = "accessToken" in user;
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [isSocialDemographicsOpen, setIsSocialDemographicsOpen] =
     useState(false);
 
   const hasCensusData =
     isIntegrationUser ||
-    user?.subscription?.config.appFeatures.dataSources.includes(
+    !!user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.CENSUS
-    )!;
+    );
 
   const hasElectionData =
     isIntegrationUser ||
-    user?.subscription?.config.appFeatures.dataSources.includes(
+    !!user?.subscription?.config.appFeatures.dataSources.includes(
       ApiDataSource.FEDERAL_ELECTION
-    )!;
+    );
 
   return (
     <div
