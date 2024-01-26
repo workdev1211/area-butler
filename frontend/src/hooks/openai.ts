@@ -18,6 +18,7 @@ import { ConfigContext } from "../context/ConfigContext";
 import { useIntegrationTools } from "./integrationtools";
 import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 export type TOpenAiQuery =
   | IApiOpenAiLocDescQuery
@@ -35,6 +36,7 @@ export const useOpenAi = () => {
   const { post } = useHttp();
 
   const isIntegration = !!integrationType;
+  const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
   const realEstateListing = searchContextState.realEstateListing!;
 
   const fetchOpenAiResponse = async (
@@ -75,7 +77,12 @@ export const useOpenAi = () => {
 
     let availProdContType: ApiIntUserOnOfficeProdContTypesEnum | undefined;
 
-    if (isIntegration && !realEstateListing.openAiRequestQuantity) {
+    // TODO PROPSTACK CONTINGENT
+    if (
+      isIntegration &&
+      !isPropstackInt &&
+      !realEstateListing.openAiRequestQuantity
+    ) {
       availProdContType = getAvailProdContTypeOrFail(openAiQueryType);
 
       if (!availProdContType) {
@@ -94,7 +101,8 @@ export const useOpenAi = () => {
       return "";
     }
 
-    if (!isIntegration) {
+    // TODO PROPSTACK CONTINGENT
+    if (!isIntegration || isPropstackInt) {
       return queryResponse;
     }
 

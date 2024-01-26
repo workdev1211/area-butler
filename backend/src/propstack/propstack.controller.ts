@@ -31,11 +31,7 @@ export class PropstackController {
   @UseGuards(PropstackConnectGuard)
   @HttpCode(HttpStatus.CREATED)
   connect(@Body() connectData: ApiPropstackConnectReqDto): Promise<void> {
-    this.logger.debug(
-      `${PropstackController.name} / ${this.connect.name}`,
-      connectData,
-    );
-
+    this.logger.debug(`'${this.connect.name}' method has been triggered.`, connectData);
     return this.propstackService.connect(connectData);
   }
 
@@ -47,10 +43,10 @@ export class PropstackController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() loginData: ApiPropstackLoginReqDto,
   ): Promise<IApiIntUserLoginRes> {
-    this.logger.debug(
-      `${PropstackController.name} / ${this.login.name}`,
-      loginData,
-    );
+    this.logger.debug(`'${this.login.name}' method has been triggered.`, {
+      integrationUserId: integrationUser.integrationUserId,
+      ...loginData,
+    });
 
     return this.propstackService.login(integrationUser, loginData);
   }

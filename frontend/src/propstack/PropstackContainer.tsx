@@ -23,15 +23,11 @@ import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 
 // MOVE TO A SEPARATE COMPONENT START
-window.addEventListener("resize", () => {
-  calculateViewHeight();
-});
-
-const calculateViewHeight = () => {
+const calculateViewHeight = (): void => {
   const vh = window.innerHeight * 0.01;
   document.documentElement.style.setProperty("--vh", `${vh}px`);
 };
-
+window.addEventListener("resize", calculateViewHeight);
 calculateViewHeight();
 // MOVE TO A SEPARATE COMPONENT END
 
@@ -45,7 +41,7 @@ const PotentialCustomersPage = lazy(
 );
 const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
-// const MapPage = lazy(() => import("./pages/MapPage"));
+const SnapshotEditorPage = lazy(() => import("../pages/SnapshotEditorPage"));
 // const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
 // const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
@@ -148,9 +144,9 @@ const PropstackContainer: FunctionComponent = () => {
           <Route path="/real-estates">
             <RealEstatesPage />
           </Route>
-          {/*<Route path={`/${snapshotEditorPath}/:snapshotId`}>*/}
-          {/*  <MapPage />*/}
-          {/*</Route>*/}
+          <Route path={`/${snapshotEditorPath}/:snapshotId`}>
+            <SnapshotEditorPage />
+          </Route>
           <Route path="/map-snapshots">
             <MapSnapshotsPage />
           </Route>

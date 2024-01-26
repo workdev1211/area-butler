@@ -6,12 +6,14 @@ import {
   Logger,
   NestInterceptor,
 } from '@nestjs/common';
-import { tap, Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 
 import { RealEstateListingService } from '../real-estate-listing.service';
 import { IntegrationUserService } from '../../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { RealEstateListingIntService } from '../real-estate-listing-int.service';
+import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
@@ -30,8 +32,13 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
     const req = context.switchToHttp().getRequest();
     const path = req.route.path;
     const { realEstateListingId, isFormalToInformal } = req.body;
-    const integrationUser = req.principal;
+    const integrationUser: TIntegrationUserDocument = req.principal;
     let actionType;
+
+    // TODO PROPSTACK CONTINGENT
+    if (integrationUser.integrationType === IntegrationTypesEnum.PROPSTACK) {
+      return next.handle();
+    }
 
     switch (path) {
       case '/api/location-int/open-ai-loc-desc': {

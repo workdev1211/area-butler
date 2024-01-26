@@ -42,7 +42,7 @@ export class PropstackWebhookIntController {
     }-${nowDate.getTime()}`;
 
     this.logger.log(
-      `Event id: ${eventId}. ${this.handlePropertyCreated.name} method has been triggered.`,
+      `Event id: ${eventId}. '${this.handlePropertyCreated.name}' method has been triggered.`,
     );
 
     void this.propstackWebhookService.handlePropertyCreated(

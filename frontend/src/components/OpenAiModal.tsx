@@ -2,10 +2,13 @@ import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { UserContext } from "../context/UserContext";
 import { useIntegrationTools } from "../hooks/integrationtools";
-import { TUnlockIntProduct } from "../../../shared/types/integration";
+import {
+  IntegrationTypesEnum,
+  TUnlockIntProduct,
+} from "../../../shared/types/integration";
 import { SearchContext } from "../context/SearchContext";
+import { ConfigContext } from "../context/ConfigContext";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -20,12 +23,10 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   queryType,
   performUnlock,
 }) => {
+  const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
-  const {
-    userState: { integrationUser },
-  } = useContext(UserContext);
 
   const { sendToOnOffice } = useIntegrationTools();
 
@@ -36,9 +37,13 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     useState(true);
   const [queryResponse, setQueryResponse] = useState("");
 
-  const isIntegrationUser = !!integrationUser;
+  const isIntegration = !!integrationType;
+
+  // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
-    !integrationUser || !!realEstateListing?.openAiRequestQuantity;
+    !isIntegration ||
+    !!realEstateListing?.openAiRequestQuantity ||
+    integrationType === IntegrationTypesEnum.PROPSTACK;
 
   const handleUnlock = (): void => {
     if (performUnlock) {
@@ -74,11 +79,9 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
           }}
         />
         <div
-          className={`modal-action ${
-            isIntegrationUser ? "justify-between" : ""
-          }`}
+          className={`modal-action ${isIntegration ? "justify-between" : ""}`}
         >
-          {isIntegrationUser && (
+          {isIntegration && (
             <button
               className="btn bg-primary-gradient max-w-fit self-end"
               onClick={(): void => {

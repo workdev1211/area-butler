@@ -18,7 +18,10 @@ import { OnOfficeIntActTypesEnum } from "../../../../../shared/types/on-office";
 import { ExportTypeEnum } from "../../../../../shared/types/export";
 import { statsExportUnlockText } from "../../../../../shared/constants/on-office/products";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
+import {
+  IntegrationTypesEnum,
+  TUnlockIntProduct,
+} from "../../../../../shared/types/integration";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -100,11 +103,13 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
 
     const isOnePageExport = exportType === ExportTypeEnum.ONE_PAGE;
 
+    // TODO PROPSTACK CONTINGENT
     const isExportAvailForIntUser =
       isIntegration &&
-      (isOnePageExport
+      ((isOnePageExport
         ? realEstateListing?.isOnePageExportActive
-        : realEstateListing?.isStatsFullExportActive);
+        : realEstateListing?.isStatsFullExportActive) ||
+        integrationType === IntegrationTypesEnum.PROPSTACK);
 
     if (
       isExportAvailForIntUser ||

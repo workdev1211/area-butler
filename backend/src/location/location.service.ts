@@ -65,6 +65,7 @@ import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { TApiMongoSortQuery } from '../shared/shared.types';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class LocationService {
@@ -654,6 +655,14 @@ export class LocationService {
     const isSnapshotIframeExpired = iframeEndsAt
       ? dayjs().isAfter(iframeEndsAt)
       : true;
+
+    // TODO PROPSTACK CONTINGENT
+    if (
+      snapshotDoc.integrationParams.integrationType ===
+      IntegrationTypesEnum.PROPSTACK
+    ) {
+      return;
+    }
 
     if (isSnapshotIframeExpired) {
       throw new HttpException(addressExpiredMessage, 402);

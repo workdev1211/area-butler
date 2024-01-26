@@ -14,7 +14,6 @@ import SearchResultContainer from "components/search-result-container/SearchResu
 import { ICurrentMapRef } from "shared/search-result.types";
 import { ConfigContext } from "context/ConfigContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
-import { UserContext } from "context/UserContext";
 import DefaultLayout from "layout/defaultLayout";
 import {
   buildEntityData,
@@ -46,6 +45,9 @@ import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
 import { realEstAllTextStatus } from "../../../shared/constants/real-estate";
+import { useTools } from "../hooks/tools";
+import { LoadingMessage } from "../components/Loading";
+import { useRealEstateData } from "../hooks/realestatedata";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
@@ -55,7 +57,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
-  const { userState } = useContext(UserContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
 
@@ -63,7 +64,10 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
 
+  const { getActualUser } = useTools();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
+  const { fetchRealEstateByIntId } = useRealEstateData();
+
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
   const { fetchParticlePollutionData } = useParticlePollutionData();
@@ -71,9 +75,12 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
 
-  const user = userState.user;
-  const hasHtmlSnippet = user?.subscription?.config.appFeatures.htmlSnippet;
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
+  const isAvailHtmlSnippet =
+    isIntegrationUser || !!user?.subscription?.config.appFeatures.htmlSnippet;
 
+  // initialization
   useEffect(() => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
@@ -88,8 +95,9 @@ const SnapshotEditorPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // fetching a snapshot
   useEffect(() => {
-    if (!hasHtmlSnippet) {
+    if (!isAvailHtmlSnippet) {
       toastError(
         "Nur das Business+ Abonnement erlaubt die Nutzung des Karten Editors."
       );
@@ -105,24 +113,18 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
       const snapshotResponse = await fetchSnapshot(snapshotId);
 
-      let snapshotConfig = (snapshotResponse.config ||
+      const snapshotConfig = (snapshotResponse.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
 
-      if (user?.color && !("primaryColor" in snapshotConfig)) {
-        snapshotConfig["primaryColor"] = user.color;
-      }
-
-      if (user?.mapIcon && !("mapIcon" in snapshotConfig)) {
-        snapshotConfig["mapIcon"] = user.mapIcon;
-      }
-
-      if (!("showAddress" in snapshotConfig)) {
-        snapshotConfig["showAddress"] = true;
-      }
-
-      if (!("showStreetViewLink" in snapshotConfig)) {
-        snapshotConfig["showStreetViewLink"] = true;
-      }
+      snapshotConfig.primaryColor =
+        snapshotConfig.primaryColor ??
+        (isIntegrationUser ? user.config : user).color;
+      snapshotConfig.mapIcon =
+        snapshotConfig.mapIcon ??
+        (isIntegrationUser ? user.config : user).mapIcon;
+      snapshotConfig.showAddress = snapshotConfig.showAddress ?? true;
+      snapshotConfig.showStreetViewLink =
+        snapshotConfig.showStreetViewLink ?? true;
 
       const enhancedConfig = {
         ...snapshotConfig,
@@ -145,8 +147,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
           payload: enhancedConfig.zoomLevel || defaultMapZoom,
         });
       }
-
-      setSnapshot(snapshotResponse.snapshot);
 
       if (!snapshotResponse.snapshot || !snapshotConfig) {
         return;
@@ -203,21 +203,9 @@ const SnapshotEditorPage: FunctionComponent = () => {
       });
 
       searchContextDispatch({
-        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-        payload: undefined,
-      });
-
-      searchContextDispatch({
         type: SearchContextActionTypes.SET_SNAPSHOT_ID,
         payload: snapshotId,
       });
-
-      if (snapshotResponse.snapshot.realEstateListing) {
-        searchContextDispatch({
-          type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-          payload: snapshotResponse.snapshot.realEstateListing,
-        });
-      }
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
@@ -235,23 +223,73 @@ const SnapshotEditorPage: FunctionComponent = () => {
           ignorePoiFilter: true,
         }),
       });
+
+      setSnapshot(snapshotResponse.snapshot);
     };
 
     void fetchSnapshotData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
+  // setting a real estate listing
   useEffect(() => {
-    const fetchLocationStatistics = async () => {
-      if (!snapshot) {
-        return;
-      }
+    if (!snapshot) {
+      return;
+    }
 
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
+    if (!isIntegrationUser) {
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: snapshot.realEstateListing || undefined,
+      });
+
+      return;
+    }
+
+    if (
+      !snapshot.integrationId ||
+      snapshot.integrationId ===
+        searchContextState.realEstateListing?.integrationId
+    ) {
+      return;
+    }
+
+    const getRealEstate = (): Promise<void> =>
+      fetchRealEstateByIntId(snapshot.integrationId!);
+
+    void getRealEstate();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [snapshot]);
+
+  // fetching location statistics
+  useEffect(() => {
+    if (!snapshot) {
+      return;
+    }
+
+    const fetchLocationStatistics = async () => {
+      const isAvailCensus =
+        isIntegrationUser ||
+        !!user?.subscription?.config.appFeatures.dataSources.includes(
           ApiDataSource.CENSUS
-        )
-      ) {
+        );
+      const isAvailElection =
+        isIntegrationUser ||
+        !!user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.FEDERAL_ELECTION
+        );
+      const isAvailPollution =
+        isIntegrationUser ||
+        !!user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.PARTICLE_POLLUTION
+        );
+      const isAvailIndices =
+        isIntegrationUser ||
+        !!user?.subscription?.config.appFeatures.dataSources.includes(
+          ApiDataSource.LOCATION_INDICES
+        );
+
+      if (isAvailCensus) {
         const censusData = await fetchCensusData(snapshot.location);
 
         searchContextDispatch({
@@ -260,11 +298,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
         });
       }
 
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.FEDERAL_ELECTION
-        )
-      ) {
+      if (isAvailElection) {
         const federalElectionData = await fetchFederalElectionData(
           snapshot.location
         );
@@ -275,11 +309,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
         });
       }
 
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.PARTICLE_POLLUTION
-        )
-      ) {
+      if (isAvailPollution) {
         const particlePollutionData = await fetchParticlePollutionData(
           snapshot.location
         );
@@ -290,11 +320,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
         });
       }
 
-      if (
-        user?.subscription?.config.appFeatures.dataSources.includes(
-          ApiDataSource.LOCATION_INDICES
-        )
-      ) {
+      if (isAvailIndices) {
         const locationIndexData = await fetchLocationIndexData(
           snapshot.location
         );
@@ -357,10 +383,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.poiFilter,
   ]);
 
-  if (!snapshot) {
-    return <div>Lade Daten...</div>;
-  }
-
   const onPoiAdd = (poi: ApiOsmLocation) => {
     if (!snapshot) {
       return;
@@ -398,41 +420,47 @@ const SnapshotEditorPage: FunctionComponent = () => {
     });
   };
 
+  if (!snapshot) {
+    return <LoadingMessage />;
+  }
+
   return (
-    <>
-      <DefaultLayout withHorizontalPadding={false}>
-        <TourStarter tour={ApiTourNamesEnum.EDITOR} />
-        <div className="hidden">
-          <GooglePlacesAutocomplete
-            apiOptions={googleMapsApiOptions}
-            autocompletionRequest={{
-              componentRestrictions: {
-                country: ["de"],
-              },
-            }}
-            minLengthAutocomplete={5}
-            selectProps={{}}
-            apiKey={googleApiKey}
-          />
-        </div>
-        <div className="editor-container">
-          <SearchResultContainer
-            mapboxToken={mapBoxAccessToken}
-            searchResponse={snapshot.searchResponse}
-            searchAddress={snapshot.placesLocation.label}
-            location={snapshot.location}
-            saveConfig={async () => {
-              await saveSnapshotConfig(mapRef, snapshotId);
-            }}
-            mapDisplayMode={MapDisplayModesEnum.EDITOR}
-            onPoiAdd={onPoiAdd}
-            isTrial={user?.subscription?.type === ApiSubscriptionPlanType.TRIAL}
-            isNewSnapshot={!!state?.isNewSnapshot}
-            ref={mapRef}
-          />
-        </div>
-      </DefaultLayout>
-    </>
+    <DefaultLayout withHorizontalPadding={false}>
+      <TourStarter tour={ApiTourNamesEnum.EDITOR} />
+      <div className="hidden">
+        <GooglePlacesAutocomplete
+          apiOptions={googleMapsApiOptions}
+          autocompletionRequest={{
+            componentRestrictions: {
+              country: ["de"],
+            },
+          }}
+          minLengthAutocomplete={5}
+          selectProps={{}}
+          apiKey={googleApiKey}
+        />
+      </div>
+      <div className="editor-container">
+        <SearchResultContainer
+          mapboxToken={mapBoxAccessToken}
+          searchResponse={snapshot.searchResponse}
+          searchAddress={snapshot.placesLocation.label}
+          location={snapshot.location}
+          saveConfig={async () => {
+            await saveSnapshotConfig(mapRef, snapshotId);
+          }}
+          mapDisplayMode={MapDisplayModesEnum.EDITOR}
+          onPoiAdd={onPoiAdd}
+          isTrial={
+            isIntegrationUser
+              ? false
+              : user?.subscription?.type === ApiSubscriptionPlanType.TRIAL
+          }
+          isNewSnapshot={!!state?.isNewSnapshot}
+          ref={mapRef}
+        />
+      </div>
+    </DefaultLayout>
   );
 };
 

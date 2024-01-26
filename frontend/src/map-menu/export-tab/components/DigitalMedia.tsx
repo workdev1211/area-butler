@@ -26,7 +26,10 @@ import {
 } from "../../../shared/shared.functions";
 import { useIntegrationTools } from "../../../hooks/integrationtools";
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
-import { TUnlockIntProduct } from "../../../../../shared/types/integration";
+import {
+  IntegrationTypesEnum,
+  TUnlockIntProduct,
+} from "../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
 import { UserContext } from "../../../context/UserContext";
 import UnlockProductButton from "../../components/UnlockProductButton";
@@ -34,6 +37,7 @@ import { EntityGroup } from "../../../shared/search-result.types";
 import { getFilteredLegend } from "../../../export/shared/shared.functions";
 import { getRenderedLegend } from "../../../export/RenderedLegend";
 import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
+import { ConfigContext } from "../../../context/ConfigContext";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -50,6 +54,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   backgroundColor,
   performUnlock,
 }) => {
+  const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
@@ -66,6 +71,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
 
   const { sendToOnOffice } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
+  const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
   useEffect(() => {
     if (!printingZipActive) {
@@ -113,7 +119,8 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   };
 
   const getIntUserLinkExpType = (): AreaButlerExportTypesEnum | undefined => {
-    if (!integrationUser) {
+    // TODO PROPSTACK CONTINGENT
+    if (!integrationUser || isPropstackInt) {
       return;
     }
 
@@ -148,10 +155,12 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
   };
 
+  // TODO PROPSTACK CONTINGENT
   const isNotIntOrNotExpForIntUser =
     !integrationUser ||
     (!!realEstateListing?.iframeEndsAt &&
-      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
+      !dayjs().isAfter(realEstateListing?.iframeEndsAt)) ||
+    isPropstackInt;
 
   const isIntUserIframeExportAvail = !!(
     integrationUser?.config.exportMatching &&
@@ -255,7 +264,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={downloadIcon} alt="download-qr-code" />
                 <span>Herunterladen</span>
               </div>
-              {integrationUser && (
+              {integrationUser && !isPropstackInt && (
                 <div
                   onClick={async () => {
                     void sendToOnOffice({

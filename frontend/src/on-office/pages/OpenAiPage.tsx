@@ -9,6 +9,7 @@ import { useIntegrationTools } from "../../hooks/integrationtools";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { TOnOfficeIntActTypes } from "../../../../shared/types/on-office";
 
+// TODO PROPSTACK CONTINGENT - is used only in onOffice for the moment
 const OpenAiPage: FunctionComponent = () => {
   const { searchContextState } = useContext(SearchContext);
 
