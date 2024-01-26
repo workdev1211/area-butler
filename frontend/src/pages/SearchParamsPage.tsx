@@ -415,6 +415,9 @@ const SearchParamsPage: FunctionComponent = () => {
     onFinish: (snapshotResponse: ApiSearchResultSnapshotResponse) => void,
     onFinally?: () => void
   ): Promise<void> => {
+    let createdSnapshotResponse;
+    let isFinishedAnalysis = false;
+
     try {
       setIsShownBusyModal(true);
 
@@ -450,7 +453,7 @@ const SearchParamsPage: FunctionComponent = () => {
         payload: [...activeMeans],
       });
 
-      const createdSnapshotResponse = await createSnapshot({
+      createdSnapshotResponse = await createSnapshot({
         setBusyModalItems,
         searchResponse,
         busyModalItems: items,
@@ -479,7 +482,7 @@ const SearchParamsPage: FunctionComponent = () => {
         });
       }
 
-      onFinish(createdSnapshotResponse);
+      isFinishedAnalysis = true;
     } catch (error) {
       toastError(
         "Fehler bei der Suchausführung. Bitte zu einem späteren Zeitpunkt wiederholen."
@@ -498,6 +501,10 @@ const SearchParamsPage: FunctionComponent = () => {
 
       setIsShownBusyModal(false);
       setBusyModalItems([]);
+    }
+
+    if (isFinishedAnalysis && createdSnapshotResponse) {
+      onFinish(createdSnapshotResponse);
     }
   };
 

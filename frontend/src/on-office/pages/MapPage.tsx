@@ -67,7 +67,7 @@ const MapPage: FunctionComponent = () => {
 
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
-  const [mapBoxToken, setMapBoxToken] = useState("");
+  const [mapboxToken, setMapboxToken] = useState("");
   const [processedRealEstates, setProcessedRealEstates] = useState<
     ApiRealEstateListing[]
   >([]);
@@ -101,7 +101,7 @@ const MapPage: FunctionComponent = () => {
       }
 
       setSnapshotResponse(snapshotRespData);
-      setMapBoxToken(snapshotRespData.mapboxAccessToken);
+      setMapboxToken(snapshotRespData.mapboxAccessToken);
     };
 
     void getSnapshot();
@@ -408,7 +408,7 @@ const MapPage: FunctionComponent = () => {
   if (
     !searchContextState.searchResponse ||
     !searchContextState.responseConfig ||
-    !mapBoxToken
+    !mapboxToken
   ) {
     return <LoadingMessage />;
   }
@@ -430,7 +430,7 @@ const MapPage: FunctionComponent = () => {
         />
       </div>
       <SearchResultContainer
-        mapboxToken={mapBoxToken}
+        mapboxToken={mapboxToken}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

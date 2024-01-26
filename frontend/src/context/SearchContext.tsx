@@ -125,7 +125,6 @@ export enum SearchContextActionTypes {
   REMOVE_MAP_CLIPPING = "REMOVE_MAP_CLIPPING",
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
-  CLEAR_REAL_ESTATE_LISTING = "CLEAR_REAL_ESTATE_LISTING",
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
   SET_SNAPSHOT_ID = "SET_SNAPSHOT_ID",
@@ -181,7 +180,6 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]:
     | ApiRealEstateListing
     | undefined;
-  [SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING]: undefined;
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
   [SearchContextActionTypes.SET_SNAPSHOT_ID]: string;
@@ -383,9 +381,6 @@ export const searchContextReducer = (
         ...state,
         realEstateListing: action.payload ? { ...action.payload } : undefined,
       };
-    }
-    case SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING: {
-      return { ...state, realEstateListing: undefined };
     }
     case SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE: {
       const poi: ApiOsmLocation = action.payload;

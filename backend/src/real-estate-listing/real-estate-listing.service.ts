@@ -151,16 +151,16 @@ export class RealEstateListingService {
           $facet: {
             status: [
               { $match: { status: { $exists: true } } },
-              { $group: { _id: '$status', status: { $first: '$status' } } },
+              { $group: { _id: '$status' } },
             ],
             status2: [
               { $match: { status2: { $exists: true } } },
-              { $group: { _id: '$status2', status2: { $first: '$status2' } } },
+              { $group: { _id: '$status2' } },
             ],
           },
         },
         {
-          $project: { status: '$status.status', status2: '$status2.status2' },
+          $project: { status: '$status._id', status2: '$status2._id' },
         },
       ])
     )[0];

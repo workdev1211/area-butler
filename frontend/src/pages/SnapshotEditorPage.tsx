@@ -203,7 +203,8 @@ const SnapshotEditorPage: FunctionComponent = () => {
       });
 
       searchContextDispatch({
-        type: SearchContextActionTypes.CLEAR_REAL_ESTATE_LISTING,
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: undefined,
       });
 
       searchContextDispatch({

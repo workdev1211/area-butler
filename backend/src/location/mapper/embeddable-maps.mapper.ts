@@ -43,8 +43,8 @@ export const mapSnapshotToEmbeddableMap = (
         );
 
       const isNotEstateAtCenter =
-        mappedApiRealEstateListing.coordinates.lat !== centerOfLocation.lat ||
-        mappedApiRealEstateListing.coordinates.lng !== centerOfLocation.lng;
+        currentEstate.location.coordinates[0] !== centerOfLocation.lat ||
+        currentEstate.location.coordinates[1] !== centerOfLocation.lng;
 
       if (isNotEstateAtCenter) {
         result.push(mappedApiRealEstateListing);
