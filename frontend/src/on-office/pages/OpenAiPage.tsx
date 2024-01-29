@@ -5,7 +5,7 @@ import { LoadingMessage } from "../../components/Loading";
 import { SearchContext } from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
-import { useIntegrationTools } from "../../hooks/integrationtools";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import ConfirmationModal from "../../components/ConfirmationModal";
 import { TOnOfficeIntActTypes } from "../../../../shared/types/on-office";
 

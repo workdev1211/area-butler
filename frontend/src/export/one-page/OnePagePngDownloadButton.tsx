@@ -7,7 +7,7 @@ import { ISelectableMapClipping } from "export/MapClippingSelection";
 import OnePagePng from "./OnePagePng";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import { useIntegrationTools } from "../../hooks/integrationtools";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 import { IOnePagePngDownProps } from "../../shared/one-page.types";
 

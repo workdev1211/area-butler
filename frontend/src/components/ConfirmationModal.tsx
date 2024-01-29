@@ -1,4 +1,6 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FunctionComponent, useState } from "react";
+
+import { useEscape } from "../hooks/escape";
 
 interface IConfirmationModalProps {
   closeModal: () => void;
@@ -11,21 +13,8 @@ const ConfirmationModal: FunctionComponent<IConfirmationModalProps> = ({
   onConfirm,
   text,
 }) => {
+  useEscape(closeModal);
   const [isLoading, setIsLoading] = useState(false);
-
-  // TODO make a common modal component in the future
-  useEffect(() => {
-    const handleEscape = async (e: KeyboardEvent) => {
-      if (e.key === "Escape") {
-        closeModal();
-      }
-    };
-
-    document.addEventListener("keydown", handleEscape);
-
-    return () => document.removeEventListener("keydown", handleEscape);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   return (
     <div className="modal modal-open z-9999">

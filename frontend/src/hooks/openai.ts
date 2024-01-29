@@ -15,7 +15,7 @@ import {
 import { toastError } from "../shared/shared.functions";
 import { UserActionTypes, UserContext } from "../context/UserContext";
 import { ConfigContext } from "../context/ConfigContext";
-import { useIntegrationTools } from "./integrationtools";
+import { useIntegrationTools } from "./integration/integrationtools";
 import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
 import { IntegrationTypesEnum } from "../../../shared/types/integration";

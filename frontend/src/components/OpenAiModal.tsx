@@ -2,7 +2,7 @@ import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { useIntegrationTools } from "../hooks/integrationtools";
+import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import {
   IntegrationTypesEnum,
   TUnlockIntProduct,

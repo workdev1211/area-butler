@@ -24,7 +24,7 @@ import {
   sanitizeFilename,
   setBackgroundColor,
 } from "../../../shared/shared.functions";
-import { useIntegrationTools } from "../../../hooks/integrationtools";
+import { useIntegrationTools } from "../../../hooks/integration/integrationtools";
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import {
   IntegrationTypesEnum,

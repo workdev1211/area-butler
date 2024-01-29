@@ -2,27 +2,27 @@ import { useContext } from "react";
 import { useHistory } from "react-router-dom";
 import dayjs from "dayjs";
 
-import { ConfigContext } from "../context/ConfigContext";
-import { UserActionTypes, UserContext } from "../context/UserContext";
-import { toastError, toastSuccess } from "../shared/shared.functions";
+import { ConfigContext } from "../../context/ConfigContext";
+import { UserActionTypes, UserContext } from "../../context/UserContext";
+import { toastError, toastSuccess } from "../../shared/shared.functions";
 import {
   IApiUnlockIntProductReq,
   TIntegrationActionTypes,
-} from "../../../shared/types/integration";
+} from "../../../../shared/types/integration";
 import {
   IApiOnOfficeUpdEstTextFieldReq,
   IApiOnOfficeUplEstFileOrLinkReq,
   TOnOfficeIntActTypes,
-} from "../../../shared/types/on-office";
-import { useHttp } from "./http";
+} from "../../../../shared/types/on-office";
+import { useHttp } from "../http";
 import {
   SearchContext,
   SearchContextActionTypes,
-} from "../context/SearchContext";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
-import { getAvailProdContType } from "../../../shared/functions/integration.functions";
-import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/products";
-import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
+} from "../../context/SearchContext";
+import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
+import { getAvailProdContType } from "../../../../shared/functions/integration.functions";
+import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/products";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);

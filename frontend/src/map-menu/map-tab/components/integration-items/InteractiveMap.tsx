@@ -27,7 +27,7 @@ import {
   ApiOnOfficeArtTypesEnum,
   OnOfficeIntActTypesEnum,
 } from "../../../../../../shared/types/on-office";
-import { useIntegrationTools } from "../../../../hooks/integrationtools";
+import { useIntegrationTools } from "../../../../hooks/integration/integrationtools";
 import { useTools } from "../../../../hooks/tools";
 import copyIcon from "../../../../assets/icons/copy.svg";
 import sendToOnOfficeIcon from "../../../../assets/icons/entrance-alt1.svg";

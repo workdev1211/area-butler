@@ -10,7 +10,7 @@ import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import sendToOnOfficeIcon from "../../assets/icons/entrance-alt1.svg";
 import { ConfigContext } from "../../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import { useIntegrationTools } from "../../hooks/integrationtools";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 
 interface IMapClippingsCollapsableProps {
