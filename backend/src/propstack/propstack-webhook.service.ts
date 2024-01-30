@@ -88,9 +88,7 @@ export class PropstackWebhookService {
     const areaButlerRealEstate = plainToInstance<
       ApiUpsertRealEstateListing,
       IPropstackRealEstate
-    >(ApiPropstackToAreaButlerDto, propstackRealEstate, {
-      exposeUnsetFields: false,
-    });
+    >(ApiPropstackToAreaButlerDto, propstackRealEstate);
 
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
       resultingUser,

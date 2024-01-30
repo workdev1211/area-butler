@@ -1,5 +1,5 @@
 import { TOnOfficeIntActTypes } from "./on-office";
-import { RequestStatusTypesEnum } from "./types";
+import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -35,4 +35,14 @@ export type TUnlockIntProduct = (
 export interface IIntegrationHandleLogin {
   requestStatus: RequestStatusTypesEnum;
   message?: string;
+}
+
+export interface IApiSyncEstatesIntFilterParams {
+  estateStatus?: string;
+  estateMarketType?: string;
+}
+
+export interface IApiRealEstAvailIntStatuses {
+  estateStatuses?: ISelectTextValue[];
+  estateMarketTypes?: ISelectTextValue[];
 }

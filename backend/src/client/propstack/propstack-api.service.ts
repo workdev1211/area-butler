@@ -6,7 +6,9 @@ import {
   IPropstackApiFetchEstates,
   IPropstackApiFetchedEstates,
   IPropstackRealEstate,
+  IPropstackRealEstateStatus,
 } from '../../shared/propstack.types';
+import { filterQueryParams } from '../../../../shared/functions/shared.functions';
 
 interface IPropstackRealEstLink {
   property_id: number;
@@ -40,12 +42,15 @@ export class PropstackApiService {
 
     const resultingPerPage = isTest ? 1 : PROPSTACK_ESTATES_PER_PAGE;
 
-    const resultingQueryParams = new URLSearchParams({
-      ...queryParams,
-      with_meta: '1',
-      page: `${pageNumber}`,
-      per: `${resultingPerPage}`,
-    }).toString();
+    const resultingQueryParams = filterQueryParams(
+      new URLSearchParams({
+        ...queryParams,
+        with_meta: '1',
+        expand: '1',
+        page: `${pageNumber}`,
+        per: `${resultingPerPage}`,
+      }),
+    ).toString();
 
     const { data } = await firstValueFrom<{
       data: IPropstackApiFetchedEstates;
@@ -119,6 +124,30 @@ export class PropstackApiService {
         `${this.apiUrl}/links`,
         realEstLinkData,
         { headers },
+      ),
+    );
+
+    return data;
+  }
+
+  async fetchRealEstAvailStatuses(
+    apiKey: string,
+  ): Promise<IPropstackRealEstateStatus[]> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    };
+
+    const {
+      data: { data },
+    } = await firstValueFrom<{
+      data: { data: IPropstackRealEstateStatus[] };
+    }>(
+      this.http.get<{ data: IPropstackRealEstateStatus[] }>(
+        `${this.apiUrl}/property_statuses`,
+        {
+          headers,
+        },
       ),
     );
 

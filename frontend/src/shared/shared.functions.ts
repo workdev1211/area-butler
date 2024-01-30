@@ -808,17 +808,3 @@ export const copyTextToClipboard = (text?: string): void => {
     toastSuccess("Erfolgreich in Zwischenablage kopiert!");
   }
 };
-
-export const filterQueryParams = (queryParams: URLSearchParams): void => {
-  const paramsToDel: string[] = [];
-
-  queryParams.forEach((value, key) => {
-    if (["undefined", "null", ""].includes(value)) {
-      paramsToDel.push(key);
-    }
-  });
-
-  paramsToDel.forEach((key) => {
-    queryParams.delete(key);
-  });
-};

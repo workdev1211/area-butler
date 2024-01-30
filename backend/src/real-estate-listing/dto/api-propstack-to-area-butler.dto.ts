@@ -5,16 +5,15 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateCostType,
-  ApiRealEstateStatusEnum,
   ApiUpsertRealEstateListing,
 } from '@area-butler-types/real-estate';
 import {
   IPropstackProcessedRealEstate,
   IPropstackRealEstate,
-  PropstackRealEstStatusesEnum,
 } from '../../shared/propstack.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 import {
+  IsNotEmpty,
   IsObject,
   IsOptional,
   IsString,
@@ -22,6 +21,10 @@ import {
 } from 'class-validator';
 import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
 import { IApiIntegrationParams } from '@area-butler-types/integration';
+import { propstackRealEstMarketTypeNames } from '../../../../shared/constants/propstack';
+import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
+import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
+import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-characteristics.dto';
 
 @Exclude()
 class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
@@ -38,14 +41,17 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
   integrationParams?: IApiIntegrationParams;
 
   @Expose()
+  @IsNotEmpty()
   @Transform(
     ({ obj: { name, title } }: { obj: IPropstackRealEstate }): string =>
       name || title,
     { toClassOnly: true },
   )
+  @IsString()
   name: string;
 
   @Expose()
+  @IsNotEmpty()
   @Transform(
     ({
       obj: {
@@ -66,9 +72,11 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
       `${street} ${house_number}, ${zip_code} ${city || region}, ${country}`,
     { toClassOnly: true },
   )
+  @IsString()
   address: string;
 
   @Expose()
+  @IsNotEmpty()
   // currently we obtain and assign it by ourselves based on the provided address
   // @Transform(
   //   ({ obj: { lat, lng } }: { obj: IPropstackRealEstate }): GeoJsonPoint => ({
@@ -76,25 +84,64 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
   //     coordinates: [lat, lng],
   //   }),
   // )
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiGeoJsonPointDto)
   location: GeoJsonPoint;
 
+  // TODO should be expanded further
+  // keep in mind that property structure with 'expand' option differs from the structure without it
   @Expose()
+  @IsOptional()
   @Transform(
-    ({ obj: { price } }: { obj: IPropstackRealEstate }): ApiRealEstateCost => {
-      if (!price) {
-        return;
+    ({
+      obj: { price, base_rent: baseRent },
+    }: {
+      obj: IPropstackRealEstate;
+    }): ApiRealEstateCost => {
+      if (price) {
+        const priceValue = (
+          price !== null && typeof price === 'object' ? price.value : price
+        ) as number;
+
+        return priceValue
+          ? {
+              price: {
+                amount: priceValue,
+                currency: '€',
+              },
+              type: ApiRealEstateCostType.SELL,
+            }
+          : undefined;
       }
 
-      return {
-        price: { amount: price, currency: '€' },
-        type: ApiRealEstateCostType.SELL,
-      };
+      if (baseRent) {
+        const rentValue = (
+          baseRent !== null && typeof baseRent === 'object'
+            ? baseRent.value
+            : baseRent
+        ) as number;
+
+        return rentValue
+          ? {
+              price: {
+                amount: rentValue,
+                currency: '€',
+              },
+              type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
+            }
+          : undefined;
+      }
     },
     { toClassOnly: true },
   )
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiRealEstateCostDto)
   costStructure?: ApiRealEstateCost;
 
   @Expose()
+  @IsOptional()
   @Transform(
     ({
       obj: {
@@ -151,72 +198,56 @@ class ApiPropstackToAreaButlerDto implements ApiUpsertRealEstateListing {
       return characteristics;
     },
   )
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
-  @Transform(
-    ({ obj: { id } }: { obj: IPropstackRealEstate }): string => `${id}`,
-    {
-      toClassOnly: true,
-    },
-  )
+  @IsOptional()
+  // @Transform(
+  //   ({ obj: { id } }: { obj: IPropstackRealEstate }): string => `${id}`,
+  //   {
+  //     toClassOnly: true,
+  //   },
+  // )
+  @IsString()
   externalId?: string;
 
   @Expose()
+  @IsOptional()
   @Transform(
     ({
-      obj: {
-        status: { name },
-        areaButlerStatus,
-      },
+      obj: { areaButlerStatus2, marketing_type: marketingType },
     }: {
       obj: IPropstackProcessedRealEstate;
-    }): string => {
-      if (areaButlerStatus) {
-        return areaButlerStatus;
-      }
-
-      switch (name) {
-        case PropstackRealEstStatusesEnum.AKQUISE: {
-          return ApiRealEstateStatusEnum.RENTED;
-        }
-        case PropstackRealEstStatusesEnum.IN_VERMARKTUNG: {
-          return ApiRealEstateStatusEnum.MARKET_OBSERVATION;
-        }
-        case PropstackRealEstStatusesEnum.RESERVIERT: {
-          return ApiRealEstateStatusEnum.RESERVED;
-        }
-        case PropstackRealEstStatusesEnum.VERKAUFT: {
-          return ApiRealEstateStatusEnum.SOLD;
-        }
-        case PropstackRealEstStatusesEnum.INAKTIV: {
-          return ApiRealEstateStatusEnum.ARCHIVED;
-        }
-        case PropstackRealEstStatusesEnum.IN_VORBEREITUNG: {
-          return ApiRealEstateStatusEnum.IN_PREPARATION;
-        }
-        default: {
-          return name;
-        }
-      }
-    },
+    }): string =>
+      areaButlerStatus2 ||
+      (marketingType
+        ? propstackRealEstMarketTypeNames.find(
+            ({ value }) => value === marketingType,
+          )?.text
+        : undefined),
     {
       toClassOnly: true,
     },
   )
+  @IsString()
   status?: string;
 
   @Expose()
+  @IsOptional()
   @Transform(
     ({
-      obj: { areaButlerStatus2 },
+      obj: { status, property_status, areaButlerStatus },
     }: {
       obj: IPropstackProcessedRealEstate;
-    }): string => areaButlerStatus2,
+    }): string => areaButlerStatus || (status || property_status)?.name,
     {
       toClassOnly: true,
     },
   )
+  @IsString()
   status2?: string;
 
   showInSnippet = true;

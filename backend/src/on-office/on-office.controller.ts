@@ -20,7 +20,6 @@ import ApiOnOfficeLoginReqDto from './dto/api-on-office-login-req.dto';
 import {
   IApiOnOfficeActivationRes,
   IApiOnOfficeCreateOrderRes,
-  IApiOnOfficeEstateAvailStatuses,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import ApiOnOfficeCreateOrderReqDto from './dto/api-on-office-create-order-req.dto';
@@ -39,6 +38,7 @@ import {
 import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto';
 import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-estates-filter-params.dto';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
+import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 
 @ApiTags('on-office')
 @Controller('api/on-office')
@@ -64,7 +64,7 @@ export class OnOfficeController {
   @ApiOperation({ description: 'Activates user in the AreaButler app' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post(activateUserPath) // activate-user
-  async unlockProvider(
+  unlockProvider(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() unlockProviderData: ApiOnOfficeUnlockProviderReqDto,
   ): Promise<string> {
@@ -148,10 +148,19 @@ export class OnOfficeController {
     );
   }
 
+  @ApiOperation({ description: 'Fetch available estate statuses' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('avail-statuses')
+  fetchAvailStatuses(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiRealEstAvailIntStatuses> {
+    return this.onOfficeService.fetchAvailStatuses(integrationUser);
+  }
+
   @ApiOperation({ description: 'Sync estate data' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Put('sync-estates')
-  async syncEstateData(
+  syncEstateData(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
     estateStatusParams: ApiOnOfficeSyncEstatesFilterParamsDto,
@@ -160,14 +169,5 @@ export class OnOfficeController {
       integrationUser,
       estateStatusParams,
     );
-  }
-
-  @ApiOperation({ description: 'Fetch available estate statuses' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get('avail-statuses')
-  async fetchAvailStatuses(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-  ): Promise<IApiOnOfficeEstateAvailStatuses> {
-    return this.onOfficeService.fetchAvailStatuses(integrationUser);
   }
 }

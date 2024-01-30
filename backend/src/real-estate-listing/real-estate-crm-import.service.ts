@@ -45,8 +45,13 @@ import {
 } from './mapper/real-estate-on-office-import.mapper';
 import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IApiIntUserOnOfficeParams } from '@area-butler-types/integration-user';
+import {
+  IApiIntUserOnOfficeParams,
+  IApiIntUserPropstackParams,
+} from '@area-butler-types/integration-user';
 import { RealEstateListingService } from './real-estate-listing.service';
+import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
+import { getProcUpdateQuery } from '../shared/shared.functions';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -196,8 +201,12 @@ export class RealEstateCrmImportService {
     }
   }
 
-  private async importFromPropstack(
+  async importFromPropstack(
     user: UserDocument | TIntegrationUserDocument,
+    queryParams: Pick<
+      IPropstackApiFetchEstsQueryParams,
+      'status' | 'marketing_type'
+    > = {},
   ): Promise<string[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     const errorIds: string[] = [];
@@ -206,10 +215,9 @@ export class RealEstateCrmImportService {
     //   isIntegrationUser ? user.parameters.email : user.email
     // )?.toLowerCase();
     // const customStatuses = propstackCustomSyncStatuses[processedUserEmail];
-    const queryParams: IPropstackApiFetchEstsQueryParams = {};
 
     const apiKey = isIntegrationUser
-      ? undefined
+      ? (user.parameters as IApiIntUserPropstackParams).apiKey
       : user.apiConnections[ApiRealEstateExtSourcesEnum.PROPSTACK]?.apiKey;
 
     if (!apiKey) {
@@ -239,7 +247,7 @@ export class RealEstateCrmImportService {
     if (totalCount > PROPSTACK_ESTATES_PER_PAGE) {
       const numberOfPages = Math.ceil(totalCount / PROPSTACK_ESTATES_PER_PAGE);
 
-      for (let i = 2; i < numberOfPages + 1; i++) {
+      for (let i = 2; i < numberOfPages + 1; i += 1) {
         const { data } = await this.propstackApiService.fetchRealEstates({
           queryParams,
           apiKey,
@@ -254,7 +262,9 @@ export class RealEstateCrmImportService {
 
     this.logger.log(
       `User ${
-        isIntegrationUser ? user.integrationUserId : user.id
+        isIntegrationUser
+          ? `${user.integrationUserId} / ${user.integrationType}`
+          : user.id
       } is going to import ${totalCount} real estates from Propstack split into ${
         chunks.length
       } chunks.`,
@@ -283,7 +293,7 @@ export class RealEstateCrmImportService {
         //   processCustomPropstackStatus(processedUserEmail, realEstate);
         // }
 
-        Object.assign(realEstate, {
+        const estateData: Partial<IApiRealEstateListingSchema> = {
           address: realEstate.address,
           location: {
             type: 'Point',
@@ -292,28 +302,53 @@ export class RealEstateCrmImportService {
               place.geometry.location.lng,
             ],
           },
-          userId: user.id,
-          externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
-        });
+        };
+
+        if (isIntegrationUser) {
+          estateData.integrationParams = {
+            integrationUserId: user.integrationUserId,
+            integrationId: `${realEstate.id}`,
+            integrationType: user.integrationType,
+          };
+        }
+
+        if (!isIntegrationUser) {
+          estateData.userId = user.id;
+          estateData.externalId = `${realEstate.id}`;
+          estateData.externalSource = ApiRealEstateExtSourcesEnum.PROPSTACK;
+        }
+
+        Object.assign(realEstate, estateData);
 
         const areaButlerRealEstate = plainToInstance(
           ApiPropstackToAreaButlerDto,
           realEstate,
-          { exposeUnsetFields: false },
         ) as IApiRealEstateListingSchema;
 
         await this.realEstateListingService.assignLocationIndices(
           areaButlerRealEstate,
         );
 
+        const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
+          isIntegrationUser
+            ? {
+                'integrationParams.integrationUserId':
+                  areaButlerRealEstate.integrationParams.integrationUserId,
+                'integrationParams.integrationId':
+                  areaButlerRealEstate.integrationParams.integrationId,
+                'integrationParams.integrationType':
+                  areaButlerRealEstate.integrationParams.integrationType,
+              }
+            : {
+                userId: areaButlerRealEstate.userId,
+                externalId: areaButlerRealEstate.externalId,
+                externalSource: areaButlerRealEstate.externalSource,
+              };
+
         bulkOperations.push({
           updateOne: {
-            filter: {
-              userId: areaButlerRealEstate.userId,
-              externalSource: areaButlerRealEstate.externalSource,
-              externalId: areaButlerRealEstate.externalId,
-            },
-            update: areaButlerRealEstate,
+            filter: filterQuery,
+            update: getProcUpdateQuery(areaButlerRealEstate),
             upsert: true,
           },
         });
@@ -393,7 +428,7 @@ export class RealEstateCrmImportService {
 
       Object.keys(estateStatusParams).forEach((key) => {
         const value =
-          estateStatusParams[key as keyof IApiOnOfficeSyncEstatesFilterParams];
+          estateStatusParams[key as keyof IApiSyncEstatesIntFilterParams];
 
         if (value) {
           parameters.filter[key] = [
@@ -444,7 +479,7 @@ export class RealEstateCrmImportService {
     if (totalCount > ON_OFFICE_ESTATES_PER_PAGE) {
       const numberOfPages = Math.ceil(totalCount / ON_OFFICE_ESTATES_PER_PAGE);
 
-      for (let i = 2; i < numberOfPages + 1; i++) {
+      for (let i = 2; i < numberOfPages + 1; i += 1) {
         const timestamp = dayjs().unix();
 
         signature = this.onOfficeApiService.generateSignature(
@@ -481,7 +516,9 @@ export class RealEstateCrmImportService {
 
     this.logger.log(
       `User ${
-        isIntegrationUser ? user.integrationUserId : user.id
+        isIntegrationUser
+          ? `${user.integrationUserId} / ${user.integrationType}`
+          : user.id
       } is going to import ${totalCount} real estates from onOffice split into ${
         chunks.length
       } chunks.`,
@@ -554,14 +591,15 @@ export class RealEstateCrmImportService {
 
         if (isIntegrationUser) {
           estateData.integrationParams = {
-            integrationId: realEstate.Id,
             integrationUserId: user.integrationUserId,
+            integrationId: realEstate.Id,
             integrationType: user.integrationType,
           };
         }
 
         if (!isIntegrationUser) {
           estateData.userId = user.id;
+          estateData.externalId = realEstate.Id;
           estateData.externalSource = ApiRealEstateExtSourcesEnum.ON_OFFICE;
         }
 
@@ -580,17 +618,17 @@ export class RealEstateCrmImportService {
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
           isIntegrationUser
             ? {
-                'integrationParams.integrationId':
-                  areaButlerRealEstate.integrationParams.integrationId,
                 'integrationParams.integrationUserId':
                   areaButlerRealEstate.integrationParams.integrationUserId,
+                'integrationParams.integrationId':
+                  areaButlerRealEstate.integrationParams.integrationId,
                 'integrationParams.integrationType':
                   areaButlerRealEstate.integrationParams.integrationType,
               }
             : {
                 userId: areaButlerRealEstate.userId,
-                externalSource: areaButlerRealEstate.externalSource,
                 externalId: areaButlerRealEstate.externalId,
+                externalSource: areaButlerRealEstate.externalSource,
               };
 
         bulkOperations.push({

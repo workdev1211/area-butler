@@ -22,7 +22,7 @@ import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
 import RealEstatesTableV2 from "../real-estates/table/RealEstatesTableV2";
 import { RealEstateContext } from "../context/RealEstateContext";
-import OnOfficeSyncModal from "../real-estates/OnOfficeSyncModal";
+import IntegrationSyncModal from "../real-estates/IntegrationSyncModal";
 
 const RealEstatesPage: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
@@ -40,8 +40,7 @@ const RealEstatesPage: FunctionComponent = () => {
   const [isShownSnapshotsModal, setIsShownSnapshotsModal] = useState(false);
   const [isShownCsvImportModal, setIsShownCsvImportModal] = useState(false);
   const [isShownCrmImportModal, setIsShownCrmImportModal] = useState(false);
-  const [isShownOnOfficeSyncModal, setIsShownOnOfficeSyncModal] =
-    useState(false);
+  const [isShownIntSyncModal, setIsShownIntSyncModal] = useState(false);
 
   const isIntegration = !!integrationType;
   const user = userState.user!;
@@ -141,7 +140,7 @@ const RealEstatesPage: FunctionComponent = () => {
         <button
           className="btn btn-link"
           onClick={() => {
-            setIsShownOnOfficeSyncModal(true);
+            setIsShownIntSyncModal(true);
           }}
         >
           <img className="invert h-[16px]" src={syncIcon} alt="sync-icon" />
@@ -185,12 +184,12 @@ const RealEstatesPage: FunctionComponent = () => {
         />
       )}
 
-      {isShownOnOfficeSyncModal && (
-        <OnOfficeSyncModal
-          closeModal={(isSyncSuccessful?: boolean) => {
-            setIsShownOnOfficeSyncModal(false);
+      {isShownIntSyncModal && (
+        <IntegrationSyncModal
+          closeModal={(isCompletedSync?: boolean) => {
+            setIsShownIntSyncModal(false);
 
-            if (isSyncSuccessful) {
+            if (isCompletedSync) {
               void fetchRealEstates();
             }
           }}

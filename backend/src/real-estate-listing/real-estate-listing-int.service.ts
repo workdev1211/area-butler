@@ -13,6 +13,7 @@ import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/produ
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { getProcUpdateQuery } from '../shared/shared.functions';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -57,7 +58,7 @@ export class RealEstateListingIntService {
           'integrationParams.integrationUserId': integrationUserId,
           'integrationParams.integrationType': integrationType,
         },
-        realEstateData,
+        getProcUpdateQuery(realEstateData),
         { new: true },
       );
 

@@ -1,35 +1,32 @@
 import { IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
+import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
 import { IApiOnOfficeSyncEstatesFilterParams } from '@area-butler-types/on-office';
 
 @Exclude()
 class ApiOnOfficeSyncEstatesFilterParamsDto
   implements IApiOnOfficeSyncEstatesFilterParams
 {
-  // 'Expose' with 'Transform' are both required to rename the params
-  @Expose({ name: 'status2' })
+  @Expose()
   @IsOptional()
   @Transform(
-    ({ obj: { estateStatus } }: { obj: IApiOnOfficeSyncEstatesFilterParams }) =>
+    ({ obj: { estateStatus } }: { obj: IApiSyncEstatesIntFilterParams }) =>
       estateStatus,
     { toClassOnly: true },
   )
   @IsString()
-  estateStatus?: string;
+  status2?: string;
 
-  @Expose({ name: 'vermarktungsart' })
+  @Expose()
   @IsOptional()
   @Transform(
-    ({
-      obj: { estateMarketType },
-    }: {
-      obj: IApiOnOfficeSyncEstatesFilterParams;
-    }) => estateMarketType,
+    ({ obj: { estateMarketType } }: { obj: IApiSyncEstatesIntFilterParams }) =>
+      estateMarketType,
     { toClassOnly: true },
   )
   @IsString()
-  estateMarketType?: string;
+  vermarktungsart?: string;
 }
 
 export default ApiOnOfficeSyncEstatesFilterParamsDto;

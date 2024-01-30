@@ -4,37 +4,40 @@ import BusyModal from "../components/BusyModal";
 import { toastError, toastSuccess } from "../shared/shared.functions";
 import closeIcon from "../assets/icons/cross.svg";
 import { useEscape } from "../hooks/escape";
-import { useOnOfficeSync } from "../on-office/hooks/sync";
+import { useIntegrationSync } from "../hooks/integration/integrationsync";
+import { ISelectTextValue } from "../../../shared/types/types";
 
-interface IOnOfficeSyncModalProps {
-  closeModal: (isSyncSuccessful?: boolean) => void;
+interface IIntegrationSyncModalProps {
+  closeModal: (isCompletedSync?: boolean) => void;
 }
 
-const allValue = "Alle";
+const allValue: ISelectTextValue = { text: "Alle", value: "all" };
 
-const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
+const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
   closeModal,
 }) => {
   useEscape(closeModal);
-  const { handleOnOfficeSync, fetchAvailStatuses } = useOnOfficeSync();
+  const { handleIntSync, fetchAvailIntStatuses } = useIntegrationSync();
 
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [isAllowedSync, setIsAllowedSync] = useState(false);
   const [estateStatus, setEstateStatus] = useState<string | undefined>();
-  const [estateStatuses, setEstateStatuses] = useState<string[]>([allValue]);
+  const [estateStatuses, setEstateStatuses] = useState<ISelectTextValue[]>([
+    allValue,
+  ]);
   const [estateMarketType, setEstateMarketType] = useState<
     string | undefined
   >();
-  const [estateMarketTypes, setEstateMarketTypes] = useState<string[]>([
-    allValue,
-  ]);
+  const [estateMarketTypes, setEstateMarketTypes] = useState<
+    ISelectTextValue[]
+  >([allValue]);
 
   useEffect(() => {
     const setAvailStatuses = async (): Promise<void> => {
       const {
         estateStatuses: fetchedStatuses,
         estateMarketTypes: fetchedMarketTypes,
-      } = await fetchAvailStatuses();
+      } = await fetchAvailIntStatuses();
 
       if (fetchedStatuses) {
         setEstateStatuses([...estateStatuses, ...fetchedStatuses]);
@@ -53,10 +56,10 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
 
   const syncRealEstates = async (): Promise<void> => {
     setIsShownBusyModal(true);
-    let isSyncSuccessful = false;
+    let isCompletedSync = false;
 
     try {
-      const errorLineNumbers = await handleOnOfficeSync({
+      const errorLineNumbers = await handleIntSync({
         estateStatus,
         estateMarketType,
       });
@@ -77,12 +80,12 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
         toastSuccess("Immobiliensynchronisierung erfolgreich abgeschlossen!");
       }
 
-      isSyncSuccessful = true;
+      isCompletedSync = true;
     } catch (e) {
       console.error(e);
       toastError("Immobiliensynchronisation fehlgeschlagen!");
     } finally {
-      closeModal(isSyncSuccessful);
+      closeModal(isCompletedSync);
       setIsShownBusyModal(false);
     }
   };
@@ -130,12 +133,14 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
                   className="select select-bordered"
                   value={estateStatus}
                   onChange={({ target: { value } }) => {
-                    setEstateStatus(value === allValue ? undefined : value);
+                    setEstateStatus(
+                      value === allValue.value ? undefined : value
+                    );
                   }}
                 >
-                  {estateStatuses.map((status) => (
-                    <option key={status} value={status}>
-                      {status}
+                  {estateStatuses.map(({ text, value }) => (
+                    <option key={value} value={value}>
+                      {text}
                     </option>
                   ))}
                 </select>
@@ -151,12 +156,14 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
                   className="select select-bordered"
                   value={estateMarketType}
                   onChange={({ target: { value } }) => {
-                    setEstateMarketType(value === allValue ? undefined : value);
+                    setEstateMarketType(
+                      value === allValue.value ? undefined : value
+                    );
                   }}
                 >
-                  {estateMarketTypes.map((marketType) => (
-                    <option key={marketType} value={marketType}>
-                      {marketType}
+                  {estateMarketTypes.map(({ text, value }) => (
+                    <option key={value} value={value}>
+                      {text}
                     </option>
                   ))}
                 </select>
@@ -179,4 +186,4 @@ const OnOfficeSyncModal: FunctionComponent<IOnOfficeSyncModalProps> = ({
   );
 };
 
-export default OnOfficeSyncModal;
+export default IntegrationSyncModal;

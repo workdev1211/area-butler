@@ -1,4 +1,6 @@
 // obtained via the 'GET' request from Propstack
+import { PropstackRealEstMarketTypesEnum } from '@area-butler-types/propstack';
+
 export interface IPropstackRealEstate {
   id: number;
   name: string;
@@ -15,11 +17,15 @@ export interface IPropstackRealEstate {
   lat: number;
   lng: number;
   number_of_rooms?: number;
-  price?: number;
+  price?: number | { label: string; value: number };
+  base_rent?: number | { label: string; value: number };
   living_space?: number;
   property_space_value?: number;
-  status: IPropstackRealEstateStatus;
+  status?: IPropstackRealEstateStatus;
+  property_status?: IPropstackRealEstateStatus;
   furnishings?: IPropstackRealEstFurnishings;
+  marketing_type?: PropstackRealEstMarketTypesEnum;
+  // OpenAi text fields
   custom_fields?: IPropstackRealEstCustFields;
   location_note?: string;
   description_note?: string;
@@ -99,7 +105,7 @@ export interface IPropstackApiFetchEstsQueryParams {
   q?: string;
   country?: string;
   project_id?: string; // number
-  marketing_type?: string;
+  marketing_type?: string; // PropstackRealEstMarketTypesEnum
   rs_type?: string;
   expand?: string; // number
   archived?: string;

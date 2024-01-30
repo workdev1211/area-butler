@@ -58,7 +58,6 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
 
   @Expose()
   @IsNotEmpty()
-  @IsString()
   @Transform(
     ({
       obj: { objekttitel, objekttyp, address },
@@ -69,6 +68,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       toClassOnly: true,
     },
   )
+  @IsString()
   name: string;
 
   @Expose()
@@ -90,9 +90,6 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
 
   @Expose()
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
   @Transform(
     ({
       obj: { kaufpreis, waehrung, kaltmiete, warmmiete },
@@ -130,13 +127,13 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     },
     { toClassOnly: true },
   )
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiRealEstateCostDto)
   costStructure?: ApiRealEstateCost;
 
   @Expose()
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   @Transform(
     ({
       obj,
@@ -212,6 +209,9 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     },
     { toClassOnly: true },
   )
+  @IsObject()
+  @ValidateNested()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
@@ -223,7 +223,6 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
 
   @Expose()
   @IsNotEmpty()
-  @IsString()
   @Transform(
     ({
       obj: { areaButlerStatus, vermarktungsart },
@@ -231,11 +230,11 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus || vermarktungsart,
   )
+  @IsString()
   status?: string;
 
   @Expose()
   @IsNotEmpty()
-  @IsString()
   @Transform(
     ({
       obj: { areaButlerStatus2, status2, status },
@@ -243,19 +242,20 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus2 || status2 || status,
   )
+  @IsString()
   status2?: string;
 
   @Expose()
   @IsOptional()
+  // @Transform(
+  //   ({
+  //     obj: { integrationParams, objektnr_extern, immonr, Id, datensatznr },
+  //   }: {
+  //     obj: IApiOnOfficeProcessedRealEstate;
+  //   }): string =>
+  //     integrationParams ? objektnr_extern || immonr : Id || datensatznr,
+  // )
   @IsString()
-  @Transform(
-    ({
-      obj: { integrationParams, objektnr_extern, immonr, Id, datensatznr },
-    }: {
-      obj: IApiOnOfficeProcessedRealEstate;
-    }): string =>
-      integrationParams ? objektnr_extern || immonr : Id || datensatznr,
-  )
   externalId?: string;
 }
 

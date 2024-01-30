@@ -2,7 +2,10 @@ import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 
 import { IntegrationUserService } from '../user/integration-user.service';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import {
+  IApiRealEstAvailIntStatuses,
+  IntegrationTypesEnum,
+} from '@area-butler-types/integration';
 import { IApiPropstackConnectReq } from '../shared/propstack.types';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -15,9 +18,12 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
+import {
+  IApiPropstackLoginReq,
+} from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
+import { propstackRealEstMarketTypeNames } from '../../../shared/constants/propstack';
 
 @Injectable()
 export class PropstackService {
@@ -101,7 +107,6 @@ export class PropstackService {
     const areaButlerRealEstate = plainToInstance(
       ApiPropstackToAreaButlerDto,
       realEstate,
-      { exposeUnsetFields: false },
     ) as IApiRealEstateListingSchema;
 
     const resRealEstate = mapRealEstateListingToApiRealEstateListing(
@@ -175,5 +180,25 @@ export class PropstackService {
     }
 
     return integrationUser;
+  }
+
+  async fetchAvailStatuses({
+    parameters,
+  }: TIntegrationUserDocument): Promise<IApiRealEstAvailIntStatuses> {
+    const { apiKey } = parameters as IApiIntUserPropstackParams;
+    const realEstateStatuses =
+      await this.propstackApiService.fetchRealEstAvailStatuses(apiKey);
+
+    const estateStatuses = realEstateStatuses?.map(
+      ({ id: value, name: text }) => ({
+        text,
+        value: `${value}`,
+      }),
+    );
+
+    return {
+      estateStatuses,
+      estateMarketTypes: propstackRealEstMarketTypeNames,
+    };
   }
 }

@@ -232,3 +232,22 @@ export const convertMinutesToMeters = (
 
   return distanceInMinutes * 1.2 * multiplier;
 };
+
+export const filterQueryParams = (
+  queryParams: URLSearchParams,
+  filteredValues = ["undefined", "null", ""]
+): URLSearchParams => {
+  const paramsToDel: string[] = [];
+
+  queryParams.forEach((value, key) => {
+    if (filteredValues.includes(value)) {
+      paramsToDel.push(key);
+    }
+  });
+
+  paramsToDel.forEach((key) => {
+    queryParams.delete(key);
+  });
+
+  return queryParams;
+};

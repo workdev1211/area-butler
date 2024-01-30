@@ -263,16 +263,6 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
   products: string;
 }
 
-export interface IApiOnOfficeSyncEstatesFilterParams {
-  estateStatus?: string;
-  estateMarketType?: string;
-}
-
-export interface IApiOnOfficeEstateAvailStatuses {
-  estateStatuses?: string[];
-  estateMarketTypes?: string[];
-}
-
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
@@ -353,3 +343,8 @@ export enum OnOfficeIntActTypesEnum {
 export type TOnOfficeIntActTypes =
   | OpenAiQueryTypeEnum
   | OnOfficeIntActTypesEnum;
+
+export interface IApiOnOfficeSyncEstatesFilterParams {
+  status2?: string;
+  vermarktungsart?: string;
+}

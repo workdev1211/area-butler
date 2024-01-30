@@ -4,23 +4,23 @@ import {
   IApiSyncEstatesIntFilterParams,
 } from "../../../../shared/types/integration";
 
-export const useOnOfficeSync = () => {
+export const usePropstackSync = () => {
   const { get, put } = useHttp();
 
-  const fetchAvailOnOfficeStatuses =
+  const fetchAvailPropstackStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {
       return (
-        await get<IApiRealEstAvailIntStatuses>("/api/on-office/avail-statuses")
+        await get<IApiRealEstAvailIntStatuses>("/api/propstack/avail-statuses")
       ).data;
     };
 
-  const handleOnOfficeSync = async (
+  const handlePropstackSync = async (
     estateStatusParams?: IApiSyncEstatesIntFilterParams
   ): Promise<string[]> => {
     return (
-      await put<string[]>("/api/on-office/sync-estates", estateStatusParams)
+      await put<string[]>("/api/propstack/sync-estates", estateStatusParams)
     ).data;
   };
 
-  return { fetchAvailOnOfficeStatuses, handleOnOfficeSync };
+  return { fetchAvailPropstackStatuses, handlePropstackSync };
 };

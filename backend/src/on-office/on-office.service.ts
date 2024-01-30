@@ -20,7 +20,6 @@ import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
-  IApiOnOfficeEstateAvailStatuses,
   IApiOnOfficeLoginQueryParams,
   IApiOnOfficeLoginReq,
   IApiOnOfficeOrderData,
@@ -44,7 +43,10 @@ import {
   TOnOfficeTransactionDocument,
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import {
+  IApiRealEstAvailIntStatuses,
+  IntegrationTypesEnum,
+} from '@area-butler-types/integration';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
@@ -833,7 +835,7 @@ export class OnOfficeService {
 
   async fetchAvailStatuses({
     parameters,
-  }: TIntegrationUserDocument): Promise<IApiOnOfficeEstateAvailStatuses> {
+  }: TIntegrationUserDocument): Promise<IApiRealEstAvailIntStatuses> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.GET;
@@ -889,10 +891,16 @@ export class OnOfficeService {
 
     return {
       estateStatuses: estateStatuses
-        ? Object.values(estateStatuses)
+        ? Object.keys(estateStatuses).map((key) => ({
+            text: estateStatuses[key],
+            value: key,
+          }))
         : undefined,
       estateMarketTypes: estateMarketTypes
-        ? Object.values(estateMarketTypes)
+        ? Object.keys(estateMarketTypes).map((key) => ({
+            text: estateMarketTypes[key],
+            value: key,
+          }))
         : undefined,
     };
   }

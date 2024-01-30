@@ -1,3 +1,5 @@
+import { UpdateQuery } from 'mongoose';
+
 import { ApiCoordinates } from '@area-butler-types/types';
 import { configService } from '../config/config.service';
 
@@ -71,3 +73,22 @@ export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {
 
 export const createDirectLink = (token: string): string =>
   `${configService.getBaseAppUrl()}/embed?token=${token}`;
+
+export const getProcUpdateQuery = <T = object>(
+  updateData: T,
+): UpdateQuery<T> => {
+  const updateQuery: UpdateQuery<T> = {
+    $set: updateData,
+    $unset: {},
+  };
+
+  Object.keys(updateData).forEach((key) => {
+    if (updateData[key] === undefined) {
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      updateQuery.$unset[key] = 1;
+    }
+  });
+
+  return updateQuery;
+};
