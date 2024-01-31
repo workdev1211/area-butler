@@ -4,6 +4,7 @@ import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import { propstackWebhookIntRoutePaths } from '../../../shared/constants/propstack';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class PropstackWebhookIntStrategy extends PassportStrategy(
@@ -17,9 +18,13 @@ export class PropstackWebhookIntStrategy extends PassportStrategy(
       },
       true,
       async (apiKey: string, verified, req): Promise<void> => {
-        const integrationUser = await this.integrationUserService
-          .findByTokenOrFail(apiKey)
-          .catch(() => undefined);
+        const integrationUser = await this.integrationUserService.findOne(
+          IntegrationTypesEnum.PROPSTACK,
+          {
+            integrationUserId: { $regex: /^\d*?$/ },
+            'parameters.apiKey': apiKey,
+          },
+        );
 
         const routePath = req.route.path;
 

@@ -78,6 +78,10 @@ class ConfigService {
     return this.getValue('PROPSTACK_CONNECT_API_KEY');
   }
 
+  getPropstackLoginSecret(): string {
+    return this.getValue('PROPSTACK_LOGIN_SECRET');
+  }
+
   getFeedbackSlackWebhook(): string {
     return this.getValue('FEEDBACK_SLACK_WEBHOOK', false);
   }
@@ -201,6 +205,7 @@ class ConfigService {
     };
   }
 
+  // TODO check Dockerfile for NODE_ENV var and refactor to use it instead of this one
   getSystemEnv(): TSystemEnvironment {
     const systemEnv = this.getValue('SYSTEM_ENV', false) as TSystemEnvironment;
 

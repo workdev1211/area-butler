@@ -9,6 +9,7 @@ import {
   IPropstackRealEstateStatus,
 } from '../../shared/propstack.types';
 import { filterQueryParams } from '../../../../shared/functions/shared.functions';
+import { configService } from '../../config/config.service';
 
 interface IPropstackRealEstLink {
   property_id: number;
@@ -25,7 +26,10 @@ export const PROPSTACK_ESTATES_PER_PAGE = 20;
 
 @Injectable()
 export class PropstackApiService {
-  private readonly apiUrl = 'https://api.propstack.de/v1';
+  private readonly apiUrl =
+    configService.getSystemEnv() === 'prod'
+      ? 'https://api.propstack.de/v1'
+      : 'https://api.staging.propstack.de/v1';
 
   constructor(private readonly http: HttpService) {}
 

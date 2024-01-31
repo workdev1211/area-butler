@@ -23,6 +23,7 @@ import { IApiIntUserLoginRes } from '@area-butler-types/integration-user';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 import ApiPropstackSyncEstatesFilterParamsDto from './dto/api-propstack-sync-estates-filter-params.dto';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
+import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -48,7 +49,7 @@ export class PropstackController {
   }
 
   @ApiOperation({ description: 'Log in a Propstack user' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @UseInterceptors(InjectPropstackLoginUserInterceptor)
   @Post('login')
   @HttpCode(HttpStatus.OK)
   login(

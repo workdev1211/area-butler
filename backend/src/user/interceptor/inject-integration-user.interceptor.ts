@@ -24,18 +24,19 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
     const { authorization } = req.headers;
-    const accessToken = authorization?.match(/^AccessToken (.*)$/);
+    const accessToken = authorization?.match(/^AccessToken (.*)$/)?.pop();
     let integrationUser;
 
-    if (accessToken?.length === 2) {
-      integrationUser =
-        await this.integrationUserService.findByTokenOrFail(
-          accessToken[1],
-        );
+    if (accessToken) {
+      integrationUser = await this.integrationUserService
+        .findByTokenOrFail(accessToken)
+        .catch(() => undefined);
     }
 
     if (!integrationUser) {
-      this.logger.debug(accessToken, authorization);
+      this.logger.debug(
+        `\nPath: ${req.route.path}\nAccess token: ${accessToken}\nAuth header: ${authorization}`,
+      );
       throw new HttpException('Unknown user!', 400);
     }
 

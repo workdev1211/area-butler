@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
+import { createCipheriv, createDecipheriv } from 'crypto';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -18,12 +19,11 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import {
-  IApiPropstackLoginReq,
-} from '@area-butler-types/propstack';
+import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { propstackRealEstMarketTypeNames } from '../../../shared/constants/propstack';
+import { configService } from '../config/config.service';
 
 @Injectable()
 export class PropstackService {
@@ -43,19 +43,16 @@ export class PropstackService {
 
     const integrationUser = await this.integrationUserService.findOne(
       this.integrationType,
-      {
-        $or: [
-          { integrationUserId },
-          { accessToken: apiKey, 'parameters.apiKey': apiKey },
-        ],
-      },
+      { integrationUserId, 'parameters.apiKey': apiKey },
     );
+
+    const accessToken = PropstackService.encryptAccessToken(apiKey);
 
     if (!integrationUser) {
       await this.integrationUserService.create({
+        accessToken,
         integrationUserId,
         integrationType: this.integrationType,
-        accessToken: apiKey,
         parameters: connectData,
         isParent: true,
       });
@@ -64,9 +61,9 @@ export class PropstackService {
     }
 
     Object.assign(integrationUser, {
+      accessToken,
       integrationUserId,
-      accessToken: apiKey,
-      parameters: { ...integrationUser.parameters, shopId, apiKey },
+      parameters: { ...integrationUser.parameters, ...connectData },
     });
 
     await integrationUser.save();
@@ -149,11 +146,14 @@ export class PropstackService {
 
     const { apiKey } = parameters as IApiIntUserPropstackParams;
     const integrationUserId = `${parentIntUserId}-${departmentId}`;
-    const accessToken = `${apiKey}-${departmentId}`;
 
     const integrationUser = await this.integrationUserService.findOne(
       this.integrationType,
       { integrationUserId },
+    );
+
+    const accessToken = PropstackService.encryptAccessToken(
+      `${apiKey}-${departmentId}`,
     );
 
     if (!integrationUser) {
@@ -169,7 +169,10 @@ export class PropstackService {
       });
     }
 
-    if (integrationUser.accessToken !== accessToken) {
+    if (
+      (integrationUser.parameters as IApiIntUserPropstackParams).apiKey !==
+      apiKey
+    ) {
       Object.assign(integrationUser, {
         accessToken,
         parentId,
@@ -200,5 +203,30 @@ export class PropstackService {
       estateStatuses,
       estateMarketTypes: propstackRealEstMarketTypeNames,
     };
+  }
+
+  static encryptAccessToken(accessToken: string): string {
+    const cipher = createCipheriv(
+      'aes-256-ecb',
+      Buffer.from(configService.getPropstackLoginSecret(), 'hex'),
+      null,
+    );
+
+    return Buffer.concat([cipher.update(accessToken), cipher.final()]).toString(
+      'hex',
+    );
+  }
+
+  static decryptAccessToken(accessToken: string): string {
+    const decipher = createDecipheriv(
+      'aes-256-ecb',
+      Buffer.from(configService.getPropstackLoginSecret(), 'hex'),
+      null,
+    );
+
+    return Buffer.concat([
+      decipher.update(Buffer.from(accessToken, 'hex')),
+      decipher.final(),
+    ]).toString();
   }
 }

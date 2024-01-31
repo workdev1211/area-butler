@@ -3,7 +3,10 @@ import { PropstackRealEstMarketTypesEnum } from "../types/propstack";
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
   "/api/propstack-webhook-int/property-created",
+  "/api/propstack-webhook-int/property-updated",
 ];
+
+export const propstackLoginRoutePath: string = "/api/propstack/login";
 
 export const propstackRealEstMarketTypeNames: {
   text: string;
