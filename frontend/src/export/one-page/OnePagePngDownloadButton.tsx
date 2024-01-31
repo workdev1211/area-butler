@@ -145,6 +145,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
 
   return (
     <>
+      {/* TODO ADD 'An Propstack senden' */}
       {integrationType === IntegrationTypesEnum.ON_OFFICE && (
         <button
           className="btn btn-primary btn-sm"

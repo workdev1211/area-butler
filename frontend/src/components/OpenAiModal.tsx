@@ -38,12 +38,13 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const [queryResponse, setQueryResponse] = useState("");
 
   const isIntegration = !!integrationType;
+  const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
   // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
     !isIntegration ||
     !!realEstateListing?.openAiRequestQuantity ||
-    integrationType === IntegrationTypesEnum.PROPSTACK;
+    isPropstackInt;
 
   const handleUnlock = (): void => {
     if (performUnlock) {
@@ -81,7 +82,9 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
         <div
           className={`modal-action ${isIntegration ? "justify-between" : ""}`}
         >
-          {isIntegration && (
+          {/* TODO ADD 'An Propstack senden' */}
+          {/* add change 'sendToOnOffice' to 'sendToInt' */}
+          {isIntegration && !isPropstackInt && (
             <button
               className="btn bg-primary-gradient max-w-fit self-end"
               onClick={(): void => {
@@ -97,6 +100,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
               An onOffice senden
             </button>
           )}
+
           <div className="flex gap-2">
             <button type="button" className="btn btn-sm" onClick={closeModal}>
               Schließen

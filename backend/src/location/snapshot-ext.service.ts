@@ -92,6 +92,7 @@ export class SnapshotExtService {
       routes: [],
       transitRoutes: [],
       transportationParams: searchData.meansOfTransportation,
+      integrationId: realEstateListing?.integrationId,
     };
 
     let snapshotConfig;
