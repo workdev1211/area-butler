@@ -24,7 +24,7 @@ const MapClippingsCollapsable: FunctionComponent<
   const { integrationType } = useContext(ConfigContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
+  const { sendToIntegration } = useIntegrationTools();
 
   const parsedAddress = searchAddress.replace(",", "-").replace(/\s/g, "");
 
@@ -86,7 +86,7 @@ const MapClippingsCollapsable: FunctionComponent<
               <div
                 className="flex cursor-pointer"
                 onClick={() => {
-                  void sendToOnOffice({
+                  void sendToIntegration({
                     exportType: AreaButlerExportTypesEnum.SCREENSHOT,
                     filename: `${parsedAddress}-Kartenausschnitt-${i + 1}.png`,
                     base64Content: clipping.mapClippingDataUrl.replace(

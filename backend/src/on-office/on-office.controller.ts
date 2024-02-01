@@ -30,7 +30,7 @@ import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
-import ApiOnOfficeUpdEstTextFieldReqDto from './dto/api-on-office-upd-est-text-field-req.dto';
+import ApiIntUpdEstTextFieldReqDto from '../dto/api-int-upd-est-text-field-req.dto';
 import {
   AreaButlerExportTypesEnum,
   IApiIntUserLoginRes,
@@ -103,13 +103,13 @@ export class OnOfficeController {
     return this.onOfficeService.confirmOrder(confirmOrderData);
   }
 
-  @ApiOperation({ description: 'Update an estate' })
+  @ApiOperation({ description: 'Update estate text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('estate-text/:integrationId')
   updateEstateTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Param('integrationId') integrationId: string,
-    @Body() updateEstateTextFieldData: ApiOnOfficeUpdEstTextFieldReqDto,
+    @Body() updateEstateTextFieldData: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
     return this.onOfficeService.updateEstateTextField(
       integrationUser,

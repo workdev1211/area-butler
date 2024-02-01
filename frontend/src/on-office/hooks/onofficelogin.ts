@@ -50,13 +50,13 @@ const confirmOrderSchema = Yup.object({
   products: Yup.string().required(),
 });
 
-export const useLogin = () => {
+export const useOnOfficeLogin = () => {
   const { userDispatch } = useContext(UserContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
   const { post } = useHttp();
 
-  const handleLogin = async (): Promise<IOnOfficeHandleLogin> => {
+  const handleOnOfficeLogin = async (): Promise<IOnOfficeHandleLogin> => {
     const queryParamsAndUrl = getQueryParamsAndUrl();
 
     if (!queryParamsAndUrl) {
@@ -212,5 +212,5 @@ export const useLogin = () => {
     });
   };
 
-  return { handleLogin };
+  return { handleOnOfficeLogin };
 };

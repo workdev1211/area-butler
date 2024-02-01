@@ -9,6 +9,7 @@ import {
 } from "../../../shared/types/integration";
 import { SearchContext } from "../context/SearchContext";
 import { ConfigContext } from "../context/ConfigContext";
+import { propstackExportTypeMapping } from "../../../shared/constants/propstack";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -28,7 +29,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
+  const { sendToIntegration } = useIntegrationTools();
 
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
@@ -37,8 +38,14 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     useState(true);
   const [queryResponse, setQueryResponse] = useState("");
 
-  const isIntegration = !!integrationType;
   const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
+
+  const isIntegration = !!integrationType;
+  const isSendToIntAllowed =
+    isIntegration &&
+    (!isPropstackInt ||
+      (isPropstackInt &&
+        Object.keys(propstackExportTypeMapping).includes(queryType!)));
 
   // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
@@ -82,22 +89,20 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
         <div
           className={`modal-action ${isIntegration ? "justify-between" : ""}`}
         >
-          {/* TODO ADD 'An Propstack senden' */}
-          {/* add change 'sendToOnOffice' to 'sendToInt' */}
-          {isIntegration && !isPropstackInt && (
+          {isSendToIntAllowed && (
             <button
               className="btn bg-primary-gradient max-w-fit self-end"
               onClick={(): void => {
                 setIsCopyTextButtonDisabled(true);
 
-                void sendToOnOffice({
+                void sendToIntegration({
                   exportType: queryType!,
                   text: queryResponse!,
                 });
               }}
               disabled={isCopyTextButtonDisabled}
             >
-              An onOffice senden
+              {isPropstackInt ? "An Propstack senden" : "An onOffice senden"}
             </button>
           )}
 

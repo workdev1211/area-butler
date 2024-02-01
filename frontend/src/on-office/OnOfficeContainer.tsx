@@ -15,7 +15,7 @@ import "./OnOfficeContainer.scss";
 import IntegrationNav from "./layout/IntegrationNav";
 import { RequestStatusTypesEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
-import { useLogin } from "./hooks/login";
+import { useOnOfficeLogin } from "./hooks/onofficelogin";
 import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
@@ -58,7 +58,7 @@ const OnOfficeContainer: FunctionComponent = () => {
 
   const history = useHistory();
   const { pathname } = useLocation();
-  const { handleLogin } = useLogin();
+  const { handleOnOfficeLogin } = useOnOfficeLogin();
 
   const [isErrorOccurred, setIsErrorOccurred] = useState(false);
   const [actionType, setActionType] = useState<OnOfficeLoginActionTypesEnum>();
@@ -72,7 +72,7 @@ const OnOfficeContainer: FunctionComponent = () => {
         requestStatus,
         actionType: loginActionType,
         message,
-      } = await handleLogin();
+      } = await handleOnOfficeLogin();
 
       if (requestStatus === RequestStatusTypesEnum.FAILURE) {
         setErrorMessage(message);

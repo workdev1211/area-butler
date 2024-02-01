@@ -27,7 +27,6 @@ import {
   IApiOnOfficeRequest,
   IApiOnOfficeResponse,
   IApiOnOfficeUnlockProviderReq,
-  IApiOnOfficeUpdEstTextFieldReq,
   IApiOnOfficeUplEstFileOrLinkReq,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
@@ -44,6 +43,7 @@ import {
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import {
+  IApiIntUpdEstTextFieldReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
@@ -541,7 +541,7 @@ export class OnOfficeService {
       parentUser,
     }: TIntegrationUserDocument,
     integrationId: string,
-    { exportType, text }: IApiOnOfficeUpdEstTextFieldReq,
+    { exportType, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;

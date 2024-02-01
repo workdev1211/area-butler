@@ -3,8 +3,9 @@ import { useContext } from "react";
 import { ConfigContext } from "../../context/ConfigContext";
 import { toastError } from "../../shared/shared.functions";
 import { IntegrationTypesEnum } from "../../../../shared/types/integration";
-import { useOnOfficeSync } from "../../on-office/hooks/sync";
+import { useOnOfficeSync } from "../../on-office/hooks/onofficesync";
 import { usePropstackSync } from "../../propstack/hooks/propstacksync";
+import { wrongIntegrationErrorMsg } from "../../../../shared/constants/integration";
 
 export const useIntegrationSync = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -29,9 +30,9 @@ export const useIntegrationSync = () => {
     }
 
     default: {
-      const errorMessage = "Diese Integration ist nicht korrekt.";
-      toastError(errorMessage);
-      throw new Error(errorMessage);
+      toastError(wrongIntegrationErrorMsg);
+      console.error(wrongIntegrationErrorMsg);
+      throw new Error(wrongIntegrationErrorMsg);
     }
   }
 };

@@ -1,4 +1,5 @@
 import { PropstackRealEstMarketTypesEnum } from "../types/propstack";
+import { OpenAiQueryTypeEnum } from "../types/open-ai";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
@@ -21,3 +22,11 @@ export const propstackRealEstMarketTypeNames: {
     value: PropstackRealEstMarketTypesEnum.RENT,
   },
 ];
+
+export const propstackExportTypeMapping: Partial<
+  Record<OpenAiQueryTypeEnum, string>
+> = {
+  [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: "location_note",
+  [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: "description_note",
+  [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "other_note",
+};

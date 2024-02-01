@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
+  IApiIntUpdEstTextFieldReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
@@ -22,7 +23,10 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
-import { propstackRealEstMarketTypeNames } from '../../../shared/constants/propstack';
+import {
+  propstackExportTypeMapping,
+  propstackRealEstMarketTypeNames,
+} from '../../../shared/constants/propstack';
 import { configService } from '../config/config.service';
 
 @Injectable()
@@ -128,6 +132,24 @@ export class PropstackService {
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
     };
+  }
+
+  async updateEstateTextField(
+    { parameters }: TIntegrationUserDocument,
+    realEstateIntId: number,
+    { exportType, text }: IApiIntUpdEstTextFieldReq,
+  ): Promise<void> {
+    const paramName = propstackExportTypeMapping[exportType];
+
+    if (!paramName) {
+      throw new HttpException('Unprocessable export type was provided!', 400);
+    }
+
+    await this.propstackApiService.updateRealEstateById(
+      (parameters as IApiIntUserPropstackParams).apiKey,
+      realEstateIntId,
+      { [paramName]: text },
+    );
   }
 
   async getResultIntUser(

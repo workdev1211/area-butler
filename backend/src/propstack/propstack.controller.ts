@@ -5,6 +5,9 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
+  Param,
+  ParseIntPipe,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -24,6 +27,7 @@ import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-c
 import ApiPropstackSyncEstatesFilterParamsDto from './dto/api-propstack-sync-estates-filter-params.dto';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
+import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -62,6 +66,21 @@ export class PropstackController {
     });
 
     return this.propstackService.login(integrationUser, loginData);
+  }
+
+  @ApiOperation({ description: 'Update estate text field value' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Patch('estate-text/:estateId')
+  updateEstateTextField(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('estateId', new ParseIntPipe()) estateId: number,
+    @Body() updateEstateTextFieldDto: ApiPropstackUpdEstTextFieldReqDto,
+  ): Promise<void> {
+    return this.propstackService.updateEstateTextField(
+      integrationUser,
+      estateId,
+      updateEstateTextFieldDto,
+    );
   }
 
   @ApiOperation({ description: 'Fetch available estate statuses' })

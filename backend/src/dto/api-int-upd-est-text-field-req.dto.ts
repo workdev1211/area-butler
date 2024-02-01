@@ -1,15 +1,16 @@
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
-import { IApiOnOfficeUpdEstTextFieldReq } from '@area-butler-types/on-office';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import {
   AreaButlerExportTypesEnum,
   TAreaButlerExportTypes,
 } from '@area-butler-types/integration-user';
+import { IApiIntUpdEstTextFieldReq } from '@area-butler-types/integration';
 
-class ApiOnOfficeUpdEstTextFieldReqDto
-  implements IApiOnOfficeUpdEstTextFieldReq
-{
+@Exclude()
+class ApiIntUpdEstTextFieldReqDto implements IApiIntUpdEstTextFieldReq {
+  @Expose()
   @IsNotEmpty()
   @IsIn([
     ...Object.values(OpenAiQueryTypeEnum),
@@ -17,9 +18,10 @@ class ApiOnOfficeUpdEstTextFieldReqDto
   ])
   exportType: TAreaButlerExportTypes;
 
+  @Expose()
   @IsNotEmpty()
   @IsString()
   text: string;
 }
 
-export default ApiOnOfficeUpdEstTextFieldReqDto;
+export default ApiIntUpdEstTextFieldReqDto;

@@ -69,7 +69,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     searchContextDispatch,
   } = useContext(SearchContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
+  const { sendToIntegration } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
   const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
@@ -219,7 +219,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <div
                   onClick={() => {
                     if (!integrationUser?.config.isFileLink) {
-                      void sendToOnOffice({
+                      void sendToIntegration({
                         exportType: intUserLinkExpType!,
                         text: directLink,
                       });
@@ -233,7 +233,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                         ? "Anonym - AreaButler Link ohne Adresse"
                         : "Mit Adresse - AreaButler Link";
 
-                    void sendToOnOffice({
+                    void sendToIntegration({
                       fileTitle,
                       exportType: intUserLinkExpType!,
                       url: directLink,
@@ -267,7 +267,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
               {integrationUser && !isPropstackInt && (
                 <div
                   onClick={async () => {
-                    void sendToOnOffice({
+                    void sendToIntegration({
                       exportType: AreaButlerExportTypesEnum.QR_CODE,
                       filename: `${searchAddress.replace(
                         /[\s|,]+/g,
@@ -324,7 +324,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
               {isIntUserIframeExportAvail && (
                 <div
                   onClick={() => {
-                    void sendToOnOffice({
+                    void sendToIntegration({
                       exportType: AreaButlerExportTypesEnum.INLINE_FRAME,
                       text: codeSnippet,
                     });

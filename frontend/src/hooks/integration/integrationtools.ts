@@ -6,11 +6,12 @@ import { ConfigContext } from "../../context/ConfigContext";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import {
+  IApiIntUpdEstTextFieldReq,
   IApiUnlockIntProductReq,
+  IntegrationTypesEnum,
   TIntegrationActionTypes,
 } from "../../../../shared/types/integration";
 import {
-  IApiOnOfficeUpdEstTextFieldReq,
   IApiOnOfficeUplEstFileOrLinkReq,
   TOnOfficeIntActTypes,
 } from "../../../../shared/types/on-office";
@@ -23,6 +24,9 @@ import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import { getAvailProdContType } from "../../../../shared/functions/integration.functions";
 import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/products";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
+import { useOnOfficeSync } from "../../on-office/hooks/onofficesync";
+import { wrongIntegrationErrorMsg } from "../../../../shared/constants/integration";
+import { usePropstackSync } from "../../propstack/hooks/propstacksync";
 
 export const useIntegrationTools = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -36,7 +40,9 @@ export const useIntegrationTools = () => {
   } = useContext(SearchContext);
 
   const history = useHistory();
-  const { post, patch } = useHttp();
+  const { post } = useHttp();
+  const { sendToOnOffice } = useOnOfficeSync();
+  const { sendToPropstack } = usePropstackSync();
 
   const getAvailProdContTypeOrFail = (
     actionType: TIntegrationActionTypes
@@ -56,38 +62,39 @@ export const useIntegrationTools = () => {
     });
   };
 
-  const sendToOnOffice = async (
-    sendToOnOfficeData:
-      | IApiOnOfficeUpdEstTextFieldReq
+  const sendToIntegration = async (
+    sendToIntegrationData:
+      | IApiIntUpdEstTextFieldReq
       | IApiOnOfficeUplEstFileOrLinkReq
   ): Promise<void> => {
     try {
-      if ("text" in sendToOnOfficeData) {
-        await patch<
-          void,
-          IApiOnOfficeUpdEstTextFieldReq | IApiOnOfficeUplEstFileOrLinkReq
-        >(
-          `/api/on-office/estate-text/${realEstateListing?.integrationId}`,
-          sendToOnOfficeData
-        );
+      switch (integrationType) {
+        case IntegrationTypesEnum.ON_OFFICE: {
+          await sendToOnOffice(
+            sendToIntegrationData,
+            realEstateListing?.integrationId!
+          );
 
-        toastSuccess("Die Daten wurden an onOffice gesendet!");
-        return;
+          toastSuccess("Die Daten wurden an Propstack gesendet!");
+          break;
+        }
+
+        case IntegrationTypesEnum.PROPSTACK: {
+          await sendToPropstack(
+            sendToIntegrationData as IApiIntUpdEstTextFieldReq,
+            realEstateListing?.integrationId!
+          );
+
+          toastSuccess("Die Daten wurden an onOffice gesendet!");
+          break;
+        }
+
+        default: {
+          toastError(wrongIntegrationErrorMsg);
+          console.error(wrongIntegrationErrorMsg);
+          return;
+        }
       }
-
-      if (sendToOnOfficeData.filename) {
-        sendToOnOfficeData.filename = sendToOnOfficeData.filename.replace(
-          /[/\\?%*:|"<>\s,]/g,
-          "-"
-        );
-      }
-
-      await post<void, IApiOnOfficeUplEstFileOrLinkReq>(
-        `/api/on-office/estate-file/${realEstateListing?.integrationId}`,
-        sendToOnOfficeData
-      );
-
-      toastSuccess("Die Daten wurden an onOffice gesendet!");
     } catch (e) {
       toastError("Der Fehler ist aufgetreten!");
       console.error(e);
@@ -159,7 +166,8 @@ export const useIntegrationTools = () => {
         }
 
         default: {
-          throw new Error(errorMessage);
+          toastError(errorMessage);
+          return;
         }
       }
 
@@ -181,7 +189,7 @@ export const useIntegrationTools = () => {
   };
 
   return {
-    sendToOnOffice,
+    sendToIntegration,
     getAvailProdContTypeOrFail,
     unlockProduct,
   };

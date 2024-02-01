@@ -13,7 +13,7 @@ import { TOnOfficeIntActTypes } from "../../../../shared/types/on-office";
 const OpenAiPage: FunctionComponent = () => {
   const { searchContextState } = useContext(SearchContext);
 
-  const { sendToOnOffice, unlockProduct } = useIntegrationTools();
+  const { sendToIntegration, unlockProduct } = useIntegrationTools();
 
   const [isGenerateButtonDisabled, setIsGenerateButtonDisabled] =
     useState(true);
@@ -103,7 +103,7 @@ const OpenAiPage: FunctionComponent = () => {
               onClick={() => {
                 setIsCopyTextButtonDisabled(true);
 
-                void sendToOnOffice({
+                void sendToIntegration({
                   exportType: queryType!,
                   text: queryResponse!,
                 });

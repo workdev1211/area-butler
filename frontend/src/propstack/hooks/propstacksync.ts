@@ -1,11 +1,12 @@
 import { useHttp } from "../../hooks/http";
 import {
+  IApiIntUpdEstTextFieldReq,
   IApiRealEstAvailIntStatuses,
   IApiSyncEstatesIntFilterParams,
 } from "../../../../shared/types/integration";
 
 export const usePropstackSync = () => {
-  const { get, put } = useHttp();
+  const { get, patch, put } = useHttp();
 
   const fetchAvailPropstackStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {
@@ -22,5 +23,15 @@ export const usePropstackSync = () => {
     ).data;
   };
 
-  return { fetchAvailPropstackStatuses, handlePropstackSync };
+  const sendToPropstack = async (
+    sendToPropstackData: IApiIntUpdEstTextFieldReq,
+    realEstateIntId: string
+  ): Promise<void> => {
+    await patch<void, IApiIntUpdEstTextFieldReq>(
+      `/api/propstack/estate-text/${realEstateIntId}`,
+      sendToPropstackData
+    );
+  };
+
+  return { fetchAvailPropstackStatuses, handlePropstackSync, sendToPropstack };
 };

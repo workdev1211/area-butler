@@ -268,11 +268,6 @@ export interface IApiOnOfficeConfirmOrderReq {
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
-export interface IApiOnOfficeUpdEstTextFieldReq {
-  exportType: TAreaButlerExportTypes;
-  text: string;
-}
-
 export interface IApiOnOfficeUplEstFileOrLinkReq {
   exportType: TAreaButlerExportTypes;
   filename?: string;

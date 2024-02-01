@@ -1,5 +1,6 @@
 import { TOnOfficeIntActTypes } from "./on-office";
 import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
+import { TAreaButlerExportTypes } from "./integration-user";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -45,4 +46,9 @@ export interface IApiSyncEstatesIntFilterParams {
 export interface IApiRealEstAvailIntStatuses {
   estateStatuses?: ISelectTextValue[];
   estateMarketTypes?: ISelectTextValue[];
+}
+
+export interface IApiIntUpdEstTextFieldReq {
+  exportType: TAreaButlerExportTypes;
+  text: string;
 }

@@ -28,7 +28,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
 }) => {
   const { integrationType } = useContext(ConfigContext);
 
-  const { sendToOnOffice } = useIntegrationTools();
+  const { sendToIntegration } = useIntegrationTools();
 
   const [selectedMapClippings, setSelectedMapClippings] = useState<
     ISelectableMapClipping[]
@@ -145,13 +145,12 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
 
   return (
     <>
-      {/* TODO ADD 'An Propstack senden' */}
       {integrationType === IntegrationTypesEnum.ON_OFFICE && (
         <button
           className="btn btn-primary btn-sm"
           disabled={downloadButtonDisabled}
           onClick={async () => {
-            void sendToOnOffice({
+            void sendToIntegration({
               exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
               filename: `${documentTitle}.png`,
               base64Content: (await getRenderedPngImage()).replace(

@@ -10,3 +10,5 @@ export const intUserInitShowTour: ApiShowTour = {
   [ApiTourNamesEnum.INT_MAP]: true,
   [ApiTourNamesEnum.INT_SEARCH]: true,
 };
+
+export const wrongIntegrationErrorMsg = "Diese Integration ist nicht korrekt.";
