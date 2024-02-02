@@ -110,7 +110,7 @@ export class PropstackWebhookService {
       });
 
     this.logger.log(
-      `Event id: ${eventId}. The event continues to be processed for ${dayjs
+      `Event ${eventId} continues to be processed for ${dayjs
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}. Snapshot creation is complete.`,
     );
@@ -155,7 +155,7 @@ export class PropstackWebhookService {
     ]);
 
     this.logger.log(
-      `Event id: ${eventId}. The event continues to be processed for ${dayjs
+      `Event ${eventId} continues to be processed for ${dayjs
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}. Fetching of OpenAi descriptions is complete.`,
     );
@@ -167,7 +167,7 @@ export class PropstackWebhookService {
         Object.assign(result, { ...queryResult.value });
       } else {
         this.logger.error(
-          `Event id: ${eventId}. The following error has occurred on fetching OpenAi descriptions: ${queryResult.reason}.`,
+          `Event ${eventId}. The following error has occurred on fetching OpenAi descriptions: ${queryResult.reason}.`,
         );
       }
 
@@ -194,13 +194,25 @@ export class PropstackWebhookService {
     ).forEach((response) => {
       if (response.status === 'rejected') {
         this.logger.error(
-          `Event id: ${eventId}. The following error has occurred on Propstack property update: ${response.reason}.`,
+          `Event ${eventId}. The following error has occurred on Propstack property update: ${response.reason}.`,
         );
       }
     });
 
     this.logger.log(
-      `Event id: ${eventId}. Event processing is complete and took ${dayjs
+      `Event ${eventId} processing is complete and took ${dayjs
+        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+        .humanize()}.`,
+    );
+  }
+
+  async handlePropertyUpdated(
+    user: UserDocument | TIntegrationUserDocument,
+    { id }: ApiPropstackWebhookRealEstateDto,
+    eventId: string,
+  ): Promise<void> {
+    this.logger.log(
+      `Event ${eventId} processing is complete and took ${dayjs
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}.`,
     );

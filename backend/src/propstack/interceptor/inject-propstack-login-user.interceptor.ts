@@ -47,7 +47,10 @@ export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
 
     if (!integrationUser) {
       this.logger.debug(
-        `\nPath: ${routePath}\nAccess token: ${accessToken}\nAuth header: ${authorization}`,
+        `\nPath: ${routePath}` +
+          `\nAccess token: ${accessToken}` +
+          `\nAPI key: ${PropstackService.decryptAccessToken(accessToken)}` +
+          `\nAuth header: ${authorization}`,
       );
       throw new HttpException('Unknown user!', 400);
     }

@@ -37,15 +37,42 @@ export class PropstackWebhookIntController {
   ): Promise<void> {
     const nowDate = new Date();
     const integrationUserId = integrationUser.integrationUserId;
-    const eventId = `${integrationUserId}-${
+    const eventId = `propertyCreated-${integrationUserId}-${
       propstackRealEstDto.id
     }-${nowDate.getTime()}`;
-
     this.logger.log(
-      `Event id: ${eventId}. '${this.handlePropertyCreated.name}' method has been triggered.`,
+      `Event ${eventId} has been triggered.`,
+      propstackRealEstDto,
     );
 
     void this.propstackWebhookService.handlePropertyCreated(
+      integrationUser,
+      propstackRealEstDto,
+      eventId,
+    );
+  }
+
+  @ApiOperation({
+    description: 'Process a Propstack webhook on event "Property updated"',
+  })
+  @Post('property-updated')
+  @HttpCode(HttpStatus.OK)
+  async handlePropertyUpdated(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body()
+    propstackRealEstDto: ApiPropstackWebhookRealEstateDto,
+  ): Promise<void> {
+    const nowDate = new Date();
+    const integrationUserId = integrationUser.integrationUserId;
+    const eventId = `propertyUpdated-${integrationUserId}-${
+      propstackRealEstDto.id
+    }-${nowDate.getTime()}`;
+    this.logger.log(
+      `Event ${eventId} has been triggered.`,
+      propstackRealEstDto,
+    );
+
+    void this.propstackWebhookService.handlePropertyUpdated(
       integrationUser,
       propstackRealEstDto,
       eventId,
