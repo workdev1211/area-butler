@@ -31,11 +31,6 @@ import {
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
-import {
-  buildOnOfficeQueryString,
-  getOnOfficeSortedMapData,
-  parseCommaFloat,
-} from '../../../shared/functions/shared.functions';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   OnOfficeTransaction,
@@ -65,6 +60,11 @@ import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/con
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import {
+  buildOnOfficeQueryString,
+  getOnOfficeSortedMapData,
+  parseOnOfficeFloat,
+} from '../shared/on-office.functions';
 
 @Injectable()
 export class OnOfficeService {
@@ -991,8 +991,8 @@ export class OnOfficeService {
     let locationAddress = `${street} ${houseNumber}, ${zipCode} ${city}, ${country}`;
 
     const locationCoordinates = {
-      lat: parseCommaFloat(lat),
-      lng: parseCommaFloat(lng),
+      lat: parseOnOfficeFloat(lat),
+      lng: parseOnOfficeFloat(lng),
     };
 
     let place = await this.googleGeocodeService.fetchPlace(locationAddress);

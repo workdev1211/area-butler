@@ -6,6 +6,8 @@ import {
   ApiRealEstateCostType,
 } from "../../../shared/types/real-estate";
 
+// Not used for the moment. Left just in case of possible future usage.
+
 export interface RealEstateCostStructureControlProps {
   inputValues?: ApiRealEstateCost;
   onChange: (realEstateCost: ApiRealEstateCost) => void;

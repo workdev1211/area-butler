@@ -426,7 +426,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Status</h4>
+                <h4 className="w-[6.5rem] font-bold">Vermarktungsart</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus || realEstAllTextStatus}
@@ -449,7 +449,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
             </li>
             <li>
               <div className="flex items-center gap-6 py-1 w-full">
-                <h4 className="w-[6.5rem] font-bold">Extra-Status</h4>
+                <h4 className="w-[6.5rem] font-bold">Status</h4>
                 <select
                   className="select select-bordered select-sm flex-1 w-full"
                   value={config?.realEstateStatus2 || realEstAllTextStatus}

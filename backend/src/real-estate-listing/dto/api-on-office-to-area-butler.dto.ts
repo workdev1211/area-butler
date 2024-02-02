@@ -22,11 +22,11 @@ import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
 import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-characteristics.dto';
 import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
 import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
-import { parseCommaFloat } from '../../../../shared/functions/shared.functions';
 import {
   ApiOnOfficeEstateBasementEnum,
   IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
+import { parseOnOfficeFloat } from '../../shared/on-office.functions';
 
 export interface IApiOnOfficeProcessedRealEstate
   extends IApiOnOfficeRealEstate {
@@ -96,9 +96,9 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
     }): ApiRealEstateCost => {
-      const price = parseCommaFloat(kaufpreis);
-      const coldPrice = parseCommaFloat(kaltmiete);
-      const warmPrice = parseCommaFloat(warmmiete);
+      const price = parseOnOfficeFloat(kaufpreis);
+      const coldPrice = parseOnOfficeFloat(kaltmiete);
+      const warmPrice = parseOnOfficeFloat(warmmiete);
       const currency =
         !waehrung || waehrung.toUpperCase() === 'EUR' ? '€' : waehrung;
 
@@ -153,10 +153,10 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       } = obj;
 
       const resultingEnergyClass = energyClass || energieeffizienzklasse;
-      const numberOfRooms = parseCommaFloat(anzahl_zimmer);
-      const realEstateSizeInSquareMeters = parseCommaFloat(wohnflaeche);
+      const numberOfRooms = parseOnOfficeFloat(anzahl_zimmer);
+      const realEstateSizeInSquareMeters = parseOnOfficeFloat(wohnflaeche);
 
-      const propertySizeInSquareMeters = parseCommaFloat(
+      const propertySizeInSquareMeters = parseOnOfficeFloat(
         grundstuecksflaeche || grundstuecksgroesse,
       );
 

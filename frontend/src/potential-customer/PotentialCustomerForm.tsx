@@ -7,8 +7,8 @@ import Input from "../components/inputs/formik/Input";
 import TransportationParams from "../components/TransportationParams";
 import LocalityParams from "../components/LocalityParams";
 import ImportantAddresses from "../components/ImportantAddresses";
-import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
-import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
+// import RealEstateCostStructureControl from "../real-estates/RealEstateCostStructureControl";
+// import RealEstateCharacteristicsControl from "../real-estates/RealEstateCharacteristicsControl";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { preferredLocationsTitle } from "../shared/shared.functions";
 
@@ -63,6 +63,7 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
                 className="input input-bordered w-full"
               />
             )}
+            {/* Not used for the moment. Left just in case of possible future usage. */}
             {/*{!questionnaire && (*/}
             {/*  <Input*/}
             {/*    label="Email-Adresse des Interessenten"*/}
@@ -122,29 +123,30 @@ const PotentialCustomerForm: FunctionComponent<PotentialCustomerFormProps> = ({
               }}
             />
           </div>
-          <div className="my-6">
-            <strong>
-              {questionnaire ? "Meine" : "Bevorzugte"} Wohnvorstellung
-            </strong>
-          </div>
-          <RealEstateCostStructureControl
-            inputValues={customer.realEstateCostStructure}
-            onChange={(newValue) => {
-              setCustomer({
-                ...customer,
-                realEstateCostStructure: newValue,
-              });
-            }}
-          />
-          <RealEstateCharacteristicsControl
-            inputValues={customer.realEstateCharacteristics}
-            onChange={(newValue) => {
-              setCustomer({
-                ...customer,
-                realEstateCharacteristics: newValue,
-              });
-            }}
-          />
+          {/* Not used for the moment. Left just in case of possible future usage. */}
+          {/*<div className="my-6">*/}
+          {/*  <strong>*/}
+          {/*    {questionnaire ? "Meine" : "Bevorzugte"} Wohnvorstellung*/}
+          {/*  </strong>*/}
+          {/*</div>*/}
+          {/*<RealEstateCostStructureControl*/}
+          {/*  inputValues={customer.realEstateCostStructure}*/}
+          {/*  onChange={(newValue) => {*/}
+          {/*    setCustomer({*/}
+          {/*      ...customer,*/}
+          {/*      realEstateCostStructure: newValue,*/}
+          {/*    });*/}
+          {/*  }}*/}
+          {/*/>*/}
+          {/*<RealEstateCharacteristicsControl*/}
+          {/*  inputValues={customer.realEstateCharacteristics}*/}
+          {/*  onChange={(newValue) => {*/}
+          {/*    setCustomer({*/}
+          {/*      ...customer,*/}
+          {/*      realEstateCharacteristics: newValue,*/}
+          {/*    });*/}
+          {/*  }}*/}
+          {/*/>*/}
         </div>
       </Form>
     </Formik>

@@ -14,6 +14,8 @@ export interface RealEstateCharacteristicsControlProps {
     onChange: (furnishing: ApiRealEstateCharacteristics) => void;
 }
 
+// Not used for the moment. Left just in case of possible future usage.
+
 const RealEstateCharacteristicsControl: React.FunctionComponent<RealEstateCharacteristicsControlProps> =
     ({onChange, inputValues = defaultValue()}) => {
 

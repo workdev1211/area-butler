@@ -21,16 +21,16 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
 
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [isAllowedSync, setIsAllowedSync] = useState(false);
-  const [estateStatus, setEstateStatus] = useState<string | undefined>();
-  const [estateStatuses, setEstateStatuses] = useState<ISelectTextValue[]>([
-    allValue,
-  ]);
   const [estateMarketType, setEstateMarketType] = useState<
     string | undefined
   >();
   const [estateMarketTypes, setEstateMarketTypes] = useState<
     ISelectTextValue[]
   >([allValue]);
+  const [estateStatus, setEstateStatus] = useState<string | undefined>();
+  const [estateStatuses, setEstateStatuses] = useState<ISelectTextValue[]>([
+    allValue,
+  ]);
 
   useEffect(() => {
     const setAvailStatuses = async (): Promise<void> => {
@@ -109,7 +109,7 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
       >
         <div className="modal-box p-0 sm:rounded-2xl">
           <div className="flex justify-between px-6 py-3 rounded-t-2xl text-white bg-primary">
-            <span className="text-lg font-medium">Filter setzen:</span>
+            <span className="text-lg font-medium">Filter setzen</span>
 
             <img
               className="cursor-pointer invert"
@@ -123,29 +123,6 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
 
           <div className="px-6 py-3">
             <div className="grid grid-cols-2 gap-3">
-              <div className="form-control">
-                <label htmlFor="estateStatuses" className="label">
-                  <span>Status</span>
-                </label>
-
-                <select
-                  name="estateStatuses"
-                  className="select select-bordered"
-                  value={estateStatus}
-                  onChange={({ target: { value } }) => {
-                    setEstateStatus(
-                      value === allValue.value ? undefined : value
-                    );
-                  }}
-                >
-                  {estateStatuses.map(({ text, value }) => (
-                    <option key={value} value={value}>
-                      {text}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
               <div className="form-control">
                 <label htmlFor="marketTypes" className="label">
                   <span>Vermarktungsart</span>
@@ -162,6 +139,29 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
                   }}
                 >
                   {estateMarketTypes.map(({ text, value }) => (
+                    <option key={value} value={value}>
+                      {text}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="form-control">
+                <label htmlFor="estateStatuses" className="label">
+                  <span>Status</span>
+                </label>
+
+                <select
+                  name="estateStatuses"
+                  className="select select-bordered"
+                  value={estateStatus}
+                  onChange={({ target: { value } }) => {
+                    setEstateStatus(
+                      value === allValue.value ? undefined : value
+                    );
+                  }}
+                >
+                  {estateStatuses.map(({ text, value }) => (
                     <option key={value} value={value}>
                       {text}
                     </option>

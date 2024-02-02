@@ -187,7 +187,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
         },
       }),
       columnHelper.accessor("cost", {
-        header: "kosten",
+        header: "preis",
         cell: (props) => (props.getValue() ? props.getValue() : null),
         size: 200,
         meta: {
@@ -197,7 +197,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       }),
       ...Object.values(locationIndexNames).reduce<
         Array<ColumnDef<IRealEstateTableItem, any>>
-      >((result, indexName, i) => {
+      >((result, indexName) => {
         const column = columnHelper.accessor(
           (row) =>
             row.locationIndices ? row.locationIndices[indexName] : undefined,
@@ -324,7 +324,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
       >
         <table className="real-estates-table table w-full">
           <thead>
-            {table.getHeaderGroups().map((headerGroup, headGroupIndex) => (
+            {table.getHeaderGroups().map((headerGroup) => (
               <Fragment key={headerGroup.id}>
                 <tr>
                   {headerGroup.headers.map((header) => (
