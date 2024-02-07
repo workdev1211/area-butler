@@ -15,7 +15,7 @@ import {
   ApiUnitsOfTransportEnum,
   IApiFetchPoiDataReq,
 } from '@area-butler-types/external-api';
-import { getEnumValidMessage } from '../../shared/validation.functions';
+import { getEnumValidMessage } from '../../shared/validation/validation.functions';
 
 const DEFAULT_POI_NUMBER = 5;
 const DEFAULT_DISTANCE = 10;

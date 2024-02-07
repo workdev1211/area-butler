@@ -52,7 +52,7 @@ export const usePropstackLogin = () => {
       const loginRes = (
         await post<IApiIntUserLoginRes, IApiPropstackLoginReq>(
           "/api/propstack/login",
-          { realEstateId: +propertyId },
+          { propertyId: +propertyId },
           { Authorization: `AccessToken ${apiKey}` }
         )
       ).data;

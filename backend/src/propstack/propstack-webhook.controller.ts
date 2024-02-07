@@ -12,7 +12,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
-import ApiPropstackWebhookRealEstateDto from './dto/api-propstack-webhook-real-estate.dto';
+import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackWebhookService } from './propstack-webhook.service';
 
 @ApiTags('propstack', 'webhook')
@@ -34,18 +34,18 @@ export class PropstackWebhookController extends ApiKeyAuthController {
   async handlePropertyCreated(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    propstackRealEstDto: ApiPropstackWebhookRealEstateDto,
+    propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
     const nowDate = new Date();
-    const eventId = `${user.id}-${propstackRealEstDto.id}-${nowDate.getTime()}`;
+    const eventId = `propertyCreated-${user.id}-${
+      propstackPropertyDto.id
+    }-${nowDate.getTime()}`;
 
-    this.logger.log(
-      `Event id: ${eventId}. '${this.handlePropertyCreated.name}' method has been triggered.`,
-    );
+    this.logger.log(`Event ${eventId} has been triggered.`);
 
     void this.propstackWebhookService.handlePropertyCreated(
       user,
-      propstackRealEstDto,
+      propstackPropertyDto,
       eventId,
     );
   }

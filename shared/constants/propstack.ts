@@ -1,5 +1,5 @@
-import { PropstackRealEstMarketTypesEnum } from "../types/propstack";
 import { OpenAiQueryTypeEnum } from "../types/open-ai";
+import { PropstackPropMarketTypesEnum } from "../types/propstack";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
@@ -9,17 +9,17 @@ export const propstackWebhookIntRoutePaths: string[] = [
 
 export const propstackLoginRoutePath: string = "/api/propstack/login";
 
-export const propstackRealEstMarketTypeNames: {
+export const propstackPropertyMarketTypeNames: {
   text: string;
-  value: PropstackRealEstMarketTypesEnum;
+  value: PropstackPropMarketTypesEnum;
 }[] = [
   {
     text: "Kauf",
-    value: PropstackRealEstMarketTypesEnum.BUY,
+    value: PropstackPropMarketTypesEnum.BUY,
   },
   {
     text: "Miete",
-    value: PropstackRealEstMarketTypesEnum.RENT,
+    value: PropstackPropMarketTypesEnum.RENT,
   },
 ];
 

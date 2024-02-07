@@ -10,7 +10,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { InjectUser } from '../user/inject-user.decorator';
-import ApiPropstackWebhookRealEstateDto from './dto/api-propstack-webhook-real-estate.dto';
+import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackWebhookService } from './propstack-webhook.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { PropstackWebhookIntGuard } from '../auth/propstack-webhook-int.guard';
@@ -33,21 +33,18 @@ export class PropstackWebhookIntController {
   async handlePropertyCreated(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
-    propstackRealEstDto: ApiPropstackWebhookRealEstateDto,
+    propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
     const nowDate = new Date();
-    const integrationUserId = integrationUser.integrationUserId;
-    const eventId = `propertyCreated-${integrationUserId}-${
-      propstackRealEstDto.id
+    const eventId = `propertyCreated-${integrationUser.integrationUserId}-${
+      propstackPropertyDto.id
     }-${nowDate.getTime()}`;
-    this.logger.log(
-      `Event ${eventId} has been triggered.`,
-      propstackRealEstDto,
-    );
+
+    this.logger.log(`Event ${eventId} has been triggered.`);
 
     void this.propstackWebhookService.handlePropertyCreated(
       integrationUser,
-      propstackRealEstDto,
+      propstackPropertyDto,
       eventId,
     );
   }
@@ -60,21 +57,18 @@ export class PropstackWebhookIntController {
   async handlePropertyUpdated(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
-    propstackRealEstDto: ApiPropstackWebhookRealEstateDto,
+    propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
     const nowDate = new Date();
-    const integrationUserId = integrationUser.integrationUserId;
-    const eventId = `propertyUpdated-${integrationUserId}-${
-      propstackRealEstDto.id
+    const eventId = `propertyUpdated-${integrationUser.integrationUserId}-${
+      propstackPropertyDto.id
     }-${nowDate.getTime()}`;
-    this.logger.log(
-      `Event ${eventId} has been triggered.`,
-      propstackRealEstDto,
-    );
+
+    this.logger.log(`Event ${eventId} has been triggered.`);
 
     void this.propstackWebhookService.handlePropertyUpdated(
       integrationUser,
-      propstackRealEstDto,
+      propstackPropertyDto,
       eventId,
     );
   }

@@ -5,8 +5,7 @@ import * as duration from 'dayjs/plugin/duration';
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
-import { IPropstackRealEstate } from '../shared/propstack.types';
-import ApiPropstackToAreaButlerDto from '../real-estate-listing/dto/api-propstack-to-area-butler.dto';
+import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
 import { createDirectLink } from '../shared/shared.functions';
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -21,9 +20,10 @@ import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user';
-import ApiPropstackWebhookRealEstateDto from './dto/api-propstack-webhook-real-estate.dto';
+import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackService } from './propstack.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { IPropstackProperty } from '../shared/propstack.types';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -44,7 +44,7 @@ export class PropstackWebhookService {
 
   async handlePropertyCreated(
     user: UserDocument | TIntegrationUserDocument,
-    { id }: ApiPropstackWebhookRealEstateDto,
+    { id }: ApiPropstackWebhookPropertyDto,
     eventId: string,
   ): Promise<void> {
     let resultingUser = user;
@@ -54,14 +54,20 @@ export class PropstackWebhookService {
       : user.apiConnections?.PROPSTACK.apiKey;
 
     // TODO remove the request by adding the complete validation of the required fields in the dto file
-    const propstackRealEstate =
-      await this.propstackApiService.fetchRealEstateById(propstackApiKey, id);
+    const property = await this.propstackApiService.fetchPropertyById(
+      propstackApiKey,
+      id,
+    );
 
-    const { address, department_id: departmentId } = propstackRealEstate;
+    const {
+      address,
+      broker: { department_ids: departmentIds },
+    } = property;
     const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+    const resProperty = { ...property };
 
-    Object.assign(propstackRealEstate, {
-      address: address || place.formatted_address,
+    Object.assign(resProperty, {
+      address,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],
@@ -69,6 +75,8 @@ export class PropstackWebhookService {
     });
 
     if (isIntegrationUser) {
+      const departmentId = departmentIds?.length ? departmentIds[0] : undefined;
+
       resultingUser = await this.propstackService.getResultIntUser(
         user,
         departmentId,
@@ -76,19 +84,19 @@ export class PropstackWebhookService {
 
       const { integrationUserId, integrationType } = resultingUser;
 
-      Object.assign(propstackRealEstate, {
+      Object.assign(resProperty, {
         integrationParams: {
           integrationUserId,
           integrationType,
-          integrationId: `${propstackRealEstate.id}`,
+          integrationId: `${resProperty.id}`,
         },
       });
     }
 
     const areaButlerRealEstate = plainToInstance<
       ApiUpsertRealEstateListing,
-      IPropstackRealEstate
-    >(ApiPropstackToAreaButlerDto, propstackRealEstate);
+      IPropstackProperty
+    >(ApiPropstackFetchToAreaButlerDto, resProperty);
 
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
       resultingUser,
@@ -176,14 +184,14 @@ export class PropstackWebhookService {
 
     (
       await Promise.allSettled([
-        this.propstackApiService.updateRealEstateById(propstackApiKey, id, {
+        this.propstackApiService.updatePropertyById(propstackApiKey, id, {
           ...openAiDescriptions,
           // the old iframe link way - left just in case
           // custom_fields: {
           //   objekt_webseiten_url: createDirectLink(token),
           // },
         }),
-        this.propstackApiService.createRealEstLink(propstackApiKey, {
+        this.propstackApiService.createPropertyLink(propstackApiKey, {
           property_id: id,
           title: 'Interaktive Karte',
           url: createDirectLink(token),
@@ -208,7 +216,7 @@ export class PropstackWebhookService {
 
   async handlePropertyUpdated(
     user: UserDocument | TIntegrationUserDocument,
-    { id }: ApiPropstackWebhookRealEstateDto,
+    { id }: ApiPropstackWebhookPropertyDto,
     eventId: string,
   ): Promise<void> {
     this.logger.log(

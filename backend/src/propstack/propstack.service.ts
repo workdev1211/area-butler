@@ -12,7 +12,7 @@ import { IApiPropstackConnectReq } from '../shared/propstack.types';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
-import ApiPropstackToAreaButlerDto from '../real-estate-listing/dto/api-propstack-to-area-butler.dto';
+import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
 import {
   IApiIntUserLoginRes,
@@ -25,7 +25,7 @@ import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
   propstackExportTypeMapping,
-  propstackRealEstMarketTypeNames,
+  propstackPropertyMarketTypeNames,
 } from '../../../shared/constants/propstack';
 import { configService } from '../config/config.service';
 
@@ -75,15 +75,19 @@ export class PropstackService {
 
   async login(
     parentIntUser: TIntegrationUserDocument,
-    { realEstateId }: IApiPropstackLoginReq,
+    { propertyId }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const realEstate = await this.propstackApiService.fetchRealEstateById(
+    const property = await this.propstackApiService.fetchPropertyById(
       (parentIntUser.parameters as IApiIntUserPropstackParams).apiKey,
-      realEstateId,
+      propertyId,
     );
 
-    const { department_id: departmentId, address } = realEstate;
+    const {
+      address,
+      broker: { department_ids: departmentIds },
+    } = property;
     const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+    const departmentId = departmentIds?.length ? departmentIds[0] : undefined;
 
     const integrationUser = await this.getResultIntUser(
       parentIntUser,
@@ -92,8 +96,10 @@ export class PropstackService {
     const { integrationUserId, accessToken, config, parentId } =
       integrationUser;
 
-    Object.assign(realEstate, {
-      address: address || place.formatted_address,
+    const resultProperty = { ...property };
+
+    Object.assign(resultProperty, {
+      address,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],
@@ -101,16 +107,16 @@ export class PropstackService {
       integrationParams: {
         integrationUserId,
         integrationType: this.integrationType,
-        integrationId: `${realEstateId}`,
+        integrationId: `${propertyId}`,
       },
     });
 
     const areaButlerRealEstate = plainToInstance(
-      ApiPropstackToAreaButlerDto,
-      realEstate,
+      ApiPropstackFetchToAreaButlerDto,
+      resultProperty,
     ) as IApiRealEstateListingSchema;
 
-    const resRealEstate = mapRealEstateListingToApiRealEstateListing(
+    const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
       await this.realEstateListingIntService.upsertByIntParams(
         areaButlerRealEstate,
@@ -119,24 +125,24 @@ export class PropstackService {
 
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
-      resRealEstate.integrationId,
+      realEstate.integrationId,
     );
 
     return {
       integrationUserId,
       accessToken,
       config,
+      realEstate,
       isChild: !!parentId,
-      realEstate: resRealEstate,
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
     };
   }
 
-  async updateEstateTextField(
+  async updatePropertyTextField(
     { parameters }: TIntegrationUserDocument,
-    realEstateIntId: number,
+    propertyId: number,
     { exportType, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const paramName = propstackExportTypeMapping[exportType];
@@ -145,9 +151,9 @@ export class PropstackService {
       throw new HttpException('Unprocessable export type was provided!', 400);
     }
 
-    await this.propstackApiService.updateRealEstateById(
+    await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
-      realEstateIntId,
+      propertyId,
       { [paramName]: text },
     );
   }
@@ -211,10 +217,10 @@ export class PropstackService {
     parameters,
   }: TIntegrationUserDocument): Promise<IApiRealEstAvailIntStatuses> {
     const { apiKey } = parameters as IApiIntUserPropstackParams;
-    const realEstateStatuses =
-      await this.propstackApiService.fetchRealEstAvailStatuses(apiKey);
+    const propertyStatuses =
+      await this.propstackApiService.fetchAvailPropStatuses(apiKey);
 
-    const estateStatuses = realEstateStatuses?.map(
+    const estateStatuses = propertyStatuses?.map(
       ({ id: value, name: text }) => ({
         text,
         value: `${value}`,
@@ -223,7 +229,7 @@ export class PropstackService {
 
     return {
       estateStatuses,
-      estateMarketTypes: propstackRealEstMarketTypeNames,
+      estateMarketTypes: propstackPropertyMarketTypeNames,
     };
   }
 

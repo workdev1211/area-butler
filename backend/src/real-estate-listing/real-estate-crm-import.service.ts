@@ -21,10 +21,10 @@ import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
 import {
-  PROPSTACK_ESTATES_PER_PAGE,
+  PROPSTACK_PROPERTIES_PER_PAGE,
   PropstackApiService,
 } from '../client/propstack/propstack-api.service';
-import ApiPropstackToAreaButlerDto from './dto/api-propstack-to-area-butler.dto';
+import ApiPropstackFetchToAreaButlerDto from './dto/api-propstack-fetch-to-area-butler.dto';
 import { apiConnectTypeNames } from '../../../shared/constants/real-estate';
 import { UserService } from '../user/user.service';
 import {
@@ -43,7 +43,7 @@ import {
   ApiOnOfficeRealEstStatusByUserEmailsEnum,
   setRealEstateStatusByUserEmail,
 } from './mapper/real-estate-on-office-import.mapper';
-import { IPropstackApiFetchEstsQueryParams } from '../shared/propstack.types';
+import { IApiPropstackFetchPropQueryParams } from '../shared/propstack.types';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   IApiIntUserOnOfficeParams,
@@ -123,7 +123,7 @@ export class RealEstateCrmImportService {
       switch (connectType) {
         case ApiRealEstateExtSourcesEnum.PROPSTACK: {
           try {
-            await this.propstackApiService.fetchRealEstates({
+            await this.propstackApiService.fetchProperties({
               apiKey: connectSettings.apiKey,
               isTest: true,
             });
@@ -204,7 +204,7 @@ export class RealEstateCrmImportService {
   async importFromPropstack(
     user: UserDocument | TIntegrationUserDocument,
     queryParams: Pick<
-      IPropstackApiFetchEstsQueryParams,
+      IApiPropstackFetchPropQueryParams,
       'status' | 'marketing_type'
     > = {},
   ): Promise<string[]> {
@@ -237,28 +237,30 @@ export class RealEstateCrmImportService {
     const {
       data,
       meta: { total_count: totalCount },
-    } = await this.propstackApiService.fetchRealEstates({
+    } = await this.propstackApiService.fetchProperties({
       queryParams,
       apiKey,
     });
 
-    const realEstates = [...data];
+    const properties = [...data];
 
-    if (totalCount > PROPSTACK_ESTATES_PER_PAGE) {
-      const numberOfPages = Math.ceil(totalCount / PROPSTACK_ESTATES_PER_PAGE);
+    if (totalCount > PROPSTACK_PROPERTIES_PER_PAGE) {
+      const numberOfPages = Math.ceil(
+        totalCount / PROPSTACK_PROPERTIES_PER_PAGE,
+      );
 
       for (let i = 2; i < numberOfPages + 1; i += 1) {
-        const { data } = await this.propstackApiService.fetchRealEstates({
+        const { data } = await this.propstackApiService.fetchProperties({
           queryParams,
           apiKey,
           pageNumber: i,
         });
 
-        realEstates.push(...data);
+        properties.push(...data);
       }
     }
 
-    const chunks = createChunks(realEstates, 100);
+    const chunks = createChunks(properties, 100);
 
     this.logger.log(
       `User ${
@@ -273,18 +275,18 @@ export class RealEstateCrmImportService {
     for (const chunk of chunks) {
       const bulkOperations = [];
 
-      for (const realEstate of chunk) {
-        if (!realEstate.address) {
-          errorIds.push(`${realEstate.id}`);
+      for (const property of chunk) {
+        if (!property.address) {
+          errorIds.push(`${property.id}`);
           continue;
         }
 
         const place = await this.googleGeocodeService.fetchPlace(
-          realEstate.address,
+          property.address,
         );
 
         if (!place) {
-          errorIds.push(`${realEstate.id}`);
+          errorIds.push(`${property.id}`);
           continue;
         }
 
@@ -294,7 +296,7 @@ export class RealEstateCrmImportService {
         // }
 
         const estateData: Partial<IApiRealEstateListingSchema> = {
-          address: realEstate.address,
+          address: property.address,
           location: {
             type: 'Point',
             coordinates: [
@@ -307,22 +309,22 @@ export class RealEstateCrmImportService {
         if (isIntegrationUser) {
           estateData.integrationParams = {
             integrationUserId: user.integrationUserId,
-            integrationId: `${realEstate.id}`,
+            integrationId: `${property.id}`,
             integrationType: user.integrationType,
           };
         }
 
         if (!isIntegrationUser) {
           estateData.userId = user.id;
-          estateData.externalId = `${realEstate.id}`;
+          estateData.externalId = `${property.id}`;
           estateData.externalSource = ApiRealEstateExtSourcesEnum.PROPSTACK;
         }
 
-        Object.assign(realEstate, estateData);
+        Object.assign(property, estateData);
 
         const areaButlerRealEstate = plainToInstance(
-          ApiPropstackToAreaButlerDto,
-          realEstate,
+          ApiPropstackFetchToAreaButlerDto,
+          property,
         ) as IApiRealEstateListingSchema;
 
         await this.realEstateListingService.assignLocationIndices(
@@ -341,8 +343,8 @@ export class RealEstateCrmImportService {
               }
             : {
                 userId: areaButlerRealEstate.userId,
-                externalId: areaButlerRealEstate.externalId,
                 externalSource: areaButlerRealEstate.externalSource,
+                externalId: areaButlerRealEstate.externalId,
               };
 
         bulkOperations.push({
@@ -627,8 +629,8 @@ export class RealEstateCrmImportService {
               }
             : {
                 userId: areaButlerRealEstate.userId,
-                externalId: areaButlerRealEstate.externalId,
                 externalSource: areaButlerRealEstate.externalSource,
+                externalId: areaButlerRealEstate.externalId,
               };
 
         bulkOperations.push({

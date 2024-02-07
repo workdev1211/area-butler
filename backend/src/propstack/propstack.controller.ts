@@ -24,10 +24,10 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import ApiPropstackLoginReqDto from './dto/api-propstack-login-req.dto';
 import { IApiIntUserLoginRes } from '@area-butler-types/integration-user';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
-import ApiPropstackSyncEstatesFilterParamsDto from './dto/api-propstack-sync-estates-filter-params.dto';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
-import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
+import ApiPropstackSyncEstatesReqDto from './dto/api-propstack-sync-estates-req.dto';
+import ApiPropstackUpdPropTextFieldReqDto from './dto/api-propstack-upd-prop-text-field-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -45,7 +45,7 @@ export class PropstackController {
   @HttpCode(HttpStatus.CREATED)
   connect(@Body() connectData: ApiPropstackConnectReqDto): Promise<void> {
     this.logger.debug(
-      `'${this.connect.name}' method has been triggered.`,
+      `'${this.connect.name}' method was triggered.`,
       connectData,
     );
 
@@ -68,18 +68,18 @@ export class PropstackController {
     return this.propstackService.login(integrationUser, loginData);
   }
 
-  @ApiOperation({ description: 'Update estate text field value' })
+  @ApiOperation({ description: 'Update property text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Patch('estate-text/:estateId')
-  updateEstateTextField(
+  @Patch('property-text/:propertyId')
+  updatePropertyTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('estateId', new ParseIntPipe()) estateId: number,
-    @Body() updateEstateTextFieldDto: ApiPropstackUpdEstTextFieldReqDto,
+    @Param('propertyId', new ParseIntPipe()) propertyId: number,
+    @Body() updatePropTextFieldDto: ApiPropstackUpdPropTextFieldReqDto,
   ): Promise<void> {
-    return this.propstackService.updateEstateTextField(
+    return this.propstackService.updatePropertyTextField(
       integrationUser,
-      estateId,
-      updateEstateTextFieldDto,
+      propertyId,
+      updatePropTextFieldDto,
     );
   }
 
@@ -98,11 +98,11 @@ export class PropstackController {
   syncEstateData(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body()
-    estateStatusParams: ApiPropstackSyncEstatesFilterParamsDto,
+    syncEstatesReqDto: ApiPropstackSyncEstatesReqDto,
   ): Promise<string[]> {
     return this.realEstateCrmImportService.importFromPropstack(
       integrationUser,
-      estateStatusParams,
+      syncEstatesReqDto,
     );
   }
 }

@@ -1,5 +1,5 @@
 export interface IApiPropstackLoginReq {
-  realEstateId: number;
+  propertyId: number;
 }
 
 export interface IApiPropstackLoginQueryParams {
@@ -7,7 +7,7 @@ export interface IApiPropstackLoginQueryParams {
   propertyId: string;
 }
 
-export enum PropstackRealEstMarketTypesEnum {
+export enum PropstackPropMarketTypesEnum {
   BUY = "BUY",
   RENT = "RENT",
 }

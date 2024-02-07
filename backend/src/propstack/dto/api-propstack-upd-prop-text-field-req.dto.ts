@@ -6,11 +6,11 @@ import ApiIntUpdEstTextFieldReqDto from '../../dto/api-int-upd-est-text-field-re
 import { propstackExportTypeMapping } from '../../../../shared/constants/propstack';
 
 @Exclude()
-class ApiPropstackUpdEstTextFieldReqDto extends ApiIntUpdEstTextFieldReqDto {
+class ApiPropstackUpdPropTextFieldReqDto extends ApiIntUpdEstTextFieldReqDto {
   @Expose()
   @IsNotEmpty()
   @IsIn(Object.keys(propstackExportTypeMapping))
   exportType: TAreaButlerExportTypes;
 }
 
-export default ApiPropstackUpdEstTextFieldReqDto;
+export default ApiPropstackUpdPropTextFieldReqDto;

@@ -9,7 +9,7 @@ class ApiPropstackLoginReqDto implements IApiPropstackLoginReq {
   @IsNotEmpty()
   @IsInt()
   @IsPositive()
-  realEstateId: number;
+  propertyId: number;
 }
 
 export default ApiPropstackLoginReqDto;

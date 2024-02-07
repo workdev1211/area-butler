@@ -28,7 +28,7 @@ export const usePropstackSync = () => {
     realEstateIntId: string
   ): Promise<void> => {
     await patch<void, IApiIntUpdEstTextFieldReq>(
-      `/api/propstack/estate-text/${realEstateIntId}`,
+      `/api/propstack/property-text/${realEstateIntId}`,
       sendToPropstackData
     );
   };

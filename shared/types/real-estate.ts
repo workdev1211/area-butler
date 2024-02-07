@@ -4,19 +4,22 @@ import { IApiIntegrationParams } from "./integration";
 import { TApiLocIndexProps, TLocationIndexData } from "./location-index";
 
 export interface IApiRealEstateListingSchema {
-  userId?: string;
-  integrationParams?: IApiIntegrationParams;
   name: string;
   address: string;
+  location: GeoJsonPoint;
+
   externalUrl?: string;
   createdAt?: Date;
   showInSnippet?: boolean;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
-  location: GeoJsonPoint;
   locationIndices?: TApiLocIndexProps;
+
   status?: string;
   status2?: string;
+
+  integrationParams?: IApiIntegrationParams;
+  userId?: string;
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
 }
@@ -47,15 +50,19 @@ export interface ApiUpsertRealEstateListing {
   name: string;
   address: string;
   location: GeoJsonPoint;
+  showInSnippet: boolean;
+
   externalUrl?: string;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
-  showInSnippet: boolean;
+
   status?: string;
   status2?: string;
+
+  userId?: string;
+  // Should be specified for the integration entity
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
-  userId?: string;
 }
 
 // should be present either minPrice or price (maxPrice), or both

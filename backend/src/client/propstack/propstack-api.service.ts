@@ -3,26 +3,17 @@ import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 import {
-  IPropstackApiFetchEstates,
-  IPropstackApiFetchedEstates,
-  IPropstackRealEstate,
-  IPropstackRealEstateStatus,
+  IApiPropstackFetchedProperties,
+  IApiPropstackFetchProperties,
+  IApiPropstackLink,
+  IPropstackProperty,
+  IPropstackPropertyStatus,
 } from '../../shared/propstack.types';
 import { filterQueryParams } from '../../../../shared/functions/shared.functions';
 import { configService } from '../../config/config.service';
 
-interface IPropstackRealEstLink {
-  property_id: number;
-  title: string;
-  url: string;
-  is_private?: boolean;
-  is_embedable?: boolean;
-  on_landing_page?: boolean;
-  pinned?: boolean;
-}
-
-// This value is recommended by Propstack
-export const PROPSTACK_ESTATES_PER_PAGE = 20;
+// The value is recommended by Propstack
+export const PROPSTACK_PROPERTIES_PER_PAGE = 20;
 
 @Injectable()
 export class PropstackApiService {
@@ -33,19 +24,20 @@ export class PropstackApiService {
 
   constructor(private readonly http: HttpService) {}
 
-  async fetchRealEstates({
+  async fetchProperties({
     apiKey,
     pageNumber = 1,
     queryParams = {},
     isTest = false,
-  }: IPropstackApiFetchEstates): Promise<IPropstackApiFetchedEstates> {
+  }: IApiPropstackFetchProperties): Promise<IApiPropstackFetchedProperties> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
-    const resultingPerPage = isTest ? 1 : PROPSTACK_ESTATES_PER_PAGE;
+    const resultingPerPage = isTest ? 1 : PROPSTACK_PROPERTIES_PER_PAGE;
 
+    // keep in mind that property structure with 'expand' option differs from the structure without it
     const resultingQueryParams = filterQueryParams(
       new URLSearchParams({
         ...queryParams,
@@ -57,9 +49,9 @@ export class PropstackApiService {
     ).toString();
 
     const { data } = await firstValueFrom<{
-      data: IPropstackApiFetchedEstates;
+      data: IApiPropstackFetchedProperties;
     }>(
-      this.http.get<IPropstackApiFetchedEstates>(
+      this.http.get<IApiPropstackFetchedProperties>(
         `${this.apiUrl}/units?${resultingQueryParams}`,
         { headers },
       ),
@@ -68,42 +60,41 @@ export class PropstackApiService {
     return data;
   }
 
-  async fetchRealEstateById(
+  async fetchPropertyById(
     apiKey: string,
-    realEstateId: number,
-  ): Promise<IPropstackRealEstate> {
+    propertyId: number,
+  ): Promise<IPropstackProperty> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
-      data: IPropstackRealEstate;
+      data: IPropstackProperty;
     }>(
-      this.http.get<IPropstackRealEstate>(
-        `${this.apiUrl}/units/${realEstateId}`,
-        { headers },
-      ),
+      this.http.get<IPropstackProperty>(`${this.apiUrl}/units/${propertyId}`, {
+        headers,
+      }),
     );
 
     return data;
   }
 
-  async updateRealEstateById(
+  async updatePropertyById(
     apiKey: string,
-    realEstateId: number,
-    updatedParams: Partial<IPropstackRealEstate>,
-  ): Promise<IPropstackRealEstate> {
+    propertyId: number,
+    updatedParams: Partial<IPropstackProperty>,
+  ): Promise<IPropstackProperty> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
-      data: IPropstackRealEstate;
+      data: IPropstackProperty;
     }>(
-      this.http.put<IPropstackRealEstate>(
-        `${this.apiUrl}/units/${realEstateId}`,
+      this.http.put<IPropstackProperty>(
+        `${this.apiUrl}/units/${propertyId}`,
         { property: updatedParams },
         { headers },
       ),
@@ -112,21 +103,21 @@ export class PropstackApiService {
     return data;
   }
 
-  async createRealEstLink(
+  async createPropertyLink(
     apiKey: string,
-    realEstLinkData: IPropstackRealEstLink,
-  ): Promise<IPropstackRealEstate> {
+    propertyLinkData: IApiPropstackLink,
+  ): Promise<IPropstackProperty> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
-      data: IPropstackRealEstate;
+      data: IPropstackProperty;
     }>(
-      this.http.post<IPropstackRealEstate>(
+      this.http.post<IPropstackProperty>(
         `${this.apiUrl}/links`,
-        realEstLinkData,
+        propertyLinkData,
         { headers },
       ),
     );
@@ -134,9 +125,9 @@ export class PropstackApiService {
     return data;
   }
 
-  async fetchRealEstAvailStatuses(
+  async fetchAvailPropStatuses(
     apiKey: string,
-  ): Promise<IPropstackRealEstateStatus[]> {
+  ): Promise<IPropstackPropertyStatus[]> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
@@ -145,9 +136,9 @@ export class PropstackApiService {
     const {
       data: { data },
     } = await firstValueFrom<{
-      data: { data: IPropstackRealEstateStatus[] };
+      data: { data: IPropstackPropertyStatus[] };
     }>(
-      this.http.get<{ data: IPropstackRealEstateStatus[] }>(
+      this.http.get<{ data: IPropstackPropertyStatus[] }>(
         `${this.apiUrl}/property_statuses`,
         {
           headers,

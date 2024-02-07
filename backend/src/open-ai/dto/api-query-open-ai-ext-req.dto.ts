@@ -19,7 +19,7 @@ import {
   ApiRealEstateCostType,
 } from '@area-butler-types/real-estate';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
-import { getEnumValidMessage } from '../../shared/validation.functions';
+import { getEnumValidMessage } from '../../shared/validation/validation.functions';
 
 class ApiQueryOpenAiExtReqDto
   extends ApiFetchPoiDataReqDto
