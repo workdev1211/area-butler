@@ -197,6 +197,37 @@ export class RealEstateListingService {
     return realEstate;
   }
 
+  async updateEstateByExtParams(
+    updateData: Partial<IApiRealEstateListingSchema> &
+      Pick<IApiRealEstateListingSchema, 'externalSource' | 'externalId'>,
+  ): Promise<RealEstateListingDocument> {
+    const { userId, externalSource, externalId } = updateData;
+
+    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
+      externalSource,
+      externalId,
+      userId,
+    };
+
+    return this.realEstateListingModel.findOneAndUpdate(
+      filterQuery,
+      updateData,
+      { new: true },
+    );
+  }
+
+  async upsertEstateByExtParams(
+    upsertData: IApiRealEstateListingSchema,
+  ): Promise<RealEstateListingDocument> {
+    const realEstate = await this.updateEstateByExtParams(upsertData);
+
+    if (!realEstate) {
+      throw new HttpException('Real estate not found!', 400);
+    }
+
+    return realEstate;
+  }
+
   async updateLocationIndices(): Promise<void> {
     const total = await this.realEstateListingModel.find().count();
     const limit = 100;

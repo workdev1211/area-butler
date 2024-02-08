@@ -8,8 +8,8 @@ export interface IApiRealEstateListingSchema {
   address: string;
   location: GeoJsonPoint;
 
-  externalUrl?: string;
   createdAt?: Date;
+  externalUrl?: string;
   showInSnippet?: boolean;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
@@ -50,9 +50,9 @@ export interface ApiUpsertRealEstateListing {
   name: string;
   address: string;
   location: GeoJsonPoint;
-  showInSnippet: boolean;
 
   externalUrl?: string;
+  showInSnippet?: boolean;
   costStructure?: ApiRealEstateCost;
   characteristics?: ApiRealEstateCharacteristics;
 

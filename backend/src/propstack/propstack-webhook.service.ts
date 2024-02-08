@@ -4,8 +4,10 @@ import * as dayjs from 'dayjs';
 import * as duration from 'dayjs/plugin/duration';
 import * as relativeTime from 'dayjs/plugin/relativeTime';
 
-import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
-import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
+import {
+  ApiRealEstateExtSourcesEnum,
+  ApiUpsertRealEstateListing,
+} from '@area-butler-types/real-estate';
 import { createDirectLink } from '../shared/shared.functions';
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -23,7 +25,9 @@ import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user'
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackService } from './propstack.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { IPropstackProperty } from '../shared/propstack.types';
+import { IPropstackWebhookProperty } from '../shared/propstack.types';
+import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
+import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -44,7 +48,7 @@ export class PropstackWebhookService {
 
   async handlePropertyCreated(
     user: UserDocument | TIntegrationUserDocument,
-    { id }: ApiPropstackWebhookPropertyDto,
+    property: ApiPropstackWebhookPropertyDto,
     eventId: string,
   ): Promise<void> {
     let resultingUser = user;
@@ -53,20 +57,14 @@ export class PropstackWebhookService {
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
       : user.apiConnections?.PROPSTACK.apiKey;
 
-    // TODO remove the request by adding the complete validation of the required fields in the dto file
-    const property = await this.propstackApiService.fetchPropertyById(
-      propstackApiKey,
-      id,
-    );
-
     const {
       address,
       broker: { department_ids: departmentIds },
     } = property;
     const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
-    const resProperty = { ...property };
+    const resultProperty = { ...property };
 
-    Object.assign(resProperty, {
+    Object.assign(resultProperty, {
       address,
       location: {
         type: 'Point',
@@ -84,29 +82,27 @@ export class PropstackWebhookService {
 
       const { integrationUserId, integrationType } = resultingUser;
 
-      Object.assign(resProperty, {
+      Object.assign(resultProperty, {
         integrationParams: {
           integrationUserId,
           integrationType,
-          integrationId: `${resProperty.id}`,
+          integrationId: `${resultProperty.id}`,
         },
       });
     }
 
-    const areaButlerRealEstate = plainToInstance<
+    const realEstate = plainToInstance<
       ApiUpsertRealEstateListing,
-      IPropstackProperty
-    >(ApiPropstackFetchToAreaButlerDto, resProperty);
+      IPropstackWebhookProperty
+    >(ApiPropstackWebhookToAreaButlerDto, resultProperty);
 
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
       resultingUser,
       isIntegrationUser
-        ? await this.realEstateListingIntService.upsertByIntParams(
-            areaButlerRealEstate,
-          )
+        ? await this.realEstateListingIntService.upsertByIntParams(realEstate)
         : await this.realEstateListingService.createRealEstateListing(
             user,
-            areaButlerRealEstate,
+            realEstate,
           ),
     );
 
@@ -184,15 +180,19 @@ export class PropstackWebhookService {
 
     (
       await Promise.allSettled([
-        this.propstackApiService.updatePropertyById(propstackApiKey, id, {
-          ...openAiDescriptions,
-          // the old iframe link way - left just in case
-          // custom_fields: {
-          //   objekt_webseiten_url: createDirectLink(token),
-          // },
-        }),
+        this.propstackApiService.updatePropertyById(
+          propstackApiKey,
+          resultProperty.id,
+          {
+            ...openAiDescriptions,
+            // the old iframe link way - left just in case
+            // custom_fields: {
+            //   objekt_webseiten_url: createDirectLink(token),
+            // },
+          },
+        ),
         this.propstackApiService.createPropertyLink(propstackApiKey, {
-          property_id: id,
+          property_id: resultProperty.id,
           title: 'Interaktive Karte',
           url: createDirectLink(token),
           on_landing_page: true,
@@ -216,13 +216,98 @@ export class PropstackWebhookService {
 
   async handlePropertyUpdated(
     user: UserDocument | TIntegrationUserDocument,
-    { id }: ApiPropstackWebhookPropertyDto,
-    eventId: string,
+    property: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
-    this.logger.log(
-      `Event ${eventId} processing is complete and took ${dayjs
-        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-        .humanize()}.`,
-    );
+    const changedAttributes = property.changed_attributes?.split(',');
+
+    if (!changedAttributes) {
+      return;
+    }
+
+    const resultProperty: Partial<IPropstackWebhookProperty> =
+      changedAttributes.reduce((result, attrName) => {
+        const attrValue = property[attrName];
+
+        if (attrValue) {
+          result[attrName] = attrValue;
+        }
+
+        return result;
+      }, {});
+
+    if (!Object.keys(resultProperty).length) {
+      return;
+    }
+
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    if (!isIntegrationUser) {
+      Object.assign(resultProperty, {
+        userId: user.id,
+        externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
+        externalId: property.id,
+      });
+    }
+
+    if (isIntegrationUser) {
+      const departmentId = property.broker?.department_ids.length
+        ? property.broker?.department_ids[0]
+        : undefined;
+
+      const resultingUser = await this.propstackService.getResultIntUser(
+        user,
+        departmentId,
+      );
+
+      const { integrationUserId, integrationType } = resultingUser;
+
+      Object.assign(resultProperty, {
+        integrationParams: {
+          integrationUserId,
+          integrationType,
+          integrationId: `${property.id}`,
+        },
+      });
+    }
+
+    if (resultProperty.address) {
+      const place = await this.googleGeocodeService.fetchPlaceOrFail(
+        resultProperty.address,
+      );
+
+      Object.assign(resultProperty, {
+        location: {
+          type: 'Point',
+          coordinates: [
+            place.geometry.location.lat,
+            place.geometry.location.lng,
+          ],
+        },
+      });
+    }
+
+    const realEstate = plainToInstance<
+      Partial<ApiUpsertRealEstateListing>,
+      Partial<IPropstackWebhookProperty>
+    >(ApiPropstackWebhookToAreaButlerUpdDto, resultProperty, {
+      exposeUnsetFields: false,
+    });
+
+    // TODO make 'furnishing' completely optional
+    // needed because furnishing should not be empty on real estate creation
+    if (
+      Object.keys(realEstate.characteristics).length === 1 &&
+      'furnishing' in realEstate.characteristics &&
+      !realEstate.characteristics.furnishing.length
+    ) {
+      delete realEstate.characteristics;
+    }
+
+    if (isIntegrationUser) {
+      await this.realEstateListingIntService.updateByIntParams(realEstate);
+      return;
+    }
+
+    await this.realEstateListingService.updateEstateByExtParams(realEstate);
   }
 }

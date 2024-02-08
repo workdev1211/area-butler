@@ -132,9 +132,6 @@ abstract class ApiPropstackToAreaButlerDto<
   @IsOptional()
   @IsString()
   status2?: string;
-
-  @Expose()
-  showInSnippet = true;
 }
 
 export default ApiPropstackToAreaButlerDto;

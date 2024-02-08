@@ -54,7 +54,13 @@ async function bootstrap() {
   app.setBaseViewsDir(resolve('./src/views'));
   app.setViewEngine('hbs');
 
-  app.useGlobalPipes(new ValidationPipe({ forbidUnknownValues: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      forbidUnknownValues: true,
+      transformOptions: { exposeUnsetFields: false },
+    }),
+  );
+
   await app.listen(process.env.PORT || 3000, process.env.HOST || '0.0.0.0');
 }
 

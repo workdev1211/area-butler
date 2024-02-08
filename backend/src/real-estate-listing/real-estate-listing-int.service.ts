@@ -43,24 +43,30 @@ export class RealEstateListingIntService {
     return existingRealEstateListing;
   }
 
-  async upsertByIntParams(
-    realEstateListing: IApiRealEstateListingSchema,
+  async updateByIntParams(
+    realEstateListing: Partial<IApiRealEstateListingSchema> &
+      Pick<IApiRealEstateListingSchema, 'integrationParams'>,
   ): Promise<RealEstateListingDocument> {
     const {
       integrationParams: { integrationId, integrationUserId, integrationType },
       ...realEstateData
     } = realEstateListing;
 
-    const existingRealEstate =
-      await this.realEstateListingModel.findOneAndUpdate(
-        {
-          'integrationParams.integrationId': integrationId,
-          'integrationParams.integrationUserId': integrationUserId,
-          'integrationParams.integrationType': integrationType,
-        },
-        getProcUpdateQuery(realEstateData),
-        { new: true },
-      );
+    return this.realEstateListingModel.findOneAndUpdate(
+      {
+        'integrationParams.integrationId': integrationId,
+        'integrationParams.integrationUserId': integrationUserId,
+        'integrationParams.integrationType': integrationType,
+      },
+      getProcUpdateQuery(realEstateData),
+      { new: true },
+    );
+  }
+
+  async upsertByIntParams(
+    realEstateListing: IApiRealEstateListingSchema,
+  ): Promise<RealEstateListingDocument> {
+    const existingRealEstate = await this.updateByIntParams(realEstateListing);
 
     if (existingRealEstate) {
       return existingRealEstate;

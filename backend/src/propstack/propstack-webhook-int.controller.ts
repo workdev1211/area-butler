@@ -8,12 +8,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import * as dayjs from 'dayjs';
+import * as duration from 'dayjs/plugin/duration';
+import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import { InjectUser } from '../user/inject-user.decorator';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackWebhookService } from './propstack-webhook.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { PropstackWebhookIntGuard } from '../auth/propstack-webhook-int.guard';
+
+dayjs.extend(duration);
+dayjs.extend(relativeTime);
 
 @ApiTags('propstack', 'webhook', 'integration')
 @UseGuards(PropstackWebhookIntGuard)
@@ -36,11 +42,11 @@ export class PropstackWebhookIntController {
     propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
     const nowDate = new Date();
-    const eventId = `propertyCreated-${integrationUser.integrationUserId}-${
-      propstackPropertyDto.id
-    }-${nowDate.getTime()}`;
+    const eventId = `propertyCreated-user(${
+      integrationUser.integrationUserId
+    })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.log(`Event ${eventId} has been triggered.`);
+    this.logger.log(`Event ${eventId} was triggered.`);
 
     void this.propstackWebhookService.handlePropertyCreated(
       integrationUser,
@@ -60,16 +66,20 @@ export class PropstackWebhookIntController {
     propstackPropertyDto: ApiPropstackWebhookPropertyDto,
   ): Promise<void> {
     const nowDate = new Date();
-    const eventId = `propertyUpdated-${integrationUser.integrationUserId}-${
-      propstackPropertyDto.id
-    }-${nowDate.getTime()}`;
+    const eventId = `propertyUpdated-user(${
+      integrationUser.integrationUserId
+    })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.log(`Event ${eventId} has been triggered.`);
+    this.logger.log(`Event ${eventId} was triggered.`);
 
-    void this.propstackWebhookService.handlePropertyUpdated(
-      integrationUser,
-      propstackPropertyDto,
-      eventId,
-    );
+    void this.propstackWebhookService
+      .handlePropertyUpdated(integrationUser, propstackPropertyDto)
+      .then(() => {
+        this.logger.log(
+          `Event ${eventId} processing is complete and took ${dayjs
+            .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+            .humanize()}.`,
+        );
+      });
   }
 }
