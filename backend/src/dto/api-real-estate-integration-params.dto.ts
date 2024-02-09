@@ -2,12 +2,14 @@ import { IsNotEmpty, IsString, IsEnum } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
 import {
-  IApiIntegrationParams,
+  IApiRealEstateIntegrationParams,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
 
 @Exclude()
-class ApiIntegrationParamsDto implements IApiIntegrationParams {
+class ApiRealEstateIntegrationParamsDto
+  implements IApiRealEstateIntegrationParams
+{
   @Expose()
   @IsNotEmpty()
   @IsString()
@@ -24,4 +26,4 @@ class ApiIntegrationParamsDto implements IApiIntegrationParams {
   integrationType: IntegrationTypesEnum;
 }
 
-export default ApiIntegrationParamsDto;
+export default ApiRealEstateIntegrationParamsDto;

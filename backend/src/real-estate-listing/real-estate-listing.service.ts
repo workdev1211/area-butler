@@ -9,7 +9,6 @@ import {
 import { SubscriptionService } from '../user/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
 import {
-  ApiUpsertRealEstateListing,
   IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
@@ -37,7 +36,7 @@ export class RealEstateListingService {
 
   async createRealEstateListing(
     user: UserDocument,
-    upsertData: ApiUpsertRealEstateListing,
+    upsertData: IApiRealEstateListingSchema,
     subscriptionCheck = true,
   ): Promise<RealEstateListingDocument> {
     // Further object creation is no longer possible for the current plan
@@ -48,7 +47,7 @@ export class RealEstateListingService {
         'Weitere Objekterstellung ist im aktuellen Plan nicht mehr möglich',
       );
 
-    const realEstateListingDoc: Partial<RealEstateListingDocument> = {
+    const realEstateListingDoc: IApiRealEstateListingSchema = {
       userId: user.id,
       ...upsertData,
     };
@@ -169,7 +168,7 @@ export class RealEstateListingService {
   async updateRealEstateListing(
     user: UserDocument | TIntegrationUserDocument,
     realEstateId: string,
-    updatedData: Partial<ApiUpsertRealEstateListing>,
+    updatedData: Partial<IApiRealEstateListingSchema>,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {

@@ -1,4 +1,5 @@
 import {
+  IsEnum,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -10,11 +11,12 @@ import { Exclude, Expose, Transform, Type } from 'class-transformer';
 import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
+  ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
-import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
+import ApiIntegrationParamsDto from '../../dto/api-real-estate-integration-params.dto';
+import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 import { propstackPropertyMarketTypeNames } from '../../../../shared/constants/propstack';
 import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
 import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
@@ -31,29 +33,6 @@ abstract class ApiPropstackToAreaButlerDto<
 > implements IApiRealEstateListingSchema
 {
   @Expose()
-  @IsOptional()
-  @IsString()
-  userId?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  externalId?: string;
-
-  @Expose()
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiIntegrationParamsDto)
-  integrationParams?: IApiIntegrationParams;
-
-  @Expose()
-  @IsNotEmpty()
-  @IsString()
-  name: string;
-
-  @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: {
@@ -76,11 +55,12 @@ abstract class ApiPropstackToAreaButlerDto<
     // `${street} ${house_number}, ${zip_code} ${city || region}, ${country}`,
     { toClassOnly: true },
   )
+  @IsNotEmpty()
   @IsString()
   address: string;
 
   @Expose()
-  @IsNotEmpty()
+  @Type(() => ApiGeoJsonPointDto)
   // currently we obtain and assign it by ourselves based on the provided address
   // @Transform(
   //   ({ obj: { lat, lng } }: { obj: IPropstackRealEstate }): GeoJsonPoint => ({
@@ -88,27 +68,58 @@ abstract class ApiPropstackToAreaButlerDto<
   //     coordinates: [lat, lng],
   //   }),
   // )
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiGeoJsonPointDto)
   location: GeoJsonPoint;
 
   @Expose()
+  @IsNotEmpty()
+  @IsString()
+  name: string;
+
+  @Expose()
+  @Type(() => ApiIntegrationParamsDto)
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCost;
+  integrationParams?: IApiRealEstateIntegrationParams;
 
   @Expose()
   @IsOptional()
+  @IsString()
+  userId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(ApiRealEstateExtSourcesEnum)
+  externalSource?: ApiRealEstateExtSourcesEnum;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  externalId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  externalUrl?: string;
+
+  @Expose()
+  @Type(() => ApiRealEstateCharacteristicsDto)
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
+  @Type(() => ApiRealEstateCostDto)
   @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  costStructure?: ApiRealEstateCost;
+
+  @Expose()
   @Transform(
     ({
       obj: { areaButlerStatus2, marketing_type: marketingType },
@@ -125,6 +136,7 @@ abstract class ApiPropstackToAreaButlerDto<
       toClassOnly: true,
     },
   )
+  @IsOptional()
   @IsString()
   status?: string;
 

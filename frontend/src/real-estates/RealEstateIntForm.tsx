@@ -4,14 +4,14 @@ import * as Yup from "yup";
 
 import {
   ApiRealEstateListing,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from "../../../shared/types/real-estate";
 import Input from "../components/inputs/formik/Input";
 import Checkbox from "../components/inputs/formik/Checkbox";
 
 export interface IRealEstateIntFormProps {
   formId: string;
-  onSubmit: (values: Partial<ApiUpsertRealEstateListing>) => void;
+  onSubmit: (values: Partial<IApiRealEstateListingSchema>) => void;
   realEstate: ApiRealEstateListing;
 }
 
@@ -31,7 +31,7 @@ export const RealEstateIntForm: FunctionComponent<IRealEstateIntFormProps> = ({
         externalUrl: Yup.string().url("Bitte geben Sie eine gültige URL an"),
       })}
       enableReinitialize={true}
-      onSubmit={(values: Partial<ApiUpsertRealEstateListing>) => {
+      onSubmit={(values: Partial<IApiRealEstateListingSchema>) => {
         onSubmit({ ...values });
       }}
     >

@@ -24,7 +24,6 @@ import ApiPropstackToAreaButlerDto from './api-propstack-to-area-butler.dto';
 @Exclude()
 class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPropstackWebhookProperty> {
   @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: { name, title },
@@ -33,50 +32,12 @@ class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPr
     }): string => name || title?.value,
     { toClassOnly: true },
   )
+  @IsNotEmpty()
   @IsString()
   name: string;
 
   @Expose()
-  @IsOptional()
-  @Transform(
-    ({
-      obj: { price, base_rent: coldRent, total_rent: warmRent },
-    }: {
-      obj: TPropstackProcProperty<IPropstackWebhookProperty>;
-    }): ApiRealEstateCost => {
-      if (!price?.value && !coldRent?.value && !warmRent?.value) {
-        return undefined;
-      }
-
-      let priceValue = price?.value;
-      let priceType = ApiRealEstateCostType.SELL;
-
-      if (!priceValue && coldRent?.value) {
-        priceValue = coldRent.value;
-        priceType = ApiRealEstateCostType.RENT_MONTHLY_COLD;
-      }
-      if (!priceValue && warmRent?.value) {
-        priceValue = warmRent.value;
-        priceType = ApiRealEstateCostType.RENT_MONTHLY_WARM;
-      }
-
-      return {
-        price: {
-          amount: priceValue,
-          currency: '€',
-        },
-        type: priceType,
-      };
-    },
-    { toClassOnly: true },
-  )
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCost;
-
-  @Expose()
-  @IsOptional()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   @Transform(
     ({
       obj: {
@@ -129,13 +90,51 @@ class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPr
       return characteristics;
     },
   )
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
+  @Type(() => ApiRealEstateCostDto)
+  @Transform(
+    ({
+      obj: { price, base_rent: coldRent, total_rent: warmRent },
+    }: {
+      obj: TPropstackProcProperty<IPropstackWebhookProperty>;
+    }): ApiRealEstateCost => {
+      if (!price?.value && !coldRent?.value && !warmRent?.value) {
+        return undefined;
+      }
+
+      let priceValue = price?.value;
+      let priceType = ApiRealEstateCostType.SELL;
+
+      if (!priceValue && coldRent?.value) {
+        priceValue = coldRent.value;
+        priceType = ApiRealEstateCostType.RENT_MONTHLY_COLD;
+      }
+      if (!priceValue && warmRent?.value) {
+        priceValue = warmRent.value;
+        priceType = ApiRealEstateCostType.RENT_MONTHLY_WARM;
+      }
+
+      return {
+        price: {
+          amount: priceValue,
+          currency: '€',
+        },
+        type: priceType,
+      };
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  costStructure?: ApiRealEstateCost;
+
+  @Expose()
   @Transform(
     ({
       obj: { property_status, areaButlerStatus },
@@ -146,6 +145,7 @@ class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPr
       toClassOnly: true,
     },
   )
+  @IsOptional()
   @IsString()
   status2?: string;
 }

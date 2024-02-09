@@ -18,7 +18,6 @@ import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
   ApiRealEstateStatusEnum,
-  ApiUpsertRealEstateListing,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GoogleGeocodeService } from '../client/google/google-geocode.service';
@@ -552,7 +551,7 @@ export class RealEstateListingImportService {
   }
 
   private async setAddressAndCoordinates(
-    realEstate: ApiUpsertRealEstateListing,
+    realEstate: IApiRealEstateListingSchema,
   ): Promise<void> {
     if (realEstate.address) {
       const {

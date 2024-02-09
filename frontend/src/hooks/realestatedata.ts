@@ -3,7 +3,7 @@ import { useContext } from "react";
 import { useHttp } from "./http";
 import {
   ApiRealEstateListing,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
 } from "../../../shared/types/real-estate";
 import {
@@ -29,10 +29,10 @@ export const useRealEstateData = () => {
   const isIntegration = !!integrationType;
 
   const createRealEstate = async (
-    realEstateData: ApiUpsertRealEstateListing
+    realEstateData: IApiRealEstateListingSchema
   ): Promise<ApiRealEstateListing> => {
     return (
-      await post<ApiRealEstateListing, ApiUpsertRealEstateListing>(
+      await post<ApiRealEstateListing, IApiRealEstateListingSchema>(
         "/api/real-estate-listing",
         realEstateData
       )
@@ -84,10 +84,10 @@ export const useRealEstateData = () => {
 
   const updateRealEstate = async (
     realEstateId: string,
-    updatedData: Partial<ApiUpsertRealEstateListing>
+    updatedData: Partial<IApiRealEstateListingSchema>
   ): Promise<ApiRealEstateListing> => {
     return (
-      await put<ApiRealEstateListing, Partial<ApiUpsertRealEstateListing>>(
+      await put<ApiRealEstateListing, Partial<IApiRealEstateListingSchema>>(
         isIntegration
           ? `/api/real-estate-listing-int/${realEstateId}`
           : `/api/real-estate-listing/${realEstateId}`,

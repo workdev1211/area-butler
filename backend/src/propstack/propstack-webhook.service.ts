@@ -6,7 +6,7 @@ import * as relativeTime from 'dayjs/plugin/relativeTime';
 
 import {
   ApiRealEstateExtSourcesEnum,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { createDirectLink } from '../shared/shared.functions';
 import { UserDocument } from '../user/schema/user.schema';
@@ -92,7 +92,7 @@ export class PropstackWebhookService {
     }
 
     const realEstate = plainToInstance<
-      ApiUpsertRealEstateListing,
+      IApiRealEstateListingSchema,
       IPropstackWebhookProperty
     >(ApiPropstackWebhookToAreaButlerDto, resultProperty);
 
@@ -287,7 +287,7 @@ export class PropstackWebhookService {
     }
 
     const realEstate = plainToInstance<
-      Partial<ApiUpsertRealEstateListing>,
+      Partial<IApiRealEstateListingSchema>,
       Partial<IPropstackWebhookProperty>
     >(ApiPropstackWebhookToAreaButlerUpdDto, resultProperty, {
       exposeUnsetFields: false,

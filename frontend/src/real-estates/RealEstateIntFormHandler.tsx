@@ -5,7 +5,7 @@ import { FormModalData } from "components/FormModal";
 import { toastError, toastSuccess } from "shared/shared.functions";
 import {
   ApiRealEstateListing,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from "../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
@@ -32,7 +32,7 @@ export const RealEstateIntFormHandler: FunctionComponent<
   const { updateRealEstate } = useRealEstateData();
 
   const onSubmit = async (
-    updatedData: Partial<ApiUpsertRealEstateListing>
+    updatedData: Partial<IApiRealEstateListingSchema>
   ): Promise<void> => {
     try {
       beforeSubmit();

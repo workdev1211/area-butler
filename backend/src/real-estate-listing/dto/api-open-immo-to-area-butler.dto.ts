@@ -6,36 +6,14 @@ import {
   ApiRealEstateCost,
   ApiRealEstateCostType,
   ApiRealEstateStatusEnum,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { IOpenImmoXmlVendor } from '../../shared/open-immo.types';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
 import { iso3166Alpha3CountryNames } from '../../../../shared/constants/location';
 
 @Exclude()
-class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
-  @Expose()
-  @Transform(
-    ({
-      obj: {
-        immobilie: {
-          geo: {
-            strasse: streetName,
-            hausnummer: houseNumber,
-            plz: postCode,
-            ort: location,
-            land: { iso_land: country },
-          },
-        },
-      },
-    }: {
-      obj: IOpenImmoXmlVendor;
-    }): string =>
-      `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`,
-    { toClassOnly: true },
-  )
-  name: string;
-
+class ApiOpenImmoToAreaButlerDto implements IApiRealEstateListingSchema {
   @Expose()
   @Transform(
     ({
@@ -83,6 +61,28 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
     ({
       obj: {
         immobilie: {
+          geo: {
+            strasse: streetName,
+            hausnummer: houseNumber,
+            plz: postCode,
+            ort: location,
+            land: { iso_land: country },
+          },
+        },
+      },
+    }: {
+      obj: IOpenImmoXmlVendor;
+    }): string =>
+      `${streetName} ${houseNumber}, ${postCode} ${location}, ${iso3166Alpha3CountryNames[country]}`,
+    { toClassOnly: true },
+  )
+  name: string;
+
+  @Expose()
+  @Transform(
+    ({
+      obj: {
+        immobilie: {
           weitere_adresse: { url },
         },
       },
@@ -92,57 +92,6 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
     { toClassOnly: true },
   )
   externalUrl?: string;
-
-  @Expose()
-  @Transform(
-    ({
-      obj: {
-        immobilie: {
-          preise: {
-            kaufpreis: purchasePrice,
-            // TODO parse in the future
-            // kaufpreisnetto: purchasePriceNet,
-            // kaufpreisbrutto: purchasePriceGross,
-            // nettokaltmiete: coldRentNet,
-            kaltmiete: coldRent,
-            warmmiete: warmRent,
-          },
-        },
-      },
-    }: {
-      obj: IOpenImmoXmlVendor;
-    }) => {
-      if (!purchasePrice && !coldRent && !warmRent) {
-        return;
-      }
-
-      const costStructure: ApiRealEstateCost = {
-        price: { currency: '€' },
-        type: ApiRealEstateCostType.SELL,
-      };
-
-      if (purchasePrice) {
-        costStructure.price.amount = purchasePrice;
-        return costStructure;
-      }
-
-      if (coldRent) {
-        costStructure.price.amount = coldRent;
-        costStructure.type = ApiRealEstateCostType.RENT_MONTHLY_COLD;
-
-        return costStructure;
-      }
-
-      if (warmRent) {
-        costStructure.price.amount = warmRent;
-        costStructure.type = ApiRealEstateCostType.RENT_MONTHLY_WARM;
-
-        return costStructure;
-      }
-    },
-    { toClassOnly: true },
-  )
-  costStructure?: ApiRealEstateCost;
 
   @Expose()
   @Transform(
@@ -206,8 +155,58 @@ class ApiOpenImmoToAreaButlerDto implements ApiUpsertRealEstateListing {
   )
   characteristics?: ApiRealEstateCharacteristics;
 
+  @Expose()
+  @Transform(
+    ({
+      obj: {
+        immobilie: {
+          preise: {
+            kaufpreis: purchasePrice,
+            // TODO parse in the future
+            // kaufpreisnetto: purchasePriceNet,
+            // kaufpreisbrutto: purchasePriceGross,
+            // nettokaltmiete: coldRentNet,
+            kaltmiete: coldRent,
+            warmmiete: warmRent,
+          },
+        },
+      },
+    }: {
+      obj: IOpenImmoXmlVendor;
+    }) => {
+      if (!purchasePrice && !coldRent && !warmRent) {
+        return;
+      }
+
+      const costStructure: ApiRealEstateCost = {
+        price: { currency: '€' },
+        type: ApiRealEstateCostType.SELL,
+      };
+
+      if (purchasePrice) {
+        costStructure.price.amount = purchasePrice;
+        return costStructure;
+      }
+
+      if (coldRent) {
+        costStructure.price.amount = coldRent;
+        costStructure.type = ApiRealEstateCostType.RENT_MONTHLY_COLD;
+
+        return costStructure;
+      }
+
+      if (warmRent) {
+        costStructure.price.amount = warmRent;
+        costStructure.type = ApiRealEstateCostType.RENT_MONTHLY_WARM;
+
+        return costStructure;
+      }
+    },
+    { toClassOnly: true },
+  )
+  costStructure?: ApiRealEstateCost;
+
   status = ApiRealEstateStatusEnum.IN_PREPARATION;
-  showInSnippet = true;
 }
 
 export default ApiOpenImmoToAreaButlerDto;

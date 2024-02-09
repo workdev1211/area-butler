@@ -24,7 +24,6 @@ import ApiPropstackToAreaButlerDto from './api-propstack-to-area-butler.dto';
 @Exclude()
 class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPropstackProperty> {
   @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: { name, title },
@@ -33,50 +32,12 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
     }): string => name || title,
     { toClassOnly: true },
   )
+  @IsNotEmpty()
   @IsString()
   name: string;
 
   @Expose()
-  @IsOptional()
-  @Transform(
-    ({
-      obj: { price, base_rent: coldRent, total_rent: warmRent },
-    }: {
-      obj: TPropstackProcProperty<IPropstackProperty>;
-    }): ApiRealEstateCost => {
-      if (!price && !coldRent && !warmRent) {
-        return undefined;
-      }
-
-      let priceValue = price;
-      let priceType = ApiRealEstateCostType.SELL;
-
-      if (!price && coldRent) {
-        priceValue = coldRent;
-        priceType = ApiRealEstateCostType.RENT_MONTHLY_COLD;
-      }
-      if (!price && warmRent) {
-        priceValue = warmRent;
-        priceType = ApiRealEstateCostType.RENT_MONTHLY_WARM;
-      }
-
-      return {
-        price: {
-          amount: priceValue,
-          currency: '€',
-        },
-        type: priceType,
-      };
-    },
-    { toClassOnly: true },
-  )
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCost;
-
-  @Expose()
-  @IsOptional()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   @Transform(
     ({
       obj: {
@@ -137,13 +98,51 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
       return characteristics;
     },
   )
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
+  @Type(() => ApiRealEstateCostDto)
+  @Transform(
+    ({
+      obj: { price, base_rent: coldRent, total_rent: warmRent },
+    }: {
+      obj: TPropstackProcProperty<IPropstackProperty>;
+    }): ApiRealEstateCost => {
+      if (!price && !coldRent && !warmRent) {
+        return undefined;
+      }
+
+      let priceValue = price;
+      let priceType = ApiRealEstateCostType.SELL;
+
+      if (!price && coldRent) {
+        priceValue = coldRent;
+        priceType = ApiRealEstateCostType.RENT_MONTHLY_COLD;
+      }
+      if (!price && warmRent) {
+        priceValue = warmRent;
+        priceType = ApiRealEstateCostType.RENT_MONTHLY_WARM;
+      }
+
+      return {
+        price: {
+          amount: priceValue,
+          currency: '€',
+        },
+        type: priceType,
+      };
+    },
+    { toClassOnly: true },
+  )
   @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  costStructure?: ApiRealEstateCost;
+
+  @Expose()
   @Transform(
     ({
       obj: { status, areaButlerStatus },
@@ -154,6 +153,7 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
       toClassOnly: true,
     },
   )
+  @IsOptional()
   @IsString()
   status2?: string;
 }

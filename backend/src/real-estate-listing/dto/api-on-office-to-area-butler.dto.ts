@@ -1,5 +1,6 @@
 import {
   IsDate,
+  IsEnum,
   IsNotEmpty,
   IsObject,
   IsOptional,
@@ -14,19 +15,23 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateCostType,
+  ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
 import { GeoJsonPoint } from '../../shared/geo-json.types';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
+import {
+  IApiIntegrationParams,
+  IApiRealEstateIntegrationParams,
+} from '@area-butler-types/integration';
 import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
 import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-characteristics.dto';
 import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
-import ApiIntegrationParamsDto from '../../dto/api-integration-params.dto';
 import {
   ApiOnOfficeEstateBasementEnum,
   IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
 import { parseOnOfficeFloat } from '../../shared/on-office.functions';
+import ApiRealEstateIntegrationParamsDto from '../../dto/api-real-estate-integration-params.dto';
 
 export interface IApiOnOfficeProcessedRealEstate
   extends IApiOnOfficeRealEstate {
@@ -45,19 +50,18 @@ export interface IApiOnOfficeProcessedRealEstate
 @Exclude()
 class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   @Expose()
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
-  userId?: string;
+  address: string;
 
   @Expose()
-  @IsOptional()
+  @Type(() => ApiGeoJsonPointDto)
+  @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiIntegrationParamsDto)
-  integrationParams?: IApiIntegrationParams;
+  location: GeoJsonPoint;
 
   @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: { objekttitel, objekttyp, address },
@@ -68,13 +72,31 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       toClassOnly: true,
     },
   )
+  @IsNotEmpty()
   @IsString()
   name: string;
 
   @Expose()
-  @IsNotEmpty()
+  @Type(() => ApiRealEstateIntegrationParamsDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  integrationParams?: IApiRealEstateIntegrationParams;
+
+  @Expose()
+  @IsOptional()
   @IsString()
-  address: string;
+  userId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsEnum(ApiRealEstateExtSourcesEnum)
+  externalSource?: ApiRealEstateExtSourcesEnum;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  externalId?: string;
 
   @Expose()
   @IsOptional()
@@ -82,58 +104,7 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
   externalUrl?: string;
 
   @Expose()
-  @IsOptional()
-  @IsDate()
-  createdAt?: Date;
-
-  showInSnippet = true;
-
-  @Expose()
-  @IsOptional()
-  @Transform(
-    ({
-      obj: { kaufpreis, waehrung, kaltmiete, warmmiete },
-    }: {
-      obj: IApiOnOfficeProcessedRealEstate;
-    }): ApiRealEstateCost => {
-      const price = parseOnOfficeFloat(kaufpreis);
-      const coldPrice = parseOnOfficeFloat(kaltmiete);
-      const warmPrice = parseOnOfficeFloat(warmmiete);
-      const currency =
-        !waehrung || waehrung.toUpperCase() === 'EUR' ? '€' : waehrung;
-
-      if (price) {
-        return {
-          price: { amount: price, currency },
-          type: ApiRealEstateCostType.SELL,
-        };
-      }
-
-      if (warmPrice) {
-        return {
-          price: { amount: warmPrice, currency },
-          type: ApiRealEstateCostType.RENT_MONTHLY_WARM,
-        };
-      }
-
-      if (coldPrice) {
-        return {
-          price: { amount: coldPrice, currency },
-          type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
-        };
-      }
-
-      return undefined;
-    },
-    { toClassOnly: true },
-  )
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCost;
-
-  @Expose()
-  @IsOptional()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   @Transform(
     ({
       obj,
@@ -209,20 +180,56 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     },
     { toClassOnly: true },
   )
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   characteristics?: ApiRealEstateCharacteristics;
 
   @Expose()
-  @IsNotEmpty()
+  @Type(() => ApiRealEstateCostDto)
+  @Transform(
+    ({
+      obj: { kaufpreis, waehrung, kaltmiete, warmmiete },
+    }: {
+      obj: IApiOnOfficeProcessedRealEstate;
+    }): ApiRealEstateCost => {
+      const price = parseOnOfficeFloat(kaufpreis);
+      const coldPrice = parseOnOfficeFloat(kaltmiete);
+      const warmPrice = parseOnOfficeFloat(warmmiete);
+      const currency =
+        !waehrung || waehrung.toUpperCase() === 'EUR' ? '€' : waehrung;
+
+      if (price) {
+        return {
+          price: { amount: price, currency },
+          type: ApiRealEstateCostType.SELL,
+        };
+      }
+
+      if (warmPrice) {
+        return {
+          price: { amount: warmPrice, currency },
+          type: ApiRealEstateCostType.RENT_MONTHLY_WARM,
+        };
+      }
+
+      if (coldPrice) {
+        return {
+          price: { amount: coldPrice, currency },
+          type: ApiRealEstateCostType.RENT_MONTHLY_COLD,
+        };
+      }
+
+      return undefined;
+    },
+    { toClassOnly: true },
+  )
+  @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiGeoJsonPointDto)
-  location: GeoJsonPoint;
+  costStructure?: ApiRealEstateCost;
 
   @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: { areaButlerStatus, vermarktungsart },
@@ -230,11 +237,11 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus || vermarktungsart,
   )
+  @IsNotEmpty()
   @IsString()
   status?: string;
 
   @Expose()
-  @IsNotEmpty()
   @Transform(
     ({
       obj: { areaButlerStatus2, status2, status },
@@ -242,21 +249,9 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus2 || status2 || status,
   )
+  @IsNotEmpty()
   @IsString()
   status2?: string;
-
-  @Expose()
-  @IsOptional()
-  // @Transform(
-  //   ({
-  //     obj: { integrationParams, objektnr_extern, immonr, Id, datensatznr },
-  //   }: {
-  //     obj: IApiOnOfficeProcessedRealEstate;
-  //   }): string =>
-  //     integrationParams ? objektnr_extern || immonr : Id || datensatznr,
-  // )
-  @IsString()
-  externalId?: string;
 }
 
 export default ApiOnOfficeToAreaButlerDto;

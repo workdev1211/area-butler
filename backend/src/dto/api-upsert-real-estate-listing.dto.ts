@@ -7,55 +7,65 @@ import {
   NotEquals,
   IsObject,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
-import { ApiUpsertRealEstateListing } from '@area-butler-types/real-estate';
+import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import ApiGeoJsonPointDto from './api-geo-json-point.dto';
 import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 
-class ApiUpsertRealEstateListingDto implements ApiUpsertRealEstateListing {
+@Exclude()
+class ApiUpsertRealEstateListingDto implements IApiRealEstateListingSchema {
+  @Expose()
   @IsNotEmpty()
   @IsString()
   address: string;
 
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
-  characteristics?: ApiRealEstateCharacteristicsDto;
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
+  @Expose()
   @Type(() => ApiGeoJsonPointDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
   location: GeoJsonPoint;
 
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
-  costStructure?: ApiRealEstateCostDto;
-
-  @IsOptional()
-  @IsString()
-  externalUrl?: string;
-
+  @Expose()
   @IsNotEmpty()
   @IsString()
   name: string;
 
-  @IsNotEmpty()
+  @Expose()
+  @IsOptional()
   @IsBoolean()
-  showInSnippet: boolean;
+  showInSnippet?: boolean;
 
+  @Expose()
+  @IsOptional()
+  @IsString()
+  externalUrl?: string;
+
+  @Expose()
+  @Type(() => ApiRealEstateCharacteristicsDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  characteristics?: ApiRealEstateCharacteristicsDto;
+
+  @Expose()
+  @Type(() => ApiRealEstateCostDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  costStructure?: ApiRealEstateCostDto;
+
+  @Expose()
   @IsOptional()
   @IsString()
   @NotEquals(realEstateAllStatus)
   status?: string;
 
+  @Expose()
   @IsOptional()
   @IsString()
   status2?: string;

@@ -163,11 +163,17 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
         header: "Vermarktungsart",
         cell: (props) => props.getValue() || null,
         size: 150,
+        meta: {
+          cellStyles: { whiteSpace: "normal" },
+        },
       }),
       columnHelper.accessor("status2", {
         header: "Status",
         cell: (props) => props.getValue() || null,
-        size: 150,
+        size: 200,
+        meta: {
+          cellStyles: { whiteSpace: "normal" },
+        },
       }),
       columnHelper.accessor((row) => row.listing.name, {
         id: "name",

@@ -10,7 +10,7 @@ import {
 import {
   ApiFurnishing,
   ApiRealEstateListing,
-  ApiUpsertRealEstateListing,
+  IApiRealEstateListingSchema,
 } from "../../../shared/types/real-estate";
 import {
   RealEstateActionTypes,
@@ -21,7 +21,7 @@ import { useRealEstateData } from "../hooks/realestatedata";
 
 const mapFormToApiUpsertRealEstateListing = async (
   values: any
-): Promise<ApiUpsertRealEstateListing> => {
+): Promise<IApiRealEstateListingSchema> => {
   const availableFurnishing = Object.keys(ApiFurnishing);
 
   const furnishing = Object.keys(values).reduce<ApiFurnishing[]>(

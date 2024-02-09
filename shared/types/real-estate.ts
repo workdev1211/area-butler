@@ -1,17 +1,17 @@
 import { ApiCoordinates, ApiMoneyAmount } from "./types";
 import { GeoJsonPoint } from "../../backend/src/shared/geo-json.types";
-import { IApiIntegrationParams } from "./integration";
+import { IApiRealEstateIntegrationParams } from "./integration";
 import { TApiLocIndexProps, TLocationIndexData } from "./location-index";
 
 export interface IApiRealEstateListingSchema {
-  name: string;
   address: string;
   location: GeoJsonPoint;
+  name: string;
 
   createdAt?: Date;
   showInSnippet?: boolean;
 
-  integrationParams?: IApiIntegrationParams;
+  integrationParams?: IApiRealEstateIntegrationParams;
   userId?: string;
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
@@ -45,25 +45,6 @@ export interface ApiRealEstateListing {
   externalSource?: ApiRealEstateExtSourcesEnum; // if it was exported from a CRM
   externalId?: string; // if it was exported from a CRM
   locationIndices?: TLocationIndexData;
-}
-
-export interface ApiUpsertRealEstateListing {
-  name: string;
-  address: string;
-  location: GeoJsonPoint;
-
-  externalUrl?: string;
-  showInSnippet?: boolean;
-  costStructure?: ApiRealEstateCost;
-  characteristics?: ApiRealEstateCharacteristics;
-
-  status?: string;
-  status2?: string;
-
-  userId?: string;
-  // Should be specified for the integration entity
-  externalSource?: ApiRealEstateExtSourcesEnum;
-  externalId?: string;
 }
 
 // should be present either minPrice or price (maxPrice), or both
