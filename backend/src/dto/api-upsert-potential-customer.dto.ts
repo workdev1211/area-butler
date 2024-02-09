@@ -6,48 +6,59 @@ import {
   IsString,
   ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ApiUpsertPotentialCustomer } from '@area-butler-types/potential-customer';
 import { OsmName, TransportationParam } from '@area-butler-types/types';
 import ApiPreferredLocationDto from './api-preferred-location.dto';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
+import ApiTransportationParamDto from './api-transportation-param.dto';
 
+@Exclude()
 class ApiUpsertPotentialCustomerDto implements ApiUpsertPotentialCustomer {
+  @Expose()
   @IsOptional()
   @IsString()
   email?: string;
 
+  @Expose()
   @IsOptional()
   @IsString()
   name?: string;
 
+  @Expose()
   @IsOptional()
   @IsArray()
   @IsEnum(OsmName, { each: true })
   preferredAmenities?: OsmName[];
 
+  @Expose()
+  @Type(() => ApiPreferredLocationDto)
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiPreferredLocationDto)
   preferredLocations?: ApiPreferredLocationDto[];
 
+  @Expose()
+  @Type(() => ApiRealEstateCharacteristicsDto)
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCharacteristicsDto)
   realEstateCharacteristics?: ApiRealEstateCharacteristicsDto;
 
+  @Expose()
+  @Type(() => ApiRealEstateCostDto)
   @IsOptional()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiRealEstateCostDto)
   realEstateCostStructure?: ApiRealEstateCostDto;
 
+  @Expose()
+  @Type(() => ApiTransportationParamDto)
   @IsOptional()
   @IsArray()
+  @ValidateNested({ each: true })
   routingProfiles?: TransportationParam[];
 }
 

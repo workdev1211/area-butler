@@ -21,7 +21,7 @@ import ApiPreferredLocationDto from '../../../dto/api-preferred-location.dto';
 import ApiRealEstateListingDto from '../../../dto/api-real-estate-listing.dto';
 import ApiSearchResponseDto from '../../../dto/api-search-response.dto';
 import EntityRouteDto from '../../../dto/entity-route.dto';
-import TransportationParamDto from '../../../dto/transportation-param.dto';
+import ApiTransportationParamDto from '../../../dto/api-transportation-param.dto';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 
@@ -79,7 +79,7 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TransportationParamDto)
+  @Type(() => ApiTransportationParamDto)
   transportationParams: TransportationParam[];
 
   @IsOptional()

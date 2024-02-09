@@ -31,12 +31,6 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
   onSubmit,
   formId,
 }) => {
-  const furnishing = {} as any;
-
-  (realEstate?.characteristics?.furnishing || []).map(
-    (f) => (furnishing[f] = true)
-  );
-
   const [localRealEstate, setLocalRealEstate] =
     useState<Partial<ApiRealEstateListing>>(realEstate);
 
@@ -110,7 +104,6 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
           localRealEstate.characteristics?.energyEfficiency ?? "A",
         status:
           localRealEstate.status ?? ApiRealEstateStatusEnum.IN_PREPARATION,
-        ...furnishing,
       }}
       validationSchema={Yup.object({
         name: Yup.string().required("Bitte geben Sie einen Objektnamen an"),

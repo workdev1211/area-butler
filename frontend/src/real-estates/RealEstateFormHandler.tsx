@@ -24,11 +24,16 @@ const mapFormToApiUpsertRealEstateListing = async (
 ): Promise<ApiUpsertRealEstateListing> => {
   const availableFurnishing = Object.keys(ApiFurnishing);
 
-  // TODO convert to reduce
-  const furnishing = Object.entries(values)
-    .filter(([_, v]) => Boolean(v))
-    .filter(([k, _]) => availableFurnishing.includes(k))
-    .map(([k, _]) => k) as ApiFurnishing[];
+  const furnishing = Object.keys(values).reduce<ApiFurnishing[]>(
+    (result, key) => {
+      if (availableFurnishing.includes(key) && values[key]) {
+        result.push(key as ApiFurnishing);
+      }
+
+      return result;
+    },
+    []
+  );
 
   const { lat, lng } = await deriveGeocodeByAddress(values.address);
 
@@ -57,6 +62,7 @@ const mapFormToApiUpsertRealEstateListing = async (
       type: values.type,
     },
     characteristics: {
+      furnishing,
       startingAt: values.propertyStartingAt,
       numberOfRooms: values.numberOfRooms,
       propertySizeInSquareMeters: Number.isFinite(
@@ -70,7 +76,6 @@ const mapFormToApiUpsertRealEstateListing = async (
         ? values.realEstateSizeInSquareMeters
         : undefined,
       energyEfficiency: values.energyEfficiency,
-      furnishing,
     },
     status: values.status,
     status2: values.status2,

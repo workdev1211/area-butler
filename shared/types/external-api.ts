@@ -166,7 +166,7 @@ export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
   housingArea?: number;
   totalArea?: number;
   energyEfficiency?: ApiEnergyEfficiency;
-  furnishing: ApiFurnishing[];
+  furnishing?: ApiFurnishing[];
 }
 
 export interface IApiQueryOpenAiExtReqStatus

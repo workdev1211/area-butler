@@ -222,7 +222,7 @@ const PotentialCustomersPage: FunctionComponent = () => {
                     {customer?.realEstateCharacteristics?.furnishing &&
                       allFurnishing
                         .filter((f) =>
-                          customer?.realEstateCharacteristics?.furnishing.includes(
+                          customer?.realEstateCharacteristics?.furnishing?.includes(
                             f.type
                           )
                         )

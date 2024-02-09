@@ -9,19 +9,20 @@ export interface IApiRealEstateListingSchema {
   location: GeoJsonPoint;
 
   createdAt?: Date;
-  externalUrl?: string;
   showInSnippet?: boolean;
-  costStructure?: ApiRealEstateCost;
-  characteristics?: ApiRealEstateCharacteristics;
-  locationIndices?: TApiLocIndexProps;
-
-  status?: string;
-  status2?: string;
 
   integrationParams?: IApiIntegrationParams;
   userId?: string;
   externalSource?: ApiRealEstateExtSourcesEnum;
   externalId?: string;
+  externalUrl?: string;
+
+  characteristics?: ApiRealEstateCharacteristics;
+  costStructure?: ApiRealEstateCost;
+  locationIndices?: TApiLocIndexProps;
+
+  status?: string;
+  status2?: string;
 }
 
 export interface ApiRealEstateListing {
@@ -85,7 +86,7 @@ export interface ApiRealEstateCharacteristics {
   realEstateSizeInSquareMeters?: number; // living area - housing area
   propertySizeInSquareMeters?: number; // total area
   energyEfficiency?: ApiEnergyEfficiency;
-  furnishing: ApiFurnishing[];
+  furnishing?: ApiFurnishing[];
 }
 
 export enum ApiFurnishing {

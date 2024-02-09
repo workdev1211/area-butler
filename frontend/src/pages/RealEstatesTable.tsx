@@ -105,7 +105,7 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
               {realEstate.characteristics?.furnishing &&
                 allFurnishing
                   .filter((f) =>
-                    realEstate.characteristics?.furnishing.includes(f.type)
+                    realEstate.characteristics?.furnishing?.includes(f.type)
                   )
                   .map((f) => f.label)
                   .join(", ")}

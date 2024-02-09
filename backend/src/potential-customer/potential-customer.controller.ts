@@ -9,8 +9,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import ApiPotentialCustomerDto from '../dto/api-potential-customer.dto';
-import ApiQuestionnaireRequestDto from '../dto/api-questionnaire-request.dto';
 import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
 import ApiUpsertQuestionnaireRequestDto from '../dto/api-upsert-questionnaire-request.dto';
 import { AuthenticatedController } from '../shared/authenticated.controller';
@@ -22,6 +20,10 @@ import {
 } from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
+import {
+  ApiPotentialCustomer,
+  ApiQuestionnaireRequest,
+} from '@area-butler-types/potential-customer';
 
 @ApiTags('potential-customers')
 @Controller('api/potential-customers')
@@ -36,7 +38,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   @Get()
   async fetchPotentialCustomers(
     @InjectUser() user: UserDocument,
-  ): Promise<ApiPotentialCustomerDto[]> {
+  ): Promise<ApiPotentialCustomer[]> {
     return (
       await this.potentialCustomerService.fetchPotentialCustomers(user)
     ).map((p) => mapPotentialCustomerToApiPotentialCustomer(p, user.id));
@@ -44,7 +46,7 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Fetch potential customer names' })
   @Get('names')
-  async fetchNames(@InjectUser() user: UserDocument): Promise<string[]> {
+  fetchNames(@InjectUser() user: UserDocument): Promise<string[]> {
     return this.potentialCustomerService.fetchNames(user);
   }
 
@@ -53,7 +55,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   async createPotentialCustomer(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
-  ): Promise<ApiPotentialCustomerDto> {
+  ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.createPotentialCustomer(
         user,
@@ -68,7 +70,7 @@ export class PotentialCustomerController extends AuthenticatedController {
   async insertQuestionnaireRequest(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body() questionnaireRequest: ApiUpsertQuestionnaireRequestDto,
-  ): Promise<ApiQuestionnaireRequestDto> {
+  ): Promise<ApiQuestionnaireRequest> {
     return mapQuestionnaireRequestToApiQuestionnaireRequest(
       await this.potentialCustomerService.insertQuestionnaireRequest(
         user,
@@ -83,7 +85,7 @@ export class PotentialCustomerController extends AuthenticatedController {
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
     @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
-  ): Promise<ApiPotentialCustomerDto> {
+  ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.updatePotentialCustomer(
         user,
@@ -96,10 +98,10 @@ export class PotentialCustomerController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Delete a potential customer' })
   @Delete(':id')
-  async deletePotentialCustomer(
+  deletePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() user: UserDocument,
-  ) {
-    await this.potentialCustomerService.deletePotentialCustomer(user, id);
+  ): Promise<void> {
+    return this.potentialCustomerService.deletePotentialCustomer(user, id);
   }
 }

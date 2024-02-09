@@ -88,14 +88,14 @@ class ApiQueryOpenAiExtReqDto
   @IsNotEmpty()
   @Transform(
     ({ value }: { value: string }): string[] =>
-      value.split(',').map((furnishItem) => furnishItem.toUpperCase()),
+      value?.split(',').map((furnishItem) => furnishItem.toUpperCase()),
     {
       toClassOnly: true,
     },
   )
   @IsArray()
   @IsEnum(ApiFurnishing, { each: true, message: getEnumValidMessage })
-  furnishing: ApiFurnishing[] = [];
+  furnishing?: ApiFurnishing[];
 }
 
 export default ApiQueryOpenAiExtReqDto;

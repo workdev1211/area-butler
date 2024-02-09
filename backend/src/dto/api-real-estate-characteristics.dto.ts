@@ -4,7 +4,6 @@ import {
   IsEnum,
   IsNumber,
   IsOptional,
-  IsNotEmpty,
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
@@ -21,12 +20,11 @@ class ApiRealEstateCharacteristicsDto implements ApiRealEstateCharacteristics {
   @IsEnum(ApiEnergyEfficiency)
   energyEfficiency?: ApiEnergyEfficiency;
 
-  // TODO make "furnishing" completely optional
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   @IsEnum(ApiFurnishing, { each: true })
-  furnishing: ApiFurnishing[];
+  furnishing?: ApiFurnishing[];
 
   @Expose()
   @IsOptional()

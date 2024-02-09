@@ -16,57 +16,57 @@ export type RealEstateListingDocument = RealEstateListing & Document;
 
 @Schema()
 export class RealEstateListing implements IApiRealEstateListingSchema {
-  @Prop()
-  userId: string;
-
-  @Prop({ type: RealEstateIntegrationParamsSchema })
-  integrationParams: IApiRealEstateIntegrationParams;
-
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   name: string;
 
-  @Prop({ required: true })
+  @Prop({ type: String, required: true })
   address: string;
-
-  @Prop()
-  externalUrl: string;
-
-  @Prop({ type: Date, default: Date.now })
-  createdAt: Date;
-
-  @Prop({ type: Boolean, default: true })
-  showInSnippet: boolean;
-
-  @Prop({ type: Object })
-  costStructure: ApiRealEstateCost;
-
-  @Prop({ type: Object })
-  characteristics: ApiRealEstateCharacteristics;
 
   @Prop({ type: Object, required: true })
   location: GeoJsonPoint;
 
-  @Prop({ type: Object })
-  locationIndices: TApiLocIndexProps;
+  @Prop({ type: Date, default: Date.now })
+  createdAt?: Date;
 
-  @Prop({
-    type: String,
-  })
-  status: string;
+  @Prop({ type: Boolean, default: true })
+  showInSnippet?: boolean;
 
-  @Prop({
-    type: String,
-  })
-  status2: string;
+  @Prop({ type: RealEstateIntegrationParamsSchema })
+  integrationParams?: IApiRealEstateIntegrationParams;
+
+  @Prop({ type: String })
+  userId?: string;
 
   @Prop({
     type: String,
     enum: ApiRealEstateExtSourcesEnum,
   })
-  externalSource: ApiRealEstateExtSourcesEnum;
+  externalSource?: ApiRealEstateExtSourcesEnum;
 
   @Prop({ type: String })
-  externalId: string;
+  externalId?: string;
+
+  @Prop({ type: String })
+  externalUrl?: string;
+
+  @Prop({ type: Object })
+  characteristics?: ApiRealEstateCharacteristics;
+
+  @Prop({ type: Object })
+  costStructure?: ApiRealEstateCost;
+
+  @Prop({ type: Object })
+  locationIndices?: TApiLocIndexProps;
+
+  @Prop({
+    type: String,
+  })
+  status?: string;
+
+  @Prop({
+    type: String,
+  })
+  status2?: string;
 }
 
 export const RealEstateListingSchema =

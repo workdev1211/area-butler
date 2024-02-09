@@ -18,7 +18,7 @@ import {
   TransportationParam,
 } from '@area-butler-types/types';
 import ApiCoordinatesDto from './api-coordinates.dto';
-import TransportationParamDto from './transportation-param.dto';
+import ApiTransportationParamDto from './api-transportation-param.dto';
 import ApiPreferredLocationDto from './api-preferred-location.dto';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 
@@ -36,7 +36,7 @@ class ApiSearchDto implements ApiSearch {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TransportationParamDto)
+  @Type(() => ApiTransportationParamDto)
   meansOfTransportation: TransportationParam[];
 
   @IsNotEmpty()

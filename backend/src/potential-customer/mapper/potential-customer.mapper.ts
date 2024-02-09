@@ -1,13 +1,16 @@
 import { PotentialCustomerDocument } from '../schema/potential-customer.schema';
 import { QuestionnaireRequestDocument } from '../schema/questionnaire-request.schema';
-import ApiPotentialCustomerDto from '../../dto/api-potential-customer.dto';
-import ApiQuestionnaireRequestDto from '../../dto/api-questionnaire-request.dto';
+import {
+  ApiPotentialCustomer,
+  ApiQuestionnaireRequest,
+} from '@area-butler-types/potential-customer';
 
+// TODO change to 'plainToInstance' with 'ApiPotentialCustomerDto'
 export const mapPotentialCustomerToApiPotentialCustomer = (
   potentialCustomer: PotentialCustomerDocument,
   userId?: string,
   isIntegrationUser = false,
-): ApiPotentialCustomerDto => ({
+): ApiPotentialCustomer => ({
   id: potentialCustomer.id,
   name: potentialCustomer.name,
   email: potentialCustomer.email,
@@ -21,9 +24,10 @@ export const mapPotentialCustomerToApiPotentialCustomer = (
     : potentialCustomer.userId !== userId,
 });
 
+// TODO change to 'plainToInstance' with 'ApiQuestionnaireRequestDto'
 export const mapQuestionnaireRequestToApiQuestionnaireRequest = (
   questionnaireRequest: QuestionnaireRequestDocument,
-): ApiQuestionnaireRequestDto => ({
+): ApiQuestionnaireRequest => ({
   id: questionnaireRequest.id,
   name: questionnaireRequest.name,
   email: questionnaireRequest.email,

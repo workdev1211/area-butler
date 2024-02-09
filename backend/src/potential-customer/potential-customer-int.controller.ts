@@ -10,13 +10,13 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 
-import ApiPotentialCustomerDto from '../dto/api-potential-customer.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { mapPotentialCustomerToApiPotentialCustomer } from './mapper/potential-customer.mapper';
 import { PotentialCustomerService } from './potential-customer.service';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import ApiUpsertPotentialCustomerDto from '../dto/api-upsert-potential-customer.dto';
+import { ApiPotentialCustomer } from '@area-butler-types/potential-customer';
 
 @ApiTags('potential-customers', 'integration')
 @Controller('api/potential-customers-int')
@@ -31,7 +31,7 @@ export class PotentialCustomerIntController {
   async createPotentialCustomer(
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() potentialCustomer: ApiUpsertPotentialCustomerDto,
-  ): Promise<ApiPotentialCustomerDto> {
+  ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.createPotentialCustomer(
         integrationUser,
@@ -45,7 +45,7 @@ export class PotentialCustomerIntController {
   @Get()
   async fetchPotentialCustomers(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-  ): Promise<ApiPotentialCustomerDto[]> {
+  ): Promise<ApiPotentialCustomer[]> {
     return (
       await this.potentialCustomerService.fetchPotentialCustomers(
         integrationUser,
@@ -62,7 +62,7 @@ export class PotentialCustomerIntController {
   @ApiOperation({ description: 'Fetch potential customer names' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Get('names')
-  async fetchNames(
+  fetchNames(
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<string[]> {
     return this.potentialCustomerService.fetchNames(integrationUser);
@@ -75,7 +75,7 @@ export class PotentialCustomerIntController {
     @Param('id') id: string,
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() potentialCustomer: Partial<ApiUpsertPotentialCustomerDto>,
-  ): Promise<ApiPotentialCustomerDto> {
+  ): Promise<ApiPotentialCustomer> {
     return mapPotentialCustomerToApiPotentialCustomer(
       await this.potentialCustomerService.updatePotentialCustomer(
         integrationUser,
@@ -88,11 +88,11 @@ export class PotentialCustomerIntController {
   @ApiOperation({ description: 'Delete a potential customer' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Delete(':id')
-  async deletePotentialCustomer(
+  deletePotentialCustomer(
     @Param('id') id: string,
     @InjectUser() integrationUser: TIntegrationUserDocument,
-  ) {
-    await this.potentialCustomerService.deletePotentialCustomer(
+  ): Promise<void> {
+    return this.potentialCustomerService.deletePotentialCustomer(
       integrationUser,
       id,
     );

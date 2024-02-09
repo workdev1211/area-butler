@@ -13,7 +13,7 @@ import { OsmName } from '@area-butler-types/types';
 import ApiPreferredLocationDto from './api-preferred-location.dto';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
-import TransportationParamDto from './transportation-param.dto';
+import ApiTransportationParamDto from './api-transportation-param.dto';
 
 class ApiPotentialCustomerDto implements ApiPotentialCustomer {
   @IsNotEmpty()
@@ -52,8 +52,8 @@ class ApiPotentialCustomerDto implements ApiPotentialCustomer {
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => TransportationParamDto)
-  routingProfiles: TransportationParamDto[];
+  @Type(() => ApiTransportationParamDto)
+  routingProfiles: ApiTransportationParamDto[];
 
   @IsNotEmpty()
   @IsBoolean()
