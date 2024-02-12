@@ -39,10 +39,11 @@ import {
   ON_OFFICE_ESTATES_PER_PAGE,
   OnOfficeApiService,
 } from '../client/on-office/on-office-api.service';
-import {
-  ApiOnOfficeRealEstStatusByUserEmailsEnum,
-  setRealEstateStatusByUserEmail,
-} from './mapper/real-estate-on-office-import.mapper';
+// TODO should be removed in the future after some testing
+// import {
+//   ApiOnOfficeRealEstStatusByUserEmailsEnum,
+//   setRealEstateStatusByUserEmail,
+// } from './mapper/real-estate-on-office-import.mapper';
 import { IApiPropstackFetchPropQueryParams } from '../shared/propstack.types';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
@@ -417,6 +418,7 @@ export class RealEstateCrmImportService {
         'unterkellert',
         'vermarktungsart',
         'status2',
+        'objekttyp',
         'objektnr_extern', // external id
       ],
     };
@@ -558,18 +560,19 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        const processedUserEmail = (
-          isIntegrationUser ? intUserParams.email : user.email
-        )?.toLowerCase();
-
-        if (
-          !isIntegrationUser &&
-          Object.values<string>(
-            ApiOnOfficeRealEstStatusByUserEmailsEnum,
-          ).includes(processedUserEmail)
-        ) {
-          setRealEstateStatusByUserEmail(processedUserEmail, realEstate);
-        }
+        // TODO should be removed in the future after some testing
+        // const processedUserEmail = (
+        //   isIntegrationUser ? intUserParams.email : user.email
+        // )?.toLowerCase();
+        //
+        // if (
+        //   !isIntegrationUser &&
+        //   Object.values<string>(
+        //     ApiOnOfficeRealEstStatusByUserEmailsEnum,
+        //   ).includes(processedUserEmail)
+        // ) {
+        //   setRealEstateStatusByUserEmail(processedUserEmail, realEstate);
+        // }
 
         // LEFT FOR DEBUGGING PURPOSES
         // testData.push(

@@ -1,5 +1,4 @@
 import {
-  IsDate,
   IsEnum,
   IsNotEmpty,
   IsObject,
@@ -236,8 +235,9 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus || vermarktungsart,
+    { toClassOnly: true },
   )
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   status?: string;
 
@@ -248,10 +248,26 @@ class ApiOnOfficeToAreaButlerDto implements IApiRealEstateListingSchema {
     }: {
       obj: IApiOnOfficeProcessedRealEstate;
     }): string => areaButlerStatus2 || status2 || status,
+    { toClassOnly: true },
   )
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   status2?: string;
+
+  @Expose()
+  @Transform(
+    ({
+      obj: { objekttyp },
+    }: {
+      obj: IApiOnOfficeProcessedRealEstate;
+    }): string => objekttyp ?? undefined,
+    {
+      toClassOnly: true,
+    },
+  )
+  @IsOptional()
+  @IsString()
+  type?: string;
 }
 
 export default ApiOnOfficeToAreaButlerDto;

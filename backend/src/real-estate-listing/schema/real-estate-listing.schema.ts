@@ -67,6 +67,11 @@ export class RealEstateListing implements IApiRealEstateListingSchema {
     type: String,
   })
   status2?: string;
+
+  @Prop({
+    type: String,
+  })
+  type?: string;
 }
 
 export const RealEstateListingSchema =

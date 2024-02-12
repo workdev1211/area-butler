@@ -23,6 +23,7 @@ export interface IApiRealEstateListingSchema {
 
   status?: string;
   status2?: string;
+  type?: string;
 }
 
 export interface ApiRealEstateListing {

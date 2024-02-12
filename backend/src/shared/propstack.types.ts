@@ -231,6 +231,7 @@ export interface IPropstackProperty {
   long_furnishing_note?: string;
   object_type?: string; // enum
   rs_type?: string; // enum
+  rs_category?: string; // enum
   district?: string;
 }
 

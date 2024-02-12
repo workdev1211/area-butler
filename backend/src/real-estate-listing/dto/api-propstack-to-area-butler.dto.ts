@@ -67,6 +67,7 @@ abstract class ApiPropstackToAreaButlerDto<
   //     type: 'Point',
   //     coordinates: [lat, lng],
   //   }),
+  //   { toClassOnly: true },
   // )
   @IsNotEmpty()
   @IsObject()

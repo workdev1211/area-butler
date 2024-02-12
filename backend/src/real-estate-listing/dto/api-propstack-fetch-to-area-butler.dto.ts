@@ -97,6 +97,7 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
 
       return characteristics;
     },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsObject()
@@ -156,6 +157,43 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
   @IsOptional()
   @IsString()
   status2?: string;
+
+  @Expose()
+  @Transform(
+    ({
+      obj: {
+        object_type: objectType,
+        rs_type: rsType,
+        rs_category: rsCategory,
+      },
+    }: {
+      obj: TPropstackProcProperty<IPropstackProperty>;
+    }): string => {
+      if (!objectType && !rsType && !rsCategory) {
+        return;
+      }
+
+      let resultType = '';
+
+      if (objectType) {
+        resultType += objectType;
+      }
+      if (rsType) {
+        resultType += resultType.length ? ` | ${rsType}` : rsType;
+      }
+      if (rsCategory) {
+        resultType += resultType.length ? ` | ${rsCategory}` : rsCategory;
+      }
+
+      return resultType;
+    },
+    {
+      toClassOnly: true,
+    },
+  )
+  @IsOptional()
+  @IsString()
+  type?: string;
 }
 
 export default ApiPropstackFetchToAreaButlerDto;

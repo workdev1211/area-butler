@@ -89,6 +89,7 @@ class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPr
 
       return characteristics;
     },
+    { toClassOnly: true },
   )
   @IsOptional()
   @IsObject()
