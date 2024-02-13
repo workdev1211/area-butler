@@ -230,7 +230,7 @@ export class RealEstateListingService {
   async updateLocationIndices(): Promise<void> {
     const total = await this.realEstateListingModel.find().count();
     const limit = 100;
-    this.logger.debug('Location index update starting!');
+    this.logger.log('Location index update starting!');
 
     for (let skip = 0; skip < total; skip += limit) {
       const realEstates = await this.realEstateListingModel
@@ -247,7 +247,7 @@ export class RealEstateListingService {
       }
     }
 
-    this.logger.debug('Location index update finished!');
+    this.logger.log('Location index update finished!');
   }
 
   async deleteRealEstateListing(

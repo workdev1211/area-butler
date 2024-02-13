@@ -41,8 +41,8 @@ export interface IApiPropstackFetchedProperties {
 }
 
 export interface IApiPropstackConnectReq {
-  shopId: number;
   apiKey: string;
+  shopId: number;
 }
 
 export interface IPropstackPrettyValue {

@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
@@ -10,6 +10,7 @@ export class PropstackConnectStrategy extends PassportStrategy(
   HeaderAPIKeyStrategy,
   'propstack-connect',
 ) {
+  private readonly logger = new Logger(PropstackConnectStrategy.name);
   private readonly propstackConnectApiKey =
     configService.getPropstackConnectApiKey();
 
@@ -28,6 +29,8 @@ export class PropstackConnectStrategy extends PassportStrategy(
         ) {
           return verified(null, {});
         }
+
+        this.logger.debug(`\nRoute path: ${routePath}\nAPI key: ${apiKey}`);
 
         return verified(new UnauthorizedException());
       },

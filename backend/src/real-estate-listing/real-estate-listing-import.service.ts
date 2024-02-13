@@ -522,6 +522,7 @@ export class RealEstateListingImportService {
       return;
     }
 
+    // TODO refactor, 'realEstateData' should be a new object to avoid side effects
     Object.assign(realEstateData, {
       userId,
       address: locationAddress,

@@ -48,7 +48,7 @@ export interface IApiIntUserOnOfficeParams {
 export interface IApiIntUserPropstackParams {
   apiKey?: string;
   shopId?: number;
-  departmentId?: number;
+  teamId?: number;
   brokerId?: number;
 }
 

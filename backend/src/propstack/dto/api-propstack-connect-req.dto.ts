@@ -7,14 +7,14 @@ import { IApiPropstackConnectReq } from '../../shared/propstack.types';
 class ApiPropstackConnectReqDto implements IApiPropstackConnectReq {
   @Expose()
   @IsNotEmpty()
-  @IsInt()
-  @IsPositive()
-  shopId: number;
+  @IsString()
+  apiKey: string;
 
   @Expose()
   @IsNotEmpty()
-  @IsString()
-  apiKey: string;
+  @IsInt()
+  @IsPositive()
+  shopId: number;
 }
 
 export default ApiPropstackConnectReqDto;

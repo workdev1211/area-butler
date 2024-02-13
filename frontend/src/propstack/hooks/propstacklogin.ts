@@ -10,15 +10,14 @@ import {
 } from "../../context/SearchContext";
 import { RequestStatusTypesEnum } from "../../../../shared/types/types";
 import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
-import {
-  IApiPropstackLoginQueryParams,
-  IApiPropstackLoginReq,
-} from "../../../../shared/types/propstack";
+import { IApiPropstackLoginQueryParams } from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
 const loginQueryParamsSchema = Yup.object({
   apiKey: Yup.string().required(),
   propertyId: Yup.string().required(),
+  shopId: Yup.string().required(),
+  teamId: Yup.string().optional(),
 });
 
 export const usePropstackLogin = () => {
@@ -42,7 +41,7 @@ export const usePropstackLogin = () => {
 
   const performLogin = async ({
     apiKey,
-    propertyId,
+    ...loginData
   }: IApiPropstackLoginQueryParams): Promise<IIntegrationHandleLogin> => {
     const response: IIntegrationHandleLogin = {
       requestStatus: RequestStatusTypesEnum.SUCCESS,
@@ -50,11 +49,12 @@ export const usePropstackLogin = () => {
 
     try {
       const loginRes = (
-        await post<IApiIntUserLoginRes, IApiPropstackLoginReq>(
-          "/api/propstack/login",
-          { propertyId: +propertyId },
-          { Authorization: `AccessToken ${apiKey}` }
-        )
+        await post<
+          IApiIntUserLoginRes,
+          Omit<IApiPropstackLoginQueryParams, "apiKey">
+        >("/api/propstack/login", loginData, {
+          Authorization: `AccessToken ${apiKey}`,
+        })
       ).data;
 
       dispatchContextData(loginRes);

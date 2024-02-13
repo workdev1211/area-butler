@@ -1,10 +1,10 @@
 import {
   CallHandler,
   ExecutionContext,
-  HttpException,
   Injectable,
   Logger,
   NestInterceptor,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
@@ -35,11 +35,10 @@ export class InjectIntegrationUserInterceptor implements NestInterceptor {
 
     if (!integrationUser) {
       this.logger.debug(
-        `\nPath: ${req.route.path}` +
-          `\nAccess token: ${accessToken}` +
-          `\nAuth header: ${authorization}`,
+        `\nRoute path: ${req.route.path}\nAuth header: ${authorization}`,
       );
-      throw new HttpException('Unknown user!', 400);
+
+      throw new UnauthorizedException();
     }
 
     req.principal = integrationUser;

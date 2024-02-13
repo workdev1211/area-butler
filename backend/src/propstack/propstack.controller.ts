@@ -60,7 +60,7 @@ export class PropstackController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() loginData: ApiPropstackLoginReqDto,
   ): Promise<IApiIntUserLoginRes> {
-    this.logger.debug(`'${this.login.name}' method has been triggered.`, {
+    this.logger.debug(`'${this.login.name}' method was triggered.`, {
       integrationUserId: integrationUser.integrationUserId,
       ...loginData,
     });

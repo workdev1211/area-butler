@@ -297,7 +297,6 @@ export class RealEstateCrmImportService {
         // }
 
         const estateData: Partial<IApiRealEstateListingSchema> = {
-          address: property.address,
           location: {
             type: 'Point',
             coordinates: [

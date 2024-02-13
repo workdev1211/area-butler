@@ -1,6 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
+import { Types } from 'mongoose';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
@@ -41,68 +42,53 @@ export class PropstackService {
     private readonly locationIntService: LocationIntService,
   ) {}
 
-  async connect(connectData: IApiPropstackConnectReq): Promise<void> {
-    const { shopId, apiKey } = connectData;
+  async connect({ apiKey, shopId }: IApiPropstackConnectReq): Promise<void> {
     const integrationUserId = `${shopId}`;
-
-    const integrationUser = await this.integrationUserService.findOne(
-      this.integrationType,
-      { integrationUserId, 'parameters.apiKey': apiKey },
-    );
-
     const accessToken = PropstackService.encryptAccessToken(apiKey);
 
-    if (!integrationUser) {
-      await this.integrationUserService.create({
-        accessToken,
-        integrationUserId,
-        integrationType: this.integrationType,
-        parameters: connectData,
-        isParent: true,
-      });
+    const integrationUser = await this.integrationUserService.findOneAndUpdate(
+      this.integrationType,
+      { integrationUserId },
+      { accessToken, 'parameters.apiKey': apiKey, 'parameters.shopId': shopId },
+    );
 
+    if (integrationUser) {
       return;
     }
 
-    Object.assign(integrationUser, {
+    await this.integrationUserService.create({
       accessToken,
       integrationUserId,
-      parameters: { ...integrationUser.parameters, ...connectData },
+      integrationType: this.integrationType,
+      parameters: { apiKey, shopId },
+      isParent: true,
     });
-
-    await integrationUser.save();
   }
 
   async login(
-    parentIntUser: TIntegrationUserDocument,
+    integrationUser: TIntegrationUserDocument,
     { propertyId }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
+    const { integrationUserId, accessToken, config, parameters, parentId } =
+      integrationUser;
+
     const property = await this.propstackApiService.fetchPropertyById(
-      (parentIntUser.parameters as IApiIntUserPropstackParams).apiKey,
+      (parameters as IApiIntUserPropstackParams).apiKey,
       propertyId,
     );
 
     const {
-      address,
-      broker: { department_ids: departmentIds },
-    } = property;
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
-    const departmentId = departmentIds?.length ? departmentIds[0] : undefined;
-
-    const integrationUser = await this.getResultIntUser(
-      parentIntUser,
-      departmentId,
-    );
-    const { integrationUserId, accessToken, config, parentId } =
-      integrationUser;
+      geometry: {
+        location: { lat, lng },
+      },
+    } = await this.googleGeocodeService.fetchPlaceOrFail(property.address);
 
     const resultProperty = { ...property };
 
     Object.assign(resultProperty, {
-      address,
       location: {
         type: 'Point',
-        coordinates: [place.geometry.location.lat, place.geometry.location.lng],
+        coordinates: [lat, lng],
       },
       integrationParams: {
         integrationUserId,
@@ -158,61 +144,6 @@ export class PropstackService {
     );
   }
 
-  async getResultIntUser(
-    parentIntUser: TIntegrationUserDocument,
-    departmentId?: number,
-  ): Promise<TIntegrationUserDocument> {
-    if (!departmentId) {
-      return parentIntUser;
-    }
-
-    const {
-      parameters,
-      id: parentId,
-      integrationUserId: parentIntUserId,
-    } = parentIntUser;
-
-    const { apiKey } = parameters as IApiIntUserPropstackParams;
-    const integrationUserId = `${parentIntUserId}-${departmentId}`;
-
-    const integrationUser = await this.integrationUserService.findOne(
-      this.integrationType,
-      { integrationUserId },
-    );
-
-    const accessToken = PropstackService.encryptAccessToken(
-      `${apiKey}-${departmentId}`,
-    );
-
-    if (!integrationUser) {
-      return this.integrationUserService.create({
-        integrationUserId,
-        accessToken,
-        parentId,
-        integrationType: this.integrationType,
-        parameters: {
-          ...parameters,
-          departmentId,
-        },
-      });
-    }
-
-    if (
-      (integrationUser.parameters as IApiIntUserPropstackParams).apiKey !==
-      apiKey
-    ) {
-      Object.assign(integrationUser, {
-        accessToken,
-        parentId,
-        parameters: { ...integrationUser.parameters, apiKey },
-      });
-
-      await integrationUser.save();
-    }
-
-    return integrationUser;
-  }
-
   async fetchAvailStatuses({
     parameters,
   }: TIntegrationUserDocument): Promise<IApiRealEstAvailIntStatuses> {
@@ -231,6 +162,101 @@ export class PropstackService {
       estateStatuses,
       estateMarketTypes: propstackPropertyMarketTypeNames,
     };
+  }
+
+  async getIntegrationUser(
+    apiKey: string,
+    shopId: string,
+    teamId: string,
+  ): Promise<TIntegrationUserDocument> {
+    let integrationUser: TIntegrationUserDocument;
+
+    if (teamId) {
+      integrationUser = await this.integrationUserService.findOne(
+        this.integrationType,
+        {
+          integrationUserId: `${shopId}-${teamId}`,
+          'parameters.apiKey': apiKey,
+        },
+      );
+
+      if (integrationUser?.parentId) {
+        integrationUser.parentUser = await this.integrationUserService.findOne(
+          this.integrationType,
+          {
+            _id: new Types.ObjectId(integrationUser.parentId),
+            isParent: true,
+            'parameters.apiKey': apiKey,
+          },
+        );
+      }
+    }
+
+    if (teamId && !integrationUser) {
+      const parentUser = await this.integrationUserService.findOne(
+        this.integrationType,
+        {
+          integrationUserId: `${shopId}`,
+          isParent: true,
+          'parameters.apiKey': apiKey,
+        },
+      );
+
+      if (!parentUser) {
+        return;
+      }
+
+      integrationUser = await this.integrationUserService.findOneAndUpdate(
+        this.integrationType,
+        {
+          integrationUserId: `${shopId}-${teamId}`,
+        },
+        { 'parameters.apiKey': apiKey },
+      );
+
+      if (!integrationUser) {
+        integrationUser = await this.integrationUserService
+          .create({
+            accessToken: PropstackService.encryptAccessToken(
+              `${apiKey}-${teamId}`,
+            ),
+            integrationType: this.integrationType,
+            integrationUserId: `${shopId}-${teamId}`,
+            parameters: {
+              apiKey,
+              shopId: parseInt(shopId, 10),
+              teamId: parseInt(teamId, 10),
+            } as IApiIntUserPropstackParams,
+            parentId: parentUser.id,
+          })
+          .catch((e) => {
+            PropstackService.logger.error(e);
+
+            PropstackService.logger.debug(
+              `\nAPI key: ${apiKey}` +
+                `\nShop id: ${shopId}` +
+                `\nTeam id: ${teamId}`,
+            );
+
+            return undefined;
+          });
+      }
+
+      integrationUser.parentUser = parentUser;
+    }
+
+    if (!teamId && !integrationUser) {
+      integrationUser = await this.integrationUserService.findOne(
+        this.integrationType,
+        {
+          integrationUserId: `${shopId}`,
+          isParent: true,
+          'parameters.apiKey': apiKey,
+        },
+      );
+    }
+
+    return integrationUser;
   }
 
   static encryptAccessToken(accessToken: string): string {

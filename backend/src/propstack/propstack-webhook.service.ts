@@ -51,21 +51,18 @@ export class PropstackWebhookService {
     property: ApiPropstackWebhookPropertyDto,
     eventId: string,
   ): Promise<void> {
-    let resultingUser = user;
     const isIntegrationUser = 'integrationUserId' in user;
     const propstackApiKey = isIntegrationUser
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
       : user.apiConnections?.PROPSTACK.apiKey;
 
-    const {
-      address,
-      broker: { department_ids: departmentIds },
-    } = property;
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+    const place = await this.googleGeocodeService.fetchPlaceOrFail(
+      property.address,
+    );
+
     const resultProperty = { ...property };
 
     Object.assign(resultProperty, {
-      address,
       location: {
         type: 'Point',
         coordinates: [place.geometry.location.lat, place.geometry.location.lng],
@@ -73,19 +70,10 @@ export class PropstackWebhookService {
     });
 
     if (isIntegrationUser) {
-      const departmentId = departmentIds?.length ? departmentIds[0] : undefined;
-
-      resultingUser = await this.propstackService.getResultIntUser(
-        user,
-        departmentId,
-      );
-
-      const { integrationUserId, integrationType } = resultingUser;
-
       Object.assign(resultProperty, {
         integrationParams: {
-          integrationUserId,
-          integrationType,
+          integrationUserId: user.integrationUserId,
+          integrationType: user.integrationType,
           integrationId: `${resultProperty.id}`,
         },
       });
@@ -97,7 +85,7 @@ export class PropstackWebhookService {
     >(ApiPropstackWebhookToAreaButlerDto, resultProperty);
 
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
-      resultingUser,
+      user,
       isIntegrationUser
         ? await this.realEstateListingIntService.upsertByIntParams(realEstate)
         : await this.realEstateListingService.createRealEstateListing(
@@ -110,14 +98,14 @@ export class PropstackWebhookService {
       await this.snapshotExtService.createSnapshotByPlace({
         place,
         realEstateListing,
-        user: resultingUser,
+        user,
       });
 
-    this.logger.log(
-      `Event ${eventId} continues to be processed for ${dayjs
-        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-        .humanize()}. Snapshot creation is complete.`,
-    );
+    // this.logger.log(
+    //   `Event ${eventId} continues to be processed for ${dayjs
+    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+    //     .humanize()}. Snapshot creation is complete.`,
+    // );
 
     const fetchOpenAiDescription = async (
       fetchDescription: Promise<string>,
@@ -128,7 +116,7 @@ export class PropstackWebhookService {
 
     const openAiQueryResults = await Promise.allSettled([
       fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocationDescription(resultingUser, {
+        this.locationService.fetchOpenAiLocationDescription(user, {
           searchResultSnapshotId,
           meanOfTransportation: MeansOfTransportation.WALK,
           targetGroupName: defaultTargetGroupName,
@@ -137,7 +125,7 @@ export class PropstackWebhookService {
         'location_note',
       ),
       fetchOpenAiDescription(
-        this.realEstateListingService.fetchOpenAiRealEstateDesc(resultingUser, {
+        this.realEstateListingService.fetchOpenAiRealEstateDesc(user, {
           realEstateListingId: realEstateListing.id,
           realEstateType: defaultRealEstType,
           targetGroupName: defaultTargetGroupName,
@@ -146,7 +134,7 @@ export class PropstackWebhookService {
         'description_note',
       ),
       fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocRealEstDesc(resultingUser, {
+        this.locationService.fetchOpenAiLocRealEstDesc(user, {
           searchResultSnapshotId,
           meanOfTransportation: MeansOfTransportation.WALK,
           targetGroupName: defaultTargetGroupName,
@@ -158,11 +146,11 @@ export class PropstackWebhookService {
       ),
     ]);
 
-    this.logger.log(
-      `Event ${eventId} continues to be processed for ${dayjs
-        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-        .humanize()}. Fetching of OpenAi descriptions is complete.`,
-    );
+    // this.logger.log(
+    //   `Event ${eventId} continues to be processed for ${dayjs
+    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+    //     .humanize()}. Fetching of OpenAi descriptions is complete.`,
+    // );
 
     const openAiDescriptions = openAiQueryResults.reduce<{
       [p: string]: string;
@@ -207,11 +195,11 @@ export class PropstackWebhookService {
       }
     });
 
-    this.logger.log(
-      `Event ${eventId} processing is complete and took ${dayjs
-        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-        .humanize()}.`,
-    );
+    // this.logger.log(
+    //   `Event ${eventId} processing is complete and took ${dayjs
+    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+    //     .humanize()}.`,
+    // );
   }
 
   async handlePropertyUpdated(
@@ -250,38 +238,28 @@ export class PropstackWebhookService {
     }
 
     if (isIntegrationUser) {
-      const departmentId = property.broker?.department_ids.length
-        ? property.broker?.department_ids[0]
-        : undefined;
-
-      const resultingUser = await this.propstackService.getResultIntUser(
-        user,
-        departmentId,
-      );
-
-      const { integrationUserId, integrationType } = resultingUser;
-
       Object.assign(resultProperty, {
         integrationParams: {
-          integrationUserId,
-          integrationType,
+          integrationUserId: user.integrationUserId,
+          integrationType: user.integrationType,
           integrationId: `${property.id}`,
         },
       });
     }
 
     if (resultProperty.address) {
-      const place = await this.googleGeocodeService.fetchPlaceOrFail(
+      const {
+        geometry: {
+          location: { lat, lng },
+        },
+      } = await this.googleGeocodeService.fetchPlaceOrFail(
         resultProperty.address,
       );
 
       Object.assign(resultProperty, {
         location: {
           type: 'Point',
-          coordinates: [
-            place.geometry.location.lat,
-            place.geometry.location.lng,
-          ],
+          coordinates: [lat, lng],
         },
       });
     }
