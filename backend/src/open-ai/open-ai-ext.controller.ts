@@ -103,6 +103,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
           const searchResultSnapshot = {
             snapshot: {
+              location: coordinates,
               placesLocation: { label: resultingAddress },
               searchResponse: {
                 routingProfiles: {
