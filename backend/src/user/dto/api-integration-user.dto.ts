@@ -5,13 +5,14 @@ import {
   IsOptional,
   IsString,
 } from 'class-validator';
-import { Expose, Exclude } from 'class-transformer';
+import { Expose, Exclude, Transform } from 'class-transformer';
 
 import {
   IApiIntegrationUser,
   TApiIntegrationUserConfig,
   TApiIntUserAvailProdContingents,
 } from '@area-butler-types/integration-user';
+import { TIntegrationUserDocument } from '../schema/integration-user.schema';
 
 @Exclude()
 class ApiIntegrationUserDto implements IApiIntegrationUser {
@@ -31,6 +32,16 @@ class ApiIntegrationUserDto implements IApiIntegrationUser {
   config: TApiIntegrationUserConfig;
 
   @Expose()
+  @Transform(
+    ({
+      value,
+      obj: { parentId },
+    }: {
+      value: boolean;
+      obj: TIntegrationUserDocument;
+    }) => value || !!parentId,
+    { toClassOnly: true },
+  )
   @IsNotEmpty()
   @IsBoolean()
   isChild: boolean;

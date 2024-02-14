@@ -138,15 +138,6 @@ export class UserController {
     return this.transformToApiUser(user);
   }
 
-  @ApiProperty({ description: 'Hide tours for current user' })
-  @Post('me/hide-tour')
-  async hideAllTours(@Req() request): Promise<ApiUserDto> {
-    const requestUser = request?.user;
-    const user = await this.userService.hideTour(requestUser.email);
-
-    return this.transformToApiUser(user);
-  }
-
   @ApiProperty({ description: 'Hide single tour for current user' })
   @Post('me/hide-tour/:tour')
   async hideTour(
@@ -155,6 +146,15 @@ export class UserController {
   ): Promise<ApiUserDto> {
     const requestUser = request?.user;
     const user = await this.userService.hideTour(requestUser.email, tour);
+
+    return this.transformToApiUser(user);
+  }
+
+  @ApiProperty({ description: 'Hide tours for current user' })
+  @Post('me/hide-tour')
+  async hideAllTours(@Req() request): Promise<ApiUserDto> {
+    const requestUser = request?.user;
+    const user = await this.userService.hideTour(requestUser.email);
 
     return this.transformToApiUser(user);
   }

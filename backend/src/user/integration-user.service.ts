@@ -210,6 +210,11 @@ export class IntegrationUserService {
   async getAvailProdContingents(
     integrationUser: TIntegrationUserDocument,
   ): Promise<TApiIntUserAvailProdContingents> {
+    // TODO PROPSTACK CONTINGENT
+    if (integrationUser.integrationType === IntegrationTypesEnum.PROPSTACK) {
+      return;
+    }
+
     let { productContingents, productsUsed } = integrationUser;
 
     if (integrationUser.parentId) {

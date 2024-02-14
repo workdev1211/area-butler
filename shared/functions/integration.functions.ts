@@ -6,6 +6,7 @@ import {
   ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserOnOfficeParams,
+  IApiIntUserPropstackParams,
   TApiIntUserAvailProdContingents,
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
@@ -107,17 +108,11 @@ export const checkIsParent = (
   integrationUser: IApiIntegrationUserSchema,
   parentUser: IApiIntegrationUserSchema
 ): boolean => {
-  const isSameIntegration =
-    integrationUser.integrationType === parentUser.integrationType;
-
-  if (!isSameIntegration) {
+  if (integrationUser.integrationType !== parentUser.integrationType) {
     return false;
   }
 
-  let isParent = false;
-
   switch (integrationUser.integrationType) {
-    default:
     case IntegrationTypesEnum.ON_OFFICE: {
       return (
         (integrationUser.parameters as IApiIntUserOnOfficeParams)
@@ -125,7 +120,14 @@ export const checkIsParent = (
         (parentUser.parameters as IApiIntUserOnOfficeParams).customerWebId
       );
     }
+
+    case IntegrationTypesEnum.PROPSTACK: {
+      return (
+        (integrationUser.parameters as IApiIntUserPropstackParams).shopId ===
+        (parentUser.parameters as IApiIntUserPropstackParams).shopId
+      );
+    }
   }
 
-  return isParent;
+  return false;
 };

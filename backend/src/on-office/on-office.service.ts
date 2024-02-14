@@ -250,16 +250,14 @@ export class OnOfficeService {
       { integrationUserId },
     );
 
-    const parentUser = await this.integrationUserService.findOne(
-      this.integrationType,
-      {
-        'parameters.customerWebId': customerWebId,
-        'parameters.token': { $exists: true },
-        'parameters.apiKey': { $exists: true },
-        isParent: true,
-      },
-      { parameters: 1, isParent: 1 },
-    );
+    const parentUser = !integrationUser?.isParent
+      ? await this.integrationUserService.findOne(this.integrationType, {
+          'parameters.customerWebId': customerWebId,
+          'parameters.token': { $exists: true },
+          'parameters.apiKey': { $exists: true },
+          isParent: true,
+        })
+      : undefined;
 
     if (integrationUser) {
       const { userName, email } = await this.fetchUserData({
@@ -285,11 +283,6 @@ export class OnOfficeService {
           parentId: parentUser?.id,
         },
       };
-
-      if (!parentUser) {
-        delete updateQuery.$set.parentId;
-        updateQuery.$unset = { parentId: 1 };
-      }
 
       integrationUser = await this.integrationUserService.findByDbIdAndUpdate(
         integrationUser.id,
@@ -349,11 +342,11 @@ export class OnOfficeService {
     }
 
     if (!integrationUser) {
-      this.logger.error(this.login, integrationUserId, customerWebId);
+      this.logger.debug(this.login, integrationUserId, customerWebId);
       throw new HttpException('Die App muss neu aktiviert werden.', 400); // The app must be reactivated.
     }
 
-    await this.processParentUser(integrationUser);
+    integrationUser.parentUser = parentUser;
 
     const availProdContingents =
       await this.integrationUserService.getAvailProdContingents(
@@ -383,7 +376,7 @@ export class OnOfficeService {
       realEstate,
       isChild: !!integrationUser.parentId,
       accessToken: extendedClaim,
-      config: integrationUser.config,
+      config: this.getIntUserResConfig(integrationUser),
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
@@ -504,7 +497,13 @@ export class OnOfficeService {
       convertOnOfficeProdToIntUserProd(product),
     );
 
-    await this.processParentUser(integrationUser);
+    const parentUser = integrationUser.parentId
+      ? await this.integrationUserService.findByDbId(integrationUser.parentId)
+      : undefined;
+
+    if (parentUser && checkIsParent(integrationUser, parentUser)) {
+      integrationUser.parentUser = parentUser;
+    }
 
     const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
@@ -514,7 +513,7 @@ export class OnOfficeService {
     return {
       accessToken,
       integrationUserId: integrationUser.integrationUserId,
-      config: integrationUser.config,
+      config: this.getIntUserResConfig(integrationUser),
       isChild: !!integrationUser.parentId,
       realEstate: mapRealEstateListingToApiRealEstateListing(
         integrationUser,
@@ -1140,29 +1139,26 @@ export class OnOfficeService {
     return { userName, email };
   }
 
-  private async processParentUser(
-    integrationUser: TIntegrationUserDocument,
-  ): Promise<void> {
-    if (!integrationUser.parentId) {
-      return;
+  private getIntUserResConfig({
+    config,
+    isParent,
+    parentUser,
+  }: TIntegrationUserDocument): TApiIntegrationUserConfig {
+    if (isParent || !parentUser) {
+      return { ...config };
     }
 
-    const parentUser = await this.integrationUserService.findByDbId(
-      integrationUser.parentId,
-    );
-
-    if (checkIsParent(integrationUser, parentUser)) {
-      integrationUser.parentUser = parentUser;
-
-      integrationUser.config.extraMapboxStyles = [
-        ...(parentUser?.config.extraMapboxStyles
+    return {
+      ...config,
+      extraMapboxStyles: [
+        ...(parentUser?.config?.extraMapboxStyles
           ? parentUser.config.extraMapboxStyles.map((parentStyle) => {
               parentStyle.label = `Elternteil: ${parentStyle.label}`;
               return parentStyle;
             })
           : []),
-        ...(integrationUser.config.extraMapboxStyles || []),
-      ];
-    }
+        ...(config.extraMapboxStyles || []),
+      ],
+    };
   }
 }

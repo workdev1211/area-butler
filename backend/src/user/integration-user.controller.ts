@@ -9,6 +9,7 @@ import { IntegrationUserService } from './integration-user.service';
 import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import ApiIntegrationUserDto from './dto/api-integration-user.dto';
 import ApiIntegrationUserConfigDto from './dto/api-integration-user-config.dto';
+import { TIntegrationUserDocument } from './schema/integration-user.schema';
 
 @ApiTags('users', 'integration')
 @Controller('api/integration-users')
@@ -17,18 +18,6 @@ export class IntegrationUserController {
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
-  @ApiProperty({ description: 'Hide tours for current integration user' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('me/hide-tour')
-  async hideAllTours(
-    @InjectUser() integrationUser,
-  ): Promise<IApiIntegrationUser> {
-    return plainToInstance(
-      ApiIntegrationUserDto,
-      await this.integrationUserService.hideTour(integrationUser),
-    );
-  }
-
   @ApiProperty({ description: 'Hide single tour for current integration user' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('me/hide-tour/:tour')
@@ -36,9 +25,19 @@ export class IntegrationUserController {
     @InjectUser() integrationUser,
     @Param('tour') tour: ApiTourNamesEnum,
   ): Promise<IApiIntegrationUser> {
-    return plainToInstance(
-      ApiIntegrationUserDto,
+    return this.convertIntUserToApiIntUser(
       await this.integrationUserService.hideTour(integrationUser, tour),
+    );
+  }
+
+  @ApiProperty({ description: 'Hide tours for current integration user' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('me/hide-tour')
+  async hideAllTours(
+    @InjectUser() integrationUser,
+  ): Promise<IApiIntegrationUser> {
+    return this.convertIntUserToApiIntUser(
+      await this.integrationUserService.hideTour(integrationUser),
     );
   }
 
@@ -49,9 +48,21 @@ export class IntegrationUserController {
     @InjectUser() integrationUser,
     @Body() config: ApiIntegrationUserConfigDto,
   ): Promise<IApiIntegrationUser> {
-    return plainToInstance(
-      ApiIntegrationUserDto,
+    return this.convertIntUserToApiIntUser(
       await this.integrationUserService.updateConfig(integrationUser, config),
     );
+  }
+
+  private async convertIntUserToApiIntUser(
+    integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiIntegrationUser> {
+    Object.assign(integrationUser, {
+      availProdContingents:
+        await this.integrationUserService.getAvailProdContingents(
+          integrationUser,
+        ),
+    });
+
+    return plainToInstance(ApiIntegrationUserDto, integrationUser);
   }
 }
