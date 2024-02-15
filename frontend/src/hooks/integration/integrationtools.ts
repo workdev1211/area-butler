@@ -75,7 +75,7 @@ export const useIntegrationTools = () => {
             realEstateListing?.integrationId!
           );
 
-          toastSuccess("Die Daten wurden an Propstack gesendet!");
+          toastSuccess("Die Daten wurden an onOffice gesendet!");
           break;
         }
 
@@ -85,7 +85,7 @@ export const useIntegrationTools = () => {
             realEstateListing?.integrationId!
           );
 
-          toastSuccess("Die Daten wurden an onOffice gesendet!");
+          toastSuccess("Die Daten wurden an Propstack gesendet!");
           break;
         }
 

@@ -1,7 +1,6 @@
 import { FunctionComponent, useContext, useState } from "react";
 
 import OpenAiModule from "../../components/open-ai/OpenAiModule";
-import { LoadingMessage } from "../../components/Loading";
 import { SearchContext } from "../../context/SearchContext";
 import DefaultLayout from "../../layout/defaultLayout";
 import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
@@ -43,10 +42,6 @@ const OpenAiPage: FunctionComponent = () => {
     setQueryResponse(responseText);
     setIsCopyTextButtonDisabled(false);
   };
-
-  if (!searchContextState.snapshotId) {
-    return <LoadingMessage />;
-  }
 
   return (
     <DefaultLayout

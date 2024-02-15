@@ -31,21 +31,21 @@ import {
 import OpenAiGeneralForm from "./OpenAiGeneralForm";
 
 interface IOpenAiModuleProps {
-  searchResultSnapshotId: string;
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
   onResponseFetched: (responseText: string) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
+  searchResultSnapshotId?: string;
 }
 
 const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
-  searchResultSnapshotId,
   onModuleStatusChange,
   isFetchResponse,
   onResponseFetched,
   initialQueryType,
   onQueryTypeChange,
+  searchResultSnapshotId,
 }) => {
   const {
     cachingState: { openAi: cachedOpenAi },
@@ -65,6 +65,16 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   >(initialQueryType);
   const [fetchedResponse, setFetchedResponse] = useState<string>();
 
+  const resultQueryTypes = searchResultSnapshotId
+    ? openAiQueryTypes
+    : openAiQueryTypes.filter(
+        ({ type }) =>
+          ![
+            OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+            OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+          ].includes(type)
+      );
+
   useEffect(() => {
     if (!isFetchResponse || !queryType) {
       return;
@@ -79,7 +89,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           formRef.current?.handleSubmit();
 
           query = {
-            searchResultSnapshotId,
+            searchResultSnapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
           };
@@ -103,7 +113,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           realEstDescFormRef.current?.handleSubmit();
 
           query = {
-            searchResultSnapshotId,
+            searchResultSnapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
             ...realEstDescFormRef.current!.values,
@@ -176,7 +186,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           >
             Was möchten Sie generieren?
           </option>
-          {openAiQueryTypes.map(({ type, label }) => (
+          {resultQueryTypes.map(({ type, label }) => (
             <option value={type} key={type} className="flex flex-col">
               {label}
             </option>
@@ -316,6 +326,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               rows={7}
               value={fetchedResponse}
               onChange={({ target: { value } }) => {
+                onResponseFetched(value);
                 setFetchedResponse(value);
               }}
             />
