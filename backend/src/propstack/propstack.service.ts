@@ -1,4 +1,4 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { Types } from 'mongoose';
@@ -33,6 +33,7 @@ import { configService } from '../config/config.service';
 @Injectable()
 export class PropstackService {
   private readonly integrationType = IntegrationTypesEnum.PROPSTACK;
+  private static readonly logger = new Logger(PropstackService.name);
 
   constructor(
     private readonly integrationUserService: IntegrationUserService,
@@ -272,6 +273,12 @@ export class PropstackService {
   }
 
   static decryptAccessToken(accessToken: string): string {
+    this.logger.debug(
+      `\nMethod: ${this.decryptAccessToken.name}` +
+        `\nAccess token: ${accessToken}` +
+        `\nSecret: ${configService.getPropstackLoginSecret()}`,
+    );
+
     const decipher = createDecipheriv(
       'aes-256-ecb',
       Buffer.from(configService.getPropstackLoginSecret(), 'hex'),
