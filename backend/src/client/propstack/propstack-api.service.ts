@@ -1,22 +1,25 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { firstValueFrom } from 'rxjs';
 
 import {
   IApiPropstackFetchedProperties,
   IApiPropstackFetchProperties,
+  IApiPropstackImage,
   IApiPropstackLink,
   IPropstackProperty,
   IPropstackPropertyStatus,
 } from '../../shared/propstack.types';
 import { filterQueryParams } from '../../../../shared/functions/shared.functions';
 import { configService } from '../../config/config.service';
+import { IUploadPropertyImageRes } from '@area-butler-types/propstack';
 
 // The value is recommended by Propstack
 export const PROPSTACK_PROPERTIES_PER_PAGE = 20;
 
 @Injectable()
 export class PropstackApiService {
+  private readonly logger = new Logger(PropstackApiService.name);
   private readonly apiUrl =
     configService.getSystemEnv() === 'prod'
       ? 'https://api.propstack.de/v1'
@@ -123,6 +126,33 @@ export class PropstackApiService {
     );
 
     return data;
+  }
+
+  async uploadPropertyImage(
+    apiKey: string,
+    propertyImageData: IApiPropstackImage,
+  ): Promise<any> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    };
+
+    const { data } = await firstValueFrom<{ data: IUploadPropertyImageRes }>(
+      this.http.post<IUploadPropertyImageRes>(
+        `${this.apiUrl}/images`,
+        propertyImageData,
+        {
+          headers,
+        },
+      ),
+    );
+
+    if (data.ok) {
+      return;
+    }
+
+    this.logger.debug(this.uploadPropertyImage.name, data);
+    throw new HttpException('Propstack image upload failed.', 400);
   }
 
   async fetchAvailPropStatuses(

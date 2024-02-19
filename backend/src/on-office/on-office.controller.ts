@@ -126,6 +126,7 @@ export class OnOfficeController {
     @Param('integrationId') integrationId: string,
     @Body() uploadEstateFileOrLinkData: ApiOnOfficeUplEstFileOrLinkReqDto,
   ): Promise<void> {
+    // TODO move to a separate endpoint
     if (
       [
         AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,

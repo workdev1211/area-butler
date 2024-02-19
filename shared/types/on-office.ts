@@ -1,9 +1,6 @@
-import {
-  IApiIntUserLoginRes,
-  TAreaButlerExportTypes,
-} from "./integration-user";
+import { IApiIntUserLoginRes } from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
-import { IIntegrationHandleLogin } from "./integration";
+import { IApiIntUplEstFileReq, IIntegrationHandleLogin } from "./integration";
 
 // TODO remove _10 products in the future
 export enum OnOfficeProductTypesEnum {
@@ -268,11 +265,8 @@ export interface IApiOnOfficeConfirmOrderReq {
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
 }
 
-export interface IApiOnOfficeUplEstFileOrLinkReq {
-  exportType: TAreaButlerExportTypes;
-  filename?: string;
-  base64Content?: string;
-  fileTitle: string;
+// TODO move to a separate endpoint
+export interface IApiOnOfficeUplEstFileOrLinkReq extends IApiIntUplEstFileReq {
   url?: string;
 }
 

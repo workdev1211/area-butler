@@ -1,4 +1,8 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import {
+  Injectable,
+  UnprocessableEntityException,
+  Logger,
+} from '@nestjs/common';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
 import { Types } from 'mongoose';
@@ -9,7 +13,10 @@ import {
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
-import { IApiPropstackConnectReq } from '../shared/propstack.types';
+import {
+  ApiPropstackImageTypeEnum,
+  IApiPropstackConnectReq,
+} from '../shared/propstack.types';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
@@ -21,7 +28,10 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
+import {
+  IApiPropstackLoginReq,
+  IApiPropstackUplPropImgReq,
+} from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
@@ -135,13 +145,30 @@ export class PropstackService {
     const paramName = propstackExportTypeMapping[exportType];
 
     if (!paramName) {
-      throw new HttpException('Unprocessable export type was provided!', 400);
+      throw new UnprocessableEntityException();
     }
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
       propertyId,
       { [paramName]: text },
+    );
+  }
+
+  async uploadPropertyImage(
+    { parameters }: TIntegrationUserDocument,
+    propertyId: number,
+    { base64Content, fileTitle }: IApiPropstackUplPropImgReq,
+  ): Promise<void> {
+    await this.propstackApiService.uploadPropertyImage(
+      (parameters as IApiIntUserPropstackParams).apiKey,
+      {
+        imageable_id: propertyId,
+        imageable_type: ApiPropstackImageTypeEnum.PROPERTY,
+        is_private: false,
+        photo: base64Content,
+        title: fileTitle,
+      },
     );
   }
 
@@ -261,6 +288,11 @@ export class PropstackService {
   }
 
   static encryptAccessToken(accessToken: string): string {
+    // left just in case to explain how the new keys are generated
+    // const key =
+    //   configService.getPropstackLoginSecret() ||
+    //   randomBytes(32).toString('hex');
+
     const cipher = createCipheriv(
       'aes-256-ecb',
       Buffer.from(configService.getPropstackLoginSecret(), 'hex'),

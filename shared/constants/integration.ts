@@ -1,4 +1,5 @@
 import { ApiShowTour, ApiTourNamesEnum } from "../types/types";
+import { IntegrationTypesEnum } from "../types/integration";
 
 export const intUserInitShowTour: ApiShowTour = {
   [ApiTourNamesEnum.SEARCH]: false,
@@ -12,3 +13,8 @@ export const intUserInitShowTour: ApiShowTour = {
 };
 
 export const wrongIntegrationErrorMsg = "Diese Integration ist nicht korrekt.";
+
+export const integrationNames: Record<IntegrationTypesEnum, string> = {
+  [IntegrationTypesEnum.ON_OFFICE]: "onOffice",
+  [IntegrationTypesEnum.PROPSTACK]: "Propstack",
+};

@@ -273,9 +273,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                         /[\s|,]+/g,
                         "-"
                       )}-QR-Code.png`,
-                      base64Content: (
-                        await getQrCodeBase64(directLink)
-                      ).replace(/^data:.*;base64,/, ""),
+                      base64Content: await getQrCodeBase64(directLink),
                       fileTitle: "QR-Code",
                     });
                   }}

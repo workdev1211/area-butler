@@ -30,6 +30,7 @@ export const useOnOfficeSync = () => {
       | IApiOnOfficeUplEstFileOrLinkReq,
     realEstateIntId: string
   ): Promise<void> => {
+    // TODO refacture to switch and different endpoints
     if ("text" in sendToOnOfficeData) {
       await patch<
         void,

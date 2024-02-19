@@ -1,3 +1,5 @@
+import { IApiIntUplEstFileReq } from "./integration";
+
 export interface IApiPropstackLoginReq {
   propertyId: number;
   shopId: number;
@@ -14,4 +16,14 @@ export interface IApiPropstackLoginQueryParams {
 export enum PropstackPropMarketTypesEnum {
   BUY = "BUY",
   RENT = "RENT",
+}
+
+export interface IApiPropstackUplPropImgReq
+  extends Omit<IApiIntUplEstFileReq, "filename"> {
+  base64Content: string;
+}
+
+export interface IUploadPropertyImageRes {
+  ok: boolean;
+  id: number;
 }

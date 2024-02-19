@@ -153,10 +153,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
             void sendToIntegration({
               exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
               filename: `${documentTitle}.png`,
-              base64Content: (await getRenderedPngImage()).replace(
-                /^data:.*;base64,/,
-                ""
-              ),
+              base64Content: await getRenderedPngImage(),
               fileTitle: documentTitle,
             });
           }}

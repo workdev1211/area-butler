@@ -7,11 +7,11 @@ import {
   SearchContextActionTypes,
 } from "context/SearchContext";
 import deleteIcon from "../../assets/icons/icons-16-x-16-outline-ic-delete.svg";
-import sendToOnOfficeIcon from "../../assets/icons/entrance-alt1.svg";
+import sendToIntegrationIcon from "../../assets/icons/entrance-alt1.svg";
 import { ConfigContext } from "../../context/ConfigContext";
-import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
+import { integrationNames } from "../../../../shared/constants/integration";
 
 interface IMapClippingsCollapsableProps {
   clippings: MapClipping[];
@@ -82,27 +82,24 @@ const MapClippingsCollapsable: FunctionComponent<
               }}
             />
 
-            {integrationType === IntegrationTypesEnum.ON_OFFICE && (
+            {!!integrationType && (
               <div
                 className="flex cursor-pointer"
                 onClick={() => {
                   void sendToIntegration({
                     exportType: AreaButlerExportTypesEnum.SCREENSHOT,
-                    filename: `${parsedAddress}-Kartenausschnitt-${i + 1}.png`,
-                    base64Content: clipping.mapClippingDataUrl.replace(
-                      /^data:.*;base64,/,
-                      ""
-                    ),
-                    fileTitle: `${parsedAddress} Kartenausschnitt ${i + 1}`,
+                    filename: `Lageplan-${i + 1}.png`,
+                    base64Content: clipping.mapClippingDataUrl,
+                    fileTitle: `Lageplan ${i + 1}`,
                   });
                 }}
               >
                 <img
-                  src={sendToOnOfficeIcon}
+                  src={sendToIntegrationIcon}
                   className="w-6 h-6"
-                  alt="send-to-on-office-icon"
+                  alt="send-to-integration-icon"
                 />
-                <span>onOffice</span>
+                <span>{integrationNames[integrationType]}</span>
               </div>
             )}
           </div>

@@ -149,6 +149,19 @@ export interface IApiPropstackLink extends Omit<IPropstackLink, 'id'> {
   property_id: number;
 }
 
+export enum ApiPropstackImageTypeEnum {
+  PROPERTY = 'Property',
+  PROJECT = 'Project',
+}
+
+export interface IApiPropstackImage {
+  imageable_id: number;
+  imageable_type: ApiPropstackImageTypeEnum;
+  is_private: boolean;
+  photo: string; // base64 image
+  title: string;
+}
+
 interface IPropstackFurnishing {
   balcony?: boolean;
   kitchen_complete?: boolean;

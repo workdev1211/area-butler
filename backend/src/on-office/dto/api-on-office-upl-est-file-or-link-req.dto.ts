@@ -1,42 +1,33 @@
 import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Exclude, Expose } from 'class-transformer';
 
 import { IApiOnOfficeUplEstFileOrLinkReq } from '@area-butler-types/on-office';
+import ApiIntUplEstFileReqDto from '../../dto/api-int-upl-est-file-req.dto';
 import {
   AreaButlerExportTypesEnum,
   TAreaButlerExportTypes,
 } from '@area-butler-types/integration-user';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 
+@Exclude()
 class ApiOnOfficeUplEstFileOrLinkReqDto
+  extends ApiIntUplEstFileReqDto
   implements IApiOnOfficeUplEstFileOrLinkReq
 {
+  @Expose()
   @IsNotEmpty()
   @IsIn([
-    ...Object.values(OpenAiQueryTypeEnum),
-    ...Object.values(AreaButlerExportTypesEnum),
+    AreaButlerExportTypesEnum.QR_CODE,
+    AreaButlerExportTypesEnum.SCREENSHOT,
+    AreaButlerExportTypesEnum.ONE_PAGE_PNG,
+    AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
+    AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
   ])
   exportType: TAreaButlerExportTypes;
 
-  @IsOptional()
-  @IsString()
-  filename?: string;
-
-  @IsOptional()
-  @IsString()
-  base64Content?: string;
-
-  @IsNotEmpty()
-  @IsString()
-  fileTitle: string;
-
+  @Expose()
   @IsOptional()
   @IsString()
   url?: string;
-
-  // TODO check TS Exclude utility
-  @IsOptional()
-  @IsString()
-  integrationId?: string;
 }
 
 export default ApiOnOfficeUplEstFileOrLinkReqDto;

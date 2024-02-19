@@ -28,6 +28,7 @@ import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
 import ApiPropstackSyncEstatesReqDto from './dto/api-propstack-sync-estates-req.dto';
 import ApiPropstackUpdPropTextFieldReqDto from './dto/api-propstack-upd-prop-text-field-req.dto';
+import ApiPropstackUplPropImgReqDto from './dto/api-propstack-upl-prop-img-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -68,6 +69,30 @@ export class PropstackController {
     return this.propstackService.login(integrationUser, loginData);
   }
 
+  @ApiOperation({ description: 'Upload property image' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('property-image/:propertyId')
+  uploadPropertyImage(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Param('propertyId', new ParseIntPipe()) propertyId: number,
+    @Body() uploadPropertyImageDto: ApiPropstackUplPropImgReqDto,
+  ): Promise<void> {
+    return this.propstackService.uploadPropertyImage(
+      integrationUser,
+      propertyId,
+      uploadPropertyImageDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Fetch available estate statuses' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Get('avail-statuses')
+  fetchAvailStatuses(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+  ): Promise<IApiRealEstAvailIntStatuses> {
+    return this.propstackService.fetchAvailStatuses(integrationUser);
+  }
+
   @ApiOperation({ description: 'Update property text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Patch('property-text/:propertyId')
@@ -81,15 +106,6 @@ export class PropstackController {
       propertyId,
       updatePropTextFieldDto,
     );
-  }
-
-  @ApiOperation({ description: 'Fetch available estate statuses' })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get('avail-statuses')
-  fetchAvailStatuses(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-  ): Promise<IApiRealEstAvailIntStatuses> {
-    return this.propstackService.fetchAvailStatuses(integrationUser);
   }
 
   @ApiOperation({ description: 'Sync estate data' })

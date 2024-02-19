@@ -52,3 +52,10 @@ export interface IApiIntUpdEstTextFieldReq {
   exportType: TAreaButlerExportTypes;
   text: string;
 }
+
+export interface IApiIntUplEstFileReq {
+  exportType: TAreaButlerExportTypes;
+  fileTitle: string;
+  base64Content?: string;
+  filename?: string;
+}

@@ -663,7 +663,7 @@ export class OnOfficeService {
             resourcetype: resourceType,
             parameters: {
               extendedclaim: extendedClaim,
-              data: base64Content,
+              data: base64Content.replace(/^data:.*;base64,/, ''),
             },
           },
         ],
