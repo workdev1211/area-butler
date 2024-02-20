@@ -27,7 +27,6 @@ import {
   IApiOnOfficeRequest,
   IApiOnOfficeResponse,
   IApiOnOfficeUnlockProviderReq,
-  IApiOnOfficeUplEstFileOrLinkReq,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
 import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
@@ -38,7 +37,9 @@ import {
 } from './schema/on-office-transaction.schema';
 import { convertOnOfficeProdToIntUserProd } from './shared/on-office.functions';
 import {
+  IApiIntCreateEstateLinkReq,
   IApiIntUpdEstTextFieldReq,
+  IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
@@ -539,8 +540,7 @@ export class OnOfficeService {
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
-    integrationId: string,
-    { exportType, text }: IApiIntUpdEstTextFieldReq,
+    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -555,29 +555,27 @@ export class OnOfficeService {
     );
 
     const defaultMaxTextLength = 2000;
+    const resExpMatching = exportMatching || parentUser?.config.exportMatching;
+    let expMatchingParams = resExpMatching && resExpMatching[exportType];
 
-    const resultExpMatch = exportMatching || parentUser?.config.exportMatching;
-
-    let expMatchParams = resultExpMatch && resultExpMatch[exportType];
-
-    if (!expMatchParams) {
+    if (!expMatchingParams) {
       switch (exportType) {
         case AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS: {
-          expMatchParams = {
+          expMatchingParams = {
             fieldId: 'MPAreaButlerUrlWithAddress',
           };
           break;
         }
 
         case AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS: {
-          expMatchParams = {
+          expMatchingParams = {
             fieldId: 'MPAreaButlerUrlNoAddress',
           };
           break;
         }
 
         default: {
-          expMatchParams = {
+          expMatchingParams = {
             fieldId: openAiQueryTypeToOnOfficeEstateFieldMapping[exportType],
             maxTextLength: defaultMaxTextLength,
           };
@@ -586,9 +584,12 @@ export class OnOfficeService {
     }
 
     const processedText =
-      expMatchParams.maxTextLength === 0
+      expMatchingParams.maxTextLength === 0
         ? text
-        : text.slice(0, expMatchParams.maxTextLength || defaultMaxTextLength);
+        : text.slice(
+            0,
+            expMatchingParams.maxTextLength || defaultMaxTextLength,
+          );
 
     const request: IApiOnOfficeRequest = {
       token,
@@ -605,7 +606,7 @@ export class OnOfficeService {
             parameters: {
               extendedclaim: extendedClaim,
               data: {
-                [expMatchParams.fieldId]: processedText,
+                [expMatchingParams.fieldId]: processedText,
               },
             },
           },
@@ -629,13 +630,13 @@ export class OnOfficeService {
       config: { exportMatching },
       parentUser,
     }: TIntegrationUserDocument,
-    integrationId: string,
     {
       exportType,
-      fileTitle,
       base64Content,
+      fileTitle,
+      integrationId,
       filename,
-    }: IApiOnOfficeUplEstFileOrLinkReq,
+    }: IApiIntUploadEstateFileReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -739,10 +740,9 @@ export class OnOfficeService {
     );
   }
 
-  async uploadEstateLink(
+  async createEstateLink(
     { parameters }: TIntegrationUserDocument,
-    integrationId: string,
-    { fileTitle, url }: IApiOnOfficeUplEstFileOrLinkReq,
+    { integrationId, title, url }: IApiIntCreateEstateLinkReq,
   ): Promise<void> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -771,10 +771,10 @@ export class OnOfficeService {
             resourcetype: resourceType,
             identifier: '',
             parameters: {
+              title,
               url,
               extendedclaim: extendedClaim,
               module: 'estate',
-              title: fileTitle,
               Art: artType,
               relatedRecordId: integrationId,
             },
@@ -783,7 +783,7 @@ export class OnOfficeService {
       },
     };
 
-    // should be verified or removed in the future
+    // TODO should be verified or removed in the future
     // if (exportMatching && exportMatching[exportType]) {
     //   request.request.actions[0].parameters.documentAttribute =
     //     exportMatching[exportType].fieldId;
@@ -792,7 +792,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.uploadEstateLink.name,
+      this.createEstateLink.name,
       'Link upload failed!',
       request,
       response,
@@ -874,7 +874,7 @@ export class OnOfficeService {
     const response = await this.onOfficeApiService.sendRequest(request);
 
     this.onOfficeApiService.checkResponseIsSuccess(
-      this.uploadEstateLink.name,
+      this.fetchAvailStatuses.name,
       'Link upload failed!',
       request,
       response,

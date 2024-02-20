@@ -87,17 +87,17 @@ const MapClippingsCollapsable: FunctionComponent<
                 className="flex cursor-pointer"
                 onClick={() => {
                   void sendToIntegration({
-                    exportType: AreaButlerExportTypesEnum.SCREENSHOT,
-                    filename: `Lageplan-${i + 1}.png`,
                     base64Content: clipping.mapClippingDataUrl,
+                    exportType: AreaButlerExportTypesEnum.SCREENSHOT,
                     fileTitle: `Lageplan ${i + 1}`,
+                    filename: `Lageplan-${i + 1}.png`,
                   });
                 }}
               >
                 <img
                   src={sendToIntegrationIcon}
                   className="w-6 h-6"
-                  alt="send-to-integration-icon"
+                  alt="send-to-integration"
                 />
                 <span>{integrationNames[integrationType]}</span>
               </div>

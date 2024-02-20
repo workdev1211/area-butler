@@ -9,12 +9,11 @@ import {
 } from "../../../shared/types/integration";
 import { SearchContext } from "../context/SearchContext";
 import { ConfigContext } from "../context/ConfigContext";
-import { propstackExportTypeMapping } from "../../../shared/constants/propstack";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
   searchResultSnapshotId: string;
-  queryType?: OpenAiQueryTypeEnum;
+  queryType: OpenAiQueryTypeEnum;
   performUnlock?: TUnlockIntProduct;
 }
 
@@ -36,16 +35,19 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [isCopyTextButtonDisabled, setIsCopyTextButtonDisabled] =
     useState(true);
-  const [queryResponse, setQueryResponse] = useState("");
+  const [queryResponse, setQueryResponse] = useState<string>();
 
   const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
   const isIntegration = !!integrationType;
   const isSendToIntAllowed =
     isIntegration &&
-    (!isPropstackInt ||
-      (isPropstackInt &&
-        Object.keys(propstackExportTypeMapping).includes(queryType!)));
+    [
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+    ].includes(queryType) &&
+    queryResponse;
 
   // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
@@ -96,8 +98,11 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                 setIsCopyTextButtonDisabled(true);
 
                 void sendToIntegration({
-                  exportType: queryType!,
-                  text: queryResponse!,
+                  exportType: queryType as
+                    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                  text: queryResponse,
                 });
               }}
               disabled={isCopyTextButtonDisabled}

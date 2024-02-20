@@ -5,8 +5,6 @@ import {
   HttpCode,
   HttpStatus,
   Logger,
-  Param,
-  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -27,8 +25,10 @@ import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-c
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
 import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propstack-login-user.interceptor';
 import ApiPropstackSyncEstatesReqDto from './dto/api-propstack-sync-estates-req.dto';
-import ApiPropstackUpdPropTextFieldReqDto from './dto/api-propstack-upd-prop-text-field-req.dto';
-import ApiPropstackUplPropImgReqDto from './dto/api-propstack-upl-prop-img-req.dto';
+import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
+import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
+import { IPropstackLink } from '../shared/propstack.types';
+import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -69,18 +69,29 @@ export class PropstackController {
     return this.propstackService.login(integrationUser, loginData);
   }
 
+  @ApiOperation({ description: 'Create property link' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('property-link')
+  createPropertyLink(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
+  ): Promise<IPropstackLink> {
+    return this.propstackService.createPropertyLink(
+      integrationUser,
+      createEstateLinkDto,
+    );
+  }
+
   @ApiOperation({ description: 'Upload property image' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('property-image/:propertyId')
+  @Post('property-image')
   uploadPropertyImage(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('propertyId', new ParseIntPipe()) propertyId: number,
-    @Body() uploadPropertyImageDto: ApiPropstackUplPropImgReqDto,
+    @Body() uploadEstateFileDto: ApiIntUploadEstateFileReqDto,
   ): Promise<void> {
     return this.propstackService.uploadPropertyImage(
       integrationUser,
-      propertyId,
-      uploadPropertyImageDto,
+      uploadEstateFileDto,
     );
   }
 
@@ -95,16 +106,14 @@ export class PropstackController {
 
   @ApiOperation({ description: 'Update property text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Patch('property-text/:propertyId')
+  @Patch('property-text')
   updatePropertyTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('propertyId', new ParseIntPipe()) propertyId: number,
-    @Body() updatePropTextFieldDto: ApiPropstackUpdPropTextFieldReqDto,
+    @Body() updEstTextFieldDto: ApiPropstackUpdEstTextFieldReqDto,
   ): Promise<void> {
     return this.propstackService.updatePropertyTextField(
       integrationUser,
-      propertyId,
-      updatePropTextFieldDto,
+      updEstTextFieldDto,
     );
   }
 

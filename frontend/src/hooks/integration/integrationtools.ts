@@ -6,15 +6,12 @@ import { ConfigContext } from "../../context/ConfigContext";
 import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import {
-  IApiIntUpdEstTextFieldReq,
   IApiUnlockIntProductReq,
   IntegrationTypesEnum,
   TIntegrationActionTypes,
+  TSendToIntegrationData,
 } from "../../../../shared/types/integration";
-import {
-  IApiOnOfficeUplEstFileOrLinkReq,
-  TOnOfficeIntActTypes,
-} from "../../../../shared/types/on-office";
+import { TOnOfficeIntActTypes } from "../../../../shared/types/on-office";
 import { useHttp } from "../http";
 import {
   SearchContext,
@@ -63,28 +60,27 @@ export const useIntegrationTools = () => {
   };
 
   const sendToIntegration = async (
-    sendToIntegrationData:
-      | IApiIntUpdEstTextFieldReq
-      | IApiOnOfficeUplEstFileOrLinkReq
+    sendToIntegrationData: TSendToIntegrationData
   ): Promise<void> => {
+    if (!realEstateListing?.integrationId) {
+      const errorMessage = "Die Integrations-ID wird nicht angegeben!"; // Integration id is not provided!
+      toastError(errorMessage);
+      console.error(errorMessage);
+      return;
+    }
+
+    sendToIntegrationData.integrationId = realEstateListing.integrationId;
+
     try {
       switch (integrationType) {
         case IntegrationTypesEnum.ON_OFFICE: {
-          await sendToOnOffice(
-            sendToIntegrationData,
-            realEstateListing?.integrationId!
-          );
-
+          await sendToOnOffice(sendToIntegrationData);
           toastSuccess("Die Daten wurden an onOffice gesendet!");
           break;
         }
 
         case IntegrationTypesEnum.PROPSTACK: {
-          await sendToPropstack(
-            sendToIntegrationData as IApiIntUpdEstTextFieldReq,
-            realEstateListing?.integrationId!
-          );
-
+          await sendToPropstack(sendToIntegrationData);
           toastSuccess("Die Daten wurden an Propstack gesendet!");
           break;
         }

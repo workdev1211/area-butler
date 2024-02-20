@@ -1,4 +1,6 @@
-import { IApiIntUplEstFileReq } from "./integration";
+import { IApiIntUpdEstTextFieldReq } from "./integration";
+import { OpenAiQueryTypeEnum } from "./open-ai";
+import { AreaButlerExportTypesEnum } from "./integration-user";
 
 export interface IApiPropstackLoginReq {
   propertyId: number;
@@ -18,12 +20,17 @@ export enum PropstackPropMarketTypesEnum {
   RENT = "RENT",
 }
 
-export interface IApiPropstackUplPropImgReq
-  extends Omit<IApiIntUplEstFileReq, "filename"> {
-  base64Content: string;
-}
-
 export interface IUploadPropertyImageRes {
   ok: boolean;
   id: number;
+}
+
+export interface IApiPropstackUpdEstTextFieldReq
+  extends IApiIntUpdEstTextFieldReq {
+  exportType:
+    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
 }

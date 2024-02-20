@@ -1,6 +1,6 @@
 import { IApiIntUserLoginRes } from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
-import { IApiIntUplEstFileReq, IIntegrationHandleLogin } from "./integration";
+import { IIntegrationHandleLogin } from "./integration";
 
 // TODO remove _10 products in the future
 export enum OnOfficeProductTypesEnum {
@@ -263,11 +263,6 @@ export interface IApiOnOfficeConfirmOrderQueryParams {
 export interface IApiOnOfficeConfirmOrderReq {
   url: string;
   onOfficeQueryParams: IApiOnOfficeConfirmOrderQueryParams;
-}
-
-// TODO move to a separate endpoint
-export interface IApiOnOfficeUplEstFileOrLinkReq extends IApiIntUplEstFileReq {
-  url?: string;
 }
 
 export interface IApiOnOfficeConfirmOrderErrorRes {

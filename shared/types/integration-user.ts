@@ -52,10 +52,6 @@ export interface IApiIntUserPropstackParams {
   brokerId?: number;
 }
 
-export interface IApiIntUserOnOfficeConfig {
-  isFileLink?: boolean;
-}
-
 // IMPORTANT
 // The products are arranged in a certain order representing their hierarchy.
 // Please, check the 'getProdContTypeByActType' method for better understanding.
@@ -123,7 +119,8 @@ export type TApiIntegrationUserConfig = {
   exportMatching?: Record<TAreaButlerExportTypes, IIntUserExpMatchParams>;
   templateSnapshotId?: string;
   extraMapboxStyles?: IApiMapboxStyle[];
-} & IApiIntUserOnOfficeConfig;
+  isSpecialLink?: boolean;
+};
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>
 >;

@@ -38,6 +38,7 @@ import { getFilteredLegend } from "../../../export/shared/shared.functions";
 import { getRenderedLegend } from "../../../export/RenderedLegend";
 import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
 import { ConfigContext } from "../../../context/ConfigContext";
+import { integrationNames } from "../../../../../shared/constants/integration";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -118,13 +119,10 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     }
   };
 
-  const getIntUserLinkExpType = (): AreaButlerExportTypesEnum | undefined => {
-    // TODO PROPSTACK CONTINGENT
-    if (!integrationUser || isPropstackInt) {
-      return;
-    }
-
-    if (integrationUser?.config.isFileLink) {
+  const getIntUserLinkExpType = ():
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS => {
+    if (integrationUser?.config.isSpecialLink) {
       return responseConfig?.showAddress
         ? AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS
         : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
@@ -162,14 +160,16 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       !dayjs().isAfter(realEstateListing?.iframeEndsAt)) ||
     isPropstackInt;
 
-  const isIntUserIframeExportAvail = !!(
-    integrationUser?.config.exportMatching &&
-    integrationUser?.config.exportMatching[
-      AreaButlerExportTypesEnum.INLINE_FRAME
-    ]
-  );
+  const isIntUserIframeExportAvail =
+    !isPropstackInt &&
+    !!(
+      integrationUser?.config.exportMatching &&
+      integrationUser?.config.exportMatching[
+        AreaButlerExportTypesEnum.INLINE_FRAME
+      ]
+    );
 
-  const intUserLinkExpType = getIntUserLinkExpType();
+  const intUserLinkExpType = integrationType && getIntUserLinkExpType();
 
   return (
     <div
@@ -218,30 +218,37 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
               {!!intUserLinkExpType && (
                 <div
                   onClick={() => {
-                    if (!integrationUser?.config.isFileLink) {
+                    if (!intUserLinkExpType) {
+                      return;
+                    }
+
+                    if (
+                      !isPropstackInt &&
+                      !integrationUser?.config.isSpecialLink
+                    ) {
                       void sendToIntegration({
-                        exportType: intUserLinkExpType!,
+                        exportType: intUserLinkExpType,
                         text: directLink,
                       });
 
                       return;
                     }
 
-                    const fileTitle =
+                    const title =
                       intUserLinkExpType ===
                       AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
                         ? "Anonym - AreaButler Link ohne Adresse"
                         : "Mit Adresse - AreaButler Link";
 
                     void sendToIntegration({
-                      fileTitle,
-                      exportType: intUserLinkExpType!,
+                      title,
+                      exportType: intUserLinkExpType,
                       url: directLink,
                     });
                   }}
                 >
-                  <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
-                  <span>onOffice</span>
+                  <img src={sendToOnOfficeIcon} alt="send-to-integration" />
+                  <span>{integrationNames[integrationType]}</span>
                 </div>
               )}
             </div>
@@ -264,22 +271,24 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                 <img src={downloadIcon} alt="download-qr-code" />
                 <span>Herunterladen</span>
               </div>
-              {integrationUser && !isPropstackInt && (
+              {integrationType && (
                 <div
                   onClick={async () => {
                     void sendToIntegration({
-                      exportType: AreaButlerExportTypesEnum.QR_CODE,
-                      filename: `${searchAddress.replace(
-                        /[\s|,]+/g,
-                        "-"
-                      )}-QR-Code.png`,
                       base64Content: await getQrCodeBase64(directLink),
-                      fileTitle: "QR-Code",
+                      exportType: AreaButlerExportTypesEnum.QR_CODE,
+                      fileTitle: "QR-Lageplan",
+                      filename: `QR-Lageplan.png`,
+                      // left just in case
+                      // filename: `${searchAddress.replace(
+                      //   /[\s|,]+/g,
+                      //   "-"
+                      // )}-QR-Code.png`,
                     });
                   }}
                 >
-                  <img src={sendToOnOfficeIcon} alt="send-to-on-office" />
-                  <span>onOffice</span>
+                  <img src={sendToOnOfficeIcon} alt="send-to-integration" />
+                  <span>{integrationNames[integrationType]}</span>
                 </div>
               )}
             </div>

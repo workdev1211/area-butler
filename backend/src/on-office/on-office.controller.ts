@@ -3,7 +3,6 @@ import {
   Controller,
   Get,
   Logger,
-  Param,
   Patch,
   Post,
   Put,
@@ -29,16 +28,14 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { VerifyOnOfficeActSignInterceptor } from './interceptor/verify-on-office-act-sign.interceptor';
 import { VerifyOnOfficeSignatureInterceptor } from './interceptor/verify-on-office-signature.interceptor';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
-import ApiOnOfficeUplEstFileOrLinkReqDto from './dto/api-on-office-upl-est-file-or-link-req.dto';
-import ApiIntUpdEstTextFieldReqDto from '../dto/api-int-upd-est-text-field-req.dto';
-import {
-  AreaButlerExportTypesEnum,
-  IApiIntUserLoginRes,
-} from '@area-butler-types/integration-user';
+import ApiIntUpdEstTextFieldReqDto from '../dto/integration/api-int-upd-est-text-field-req.dto';
+import { IApiIntUserLoginRes } from '@area-butler-types/integration-user';
 import ApiOnOfficeActivationReqDto from './dto/api-on-office-activation-req.dto';
 import ApiOnOfficeSyncEstatesFilterParamsDto from './dto/api-on-office-sync-estates-filter-params.dto';
 import { RealEstateCrmImportService } from '../real-estate-listing/real-estate-crm-import.service';
 import { IApiRealEstAvailIntStatuses } from '@area-butler-types/integration';
+import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
+import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
 
 @ApiTags('on-office')
 @Controller('api/on-office')
@@ -105,47 +102,40 @@ export class OnOfficeController {
 
   @ApiOperation({ description: 'Update estate text field value' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Patch('estate-text/:integrationId')
+  @Patch('estate-text')
   updateEstateTextField(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('integrationId') integrationId: string,
-    @Body() updateEstateTextFieldData: ApiIntUpdEstTextFieldReqDto,
+    @Body() updateEstateTextFieldDto: ApiIntUpdEstTextFieldReqDto,
   ): Promise<void> {
     return this.onOfficeService.updateEstateTextField(
       integrationUser,
-      integrationId,
-      updateEstateTextFieldData,
+      updateEstateTextFieldDto,
     );
   }
 
   @ApiOperation({ description: 'Upload a file' })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('estate-file/:integrationId')
-  uploadEstateFileOrLink(
+  @Post('estate-file')
+  uploadEstateFile(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Param('integrationId') integrationId: string,
-    @Body() uploadEstateFileOrLinkData: ApiOnOfficeUplEstFileOrLinkReqDto,
+    @Body() uploadEstateFileDto: ApiIntUploadEstateFileReqDto,
   ): Promise<void> {
-    // TODO move to a separate endpoint
-    if (
-      [
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS,
-        AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS,
-      ].includes(
-        uploadEstateFileOrLinkData.exportType as AreaButlerExportTypesEnum,
-      )
-    ) {
-      return this.onOfficeService.uploadEstateLink(
-        integrationUser,
-        integrationId,
-        uploadEstateFileOrLinkData,
-      );
-    }
-
     return this.onOfficeService.uploadEstateFile(
       integrationUser,
-      integrationId,
-      uploadEstateFileOrLinkData,
+      uploadEstateFileDto,
+    );
+  }
+
+  @ApiOperation({ description: 'Create a link' })
+  @UseInterceptors(InjectIntegrationUserInterceptor)
+  @Post('estate-link')
+  createEstateLink(
+    @InjectUser() integrationUser: TIntegrationUserDocument,
+    @Body() createEstateLinkDto: ApiIntCreateEstateLinkReqDto,
+  ): Promise<void> {
+    return this.onOfficeService.createEstateLink(
+      integrationUser,
+      createEstateLinkDto,
     );
   }
 

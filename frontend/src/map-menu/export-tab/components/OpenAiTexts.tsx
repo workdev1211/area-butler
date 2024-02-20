@@ -26,7 +26,7 @@ const OpenAiTexts: FunctionComponent<IOpenAiTextsProps> = ({
 
   return (
     <>
-      {isShownOpenAiModal && (
+      {isShownOpenAiModal && openAiQueryType && (
         <OpenAiModal
           closeModal={() => {
             setIsShownOpenAiModal(false);

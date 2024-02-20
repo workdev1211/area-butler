@@ -151,10 +151,10 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
           disabled={downloadButtonDisabled}
           onClick={async () => {
             void sendToIntegration({
-              exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
-              filename: `${documentTitle}.png`,
               base64Content: await getRenderedPngImage(),
+              exportType: AreaButlerExportTypesEnum.ONE_PAGE_PNG,
               fileTitle: documentTitle,
+              filename: `${documentTitle}.png`,
             });
           }}
         >

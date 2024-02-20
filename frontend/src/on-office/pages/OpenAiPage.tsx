@@ -20,7 +20,7 @@ const OpenAiPage: FunctionComponent = () => {
     useState(true);
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [queryType, setQueryType] = useState<OpenAiQueryTypeEnum>();
-  const [queryResponse, setQueryResponse] = useState<string | undefined>();
+  const [queryResponse, setQueryResponse] = useState<string>();
   const [unlockParams, setUnlockParams] = useState<{
     isShownModal: boolean;
     modalMessage?: string;
@@ -28,11 +28,13 @@ const OpenAiPage: FunctionComponent = () => {
   }>({ isShownModal: false });
 
   const isShownOnOfficeButton =
-    !!queryType &&
-    ![
-      OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
-      OpenAiQueryTypeEnum.GENERAL_QUESTION,
-    ].includes(queryType);
+    queryType &&
+    [
+      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+      OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+    ].includes(queryType) &&
+    queryResponse;
 
   const isQueryAvailable =
     !!searchContextState.realEstateListing?.openAiRequestQuantity;
@@ -99,8 +101,11 @@ const OpenAiPage: FunctionComponent = () => {
                 setIsCopyTextButtonDisabled(true);
 
                 void sendToIntegration({
-                  exportType: queryType!,
-                  text: queryResponse!,
+                  exportType: queryType as
+                    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                  text: queryResponse,
                 });
               }}
               disabled={isCopyTextButtonDisabled}

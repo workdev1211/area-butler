@@ -1,6 +1,7 @@
 import { TOnOfficeIntActTypes } from "./on-office";
 import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
-import { TAreaButlerExportTypes } from "./integration-user";
+import { AreaButlerExportTypesEnum } from "./integration-user";
+import { OpenAiQueryTypeEnum } from "./open-ai";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -49,13 +50,42 @@ export interface IApiRealEstAvailIntStatuses {
 }
 
 export interface IApiIntUpdEstTextFieldReq {
-  exportType: TAreaButlerExportTypes;
+  exportType:
+    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
+    | AreaButlerExportTypesEnum.INLINE_FRAME
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+  integrationId: string;
   text: string;
 }
 
-export interface IApiIntUplEstFileReq {
-  exportType: TAreaButlerExportTypes;
+export interface IApiIntUploadEstateFileReq {
+  exportType:
+    | AreaButlerExportTypesEnum.QR_CODE
+    | AreaButlerExportTypesEnum.SCREENSHOT
+    | AreaButlerExportTypesEnum.ONE_PAGE_PNG;
+  base64Content: string;
   fileTitle: string;
-  base64Content?: string;
+  integrationId: string;
   filename?: string;
 }
+
+export interface IApiIntCreateEstateLinkReq {
+  exportType:
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
+    | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+  integrationId: string;
+  title: string;
+  url: string;
+}
+
+export type TSendToIntegrationData = {
+  isFileLink?: boolean;
+  integrationId?: string;
+} & (
+  | Omit<IApiIntUpdEstTextFieldReq, "integrationId">
+  | Omit<IApiIntUploadEstateFileReq, "integrationId">
+  | Omit<IApiIntCreateEstateLinkReq, "integrationId">
+);

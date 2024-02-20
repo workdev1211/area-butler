@@ -1,13 +1,44 @@
+import { AxiosResponse } from "axios";
+
 import { useHttp } from "../../hooks/http";
 import {
+  IApiIntCreateEstateLinkReq,
   IApiIntUpdEstTextFieldReq,
+  IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
   IApiSyncEstatesIntFilterParams,
+  TSendToIntegrationData,
 } from "../../../../shared/types/integration";
-import { IApiOnOfficeUplEstFileOrLinkReq } from "../../../../shared/types/on-office";
+import { OpenAiQueryTypeEnum } from "../../../../shared/types/open-ai";
+import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
+import { toastError } from "../../shared/shared.functions";
 
 export const useOnOfficeSync = () => {
-  const { get, post, patch, put } = useHttp();
+  const { post, get, patch, put } = useHttp();
+
+  const createEstateLink = (
+    createEstateLinkData: IApiIntCreateEstateLinkReq
+  ): Promise<AxiosResponse<void>> =>
+    post<void, IApiIntCreateEstateLinkReq>(
+      "/api/on-office/estate-link",
+      createEstateLinkData
+    );
+
+  const uploadEstateFile = (
+    uploadEstateFileData: IApiIntUploadEstateFileReq
+  ): Promise<AxiosResponse<void>> =>
+    post<void, IApiIntUploadEstateFileReq>(
+      "/api/on-office/estate-file",
+      uploadEstateFileData
+    );
+
+  const updateEstateTextField = (
+    updEstTextFieldData: IApiIntUpdEstTextFieldReq
+  ): Promise<AxiosResponse<void>> =>
+    patch<void, IApiIntUpdEstTextFieldReq>(
+      "/api/on-office/estate-text",
+      updEstTextFieldData
+    );
 
   const fetchAvailOnOfficeStatuses =
     async (): Promise<IApiRealEstAvailIntStatuses> => {
@@ -25,32 +56,51 @@ export const useOnOfficeSync = () => {
   };
 
   const sendToOnOffice = async (
-    sendToOnOfficeData:
-      | IApiIntUpdEstTextFieldReq
-      | IApiOnOfficeUplEstFileOrLinkReq,
-    realEstateIntId: string
-  ): Promise<void> => {
-    // TODO refacture to switch and different endpoints
-    if ("text" in sendToOnOfficeData) {
-      await patch<
-        void,
-        IApiIntUpdEstTextFieldReq | IApiOnOfficeUplEstFileOrLinkReq
-      >(`/api/on-office/estate-text/${realEstateIntId}`, sendToOnOfficeData);
+    sendToOnOfficeData: TSendToIntegrationData
+  ): Promise<AxiosResponse<void>> => {
+    switch (sendToOnOfficeData.exportType) {
+      case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
+      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+      case AreaButlerExportTypesEnum.INLINE_FRAME: {
+        return updateEstateTextField(
+          sendToOnOfficeData as IApiIntUpdEstTextFieldReq
+        );
+      }
 
-      return;
+      case AreaButlerExportTypesEnum.QR_CODE:
+      case AreaButlerExportTypesEnum.SCREENSHOT:
+      case AreaButlerExportTypesEnum.ONE_PAGE_PNG: {
+        if (sendToOnOfficeData.filename) {
+          sendToOnOfficeData.filename = sendToOnOfficeData.filename.replace(
+            /[/\\?%*:|"<>\s,]/g,
+            "-"
+          );
+        }
+
+        return uploadEstateFile(
+          sendToOnOfficeData as IApiIntUploadEstateFileReq
+        );
+      }
+
+      case AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS:
+      case AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS: {
+        if (sendToOnOfficeData.isFileLink) {
+          return createEstateLink(
+            sendToOnOfficeData as IApiIntCreateEstateLinkReq
+          );
+        }
+
+        return updateEstateTextField(
+          sendToOnOfficeData as IApiIntUpdEstTextFieldReq
+        );
+      }
     }
 
-    if (sendToOnOfficeData.filename) {
-      sendToOnOfficeData.filename = sendToOnOfficeData.filename.replace(
-        /[/\\?%*:|"<>\s,]/g,
-        "-"
-      );
-    }
-
-    await post<void, IApiOnOfficeUplEstFileOrLinkReq>(
-      `/api/on-office/estate-file/${realEstateIntId}`,
-      sendToOnOfficeData
-    );
+    const errorMessage = "Falscher Exporttyp wurde angegeben!";
+    toastError(errorMessage);
+    console.error(errorMessage);
+    throw new Error(errorMessage);
   };
 
   return { fetchAvailOnOfficeStatuses, handleOnOfficeSync, sendToOnOffice };

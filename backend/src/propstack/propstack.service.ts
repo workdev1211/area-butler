@@ -9,13 +9,16 @@ import { Types } from 'mongoose';
 
 import { IntegrationUserService } from '../user/integration-user.service';
 import {
+  IApiIntCreateEstateLinkReq,
   IApiIntUpdEstTextFieldReq,
+  IApiIntUploadEstateFileReq,
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
 import {
   ApiPropstackImageTypeEnum,
   IApiPropstackConnectReq,
+  IPropstackLink,
 } from '../shared/propstack.types';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -28,10 +31,7 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import {
-  IApiPropstackLoginReq,
-  IApiPropstackUplPropImgReq,
-} from '@area-butler-types/propstack';
+import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
@@ -139,8 +139,7 @@ export class PropstackService {
 
   async updatePropertyTextField(
     { parameters }: TIntegrationUserDocument,
-    propertyId: number,
-    { exportType, text }: IApiIntUpdEstTextFieldReq,
+    { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
     const paramName = propstackExportTypeMapping[exportType];
 
@@ -150,24 +149,39 @@ export class PropstackService {
 
     await this.propstackApiService.updatePropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
-      propertyId,
+      parseInt(integrationId, 10),
       { [paramName]: text },
     );
   }
 
-  async uploadPropertyImage(
+  uploadPropertyImage(
     { parameters }: TIntegrationUserDocument,
-    propertyId: number,
-    { base64Content, fileTitle }: IApiPropstackUplPropImgReq,
+    { base64Content, fileTitle, integrationId }: IApiIntUploadEstateFileReq,
   ): Promise<void> {
-    await this.propstackApiService.uploadPropertyImage(
+    return this.propstackApiService.uploadPropertyImage(
       (parameters as IApiIntUserPropstackParams).apiKey,
       {
-        imageable_id: propertyId,
+        imageable_id: parseInt(integrationId, 10),
         imageable_type: ApiPropstackImageTypeEnum.PROPERTY,
         is_private: false,
         photo: base64Content,
         title: fileTitle,
+      },
+    );
+  }
+
+  createPropertyLink(
+    { parameters }: TIntegrationUserDocument,
+    { integrationId, title, url }: IApiIntCreateEstateLinkReq,
+  ): Promise<IPropstackLink> {
+    return this.propstackApiService.createPropertyLink(
+      (parameters as IApiIntUserPropstackParams).apiKey,
+      {
+        title,
+        url,
+        is_embedable: true,
+        on_landing_page: true,
+        property_id: parseInt(integrationId, 10),
       },
     );
   }

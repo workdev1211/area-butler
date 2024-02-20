@@ -7,6 +7,7 @@ import {
   IApiPropstackFetchProperties,
   IApiPropstackImage,
   IApiPropstackLink,
+  IPropstackLink,
   IPropstackProperty,
   IPropstackPropertyStatus,
 } from '../../shared/propstack.types';
@@ -109,20 +110,18 @@ export class PropstackApiService {
   async createPropertyLink(
     apiKey: string,
     propertyLinkData: IApiPropstackLink,
-  ): Promise<IPropstackProperty> {
+  ): Promise<IPropstackLink> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
     };
 
     const { data } = await firstValueFrom<{
-      data: IPropstackProperty;
+      data: IPropstackLink;
     }>(
-      this.http.post<IPropstackProperty>(
-        `${this.apiUrl}/links`,
-        propertyLinkData,
-        { headers },
-      ),
+      this.http.post<IPropstackLink>(`${this.apiUrl}/links`, propertyLinkData, {
+        headers,
+      }),
     );
 
     return data;
@@ -131,7 +130,7 @@ export class PropstackApiService {
   async uploadPropertyImage(
     apiKey: string,
     propertyImageData: IApiPropstackImage,
-  ): Promise<any> {
+  ): Promise<void> {
     const headers = {
       'Content-Type': 'application/json',
       'X-Api-Key': apiKey,
@@ -143,6 +142,8 @@ export class PropstackApiService {
         propertyImageData,
         {
           headers,
+          maxContentLength: 20971520,
+          maxBodyLength: 20971520,
         },
       ),
     );
