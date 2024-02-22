@@ -20,7 +20,7 @@ import {
   ApiRealEstateStatusEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import {
   ApiCoordinates,
   ApiGeometry,
@@ -69,7 +69,7 @@ export class RealEstateListingImportService {
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly locationIndexService: LocationIndexService,
   ) {}
 
@@ -383,7 +383,7 @@ export class RealEstateListingImportService {
         }
 
         const address = `${street} ${processedHouseNumber[0]}, ${zipCode} ${locality}, ${country}`;
-        const place = await this.googleGeocodeService.fetchPlace(address);
+        const place = await this.googleApiService.fetchPlace(address);
         const coordinates = place?.geometry?.location;
 
         if (coordinates) {
@@ -426,7 +426,7 @@ export class RealEstateListingImportService {
           return [];
         }
 
-        const place = await this.googleGeocodeService.fetchPlace(address);
+        const place = await this.googleApiService.fetchPlace(address);
         const coordinates = place?.geometry?.location;
 
         if (coordinates) {
@@ -502,7 +502,7 @@ export class RealEstateListingImportService {
       locationAddress += `, ${country}`;
     }
 
-    const place = await this.googleGeocodeService.fetchPlace(locationAddress);
+    const place = await this.googleApiService.fetchPlace(locationAddress);
 
     if (!place) {
       this.logger.debug(
@@ -559,7 +559,7 @@ export class RealEstateListingImportService {
         geometry: {
           location: { lat, lng },
         },
-      } = await this.googleGeocodeService.fetchPlaceOrFail(realEstate.address);
+      } = await this.googleApiService.fetchPlaceOrFail(realEstate.address);
 
       realEstate.location = { type: 'Point', coordinates: [lat, lng] };
       return;
@@ -567,7 +567,7 @@ export class RealEstateListingImportService {
 
     if (realEstate.location) {
       const { formatted_address: resultingAddress } =
-        await this.googleGeocodeService.fetchPlaceOrFail({
+        await this.googleApiService.fetchPlaceOrFail({
           lat: realEstate.location.coordinates[0],
           lng: realEstate.location.coordinates[1],
         });

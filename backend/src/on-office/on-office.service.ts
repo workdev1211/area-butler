@@ -43,7 +43,7 @@ import {
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { GeoJsonPoint } from '../shared/geo-json.types';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntService } from '../location/location-int.service';
@@ -79,7 +79,7 @@ export class OnOfficeService {
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly locationIntService: LocationIntService,
   ) {}
@@ -994,11 +994,11 @@ export class OnOfficeService {
       lng: parseOnOfficeFloat(lng),
     };
 
-    let place = await this.googleGeocodeService.fetchPlace(locationAddress);
+    let place = await this.googleApiService.fetchPlace(locationAddress);
 
     if (!place) {
       locationAddress = undefined;
-      place = await this.googleGeocodeService.fetchPlace(locationCoordinates);
+      place = await this.googleApiService.fetchPlace(locationCoordinates);
     }
 
     if (!place) {

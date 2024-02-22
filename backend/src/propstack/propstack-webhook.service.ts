@@ -15,7 +15,7 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import { SnapshotExtService } from '../location/snapshot-ext.service';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { MeansOfTransportation } from '@area-butler-types/types';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { LocationService } from '../location/location.service';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
@@ -37,7 +37,7 @@ export class PropstackWebhookService {
   private readonly logger = new Logger(PropstackWebhookService.name);
 
   constructor(
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly locationService: LocationService,
     private readonly propstackApiService: PropstackApiService,
     private readonly propstackService: PropstackService,
@@ -56,7 +56,7 @@ export class PropstackWebhookService {
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
       : user.apiConnections?.PROPSTACK.apiKey;
 
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(
+    const place = await this.googleApiService.fetchPlaceOrFail(
       property.address,
     );
 
@@ -252,7 +252,7 @@ export class PropstackWebhookService {
         geometry: {
           location: { lat, lng },
         },
-      } = await this.googleGeocodeService.fetchPlaceOrFail(
+      } = await this.googleApiService.fetchPlaceOrFail(
         resultProperty.address,
       );
 

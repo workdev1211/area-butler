@@ -6,7 +6,7 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import { GoogleGeocodeService } from '../../client/google/google-geocode.service';
+import { GoogleApiService } from '../../client/google/google-api.service';
 import {
   ApiCoordinates,
   ApiRequestStatusesEnum,
@@ -24,7 +24,7 @@ import {
 export class LocationIndexExtController extends ApiKeyAuthController {
   constructor(
     private readonly locationIndexService: LocationIndexService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -41,7 +41,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     const geoJsonCoordinates: number[] = [];
 
     if (address) {
-      const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+      const place = await this.googleApiService.fetchPlaceOrFail(address);
 
       geoJsonCoordinates.push(
         place.geometry.location.lng,

@@ -14,7 +14,7 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
 import { GeoJsonPoint } from '../shared/geo-json.types';
@@ -63,7 +63,7 @@ export class RealEstateCrmImportService {
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly propstackApiService: PropstackApiService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly userService: UserService,
@@ -282,7 +282,7 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        const place = await this.googleGeocodeService.fetchPlace(
+        const place = await this.googleApiService.fetchPlace(
           property.address,
         );
 
@@ -550,7 +550,7 @@ export class RealEstateCrmImportService {
           ? `${street} ${processedHouseNumber[0]}, ${zipCode} ${city}, ${country}`
           : `${street}, ${zipCode} ${city}, ${country}`;
 
-        const place = await this.googleGeocodeService.fetchPlace(
+        const place = await this.googleApiService.fetchPlace(
           locationAddress,
         );
 

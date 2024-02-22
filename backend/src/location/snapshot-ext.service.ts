@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { GeocodeResult } from '@googlemaps/google-maps-services-js';
 
 import { osmEntityTypes } from '../../../shared/constants/constants';
 import {
@@ -17,10 +18,7 @@ import { LocationService } from './location.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RoutingService } from '../routing/routing.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import {
-  GoogleGeocodeService,
-  IGoogleGeocodeResult,
-} from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import {
   defaultPoiTypes,
   defaultTransportParams,
@@ -39,7 +37,7 @@ interface ICreateSnapshot {
 }
 
 interface ICreateSnapshotByPlace extends Omit<ICreateSnapshot, 'location'> {
-  place: IGoogleGeocodeResult;
+  place: GeocodeResult;
 }
 
 @Injectable()
@@ -49,7 +47,7 @@ export class SnapshotExtService {
     private readonly snapshotService: SnapshotService,
     private readonly routingService: RoutingService,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
   ) {}
 
   async createSnapshotByPlace({
@@ -117,7 +115,7 @@ export class SnapshotExtService {
     transportParams,
     poiTypes,
   }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
+    const place = await this.googleApiService.fetchPlaceOrFail(location);
 
     return this.createSnapshotByPlace({
       user,
@@ -142,7 +140,7 @@ export class SnapshotExtService {
       templateSnapshotId,
     );
 
-    const place = await this.googleGeocodeService.fetchPlaceOrFail(location);
+    const place = await this.googleApiService.fetchPlaceOrFail(location);
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',

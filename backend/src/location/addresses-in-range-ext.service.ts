@@ -1,9 +1,9 @@
 import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Language, PlaceType2 } from '@googlemaps/google-maps-services-js';
 
 import { ApiCoordinates } from '@area-butler-types/types';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { distanceInMeters } from '../shared/shared.functions';
-import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 import { ApiHereLanguageEnum } from '@area-butler-types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 import {
@@ -35,7 +35,7 @@ export class AddressesInRangeExtService {
   private readonly logger = new Logger(AddressesInRangeExtService.name);
 
   constructor(
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly hereGeocodeService: HereGeocodeService,
   ) {}
 
@@ -47,11 +47,11 @@ export class AddressesInRangeExtService {
   ): Promise<IFetchedAddressesInRange> {
     let resultingLanguage = language;
 
-    const place = await this.googleGeocodeService.fetchPlace(location);
+    const place = await this.googleApiService.fetchPlace(location);
 
     const isCountryAllowed = place?.address_components.some(
       ({ short_name: shortName, types }) =>
-        types.includes('country') &&
+        types.includes(PlaceType2.country) &&
         allowedAddrInRangeCountries.has(
           shortName as Iso3166_1Alpha2CountriesEnum,
         ),
@@ -75,8 +75,9 @@ export class AddressesInRangeExtService {
 
     if (!resultingLanguage) {
       resultingLanguage =
-        place.address_components.find(({ types }) => types.includes('country'))
-          ?.short_name || ApiGoogleLanguageEnum.DE;
+        place.address_components.find(({ types }) =>
+          types.includes(PlaceType2.country),
+        )?.short_name || Language.de;
     }
 
     let fetchedAddresses;
@@ -98,16 +99,16 @@ export class AddressesInRangeExtService {
       }
 
       case ApiAddrInRangeApiTypesEnum.GOOGLE: {
-        resultingLanguage = Object.values(ApiGoogleLanguageEnum).includes(
-          resultingLanguage as ApiGoogleLanguageEnum,
+        resultingLanguage = Object.values(Language).includes(
+          resultingLanguage as Language,
         )
           ? resultingLanguage
-          : ApiGoogleLanguageEnum.DE;
+          : Language.de;
 
         fetchedAddresses = await this.fetchAddressesByGoogle(
           place.geometry.location,
           radius,
-          resultingLanguage as ApiGoogleLanguageEnum,
+          resultingLanguage as Language,
         );
         break;
       }
@@ -199,13 +200,13 @@ export class AddressesInRangeExtService {
   private async fetchAddressesByGoogle(
     coordinates: ApiCoordinates,
     radius: number,
-    language: ApiGoogleLanguageEnum,
+    language: Language,
   ): Promise<IFetchedAddresses> {
     const coordinateGrid = this.generateCoordinateGrid(coordinates, radius, 20);
 
     const addresses = await Promise.all(
       coordinateGrid.map(async (coordinates) => {
-        const currentPlace = await this.googleGeocodeService.fetchPlace(
+        const currentPlace = await this.googleApiService.fetchPlace(
           coordinates,
           language,
         );
@@ -222,19 +223,19 @@ export class AddressesInRangeExtService {
         return {
           full_address: currentPlace.formatted_address,
           street_name: currentPlace.address_components.find(({ types }) =>
-            types.includes('route'),
+            types.includes(PlaceType2.route),
           )?.long_name,
           street_number: currentPlace.address_components.find(({ types }) =>
-            types.includes('street_number'),
+            types.includes(PlaceType2.street_number),
           )?.long_name,
           postal_code: currentPlace.address_components.find(({ types }) =>
-            types.includes('postal_code'),
+            types.includes(PlaceType2.postal_code),
           )?.long_name,
           locality: currentPlace.address_components.find(({ types }) =>
-            types.includes('locality'),
+            types.includes(PlaceType2.locality),
           )?.long_name,
           country: currentPlace.address_components.find(({ types }) =>
-            types.includes('country'),
+            types.includes(PlaceType2.country),
           )?.long_name,
           location: currentPlace.geometry.location,
           distance_in_meters: distanceInMeters(

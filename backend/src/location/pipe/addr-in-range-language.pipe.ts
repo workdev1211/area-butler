@@ -1,7 +1,7 @@
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
+import { Language } from '@googlemaps/google-maps-services-js';
 
 import { ApiHereLanguageEnum } from '@area-butler-types/here';
-import { ApiGoogleLanguageEnum } from '@area-butler-types/google';
 
 @Injectable()
 export class AddrInRangeLanguagePipe implements PipeTransform {
@@ -14,9 +14,7 @@ export class AddrInRangeLanguagePipe implements PipeTransform {
       !Object.values(ApiHereLanguageEnum).includes(
         language as ApiHereLanguageEnum,
       ) &&
-      !Object.values(ApiGoogleLanguageEnum).includes(
-        language as ApiGoogleLanguageEnum,
-      )
+      !Object.values(Language).includes(language as Language)
     ) {
       throw new HttpException(
         "Language code should be BCP 47 compliant (e.g., 'de')!",

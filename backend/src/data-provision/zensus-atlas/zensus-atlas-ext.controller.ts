@@ -10,7 +10,7 @@ import {
   ApiRequestStatusesEnum,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import { GoogleGeocodeService } from '../../client/google/google-geocode.service';
+import { GoogleApiService } from '../../client/google/google-api.service';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
 import {
   ApiUsageStatsTypesEnum,
@@ -29,7 +29,7 @@ import {
 export class ZensusAtlasExtController extends ApiKeyAuthController {
   constructor(
     private readonly zensusAtlasService: ZensusAtlasService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -45,7 +45,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
     let coordinates: ApiCoordinates;
 
     if (address) {
-      const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+      const place = await this.googleApiService.fetchPlaceOrFail(address);
       coordinates = { ...place.geometry.location };
     }
 

@@ -12,7 +12,7 @@ import {
   IApiRealEstateListingSchema,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -29,7 +29,7 @@ export class RealEstateListingService {
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly subscriptionService: SubscriptionService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly openAiService: OpenAiService,
     private readonly locationIndexService: LocationIndexService,
   ) {}

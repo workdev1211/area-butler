@@ -35,7 +35,7 @@ import {
   IApiFetchSnapshotDataReqStatus,
   IApiFetchSnapshotDataRes,
 } from '@area-butler-types/external-api';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
 import { createDirectLink } from '../shared/shared.functions';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
@@ -48,7 +48,7 @@ export class LocationExtController extends ApiKeyAuthController {
     private readonly usageStatisticsService: UsageStatisticsService,
     private readonly snapshotExtService: SnapshotExtService,
     private readonly locationExtService: LocationExtService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
   ) {
     super();
   }
@@ -217,7 +217,7 @@ export class LocationExtController extends ApiKeyAuthController {
       let coordinates: ApiCoordinates;
 
       if (address) {
-        const place = await this.googleGeocodeService.fetchPlaceOrFail(address);
+        const place = await this.googleApiService.fetchPlaceOrFail(address);
         coordinates = { ...place.geometry.location };
       }
 

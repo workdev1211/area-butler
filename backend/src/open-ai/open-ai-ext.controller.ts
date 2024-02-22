@@ -19,7 +19,7 @@ import {
   defaultRealEstType,
   openAiTonalities,
 } from '../../../shared/constants/open-ai';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
@@ -30,7 +30,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
   constructor(
     private readonly openAiService: OpenAiService,
     private readonly locationExtService: LocationExtService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -67,7 +67,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
     try {
       // TODO move all complex logic to a separate OpenAI service
-      const place = await this.googleGeocodeService.fetchPlaceOrFail(
+      const place = await this.googleApiService.fetchPlaceOrFail(
         address || { lat, lng },
       );
 

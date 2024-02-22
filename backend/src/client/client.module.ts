@@ -8,7 +8,7 @@ import { SlackSenderService } from './slack/slack-sender.service';
 import { StripeService } from './stripe/stripe.service';
 import { MapboxService } from './mapbox/mapbox.service';
 import { PaypalService } from './paypal/paypal.service';
-import { GoogleGeocodeService } from './google/google-geocode.service';
+import { GoogleApiService } from './google/google-api.service';
 import { HereGeocodeService } from './here/here-geocode.service';
 import { OnOfficeApiService } from './on-office/on-office-api.service';
 import { PropstackApiService } from './propstack/propstack-api.service';
@@ -22,7 +22,7 @@ import { PropstackApiService } from './propstack/propstack-api.service';
     StripeService,
     MapboxService,
     PaypalService,
-    GoogleGeocodeService,
+    GoogleApiService,
     HereGeocodeService,
     OnOfficeApiService,
     PropstackApiService,
@@ -36,7 +36,7 @@ import { PropstackApiService } from './propstack/propstack-api.service';
     StripeService,
     MapboxService,
     PaypalService,
-    GoogleGeocodeService,
+    GoogleApiService,
     HereGeocodeService,
     OnOfficeApiService,
     PropstackApiService,

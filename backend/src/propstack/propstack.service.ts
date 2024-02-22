@@ -24,7 +24,7 @@ import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
-import { GoogleGeocodeService } from '../client/google/google-geocode.service';
+import { GoogleApiService } from '../client/google/google-api.service';
 import {
   IApiIntUserLoginRes,
   IApiIntUserPropstackParams,
@@ -48,7 +48,7 @@ export class PropstackService {
   constructor(
     private readonly integrationUserService: IntegrationUserService,
     private readonly propstackApiService: PropstackApiService,
-    private readonly googleGeocodeService: GoogleGeocodeService,
+    private readonly googleApiService: GoogleApiService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly locationIntService: LocationIntService,
   ) {}
@@ -92,7 +92,7 @@ export class PropstackService {
       geometry: {
         location: { lat, lng },
       },
-    } = await this.googleGeocodeService.fetchPlaceOrFail(property.address);
+    } = await this.googleApiService.fetchPlaceOrFail(property.address);
 
     const resultProperty = { ...property };
 
