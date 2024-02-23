@@ -28,7 +28,7 @@ export const defaultMapboxStyles: Array<{
   label: MapboxStyleLabelsEnum;
 }> = [
   {
-    key: "kudiba-tech/ckvu0ltho2j9214p847jp4t4m",
+    key: "kudiba-tech/clsyczip2000001p86f84f6rm",
     label: MapboxStyleLabelsEnum.CLASSIC,
   },
   {

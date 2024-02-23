@@ -29,6 +29,7 @@ import configOptionsIcon from "../../assets/icons/map-menu/04-konfiguration.svg"
 import poiVisibilityIcon from "../../assets/icons/map-menu/06-poi-sichtbarkeit.svg";
 import {
   defaultMapboxStyles,
+  MapboxStyleLabelsEnum,
   TMapboxStyleLabels,
 } from "../../shared/shared.constants";
 import PoiFilter from "./components/PoiFilter";
@@ -406,7 +407,9 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                   className="select select-bordered select-sm flex-1 w-full"
                   value={
                     config?.mapBoxMapId ||
-                    "kudiba-tech/ckvu0ltho2j9214p847jp4t4m"
+                    defaultMapboxStyles.find(
+                      ({ label }) => label === MapboxStyleLabelsEnum.CLASSIC
+                    )?.key
                   }
                   onChange={(event) => {
                     changeConfigParam("mapBoxMapId", event.target.value);
