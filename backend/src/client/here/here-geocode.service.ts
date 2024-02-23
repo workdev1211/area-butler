@@ -4,7 +4,7 @@ import { firstValueFrom } from 'rxjs';
 
 import { configService } from '../../config/config.service';
 import { ApiCoordinates } from '@area-butler-types/types';
-import { ApiHereLanguageEnum } from '@area-butler-types/here';
+import { ApiHereLanguageEnum } from '../../shared/types/here';
 
 export interface IHereReverseGeocodeItem {
   title: string;

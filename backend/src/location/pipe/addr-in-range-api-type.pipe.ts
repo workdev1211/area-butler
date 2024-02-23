@@ -1,6 +1,6 @@
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
 
-import { ApiAddrInRangeApiTypesEnum } from '@area-butler-types/external-api';
+import { ApiAddrInRangeApiTypesEnum } from '../../shared/types/external-api';
 
 @Injectable()
 export class AddrInRangeApiTypePipe implements PipeTransform {

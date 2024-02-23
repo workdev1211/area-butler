@@ -28,7 +28,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { TApiMongoSortQuery } from '../shared/shared.types';
+import { TApiMongoSortQuery } from '../shared/types/shared';
 
 @Injectable()
 export class SnapshotService {

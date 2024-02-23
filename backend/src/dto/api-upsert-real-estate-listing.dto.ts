@@ -12,7 +12,7 @@ import { Exclude, Expose, Type } from 'class-transformer';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import ApiRealEstateCharacteristicsDto from './api-real-estate-characteristics.dto';
 import ApiRealEstateCostDto from './api-real-estate-cost.dto';
-import { GeoJsonPoint } from '../shared/geo-json.types';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiGeoJsonPointDto from './api-geo-json-point.dto';
 import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 

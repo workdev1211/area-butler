@@ -7,9 +7,9 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { GeoJsonPoint } from '../../shared/types/geo-json';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
-import { RealEstateIntegrationParamsSchema } from '../../shared/real-estate-integration-params.schema';
+import { RealEstateIntegrationParamsSchema } from './real-estate-integration-params.schema';
 import { TApiLocIndexProps } from '@area-butler-types/location-index';
 
 export type RealEstateListingDocument = RealEstateListing & Document;

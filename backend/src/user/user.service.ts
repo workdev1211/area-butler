@@ -27,7 +27,7 @@ import ApiUserSettingsDto from '../dto/api-user-settings.dto';
 import { EventType } from '../event/event.types';
 import { MapboxService } from '../client/mapbox/mapbox.service';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
-import { getImageTypeFromFileType } from '../shared/shared.functions';
+import { getImageTypeFromFileType } from '../shared/functions/shared';
 
 @Injectable()
 export class UserService {

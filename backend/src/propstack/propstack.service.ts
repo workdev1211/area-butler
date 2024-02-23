@@ -19,7 +19,7 @@ import {
   ApiPropstackImageTypeEnum,
   IApiPropstackConnectReq,
   IPropstackLink,
-} from '../shared/propstack.types';
+} from '../shared/types/propstack';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';

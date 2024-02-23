@@ -12,7 +12,7 @@ import {
   ApiStripeCheckoutModeEnum,
   IApiCheckoutMetadata,
 } from '@area-butler-types/billing';
-import { IsStripeCheckoutMetadata } from '../shared/isStripeCheckoutMetadata.validator';
+import { IsStripeCheckoutMetadata } from '../shared/decorators/is-stripe-checkout-metadata.decorator';
 
 export class ApiCreateCheckoutDto implements ApiCreateCheckout {
   @IsOptional()

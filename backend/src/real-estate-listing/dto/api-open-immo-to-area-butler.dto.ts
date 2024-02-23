@@ -8,8 +8,8 @@ import {
   ApiRealEstateStatusEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { IOpenImmoXmlVendor } from '../../shared/open-immo.types';
-import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { IOpenImmoXmlVendor } from '../../shared/types/open-immo';
+import { GeoJsonPoint } from '../../shared/types/geo-json';
 import { iso3166Alpha3CountryNames } from '../../../../shared/constants/location';
 
 @Exclude()

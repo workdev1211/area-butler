@@ -1,7 +1,7 @@
 import { UpdateQuery } from 'mongoose';
 
 import { ApiCoordinates } from '@area-butler-types/types';
-import { configService } from '../config/config.service';
+import { configService } from '../../config/config.service';
 
 export const getRawPriceValue = (priceValue: string): string =>
   priceValue.replace('.', '');

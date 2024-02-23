@@ -12,7 +12,7 @@ import {
 import { initialShowTour } from '../../../../shared/constants/constants';
 import { SubscriptionDocument } from './subscription.schema';
 import { ApiKeyParamsSchema } from './api-key-params.schema';
-import { IApiKeyParams } from '@area-butler-types/external-api';
+import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 
 export type UserDocument = User &

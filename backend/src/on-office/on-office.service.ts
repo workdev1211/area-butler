@@ -44,7 +44,7 @@ import {
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
 import { GoogleApiService } from '../client/google/google-api.service';
-import { GeoJsonPoint } from '../shared/geo-json.types';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
@@ -65,7 +65,7 @@ import {
   buildOnOfficeQueryString,
   getOnOfficeSortedMapData,
   parseOnOfficeFloat,
-} from '../shared/on-office.functions';
+} from '../shared/functions/on-office';
 
 @Injectable()
 export class OnOfficeService {

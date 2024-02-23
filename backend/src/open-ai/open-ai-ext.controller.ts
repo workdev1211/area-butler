@@ -14,7 +14,7 @@ import {
   ApiUsageStatsTypesEnum,
   IApiQueryOpenAiExtReqStatus,
   IApiQueryOpenAiExtRes,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 import {
   defaultRealEstType,
   openAiTonalities,

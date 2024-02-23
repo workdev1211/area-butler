@@ -17,7 +17,7 @@ import {
 import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
-import { GeoJsonPoint } from '../shared/geo-json.types';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
 import {
@@ -44,7 +44,7 @@ import {
 //   ApiOnOfficeRealEstStatusByUserEmailsEnum,
 //   setRealEstateStatusByUserEmail,
 // } from './mapper/real-estate-on-office-import.mapper';
-import { IApiPropstackFetchPropQueryParams } from '../shared/propstack.types';
+import { IApiPropstackFetchPropQueryParams } from '../shared/types/propstack';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   IApiIntUserOnOfficeParams,
@@ -52,7 +52,7 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingService } from './real-estate-listing.service';
 import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
-import { getProcUpdateQuery } from '../shared/shared.functions';
+import { getProcUpdateQuery } from '../shared/functions/shared';
 
 @Injectable()
 export class RealEstateCrmImportService {

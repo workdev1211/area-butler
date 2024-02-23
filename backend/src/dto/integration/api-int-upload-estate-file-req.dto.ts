@@ -2,7 +2,7 @@ import { IsIn, IsNotEmpty, IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
 import { AreaButlerExportTypesEnum } from '@area-butler-types/integration-user';
-import { IsBase64Image } from '../../shared/validation/is-base64-image.decorator';
+import { IsBase64Image } from '../../shared/decorators/is-base64-image.decorator';
 import { IApiIntUploadEstateFileReq } from '@area-butler-types/integration';
 
 @Exclude()

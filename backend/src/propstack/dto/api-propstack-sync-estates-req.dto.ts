@@ -2,7 +2,7 @@ import { IsEnum, IsOptional, IsString } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
 import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
-import { IApiPropstackFetchPropQueryParams } from '../../shared/propstack.types';
+import { IApiPropstackFetchPropQueryParams } from '../../shared/types/propstack';
 import { PropstackPropMarketTypesEnum } from '@area-butler-types/propstack';
 
 @Exclude()

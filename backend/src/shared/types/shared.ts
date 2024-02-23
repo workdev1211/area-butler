@@ -1,6 +1,6 @@
 import { FilterQuery, ProjectionFields, SortValues } from 'mongoose';
 
-import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
+import { SearchResultSnapshotDocument } from '../../location/schema/search-result-snapshot.schema';
 
 export type TApiMongoSortQuery = Record<string, SortValues>;
 

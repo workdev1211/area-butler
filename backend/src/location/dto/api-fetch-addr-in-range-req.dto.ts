@@ -2,11 +2,11 @@ import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
 
 import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
-import { ApiHereLanguageEnum } from '@area-butler-types/here';
+import { ApiHereLanguageEnum } from '../../shared/types/here';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiFetchAddrInRangeReq,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 
 class ApiFetchAddrInRangeReqDto
   extends ApiCoordinatesOrAddressDto

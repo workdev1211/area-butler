@@ -1,5 +1,5 @@
 import { ApiCoordinates, ApiMoneyAmount } from "./types";
-import { GeoJsonPoint } from "../../backend/src/shared/geo-json.types";
+import { GeoJsonPoint } from "../../backend/src/shared/types/geo-json";
 import { IApiRealEstateIntegrationParams } from "./integration";
 import { TApiLocIndexProps, TLocationIndexData } from "./location-index";
 

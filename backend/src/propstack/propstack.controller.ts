@@ -27,7 +27,7 @@ import { InjectPropstackLoginUserInterceptor } from './interceptor/inject-propst
 import ApiPropstackSyncEstatesReqDto from './dto/api-propstack-sync-estates-req.dto';
 import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-estate-file-req.dto';
 import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
-import { IPropstackLink } from '../shared/propstack.types';
+import { IPropstackLink } from '../shared/types/propstack';
 import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
 
 @ApiTags('propstack')

@@ -9,8 +9,8 @@ import {
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IPropstackLabelValue } from '../../shared/propstack.types';
-import { IsOneOfTypes } from '../../shared/validation/is-one-of-types.decorator';
+import { IPropstackLabelValue } from '../../shared/types/propstack';
+import { IsOneOfTypes } from '../../shared/decorators/is-one-of-types.decorator';
 
 @Exclude()
 class ApiPropstackLabelValueDto<T extends string | number | boolean = string>

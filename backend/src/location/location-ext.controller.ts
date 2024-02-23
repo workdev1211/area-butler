@@ -34,10 +34,10 @@ import {
   IApiFetchPoiDataRes,
   IApiFetchSnapshotDataReqStatus,
   IApiFetchSnapshotDataRes,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 import { GoogleApiService } from '../client/google/google-api.service';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
-import { createDirectLink } from '../shared/shared.functions';
+import { createDirectLink } from '../shared/functions/shared';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 
 @ApiTags('location', 'api')

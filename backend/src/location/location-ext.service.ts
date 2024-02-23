@@ -20,14 +20,14 @@ import {
   IApiFetchSnapshotDataReq,
   IApiFetchSnapshotDataRes,
   SnapshotDataTypesEnum,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { LocationService } from './location.service';
 import { UserDocument } from '../user/schema/user.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { defaultPoiTypes } from '../../../shared/constants/location';
 import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
-import { createDirectLink } from '../shared/shared.functions';
+import { createDirectLink } from '../shared/functions/shared';
 
 interface IFetchPoiDataArgs {
   coordinates: ApiCoordinates;

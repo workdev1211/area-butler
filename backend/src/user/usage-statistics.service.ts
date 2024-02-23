@@ -13,7 +13,7 @@ import { TApiIntUserUsageStatsTypes } from '@area-butler-types/integration-user'
 import {
   ApiUsageStatsTypesEnum,
   TApiUsageStatsReqStatus,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 
 @Injectable()
 export class UsageStatisticsService {

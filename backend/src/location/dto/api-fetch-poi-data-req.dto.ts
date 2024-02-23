@@ -14,8 +14,8 @@ import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
 import {
   ApiUnitsOfTransportEnum,
   IApiFetchPoiDataReq,
-} from '@area-butler-types/external-api';
-import { getEnumValidMessage } from '../../shared/validation/validation.functions';
+} from '../../shared/types/external-api';
+import { getEnumValidMessage } from '../../shared/functions/validation';
 
 const DEFAULT_POI_NUMBER = 5;
 const DEFAULT_DISTANCE = 10;

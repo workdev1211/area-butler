@@ -3,7 +3,7 @@ import {
   OsmName,
   UnitsOfTransportation,
 } from '@area-butler-types/types';
-import { PotentialCustomerDocument } from '../potential-customer/schema/potential-customer.schema';
+import { PotentialCustomerDocument } from '../../potential-customer/schema/potential-customer.schema';
 
 export const defaultPotentialCustomers: Partial<PotentialCustomerDocument>[] = [
   {

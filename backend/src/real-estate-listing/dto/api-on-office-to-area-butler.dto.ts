@@ -17,7 +17,7 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { GeoJsonPoint } from '../../shared/types/geo-json';
 import {
   IApiIntegrationParams,
   IApiRealEstateIntegrationParams,
@@ -29,7 +29,7 @@ import {
   ApiOnOfficeEstateBasementEnum,
   IApiOnOfficeRealEstate,
 } from '@area-butler-types/on-office';
-import { parseOnOfficeFloat } from '../../shared/on-office.functions';
+import { parseOnOfficeFloat } from '../../shared/functions/on-office';
 import ApiRealEstateIntegrationParamsDto from '../../dto/api-real-estate-integration-params.dto';
 
 export interface IApiOnOfficeProcessedRealEstate

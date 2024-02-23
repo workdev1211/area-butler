@@ -3,13 +3,13 @@ import { Language, PlaceType2 } from '@googlemaps/google-maps-services-js';
 
 import { ApiCoordinates } from '@area-butler-types/types';
 import { GoogleApiService } from '../client/google/google-api.service';
-import { distanceInMeters } from '../shared/shared.functions';
-import { ApiHereLanguageEnum } from '@area-butler-types/here';
+import { distanceInMeters } from '../shared/functions/shared';
+import { ApiHereLanguageEnum } from '../shared/types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiAddressInRange,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 import { allowedAddrInRangeCountries } from '../../../shared/constants/location';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 // import { createChunks } from '../../../shared/functions/shared.functions';

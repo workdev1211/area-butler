@@ -25,7 +25,7 @@ import {
   IPaymentItem,
   ISubscriptionPlanPrice,
   PaymentItemTypeEnum,
-} from '../shared/subscription.types';
+} from '../shared/types/subscription';
 import {
   IMailProps,
   MailSenderService,
@@ -36,7 +36,7 @@ import {
   newTrialSubscriptionTemplateId,
   // subscriptionExpirationTemplateId,
   trialSubscriptionExpirationTemplateId,
-} from '../shared/email.constants';
+} from '../shared/constants/email';
 import { User, UserDocument } from './schema/user.schema';
 import { EventType } from '../event/event.types';
 import { EventEmitter2 } from 'eventemitter2';

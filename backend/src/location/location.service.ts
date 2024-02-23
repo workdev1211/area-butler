@@ -60,11 +60,11 @@ import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integrat
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
-import { TApiUsageStatsReqStatus } from '@area-butler-types/external-api';
+import { TApiUsageStatsReqStatus } from '../shared/types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
-import { TApiMongoSortQuery } from '../shared/shared.types';
+import { TApiMongoSortQuery } from '../shared/types/shared';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()

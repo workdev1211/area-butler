@@ -12,10 +12,10 @@ import { Transform } from 'class-transformer';
 import {
   IApiFetchSnapshotDataReq,
   SnapshotDataTypesEnum,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 import ApiFetchPoiDataReqDto from './api-fetch-poi-data-req.dto';
 import { OsmName } from '@area-butler-types/types';
-import { getEnumValidMessage } from '../../shared/validation/validation.functions';
+import { getEnumValidMessage } from '../../shared/functions/validation';
 import { defaultPoiTypes } from '../../../../shared/constants/location';
 
 class ApiFetchSnapshotDataReqDto

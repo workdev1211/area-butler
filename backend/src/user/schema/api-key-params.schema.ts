@@ -3,7 +3,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import {
   ApiFeatureTypesEnum,
   IApiKeyParams,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 
 @Schema({ _id: false })
 export class ApiKeyParams implements IApiKeyParams {

@@ -10,7 +10,7 @@ import {
   IPropstackLink,
   IPropstackProperty,
   IPropstackPropertyStatus,
-} from '../../shared/propstack.types';
+} from '../../shared/types/propstack';
 import { filterQueryParams } from '../../../../shared/functions/shared.functions';
 import { configService } from '../../config/config.service';
 import { IUploadPropertyImageRes } from '@area-butler-types/propstack';

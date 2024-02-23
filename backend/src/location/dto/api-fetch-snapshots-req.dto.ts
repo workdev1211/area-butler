@@ -5,7 +5,7 @@ import { FilterQuery, ProjectionFields } from 'mongoose';
 import {
   IApiFetchSnapshotsReq,
   TApiMongoSortQuery,
-} from '../../shared/shared.types';
+} from '../../shared/types/shared';
 import { SearchResultSnapshotDocument } from '../schema/search-result-snapshot.schema';
 
 class ApiFetchSnapshotsReqDto implements IApiFetchSnapshotsReq {

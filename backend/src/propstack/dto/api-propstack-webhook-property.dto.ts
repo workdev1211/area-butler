@@ -16,7 +16,7 @@ import {
   IPropstackLabelValue,
   IPropstackPropertyStatus,
   IPropstackWebhookProperty,
-} from '../../shared/propstack.types';
+} from '../../shared/types/propstack';
 import { PropstackPropMarketTypesEnum } from '@area-butler-types/propstack';
 import ApiPropstackPropertyStatusDto from './api-propstack-property-status.dto';
 import ApiPropstackLabelValueDto from './api-propstack-label-value.dto';

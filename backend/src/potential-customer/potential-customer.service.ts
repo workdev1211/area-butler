@@ -22,8 +22,8 @@ import { UserService } from '../user/user.service';
 import {
   questionnaireInvitationTemplateId,
   questionnaireSubmissionTemplateId,
-} from '../shared/email.constants';
-import { defaultPotentialCustomers } from '../shared/potential-customers.constants';
+} from '../shared/constants/email';
+import { defaultPotentialCustomers } from '../shared/constants/potential-customers';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   ApiUpsertPotentialCustomer,

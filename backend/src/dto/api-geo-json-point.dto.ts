@@ -1,7 +1,7 @@
 import { IsNotEmpty, IsString, IsIn, IsNumber } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { GeoJsonPoint } from '../shared/geo-json.types';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 
 @Exclude()
 class ApiGeoJsonPointDto implements GeoJsonPoint {

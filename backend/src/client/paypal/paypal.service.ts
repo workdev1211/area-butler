@@ -16,13 +16,13 @@ import { configService } from '../../config/config.service';
 import {
   getPriceValueWithVat,
   getRawPriceValue,
-} from '../../shared/shared.functions';
-import { IPaymentItem } from '../../shared/subscription.types';
+} from '../../shared/functions/shared';
+import { IPaymentItem } from '../../shared/types/subscription';
 import {
   IPaypalAccessToken,
   IPaypalWebhookVerificationBody,
   PaypalWebhookVerificationStatusEnum,
-} from '../../shared/paypal.types';
+} from '../../shared/types/paypal';
 import { IApiSubscriptionLimitIncreaseParams } from '@area-butler-types/subscription-plan';
 
 @Injectable()

@@ -22,7 +22,7 @@ import {
   ApiUsageStatsTypesEnum,
   IApiAddressInRange,
   IApiFetchAddrInRangeReqStatus,
-} from '@area-butler-types/external-api';
+} from '../shared/types/external-api';
 import { ApiGuard } from '../auth/api.guard';
 
 @ApiTags('api-address-range')

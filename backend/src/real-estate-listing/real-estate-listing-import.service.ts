@@ -13,7 +13,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   checkAnyStringIsEmpty,
   convertStringToNumber,
-} from '../shared/shared.functions';
+} from '../shared/functions/shared';
 import {
   ApiEnergyEfficiency,
   ApiRealEstateCostType,
@@ -26,11 +26,11 @@ import {
   ApiGeometry,
   CsvFileFormatsEnum,
 } from '@area-butler-types/types';
-import { IOpenImmoXmlData } from '../shared/open-immo.types';
+import { IOpenImmoXmlData } from '../shared/types/open-immo';
 import { RealEstateListingService } from './real-estate-listing.service';
 import { replaceUmlautWithEnglish } from '../../../shared/functions/shared.functions';
 import ApiOpenImmoToAreaButlerDto from './dto/api-open-immo-to-area-butler.dto';
-import { GeoJsonPoint } from '../shared/geo-json.types';
+import { GeoJsonPoint } from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
 import { ApiOnOfficeEstateMarketTypesEnum } from '@area-butler-types/on-office';

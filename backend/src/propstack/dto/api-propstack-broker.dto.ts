@@ -8,7 +8,7 @@ import {
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IPropstackBroker, IPropstackShop } from '../../shared/propstack.types';
+import { IPropstackBroker, IPropstackShop } from '../../shared/types/propstack';
 
 @Exclude()
 class ApiPropstackBrokerDto implements IPropstackBroker {

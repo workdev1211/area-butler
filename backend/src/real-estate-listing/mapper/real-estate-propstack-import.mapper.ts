@@ -1,7 +1,7 @@
 // TODO should be removed in the future after some testing because now the status fields are completely custom
 
 import { ApiRealEstateStatusEnum } from '@area-butler-types/real-estate';
-import { IPropstackPropertyStatus } from '../../shared/propstack.types';
+import { IPropstackPropertyStatus } from '../../shared/types/propstack';
 
 export enum PropstackCustomUserEmailsEnum {
   NADINE = 'nadine.capoen@immoaddict.de',

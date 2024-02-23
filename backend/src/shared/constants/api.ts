@@ -1,4 +1,4 @@
-import { ApiFeatureTypesEnum } from '@area-butler-types/external-api';
+import { ApiFeatureTypesEnum } from '../types/external-api';
 
 // TODO REMOVE IN THE FUTURE
 export const clientIdToUserId = {

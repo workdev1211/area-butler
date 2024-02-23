@@ -33,9 +33,9 @@ import {
   ILimitIncreaseMetadata,
 } from '@area-butler-types/billing';
 import { PaypalService } from '../client/paypal/paypal.service';
-import { PaymentItemTypeEnum } from '../shared/subscription.types';
+import { PaymentItemTypeEnum } from '../shared/types/subscription';
 import { configService } from '../config/config.service';
-import { PaypalWebhookEventTypeEnum } from '../shared/paypal.types';
+import { PaypalWebhookEventTypeEnum } from '../shared/types/paypal';
 
 @Injectable()
 export class BillingService {

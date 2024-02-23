@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IPropstackPropertyStatus } from '../../shared/propstack.types';
+import { IPropstackPropertyStatus } from '../../shared/types/propstack';
 
 @Exclude()
 class ApiPropstackPropertyStatusDto implements IPropstackPropertyStatus {

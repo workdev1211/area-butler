@@ -16,8 +16,8 @@ import {
   ApiUsageStatsTypesEnum,
   IApiQueryLocIndicesReqStatus,
   IApiQueryZensusAtlasRes,
-} from '@area-butler-types/external-api';
-import { calculateRelevantArea } from '../../shared/geo-json.functions';
+} from '../../shared/types/external-api';
+import { calculateRelevantArea } from '../../shared/functions/geo-json';
 import ApiCoordinatesOrAddressDto from '../../location/dto/api-coordinates-or-address.dto';
 import {
   cleanCensusProperties,

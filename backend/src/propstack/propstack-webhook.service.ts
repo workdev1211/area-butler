@@ -8,7 +8,7 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { createDirectLink } from '../shared/shared.functions';
+import { createDirectLink } from '../shared/functions/shared';
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
@@ -25,7 +25,7 @@ import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user'
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackService } from './propstack.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { IPropstackWebhookProperty } from '../shared/propstack.types';
+import { IPropstackWebhookProperty } from '../shared/types/propstack';
 import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
 import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
 

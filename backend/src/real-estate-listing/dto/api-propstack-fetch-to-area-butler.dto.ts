@@ -18,7 +18,7 @@ import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-character
 import {
   IPropstackProperty,
   TPropstackProcProperty,
-} from '../../shared/propstack.types';
+} from '../../shared/types/propstack';
 import ApiPropstackToAreaButlerDto from './api-propstack-to-area-butler.dto';
 
 @Exclude()

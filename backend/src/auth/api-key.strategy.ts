@@ -6,7 +6,7 @@ import { UserService } from '../user/user.service';
 import {
   apiAllowedRoutes,
   apiRoutePathToFeatureTypeMapping,
-} from '../shared/api.constants';
+} from '../shared/constants/api';
 
 @Injectable()
 export class ApiKeyStrategy extends PassportStrategy(

@@ -14,7 +14,7 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GeoJsonPoint } from '../../shared/geo-json.types';
+import { GeoJsonPoint } from '../../shared/types/geo-json';
 import ApiIntegrationParamsDto from '../../dto/api-real-estate-integration-params.dto';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
 import { propstackPropertyMarketTypeNames } from '../../../../shared/constants/propstack';
@@ -25,7 +25,7 @@ import {
   IPropstackProperty,
   IPropstackWebhookProperty,
   TPropstackProcProperty,
-} from '../../shared/propstack.types';
+} from '../../shared/types/propstack';
 
 @Exclude()
 abstract class ApiPropstackToAreaButlerDto<

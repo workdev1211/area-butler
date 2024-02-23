@@ -17,7 +17,7 @@ import {
   ApiUsageStatsTypesEnum,
   IApiQueryLocIndicesReqStatus,
   IApiQueryLocIndicesRes,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 
 @ApiTags('location-index', 'api')
 @Controller('api/location-index-ext')

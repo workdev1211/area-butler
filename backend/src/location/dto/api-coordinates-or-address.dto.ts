@@ -7,7 +7,7 @@ import {
 } from 'class-validator';
 import { Transform } from 'class-transformer';
 
-import { IApiCoordinatesOrAddress } from '@area-butler-types/external-api';
+import { IApiCoordinatesOrAddress } from '../../shared/types/external-api';
 
 class ApiCoordinatesOrAddressDto implements IApiCoordinatesOrAddress {
   @Transform(({ value }) => +value, { toClassOnly: true })

@@ -33,7 +33,7 @@ import {
   processCensusData,
 } from '../../../shared/functions/census.functions';
 import { osmEntityTypes } from '../../../shared/constants/constants';
-import { calculateRelevantArea } from '../shared/geo-json.functions';
+import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 
 // Left just in case in order to be able to calculate the number of tokens

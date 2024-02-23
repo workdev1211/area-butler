@@ -19,7 +19,7 @@ import { subscriptionExpiredMessage } from '../../../shared/messages/error.messa
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import { createDirectLink } from '../shared/shared.functions';
+import { createDirectLink } from '../shared/functions/shared';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')

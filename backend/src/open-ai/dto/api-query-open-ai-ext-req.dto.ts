@@ -11,7 +11,7 @@ import { Transform } from 'class-transformer';
 import {
   ApiOpenAiQueryTypesEnum,
   IApiQueryOpenAiExtReq,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 import ApiFetchPoiDataReqDto from '../../location/dto/api-fetch-poi-data-req.dto';
 import {
   ApiEnergyEfficiency,
@@ -19,7 +19,7 @@ import {
   ApiRealEstateCostType,
 } from '@area-butler-types/real-estate';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
-import { getEnumValidMessage } from '../../shared/validation/validation.functions';
+import { getEnumValidMessage } from '../../shared/functions/validation';
 
 class ApiQueryOpenAiExtReqDto
   extends ApiFetchPoiDataReqDto

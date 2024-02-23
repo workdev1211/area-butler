@@ -1,7 +1,7 @@
 import { HttpException, Injectable, PipeTransform } from '@nestjs/common';
 import { Language } from '@googlemaps/google-maps-services-js';
 
-import { ApiHereLanguageEnum } from '@area-butler-types/here';
+import { ApiHereLanguageEnum } from '../../shared/types/here';
 
 @Injectable()
 export class AddrInRangeLanguagePipe implements PipeTransform {

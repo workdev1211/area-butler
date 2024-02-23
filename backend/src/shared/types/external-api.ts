@@ -1,5 +1,5 @@
-import { IntegrationTypesEnum } from "./integration";
-import { ApiHereLanguageEnum } from "./here";
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { ApiHereLanguageEnum } from './here';
 import {
   ApiCoordinates,
   ApiGeojsonType,
@@ -7,15 +7,15 @@ import {
   ApiRequestStatusesEnum,
   MeansOfTransportation,
   OsmName,
-} from "./types";
-import { TProcessedCensusData } from "./data-provision";
+} from '@area-butler-types/types';
+import { TProcessedCensusData } from '@area-butler-types/data-provision';
 import {
   ApiEnergyEfficiency,
   ApiFurnishing,
   ApiRealEstateCostType,
-} from "./real-estate";
-import { OpenAiTonalityEnum } from "./open-ai";
-import { TApiLocIndexProps } from "./location-index";
+} from '@area-butler-types/real-estate';
+import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import { TApiLocIndexProps } from '@area-butler-types/location-index';
 
 export interface IApiKeyParams {
   apiKey: string;
@@ -23,46 +23,47 @@ export interface IApiKeyParams {
 }
 
 export enum ApiUnitsOfTransportEnum {
-  MINUTES = "MIN",
-  METERS = "M",
-  KILOMETERS = "KM",
+  MINUTES = 'MIN',
+  METERS = 'M',
+  KILOMETERS = 'KM',
 }
 
 export enum ApiFeatureTypesEnum {
-  ADDRESSES_IN_RANGE = "ADDRESSES_IN_RANGE",
-  LOCATION_INDICES = "LOCATION_INDICES",
-  SNAPSHOT_DATA = "SNAPSHOT_DATA",
-  ZENSUS_ATLAS = "ZENSUS_ATLAS",
-  POI_DATA = "POI_DATA",
-  OPEN_AI = "OPEN_AI",
+  ADDRESSES_IN_RANGE = 'ADDRESSES_IN_RANGE',
+  LOCATION_INDICES = 'LOCATION_INDICES',
+  TRIGGER_OVERPASS = 'TRIGGER_OVERPASS',
+  SNAPSHOT_DATA = 'SNAPSHOT_DATA',
+  ZENSUS_ATLAS = 'ZENSUS_ATLAS',
+  POI_DATA = 'POI_DATA',
+  OPEN_AI = 'OPEN_AI',
 }
 
 export enum ApiUsageStatsTypesEnum {
-  ADDRESSES_IN_RANGE = "addressesInRange",
-  LOCATION_INDICES = "locationIndices",
-  SNAPSHOT_DATA = "snapshotData",
-  ZENSUS_ATLAS = "zensusAtlas",
-  POI_DATA = "poiData",
-  OPEN_AI = "openAi",
+  ADDRESSES_IN_RANGE = 'addressesInRange',
+  LOCATION_INDICES = 'locationIndices',
+  SNAPSHOT_DATA = 'snapshotData',
+  ZENSUS_ATLAS = 'zensusAtlas',
+  POI_DATA = 'poiData',
+  OPEN_AI = 'openAi',
 }
 
 export enum ApiAddrInRangeApiTypesEnum {
-  HERE = "here",
-  GOOGLE = "google",
+  HERE = 'here',
+  GOOGLE = 'google',
 }
 
 export enum ApiOpenAiQueryTypesEnum {
-  "LOC_DESC" = "LOC_DESC",
-  "EST_DESC" = "EST_DESC",
-  "LOC_EST_DESC" = "LOC_EST_DESC",
+  'LOC_DESC' = 'LOC_DESC',
+  'EST_DESC' = 'EST_DESC',
+  'LOC_EST_DESC' = 'LOC_EST_DESC',
 }
 
 export enum SnapshotDataTypesEnum {
   // TODO later
   // IMAGE = "IMAGE",
-  QR_CODE = "QR_CODE",
-  DIRECT_LINK = "DIRECT_LINK",
-  IFRAME_CODE = "IFRAME_CODE",
+  QR_CODE = 'QR_CODE',
+  DIRECT_LINK = 'DIRECT_LINK',
+  IFRAME_CODE = 'IFRAME_CODE',
 }
 
 export interface IApiUsageStatisticsSchema {

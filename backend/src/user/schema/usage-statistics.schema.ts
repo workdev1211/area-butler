@@ -6,7 +6,7 @@ import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
   IApiUsageStatisticsSchema,
   TApiUsageStatistics,
-} from '@area-butler-types/external-api';
+} from '../../shared/types/external-api';
 
 export type UsageStatisticsDocument = UsageStatistics & Document;
 

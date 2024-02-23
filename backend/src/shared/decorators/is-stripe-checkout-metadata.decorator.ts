@@ -1,7 +1,6 @@
 import { ValidateBy, ValidationOptions } from 'class-validator';
 import Stripe from 'stripe';
 
-const IS_STRIPE_CHECKOUT_METADATA = 'isStripeCheckoutMetadata';
 const allowedPropertyKeyTypes = ['string'];
 const allowedPropertyValueTypes = ['string', 'number', 'null'];
 
@@ -12,7 +11,7 @@ export const IsStripeCheckoutMetadata = (
 ): PropertyDecorator => {
   return ValidateBy(
     {
-      name: IS_STRIPE_CHECKOUT_METADATA,
+      name: 'isStripeCheckoutMetadata',
       validator: {
         validate: (metadata: Stripe.MetadataParam): boolean => {
           return Object.entries(metadata).every(
