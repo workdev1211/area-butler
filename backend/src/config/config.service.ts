@@ -9,7 +9,7 @@ import {
   paymentEnvironments,
   systemEnvironments,
 } from '../../../shared/constants/constants';
-import { TOverpassAvailCountries } from '@area-butler-types/overpass';
+import { OverpassAvailCountryEnum } from '@area-butler-types/overpass';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require('dotenv').config();
@@ -152,7 +152,7 @@ class ConfigService {
     return this.getValue('OVERPASS_BASE_URL');
   }
 
-  getOverpassCountries(): TOverpassAvailCountries[] {
+  getOverpassCountries(): OverpassAvailCountryEnum[] {
     const overpassCountries = this.getValue('OVERPASS_COUNTRIES');
     return overpassCountries ? JSON.parse(overpassCountries) : ['de'];
   }

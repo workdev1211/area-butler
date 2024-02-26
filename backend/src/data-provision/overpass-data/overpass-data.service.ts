@@ -42,13 +42,9 @@ export class OverpassDataService {
     const tempCollectionName = `${this.overpassDataModel.collection.name}_tmp`;
     this.logger.log('Loading overpass data into the database.');
     const tempCollection = this.connection.db.collection(tempCollectionName);
-
+    this.logger.log(`Dropping existing ${tempCollectionName} collection.`);
+    await tempCollection.drop().catch(() => undefined);
     const chunkSize = 1000;
-
-    try {
-      this.logger.log(`Dropping existing ${tempCollectionName} collection.`);
-      await tempCollection.drop();
-    } catch (e) {}
 
     this.logger.log(
       `Fetching the Overpass data of ${this.countries.join(', ')}.`,
@@ -64,7 +60,7 @@ export class OverpassDataService {
 
           const chunks = createChunks<OverpassData>(feats, chunkSize);
           this.logger.log(
-            `Starting the bulkWrite ${et.name}[${feats.length}] for ${country}.`,
+            `Starting the bulkWrite of ${et.name} (${feats.length}) for ${country}.`,
           );
 
           if (feats.length) {
@@ -78,19 +74,17 @@ export class OverpassDataService {
       }
     } catch (e) {
       this.logger.error(e);
-      await tempCollection.drop();
+      await tempCollection.drop().catch(() => undefined);
       throw new HttpException('Overpass import failed!', 400);
     }
 
-    this.logger.log('Overpass data loaded.');
-    this.logger.log('Building overpass data index.');
+    this.logger.log('Overpass data loaded.', 'Building overpass data index.');
 
     await tempCollection.createIndex({
       geometry: '2dsphere',
     });
 
-    this.logger.log('Overpass index created.');
-    this.logger.log('Switching collections.');
+    this.logger.log('Overpass index created.', 'Switching collections.');
     await this.overpassDataModel.collection.drop();
 
     await tempCollection.rename(

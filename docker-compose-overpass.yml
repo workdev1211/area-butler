@@ -1,48 +1,231 @@
-version: "3"
+# An example file which should be launched via the Portainer
+version: "3.4"
+
+x-logging: &default-logging
+  driver: "json-file"
+  options:
+    max-size: "100m"
+    max-file: "10"
+
+x-common-env: &common-env
+  OVERPASS_MODE: init
+  OVERPASS_META: yes
+  OVERPASS_RULES_LOAD: 10
+  OVERPASS_USE_AREAS: false
+  OVERPASS_MAX_TIMEOUT: 3600
+  OVERPASS_SPACE: 4294967296
 
 services:
-  overpass:
+  overpass-de:
     image: wiktorn/overpass-api
+    container_name: overpass-de
     deploy:
       resources:
         limits:
-          cpus: "0.4"
-    container_name: overpass
+          cpus: "0.2"
     restart: always
     networks:
       - web
     ports:
-      - 8074:80
+      - 8100:80
     volumes:
-      - overpass-db:/db
+      - overpass-de-db:/db
     environment:
-      - OVERPASS_META=yes
-      - OVERPASS_MODE=init
-      - OVERPASS_PLANET_URL=http://download.geofabrik.de/europe/germany-latest.osm.bz2
-      - OVERPASS_DIFF_URL=http://download.openstreetmap.fr/replication/europe/germany/minute/
-      - OVERPASS_RULES_LOAD=10
-      - OVERPASS_USE_AREAS=false
-      - OVERPASS_MAX_TIMEOUT=3600
-      - OVERPASS_SPACE=4294967296
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/germany-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/germany-updates/
     labels:
       - "traefik.docker.network=web"
-      - "traefik.http.middlewares.redirect.redirectscheme.scheme=https"
-      - "traefik.http.routers.overpass-http.entrypoints=web"
-      - "traefik.http.routers.overpass-http.middlewares=redirect"
-      - "traefik.http.routers.overpass-http.rule=Host(`overpass.areabutler.de`)"
-      - "traefik.http.routers.overpass.entrypoints=websecure"
-      - "traefik.http.routers.overpass.rule=Host(`overpass.areabutler.de`)"
-      - "traefik.http.routers.overpass.tls=true"
-      - "traefik.http.routers.overpass.tls.certresolver=le"
-      - "traefik.port=8074"
-    logging:
-      driver: "json-file"
-      options:
-        max-size: "100m"
-        max-file: "10"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-de-prefix.stripprefix.prefixes=/de"
+      - "traefik.http.routers.overpass-de-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/de`)"
+      - "traefik.http.routers.overpass-de-http.entrypoints=web"
+      - "traefik.http.routers.overpass-de-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-de.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/de`)"
+      - "traefik.http.routers.overpass-de.entrypoints=websecure"
+      - "traefik.http.routers.overpass-de.tls=true"
+      - "traefik.http.routers.overpass-de.tls.certresolver=le"
+      - "traefik.http.routers.overpass-de.middlewares=remove-de-prefix"
+      - "traefik.port=8100"
+    logging: *default-logging
+
+  overpass-es:
+    image: wiktorn/overpass-api
+    container_name: overpass-es
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8101:80
+    volumes:
+      - overpass-es-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/spain-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/spain-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-es-prefix.stripprefix.prefixes=/es"
+      - "traefik.http.routers.overpass-es-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/es`)"
+      - "traefik.http.routers.overpass-es-http.entrypoints=web"
+      - "traefik.http.routers.overpass-es-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-es.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/es`)"
+      - "traefik.http.routers.overpass-es.entrypoints=websecure"
+      - "traefik.http.routers.overpass-es.tls=true"
+      - "traefik.http.routers.overpass-es.tls.certresolver=le"
+      - "traefik.http.routers.overpass-es.middlewares=remove-es-prefix"
+      - "traefik.port=8101"
+    logging: *default-logging
+
+  overpass-hr:
+    image: wiktorn/overpass-api
+    container_name: overpass-hr
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8102:80
+    volumes:
+      - overpass-hr-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/croatia-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/croatia-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-hr-prefix.stripprefix.prefixes=/hr"
+      - "traefik.http.routers.overpass-hr-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/hr`)"
+      - "traefik.http.routers.overpass-hr-http.entrypoints=web"
+      - "traefik.http.routers.overpass-hr-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-hr.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/hr`)"
+      - "traefik.http.routers.overpass-hr.entrypoints=websecure"
+      - "traefik.http.routers.overpass-hr.tls=true"
+      - "traefik.http.routers.overpass-hr.tls.certresolver=le"
+      - "traefik.http.routers.overpass-hr.middlewares=remove-hr-prefix"
+      - "traefik.port=8102"
+    logging: *default-logging
+
+  overpass-cy:
+    image: wiktorn/overpass-api
+    container_name: overpass-cy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8103:80
+    volumes:
+      - overpass-cy-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/cyprus-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/cyprus-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-cy-prefix.stripprefix.prefixes=/cy"
+      - "traefik.http.routers.overpass-cy-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/cy`)"
+      - "traefik.http.routers.overpass-cy-http.entrypoints=web"
+      - "traefik.http.routers.overpass-cy-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-cy.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/cy`)"
+      - "traefik.http.routers.overpass-cy.entrypoints=websecure"
+      - "traefik.http.routers.overpass-cy.tls=true"
+      - "traefik.http.routers.overpass-cy.tls.certresolver=le"
+      - "traefik.http.routers.overpass-cy.middlewares=remove-cy-prefix"
+      - "traefik.port=8103"
+    logging: *default-logging
+
+  overpass-gcc:
+    image: wiktorn/overpass-api
+    container_name: overpass-gcc
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8104:80
+    volumes:
+      - overpass-gcc-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/asia/gcc-states-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/asia/gcc-states-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-gcc-prefix.stripprefix.prefixes=/gcc"
+      - "traefik.http.routers.overpass-gcc-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/gcc`)"
+      - "traefik.http.routers.overpass-gcc-http.entrypoints=web"
+      - "traefik.http.routers.overpass-gcc-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-gcc.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/gcc`)"
+      - "traefik.http.routers.overpass-gcc.entrypoints=websecure"
+      - "traefik.http.routers.overpass-gcc.tls=true"
+      - "traefik.http.routers.overpass-gcc.tls.certresolver=le"
+      - "traefik.http.routers.overpass-gcc.middlewares=remove-gcc-prefix"
+      - "traefik.port=8104"
+    logging: *default-logging
+
+  overpass-ic:
+    image: wiktorn/overpass-api
+    container_name: overpass-ic
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8105:80
+    volumes:
+      - overpass-ic-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/africa/canary-islands-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/africa/canary-islands-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-ic-prefix.stripprefix.prefixes=/ic"
+      - "traefik.http.routers.overpass-ic-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/ic`)"
+      - "traefik.http.routers.overpass-ic-http.entrypoints=web"
+      - "traefik.http.routers.overpass-ic-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-ic.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/ic`)"
+      - "traefik.http.routers.overpass-ic.entrypoints=websecure"
+      - "traefik.http.routers.overpass-ic.tls=true"
+      - "traefik.http.routers.overpass-ic.tls.certresolver=le"
+      - "traefik.http.routers.overpass-ic.middlewares=remove-ic-prefix"
+      - "traefik.port=8105"
+    logging: *default-logging
 
 volumes:
-  overpass-db:
+  overpass-de-db:
+    external: true
+  overpass-es-db:
+    external: true
+  overpass-hr-db:
+    external: true
+  overpass-cy-db:
+    external: true
+  overpass-gcc-db:
+    external: true
+  overpass-ic-db:
     external: true
 
 networks:

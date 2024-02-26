@@ -19,7 +19,7 @@ import {
 } from '@area-butler-types/types';
 import {
   IApiOverpassFetchNodes,
-  TOverpassAvailCountries,
+  OverpassAvailCountryEnum,
 } from '@area-butler-types/overpass';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
@@ -28,13 +28,14 @@ const Fuse = require('fuse.js/dist/fuse.common');
 @Injectable()
 export class OverpassService {
   private readonly baseUrl = configService.getOverpassBaseUrl();
-  private readonly countries = configService.getOverpassCountries();
+  // private readonly countries = configService.getOverpassCountries();
   private readonly logger = new Logger(OverpassService.name);
 
   constructor(private readonly http: HttpService) {}
 
   async fetchNodes(
     fetchNodeParams: IApiOverpassFetchNodes,
+    countryCode = OverpassAvailCountryEnum.GERMANY,
   ): Promise<ApiOsmLocation[]> {
     const { coordinates, preferredAmenities } = fetchNodeParams;
     const requestParams = await this.deriveRequestParams(fetchNodeParams);
@@ -42,7 +43,7 @@ export class OverpassService {
     try {
       const response = await firstValueFrom(
         this.http.post(
-          this.baseUrl.replace('xx', 'de'),
+          this.baseUrl.replace('{country}', countryCode),
           new URLSearchParams({ data: requestParams }).toString(),
         ),
       );
@@ -269,15 +270,15 @@ export class OverpassService {
 
   async fetchByEntityType(
     entityType: ApiOsmEntity,
-    countryCode: TOverpassAvailCountries = 'de',
+    countryCode = OverpassAvailCountryEnum.GERMANY,
   ): Promise<OverpassData[]> {
     const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
 
     try {
-      this.logger.log(`Fetching ${entityType.name}`);
+      this.logger.log(`Fetching ${entityType.name} for ${countryCode}.`);
 
       const response = await firstValueFrom(
-        this.http.get(this.baseUrl.replace('xx', countryCode), {
+        this.http.get(this.baseUrl.replace('{country}', countryCode), {
           params: { data: query },
         }),
       );
@@ -310,61 +311,7 @@ export class OverpassService {
         return result;
       }, []);
     } catch (e) {
-      console.error('Error while fetching data from overpass', e);
-      throw e;
-    }
-  }
-
-  // left just in case of future usage
-  async fetchAllByEntityType(
-    entityType: ApiOsmEntity,
-  ): Promise<OverpassData[]> {
-    const query = `[out:json][timeout:3600][maxsize:1073741824];(node["${entityType.type}"="${entityType.name}"];way["${entityType.type}"="${entityType.name}"];relation["${entityType.type}"="${entityType.name}"];);out center;`;
-
-    try {
-      this.logger.log(`Fetching ${entityType.name}`);
-
-      return (
-        await Promise.all(
-          this.countries.map(async (countryCode): Promise<OverpassData[]> => {
-            const response = await firstValueFrom(
-              this.http.get(this.baseUrl.replace('xx', countryCode), {
-                params: { data: query },
-              }),
-            );
-
-            return response?.data?.elements.reduce((result, el) => {
-              const coordinates = el.center
-                ? [el.center.lon, el.center.lat]
-                : [el.lon, el.lat];
-
-              const isValidCoordinates =
-                typeof coordinates[0] === 'number' &&
-                coordinates[0] >= -180 &&
-                coordinates[0] <= 180 &&
-                typeof coordinates[1] === 'number' &&
-                coordinates[1] >= -90 &&
-                coordinates[1] <= 90;
-
-              if (isValidCoordinates) {
-                result.push({
-                  ...el,
-                  geometry: {
-                    type: 'Point',
-                    coordinates,
-                  },
-                  overpassId: el.id,
-                  entityType: entityType.name,
-                });
-              }
-
-              return result;
-            }, []);
-          }),
-        )
-      ).flat();
-    } catch (e) {
-      console.error('Error while fetching data from overpass', e);
+      this.logger.error('Error while fetching data from overpass!', e);
       throw e;
     }
   }
