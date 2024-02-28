@@ -153,12 +153,13 @@ export class LocationExtController extends ApiKeyAuthController {
         returnedAddressesNumber,
         returnedAddresses,
         apiRequestsNumber,
-      } = await this.addressesInRangeExtService.fetchAddressesInRange(
-        address || { lat, lng },
-        radius,
+      } = await this.addressesInRangeExtService.fetchAddressesInRange({
         apiType,
         language,
-      );
+        radius,
+        allowedCountries: user.allowedCountries,
+        location: address || { lat, lng },
+      });
 
       Object.assign(requestStatus, {
         sourceAddress,
@@ -217,7 +218,11 @@ export class LocationExtController extends ApiKeyAuthController {
       let coordinates: ApiCoordinates;
 
       if (address) {
-        const place = await this.googleApiService.fetchPlaceOrFail(address);
+        const place = await this.googleApiService.fetchPlaceOrFail(
+          address,
+          user.allowedCountries,
+        );
+
         coordinates = { ...place.geometry.location };
       }
 

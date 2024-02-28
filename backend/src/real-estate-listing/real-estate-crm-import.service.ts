@@ -284,6 +284,9 @@ export class RealEstateCrmImportService {
 
         const place = await this.googleApiService.fetchPlace(
           property.address,
+          isIntegrationUser
+            ? user.config.allowedCountries
+            : user.allowedCountries,
         );
 
         if (!place) {
@@ -552,6 +555,9 @@ export class RealEstateCrmImportService {
 
         const place = await this.googleApiService.fetchPlace(
           locationAddress,
+          isIntegrationUser
+            ? user.config.allowedCountries
+            : user.allowedCountries,
         );
 
         if (!place) {

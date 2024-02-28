@@ -5,11 +5,11 @@ import {
   Get,
   HttpException,
   Query,
-  Req,
   UseGuards,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Language } from '@googlemaps/google-maps-services-js';
 
 import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
@@ -41,7 +41,6 @@ export class ApiAddressesInRangeController {
   @Get()
   async fetchAddressesInRange(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Req() request: any,
     @Query()
     fetchAddrInRangeReq: ApiFetchAddrInRangeReqDto,
   ): Promise<{
@@ -62,12 +61,15 @@ export class ApiAddressesInRangeController {
         returnedAddressesNumber,
         returnedAddresses,
         apiRequestsNumber,
-      } = await this.addressesInRangeService.fetchAddressesInRange(
-        address || { lat, lng },
+      } = await this.addressesInRangeService.fetchAddressesInRange({
+        location: address || { lat, lng },
         radius,
         apiType,
-        language,
-      );
+        language: Object.values<string>(Language).includes(language)
+          ? (language as unknown as Language)
+          : Language.de,
+        allowedCountries: user.allowedCountries,
+      });
 
       Object.assign(requestStatus, {
         sourceAddress,

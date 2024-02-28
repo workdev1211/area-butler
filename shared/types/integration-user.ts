@@ -6,6 +6,7 @@ import {
 } from "./types";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { ApiRealEstateListing } from "./real-estate";
+import { Iso3166_1Alpha2CountriesEnum } from "./location";
 
 export interface IApiIntegrationUserSchema {
   integrationUserId: string;
@@ -120,6 +121,7 @@ export type TApiIntegrationUserConfig = {
   templateSnapshotId?: string;
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>

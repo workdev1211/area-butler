@@ -115,7 +115,12 @@ export class SnapshotExtService {
     transportParams,
     poiTypes,
   }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.googleApiService.fetchPlaceOrFail(location);
+    const place = await this.googleApiService.fetchPlaceOrFail(
+      location,
+      'integrationUserId' in user
+        ? user.config.allowedCountries
+        : user.allowedCountries,
+    );
 
     return this.createSnapshotByPlace({
       user,
@@ -140,7 +145,10 @@ export class SnapshotExtService {
       templateSnapshotId,
     );
 
-    const place = await this.googleApiService.fetchPlaceOrFail(location);
+    const place = await this.googleApiService.fetchPlaceOrFail(
+      location,
+      user.allowedCountries,
+    );
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',

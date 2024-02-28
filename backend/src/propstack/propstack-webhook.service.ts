@@ -58,6 +58,7 @@ export class PropstackWebhookService {
 
     const place = await this.googleApiService.fetchPlaceOrFail(
       property.address,
+      isIntegrationUser ? user.config.allowedCountries : user.allowedCountries,
     );
 
     const resultProperty = { ...property };
@@ -254,6 +255,9 @@ export class PropstackWebhookService {
         },
       } = await this.googleApiService.fetchPlaceOrFail(
         resultProperty.address,
+        isIntegrationUser
+          ? user.config.allowedCountries
+          : user.allowedCountries,
       );
 
       Object.assign(resultProperty, {

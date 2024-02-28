@@ -1,8 +1,8 @@
 import { IsEnum, IsInt, IsOptional, Max, Min } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { Language } from '@googlemaps/google-maps-services-js';
 
 import ApiCoordinatesOrAddressDto from './api-coordinates-or-address.dto';
-import { ApiHereLanguageEnum } from '../../shared/types/here';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiFetchAddrInRangeReq,
@@ -20,10 +20,10 @@ class ApiFetchAddrInRangeReqDto
   radius?: number = 150;
 
   @IsOptional()
-  @IsEnum(ApiHereLanguageEnum, {
+  @IsEnum(Language, {
     message: "language should be BCP 47 compliant (e.g., 'de')",
   })
-  language?: ApiHereLanguageEnum;
+  language?: Language = Language.de;
 
   @IsOptional()
   @IsEnum(ApiAddrInRangeApiTypesEnum)

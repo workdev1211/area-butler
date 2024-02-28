@@ -69,6 +69,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
       // TODO move all complex logic to a separate OpenAI service
       const place = await this.googleApiService.fetchPlaceOrFail(
         address || { lat, lng },
+        user.allowedCountries,
       );
 
       const coordinates = place.geometry.location;

@@ -41,7 +41,10 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     const geoJsonCoordinates: number[] = [];
 
     if (address) {
-      const place = await this.googleApiService.fetchPlaceOrFail(address);
+      const place = await this.googleApiService.fetchPlaceOrFail(
+        address,
+        user.allowedCountries,
+      );
 
       geoJsonCoordinates.push(
         place.geometry.location.lng,

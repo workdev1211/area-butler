@@ -4,14 +4,14 @@ import { Language, PlaceType2 } from '@googlemaps/google-maps-services-js';
 import { ApiCoordinates } from '@area-butler-types/types';
 import { GoogleApiService } from '../client/google/google-api.service';
 import { distanceInMeters } from '../shared/functions/shared';
-import { ApiHereLanguageEnum } from '../shared/types/here';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiAddressInRange,
 } from '../shared/types/external-api';
-import { allowedAddrInRangeCountries } from '../../../shared/constants/location';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
+import { ApiHereLanguageEnum } from '../shared/types/here';
+
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
 interface IFetchedAddresses {
@@ -30,6 +30,14 @@ interface IFetchedAddressesInRange {
 // const MAXIMUM_RADIUS = 400;
 // const MINIMUM_ADDRESSES_NUMBER = 200;
 
+interface IFetchAddrInRangeData {
+  apiType: ApiAddrInRangeApiTypesEnum;
+  location: string | ApiCoordinates;
+  radius: number; // meters
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  language?: Language;
+}
+
 @Injectable()
 export class AddressesInRangeExtService {
   private readonly logger = new Logger(AddressesInRangeExtService.name);
@@ -39,76 +47,70 @@ export class AddressesInRangeExtService {
     private readonly hereGeocodeService: HereGeocodeService,
   ) {}
 
-  async fetchAddressesInRange(
-    location: string | ApiCoordinates,
-    radius, // meters
+  async fetchAddressesInRange({
     apiType,
-    language?: string,
-  ): Promise<IFetchedAddressesInRange> {
-    let resultingLanguage = language;
+    location,
+    radius,
+    allowedCountries,
+    language,
+  }: IFetchAddrInRangeData): Promise<IFetchedAddressesInRange> {
+    let resultLanguage = language;
 
-    const place = await this.googleApiService.fetchPlace(location);
-
-    const isCountryAllowed = place?.address_components.some(
-      ({ short_name: shortName, types }) =>
-        types.includes(PlaceType2.country) &&
-        allowedAddrInRangeCountries.has(
-          shortName as Iso3166_1Alpha2CountriesEnum,
-        ),
+    const place = await this.googleApiService.fetchPlace(
+      location,
+      allowedCountries,
+      language,
     );
 
     if (
       !place ||
       !place.geometry.location ||
-      !Array.isArray(place.address_components) ||
-      !isCountryAllowed
+      !Array.isArray(place.address_components)
     ) {
       this.logger.debug(
         `!place = ${!place}, !location = ${!place.geometry
           .location}, !addressComponents = ${!Array.isArray(
           place.address_components,
-        )}, !isInAllowedCountry = ${!isCountryAllowed}`,
+        )}.`,
       );
 
       throw new HttpException('Place not found!', 400);
     }
 
-    if (!resultingLanguage) {
-      resultingLanguage =
-        place.address_components.find(({ types }) =>
-          types.includes(PlaceType2.country),
-        )?.short_name || Language.de;
-    }
-
     let fetchedAddresses;
+
+    if (!resultLanguage) {
+      const country = place.address_components
+        .find(({ types }) => types.includes(PlaceType2.country))
+        ?.short_name?.toLowerCase();
+
+      resultLanguage =
+        Object.values(Language).find(
+          (value) => (value as string) === country,
+        ) || Language.de;
+    }
 
     switch (apiType) {
       case ApiAddrInRangeApiTypesEnum.HERE: {
-        resultingLanguage = Object.values(ApiHereLanguageEnum).includes(
-          resultingLanguage as ApiHereLanguageEnum,
-        )
-          ? resultingLanguage
-          : ApiHereLanguageEnum.DE;
+        const hereLanguage =
+          Object.values(ApiHereLanguageEnum).find(
+            (value) => (value as string) === resultLanguage,
+          ) || ApiHereLanguageEnum.DE;
 
         fetchedAddresses = await this.fetchAddressesByHere(
           place.geometry.location,
           radius,
-          resultingLanguage as ApiHereLanguageEnum,
+          hereLanguage,
         );
+
         break;
       }
 
       case ApiAddrInRangeApiTypesEnum.GOOGLE: {
-        resultingLanguage = Object.values(Language).includes(
-          resultingLanguage as Language,
-        )
-          ? resultingLanguage
-          : Language.de;
-
         fetchedAddresses = await this.fetchAddressesByGoogle(
           place.geometry.location,
           radius,
-          resultingLanguage as Language,
+          resultLanguage,
         );
         break;
       }
@@ -208,6 +210,7 @@ export class AddressesInRangeExtService {
       coordinateGrid.map(async (coordinates) => {
         const currentPlace = await this.googleApiService.fetchPlace(
           coordinates,
+          [],
           language,
         );
 

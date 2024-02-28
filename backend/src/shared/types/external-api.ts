@@ -1,5 +1,6 @@
+import { Language } from '@googlemaps/google-maps-services-js';
+
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
-import { ApiHereLanguageEnum } from './here';
 import {
   ApiCoordinates,
   ApiGeojsonType,
@@ -127,7 +128,7 @@ export interface IApiAddressInRange {
 
 export interface IApiFetchAddrInRangeReq extends IApiCoordinatesOrAddress {
   radius?: number;
-  language?: ApiHereLanguageEnum;
+  language?: Language;
   apiType?: ApiAddrInRangeApiTypesEnum;
 }
 

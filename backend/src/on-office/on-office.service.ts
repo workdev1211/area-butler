@@ -906,7 +906,11 @@ export class OnOfficeService {
 
   private async fetchAndProcessEstateData(
     estateId: string,
-    { integrationUserId, parameters }: TIntegrationUserDocument,
+    {
+      integrationUserId,
+      parameters,
+      config: { allowedCountries },
+    }: TIntegrationUserDocument,
   ): Promise<IApiRealEstateListingSchema> {
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
@@ -994,11 +998,18 @@ export class OnOfficeService {
       lng: parseOnOfficeFloat(lng),
     };
 
-    let place = await this.googleApiService.fetchPlace(locationAddress);
+    let place = await this.googleApiService.fetchPlace(
+      locationAddress,
+      allowedCountries,
+    );
 
     if (!place) {
       locationAddress = undefined;
-      place = await this.googleApiService.fetchPlace(locationCoordinates);
+
+      place = await this.googleApiService.fetchPlace(
+        locationCoordinates,
+        allowedCountries,
+      );
     }
 
     if (!place) {

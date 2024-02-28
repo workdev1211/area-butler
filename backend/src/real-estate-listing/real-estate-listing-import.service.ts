@@ -35,15 +35,17 @@ import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
 import { umlautMap } from '../../../shared/constants/constants';
 import { ApiOnOfficeEstateMarketTypesEnum } from '@area-butler-types/on-office';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
+import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 
 interface IListingData {
+  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
+  chunkSize: number;
+  errorLineNumbers: number[];
+  fileFormat: CsvFileFormatsEnum;
+  fromLine: number;
+  realEstateChunkIndex: number;
   realEstateData: unknown;
   realEstateIndex: number;
-  chunkSize: number;
-  realEstateChunkIndex: number;
-  fromLine: number;
-  fileFormat: CsvFileFormatsEnum;
-  errorLineNumbers: number[];
   userId: string;
 }
 
@@ -83,13 +85,13 @@ export class RealEstateListingImportService {
     // TODO implement automatic delimiter identification - there is a package for that
     const delimiter = fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? ',' : ';';
     const chunkSize = 1000;
-    const resultingFromLine =
+    const resultFromLine =
       fromLine || fileFormat === CsvFileFormatsEnum.AREA_BUTLER ? 2 : 1;
 
     const realEstateChunks = await this.processCsv(
       file,
       delimiter,
-      resultingFromLine,
+      resultFromLine,
       chunkSize,
     );
 
@@ -99,18 +101,19 @@ export class RealEstateListingImportService {
       realEstateChunks.map(async (realEstateChunk, realEstateChunkIndex) => {
         const result = await Promise.allSettled(
           realEstateChunk.map((realEstateData, realEstateIndex) => {
-            const processData = {
-              realEstateData,
-              realEstateIndex,
+            const processData: IListingData = {
               chunkSize,
-              realEstateChunkIndex,
               errorLineNumbers,
               fileFormat,
-              fromLine: resultingFromLine,
+              realEstateChunkIndex,
+              realEstateData,
+              realEstateIndex,
+              allowedCountries: user.allowedCountries,
+              fromLine: resultFromLine,
               userId: user.id,
             };
 
-            return resultingFromLine === 1 &&
+            return resultFromLine === 1 &&
               fileFormat === CsvFileFormatsEnum.PADERBORN
               ? this.processObjectListingData(processData)
               : this.processArrayListingData(processData);
@@ -291,7 +294,7 @@ export class RealEstateListingImportService {
       parsedData.openimmo.anbieter,
     );
 
-    await this.setAddressAndCoordinates(realEstate);
+    await this.setAddressAndCoordinates(realEstate, user.allowedCountries);
 
     await this.realEstateListingService.createRealEstateListing(
       user,
@@ -336,29 +339,30 @@ export class RealEstateListingImportService {
 
   // TODO completely remove after refactoring
   private async processArrayListingData({
+    allowedCountries,
+    chunkSize,
+    errorLineNumbers,
+    fileFormat,
+    fromLine,
+    realEstateChunkIndex,
     realEstateData,
     realEstateIndex,
-    realEstateChunkIndex,
-    errorLineNumbers,
-    chunkSize,
-    fromLine,
-    fileFormat,
   }: IListingData): Promise<TListingDocumentData | []> {
     switch (fileFormat) {
       // TODO refactor to the usage of 'ApiOnOfficeToAreaButlerDto'
       case CsvFileFormatsEnum.ON_OFFICE: {
         const [
-          externalId,
-          status,
-          street,
-          houseNumber = '',
-          zipCode,
-          locality,
           country,
+          externalId,
+          houseNumber = '',
+          locality,
+          name,
           price,
           propertySizeInSquareMeters,
           realEstateSizeInSquareMeters,
-          name,
+          status,
+          street,
+          zipCode,
         ] = realEstateData as string[];
 
         const processedHouseNumber = houseNumber.match(
@@ -383,7 +387,12 @@ export class RealEstateListingImportService {
         }
 
         const address = `${street} ${processedHouseNumber[0]}, ${zipCode} ${locality}, ${country}`;
-        const place = await this.googleApiService.fetchPlace(address);
+
+        const place = await this.googleApiService.fetchPlace(
+          address,
+          allowedCountries,
+        );
+
         const coordinates = place?.geometry?.location;
 
         if (coordinates) {
@@ -426,7 +435,11 @@ export class RealEstateListingImportService {
           return [];
         }
 
-        const place = await this.googleApiService.fetchPlace(address);
+        const place = await this.googleApiService.fetchPlace(
+          address,
+          allowedCountries,
+        );
+
         const coordinates = place?.geometry?.location;
 
         if (coordinates) {
@@ -453,13 +466,14 @@ export class RealEstateListingImportService {
   }
 
   private async processObjectListingData({
+    allowedCountries,
+    chunkSize,
+    errorLineNumbers,
+    fileFormat,
+    fromLine,
+    realEstateChunkIndex,
     realEstateData,
     realEstateIndex,
-    realEstateChunkIndex,
-    errorLineNumbers,
-    chunkSize,
-    fromLine,
-    fileFormat,
     userId,
   }: IListingData): Promise<ApiOnOfficeToAreaButlerDto> {
     // TODO change to 'switch' in the future and change PADERBORN to ON_OFFICE
@@ -502,7 +516,10 @@ export class RealEstateListingImportService {
       locationAddress += `, ${country}`;
     }
 
-    const place = await this.googleApiService.fetchPlace(locationAddress);
+    const place = await this.googleApiService.fetchPlace(
+      locationAddress,
+      allowedCountries,
+    );
 
     if (!place) {
       this.logger.debug(
@@ -553,13 +570,17 @@ export class RealEstateListingImportService {
 
   private async setAddressAndCoordinates(
     realEstate: IApiRealEstateListingSchema,
+    allowedCountries: Iso3166_1Alpha2CountriesEnum[],
   ): Promise<void> {
     if (realEstate.address) {
       const {
         geometry: {
           location: { lat, lng },
         },
-      } = await this.googleApiService.fetchPlaceOrFail(realEstate.address);
+      } = await this.googleApiService.fetchPlaceOrFail(
+        realEstate.address,
+        allowedCountries,
+      );
 
       realEstate.location = { type: 'Point', coordinates: [lat, lng] };
       return;
@@ -567,10 +588,13 @@ export class RealEstateListingImportService {
 
     if (realEstate.location) {
       const { formatted_address: resultingAddress } =
-        await this.googleApiService.fetchPlaceOrFail({
-          lat: realEstate.location.coordinates[0],
-          lng: realEstate.location.coordinates[1],
-        });
+        await this.googleApiService.fetchPlaceOrFail(
+          {
+            lat: realEstate.location.coordinates[0],
+            lng: realEstate.location.coordinates[1],
+          },
+          allowedCountries,
+        );
 
       realEstate.address = resultingAddress;
       realEstate.name = resultingAddress;

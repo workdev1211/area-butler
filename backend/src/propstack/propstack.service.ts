@@ -92,7 +92,10 @@ export class PropstackService {
       geometry: {
         location: { lat, lng },
       },
-    } = await this.googleApiService.fetchPlaceOrFail(property.address);
+    } = await this.googleApiService.fetchPlaceOrFail(
+      property.address,
+      integrationUser.config.allowedCountries,
+    );
 
     const resultProperty = { ...property };
 
