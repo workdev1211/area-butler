@@ -55,7 +55,7 @@ const EmbedContainer: FunctionComponent = () => {
 
   const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
   const [isAddressExpired, setIsAddressExpired] = useState(false);
-  const [mapboxToken, setMapboxToken] = useState("");
+  const [mapboxAccessToken, setMapboxAccessToken] = useState("");
   const [searchConfig, setSearchConfig] =
     useState<ApiSearchResultSnapshotConfig>();
   const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcons>();
@@ -121,7 +121,7 @@ const EmbedContainer: FunctionComponent = () => {
           config["showStreetViewLink"] = true;
         }
 
-        setMapboxToken(response.mapboxAccessToken);
+        setMapboxAccessToken(response.mapboxAccessToken);
         setResult(response);
         setSearchConfig(config);
         setUserPoiIcons(response.userPoiIcons);
@@ -285,7 +285,7 @@ const EmbedContainer: FunctionComponent = () => {
   return (
     <div onClick={handleClick} onContextMenu={handleContextMenu}>
       <SearchResultContainer
-        mapboxToken={mapboxToken}
+        mapboxAccessToken={mapboxAccessToken}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

@@ -5,7 +5,6 @@ import {
   useRef,
   useState,
 } from "react";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import "./SnapshotEditorPage.scss";
@@ -37,10 +36,7 @@ import {
 import { useCensusData } from "../hooks/censusdata";
 import { useFederalElectionData } from "../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../hooks/particlepollutiondata";
-import {
-  defaultMapZoom,
-  googleMapsApiOptions,
-} from "../shared/shared.constants";
+import { defaultMapZoom } from "../shared/shared.constants";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
@@ -56,7 +52,7 @@ export interface SnapshotEditorRouterProps {
 const SnapshotEditorPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
-  const { googleApiKey, mapBoxAccessToken } = useContext(ConfigContext);
+  const { mapBoxAccessToken: mapboxAccessToken } = useContext(ConfigContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
 
@@ -427,22 +423,9 @@ const SnapshotEditorPage: FunctionComponent = () => {
   return (
     <DefaultLayout withHorizontalPadding={false}>
       <TourStarter tour={ApiTourNamesEnum.EDITOR} />
-      <div className="hidden">
-        <GooglePlacesAutocomplete
-          apiOptions={googleMapsApiOptions}
-          autocompletionRequest={{
-            componentRestrictions: {
-              country: ["de"],
-            },
-          }}
-          minLengthAutocomplete={5}
-          selectProps={{}}
-          apiKey={googleApiKey}
-        />
-      </div>
       <div className="editor-container">
         <SearchResultContainer
-          mapboxToken={mapBoxAccessToken}
+          mapboxAccessToken={mapboxAccessToken}
           searchResponse={snapshot.searchResponse}
           searchAddress={snapshot.placesLocation.label}
           location={snapshot.location}

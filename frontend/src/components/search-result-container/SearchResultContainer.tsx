@@ -58,7 +58,7 @@ import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal"
 import { LoadingMessage } from "../Loading";
 
 interface ISearchResultContainerProps {
-  mapboxToken: string;
+  mapboxAccessToken: string;
   searchResponse: ApiSearchResponse;
   searchAddress: string;
   location: ApiCoordinates;
@@ -80,7 +80,7 @@ const SearchResultContainer = forwardRef<
 >(
   (
     {
-      mapboxToken,
+      mapboxAccessToken,
       searchResponse,
       searchAddress,
       location,
@@ -338,7 +338,7 @@ const SearchResultContainer = forwardRef<
       searchContextState.snapshotId,
     ]);
 
-    if (!searchResponse || !mapboxToken) {
+    if (!searchResponse || !mapboxAccessToken) {
       return <LoadingMessage />;
     }
 
@@ -568,227 +568,243 @@ const SearchResultContainer = forwardRef<
       !isEmbeddedMode || !searchContextState.responseConfig?.hideMeanToggles;
 
     return (
-      <>
-        <div
-          id={searchResContainId}
-          className={containerClasses}
-          ref={containerRef}
-        >
-          {mapClipping && (
-            <MapClipCropModal
-              mapClipping={mapClipping}
-              closeModal={(croppedMapClipping?: string) => {
-                if (croppedMapClipping) {
-                  toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
+      <div
+        id={searchResContainId}
+        className={containerClasses}
+        ref={containerRef}
+      >
+        {/* NOT SURE ABOUT ITS USAGE - HAS BEEN MOVED HERE FROM SNAPSHOT_EDITOR_PAGE AND MAP_PAGE COMPONENTS */}
+        {/* Required for the addition of custom POIs */}
+        {/*{isEditorMode && (*/}
+        {/*  <div className="hidden">*/}
+        {/*    <GooglePlacesAutocomplete*/}
+        {/*      apiOptions={googleMapsApiOptions}*/}
+        {/*      autocompletionRequest={{*/}
+        {/*        componentRestrictions: {*/}
+        {/*          country: (isIntegrationUser*/}
+        {/*            ? user.config.allowedCountries*/}
+        {/*            : user.allowedCountries) || [*/}
+        {/*            Iso3166_1Alpha2CountriesEnum.DE,*/}
+        {/*          ],*/}
+        {/*        },*/}
+        {/*      }}*/}
+        {/*      minLengthAutocomplete={5}*/}
+        {/*      selectProps={{}}*/}
+        {/*      apiKey={googleApiKey}*/}
+        {/*    />*/}
+        {/*  </div>*/}
+        {/*)}*/}
+        {mapClipping && (
+          <MapClipCropModal
+            mapClipping={mapClipping}
+            closeModal={(croppedMapClipping?: string) => {
+              if (croppedMapClipping) {
+                toastSuccess("Kartenausschnitt erfolgreich gespeichert!");
 
-                  searchContextDispatch({
-                    type: SearchContextActionTypes.ADD_MAP_CLIPPING,
-                    payload: {
-                      mapClippingDataUrl: croppedMapClipping,
-                    },
-                  });
-                }
-
-                setMapClipping(undefined);
-              }}
-              color={primaryColor?.slice(1)}
-              directLink={directLink}
-            />
-          )}
-
-          <div className="relative flex-1" id={mapWithLegendId}>
-            <div
-              className={`map-nav-bar-container ${
-                isMapMenuOpen ? "map-menu-open" : ""
-              }`}
-            >
-              {isMeanTogglesShown && (
-                <MeansToggle
-                  transportationParams={searchContextState.transportationParams}
-                  activeMeans={searchContextState.responseActiveMeans}
-                  availableMeans={availableMeans}
-                  onMeansChange={(newValues: MeansOfTransportation[]) => {
-                    searchContextDispatch({
-                      type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
-                      payload: [...newValues],
-                    });
-                  }}
-                  hideIsochrones={hideIsochrones}
-                />
-              )}
-            </div>
-
-            <Map
-              mapboxAccessToken={mapboxToken}
-              mapboxMapId={mapboxMapIds.current}
-              searchResponse={searchResponse}
-              searchAddress={searchAddress}
-              groupedEntities={resultGroupEntities ?? []}
-              snippetToken={searchContextState.responseToken}
-              means={{
-                byFoot: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.WALK
-                ),
-                byBike: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.BICYCLE
-                ),
-                byCar: searchContextState.responseActiveMeans.includes(
-                  MeansOfTransportation.CAR
-                ),
-              }}
-              mapCenter={
-                searchContextState.mapCenter ||
-                searchResponse.centerOfInterest.coordinates
-              }
-              mapZoomLevel={
-                mapZoomLevel ||
-                searchContextState.mapZoomLevel ||
-                defaultMapZoom
-              }
-              highlightId={searchContextState.highlightId}
-              setHighlightId={(highlightId) =>
                 searchContextDispatch({
-                  type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
-                  payload: highlightId,
-                })
-              }
-              routes={searchContextState.responseRoutes}
-              transitRoutes={searchContextState.responseTransitRoutes}
-              mapDisplayMode={mapDisplayMode}
-              config={searchContextState.responseConfig}
-              onPoiAdd={onPoiAdd}
-              hideEntity={hideEntity}
-              setMapCenterZoom={(mapCenter, mapZoomLevel) => {
-                searchContextDispatch({
-                  type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+                  type: SearchContextActionTypes.ADD_MAP_CLIPPING,
                   payload: {
-                    mapCenter: {
-                      ...mapCenter,
-                    },
-                    mapZoomLevel,
+                    mapClippingDataUrl: croppedMapClipping,
                   },
                 });
-              }}
-              addMapClipping={(mapClippingDataUrl) => {
-                setMapClipping(mapClippingDataUrl);
-              }}
-              hideIsochrones={hideIsochrones}
-              setHideIsochrones={setHideIsochrones}
-              toggleSatelliteMapMode={toggleSatelliteMapMode}
-              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-              gotoMapCenter={searchContextState.gotoMapCenter}
-              setGotoMapCenter={(data: IGotoMapCenter | undefined) => {
-                searchContextDispatch({
-                  type: SearchContextActionTypes.GOTO_MAP_CENTER,
-                  payload: data,
-                });
-              }}
-              isTrial={isTrial}
-              userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
-              isIntegration={isIntegrationUser}
-              ref={mapRef}
-            />
+              }
+
+              setMapClipping(undefined);
+            }}
+            color={primaryColor?.slice(1)}
+            directLink={directLink}
+          />
+        )}
+
+        <div className="relative flex-1" id={mapWithLegendId}>
+          <div
+            className={`map-nav-bar-container ${
+              isMapMenuOpen ? "map-menu-open" : ""
+            }`}
+          >
+            {isMeanTogglesShown && (
+              <MeansToggle
+                transportationParams={searchContextState.transportationParams}
+                activeMeans={searchContextState.responseActiveMeans}
+                availableMeans={availableMeans}
+                onMeansChange={(newValues: MeansOfTransportation[]) => {
+                  searchContextDispatch({
+                    type: SearchContextActionTypes.SET_RESPONSE_ACTIVE_MEANS,
+                    payload: [...newValues],
+                  });
+                }}
+                hideIsochrones={hideIsochrones}
+              />
+            )}
           </div>
-          {isMapMenuPresent && (
-            <MapMenuButton
-              isEditorMode={isEditorMode}
-              isMenuOpen={isMapMenuOpen}
-              setIsMenuOpen={setIsMapMenuOpen}
-            />
-          )}
-          {searchContextState.responseConfig?.isFilterMenuAvail && (
-            <FilterMenuButton
-              isEditorMode={isEditorMode}
-              toggleIsMenuOpen={() => {
-                setIsFilterMenuOpen(!isFilterMenuOpen);
-              }}
-            />
-          )}
-          {isMapMenuKFPresent && (
-            <MapMenuKarlaFricke
-              groupedEntries={(resultGroupEntities ?? [])
-                .filter(
-                  (ge) =>
-                    ge.items.length && ge.title !== realEstateListingsTitle
-                )
-                .sort((a, b) => (a.title > b.title ? 1 : -1))}
-              isMapMenuOpen={isMapMenuOpen}
-              isShownPreferredLocationsModal={isShownPreferredLocationsModal}
-              togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
-              userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
-            />
-          )}
-          {isMapMenuPresent && (
-            <MapMenu
-              isMapMenuOpen={isMapMenuOpen}
-              censusData={searchContextState.censusData}
-              federalElectionData={searchContextState.federalElectionData}
-              particlePollutionData={searchContextState.particlePollutionData}
-              locationIndexData={searchContextState.locationIndexData}
-              groupedEntries={resultGroupEntities ?? []}
-              toggleAllLocalities={toggleAllLocalities}
+
+          <Map
+            mapboxAccessToken={mapboxAccessToken}
+            mapboxMapId={mapboxMapIds.current}
+            searchResponse={searchResponse}
+            searchAddress={searchAddress}
+            groupedEntities={resultGroupEntities ?? []}
+            snippetToken={searchContextState.responseToken}
+            means={{
+              byFoot: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.WALK
+              ),
+              byBike: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.BICYCLE
+              ),
+              byCar: searchContextState.responseActiveMeans.includes(
+                MeansOfTransportation.CAR
+              ),
+            }}
+            mapCenter={
+              searchContextState.mapCenter ||
+              searchResponse.centerOfInterest.coordinates
+            }
+            mapZoomLevel={
+              mapZoomLevel || searchContextState.mapZoomLevel || defaultMapZoom
+            }
+            highlightId={searchContextState.highlightId}
+            setHighlightId={(highlightId) =>
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_HIGHLIGHT_ID,
+                payload: highlightId,
+              })
+            }
+            routes={searchContextState.responseRoutes}
+            transitRoutes={searchContextState.responseTransitRoutes}
+            mapDisplayMode={mapDisplayMode}
+            config={searchContextState.responseConfig}
+            onPoiAdd={onPoiAdd}
+            hideEntity={hideEntity}
+            setMapCenterZoom={(mapCenter, mapZoomLevel) => {
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_MAP_CENTER_ZOOM,
+                payload: {
+                  mapCenter: {
+                    ...mapCenter,
+                  },
+                  mapZoomLevel,
+                },
+              });
+            }}
+            addMapClipping={(mapClippingDataUrl) => {
+              setMapClipping(mapClippingDataUrl);
+            }}
+            hideIsochrones={hideIsochrones}
+            setHideIsochrones={setHideIsochrones}
+            toggleSatelliteMapMode={toggleSatelliteMapMode}
+            isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+            togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+            gotoMapCenter={searchContextState.gotoMapCenter}
+            setGotoMapCenter={(data: IGotoMapCenter | undefined) => {
+              searchContextDispatch({
+                type: SearchContextActionTypes.GOTO_MAP_CENTER,
+                payload: data,
+              });
+            }}
+            isTrial={isTrial}
+            userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
+            isIntegration={isIntegrationUser}
+            ref={mapRef}
+          />
+        </div>
+        {isMapMenuPresent && (
+          <MapMenuButton
+            isEditorMode={isEditorMode}
+            isMenuOpen={isMapMenuOpen}
+            setIsMenuOpen={setIsMapMenuOpen}
+          />
+        )}
+        {searchContextState.responseConfig?.isFilterMenuAvail && (
+          <FilterMenuButton
+            isEditorMode={isEditorMode}
+            toggleIsMenuOpen={() => {
+              setIsFilterMenuOpen(!isFilterMenuOpen);
+            }}
+          />
+        )}
+        {isMapMenuKFPresent && (
+          <MapMenuKarlaFricke
+            groupedEntries={(resultGroupEntities ?? [])
+              .filter(
+                (ge) => ge.items.length && ge.title !== realEstateListingsTitle
+              )
+              .sort((a, b) => (a.title > b.title ? 1 : -1))}
+            isMapMenuOpen={isMapMenuOpen}
+            isShownPreferredLocationsModal={isShownPreferredLocationsModal}
+            togglePreferredLocationsModal={setIsShownPreferredLocationsModal}
+            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
+          />
+        )}
+        {isMapMenuPresent && (
+          <MapMenu
+            isMapMenuOpen={isMapMenuOpen}
+            censusData={searchContextState.censusData}
+            federalElectionData={searchContextState.federalElectionData}
+            particlePollutionData={searchContextState.particlePollutionData}
+            locationIndexData={searchContextState.locationIndexData}
+            groupedEntries={resultGroupEntities ?? []}
+            toggleAllLocalities={toggleAllLocalities}
+            toggleRoute={(item, mean) =>
+              toggleRoutesToEntity(location, item, mean)
+            }
+            routes={searchContextState.responseRoutes}
+            toggleTransitRoute={(item) =>
+              toggleTransitRoutesToEntity(location, item)
+            }
+            transitRoutes={searchContextState.responseTransitRoutes}
+            searchAddress={searchAddress}
+            resetPosition={() => {
+              searchContextDispatch({
+                type: SearchContextActionTypes.SET_MAP_CENTER,
+                payload: searchResponse?.centerOfInterest?.coordinates!,
+              });
+
+              searchContextDispatch({
+                type: SearchContextActionTypes.GOTO_MAP_CENTER,
+                payload: { goto: true },
+              });
+            }}
+            saveConfig={saveConfig}
+            userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
+            openUpgradeSubscriptionModal={(message) => {
+              userDispatch({
+                type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
+                payload: { open: true, message },
+              });
+            }}
+            showInsights={isEditorMode}
+            config={searchContextState.responseConfig}
+            mapDisplayMode={mapDisplayMode}
+            editorTabProps={editorTabProps}
+            exportTabProps={exportTabProps}
+          />
+        )}
+        {searchContextState.responseConfig?.isFilterMenuAvail && (
+          <FilterMenu
+            isFilterMenuOpen={isFilterMenuOpen}
+            isEditorMode={isEditorMode}
+            groupEntities={resultGroupEntities}
+            setGroupEntities={setResultGroupEntities}
+          />
+        )}
+        {isThemeKf &&
+          preferredLocationsGroup &&
+          isShownPreferredLocationsModal && (
+            <PreferredLocationsModal
+              entityGroup={preferredLocationsGroup}
+              routes={searchContextState.responseRoutes}
               toggleRoute={(item, mean) =>
                 toggleRoutesToEntity(location, item, mean)
               }
-              routes={searchContextState.responseRoutes}
+              transitRoutes={searchContextState.responseTransitRoutes}
               toggleTransitRoute={(item) =>
                 toggleTransitRoutesToEntity(location, item)
               }
-              transitRoutes={searchContextState.responseTransitRoutes}
-              searchAddress={searchAddress}
-              resetPosition={() => {
-                searchContextDispatch({
-                  type: SearchContextActionTypes.SET_MAP_CENTER,
-                  payload: searchResponse?.centerOfInterest?.coordinates!,
-                });
-
-                searchContextDispatch({
-                  type: SearchContextActionTypes.GOTO_MAP_CENTER,
-                  payload: { goto: true },
-                });
-              }}
-              saveConfig={saveConfig}
-              userMenuPoiIcons={resUserPoiIcons?.menuPoiIcons}
-              openUpgradeSubscriptionModal={(message) => {
-                userDispatch({
-                  type: UserActionTypes.SET_SUBSCRIPTION_MODAL_PROPS,
-                  payload: { open: true, message },
-                });
-              }}
-              showInsights={isEditorMode}
-              config={searchContextState.responseConfig}
-              mapDisplayMode={mapDisplayMode}
-              editorTabProps={editorTabProps}
-              exportTabProps={exportTabProps}
+              closeModal={setIsShownPreferredLocationsModal}
             />
           )}
-          {searchContextState.responseConfig?.isFilterMenuAvail && (
-            <FilterMenu
-              isFilterMenuOpen={isFilterMenuOpen}
-              isEditorMode={isEditorMode}
-              groupEntities={resultGroupEntities}
-              setGroupEntities={setResultGroupEntities}
-            />
-          )}
-          {isThemeKf &&
-            preferredLocationsGroup &&
-            isShownPreferredLocationsModal && (
-              <PreferredLocationsModal
-                entityGroup={preferredLocationsGroup}
-                routes={searchContextState.responseRoutes}
-                toggleRoute={(item, mean) =>
-                  toggleRoutesToEntity(location, item, mean)
-                }
-                transitRoutes={searchContextState.responseTransitRoutes}
-                toggleTransitRoute={(item) =>
-                  toggleTransitRoutesToEntity(location, item)
-                }
-                closeModal={setIsShownPreferredLocationsModal}
-              />
-            )}
-        </div>
-      </>
+      </div>
     );
   }
 );

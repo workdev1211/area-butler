@@ -1663,4 +1663,5 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
   }
 );
 
+// DO NOT USE CHANGEABLE CONTEXT IN MEMOIZED COMPONENT TO PREVENT UNNECESSARY UPDATES
 export default memo<IMapMemoProps>(Map, isMapPropsEqual);

@@ -67,7 +67,7 @@ const MapPage: FunctionComponent = () => {
 
   const [snapshotResponse, setSnapshotResponse] =
     useState<ApiSearchResultSnapshotResponse>();
-  const [mapboxToken, setMapboxToken] = useState("");
+  const [mapboxAccessToken, setMapboxAccessToken] = useState("");
   const [processedRealEstates, setProcessedRealEstates] = useState<
     ApiRealEstateListing[]
   >([]);
@@ -101,7 +101,7 @@ const MapPage: FunctionComponent = () => {
       }
 
       setSnapshotResponse(snapshotRespData);
-      setMapboxToken(snapshotRespData.mapboxAccessToken);
+      setMapboxAccessToken(snapshotRespData.mapboxAccessToken);
     };
 
     void getSnapshot();
@@ -408,7 +408,7 @@ const MapPage: FunctionComponent = () => {
   if (
     !searchContextState.searchResponse ||
     !searchContextState.responseConfig ||
-    !mapboxToken
+    !mapboxAccessToken
   ) {
     return <LoadingMessage />;
   }
@@ -416,21 +416,8 @@ const MapPage: FunctionComponent = () => {
   return (
     <>
       <TourStarter tour={ApiTourNamesEnum.INT_MAP} />
-      <div className="hidden">
-        <GooglePlacesAutocomplete
-          apiOptions={googleMapsApiOptions}
-          autocompletionRequest={{
-            componentRestrictions: {
-              country: ["de"],
-            },
-          }}
-          minLengthAutocomplete={5}
-          selectProps={{}}
-          apiKey={googleApiKey}
-        />
-      </div>
       <SearchResultContainer
-        mapboxToken={mapboxToken}
+        mapboxAccessToken={mapboxAccessToken}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}

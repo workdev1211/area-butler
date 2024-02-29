@@ -36,8 +36,9 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
   const { getActualUser } = useTools();
 
   const user = getActualUser();
-  const allowedCountries = (!("integrationUserId" in user) &&
-    user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE];
+  const allowedCountries = ("integrationUserId" in user
+    ? user.config.allowedCountries
+    : user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE];
 
   const Menu = (props: any) => {
     return (
