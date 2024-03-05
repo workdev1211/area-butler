@@ -346,4 +346,30 @@ export class IntegrationUserService {
       'config.showTour': showTour,
     });
   }
+
+  getIntUserResultConfig({
+    config,
+    isParent,
+    parentUser,
+  }: TIntegrationUserDocument): TApiIntegrationUserConfig {
+    if (isParent || !parentUser) {
+      return { ...config };
+    }
+
+    return {
+      ...config,
+      color: config.color || parentUser.config.color,
+      extraMapboxStyles: [
+        ...(parentUser?.config?.extraMapboxStyles
+          ? parentUser.config.extraMapboxStyles.map((parentStyle) => {
+              parentStyle.label = `Elternteil: ${parentStyle.label}`;
+              return parentStyle;
+            })
+          : []),
+        ...(config.extraMapboxStyles || []),
+      ],
+      logo: config.logo || parentUser.config.logo,
+      mapIcon: config.mapIcon || parentUser.config.mapIcon,
+    };
+  }
 }

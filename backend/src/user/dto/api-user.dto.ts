@@ -42,9 +42,6 @@ import ApiMapboxStyleDto from '../../dto/api-mapbox-style.dto';
 @Exclude()
 class ApiUserDto implements ApiUser {
   @Expose()
-  @IsNotEmpty()
-  @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => ApiMapboxStyleDto)
   @Transform(
     ({
@@ -66,6 +63,9 @@ class ApiUserDto implements ApiUser {
     },
     { toClassOnly: true },
   )
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
   additionalMapBoxStyles: IApiMapboxStyle[];
 
   @Expose()
@@ -99,9 +99,6 @@ class ApiUserDto implements ApiUser {
   mapIcon?: string;
 
   @Expose()
-  @IsNotEmpty()
-  @IsArray()
-  @ValidateNested({ each: true })
   @Type(() => ApiRequestContingentDto)
   @Transform(
     ({ obj }) => retrieveTotalRequestContingent(obj.parentUser || obj),
@@ -109,48 +106,48 @@ class ApiUserDto implements ApiUser {
       toClassOnly: true,
     },
   )
+  @IsNotEmpty()
+  @IsArray()
+  @ValidateNested({ each: true })
   requestContingents: ApiRequestContingent[];
 
   @Expose()
-  @IsNotEmpty()
-  @IsNumber()
   @Transform(
     ({ obj: { parentUser, requestsExecuted } }) =>
       parentUser?.requestsExecuted || requestsExecuted,
     { toClassOnly: true },
   )
+  @IsNotEmpty()
+  @IsNumber()
   requestsExecuted: number;
 
   @Expose()
+  @Type(() => ApiShowTourDto)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiShowTourDto)
   showTour: ApiShowTour;
 
   @Expose({ name: 'subscription', toClassOnly: true })
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
   @Type(() => ApiUserSubscriptionDto)
   @Transform(
     ({ obj: { subscription } }) =>
       subscription ? mapSubscriptionToApiSubscription(subscription) : null,
     { toClassOnly: true },
   )
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
   subscription?: ApiUserSubscription;
 
   @Expose({ name: 'parentId' })
+  @Transform(({ value }) => !!value, { toClassOnly: true })
   @IsNotEmpty()
   @IsBoolean()
-  @Transform(({ value }) => !!value, { toClassOnly: true })
   isChild: boolean;
 
   // TODO change it to the new API request
   @Expose()
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
   @Type(() => ApiUserParentSettingsDto)
   @Transform(
     ({ obj: { parentUser } }) =>
@@ -164,6 +161,9 @@ class ApiUserDto implements ApiUser {
         : undefined,
     { toClassOnly: true },
   )
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
   parentSettings?: IApiUserParentSettings;
 
   @Expose()
@@ -174,10 +174,10 @@ class ApiUserDto implements ApiUser {
   poiIcons?: IApiUserPoiIcons;
 
   @Expose()
+  @Type(() => ApiUserExportFontDto)
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiUserExportFontDto)
   exportFonts?: IApiUserExportFont[];
 
   // TODO add a separate type

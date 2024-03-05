@@ -372,12 +372,13 @@ export class OnOfficeService {
     );
 
     return {
-      integrationUserId,
       availProdContingents,
+      integrationUserId,
       realEstate,
       isChild: !!integrationUser.parentId,
       accessToken: extendedClaim,
-      config: this.getIntUserResConfig(integrationUser),
+      config:
+        this.integrationUserService.getIntUserResultConfig(integrationUser),
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
@@ -514,7 +515,8 @@ export class OnOfficeService {
     return {
       accessToken,
       integrationUserId: integrationUser.integrationUserId,
-      config: this.getIntUserResConfig(integrationUser),
+      config:
+        this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!integrationUser.parentId,
       realEstate: mapRealEstateListingToApiRealEstateListing(
         integrationUser,
@@ -1145,28 +1147,5 @@ export class OnOfficeService {
       response.response.results[0].data.records[0].elements;
 
     return { userName, email };
-  }
-
-  private getIntUserResConfig({
-    config,
-    isParent,
-    parentUser,
-  }: TIntegrationUserDocument): TApiIntegrationUserConfig {
-    if (isParent || !parentUser) {
-      return { ...config };
-    }
-
-    return {
-      ...config,
-      extraMapboxStyles: [
-        ...(parentUser?.config?.extraMapboxStyles
-          ? parentUser.config.extraMapboxStyles.map((parentStyle) => {
-              parentStyle.label = `Elternteil: ${parentStyle.label}`;
-              return parentStyle;
-            })
-          : []),
-        ...(config.extraMapboxStyles || []),
-      ],
-    };
   }
 }

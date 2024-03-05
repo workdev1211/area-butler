@@ -12,7 +12,7 @@ export const useTools = () => {
     userState: { user, integrationUser },
   } = useContext(UserContext);
 
-  const { post } = useHttp();
+  const { patch, post } = useHttp();
   const isIntegrationUser = !!integrationUser;
 
   const createDirectLink = (token: string): string => {
@@ -50,10 +50,10 @@ export const useTools = () => {
     [key: string]: string | null;
   }): Promise<void> => {
     const url = isIntegrationUser
-      ? "/api/integration-users/update-config"
+      ? "/api/integration-users/config"
       : "/api/users/me/settings";
 
-    await post<ApiUser | IApiIntegrationUser>(url, settings);
+    await patch<ApiUser | IApiIntegrationUser>(url, settings);
   };
 
   const hideTour = async (

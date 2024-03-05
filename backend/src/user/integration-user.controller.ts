@@ -1,4 +1,11 @@
-import { Body, Controller, Param, Post, UseInterceptors } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Param,
+  Patch,
+  Post,
+  UseInterceptors,
+} from '@nestjs/common';
 import { ApiProperty, ApiTags } from '@nestjs/swagger';
 import { plainToInstance } from 'class-transformer';
 
@@ -43,7 +50,7 @@ export class IntegrationUserController {
 
   @ApiProperty({ description: "Update the user's config" })
   @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Post('update-config')
+  @Patch('config')
   async updateConfig(
     @InjectUser() integrationUser,
     @Body() config: ApiIntegrationUserConfigDto,

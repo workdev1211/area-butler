@@ -89,23 +89,6 @@ export class UserService {
     return newUser;
   }
 
-  async upsertUserForIntegration(
-    email: string,
-    fullname?: string,
-  ): Promise<UserDocument> {
-    const existingUser = await this.userModel.findOne({ email });
-
-    if (existingUser) {
-      return existingUser;
-    }
-
-    return new this.userModel({
-      email,
-      fullname: fullname || email,
-      consentGiven: null,
-    }).save();
-  }
-
   async patchUser(
     email: string,
     { fullname }: ApiUpsertUserDto,

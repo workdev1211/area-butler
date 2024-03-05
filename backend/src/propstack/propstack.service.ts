@@ -80,8 +80,12 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { propertyId }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const { integrationUserId, accessToken, config, parameters, parentId } =
-      integrationUser;
+    const {
+      accessToken,
+      integrationUserId,
+      parameters,
+      parentId,
+    } = integrationUser;
 
     const property = await this.propstackApiService.fetchPropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
@@ -131,8 +135,9 @@ export class PropstackService {
     return {
       integrationUserId,
       accessToken,
-      config,
       realEstate,
+      config:
+        this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!parentId,
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)

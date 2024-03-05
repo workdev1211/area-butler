@@ -6,6 +6,7 @@ import {
   HttpException,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Req,
   UseGuards,
@@ -100,7 +101,7 @@ export class UserController {
   }
 
   @ApiProperty({ description: 'Update the current user settings' })
-  @Post('me/settings')
+  @Patch('me/settings')
   async settings(
     @Req() request,
     @Body() settings: ApiUserSettingsDto,
