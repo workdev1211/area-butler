@@ -19,10 +19,10 @@ import {
   defaultRealEstType,
   openAiTonalities,
 } from '../../../shared/constants/open-ai';
-import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
+import { PlaceService } from '../place/place.service';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
@@ -30,7 +30,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
   constructor(
     private readonly openAiService: OpenAiService,
     private readonly locationExtService: LocationExtService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -67,10 +67,10 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
     try {
       // TODO move all complex logic to a separate OpenAI service
-      const place = await this.googleApiService.fetchPlaceOrFail(
-        address || { lat, lng },
-        user.allowedCountries,
-      );
+      const place = await this.placeService.fetchPlaceOrFail({
+        user,
+        location: address || { lat, lng },
+      });
 
       const coordinates = place.geometry.location;
       const resultingAddress = address || place.formatted_address;

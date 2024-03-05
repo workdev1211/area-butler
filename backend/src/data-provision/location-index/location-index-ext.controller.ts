@@ -6,7 +6,6 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import { GoogleApiService } from '../../client/google/google-api.service';
 import {
   ApiCoordinates,
   ApiRequestStatusesEnum,
@@ -18,13 +17,14 @@ import {
   IApiQueryLocIndicesReqStatus,
   IApiQueryLocIndicesRes,
 } from '../../shared/types/external-api';
+import { PlaceService } from '../../place/place.service';
 
 @ApiTags('location-index', 'api')
 @Controller('api/location-index-ext')
 export class LocationIndexExtController extends ApiKeyAuthController {
   constructor(
     private readonly locationIndexService: LocationIndexService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -41,10 +41,10 @@ export class LocationIndexExtController extends ApiKeyAuthController {
     const geoJsonCoordinates: number[] = [];
 
     if (address) {
-      const place = await this.googleApiService.fetchPlaceOrFail(
-        address,
-        user.allowedCountries,
-      );
+      const place = await this.placeService.fetchPlaceOrFail({
+        user,
+        location: address,
+      });
 
       geoJsonCoordinates.push(
         place.geometry.location.lng,

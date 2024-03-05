@@ -41,15 +41,23 @@ import {
 import { ZensusAtlasController } from './zensus-atlas/zensus-atlas.controller';
 import { ZensusAtlasIntController } from './zensus-atlas/zensus-atlas-int.controller';
 import { ZensusAtlasExtController } from './zensus-atlas/zensus-atlas-ext.controller';
+import { PlaceModule } from '../place/place.module';
 
 // TODO refactor all modules and their relations based on this one
 @Module({
-  providers: [
-    OverpassDataService,
-    FederalElectionService,
-    LocationIndexService,
-    ParticlePollutionService,
-    ZensusAtlasService,
+  imports: [
+    ClientModule,
+    HttpModule,
+    PlaceModule,
+    UserModule,
+    MongooseModule.forFeature([
+      { name: OverpassData.name, schema: OverpassDataSchema },
+      { name: FederalElection.name, schema: FederalElectionSchema },
+      { name: LocationIndex.name, schema: LocationIndexSchema },
+      { name: ParticlePollution.name, schema: ParticlePollutionSchema },
+      { name: ZensusAtlas.name, schema: ZensusAtlasSchema },
+      { name: ZipLevelData.name, schema: ZipLevelDataSchema },
+    ]),
   ],
   controllers: [
     DataProvisionController,
@@ -64,18 +72,12 @@ import { ZensusAtlasExtController } from './zensus-atlas/zensus-atlas-ext.contro
     ZensusAtlasIntController,
     ZensusAtlasExtController,
   ],
-  imports: [
-    MongooseModule.forFeature([
-      { name: OverpassData.name, schema: OverpassDataSchema },
-      { name: FederalElection.name, schema: FederalElectionSchema },
-      { name: LocationIndex.name, schema: LocationIndexSchema },
-      { name: ParticlePollution.name, schema: ParticlePollutionSchema },
-      { name: ZensusAtlas.name, schema: ZensusAtlasSchema },
-      { name: ZipLevelData.name, schema: ZipLevelDataSchema },
-    ]),
-    HttpModule,
-    ClientModule,
-    UserModule,
+  providers: [
+    OverpassDataService,
+    FederalElectionService,
+    LocationIndexService,
+    ParticlePollutionService,
+    ZensusAtlasService,
   ],
   exports: [
     OverpassDataService,

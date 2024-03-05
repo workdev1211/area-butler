@@ -15,7 +15,6 @@ import { RealEstateListingService } from '../real-estate-listing/real-estate-lis
 import { SnapshotExtService } from '../location/snapshot-ext.service';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { MeansOfTransportation } from '@area-butler-types/types';
-import { GoogleApiService } from '../client/google/google-api.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { LocationService } from '../location/location.service';
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
@@ -28,6 +27,7 @@ import { RealEstateListingIntService } from '../real-estate-listing/real-estate-
 import { IPropstackWebhookProperty } from '../shared/types/propstack';
 import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
 import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
+import { PlaceService } from '../place/place.service';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -37,7 +37,7 @@ export class PropstackWebhookService {
   private readonly logger = new Logger(PropstackWebhookService.name);
 
   constructor(
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly locationService: LocationService,
     private readonly propstackApiService: PropstackApiService,
     private readonly propstackService: PropstackService,
@@ -56,10 +56,10 @@ export class PropstackWebhookService {
       ? (user.parameters as IApiIntUserPropstackParams).apiKey
       : user.apiConnections?.PROPSTACK.apiKey;
 
-    const place = await this.googleApiService.fetchPlaceOrFail(
-      property.address,
-      isIntegrationUser ? user.config.allowedCountries : user.allowedCountries,
-    );
+    const place = await this.placeService.fetchPlaceOrFail({
+      user,
+      location: property.address,
+    });
 
     const resultProperty = { ...property };
 
@@ -253,12 +253,10 @@ export class PropstackWebhookService {
         geometry: {
           location: { lat, lng },
         },
-      } = await this.googleApiService.fetchPlaceOrFail(
-        resultProperty.address,
-        isIntegrationUser
-          ? user.config.allowedCountries
-          : user.allowedCountries,
-      );
+      } = await this.placeService.fetchPlaceOrFail({
+        user,
+        location: resultProperty.address,
+      });
 
       Object.assign(resultProperty, {
         location: {

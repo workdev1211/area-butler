@@ -10,7 +10,6 @@ import {
   ApiRequestStatusesEnum,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import { GoogleApiService } from '../../client/google/google-api.service';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
 import {
   ApiUsageStatsTypesEnum,
@@ -23,13 +22,14 @@ import {
   cleanCensusProperties,
   processCensusData,
 } from '../../../../shared/functions/census.functions';
+import { PlaceService } from '../../place/place.service';
 
 @ApiTags('zensus-atlas', 'api')
 @Controller('api/zensus-atlas-ext')
 export class ZensusAtlasExtController extends ApiKeyAuthController {
   constructor(
     private readonly zensusAtlasService: ZensusAtlasService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
     super();
@@ -45,10 +45,10 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
     let coordinates: ApiCoordinates;
 
     if (address) {
-      const place = await this.googleApiService.fetchPlaceOrFail(
-        address,
-        user.allowedCountries,
-      );
+      const place = await this.placeService.fetchPlaceOrFail({
+        user,
+        location: address,
+      });
 
       coordinates = { ...place.geometry.location };
     }

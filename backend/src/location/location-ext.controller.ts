@@ -35,10 +35,10 @@ import {
   IApiFetchSnapshotDataReqStatus,
   IApiFetchSnapshotDataRes,
 } from '../shared/types/external-api';
-import { GoogleApiService } from '../client/google/google-api.service';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
 import { createDirectLink } from '../shared/functions/shared';
 import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
+import { PlaceService } from '../place/place.service';
 
 @ApiTags('location', 'api')
 @Controller('api/location-ext')
@@ -48,7 +48,7 @@ export class LocationExtController extends ApiKeyAuthController {
     private readonly usageStatisticsService: UsageStatisticsService,
     private readonly snapshotExtService: SnapshotExtService,
     private readonly locationExtService: LocationExtService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
   ) {
     super();
   }
@@ -155,9 +155,9 @@ export class LocationExtController extends ApiKeyAuthController {
         apiRequestsNumber,
       } = await this.addressesInRangeExtService.fetchAddressesInRange({
         apiType,
-        language,
         radius,
-        allowedCountries: user.allowedCountries,
+        user,
+        language,
         location: address || { lat, lng },
       });
 
@@ -218,10 +218,10 @@ export class LocationExtController extends ApiKeyAuthController {
       let coordinates: ApiCoordinates;
 
       if (address) {
-        const place = await this.googleApiService.fetchPlaceOrFail(
-          address,
-          user.allowedCountries,
-        );
+        const place = await this.placeService.fetchPlaceOrFail({
+          user,
+          location: address,
+        });
 
         coordinates = { ...place.geometry.location };
       }

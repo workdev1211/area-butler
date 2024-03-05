@@ -62,13 +62,13 @@ export class ApiAddressesInRangeController {
         returnedAddresses,
         apiRequestsNumber,
       } = await this.addressesInRangeService.fetchAddressesInRange({
-        location: address || { lat, lng },
-        radius,
         apiType,
+        radius,
+        user,
+        location: address || { lat, lng },
         language: Object.values<string>(Language).includes(language)
           ? (language as unknown as Language)
           : Language.de,
-        allowedCountries: user.allowedCountries,
       });
 
       Object.assign(requestStatus, {

@@ -14,7 +14,6 @@ import {
   ApiRealEstateExtSourcesEnum,
   IApiRealEstateListingSchema,
 } from '@area-butler-types/real-estate';
-import { GoogleApiService } from '../client/google/google-api.service';
 import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
 import { createChunks } from '../../../shared/functions/shared.functions';
 import { GeoJsonPoint } from '../shared/types/geo-json';
@@ -53,6 +52,7 @@ import {
 import { RealEstateListingService } from './real-estate-listing.service';
 import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
 import { getProcUpdateQuery } from '../shared/functions/shared';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -63,7 +63,7 @@ export class RealEstateCrmImportService {
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly propstackApiService: PropstackApiService,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly userService: UserService,
@@ -282,12 +282,10 @@ export class RealEstateCrmImportService {
           continue;
         }
 
-        const place = await this.googleApiService.fetchPlace(
-          property.address,
-          isIntegrationUser
-            ? user.config.allowedCountries
-            : user.allowedCountries,
-        );
+        const place = await this.placeService.fetchPlace({
+          user,
+          location: property.address,
+        });
 
         if (!place) {
           errorIds.push(`${property.id}`);
@@ -553,12 +551,10 @@ export class RealEstateCrmImportService {
           ? `${street} ${processedHouseNumber[0]}, ${zipCode} ${city}, ${country}`
           : `${street}, ${zipCode} ${city}, ${country}`;
 
-        const place = await this.googleApiService.fetchPlace(
-          locationAddress,
-          isIntegrationUser
-            ? user.config.allowedCountries
-            : user.allowedCountries,
-        );
+        const place = await this.placeService.fetchPlace({
+          user,
+          location: locationAddress,
+        });
 
         if (!place) {
           errorIds.push(realEstate.Id);

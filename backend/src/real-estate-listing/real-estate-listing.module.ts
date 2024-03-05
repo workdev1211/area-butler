@@ -17,16 +17,23 @@ import { ApiOpenImmoService } from './api/api-open-immo.service';
 import { ApiRealEstateListingImportController } from './api/api-real-estate-listing-import.controller';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 import { DataProvisionModule } from '../data-provision/data-provision.module';
+import { PlaceModule } from '../place/place.module';
 
 @Module({
   imports: [
-    UserModule,
     ClientModule,
-    OpenAiModule,
     DataProvisionModule,
+    OpenAiModule,
+    PlaceModule,
+    UserModule,
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
     ]),
+  ],
+  controllers: [
+    RealEstateListingController,
+    RealEstateListingIntController,
+    ApiRealEstateListingImportController,
   ],
   providers: [
     RealEstateListingService,
@@ -34,11 +41,6 @@ import { DataProvisionModule } from '../data-provision/data-provision.module';
     RealEstateListingImportService,
     ApiOpenImmoService,
     RealEstateCrmImportService,
-  ],
-  controllers: [
-    RealEstateListingController,
-    RealEstateListingIntController,
-    ApiRealEstateListingImportController,
   ],
   exports: [
     RealEstateListingService,

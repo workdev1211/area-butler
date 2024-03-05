@@ -11,16 +11,18 @@ import {
   OnOfficeTransactionSchema,
 } from './schema/on-office-transaction.schema';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
+import { PlaceModule } from '../place/place.module';
 
 @Module({
   imports: [
+    ClientModule,
+    LocationModule,
+    PlaceModule,
+    RealEstateListingModule,
+    UserModule,
     MongooseModule.forFeature([
       { name: OnOfficeTransaction.name, schema: OnOfficeTransactionSchema },
     ]),
-    ClientModule,
-    RealEstateListingModule,
-    UserModule,
-    LocationModule,
   ],
   controllers: [OnOfficeController],
   providers: [OnOfficeService],

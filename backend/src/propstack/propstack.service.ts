@@ -24,7 +24,6 @@ import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
-import { GoogleApiService } from '../client/google/google-api.service';
 import {
   IApiIntUserLoginRes,
   IApiIntUserPropstackParams,
@@ -39,6 +38,7 @@ import {
   propstackPropertyMarketTypeNames,
 } from '../../../shared/constants/propstack';
 import { configService } from '../config/config.service';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class PropstackService {
@@ -48,7 +48,7 @@ export class PropstackService {
   constructor(
     private readonly integrationUserService: IntegrationUserService,
     private readonly propstackApiService: PropstackApiService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly locationIntService: LocationIntService,
   ) {}
@@ -92,10 +92,10 @@ export class PropstackService {
       geometry: {
         location: { lat, lng },
       },
-    } = await this.googleApiService.fetchPlaceOrFail(
-      property.address,
-      integrationUser.config.allowedCountries,
-    );
+    } = await this.placeService.fetchPlaceOrFail({
+      user: integrationUser,
+      location: property.address,
+    });
 
     const resultProperty = { ...property };
 

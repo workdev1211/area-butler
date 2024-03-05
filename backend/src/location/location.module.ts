@@ -30,16 +30,18 @@ import { LocationExtService } from './location-ext.service';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { SnapshotService } from './snapshot.service';
+import { PlaceModule } from '../place/place.module';
 
 @Module({
   imports: [
-    ClientModule,
     AuthModule,
-    UserModule,
+    ClientModule,
     DataProvisionModule,
     HttpModule,
     OpenAiModule,
+    PlaceModule,
     RealEstateListingModule,
+    UserModule,
     MongooseModule.forFeature([
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },

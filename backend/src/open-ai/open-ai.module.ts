@@ -2,7 +2,6 @@ import { Module } from '@nestjs/common';
 import { HttpModule } from '@nestjs/axios';
 import { MongooseModule } from '@nestjs/mongoose';
 
-import { ClientModule } from '../client/client.module';
 import { UserModule } from '../user/user.module';
 import { OpenAiController } from './open-ai.controller';
 import { OpenAiService } from './open-ai.service';
@@ -32,19 +31,23 @@ import { ZensusAtlasService } from '../data-provision/zensus-atlas/zensus-atlas.
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { DataProvisionModule } from '../data-provision/data-provision.module';
 import { SnapshotService } from '../location/snapshot.service';
+import { PlaceModule } from '../place/place.module';
+import { ClientModule } from '../client/client.module';
 
 @Module({
   imports: [
     ClientModule,
-    HttpModule,
-    UserModule,
     DataProvisionModule,
+    HttpModule,
+    PlaceModule,
+    UserModule,
     MongooseModule.forFeature([
       { name: RealEstateListing.name, schema: RealEstateListingSchema },
       { name: LocationSearch.name, schema: LocationSearchSchema },
       { name: SearchResultSnapshot.name, schema: SearchResultSnapshotSchema },
     ]),
   ],
+  controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   providers: [
     OpenAiService,
     RealEstateListingService,
@@ -59,7 +62,6 @@ import { SnapshotService } from '../location/snapshot.service';
     LocationIndexService,
     ZensusAtlasService,
   ],
-  controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   exports: [OpenAiService],
 })
 export class OpenAiModule {}

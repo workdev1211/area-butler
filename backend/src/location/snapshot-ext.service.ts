@@ -18,7 +18,6 @@ import { LocationService } from './location.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RoutingService } from '../routing/routing.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { GoogleApiService } from '../client/google/google-api.service';
 import {
   defaultPoiTypes,
   defaultTransportParams,
@@ -26,6 +25,7 @@ import {
 import { SnapshotService } from './snapshot.service';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
+import { PlaceService } from '../place/place.service';
 
 interface ICreateSnapshot {
   user: UserDocument | TIntegrationUserDocument;
@@ -47,7 +47,7 @@ export class SnapshotExtService {
     private readonly snapshotService: SnapshotService,
     private readonly routingService: RoutingService,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
   ) {}
 
   async createSnapshotByPlace({
@@ -115,12 +115,7 @@ export class SnapshotExtService {
     transportParams,
     poiTypes,
   }: ICreateSnapshot): Promise<ApiSearchResultSnapshotResponse> {
-    const place = await this.googleApiService.fetchPlaceOrFail(
-      location,
-      'integrationUserId' in user
-        ? user.config.allowedCountries
-        : user.allowedCountries,
-    );
+    const place = await this.placeService.fetchPlaceOrFail({ user, location });
 
     return this.createSnapshotByPlace({
       user,
@@ -145,10 +140,7 @@ export class SnapshotExtService {
       templateSnapshotId,
     );
 
-    const place = await this.googleApiService.fetchPlaceOrFail(
-      location,
-      user.allowedCountries,
-    );
+    const place = await this.placeService.fetchPlaceOrFail({ user, location });
 
     const placesLocation = {
       label: place?.formatted_address || 'Mein Standort',

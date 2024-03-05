@@ -2,15 +2,15 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { Language, PlaceType2 } from '@googlemaps/google-maps-services-js';
 
 import { ApiCoordinates } from '@area-butler-types/types';
-import { GoogleApiService } from '../client/google/google-api.service';
 import { distanceInMeters } from '../shared/functions/shared';
 import { HereGeocodeService } from '../client/here/here-geocode.service';
 import {
   ApiAddrInRangeApiTypesEnum,
   IApiAddressInRange,
 } from '../shared/types/external-api';
-import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
 import { ApiHereLanguageEnum } from '../shared/types/here';
+import { PlaceService } from '../place/place.service';
+import { UserDocument } from '../user/schema/user.schema';
 
 // import { createChunks } from '../../../shared/functions/shared.functions';
 
@@ -34,7 +34,7 @@ interface IFetchAddrInRangeData {
   apiType: ApiAddrInRangeApiTypesEnum;
   location: string | ApiCoordinates;
   radius: number; // meters
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  user: UserDocument;
   language?: Language;
 }
 
@@ -43,24 +43,24 @@ export class AddressesInRangeExtService {
   private readonly logger = new Logger(AddressesInRangeExtService.name);
 
   constructor(
-    private readonly googleApiService: GoogleApiService,
     private readonly hereGeocodeService: HereGeocodeService,
+    private readonly placeService: PlaceService,
   ) {}
 
   async fetchAddressesInRange({
     apiType,
     location,
     radius,
-    allowedCountries,
+    user,
     language,
   }: IFetchAddrInRangeData): Promise<IFetchedAddressesInRange> {
     let resultLanguage = language;
 
-    const place = await this.googleApiService.fetchPlace(
+    const place = await this.placeService.fetchPlace({
       location,
-      allowedCountries,
+      user,
       language,
-    );
+    });
 
     if (
       !place ||
@@ -208,11 +208,11 @@ export class AddressesInRangeExtService {
 
     const addresses = await Promise.all(
       coordinateGrid.map(async (coordinates) => {
-        const currentPlace = await this.googleApiService.fetchPlace(
-          coordinates,
-          [],
+        const currentPlace = await this.placeService.fetchPlace({
           language,
-        );
+          location: coordinates,
+          isNotLimitCountries: true,
+        });
 
         if (
           !currentPlace ||

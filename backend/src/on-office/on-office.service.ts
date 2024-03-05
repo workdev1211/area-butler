@@ -43,7 +43,6 @@ import {
   IApiRealEstAvailIntStatuses,
   IntegrationTypesEnum,
 } from '@area-butler-types/integration';
-import { GoogleApiService } from '../client/google/google-api.service';
 import { GeoJsonPoint } from '../shared/types/geo-json';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { LocationIntService } from '../location/location-int.service';
@@ -66,6 +65,7 @@ import {
   getOnOfficeSortedMapData,
   parseOnOfficeFloat,
 } from '../shared/functions/on-office';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class OnOfficeService {
@@ -79,7 +79,7 @@ export class OnOfficeService {
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
     private readonly onOfficeApiService: OnOfficeApiService,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly googleApiService: GoogleApiService,
+    private readonly placeService: PlaceService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly locationIntService: LocationIntService,
   ) {}
@@ -906,12 +906,9 @@ export class OnOfficeService {
 
   private async fetchAndProcessEstateData(
     estateId: string,
-    {
-      integrationUserId,
-      parameters,
-      config: { allowedCountries },
-    }: TIntegrationUserDocument,
+    integrationUser: TIntegrationUserDocument,
   ): Promise<IApiRealEstateListingSchema> {
+    const { integrationUserId, parameters } = integrationUser;
     const { token, apiKey, extendedClaim } =
       parameters as IApiIntUserOnOfficeParams;
     const actionId = ApiOnOfficeActionIdsEnum.READ;
@@ -998,18 +995,18 @@ export class OnOfficeService {
       lng: parseOnOfficeFloat(lng),
     };
 
-    let place = await this.googleApiService.fetchPlace(
-      locationAddress,
-      allowedCountries,
-    );
+    let place = await this.placeService.fetchPlace({
+      location: locationAddress,
+      user: integrationUser,
+    });
 
     if (!place) {
       locationAddress = undefined;
 
-      place = await this.googleApiService.fetchPlace(
-        locationCoordinates,
-        allowedCountries,
-      );
+      place = await this.placeService.fetchPlace({
+        location: locationCoordinates,
+        user: integrationUser,
+      });
     }
 
     if (!place) {
