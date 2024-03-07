@@ -128,11 +128,11 @@ export class PlaceService {
     }
 
     if (!allowedCountries && !user.parentUser) {
-      allowedCountries = (isIntegrationUser
+      allowedCountries = isIntegrationUser
         ? user.config.allowedCountries
-        : user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE];
+        : user.allowedCountries;
     }
 
-    return allowedCountries;
+    return allowedCountries || [Iso3166_1Alpha2CountriesEnum.DE];
   }
 }
