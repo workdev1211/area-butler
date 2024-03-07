@@ -128,10 +128,10 @@ export class LocationService {
       let parentUser = user;
 
       if (user.parentId) {
-        parentUser = await this.userService.findById(user.parentId);
-
-        parentUser.subscription =
-          await this.subscriptionService.findActiveByUserId(parentUser.id);
+        parentUser = await this.userService.findById({
+          userId: user.parentId,
+          withSubscription: true,
+        });
       }
 
       // TODO change map and reduce to reduce only
@@ -480,8 +480,11 @@ export class LocationService {
         ? await this.integrationUserService.findByDbId(parentUserId, {
             'config.templateSnapshotId': 1,
           })
-        : await this.userService.findById(parentUserId, {
-            templateSnapshotId: 1,
+        : await this.userService.findById({
+            userId: parentUserId,
+            projectQuery: {
+              templateSnapshotId: 1,
+            },
           });
 
       const isParentIntUser = 'integrationUserId' in parentUser;

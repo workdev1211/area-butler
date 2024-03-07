@@ -54,7 +54,6 @@ import {
   IApiIntegrationUserSchema,
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
-  TApiIntegrationUserConfig,
 } from '@area-butler-types/integration-user';
 import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
@@ -119,13 +118,18 @@ export class OnOfficeService {
           'parameters.apiKey': { $exists: true },
           isParent: true,
         },
-        { _id: 1 },
+        { _id: 1, 'config.color': 1, 'config.logo': 1, 'config.mapIcon': 1 },
       );
 
       await this.integrationUserService.create({
         integrationUserId,
         parameters,
         accessToken: extendedClaim,
+        config: {
+          color: parentUser?.config.color,
+          logo: parentUser?.config.logo,
+          mapIcon: parentUser?.config.mapIcon,
+        },
         integrationType: this.integrationType,
         parentId: parentUser?.id,
       });
@@ -274,13 +278,16 @@ export class OnOfficeService {
       const updateQuery: UpdateQuery<IApiIntegrationUserSchema> = {
         $set: {
           accessToken: extendedClaim,
+          'config.color': color ? `#${color}` : parentUser?.config.color,
+          'config.logo': logo
+            ? convertBase64ContentToUri(logo)
+            : parentUser?.config.logo,
+          'config.mapIcon': parentUser?.config.mapIcon,
           'parameters.extendedClaim': extendedClaim,
           'parameters.parameterCacheId': parameterCacheId,
           'parameters.customerName': customerName,
           'parameters.userName': userName,
           'parameters.email': email,
-          'config.color': color ? `#${color}` : undefined,
-          'config.logo': logo ? convertBase64ContentToUri(logo) : undefined,
           parentId: parentUser?.id,
         },
       };
@@ -334,10 +341,13 @@ export class OnOfficeService {
             token: groupUserParams.token,
           },
           config: {
-            color: color ? `#${color}` : undefined,
-            logo: logo ? convertBase64ContentToUri(logo) : undefined,
-          } as TApiIntegrationUserConfig,
-          parentId: groupUser?.isParent ? groupUser.id : undefined,
+            color: color ? `#${color}` : parentUser?.config.color,
+            logo: logo
+              ? convertBase64ContentToUri(logo)
+              : parentUser?.config.logo,
+            mapIcon: parentUser?.config.mapIcon,
+          },
+          parentId: parentUser?.id,
         });
       }
     }

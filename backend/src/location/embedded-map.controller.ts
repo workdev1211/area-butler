@@ -52,17 +52,18 @@ export class EmbeddedMapController {
     let user;
 
     if (!isIntegrationSnapshot) {
-      user = await this.userService.fetchByIdWithAssets(userId);
+      user = await this.userService.findById({
+        userId,
+        withAssets: true,
+        withSubscription: true,
+      });
 
-      const userSubscription =
-        await this.subscriptionService.findActiveByUserId(user.id);
-
-      if (!userSubscription) {
+      if (!user.subscription) {
         this.logger.error(user.id, user.email);
         throw new HttpException(subscriptionExpiredMessage, 402);
       }
 
-      isTrial = userSubscription.type === ApiSubscriptionPlanType.TRIAL;
+      isTrial = user.subscription.type === ApiSubscriptionPlanType.TRIAL;
     }
 
     if (isIntegrationSnapshot) {

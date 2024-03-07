@@ -161,14 +161,28 @@ export class UserController {
   }
 
   private async transformToApiUser(user: UserDocument): Promise<ApiUserDto> {
-    if (user.parentId) {
-      user.parentUser = await this.userService.findById(user.parentId);
+    if (user.parentId && !user.parentUser) {
+      user.parentUser = await this.userService.findById({
+        userId: user.parentId,
+        withAssets: true,
+        withSubscription: true,
+      });
     }
 
-    user.subscription = await this.subscriptionService.findActiveByUserId(
-      user.parentId || user.id,
-    );
+    if (
+      user.parentUser &&
+      (!user.subscription ||
+        user.subscription.id !== user.parentUser.subscription?.id)
+    ) {
+      user.subscription = user.parentUser.subscription;
+    }
 
-    return plainToInstance(ApiUserDto, user);
+    if (!user.subscription && !user.parentUser) {
+      user.subscription = await this.subscriptionService.findActiveByUserId(
+        user.id,
+      );
+    }
+
+    return plainToInstance(ApiUserDto, user, { exposeUnsetFields: false });
   }
 }

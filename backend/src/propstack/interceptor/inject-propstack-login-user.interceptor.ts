@@ -61,6 +61,7 @@ export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
       throw new UnprocessableEntityException();
     }
 
+    // with parent user
     const integrationUser = await this.propstackService.getIntegrationUser(
       apiKey,
       reqBody.shopId,

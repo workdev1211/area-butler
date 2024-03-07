@@ -54,32 +54,28 @@ const UserExportSettings: FunctionComponent = () => {
   };
 
   const rollbackSettings = async (): Promise<void> => {
-    const newColor = user!.parentSettings?.color;
-    const newLogo = user!.parentSettings?.logo;
-    const newMapIcon = user!.parentSettings?.mapIcon;
-
     await updateUserSettings({
-      color: newColor || null,
-      logo: newLogo || null,
-      mapIcon: newMapIcon || null,
+      color: null,
+      logo: null,
+      mapIcon: null,
     });
 
     userDispatch({
       type: UserActionTypes.SET_COLOR,
-      payload: newColor,
+      payload: undefined,
     });
     userDispatch({
       type: UserActionTypes.SET_LOGO,
-      payload: newLogo,
+      payload: undefined,
     });
     userDispatch({
       type: UserActionTypes.SET_MAP_ICON,
-      payload: newMapIcon,
+      payload: undefined,
     });
 
-    setColor(newColor);
-    setLogo(newLogo);
-    setMapIcon(newMapIcon);
+    setColor(undefined);
+    setLogo(undefined);
+    setMapIcon(undefined);
 
     toastSuccess("Export Einstellungen zurückgesetzt.");
   };

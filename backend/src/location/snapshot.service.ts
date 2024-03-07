@@ -82,8 +82,11 @@ export class SnapshotService {
               integrationType: 1,
               'config.templateSnapshotId': 1,
             })
-          : await this.userService.findById(parentUserId, {
-              templateSnapshotId: 1,
+          : await this.userService.findById({
+              userId: parentUserId,
+              projectQuery: {
+                templateSnapshotId: 1,
+              },
             });
 
         if (parentUser) {

@@ -1,7 +1,9 @@
 import { SubscriptionDocument } from '../schema/subscription.schema';
 import { allSubscriptions } from '../../../../shared/constants/subscription-plan';
-import ApiUserSubscriptionDto from '../dto/api-user-subscription.dto';
-import { PaymentSystemTypeEnum } from '@area-butler-types/subscription-plan';
+import {
+  ApiUserSubscription,
+  PaymentSystemTypeEnum,
+} from '@area-butler-types/subscription-plan';
 
 const getPaymentSystemType = (subscription: SubscriptionDocument) => {
   if (subscription.stripeSubscriptionId) {
@@ -15,7 +17,7 @@ const getPaymentSystemType = (subscription: SubscriptionDocument) => {
 
 export const mapSubscriptionToApiSubscription = (
   subscription: SubscriptionDocument,
-): ApiUserSubscriptionDto => {
+): ApiUserSubscription => {
   const subscriptionPlan = { ...allSubscriptions[subscription.type] };
 
   Object.keys(subscriptionPlan.appFeatures).forEach((key) => {

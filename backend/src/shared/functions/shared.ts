@@ -1,6 +1,6 @@
 import { UpdateQuery } from 'mongoose';
 
-import { ApiCoordinates } from '@area-butler-types/types';
+import { ApiCoordinates, IApiMapboxStyle } from '@area-butler-types/types';
 import { configService } from '../../config/config.service';
 
 export const getRawPriceValue = (priceValue: string): string =>
@@ -91,4 +91,19 @@ export const getProcUpdateQuery = <T = object>(
   });
 
   return updateQuery;
+};
+
+export const getUnitedMapboxStyles = (
+  parentStyles: IApiMapboxStyle[],
+  userStyles: IApiMapboxStyle[],
+): IApiMapboxStyle[] => {
+  return [
+    ...(parentStyles
+      ? parentStyles.map((parentStyle) => {
+          parentStyle.label = `Elternteil: ${parentStyle.label}`;
+          return parentStyle;
+        })
+      : []),
+    ...(userStyles || []),
+  ];
 };

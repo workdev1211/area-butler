@@ -178,7 +178,7 @@ const SearchResultContainer = forwardRef<
     const isIntegrationUser = "integrationUserId" in user;
     const extraMapboxStyles = isIntegrationUser
       ? user.config.extraMapboxStyles
-      : user.additionalMapBoxStyles;
+      : user.extraMapboxStyles;
 
     const directLink = createDirectLink(searchContextState.responseToken);
 

@@ -1,6 +1,6 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, ProjectionFields } from 'mongoose';
 import { randomBytes } from 'crypto';
 
 import {
@@ -47,6 +47,7 @@ export class PotentialCustomerService {
 
   async fetchPotentialCustomers(
     user: UserDocument | TIntegrationUserDocument,
+    projectQuery?: ProjectionFields<PotentialCustomerDocument>,
   ): Promise<PotentialCustomerDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
     const userIds: string[] = [];
@@ -56,10 +57,13 @@ export class PotentialCustomerService {
       userIds.push(user.integrationUserId);
 
       if (user.parentId) {
-        const { integrationUserId: parentIntUserId } =
-          await this.integrationUserService.findByDbId(user.parentId, {
-            integrationUserId: 1,
-          });
+        const parentIntUserId =
+          user.parentUser?.integrationUserId ||
+          (
+            await this.integrationUserService.findByDbId(user.parentId, {
+              integrationUserId: 1,
+            })
+          ).integrationUserId;
 
         userIds.push(parentIntUserId);
       }
@@ -82,41 +86,28 @@ export class PotentialCustomerService {
       };
     }
 
-    return this.potentialCustomerModel.find(filter);
+    return this.potentialCustomerModel.find(filter, projectQuery);
   }
 
   async fetchNames(
     user: UserDocument | TIntegrationUserDocument,
   ): Promise<string[]> {
     const isIntegrationUser = 'integrationUserId' in user;
-    let filter;
 
-    if (isIntegrationUser) {
-      filter = {
-        'integrationParams.integrationUserId': user.integrationUserId,
-        'integrationParams.integrationType': user.integrationType,
-      };
+    if (isIntegrationUser && user.parentId && !user.parentUser) {
+      user.parentUser = await this.integrationUserService.findByDbId(
+        user.parentId,
+        {
+          integrationUserId: 1,
+        },
+      );
     }
 
-    if (!isIntegrationUser) {
-      const userIds = [user.id];
-
-      if (user.parentId) {
-        userIds.push(user.parentId);
-      }
-
-      filter = {
-        userId: { $in: userIds },
-      };
-    }
-
-    const potentialCustomers = await this.potentialCustomerModel.find(filter, {
+    const potentialCustomers = await this.fetchPotentialCustomers(user, {
       name: 1,
     });
 
-    return potentialCustomers.map(
-      (potentialCustomer) => potentialCustomer.toObject().name,
-    );
+    return potentialCustomers.map(({ name }) => name);
   }
 
   async createPotentialCustomer(
@@ -284,10 +275,12 @@ export class PotentialCustomerService {
     }
 
     const { name, email, userId } = questionnaireRequest;
-    const user = await this.userService.findById(userId);
-    user.subscription = await this.subscriptionService.findActiveByUserId(
-      user.parentId || user.id,
-    );
+
+    const user = await this.userService.findById({
+      userId,
+      withSubscription: true,
+    });
+
     const customers = await this.fetchPotentialCustomers(user);
 
     const existingCustomer = customers.find(

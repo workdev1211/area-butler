@@ -1,7 +1,7 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { EventEmitter2 } from 'eventemitter2';
-import { Model, ProjectionFields } from 'mongoose';
+import { Model, ProjectionFields, UpdateQuery } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { readdir, readFile } from 'fs/promises';
 import { join as joinPath } from 'path';
@@ -93,40 +93,43 @@ export class UserService {
     email: string,
     { fullname }: ApiUpsertUserDto,
   ): Promise<UserDocument> {
-    const existingUser = await this.userModel.findOne({ email });
+    const user = await this.userModel.findOne({ email });
 
-    if (!existingUser) {
+    if (!user) {
       throw new HttpException('Unknown user!', 400);
     }
 
-    existingUser.fullname = fullname;
+    user.fullname = fullname;
 
-    return existingUser.save();
+    return user.save();
   }
 
   async updateApiConnections(
     userId: string,
     { connectType, ...connectSettings }: IApiUserApiConnectSettingsReq,
   ): Promise<UserDocument> {
-    return this.userModel.findByIdAndUpdate(
-      userId,
-      { $set: { [`apiConnections.${connectType}`]: connectSettings } },
-      { new: true },
-    );
+    const updateQuery: UpdateQuery<UserDocument> = Object.keys(connectSettings)
+      .length
+      ? {
+          $set: { [`apiConnections.${connectType}`]: connectSettings },
+        }
+      : { $unset: { [`apiConnections.${connectType}`]: 1 } };
+
+    return this.userModel.findByIdAndUpdate(userId, updateQuery, { new: true });
   }
 
   async giveConsent(email: string): Promise<UserDocument> {
-    const existingUser = await this.upsertUser(email, email);
+    const user = await this.upsertUser(email, email);
 
-    if (!existingUser) {
+    if (!user) {
       throw new HttpException('Unknown user!', 400);
     }
 
-    if (!existingUser.consentGiven) {
-      existingUser.consentGiven = new Date();
+    if (!user.consentGiven) {
+      user.consentGiven = new Date();
     }
 
-    return existingUser.save();
+    return user.save();
   }
 
   async hideTour(
@@ -161,7 +164,7 @@ export class UserService {
       { $set: { stripeCustomerId } },
     );
 
-    return this.findById(userId);
+    return this.findById({ userId });
   }
 
   async findByEmail(email: string): Promise<UserDocument> {
@@ -180,34 +183,35 @@ export class UserService {
     return this.userModel.findOne({ paypalCustomerId });
   }
 
-  async findById(
-    userId: string,
-    projectQuery?: ProjectionFields<UserDocument>,
-  ): Promise<UserDocument> {
-    return this.userModel.findById(userId, projectQuery);
-  }
+  async findById({
+    userId,
+    projectQuery,
+    withAssets,
+    withSubscription,
+  }: {
+    userId: string;
+    projectQuery?: ProjectionFields<UserDocument>;
+    withAssets?: boolean;
+    withSubscription?: boolean;
+  }): Promise<UserDocument> {
+    const user = await this.userModel.findById(userId, projectQuery);
 
-  async findByIdWithSubscription(id: string): Promise<UserDocument> {
-    const user = await this.userModel.findById({ _id: id });
-
-    if (!user) {
-      throw new HttpException('Unknown user!', 400);
+    if (!user || (!withAssets && !withSubscription)) {
+      return user;
     }
 
-    user.subscription = await this.subscriptionService.findActiveByUserId(
-      user.parentId || user.id,
-    );
+    if (withAssets) {
+      const { poiIcons } = await this.fetchUserAssets(user.email);
 
-    return user;
-  }
+      if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
+        user.poiIcons = poiIcons;
+      }
+    }
 
-  async fetchByIdWithAssets(id: string): Promise<UserDocument> {
-    const user = await this.userModel.findById({ _id: id });
-
-    const { poiIcons } = await this.fetchUserAssets(user.email);
-
-    if (Object.keys(poiIcons).some((key) => poiIcons[key]?.length)) {
-      user.poiIcons = poiIcons;
+    if (withSubscription) {
+      user.subscription = await this.subscriptionService.findActiveByUserId(
+        user.parentId || user.id,
+      );
     }
 
     return user;
@@ -249,9 +253,9 @@ export class UserService {
     user: UserDocument,
     untilMonthIncluded: Date,
   ): Promise<UserDocument> {
-    const userSubscription = await this.subscriptionService.findActiveByUserId(
-      user.parentId || user.id,
-    );
+    const userSubscription =
+      user.subscription ||
+      (await this.subscriptionService.findActiveByUserId(user.id));
 
     if (!userSubscription) {
       return user;

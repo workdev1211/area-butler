@@ -34,9 +34,9 @@ import {
 import { CsvFileFormatsEnum } from '@area-butler-types/types';
 import ApiOpenAiRealEstDescQueryDto from './dto/api-open-ai-real-est-desc-query.dto';
 import { RealEstateListingImportService } from './real-estate-listing-import.service';
-import ApiUserApiConnectionSettingsDto from '../dto/api-user-api-connect-settings.dto';
 import { RealEstateCrmImportService } from './real-estate-crm-import.service';
 import { Role, Roles } from '../auth/roles.decorator';
+import ApiUserApiConnectSettingsReqDto from '../dto/api-user-api-connect-settings-req.dto';
 
 @ApiTags('real-estate-listing')
 @Controller('api/real-estate-listing')
@@ -197,7 +197,7 @@ export class RealEstateListingController extends AuthenticatedController {
   async testApiConnection(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
-    connectSettings: ApiUserApiConnectionSettingsDto,
+    connectSettings: ApiUserApiConnectSettingsReqDto,
   ): Promise<void> {
     await this.realEstateCrmImportService.testApiConnection(
       user,

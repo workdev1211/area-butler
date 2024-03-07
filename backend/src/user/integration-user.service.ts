@@ -30,6 +30,7 @@ import {
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
+import { getUnitedMapboxStyles } from '../shared/functions/shared';
 
 @Injectable()
 export class IntegrationUserService {
@@ -43,13 +44,13 @@ export class IntegrationUserService {
   ) {}
 
   async create({
-    integrationUserId,
-    integrationType,
     accessToken,
-    parameters,
     config,
-    parentId,
+    integrationType,
+    integrationUserId,
     isParent,
+    parameters,
+    parentId,
   }: IApiIntUserCreate): Promise<TIntegrationUserDocument> {
     const processedConfig = config
       ? { ...config }
@@ -60,12 +61,12 @@ export class IntegrationUserService {
     }
 
     const integrationUser = await this.integrationUserModel.create({
-      integrationUserId,
-      integrationType,
       accessToken,
+      integrationType,
+      integrationUserId,
+      isParent,
       parameters,
       parentId,
-      isParent,
       config: processedConfig,
     });
 
@@ -356,20 +357,15 @@ export class IntegrationUserService {
       return { ...config };
     }
 
+    const { allowedCountries, extraMapboxStyles } = parentUser.config;
+
     return {
       ...config,
-      color: config.color || parentUser.config.color,
-      extraMapboxStyles: [
-        ...(parentUser?.config?.extraMapboxStyles
-          ? parentUser.config.extraMapboxStyles.map((parentStyle) => {
-              parentStyle.label = `Elternteil: ${parentStyle.label}`;
-              return parentStyle;
-            })
-          : []),
-        ...(config.extraMapboxStyles || []),
-      ],
-      logo: config.logo || parentUser.config.logo,
-      mapIcon: config.mapIcon || parentUser.config.mapIcon,
+      allowedCountries: config.allowedCountries || allowedCountries,
+      extraMapboxStyles: getUnitedMapboxStyles(
+        extraMapboxStyles,
+        config.extraMapboxStyles,
+      ),
     };
   }
 }

@@ -62,9 +62,8 @@ export interface ApiUser {
   logo?: string;
   mapIcon?: string;
   color?: string;
-  additionalMapBoxStyles: IApiMapboxStyle[];
+  extraMapboxStyles: IApiMapboxStyle[];
   isChild: boolean;
-  parentSettings?: IApiUserParentSettings;
   poiIcons?: IApiUserPoiIcons;
   exportFonts?: IApiUserExportFont[];
   apiConnections?: TApiUserApiConnections;
@@ -84,12 +83,6 @@ export interface IApiUserApiConnectSettingsReq
 export type TApiUserApiConnections = Partial<
   Record<ApiRealEstateExtSourcesEnum, TApiUserApiConnectSettings>
 >;
-
-export interface IApiUserParentSettings {
-  logo?: string;
-  mapIcon?: string;
-  color?: string;
-}
 
 export interface ApiUpsertUser {
   fullname: string;

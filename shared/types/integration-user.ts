@@ -91,7 +91,7 @@ export interface IApiIntegrationUserProductContingent {
 export interface IApiIntUserUpdateParamsAndConfig {
   accessToken: string;
   parameters: TApiIntegrationUserParameters;
-  config?: TApiIntegrationUserConfig;
+  config?: Partial<TApiIntegrationUserConfig>;
 }
 
 export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {

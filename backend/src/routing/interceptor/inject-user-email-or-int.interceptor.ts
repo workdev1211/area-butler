@@ -42,7 +42,7 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
         req.body.snapshotToken,
       );
 
-      user = await this.userService.findById(userId);
+      user = await this.userService.findById({ userId });
     }
 
     if (accessToken?.length === 2) {

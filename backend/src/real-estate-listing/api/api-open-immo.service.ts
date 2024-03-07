@@ -35,7 +35,7 @@ export class ApiOpenImmoService {
     const userContents = await Promise.all(
       filteredFtpDirContent.map(async ({ name: userId }) => {
         const user = await this.userService
-          .findByIdWithSubscription(userId)
+          .findById({ userId, withSubscription: true })
           .catch(() => undefined);
 
         if (!user || !user.subscription) {
