@@ -125,23 +125,23 @@ export class LocationService {
     }
 
     if (!existingLocation && !isIntegrationUser) {
-      let parentUser = user;
+      let resultUser = user;
 
       if (user.parentId) {
-        parentUser = await this.userService.findById({
+        resultUser = await this.userService.findById({
           userId: user.parentId,
           withSubscription: true,
         });
       }
 
-      // TODO change map and reduce to reduce only
       await this.subscriptionService.checkSubscriptionViolation(
-        parentUser.subscription.type,
+        resultUser.subscription.type,
         () =>
-          parentUser.requestsExecuted + 1 >
-          retrieveTotalRequestContingent(parentUser)
-            .map((c) => c.amount)
-            .reduce((acc, inc) => acc + inc),
+          resultUser.requestsExecuted + 1 >
+          retrieveTotalRequestContingent(resultUser).reduce(
+            (result, { amount }) => result + amount,
+            0,
+          ),
         'Im aktuellen Monat sind keine weiteren Abfragen möglich',
       );
     }

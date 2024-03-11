@@ -19,6 +19,7 @@ export class LocationSearch {
   createdAt: Date;
 
   // TODO check why do we need two "endsAt" fields - this one and inside the "locationSearch"
+  // The end date of the Pay per Use map
   @Prop({ type: Date })
   endsAt: Date;
 

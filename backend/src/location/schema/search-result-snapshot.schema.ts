@@ -39,9 +39,12 @@ export class SearchResultSnapshot {
   @Prop({ type: Date })
   updatedAt: Date;
 
+  // The end date of the Pay per Use map
   @Prop({ type: Date })
   endsAt: Date;
 
+  // Expiration date for the integration iFrame
+  // TODO move to the 'integrationParams'
   @Prop({ type: Date })
   iframeEndsAt: Date;
 
