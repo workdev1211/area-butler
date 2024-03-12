@@ -25,7 +25,6 @@ const loginQueryParamsSchema: SchemaOf<IApiPropstackLoginQueryParams> =
     shopId: Yup.string().matches(/^\d+$/).required(),
     teamId: Yup.string().matches(/^\d+$/).optional(),
     brokerId: Yup.string().matches(/^\d+$/).optional(),
-    targetGroup: Yup.string().optional(),
     textFieldType: Yup.mixed()
       .oneOf(Object.values(PropstackTextFieldTypeEnum))
       .optional(),

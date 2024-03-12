@@ -4,7 +4,6 @@ import {
   IsNotEmpty,
   IsOptional,
   IsPositive,
-  IsString,
 } from 'class-validator';
 import { Exclude, Expose, Transform } from 'class-transformer';
 
@@ -47,11 +46,6 @@ class ApiPropstackLoginReqDto implements IApiPropstackLoginReq {
   @IsInt()
   @IsPositive()
   brokerId?: number;
-
-  @Expose()
-  @IsOptional()
-  @IsString()
-  targetGroup?: string;
 
   @Expose()
   @IsOptional()

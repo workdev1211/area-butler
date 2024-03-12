@@ -8,8 +8,12 @@ export interface IApiPropstackLoginReq {
   shopId: number;
   teamId?: number;
   brokerId?: number;
-  targetGroup?: string;
   textFieldType?: PropstackTextFieldTypeEnum;
+}
+
+export interface IApiPropstackTargetGroupChangedReq
+  extends IApiPropstackLoginReq {
+  targetGroupName: string;
 }
 
 // TODO 'teamId' and 'brokerId' should be mandatory parameters
@@ -19,7 +23,6 @@ export interface IApiPropstackLoginQueryParams {
   shopId: string;
   teamId?: string;
   brokerId?: string;
-  targetGroup?: string;
   textFieldType?: PropstackTextFieldTypeEnum;
 }
 

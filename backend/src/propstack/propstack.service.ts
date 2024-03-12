@@ -22,7 +22,10 @@ import {
 } from '../shared/types/propstack';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import {
+  ApiRealEstateListing,
+  IApiRealEstateListingSchema,
+} from '@area-butler-types/real-estate';
 import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
 import {
   IApiIntUserLoginRes,
@@ -30,7 +33,11 @@ import {
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
+import {
+  IApiPropstackLoginReq,
+  IApiPropstackTargetGroupChangedReq,
+  PropstackTextFieldTypeEnum,
+} from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
@@ -40,6 +47,24 @@ import {
 } from '../../../shared/constants/propstack';
 import { configService } from '../config/config.service';
 import { PlaceService } from '../place/place.service';
+import {
+  ApiSearchResultSnapshotResponse,
+  MeansOfTransportation,
+} from '@area-butler-types/types';
+import { LocationService } from '../location/location.service';
+import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
+import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
+import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
+import { defaultRealEstType } from '../../../shared/constants/open-ai';
+import { UserDocument } from '../user/schema/user.schema';
+
+interface IPropstackFetchTextFieldValues {
+  realEstateListingId: string;
+  searchResultSnapshotId: string;
+  user: UserDocument | TIntegrationUserDocument;
+  eventId?: string; // only for the webhook events
+  targetGroupName?: string;
+}
 
 @Injectable()
 export class PropstackService {
@@ -52,6 +77,8 @@ export class PropstackService {
     private readonly placeService: PlaceService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly locationIntService: LocationIntService,
+    private readonly locationService: LocationService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
   async connect({ apiKey, shopId }: IApiPropstackConnectReq): Promise<void> {
@@ -77,12 +104,14 @@ export class PropstackService {
     });
   }
 
-  async login(
+  private async getSnapshotRealEstate(
     integrationUser: TIntegrationUserDocument,
-    { propertyId, targetGroup, textFieldType }: IApiPropstackLoginReq,
-  ): Promise<IApiIntUserLoginRes> {
-    const { accessToken, integrationUserId, parameters, parentId } =
-      integrationUser;
+    propertyId: number,
+  ): Promise<{
+    latestSnapshot?: ApiSearchResultSnapshotResponse;
+    realEstate: ApiRealEstateListing;
+  }> {
+    const { integrationUserId, parameters } = integrationUser;
 
     const property = await this.propstackApiService.fetchPropertyById(
       (parameters as IApiIntUserPropstackParams).apiKey,
@@ -124,23 +153,64 @@ export class PropstackService {
       ),
     );
 
-    const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
+    const snapshotDoc = await this.locationIntService.fetchLatestSnapByIntId(
       integrationUser,
       realEstate.integrationId,
     );
 
     return {
-      integrationUserId,
+      realEstate,
+      latestSnapshot: snapshotDoc
+        ? mapSnapshotToEmbeddableMap(integrationUser, snapshotDoc)
+        : undefined,
+    };
+  }
+
+  async login(
+    integrationUser: TIntegrationUserDocument,
+    { propertyId, textFieldType }: IApiPropstackLoginReq,
+  ): Promise<IApiIntUserLoginRes> {
+    const { accessToken, integrationUserId, parentId } = integrationUser;
+    const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
+      integrationUser,
+      propertyId,
+    );
+
+    return {
       accessToken,
+      integrationUserId,
+      latestSnapshot,
       realEstate,
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!parentId,
-      latestSnapshot: snapshot
-        ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
-        : undefined,
       openAiQueryType: propstackOpenAiFieldMapper[textFieldType],
     };
+  }
+
+  async handleTargetGroupChanged(
+    integrationUser: TIntegrationUserDocument,
+    { propertyId, targetGroupName }: IApiPropstackTargetGroupChangedReq,
+  ): Promise<void> {
+    const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
+      integrationUser,
+      propertyId,
+    );
+
+    const openAiDescriptions = await this.fetchTextFieldValues({
+      targetGroupName,
+      realEstateListingId: realEstate.id,
+      searchResultSnapshotId: latestSnapshot.id,
+      user: integrationUser,
+    });
+
+    await this.propstackApiService.updatePropertyById(
+      (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
+      propertyId,
+      {
+        ...openAiDescriptions,
+      },
+    );
   }
 
   async updatePropertyTextField(
@@ -346,5 +416,76 @@ export class PropstackService {
       decipher.update(Buffer.from(accessToken, 'hex')),
       decipher.final(),
     ]).toString();
+  }
+
+  async fetchTextFieldValues({
+    realEstateListingId,
+    searchResultSnapshotId,
+    user,
+    eventId,
+    targetGroupName = defaultTargetGroupName,
+  }: IPropstackFetchTextFieldValues): Promise<
+    Partial<Record<PropstackTextFieldTypeEnum, string>>
+  > {
+    const fetchOpenAiDescription = async (
+      fetchDescription: Promise<string>,
+      descriptionName: PropstackTextFieldTypeEnum,
+    ): Promise<{ [p: string]: string }> => {
+      return { [descriptionName]: await fetchDescription };
+    };
+
+    const openAiQueryResults = await Promise.allSettled([
+      fetchOpenAiDescription(
+        this.locationService.fetchOpenAiLocationDescription(user, {
+          searchResultSnapshotId,
+          targetGroupName,
+          meanOfTransportation: MeansOfTransportation.WALK,
+          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
+        }),
+        PropstackTextFieldTypeEnum.LOCATION_NOTE,
+      ),
+      fetchOpenAiDescription(
+        this.realEstateListingService.fetchOpenAiRealEstateDesc(user, {
+          realEstateListingId,
+          targetGroupName,
+          realEstateType: defaultRealEstType,
+          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
+        }),
+        PropstackTextFieldTypeEnum.DESCRIPTION_NOTE,
+      ),
+      fetchOpenAiDescription(
+        this.locationService.fetchOpenAiLocRealEstDesc(user, {
+          realEstateListingId,
+          searchResultSnapshotId,
+          targetGroupName,
+          meanOfTransportation: MeansOfTransportation.WALK,
+          realEstateType: defaultRealEstType,
+          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
+        }),
+        PropstackTextFieldTypeEnum.OTHER_NOTE,
+      ),
+    ]);
+
+    // this.logger.log(
+    //   `Event ${eventId} continues to be processed for ${dayjs
+    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+    //     .humanize()}. Fetching of OpenAi descriptions is complete.`,
+    // );
+
+    return openAiQueryResults.reduce<
+      Partial<Record<PropstackTextFieldTypeEnum, string>>
+    >((result, queryResult) => {
+      if (queryResult.status === 'fulfilled') {
+        Object.assign(result, { ...queryResult.value });
+      } else {
+        const fetchErrorMessage = `The following error has occurred on fetching OpenAi descriptions: ${queryResult.reason}.`;
+
+        PropstackService.logger.error(
+          eventId ? `Event ${eventId}. ` : '' + fetchErrorMessage,
+        );
+      }
+
+      return result;
+    }, {});
   }
 }

@@ -14,12 +14,7 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { SnapshotExtService } from '../location/snapshot-ext.service';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
-import { MeansOfTransportation } from '@area-butler-types/types';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { LocationService } from '../location/location.service';
-import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
-import { defaultRealEstType } from '../../../shared/constants/open-ai';
-import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 import { IApiIntUserPropstackParams } from '@area-butler-types/integration-user';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackService } from './propstack.service';
@@ -38,7 +33,6 @@ export class PropstackWebhookService {
 
   constructor(
     private readonly placeService: PlaceService,
-    private readonly locationService: LocationService,
     private readonly propstackApiService: PropstackApiService,
     private readonly propstackService: PropstackService,
     private readonly realEstateListingService: RealEstateListingService,
@@ -108,64 +102,14 @@ export class PropstackWebhookService {
     //     .humanize()}. Snapshot creation is complete.`,
     // );
 
-    const fetchOpenAiDescription = async (
-      fetchDescription: Promise<string>,
-      descriptionName,
-    ): Promise<{ [p: string]: string }> => {
-      return { [descriptionName]: await fetchDescription };
-    };
-
-    const openAiQueryResults = await Promise.allSettled([
-      fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocationDescription(user, {
-          searchResultSnapshotId,
-          meanOfTransportation: MeansOfTransportation.WALK,
-          targetGroupName: defaultTargetGroupName,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-        }),
-        'location_note',
-      ),
-      fetchOpenAiDescription(
-        this.realEstateListingService.fetchOpenAiRealEstateDesc(user, {
-          realEstateListingId: realEstateListing.id,
-          realEstateType: defaultRealEstType,
-          targetGroupName: defaultTargetGroupName,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-        }),
-        'description_note',
-      ),
-      fetchOpenAiDescription(
-        this.locationService.fetchOpenAiLocRealEstDesc(user, {
-          searchResultSnapshotId,
-          meanOfTransportation: MeansOfTransportation.WALK,
-          targetGroupName: defaultTargetGroupName,
-          tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
-          realEstateListingId: realEstateListing.id,
-          realEstateType: defaultRealEstType,
-        }),
-        'other_note',
-      ),
-    ]);
-
-    // this.logger.log(
-    //   `Event ${eventId} continues to be processed for ${dayjs
-    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-    //     .humanize()}. Fetching of OpenAi descriptions is complete.`,
-    // );
-
-    const openAiDescriptions = openAiQueryResults.reduce<{
-      [p: string]: string;
-    }>((result, queryResult) => {
-      if (queryResult.status === 'fulfilled') {
-        Object.assign(result, { ...queryResult.value });
-      } else {
-        this.logger.error(
-          `Event ${eventId}. The following error has occurred on fetching OpenAi descriptions: ${queryResult.reason}.`,
-        );
-      }
-
-      return result;
-    }, {});
+    const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
+      {
+        searchResultSnapshotId,
+        user,
+        eventId,
+        realEstateListingId: realEstateListing.id,
+      },
+    );
 
     (
       await Promise.allSettled([
