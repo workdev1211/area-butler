@@ -10,6 +10,7 @@ import { IntegrationTypesEnum } from "../../../../shared/types/integration";
 import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 import { AreaButlerExportTypesEnum } from "../../../../shared/types/integration-user";
 import { IOnePagePngDownProps } from "../../shared/one-page.types";
+import { integrationNames } from "../../../../shared/constants/integration";
 
 export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
   addressDescription,
@@ -158,7 +159,7 @@ export const OnePagePngDownload: FunctionComponent<IOnePagePngDownProps> = ({
             });
           }}
         >
-          An onOffice senden
+          An {integrationNames[integrationType]} senden
         </button>
       )}
 

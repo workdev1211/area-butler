@@ -20,6 +20,7 @@ import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.func
 import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
 import { defaultTransportParams } from "../../../shared/constants/location";
+import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 
 // TODO should be refactored in the future, it seems to be that 'zoomLevel' is not needed anymore
 export interface MapClipping {
@@ -66,6 +67,7 @@ export interface SearchContextState {
   gotoMapCenter?: IGotoMapCenter;
   storedContextState?: IStoredContextState;
   snapshotId?: string;
+  openAiQueryType?: OpenAiQueryTypeEnum;
 }
 
 export interface IGotoMapCenter {
@@ -128,6 +130,7 @@ export enum SearchContextActionTypes {
   ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
   SET_SNAPSHOT_ID = "SET_SNAPSHOT_ID",
+  SET_OPEN_AI_QUERY_TYPE = "SET_OPEN_AI_QUERY_TYPE",
 }
 
 type SearchContextActionsPayload = {
@@ -183,6 +186,9 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
   [SearchContextActionTypes.SET_SNAPSHOT_ID]: string;
+  [SearchContextActionTypes.SET_OPEN_AI_QUERY_TYPE]:
+    | OpenAiQueryTypeEnum
+    | undefined;
 };
 
 export type SearchContextActions =
@@ -405,6 +411,9 @@ export const searchContextReducer = (
     }
     case SearchContextActionTypes.SET_SNAPSHOT_ID: {
       return { ...state, snapshotId: action.payload };
+    }
+    case SearchContextActionTypes.SET_OPEN_AI_QUERY_TYPE: {
+      return { ...state, openAiQueryType: action.payload };
     }
     default:
       return state;

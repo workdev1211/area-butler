@@ -34,7 +34,8 @@ import { IApiPropstackLoginReq } from '@area-butler-types/propstack';
 import { LocationIntService } from '../location/location-int.service';
 import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
-  propstackExportTypeMapping,
+  propstackExportTypeMapper,
+  propstackOpenAiFieldMapper,
   propstackPropertyMarketTypeNames,
 } from '../../../shared/constants/propstack';
 import { configService } from '../config/config.service';
@@ -78,7 +79,7 @@ export class PropstackService {
 
   async login(
     integrationUser: TIntegrationUserDocument,
-    { propertyId }: IApiPropstackLoginReq,
+    { propertyId, targetGroup, textFieldType }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
     const { accessToken, integrationUserId, parameters, parentId } =
       integrationUser;
@@ -138,6 +139,7 @@ export class PropstackService {
       latestSnapshot: snapshot
         ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
         : undefined,
+      openAiQueryType: propstackOpenAiFieldMapper[textFieldType],
     };
   }
 
@@ -145,7 +147,7 @@ export class PropstackService {
     { parameters }: TIntegrationUserDocument,
     { exportType, integrationId, text }: IApiIntUpdEstTextFieldReq,
   ): Promise<void> {
-    const paramName = propstackExportTypeMapping[exportType];
+    const paramName = propstackExportTypeMapper[exportType];
 
     if (!paramName) {
       throw new UnprocessableEntityException();

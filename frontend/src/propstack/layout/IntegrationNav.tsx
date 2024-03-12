@@ -1,17 +1,25 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
 import { propstackRootEntries } from "../PropstackContainer";
+import { SearchContext } from "../../context/SearchContext";
 
 const IntegrationNav: FunctionComponent = () => {
+  const {
+    searchContextState: { openAiQueryType },
+  } = useContext(SearchContext);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   let mobileMenuClass = "hidden";
   if (mobileMenuOpen) {
     mobileMenuClass = "nav-mobile-menu lg:hidden";
+  }
+
+  if (openAiQueryType) {
+    return null;
   }
 
   return (

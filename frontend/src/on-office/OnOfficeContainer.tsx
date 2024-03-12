@@ -45,7 +45,7 @@ const PotentialCustomersPage = lazy(
 const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
 const MapPage = lazy(() => import("./pages/MapPage"));
-const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
+const OpenAiPage = lazy(() => import("../pages/OpenAiPage"));
 const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));

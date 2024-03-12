@@ -1,5 +1,6 @@
 import { useContext } from "react";
 import * as Yup from "yup";
+import { SchemaOf } from "yup";
 
 import { getQueryParamsAndUrl } from "../../shared/shared.functions";
 import { useHttp } from "../../hooks/http";
@@ -10,15 +11,25 @@ import {
 } from "../../context/SearchContext";
 import { RequestStatusTypesEnum } from "../../../../shared/types/types";
 import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
-import { IApiPropstackLoginQueryParams } from "../../../../shared/types/propstack";
+import {
+  IApiPropstackLoginQueryParams,
+  PropstackTextFieldTypeEnum,
+} from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
-const loginQueryParamsSchema = Yup.object({
-  apiKey: Yup.string().required(),
-  propertyId: Yup.string().required(),
-  shopId: Yup.string().required(),
-  teamId: Yup.string().optional(),
-});
+// TODO 'teamId' and 'brokerId' should be mandatory parameters
+const loginQueryParamsSchema: SchemaOf<IApiPropstackLoginQueryParams> =
+  Yup.object({
+    apiKey: Yup.string().required(),
+    propertyId: Yup.string().matches(/^\d+$/).required(),
+    shopId: Yup.string().matches(/^\d+$/).required(),
+    teamId: Yup.string().matches(/^\d+$/).optional(),
+    brokerId: Yup.string().matches(/^\d+$/).optional(),
+    targetGroup: Yup.string().optional(),
+    textFieldType: Yup.mixed()
+      .oneOf(Object.values(PropstackTextFieldTypeEnum))
+      .optional(),
+  });
 
 export const usePropstackLogin = () => {
   const { userDispatch } = useContext(UserContext);
@@ -75,6 +86,7 @@ export const usePropstackLogin = () => {
     realEstate,
     // availProdContingents,
     latestSnapshot,
+    openAiQueryType,
   }: IApiIntUserLoginRes): void => {
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
@@ -100,6 +112,11 @@ export const usePropstackLogin = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
       payload: realEstate,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_OPEN_AI_QUERY_TYPE,
+      payload: openAiQueryType,
     });
 
     if (!latestSnapshot) {

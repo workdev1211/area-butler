@@ -21,6 +21,7 @@ import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
+import { IIntegrationHandleLogin } from "../../../shared/types/integration";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -42,7 +43,7 @@ const PotentialCustomersPage = lazy(
 const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
 const SnapshotEditorPage = lazy(() => import("../pages/SnapshotEditorPage"));
-// const OpenAiPage = lazy(() => import("./pages/OpenAiPage"));
+const OpenAiPopup = lazy(() => import("../pages/OpenAiPageContent"));
 // const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
@@ -57,28 +58,34 @@ const PropstackContainer: FunctionComponent = () => {
   const { pathname } = useLocation();
   const { handleLogin } = usePropstackLogin();
 
-  const [isErrorOccurred, setIsErrorOccurred] = useState(false);
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const [loginStatus, setLoginStatus] = useState<
+    IIntegrationHandleLogin | undefined
+  >();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
+  // performs a login
   useEffect(() => {
     const login = async (): Promise<void> => {
-      const { requestStatus, message } = await handleLogin();
-
-      if (requestStatus === RequestStatusTypesEnum.FAILURE) {
-        setErrorMessage(message);
-        setIsErrorOccurred(true);
-        return;
-      }
+      setLoginStatus(await handleLogin());
     };
 
     void login();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // handles the redirects after a login
   useEffect(() => {
-    if (!integrationUser || isErrorOccurred) {
+    if (
+      !integrationUser ||
+      !loginStatus ||
+      loginStatus.requestStatus === RequestStatusTypesEnum.FAILURE
+    ) {
+      return;
+    }
+
+    if (searchContextState.openAiQueryType) {
+      history.push("/open-ai-popup");
       return;
     }
 
@@ -88,6 +95,7 @@ const PropstackContainer: FunctionComponent = () => {
         : "/search"
     );
 
+    // TODO PROPSTACK CONTINGENT - is used only in onOffice for the moment
     // if (integrationUser?.availProdContingents) {
     //   history.push(
     //     searchContextState.snapshotId
@@ -100,13 +108,16 @@ const PropstackContainer: FunctionComponent = () => {
     // history.push("/products");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationUser?.accessToken, isErrorOccurred]);
+  }, [integrationUser?.accessToken, loginStatus]);
 
-  if (!integrationUser || isErrorOccurred) {
+  if (
+    !integrationUser ||
+    loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE
+  ) {
     return (
       <div className="flex items-center justify-center h-[100vh] text-lg">
-        {isErrorOccurred ? (
-          errorMessage || "Ein Fehler ist aufgetreten!"
+        {loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE ? (
+          loginStatus.message || "Ein Fehler ist aufgetreten!"
         ) : (
           <LoadingMessage />
         )}
@@ -150,9 +161,9 @@ const PropstackContainer: FunctionComponent = () => {
           <Route path="/map-snapshots">
             <MapSnapshotsPage />
           </Route>
-          {/*<Route path="/open-ai">*/}
-          {/*  <OpenAiPage />*/}
-          {/*</Route>*/}
+          <Route path="/open-ai-popup">
+            <OpenAiPopup />
+          </Route>
           {/*<Route path="/products">*/}
           {/*  <ProductPage />*/}
           {/*</Route>*/}

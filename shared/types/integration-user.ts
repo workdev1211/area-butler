@@ -153,4 +153,5 @@ export interface IApiIntUserLoginRes {
   realEstate: ApiRealEstateListing;
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   availProdContingents?: TApiIntUserAvailProdContingents;
+  openAiQueryType?: OpenAiQueryTypeEnum;
 }

@@ -1,5 +1,8 @@
 import { OpenAiQueryTypeEnum } from "../types/open-ai";
-import { PropstackPropMarketTypesEnum } from "../types/propstack";
+import {
+  PropstackPropMarketTypesEnum,
+  PropstackTextFieldTypeEnum,
+} from "../types/propstack";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [
@@ -23,10 +26,22 @@ export const propstackPropertyMarketTypeNames: {
   },
 ];
 
-export const propstackExportTypeMapping: Partial<
+export const propstackExportTypeMapper: Partial<
   Record<OpenAiQueryTypeEnum, string>
 > = {
   [OpenAiQueryTypeEnum.LOCATION_DESCRIPTION]: "location_note",
   [OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION]: "description_note",
   [OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION]: "other_note",
+};
+
+export const propstackOpenAiFieldMapper: Record<
+  PropstackTextFieldTypeEnum,
+  OpenAiQueryTypeEnum
+> = {
+  [PropstackTextFieldTypeEnum.LOCATION_NOTE]:
+    OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+  [PropstackTextFieldTypeEnum.DESCRIPTION_NOTE]:
+    OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+  [PropstackTextFieldTypeEnum.OTHER_NOTE]:
+    OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
 };

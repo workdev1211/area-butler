@@ -9,6 +9,7 @@ import {
 } from "../../../shared/types/integration";
 import { SearchContext } from "../context/SearchContext";
 import { ConfigContext } from "../context/ConfigContext";
+import { integrationNames } from "../../../shared/constants/integration";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -107,7 +108,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
               }}
               disabled={isCopyTextButtonDisabled}
             >
-              {isPropstackInt ? "An Propstack senden" : "An onOffice senden"}
+              An {integrationNames[integrationType]} senden
             </button>
           )}
 
