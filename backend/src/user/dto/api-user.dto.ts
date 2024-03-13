@@ -22,7 +22,6 @@ import {
 } from '@area-butler-types/types';
 import ApiRequestContingentDto from './api-request-contingent.dto';
 import ApiShowTourDto from './api-show-tour.dto';
-import ApiUserSubscriptionDto from './api-user-subscription.dto';
 import { mapSubscriptionToApiSubscription } from '../mapper/subscription.mapper';
 import {
   retrieveTotalRequestContingent,
@@ -126,8 +125,8 @@ class ApiUserDto implements ApiUser {
   @ValidateNested()
   showTour: ApiShowTour;
 
+  // 'ApiUserSubscriptionDto' entity differs from a 'SubscriptionDocument' one
   @Expose()
-  @Type(() => ApiUserSubscriptionDto)
   @Transform(
     ({ value }: { value: SubscriptionDocument }): ApiUserSubscription =>
       value ? mapSubscriptionToApiSubscription(value) : null,
@@ -135,7 +134,6 @@ class ApiUserDto implements ApiUser {
   )
   @IsOptional()
   @IsObject()
-  @ValidateNested()
   subscription?: ApiUserSubscription;
 
   @Expose({ name: 'parentId', toClassOnly: true })
