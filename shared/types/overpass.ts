@@ -7,6 +7,8 @@ export enum OverpassAvailCountryEnum {
   GULF_COUNTRIES = "gcc",
   CROATIA = "hr",
   CANARY_ISLANDS = "ic",
+  AUSTRIA = "at",
+  SWITZERLAND = "ch",
 }
 
 export interface IApiOverpassFetchNodes {

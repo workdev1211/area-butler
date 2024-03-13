@@ -75,7 +75,23 @@ export class User {
   @Prop({ type: Object })
   apiConnections: TApiUserApiConnections;
 
-  @Prop({ type: Array })
+  @Prop({
+    type: Array,
+    enum: [
+      Iso3166_1Alpha2CountriesEnum.DE,
+      Iso3166_1Alpha2CountriesEnum.ES,
+      Iso3166_1Alpha2CountriesEnum.CY,
+      Iso3166_1Alpha2CountriesEnum.BH,
+      Iso3166_1Alpha2CountriesEnum.KW,
+      Iso3166_1Alpha2CountriesEnum.OM,
+      Iso3166_1Alpha2CountriesEnum.QA,
+      Iso3166_1Alpha2CountriesEnum.SA,
+      Iso3166_1Alpha2CountriesEnum.AE,
+      Iso3166_1Alpha2CountriesEnum.HR,
+      Iso3166_1Alpha2CountriesEnum.AT,
+      Iso3166_1Alpha2CountriesEnum.CH,
+    ],
+  })
   allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 
   @Prop({ type: ApiKeyParamsSchema })

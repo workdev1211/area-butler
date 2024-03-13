@@ -121,7 +121,7 @@ export type TApiIntegrationUserConfig = {
   templateSnapshotId?: string;
   extraMapboxStyles?: IApiMapboxStyle[];
   isSpecialLink?: boolean;
-  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
 };
 export type TApiIntegrationUserUsageStatistics = Partial<
   Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>
