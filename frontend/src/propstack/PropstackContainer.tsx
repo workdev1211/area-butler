@@ -58,9 +58,7 @@ const PropstackContainer: FunctionComponent = () => {
   const { pathname } = useLocation();
   const { handleLogin } = usePropstackLogin();
 
-  const [loginStatus, setLoginStatus] = useState<
-    IIntegrationHandleLogin | undefined
-  >();
+  const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
@@ -74,7 +72,7 @@ const PropstackContainer: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // handles the redirects after a login
+  // handles the redirects after a successful login
   useEffect(() => {
     if (
       !integrationUser ||

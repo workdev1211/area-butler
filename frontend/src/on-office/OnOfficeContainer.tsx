@@ -16,7 +16,10 @@ import IntegrationNav from "./layout/IntegrationNav";
 import { RequestStatusTypesEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import { useOnOfficeLogin } from "./hooks/onofficelogin";
-import { OnOfficeLoginActionTypesEnum } from "../../../shared/types/on-office";
+import {
+  IOnOfficeHandleLogin,
+  OnOfficeLoginActionTypesEnum,
+} from "../../../shared/types/on-office";
 import ScrollToTop from "../components/ScrollToTop";
 import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
@@ -60,40 +63,32 @@ const OnOfficeContainer: FunctionComponent = () => {
   const { pathname } = useLocation();
   const { handleOnOfficeLogin } = useOnOfficeLogin();
 
-  const [isErrorOccurred, setIsErrorOccurred] = useState(false);
-  const [actionType, setActionType] = useState<OnOfficeLoginActionTypesEnum>();
-  const [errorMessage, setErrorMessage] = useState<string>();
+  const [loginStatus, setLoginStatus] = useState<IOnOfficeHandleLogin>();
 
   const currentPath = pathname.replace(/^\/([^/]+).*$/, "$1");
 
+  // performs a login
   useEffect(() => {
     const login = async () => {
-      const {
-        requestStatus,
-        actionType: loginActionType,
-        message,
-      } = await handleOnOfficeLogin();
-
-      if (requestStatus === RequestStatusTypesEnum.FAILURE) {
-        setErrorMessage(message);
-        setIsErrorOccurred(true);
-        return;
-      }
-
-      setActionType(loginActionType);
+      setLoginStatus(await handleOnOfficeLogin());
     };
 
     void login();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // handles the redirects after a successful login
   useEffect(() => {
-    if (!integrationUser || isErrorOccurred || !actionType) {
+    if (
+      !integrationUser ||
+      !loginStatus ||
+      loginStatus.requestStatus === RequestStatusTypesEnum.FAILURE
+    ) {
       return;
     }
 
     if (
-      actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER ||
+      loginStatus.actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER ||
       integrationUser?.availProdContingents
     ) {
       history.push(
@@ -107,13 +102,16 @@ const OnOfficeContainer: FunctionComponent = () => {
     history.push("/products");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [integrationUser?.accessToken, isErrorOccurred, actionType]);
+  }, [integrationUser?.accessToken, loginStatus]);
 
-  if (!integrationUser || isErrorOccurred) {
+  if (
+    !integrationUser ||
+    loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE
+  ) {
     return (
       <div className="flex items-center justify-center h-[100vh] text-lg">
-        {isErrorOccurred ? (
-          errorMessage || "Ein Fehler ist aufgetreten!"
+        {loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE ? (
+          loginStatus.message || "Ein Fehler ist aufgetreten!"
         ) : (
           <LoadingMessage />
         )}
