@@ -5,19 +5,23 @@ import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import useOnClickOutside from "../hooks/onclickoutside";
+import { ApiUser } from "../../../shared/types/types";
+import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 
-export interface RealEstateMenuListProps {
+interface IRealEstateDropDownProps {
+  user: ApiUser | IApiIntegrationUser;
   buttonStyles?: string;
 }
 
-const RealEstateDropDown: FunctionComponent<RealEstateMenuListProps> = ({
+const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
+  user,
   buttonStyles = "btn btn-sm bg-white text-primary border-primary hover:bg-primary hover:text-white w-full sm:w-auto",
 }) => {
   const { realEstateState } = useContext(RealEstateContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
   const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
-    const result = await deriveGeocodeByAddress(listing.address);
+    const result = await deriveGeocodeByAddress(user, listing.address);
     const { lat, lng } = result;
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,

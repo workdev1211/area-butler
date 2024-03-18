@@ -37,12 +37,12 @@ import { RealEstateDeleteHandler } from "../RealEstateDeleteHandler";
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { getRealEstateCost } from "../../shared/real-estate.functions";
-import { ConfigContext } from "../../context/ConfigContext";
 import { IRealEstatesHistoryState } from "../../shared/shared.types";
 import { LocIndexPropsEnum } from "../../../../shared/types/location-index";
 import { locationIndexNames } from "../../../../shared/constants/location-index";
 import TableV2Pagination from "./TableV2Pagination";
 import TableV2Filter from "./TableV2Filter";
+import { useTools } from "../../hooks/tools";
 
 declare module "@tanstack/table-core" {
   // eslint-disable-next-line
@@ -78,20 +78,22 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
     realEstateState: { listings },
   } = useContext(RealEstateContext);
   const { searchContextDispatch } = useContext(SearchContext);
-  const { integrationType } = useContext(ConfigContext);
 
   const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
 
-  const [sorting, setSorting] = useState<SortingState>([]);
+  const { getActualUser } = useTools();
 
-  const isIntegration = !!integrationType;
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
+
+  const [sorting, setSorting] = useState<SortingState>([]);
 
   const startSearchFromRealEstate = async (
     realEstate: ApiRealEstateListing
   ): Promise<void> => {
-    const result = await deriveGeocodeByAddress(realEstate.address);
+    const result = await deriveGeocodeByAddress(user, realEstate.address);
     const { lat, lng } = result;
 
     searchContextDispatch({
@@ -279,7 +281,7 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
                   openSnapshotsModal(realEstate);
                 }}
               />
-              {!realEstate.isFromParent && !isIntegration && (
+              {!realEstate.isFromParent && !isIntegrationUser && (
                 <FormModal
                   modalConfig={{
                     ...deleteRealEstateModalConfig,

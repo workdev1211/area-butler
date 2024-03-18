@@ -56,6 +56,7 @@ import MapMenuButton from "./components/MapMenuButton";
 import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
 import { LoadingMessage } from "../Loading";
+import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -705,6 +706,11 @@ const SearchResultContainer = forwardRef<
             isTrial={isTrial}
             userMapPoiIcons={resUserPoiIcons?.mapPoiIcons}
             isIntegration={isIntegrationUser}
+            allowedCountries={
+              (isIntegrationUser
+                ? user.config.allowedCountries
+                : user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE]
+            }
             ref={mapRef}
           />
         </div>

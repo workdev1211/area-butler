@@ -16,8 +16,8 @@ import { RealEstateDeleteHandler } from "../real-estates/RealEstateDeleteHandler
 import { deriveGeocodeByAddress } from "shared/shared.functions";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import { getRealEstateCost } from "../shared/real-estate.functions";
-import { ConfigContext } from "../context/ConfigContext";
 import { IRealEstatesHistoryState } from "../shared/shared.types";
+import { useTools } from "../hooks/tools";
 
 interface IRealEstatesTableProps {
   openSnapshotsModal: (realEstate: ApiRealEstateListing) => void;
@@ -33,18 +33,20 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
 }) => {
   const { realEstateState } = useContext(RealEstateContext);
   const { searchContextDispatch } = useContext(SearchContext);
-  const { integrationType } = useContext(ConfigContext);
 
   const history = useHistory<IRealEstatesHistoryState>();
   const queryParams = new URLSearchParams(useLocation().search);
   const realEstateHighlightId = queryParams.get("id");
+  const { getActualUser } = useTools();
 
-  const isIntegration = !!integrationType;
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const startSearchFromRealEstate = async (
     realEstate: ApiRealEstateListing
   ): Promise<void> => {
-    const result = await deriveGeocodeByAddress(realEstate.address);
+    const result = await deriveGeocodeByAddress(user, realEstate.address);
+
     const { lat, lng } = result;
 
     searchContextDispatch({
@@ -142,7 +144,7 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
                     openSnapshotsModal(realEstate);
                   }}
                 />
-                {!realEstate.isFromParent && !isIntegration && (
+                {!realEstate.isFromParent && !isIntegrationUser && (
                   <FormModal
                     modalConfig={{
                       ...deleteRealEstateModalConfig,

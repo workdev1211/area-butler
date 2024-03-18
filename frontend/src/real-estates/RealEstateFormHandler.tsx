@@ -18,8 +18,11 @@ import {
 } from "../context/RealEstateContext";
 import RealEstateForm from "./RealEstateForm";
 import { useRealEstateData } from "../hooks/realestatedata";
+import { ApiUser } from "../../../shared/types/types";
+import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 
 const mapFormToApiUpsertRealEstateListing = async (
+  user: ApiUser | IApiIntegrationUser,
   values: any
 ): Promise<IApiRealEstateListingSchema> => {
   const availableFurnishing = Object.keys(ApiFurnishing);
@@ -35,7 +38,7 @@ const mapFormToApiUpsertRealEstateListing = async (
     []
   );
 
-  const { lat, lng } = await deriveGeocodeByAddress(values.address);
+  const { lat, lng } = await deriveGeocodeByAddress(user, values.address);
 
   return {
     name: values.name,
@@ -96,17 +99,19 @@ const validateBeforeSubmit = (values: any): boolean => {
   return true;
 };
 
-export interface RealEstateFormHandlerProps extends FormModalData {
+interface IRealEstateFormHandlerProps extends FormModalData {
   realEstate: Partial<ApiRealEstateListing>;
+  user: ApiUser | IApiIntegrationUser;
 }
 
 export const RealEstateFormHandler: FunctionComponent<
-  RealEstateFormHandlerProps
+  IRealEstateFormHandlerProps
 > = ({
   formId,
   beforeSubmit = () => {},
   postSubmit = () => {},
   realEstate,
+  user,
 }) => {
   const { realEstateDispatch } = useContext(RealEstateContext);
 
@@ -122,6 +127,7 @@ export const RealEstateFormHandler: FunctionComponent<
     }
 
     const updatedRealEstateData = await mapFormToApiUpsertRealEstateListing(
+      user,
       values
     );
 

@@ -85,6 +85,7 @@ import {
 } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
 import { searchResContainId } from "../components/search-result-container/SearchResultContainer";
+import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 // import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 
 export class IdMarker extends L.Marker {
@@ -342,6 +343,7 @@ interface IMapProps {
   isTrial: boolean;
   userMapPoiIcons?: IApiUserPoiIcon[];
   isIntegration: boolean;
+  allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 }
 
 interface IMapMemoProps extends IMapProps {
@@ -433,6 +435,7 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
       isTrial,
       userMapPoiIcons,
       isIntegration,
+      allowedCountries,
     },
     parentMapRef
   ) => {
@@ -615,7 +618,10 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
         localMap.on("contextmenu", async (e: any): Promise<void> => {
           const coordinates: ApiCoordinates = e.latlng;
 
-          const place = (await deriveAddressFromCoordinates(coordinates)) || {
+          const place = (await deriveAddressFromCoordinates({
+            coordinates,
+            allowedCountries,
+          })) || {
             label: "Mein Standort",
             value: { place_id: "123" },
           };

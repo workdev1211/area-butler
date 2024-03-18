@@ -3,6 +3,7 @@ import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
 
 import "./LocationAutocomplete.scss";
+
 import { ConfigContext } from "../context/ConfigContext";
 import {
   deriveGeocodeByAddress,
@@ -11,7 +12,6 @@ import {
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
-import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 
 interface ILocationAutocompleteProps {
   afterChange?: ({
@@ -36,9 +36,6 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
   const { getActualUser } = useTools();
 
   const user = getActualUser();
-  const allowedCountries = ("integrationUserId" in user
-    ? user.config.allowedCountries
-    : user.allowedCountries) || [Iso3166_1Alpha2CountriesEnum.DE];
 
   const Menu = (props: any) => {
     return (
@@ -60,8 +57,8 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
   const deriveLangLat = async (value: any) => {
     if (value) {
       const coordinates = value?.value?.place_id
-        ? await deriveGeocodeByPlaceId(value.value.place_id)
-        : await deriveGeocodeByAddress(value.label);
+        ? await deriveGeocodeByPlaceId(user, value.value.place_id)
+        : await deriveGeocodeByAddress(user, value.label);
 
       afterChange({ value, coordinates });
     }
@@ -111,11 +108,6 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
       >
         <GooglePlacesAutocomplete
           apiOptions={googleMapsApiOptions}
-          autocompletionRequest={{
-            componentRestrictions: {
-              country: allowedCountries,
-            },
-          }}
           minLengthAutocomplete={5}
           selectProps={{
             components: {

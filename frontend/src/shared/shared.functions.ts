@@ -61,6 +61,8 @@ import {
   TApiLocIndexProps,
 } from "../../../shared/types/location-index";
 import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
+import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
+import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 
 const tinyColor = require("tinycolor2");
 
@@ -89,29 +91,41 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()): number => {
 };
 
 export const deriveGeocodeByAddress = async (
+  user: ApiUser | IApiIntegrationUser,
   address: string
 ): Promise<LatLng> => {
-  const latlngResults = await geocodeByAddress(address);
-  return await getLatLng(latlngResults[0]);
+  const [place] = await geocodeByAddress(address);
+  checkPlaceCountry({ place, user });
+  return getLatLng(place);
 };
 
 export const deriveGeocodeByPlaceId = async (
+  user: ApiUser | IApiIntegrationUser,
   placeId: string
 ): Promise<LatLng> => {
-  const latlngResults = await geocodeByPlaceId(placeId);
-  return getLatLng(latlngResults[0]);
+  const [place] = await geocodeByPlaceId(placeId);
+  checkPlaceCountry({ place, user });
+  return getLatLng(place);
 };
 
-export const deriveAddressFromCoordinates = async (
-  coordinates: ApiCoordinates
-): Promise<{ label: string; value: { place_id: string } } | null> => {
+export const deriveAddressFromCoordinates = async ({
+  coordinates,
+  allowedCountries,
+  user,
+}: {
+  coordinates: ApiCoordinates;
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  user?: ApiUser | IApiIntegrationUser;
+}): Promise<{ label: string; value: { place_id: string } } | null> => {
   const places = await geocodeByLatLng(coordinates);
 
   if (!(places && places.length > 0)) {
     return null;
   }
 
-  const { formatted_address, place_id } = places[0];
+  const place = places[0];
+  checkPlaceCountry({ place, allowedCountries, user });
+  const { formatted_address, place_id } = place;
 
   return {
     label: formatted_address,
@@ -119,6 +133,49 @@ export const deriveAddressFromCoordinates = async (
       place_id,
     },
   };
+};
+
+const checkPlaceCountry = ({
+  place,
+  allowedCountries,
+  user,
+}: {
+  place: google.maps.GeocoderResult;
+  allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  user?: ApiUser | IApiIntegrationUser;
+}): void => {
+  if (!place) {
+    const errorMessage = "Ort nicht gefunden!";
+    toastError(errorMessage);
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
+
+  const country = place.address_components.find(({ types }) =>
+    types.includes("country")
+  )?.short_name as Iso3166_1Alpha2CountriesEnum;
+
+  let resAllowedCountries = allowedCountries;
+
+  if (!resAllowedCountries && user) {
+    resAllowedCountries =
+      "integrationUserId" in user
+        ? user.config.allowedCountries
+        : user.allowedCountries;
+  }
+
+  if (!resAllowedCountries) {
+    resAllowedCountries = [Iso3166_1Alpha2CountriesEnum.DE];
+  }
+
+  if (!resAllowedCountries.includes(country)) {
+    const errorMessage =
+      "Bitte kontaktieren Sie unser Team, um ein Land freizuschalten.";
+
+    toastError(errorMessage);
+    console.error(errorMessage);
+    throw new Error(errorMessage);
+  }
 };
 
 export const distanceInMeters = (from: ApiCoordinates, to: ApiCoordinates) => {

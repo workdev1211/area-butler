@@ -25,7 +25,7 @@ import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropD
 import { useHistory, useLocation } from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
-  deriveAddressFromCoordinates as derivePlacesLocationFromCoordinates,
+  deriveAddressFromCoordinates,
   deriveAvailableMeansFromResponse,
   deriveInitialEntityGroups,
   deriveTotalRequestContingent,
@@ -71,6 +71,7 @@ import { usePotentialCustomerData } from "../hooks/potentialcustomerdata";
 import { useRealEstateData } from "../hooks/realestatedata";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
+import { useTools } from "../hooks/tools";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -81,10 +82,6 @@ const SearchParamsPage: FunctionComponent = () => {
   const { potentialCustomerDispatch } = useContext(PotentialCustomerContext);
   const { realEstateState } = useContext(RealEstateContext);
 
-  const user = userState.user!;
-  const integrationUser = userState.integrationUser!;
-  const isIntegrationUser = !!integrationUser;
-
   const { fetchPotentialCustomers } = usePotentialCustomerData();
   const { fetchRealEstates } = useRealEstateData();
   const { fetchCensusData } = useCensusData();
@@ -93,6 +90,10 @@ const SearchParamsPage: FunctionComponent = () => {
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
+  const { getActualUser } = useTools();
+
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
@@ -190,9 +191,9 @@ const SearchParamsPage: FunctionComponent = () => {
       };
     }
 
-    const totalRequestContingent = deriveTotalRequestContingent(user);
-    const requestLimitExceeded =
-      user?.requestsExecuted >= totalRequestContingent;
+    const requestLimitExceeded = !isIntegrationUser
+      ? user.requestsExecuted >= deriveTotalRequestContingent(user)
+      : false;
 
     if (!existingRequest && requestLimitExceeded && !isIntegrationUser) {
       if (user?.subscription?.type === ApiSubscriptionPlanType.TRIAL) {
@@ -208,12 +209,7 @@ const SearchParamsPage: FunctionComponent = () => {
     setModelData(modelData);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchContextState.location,
-    userState.latestUserRequests,
-    user?.requestContingents,
-    user?.requestsExecuted,
-  ]);
+  }, [searchContextState.location, userState.latestUserRequests, user]);
 
   useEffect(() => {
     const getPotentialCustomers = async () => {
@@ -261,7 +257,10 @@ const SearchParamsPage: FunctionComponent = () => {
       },
     });
 
-    const place = (await derivePlacesLocationFromCoordinates(coordinates)) || {
+    const place = (await deriveAddressFromCoordinates({
+      coordinates,
+      user,
+    })) || {
       label: "Mein Standort",
       value: { place_id: "123" },
     };
@@ -283,20 +282,23 @@ const SearchParamsPage: FunctionComponent = () => {
       ({ coordinates }) => !coordinates
     );
 
-  const hasCensusData =
-    user?.subscription?.config.appFeatures.dataSources.includes(
-      ApiDataSource.CENSUS
-    );
+  const hasCensusData = !isIntegrationUser
+    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
+        ApiDataSource.CENSUS
+      )
+    : false;
 
-  const hasElectionData =
-    user?.subscription?.config.appFeatures.dataSources.includes(
-      ApiDataSource.FEDERAL_ELECTION
-    );
+  const hasElectionData = !isIntegrationUser
+    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
+        ApiDataSource.FEDERAL_ELECTION
+      )
+    : false;
 
-  const hasPollutionData =
-    user?.subscription?.config.appFeatures.dataSources.includes(
-      ApiDataSource.PARTICLE_POLLUTION
-    );
+  const hasPollutionData = !isIntegrationUser
+    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
+        ApiDataSource.PARTICLE_POLLUTION
+      )
+    : false;
 
   const fetchLocationSearchData = async (
     items: IBusyModalItem[]
@@ -457,7 +459,7 @@ const SearchParamsPage: FunctionComponent = () => {
         setBusyModalItems,
         searchResponse,
         busyModalItems: items,
-        userEmail: user?.email,
+        userEmail: !isIntegrationUser ? user?.email : undefined,
       });
 
       items.push({
@@ -664,7 +666,7 @@ const SearchParamsPage: FunctionComponent = () => {
               <div className="flex flex-wrap sm:gap-4">
                 {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
                 <LatestUserRequestsDropDown />
-                <RealEstateDropDown />
+                <RealEstateDropDown user={user} />
               </div>
             </>
           )}

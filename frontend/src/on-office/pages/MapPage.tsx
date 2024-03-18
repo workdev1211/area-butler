@@ -15,10 +15,7 @@ import {
   SearchContextActionTypes,
 } from "../../context/SearchContext";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
-import {
-  defaultMapZoom,
-  googleMapsApiOptions,
-} from "../../shared/shared.constants";
+import { defaultMapZoom } from "../../shared/shared.constants";
 import {
   buildEntityData,
   deriveAvailableMeansFromResponse,
@@ -41,8 +38,6 @@ import { useCensusData } from "../../hooks/censusdata";
 import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
-import GooglePlacesAutocomplete from "react-google-places-autocomplete";
-import { ConfigContext } from "../../context/ConfigContext";
 import { useRealEstateData } from "../../hooks/realestatedata";
 import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
 import { LoadingMessage } from "../../components/Loading";
@@ -50,7 +45,6 @@ import { LoadingMessage } from "../../components/Loading";
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
-  const { googleApiKey } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 

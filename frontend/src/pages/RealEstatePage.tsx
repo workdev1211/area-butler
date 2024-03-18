@@ -8,8 +8,8 @@ import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { RealEstateFormHandler } from "../real-estates/RealEstateFormHandler";
 import { SearchContext } from "context/SearchContext";
-import { ConfigContext } from "../context/ConfigContext";
 import RealEstateIntFormHandler from "../real-estates/RealEstateIntFormHandler";
+import { useTools } from "../hooks/tools";
 
 interface IRealEstatePageRouterProps {
   realEstateId: string;
@@ -20,13 +20,16 @@ const defaultRealEstate: Partial<ApiRealEstateListing> = {
 };
 
 const RealEstatePage: FunctionComponent = () => {
-  const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { storedContextState },
   } = useContext(SearchContext);
   const { realEstateState } = useContext(RealEstateContext);
 
   const { realEstateId } = useParams<IRealEstatePageRouterProps>();
+  const { getActualUser } = useTools();
+
+  const user = getActualUser();
+  const isIntegrationUser = "integrationUserId" in user;
 
   const [busy, setBusy] = useState(false);
 
@@ -47,8 +50,6 @@ const RealEstatePage: FunctionComponent = () => {
     : realEstateState.listings.find(
         (e: ApiRealEstateListing) => e.id === realEstateId
       ) ?? initialRealEstate;
-
-  const isIntegration = !!integrationType;
 
   const formId = `form-${uuid()}`;
 
@@ -88,7 +89,7 @@ const RealEstatePage: FunctionComponent = () => {
       ]}
     >
       <div className="py-20">
-        {isIntegration ? (
+        {isIntegrationUser ? (
           <RealEstateIntFormHandler
             realEstate={realEstate as ApiRealEstateListing}
             formId={formId}
@@ -101,6 +102,7 @@ const RealEstatePage: FunctionComponent = () => {
             formId={formId}
             beforeSubmit={beforeSubmit}
             postSubmit={postSubmit}
+            user={user}
           />
         )}
       </div>
