@@ -45,7 +45,7 @@ class ApiSearchResultSnapshotConfigDto
 
   @IsOptional()
   @IsBoolean()
-  showDetailsInOnePage?: boolean;
+  isDetailsShown?: boolean;
 
   @IsOptional()
   @IsBoolean()

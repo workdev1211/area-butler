@@ -273,7 +273,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     <div id="one-page-expose-modal" className="modal modal-open z-2000">
       <div className="modal-box flex flex-col justify-between">
         <div className="flex flex-col gap-3 pb-[5px]">
-          <h1 className="text-xl text-bold flex items-center gap-2 pl-[24px]">
+          <h1 className="text-xl font-bold flex items-center gap-2 pl-[24px]">
             {buttonTitle}
           </h1>
 

@@ -108,7 +108,7 @@ const ExposeSummary: FunctionComponent<ExposeSummaryProps> = ({
                   </h3>
                   <div className="font-bold">{realEstateListing.address}</div>
 
-                  {responseConfig?.showDetailsInOnePage &&
+                  {responseConfig?.isDetailsShown &&
                     realEstateListing?.costStructure && (
                       <div className="text-justify">
                         <strong>Kosten:</strong>{" "}

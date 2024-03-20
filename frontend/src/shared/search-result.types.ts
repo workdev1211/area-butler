@@ -39,10 +39,13 @@ export interface ResultEntity {
   byBike: boolean;
   byCar: boolean;
   distanceInMeters: number;
+  // 'realEstateData' property is set in the following shared function:
+  // 'deriveInitialEntityGroups' --> 'buildEntDataFromRealEstates'
   realEstateData?: {
     costStructure?: ApiRealEstateCost;
     characteristics?: ApiRealEstateCharacteristics;
     locationIndices?: TApiLocIndexProps;
+    type?: string;
   };
   selected?: boolean;
   externalUrl?: string;

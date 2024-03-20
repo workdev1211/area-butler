@@ -17,7 +17,7 @@ export const defaultSnapshotConfig: ApiSearchResultSnapshotConfig = {
   groupItems: false,
   showStreetViewLink: false,
   fixedRealEstates: true,
-  showDetailsInOnePage: true,
+  isDetailsShown: true,
   poiFilter: {
     type: PoiFilterTypesEnum.BY_AMOUNT,
     value: 10,

@@ -90,178 +90,200 @@ import { searchResContainId } from "../components/search-result-container/Search
 export class IdMarker extends L.Marker {
   entity: ResultEntity;
   searchAddress: string;
-  isAddressShown: boolean;
-  hideEntityFunction?: (entity: ResultEntity) => void;
+  config?: ApiSearchResultSnapshotConfig;
+  hideEntity?: (entity: ResultEntity) => void;
 
-  constructor(
-    latLng: L.LatLngExpression,
-    entity: ResultEntity,
-    searchAddress: string,
-    isAddressShown: boolean,
-    options?: L.MarkerOptions,
-    hideEntity?: (item: ResultEntity) => void
-  ) {
+  constructor({
+    entity,
+    latLng,
+    searchAddress,
+    config,
+    hideEntity,
+    options,
+  }: {
+    entity: ResultEntity;
+    latLng: L.LatLngExpression;
+    searchAddress: string;
+    config?: ApiSearchResultSnapshotConfig;
+    hideEntity?: (item: ResultEntity) => void;
+    options?: L.MarkerOptions;
+  }) {
     super(latLng, options);
+
     this.entity = entity;
     this.searchAddress = searchAddress;
-    this.isAddressShown = isAddressShown;
-    this.hideEntityFunction = hideEntity;
+    this.config = config;
+    this.hideEntity = hideEntity;
   }
 
-  getEntity() {
+  getEntity(): ResultEntity {
     return this.entity;
   }
 
-  setEntity(entity: ResultEntity) {
+  setEntity(entity: ResultEntity): void {
     this.entity = entity;
   }
 
-  createOpenPopup() {
+  createPopupContent(): void {
+    const entityTitle = this.entity.name || this.entity.label;
+    let cityFromSearch = "";
+
+    if (this.searchAddress) {
+      const searchAddressParts = this.searchAddress.split(",");
+      cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
+    }
+
+    const searchString = [
+      getCombinedOsmEntityTypes().find((t) => t.name === this.entity.osmName)
+        ?.label,
+      entityTitle,
+      this.entity?.address?.street !== "undefined"
+        ? this.entity.address?.street
+        : "",
+      this.entity?.address?.city
+        ? this.entity?.address?.city
+        : cityFromSearch.trim(),
+    ].join(" ");
+
+    const title =
+      this.entity.osmName !== OsmName.property
+        ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
+            searchString
+          )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
+        : `${entityTitle}`;
+
+    const isRealEstateListing = this.entity.osmName === OsmName.property;
+    const isPreferredLocation = this.entity.osmName === OsmName.favorite;
+    const isRealEstateListingOrPreferredAddress =
+      isPreferredLocation || isRealEstateListing;
+
+    const byFoot = this.entity.byFoot
+      ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
+          convertMetersToMinutes(
+            this.entity.distanceInMeters,
+            MeansOfTransportation.WALK
+          )
+        )}</span></span>`
+      : "";
+
+    const byBike = this.entity.byBike
+      ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(
+          convertMetersToMinutes(
+            this.entity.distanceInMeters,
+            MeansOfTransportation.BICYCLE
+          )
+        )}</span></span>`
+      : "";
+
+    const byCar = this.entity.byCar
+      ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(
+          convertMetersToMinutes(
+            this.entity.distanceInMeters,
+            MeansOfTransportation.CAR
+          )
+        )}</span></span>`
+      : "";
+
+    const street =
+      this.entity?.address?.street &&
+      this.entity?.address?.street !== "undefined"
+        ? this.entity.address.street
+        : null;
+
+    if (this.entity.osmName !== OsmName.property) {
+      let content = `<span class="font-semibold">${entityTitle}</span><br /><br />
+        <span class="font-semibold mt-2">${title}</span><br />${
+        street ? "<div>" + street + "</div><br />" : ""
+      }<div class="flex gap-6">${
+        !isRealEstateListingOrPreferredAddress ? byFoot : ""
+      }${!isRealEstateListingOrPreferredAddress ? byBike : ""}${
+        !isRealEstateListingOrPreferredAddress ? byCar : ""
+      }</div>`;
+
+      if (this.hideEntity) {
+        content =
+          content +
+          `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`;
+      }
+
+      this.bindPopup(content);
+      return;
+    }
+
+    // real estate listing
+    const realEstateData = this.entity.realEstateData;
+    const realEstateInfoParts: string[] = [];
+
+    if (this.config?.showAddress && street) {
+      realEstateInfoParts.push(
+        `<span class="font-semibold mt-2">Adresse: </span> ${street}`
+      );
+    }
+
+    if (this.config?.realEstateSettings?.isTypeShown && realEstateData?.type) {
+      realEstateInfoParts.push(
+        `<span class="font-semibold mt-2">Objekttyp: </span> ${realEstateData.type}`
+      );
+    }
+
+    if (
+      !this.config?.realEstateSettings?.isCharacteristicsHidden &&
+      realEstateData?.characteristics?.realEstateSizeInSquareMeters
+    ) {
+      const startingAt = realEstateData?.characteristics?.startingAt
+        ? "Ab"
+        : "";
+
+      realEstateInfoParts.push(
+        `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
+      );
+    }
+
+    if (
+      !this.config?.realEstateSettings?.isCostStructureHidden &&
+      realEstateData?.costStructure
+    ) {
+      realEstateInfoParts.push(
+        `<span class="font-semibold mt-2">Preis: </span> ${getRealEstateCost(
+          realEstateData.costStructure
+        )}`
+      );
+    }
+
+    if (this.entity.externalUrl?.length) {
+      realEstateInfoParts.push(
+        `<a target="_blank" href="${this.entity.externalUrl}" class="real-estate-cta">Direkt zum Objekt ></a>`
+      );
+    }
+
+    if (this.hideEntity) {
+      realEstateInfoParts.push(
+        `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`
+      );
+    }
+
+    this.bindPopup(
+      `<h4 class="font-semibold text-lg">${title}</h4><br />
+          ${realEstateInfoParts.join("<br /><br />")}
+          `
+    );
+  }
+
+  createOpenPopup(): void {
     this.unbindPopup();
 
     if (!this.getPopup()) {
-      const entityTitle = this.entity.name || this.entity.label;
-
-      const street =
-        this.entity?.address?.street &&
-        this.entity?.address?.street !== "undefined"
-          ? this.entity.address.street
-          : null;
-
-      let cityFromSearch = "";
-
-      if (this.searchAddress) {
-        const searchAddressParts = this.searchAddress.split(",");
-        cityFromSearch = searchAddressParts[searchAddressParts.length - 1];
-      }
-
-      const searchString = [
-        getCombinedOsmEntityTypes().find((t) => t.name === this.entity.osmName)
-          ?.label,
-        entityTitle,
-        this.entity?.address?.street !== "undefined"
-          ? this.entity.address?.street
-          : "",
-        this.entity?.address?.city
-          ? this.entity?.address?.city
-          : cityFromSearch.trim(),
-      ].join(" ");
-
-      const title =
-        this.entity.osmName !== OsmName.property
-          ? `<h4><a target="_blank" href="https://google.de/search?q=${encodeURIComponent(
-              searchString
-            )}"><span class="flex"><img class="w-4 h-4 mr-1" src=${googleIcon} alt="icon" />Mehr Informationen</a></h4>`
-          : `${entityTitle}`;
-
-      const isRealEstateListing = this.entity.osmName === OsmName.property;
-      const isPreferredLocation = this.entity.osmName === OsmName.favorite;
-      const isRealEstateListingOrPreferredAddress =
-        isPreferredLocation || isRealEstateListing;
-
-      const byFoot = this.entity.byFoot
-        ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${walkIcon} alt="icon" /><span>${timeToHumanReadable(
-            convertMetersToMinutes(
-              this.entity.distanceInMeters,
-              MeansOfTransportation.WALK
-            )
-          )}</span></span>`
-        : "";
-
-      const byBike = this.entity.byBike
-        ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${bikeIcon} alt="icon" /><span>${timeToHumanReadable(
-            convertMetersToMinutes(
-              this.entity.distanceInMeters,
-              MeansOfTransportation.BICYCLE
-            )
-          )}</span></span>`
-        : "";
-
-      const byCar = this.entity.byCar
-        ? `<span class="flex"><img class="w-4 h-4 mr-1" src=${carIcon} alt="icon" /><span>${timeToHumanReadable(
-            convertMetersToMinutes(
-              this.entity.distanceInMeters,
-              MeansOfTransportation.CAR
-            )
-          )}</span></span>`
-        : "";
-
-      if (this.entity.osmName === OsmName.property) {
-        const realEstateData = this.entity.realEstateData;
-        const realEstateInformationParts = [];
-
-        if (street && this.isAddressShown) {
-          realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Adresse: </span> ${street}`
-          );
-        }
-
-        if (realEstateData?.characteristics?.realEstateSizeInSquareMeters) {
-          const startingAt = realEstateData?.characteristics?.startingAt
-            ? "Ab"
-            : "";
-
-          realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Größe: </span> ${startingAt} ${realEstateData?.characteristics?.realEstateSizeInSquareMeters} &#13217;`
-          );
-        }
-
-        if (realEstateData?.costStructure) {
-          realEstateInformationParts.push(
-            `<span class="font-semibold mt-2">Preis: </span> ${getRealEstateCost(
-              realEstateData.costStructure
-            )}`
-          );
-        }
-
-        if (this.entity.externalUrl && this.entity.externalUrl.length) {
-          realEstateInformationParts.push(
-            `<a target="_blank" href="${this.entity.externalUrl}" class="real-estate-cta">Direkt zum Objekt ></a>`
-          );
-        }
-
-        if (this.hideEntityFunction) {
-          realEstateInformationParts.push(
-            `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`
-          );
-        }
-
-        const realEstateInformation =
-          realEstateInformationParts.join("<br /><br />");
-
-        this.bindPopup(
-          `<h4 class="font-semibold text-lg">${title}</h4><br />
-          ${realEstateInformation}
-          `
-        );
-      } else {
-        let content = `<span class="font-semibold">${entityTitle}</span><br /><br />
-        <span class="font-semibold mt-2">${title}</span><br />${
-          street ? "<div>" + street + "</div><br />" : ""
-        }<div class="flex gap-6">${
-          !isRealEstateListingOrPreferredAddress ? byFoot : ""
-        }${!isRealEstateListingOrPreferredAddress ? byBike : ""}${
-          !isRealEstateListingOrPreferredAddress ? byCar : ""
-        }</div>`;
-
-        if (this.hideEntityFunction) {
-          content =
-            content +
-            `<br /><button id="hide-btn-${this.entity.id}" class="btn btn-link text-sm" style="height: 1rem; min-height: 1rem; padding: 0; font-size: 12px;">Ausblenden</button>`;
-        }
-
-        this.bindPopup(content);
-      }
+      this.createPopupContent();
     }
 
     this.openPopup();
 
-    if (this.hideEntityFunction) {
+    if (this.hideEntity) {
       const element = document.getElementById(`hide-btn-${this.entity.id}`);
 
       if (element) {
         element.onclick = () => {
-          this.hideEntityFunction!(this.entity);
+          this.hideEntity!(this.entity);
         };
       }
     }
@@ -326,6 +348,7 @@ interface IMapMemoProps extends IMapProps {
   ref: ForwardedRef<ICurrentMapRef>;
 }
 
+// TODO should be refactored
 const isMapPropsEqual = (prevProps: IMapProps, nextProps: IMapProps) => {
   const mapboxTokenEqual =
     prevProps.mapboxAccessToken === nextProps.mapboxAccessToken;
@@ -1145,18 +1168,16 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
                   } locality-icon" style="${iconStyle}" /></div>`,
           });
 
-          const hideEntityFunction = isEditorMode ? hideEntity : undefined;
-
-          const marker = new IdMarker(
-            entity.coordinates,
+          const marker = new IdMarker({
+            config,
             entity,
             searchAddress,
-            !!config?.showAddress,
-            {
+            hideEntity: isEditorMode ? hideEntity : undefined,
+            latLng: entity.coordinates,
+            options: {
               icon,
             },
-            hideEntityFunction
-          ).on("click", (e) => {
+          }).on("click", (e) => {
             const marker = e.target;
             marker.createOpenPopup();
           });

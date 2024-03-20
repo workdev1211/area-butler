@@ -141,7 +141,7 @@ export const Cheatsheet = forwardRef((props: ICheatsheetProps, ref) => {
 
               <div className="font-bold">{props.realEstateListing.address}</div>
 
-              {responseConfig?.showDetailsInOnePage &&
+              {responseConfig?.isDetailsShown &&
                 props.realEstateListing?.costStructure && (
                   <div>
                     <strong>Kosten:</strong>{" "}

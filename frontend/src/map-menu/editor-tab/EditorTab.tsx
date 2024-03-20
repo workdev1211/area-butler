@@ -8,7 +8,9 @@ import {
   ResultEntity,
 } from "shared/search-result.types";
 import {
+  ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
+  IApiSnapshotConfigRealEstSettings,
   MeansOfTransportation,
 } from "../../../../shared/types/types";
 import { LocalityItemContent } from "../components/menu-item/locality-item/LocalityItem";
@@ -147,8 +149,25 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     },
   ];
 
-  const changeConfigParam = <T,>(paramName: string, value: T): void => {
+  const changeConfigParam = <T,>(
+    paramName: keyof ApiSearchResultSnapshotConfig,
+    value: T
+  ): void => {
     onConfigChange({ ...config, [paramName]: value });
+  };
+
+  const changeRealEstateSetting = (
+    paramName: keyof IApiSnapshotConfigRealEstSettings,
+    value: boolean | undefined
+  ): void => {
+    const newConfig = { ...config };
+
+    if (!newConfig.realEstateSettings) {
+      newConfig.realEstateSettings = {};
+    }
+
+    newConfig.realEstateSettings[paramName] = value;
+    onConfigChange(newConfig);
   };
 
   const changeTheme = (value: ApiSearchResultSnapshotConfigTheme): void => {
@@ -690,18 +709,18 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="showDetailsInOnePage"
-                    checked={!!config?.showDetailsInOnePage}
+                    name="isDetailsShown"
+                    checked={!!config?.isDetailsShown}
                     onChange={() => {
                       changeConfigParam(
-                        "showDetailsInOnePage",
-                        !config?.showDetailsInOnePage
+                        "isDetailsShown",
+                        !config?.isDetailsShown
                       );
                     }}
                     className="checkbox checkbox-xs checkbox-primary mr-2"
                   />
                   <span className="label-text">
-                    Objekt Infos in Lage-Exposé anzeigen
+                    Objekt Infos angezeigt (Lage-Exposé / Snapshot)
                   </span>
                 </label>
               </div>
@@ -818,6 +837,70 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                     Icon Zurücksetzen
                   </button>
                 )}
+              </div>
+            </li>
+            <li className="font-bold">Objekttooltip</li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isCostStructureHidden"
+                    checked={
+                      !!config?.realEstateSettings?.isCostStructureHidden
+                    }
+                    onChange={() => {
+                      changeRealEstateSetting(
+                        "isCostStructureHidden",
+                        !config?.realEstateSettings?.isCostStructureHidden
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Kosten ausblenden</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isTypeShown"
+                    checked={!!config?.realEstateSettings?.isTypeShown}
+                    onChange={() => {
+                      changeRealEstateSetting(
+                        "isTypeShown",
+                        !config?.realEstateSettings?.isTypeShown
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">Objekttyp anzeigen</span>
+                </label>
+              </div>
+            </li>
+            <li>
+              <div className="flex items-center gap-6 py-1">
+                <label className="cursor-pointer label">
+                  <input
+                    type="checkbox"
+                    name="isCharacteristicsHidden"
+                    checked={
+                      !!config?.realEstateSettings?.isCharacteristicsHidden
+                    }
+                    onChange={() => {
+                      changeRealEstateSetting(
+                        "isCharacteristicsHidden",
+                        !config?.realEstateSettings?.isCharacteristicsHidden
+                      );
+                    }}
+                    className="checkbox checkbox-xs checkbox-primary mr-2"
+                  />
+                  <span className="label-text">
+                    Weitere Objektmerkmale ausblenden
+                  </span>
+                </label>
               </div>
             </li>
           </ul>

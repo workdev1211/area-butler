@@ -156,7 +156,7 @@ const ExportModal: FunctionComponent<IExportModalProps> = ({
         searchContextState.printingDocxActive) && (
         <div id="expose-modal" className="modal modal-open z-2000">
           <div className="modal-box">
-            <h1 className="text-xl text-bold">{buttonTitle}</h1>
+            <h1 className="text-xl font-bold">{buttonTitle}</h1>
 
             <div className="overflow-y-scroll flex flex-col h-96">
               {(hasCensusElectionInSubscription ||

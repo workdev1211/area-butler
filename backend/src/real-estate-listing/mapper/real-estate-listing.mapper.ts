@@ -53,5 +53,6 @@ export const mapRealEstateListingToApiRealEstateListing = (
       realEstateListing.integrationParams?.isStatsFullExportActive,
     externalSource: realEstateListing.externalSource,
     externalId: realEstateListing.externalId,
+    type: realEstateListing.type,
   };
 };

@@ -50,7 +50,7 @@ const OnePagePngLogoAddress: FunctionComponent<IOnePagePngLogoAddressProps> = ({
             {snapshotConfig.showAddress && (
               <div style={{ fontWeight: 700 }}>{realEstateListing.address}</div>
             )}
-            {snapshotConfig?.showDetailsInOnePage &&
+            {snapshotConfig?.isDetailsShown &&
               realEstateListing?.costStructure && (
                 <div>
                   <strong>Kosten:</strong>{" "}

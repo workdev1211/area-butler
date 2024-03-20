@@ -28,24 +28,25 @@ export interface IApiRealEstateListingSchema {
 
 export interface ApiRealEstateListing {
   id: string;
-  name: string;
   address: string;
-  externalUrl?: string;
-  showInSnippet: boolean;
-  costStructure?: ApiRealEstateCost;
-  characteristics?: ApiRealEstateCharacteristics;
   coordinates: ApiCoordinates;
   isFromParent: boolean;
-  status?: string;
-  status2?: string;
-  integrationId?: string; // only for integration users
-  openAiRequestQuantity?: number;
+  name: string;
+  showInSnippet: boolean;
+  characteristics?: ApiRealEstateCharacteristics;
+  costStructure?: ApiRealEstateCost;
+  externalId?: string; // if it was exported from a CRM
+  externalSource?: ApiRealEstateExtSourcesEnum; // if it was exported from a CRM
+  externalUrl?: string;
   iframeEndsAt?: string;
+  integrationId?: string; // only for integration users
   isOnePageExportActive?: boolean;
   isStatsFullExportActive?: boolean;
-  externalSource?: ApiRealEstateExtSourcesEnum; // if it was exported from a CRM
-  externalId?: string; // if it was exported from a CRM
   locationIndices?: TLocationIndexData;
+  openAiRequestQuantity?: number;
+  status?: string;
+  status2?: string;
+  type?: string;
 }
 
 // should be present either minPrice or price (maxPrice), or both

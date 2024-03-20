@@ -567,6 +567,7 @@ export const buildEntDataFromRealEstates = ({
           locationIndices,
           costStructure: realEstate.costStructure,
           characteristics: realEstate.characteristics,
+          type: realEstate.type
         },
         coordinates: realEstate.coordinates!,
         address: config?.showLocation

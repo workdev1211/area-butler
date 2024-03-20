@@ -32,7 +32,7 @@ const OnePageLogoAddress: FunctionComponent<IOnePageLogoAddressProps> = ({
               <div className="font-bold">{realEstateListing.address}</div>
             )}
 
-            {snapshotConfig?.showDetailsInOnePage &&
+            {snapshotConfig?.isDetailsShown &&
               realEstateListing?.costStructure && (
                 <div>
                   <strong>Kosten:</strong>{" "}

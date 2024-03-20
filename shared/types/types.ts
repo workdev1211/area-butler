@@ -358,12 +358,18 @@ export interface IApiSnapshotIconSizes {
   poiIconSize?: number;
 }
 
+export interface IApiSnapshotConfigRealEstSettings {
+  isCharacteristicsHidden?: boolean;
+  isCostStructureHidden?: boolean;
+  isTypeShown?: boolean;
+}
+
 export interface ApiSearchResultSnapshotConfig {
   showLocation?: boolean;
   groupItems?: boolean;
   showAddress?: boolean;
   showStreetViewLink?: boolean;
-  showDetailsInOnePage?: boolean; // extended to other types of export
+  isDetailsShown?: boolean; // extended to other types of export
   hideIsochrones?: boolean;
   hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
   hideMapMenu?: boolean; // for reference map
@@ -383,6 +389,7 @@ export interface ApiSearchResultSnapshotConfig {
   iconSizes?: IApiSnapshotIconSizes;
   isMapMenuCollapsed?: boolean;
   isFilterMenuAvail?: boolean;
+  realEstateSettings?: IApiSnapshotConfigRealEstSettings;
 }
 
 export interface ApiSearchResultSnapshotResponse {
