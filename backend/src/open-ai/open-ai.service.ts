@@ -1,5 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
+import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
 
 import { configService } from '../config/config.service';
 import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
@@ -36,11 +37,6 @@ import { osmEntityTypes } from '../../../shared/constants/constants';
 import { calculateRelevantArea } from '../shared/functions/geo-json';
 import { defaultTargetGroupName } from '../../../shared/constants/potential-customer';
 
-// Left just in case in order to be able to calculate the number of tokens
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-// const { encode } = require('gpt-3-encoder');
-// const usedTokens = encode(queryString).length;
-
 // TODO remove similar interfaces like for the frontend part
 interface IGeneralQueryData {
   tonality: string; // should be enum
@@ -65,6 +61,7 @@ interface ILocRealEstDescQueryData
     IRealEstDescQueryData {}
 
 const POI_LIMIT_BY_CATEGORY = 3;
+const MODEL_NAME = 'gpt-4';
 
 @Injectable()
 export class OpenAiService {
@@ -75,6 +72,8 @@ export class OpenAiService {
     apiKey: this.openAiApiKey,
   });
   private readonly openAiApi = new OpenAIApi(this.openAiConfig);
+  private readonly openAiMaxTokens = configService.getOpenAiMaxTokens();
+  private readonly systemEnv = configService.getSystemEnv();
 
   constructor(
     private readonly locationIndexService: LocationIndexService,
@@ -290,15 +289,27 @@ export class OpenAiService {
   }
 
   async fetchResponse(queryText: string): Promise<string> {
-    this.logger.log(
-      `\n===== QUERY START =====\n${queryText}\n===== QUERY END =====\n`,
-    );
+    let encoding: Tiktoken;
+
+    if (this.systemEnv !== 'prod') {
+      encoding = encoding_for_model(MODEL_NAME);
+
+      this.logger.log(
+        '\n====== QUERY LENGTH ======\n' +
+          `CHARACTERS: ${queryText.length} / TOKENS: ${
+            encoding.encode(queryText).length
+          }` +
+          '\n====== QUERY START ======\n' +
+          queryText +
+          '\n====== QUERY END ======',
+      );
+    }
 
     const {
       data: { choices },
     }: AxiosResponse<CreateCompletionResponse> = await this.openAiApi.createChatCompletion(
       {
-        model: 'gpt-4',
+        model: MODEL_NAME,
         messages: [
           {
             role: 'system',
@@ -309,7 +320,7 @@ export class OpenAiService {
         ],
         temperature: 1,
         // the maximum number of tokens will be used
-        // max_tokens: 1200,
+        max_tokens: this.openAiMaxTokens,
         top_p: 1,
         n: 1,
         frequency_penalty: 0,
@@ -317,7 +328,26 @@ export class OpenAiService {
       },
     );
 
-    return choices[0]['message']['content'].replace(/^(\n)*(.*)/g, '$2');
+    const response = choices[0]['message']['content'].replace(
+      /^(\n)*(.*)/g,
+      '$2',
+    );
+
+    if (this.systemEnv !== 'prod') {
+      this.logger.log(
+        '\n====== RESPONSE LENGTH ======\n' +
+          `CHARACTERS: ${response.length} / TOKENS: ${
+            encoding.encode(response).length
+          } / MAX TOKENS: ${this.openAiMaxTokens}` +
+          '\n====== RESPONSE START ======\n' +
+          response +
+          '\n====== RESPONSE END ======',
+      );
+
+      encoding.free();
+    }
+
+    return response;
   }
 
   // Left in case of a future progress in OpenAi text limiting
