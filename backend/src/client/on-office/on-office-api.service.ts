@@ -60,30 +60,36 @@ export class OnOfficeApiService {
     request: IApiOnOfficeRequest,
     response: IApiOnOfficeResponse,
   ): void {
-    const {
-      status: {
-        code: responseCode,
-        errorcode: responseErrorCode,
-        message: responseMessage,
-      },
-      response: {
-        results: [
-          {
-            status: { errorcode: actionErrorCode, message: actionMessage },
-          },
-        ],
-      },
-    } = response;
+    let responseIsSuccess = false;
 
-    const responseIsSuccess =
-      responseCode === 200 &&
-      responseErrorCode === 0 &&
-      responseMessage === 'OK' &&
-      actionErrorCode === 0 &&
-      actionMessage === 'OK';
+    try {
+      const {
+        status: {
+          code: responseCode,
+          errorcode: responseErrorCode,
+          message: responseMessage,
+        },
+        response: {
+          results: [
+            {
+              status: { errorcode: actionErrorCode, message: actionMessage },
+            },
+          ],
+        },
+      } = response;
+
+      responseIsSuccess =
+        responseCode === 200 &&
+        responseErrorCode === 0 &&
+        responseMessage === 'OK' &&
+        actionErrorCode === 0 &&
+        actionMessage === 'OK';
+    } catch (e) {
+      this.logger.error(this.checkResponseIsSuccess.name, e);
+    }
 
     if (!responseIsSuccess) {
-      this.logger.error(methodName, request, response);
+      this.logger.error(`Method: ${methodName}`, request, response);
       throw new HttpException(errorMessage, 400);
     }
   }

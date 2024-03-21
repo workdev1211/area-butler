@@ -318,6 +318,7 @@ export class OnOfficeService {
         const { userName, email } = await this.fetchUserData({
           ...groupUser.parameters,
           extendedClaim,
+          userId,
         });
 
         const { color, logo } = await this.fetchLogoAndColor({
