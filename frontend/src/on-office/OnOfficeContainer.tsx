@@ -25,6 +25,7 @@ import FeedbackModal from "../components/FeedbackModal";
 import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
+import BrowserWarningModal from "../components/BrowserWarningModal";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -121,6 +122,7 @@ const OnOfficeContainer: FunctionComponent = () => {
 
   return (
     <div className="on-office-app">
+      <BrowserWarningModal />
       <Suspense fallback={<LoadingMessage />}>
         <ScrollToTop />
         <IntegrationNav />

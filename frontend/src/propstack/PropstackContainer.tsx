@@ -22,6 +22,7 @@ import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import { IIntegrationHandleLogin } from "../../../shared/types/integration";
+import BrowserWarningModal from "../components/BrowserWarningModal";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -125,6 +126,7 @@ const PropstackContainer: FunctionComponent = () => {
 
   return (
     <div className="propstack-app">
+      <BrowserWarningModal />
       <Suspense fallback={<LoadingMessage />}>
         <ScrollToTop />
         <IntegrationNav />

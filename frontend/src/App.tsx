@@ -1,10 +1,4 @@
-import {
-  lazy,
-  Suspense,
-  useContext,
-  useEffect,
-  // useState,
-} from "react";
+import { lazy, Suspense, useContext, useEffect } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
 import { PayPalScriptProvider } from "@paypal/react-paypal-js";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
@@ -35,6 +29,7 @@ import ScrollToTop from "./components/ScrollToTop";
 import FeedbackModal from "./components/FeedbackModal";
 import { LoadingMessage } from "./components/Loading";
 // import MaintenanceModal from "./components/MaintenanceModal";
+import BrowserWarningModal from "./components/BrowserWarningModal";
 
 Sentry.init({
   dsn: process.env.REACT_APP_SENTRY_DSN,
@@ -170,8 +165,10 @@ function App() {
       <ScrollToTop />
       <div>{process.env.REACT_APP_SENTRY_DSN_FE}</div>
       <div className="app">
+        {isAuthenticated && <BrowserWarningModal />}
         {/*{isAuthenticated && !isSeenMaintenance && (*/}
         {/*  <MaintenanceModal*/}
+        {/*    title="Wartungsarbeiten"*/}
         {/*    onClose={() => {*/}
         {/*      window.localStorage.setItem(maintenanceKey, "true");*/}
         {/*      setIsSeenMaintenance(true);*/}
