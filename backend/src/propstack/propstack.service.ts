@@ -34,6 +34,7 @@ import {
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
+  IApiPropstackLoginQueryParams,
   IApiPropstackLoginReq,
   IApiPropstackTargetGroupChangedReq,
   PropstackTextFieldTypeEnum,
@@ -282,11 +283,14 @@ export class PropstackService {
     };
   }
 
-  async getIntegrationUser(
-    apiKey: string,
-    shopId: string,
-    teamId: string,
-  ): Promise<TIntegrationUserDocument> {
+  async getIntegrationUser({
+    apiKey,
+    shopId,
+    teamId,
+  }: Omit<
+    IApiPropstackLoginQueryParams,
+    'brokerId' | 'propertyId' | 'textFieldType'
+  >): Promise<TIntegrationUserDocument> {
     let integrationUser: TIntegrationUserDocument;
 
     if (teamId) {

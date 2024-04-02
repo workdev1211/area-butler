@@ -17,14 +17,13 @@ import {
 } from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
-// TODO 'teamId' and 'brokerId' should be mandatory parameters
 const loginQueryParamsSchema: SchemaOf<IApiPropstackLoginQueryParams> =
   Yup.object({
     apiKey: Yup.string().required(),
     propertyId: Yup.string().matches(/^\d+$/).required(),
     shopId: Yup.string().matches(/^\d+$/).required(),
+    brokerId: Yup.string().matches(/^\d+$/).required(),
     teamId: Yup.string().matches(/^\d+$/).optional(),
-    brokerId: Yup.string().matches(/^\d+$/).optional(),
     textFieldType: Yup.mixed()
       .oneOf(Object.values(PropstackTextFieldTypeEnum))
       .optional(),
@@ -44,7 +43,12 @@ export const usePropstackLogin = () => {
       return { requestStatus: RequestStatusTypesEnum.FAILURE };
     }
 
-    await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
+    try {
+      await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
+    } catch (e) {
+      console.error(e);
+      return { requestStatus: RequestStatusTypesEnum.FAILURE };
+    }
 
     return performLogin(queryParamsAndUrl.queryParams);
   };
@@ -77,6 +81,7 @@ export const usePropstackLogin = () => {
     return response;
   };
 
+  // TODO PROPSTACK CONTINGENT
   const dispatchContextData = ({
     integrationUserId,
     accessToken,

@@ -12,7 +12,6 @@ import {
   PropstackTextFieldTypeEnum,
 } from '@area-butler-types/propstack';
 
-// TODO 'teamId' and 'brokerId' should be mandatory parameters
 @Exclude()
 class ApiPropstackLoginReqDto implements IApiPropstackLoginReq {
   @Expose()
@@ -33,10 +32,10 @@ class ApiPropstackLoginReqDto implements IApiPropstackLoginReq {
   @Transform(({ value }) => (value ? parseInt(value, 10) : undefined), {
     toClassOnly: true,
   })
-  @IsOptional()
+  @IsNotEmpty()
   @IsInt()
   @IsPositive()
-  teamId?: number;
+  brokerId: number;
 
   @Expose()
   @Transform(({ value }) => (value ? parseInt(value, 10) : undefined), {
@@ -45,7 +44,7 @@ class ApiPropstackLoginReqDto implements IApiPropstackLoginReq {
   @IsOptional()
   @IsInt()
   @IsPositive()
-  brokerId?: number;
+  teamId?: number;
 
   @Expose()
   @IsOptional()

@@ -43,6 +43,8 @@ export interface IApiPropstackFetchedProperties {
 export interface IApiPropstackConnectReq {
   apiKey: string;
   shopId: number;
+  brokerId: number;
+  teamId?: number;
 }
 
 export interface IPropstackPrettyValue {

@@ -8,9 +8,12 @@ import {
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
 
 import { propstackLoginRoutePath } from '../../../../shared/constants/propstack';
 import { PropstackService } from '../propstack.service';
+import ApiPropstackLoginReqDto from '../dto/api-propstack-login-req.dto';
 
 @Injectable()
 export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
@@ -44,11 +47,14 @@ export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
       this.logger.debug(e);
     }
 
-    const isWrongReqData =
-      !apiKey ||
-      !reqBody ||
-      !reqBody.shopId ||
-      routePath !== propstackLoginRoutePath;
+    let isWrongReqData =
+      !apiKey || !reqBody || routePath !== propstackLoginRoutePath;
+
+    if (!isWrongReqData) {
+      isWrongReqData =
+        (await validate(plainToInstance(ApiPropstackLoginReqDto, reqBody)))
+          .length > 0;
+    }
 
     if (isWrongReqData) {
       this.logger.debug(
@@ -62,11 +68,11 @@ export class InjectPropstackLoginUserInterceptor implements NestInterceptor {
     }
 
     // with parent user
-    const integrationUser = await this.propstackService.getIntegrationUser(
+    const integrationUser = await this.propstackService.getIntegrationUser({
       apiKey,
-      reqBody.shopId,
-      reqBody.teamId,
-    );
+      shopId: reqBody.shopId as string,
+      teamId: reqBody.teamId as string,
+    });
 
     if (!integrationUser) {
       this.logger.debug(

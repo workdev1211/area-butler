@@ -2,12 +2,11 @@ import { IApiIntUpdEstTextFieldReq } from "./integration";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { AreaButlerExportTypesEnum } from "./integration-user";
 
-// TODO 'teamId' and 'brokerId' should be mandatory parameters
 export interface IApiPropstackLoginReq {
   propertyId: number;
   shopId: number;
+  brokerId: number;
   teamId?: number;
-  brokerId?: number;
   textFieldType?: PropstackTextFieldTypeEnum;
 }
 
@@ -16,13 +15,12 @@ export interface IApiPropstackTargetGroupChangedReq
   targetGroupName: string;
 }
 
-// TODO 'teamId' and 'brokerId' should be mandatory parameters
 export interface IApiPropstackLoginQueryParams {
   apiKey: string;
   propertyId: string;
   shopId: string;
+  brokerId: string;
   teamId?: string;
-  brokerId?: string;
   textFieldType?: PropstackTextFieldTypeEnum;
 }
 
