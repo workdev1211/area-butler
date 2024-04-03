@@ -46,11 +46,18 @@ export interface IApiIntUserOnOfficeParams {
   email?: string;
 }
 
+export interface IApiPropstackStoredBroker {
+  brokerId: number;
+  email: string;
+  name: string;
+}
+
 export interface IApiIntUserPropstackParams {
   apiKey?: string;
   shopId?: number;
   teamId?: number;
   brokerId?: number;
+  brokers?: IApiPropstackStoredBroker[];
 }
 
 // IMPORTANT

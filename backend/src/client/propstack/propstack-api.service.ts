@@ -7,6 +7,7 @@ import {
   IApiPropstackFetchProperties,
   IApiPropstackImage,
   IApiPropstackLink,
+  IPropstackBroker,
   IPropstackLink,
   IPropstackProperty,
   IPropstackPropertyStatus,
@@ -59,6 +60,26 @@ export class PropstackApiService {
         `${this.apiUrl}/units?${resultingQueryParams}`,
         { headers },
       ),
+    );
+
+    return data;
+  }
+
+  async fetchBrokerById(
+    apiKey: string,
+    brokerId: number,
+  ): Promise<IPropstackBroker> {
+    const headers = {
+      'Content-Type': 'application/json',
+      'X-Api-Key': apiKey,
+    };
+
+    const { data } = await firstValueFrom<{
+      data: IPropstackBroker;
+    }>(
+      this.http.get<IPropstackBroker>(`${this.apiUrl}/brokers/${brokerId}`, {
+        headers,
+      }),
     );
 
     return data;

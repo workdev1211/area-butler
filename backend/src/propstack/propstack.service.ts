@@ -18,6 +18,7 @@ import {
 import {
   ApiPropstackImageTypeEnum,
   IApiPropstackConnectReq,
+  IPropstackBroker,
   IPropstackLink,
 } from '../shared/types/propstack';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
@@ -30,6 +31,7 @@ import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-pro
 import {
   IApiIntUserLoginRes,
   IApiIntUserPropstackParams,
+  IApiPropstackStoredBroker,
 } from '@area-butler-types/integration-user';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
@@ -82,14 +84,27 @@ export class PropstackService {
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
-  async connect({ apiKey, shopId }: IApiPropstackConnectReq): Promise<void> {
+  async connect({
+    apiKey,
+    shopId,
+    ...connectData
+  }: IApiPropstackConnectReq): Promise<void> {
     const integrationUserId = `${shopId}`;
     const accessToken = PropstackService.encryptAccessToken(apiKey);
+    const updateQuery = {
+      accessToken,
+      'parameters.apiKey': apiKey,
+      'parameters.shopId': shopId,
+    };
+
+    Object.keys(connectData).forEach((key) => {
+      updateQuery[`parameters.${key}`] = connectData[key];
+    });
 
     const integrationUser = await this.integrationUserService.findOneAndUpdate(
       this.integrationType,
       { integrationUserId },
-      { accessToken, 'parameters.apiKey': apiKey, 'parameters.shopId': shopId },
+      updateQuery,
     );
 
     if (integrationUser) {
@@ -100,7 +115,7 @@ export class PropstackService {
       accessToken,
       integrationUserId,
       integrationType: this.integrationType,
-      parameters: { apiKey, shopId },
+      parameters: { apiKey, shopId, ...connectData },
       isParent: true,
     });
   }
@@ -286,10 +301,11 @@ export class PropstackService {
   async getIntegrationUser({
     apiKey,
     shopId,
+    brokerId,
     teamId,
   }: Omit<
     IApiPropstackLoginQueryParams,
-    'brokerId' | 'propertyId' | 'textFieldType'
+    'propertyId' | 'textFieldType'
   >): Promise<TIntegrationUserDocument> {
     let integrationUser: TIntegrationUserDocument;
 
@@ -357,9 +373,10 @@ export class PropstackService {
             parentId: parentUser.id,
           })
           .catch((e) => {
-            PropstackService.logger.error(e);
+            PropstackService.logger.error(this.getIntegrationUser.name, e);
 
             PropstackService.logger.debug(
+              this.getIntegrationUser.name,
               `\nAPI key: ${apiKey}` +
                 `\nShop id: ${shopId}` +
                 `\nTeam id: ${teamId}`,
@@ -383,7 +400,45 @@ export class PropstackService {
       );
     }
 
-    return integrationUser;
+    const parsedBrokerId = parseInt(brokerId, 10);
+    const intUserParams =
+      integrationUser.parameters as IApiIntUserPropstackParams;
+    intUserParams.brokerId = parsedBrokerId;
+    integrationUser.markModified('parameters.brokerId');
+
+    const { email, public_email, name } = await this.propstackApiService
+      .fetchBrokerById(
+        (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
+        parsedBrokerId,
+      )
+      .catch((e) => {
+        PropstackService.logger.error(this.getIntegrationUser.name, e);
+        return {} as Partial<IPropstackBroker>;
+      });
+
+    const broker: IApiPropstackStoredBroker = {
+      name,
+      brokerId: parsedBrokerId,
+      email: public_email || email,
+    };
+
+    if (!intUserParams.brokers) {
+      intUserParams.brokers = [];
+    }
+
+    const storedBroker = intUserParams.brokers.find(
+      ({ brokerId: storedBrokerId }) => storedBrokerId === parsedBrokerId,
+    );
+
+    if (storedBroker) {
+      Object.assign(storedBroker, broker);
+    } else {
+      intUserParams.brokers.push(broker);
+    }
+
+    integrationUser.markModified('parameters.brokers');
+
+    return integrationUser.save();
   }
 
   static encryptAccessToken(accessToken: string): string {

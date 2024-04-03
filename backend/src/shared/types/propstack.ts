@@ -79,16 +79,18 @@ export interface IPropstackWebhookCustomFields {
 export interface IPropstackBroker {
   id: number;
   shop: IPropstackShop;
+  name?: string; // 'first_name' + 'last_name'
   email?: string;
   public_email?: string;
-  department_ids?: number[]; // team ids
   locale?: string;
+  color?: string;
+  team_id?: number;
+  team?: IPropstackTeam;
 
   salutation?: string;
   academic_title?: string;
   first_name?: string;
   last_name?: string;
-  name?: string;
   avatar?: string;
   avatar_url?: string;
   old_crm_id?: number;
@@ -97,22 +99,22 @@ export interface IPropstackBroker {
   cell?: string;
   public_phone?: string;
   public_cell?: string;
-  color?: string;
   connected?: boolean;
-  team_id?: number;
+  department_ids?: number[];
   abstract?: string;
   description?: string;
-  team?: object; // a team object - to be defined later
+  custom_fields?: object;
 }
 
 export interface IPropstackShop {
   id: number;
   name: string;
-  email?: string;
-  locale?: string;
 
+  locale?: string;
+  email?: string;
   color?: string;
   logo_url?: string;
+
   alt_logo_url?: string;
   watermark_url?: string;
   favicon_url?: string;
@@ -336,3 +338,29 @@ export type TPropstackProcProperty<
   areaButlerStatus?: string;
   areaButlerStatus2?: string;
 };
+
+interface IPropstackTeam {
+  id: number;
+  name: string;
+  broker_ids: number[];
+
+  logo_url?: string;
+
+  company_name?: string;
+  position?: string;
+  street?: string;
+  zip_code?: string;
+  city?: string;
+  country?: string;
+  website?: string;
+  cancellation_policy_note?: string;
+  imprint_note?: string;
+  terms_note?: string;
+  privacy_note?: string;
+  mail_signature?: string;
+  openimmo_email?: string;
+  pdf_epilog?: string;
+  widerruf_letter_address?: string;
+  lat?: number;
+  lng?: number;
+}
