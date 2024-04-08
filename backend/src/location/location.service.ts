@@ -336,7 +336,12 @@ export class LocationService {
   async updateSnapshot(
     user: UserDocument | TIntegrationUserDocument,
     snapshotId: string,
-    { snapshot, config, description }: ApiUpdateSearchResultSnapshot,
+    {
+      config,
+      customPois,
+      description,
+      snapshot,
+    }: ApiUpdateSearchResultSnapshot,
   ): Promise<SearchResultSnapshotDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -352,7 +357,7 @@ export class LocationService {
 
     const snapshotDoc = await this.fetchSnapshotByIdOrFail(user, snapshotId);
 
-    if (!snapshot && !config && !description) {
+    if (!config && !customPois && !description && !snapshot) {
       return snapshotDoc;
     }
 
@@ -366,6 +371,16 @@ export class LocationService {
 
     if (description) {
       snapshotDoc.description = description;
+    }
+
+    if (customPois) {
+      Object.values(MeansOfTransportation).forEach((transportParam) => {
+        snapshotDoc.snapshot.searchResponse.routingProfiles[
+          transportParam
+        ]?.locationsOfInterest.push(...customPois);
+      });
+
+      snapshotDoc.markModified('snapshot.searchResponse.routingProfiles');
     }
 
     return snapshotDoc.save();

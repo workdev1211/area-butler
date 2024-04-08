@@ -27,6 +27,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   MapDisplayModesEnum,
+  MeansOfTransportation,
 } from "../../../../shared/types/types";
 import SearchResultContainer from "../../components/search-result-container/SearchResultContainer";
 import { EntityGroup, ICurrentMapRef } from "../../shared/search-result.types";
@@ -362,20 +363,27 @@ const MapPage: FunctionComponent = () => {
       JSON.stringify(snapshotResponse.snapshot.searchResponse)
     );
 
-    copiedSearchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
-    );
-    copiedSearchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
-    );
-    copiedSearchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-      poi as any as ApiOsmLocation
-    );
+    Object.values(MeansOfTransportation).forEach((transportParam) => {
+      if (
+        copiedSearchResponse?.routingProfiles &&
+        copiedSearchResponse.routingProfiles[transportParam]
+      ) {
+        copiedSearchResponse.routingProfiles[
+          transportParam
+        ].locationsOfInterest?.push(poi);
+      }
+    });
 
     const newEntity = buildEntityData(
       copiedSearchResponse,
       searchContextState.responseConfig
-    )?.find((e) => e.id === poi.entity.id)!;
+    )?.find((e) => e.id === poi.entity.id);
+
+    if (!newEntity) {
+      return;
+    }
+
+    newEntity.isCustom = true;
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
@@ -387,6 +395,11 @@ const MapPage: FunctionComponent = () => {
               items: [...ge.items, newEntity],
             }
       ),
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.ADD_CUSTOM_POI,
+      payload: poi,
     });
 
     // update dedicated entity groups for editor

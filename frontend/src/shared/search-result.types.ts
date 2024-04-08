@@ -50,6 +50,7 @@ export interface ResultEntity {
   selected?: boolean;
   externalUrl?: string;
   isFiltered?: boolean;
+  isCustom?: boolean; // for a custom added POI
 }
 
 export interface EntityGroup {

@@ -137,11 +137,11 @@ export interface ApiSearch {
 }
 
 export interface ApiSearchResponse {
-  centerOfInterest: ApiOsmLocation;
+  centerOfInterest: ApiOsmLocation; // center of location search
   routingProfiles: Record<
     MeansOfTransportation,
     { locationsOfInterest: ApiOsmLocation[]; isochrone: ApiIsochrone }
-  >;
+  >; // POIs
 }
 
 export interface ApiIsochrone {
@@ -159,10 +159,10 @@ export interface ApiIsochroneFeature {
 }
 
 export interface ApiOsmLocation {
-  entity: ApiOsmEntity;
+  address: ApiAddress;
   coordinates: ApiCoordinates;
   distanceInMeters: number;
-  address: ApiAddress;
+  entity: ApiOsmEntity;
 }
 
 export enum ApiOsmEntityCategory {
@@ -294,24 +294,25 @@ export enum OsmName {
 }
 
 export interface ApiUpdateSearchResultSnapshot {
-  snapshot?: ApiSearchResultSnapshot;
   config?: ApiSearchResultSnapshotConfig;
+  customPois?: ApiOsmLocation[];
   description?: string;
+  snapshot?: ApiSearchResultSnapshot;
 }
 
 export interface ApiSearchResultSnapshot {
-  placesLocation: any | IApiPlacesLocation;
-  location: ApiCoordinates;
-  transportationParams: TransportationParam[];
-  localityParams: ApiOsmEntity[];
-  preferredLocations: ApiPreferredLocation[];
-  searchResponse: ApiSearchResponse;
-  routes: EntityRoute[];
-  transitRoutes: EntityTransitRoute[];
-  realEstateListing?: ApiRealEstateListing;
-  realEstateListings: ApiRealEstateListing[];
-  integrationId?: string;
-  token?: string;
+  placesLocation: any | IApiPlacesLocation; // Google Places id or an address
+  location: ApiCoordinates; // coordinates
+  transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
+  localityParams: ApiOsmEntity[]; // selected POI types
+  preferredLocations: ApiPreferredLocation[]; // important places
+  searchResponse: ApiSearchResponse; // POIs
+  routes: EntityRoute[]; // routes to important places by foot, bicycle or car
+  transitRoutes: EntityTransitRoute[]; // routes to important places by city transport
+  realEstateListing?: ApiRealEstateListing; // if an address is a certain real estate
+  realEstateListings: ApiRealEstateListing[]; // existing real estates at the time of snapshot creation
+  integrationId?: string; // probably a hack
+  token?: string; // embedded token - probably a hack
 }
 
 export interface IApiCreateRouteSnapshot {

@@ -223,23 +223,32 @@ export const useLocationData = () => {
       return;
     }
 
-    const defaultActiveGroups =
-      searchContextState.responseGroupedEntities?.reduce<string[]>(
-        (result, { title, active }) => {
-          if (active) {
-            result.push(title);
-          }
+    const defaultActiveGroups: string[] = [];
+    const customPoiIds: string[] = [];
 
-          return result;
-        },
-        []
-      );
+    searchContextState.responseGroupedEntities?.forEach(
+      ({ title, active, items }) => {
+        if (active) {
+          defaultActiveGroups.push(title);
+        }
+
+        items.forEach(({ id, isCustom }) => {
+          if (isCustom) {
+            customPoiIds.push(id);
+          }
+        });
+      }
+    );
 
     const config: ApiSearchResultSnapshotConfig = {
       ...searchContextState.responseConfig,
       defaultActiveGroups,
       defaultActiveMeans: searchContextState.responseActiveMeans,
     };
+
+    const customPois = searchContextState.customPois?.filter(
+      ({ entity: { id } }) => customPoiIds.includes(id!)
+    );
 
     const mapZoomLevel = mapRef.current.getZoom();
 
@@ -255,6 +264,11 @@ export const useLocationData = () => {
     try {
       const snapshotResponse = await updateSnapshot(snapshotId, {
         config,
+        customPois,
+      });
+
+      searchContextDispatch({
+        type: SearchContextActionTypes.CLEAR_CUSTOM_POIS,
       });
 
       toastSuccess("Einstellungen gespeichert!");

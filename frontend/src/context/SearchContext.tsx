@@ -68,6 +68,7 @@ export interface SearchContextState {
   storedContextState?: IStoredContextState;
   snapshotId?: string;
   openAiQueryType?: OpenAiQueryTypeEnum;
+  customPois?: ApiOsmLocation[];
 }
 
 export interface IGotoMapCenter {
@@ -127,7 +128,8 @@ export enum SearchContextActionTypes {
   REMOVE_MAP_CLIPPING = "REMOVE_MAP_CLIPPING",
   CLEAR_MAP_CLIPPINGS = "CLEAR_MAP_CLIPPINGS",
   SET_REAL_ESTATE_LISTING = "SET_REAL_ESTATE_LISTING",
-  ADD_POI_TO_SEARCH_RESPONSE = "ADD_POI_TO_SEARCH_RESPONSE",
+  ADD_CUSTOM_POI = "ADD_CUSTOM_POI",
+  CLEAR_CUSTOM_POIS = "CLEAR_CUSTOM_POIS",
   SET_STORED_CONTEXT_STATE = "SET_STORED_CONTEXT_STATE",
   SET_SNAPSHOT_ID = "SET_SNAPSHOT_ID",
   SET_OPEN_AI_QUERY_TYPE = "SET_OPEN_AI_QUERY_TYPE",
@@ -183,7 +185,8 @@ type SearchContextActionsPayload = {
   [SearchContextActionTypes.SET_REAL_ESTATE_LISTING]:
     | ApiRealEstateListing
     | undefined;
-  [SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE]: ApiOsmLocation;
+  [SearchContextActionTypes.ADD_CUSTOM_POI]: ApiOsmLocation;
+  [SearchContextActionTypes.CLEAR_CUSTOM_POIS]: undefined;
   [SearchContextActionTypes.SET_STORED_CONTEXT_STATE]: IStoredContextState;
   [SearchContextActionTypes.SET_SNAPSHOT_ID]: string;
   [SearchContextActionTypes.SET_OPEN_AI_QUERY_TYPE]:
@@ -388,23 +391,19 @@ export const searchContextReducer = (
         realEstateListing: action.payload ? { ...action.payload } : undefined,
       };
     }
-    case SearchContextActionTypes.ADD_POI_TO_SEARCH_RESPONSE: {
-      const poi: ApiOsmLocation = action.payload;
-
-      const searchResponse = JSON.parse(
-        JSON.stringify(state.searchResponse)
-      ) as ApiSearchResponse;
-      searchResponse?.routingProfiles?.WALK?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-      searchResponse?.routingProfiles?.BICYCLE?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-      searchResponse?.routingProfiles?.CAR?.locationsOfInterest?.push(
-        poi as any as ApiOsmLocation
-      );
-
-      return { ...state, searchResponse };
+    case SearchContextActionTypes.ADD_CUSTOM_POI: {
+      return {
+        ...state,
+        customPois: Array.isArray(state.customPois)
+          ? [...state.customPois, action.payload]
+          : [action.payload],
+      };
+    }
+    case SearchContextActionTypes.CLEAR_CUSTOM_POIS: {
+      return {
+        ...state,
+        customPois: undefined,
+      };
     }
     case SearchContextActionTypes.SET_STORED_CONTEXT_STATE: {
       return { ...state, storedContextState: action.payload };
