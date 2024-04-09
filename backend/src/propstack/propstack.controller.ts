@@ -46,7 +46,7 @@ export class PropstackController {
   @UseGuards(PropstackConnectGuard)
   @HttpCode(HttpStatus.CREATED)
   connect(@Body() connectData: ApiPropstackConnectReqDto): Promise<void> {
-    this.logger.debug(
+    this.logger.verbose(
       `'${this.connect.name}' method was triggered.`,
       connectData,
     );
@@ -62,7 +62,7 @@ export class PropstackController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() loginData: ApiPropstackLoginReqDto,
   ): Promise<IApiIntUserLoginRes> {
-    this.logger.debug(`'${this.login.name}' method was triggered.`, {
+    this.logger.verbose(`'${this.login.name}' method was triggered.`, {
       integrationUserId: integrationUser.integrationUserId,
       ...loginData,
     });
@@ -78,7 +78,7 @@ export class PropstackController {
     @InjectUser() integrationUser: TIntegrationUserDocument,
     @Body() targetGroupData: ApiPropstackTargetGroupChangedReqDto,
   ): Promise<void> {
-    this.logger.debug(
+    this.logger.verbose(
       `'${this.handleTargetGroupChanged.name}' method was triggered.`,
       {
         integrationUserId: integrationUser.integrationUserId,

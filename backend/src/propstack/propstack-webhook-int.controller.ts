@@ -46,7 +46,7 @@ export class PropstackWebhookIntController {
       integrationUser.integrationUserId
     })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.log(`Event ${eventId} was triggered.`);
+    this.logger.verbose(`Event ${eventId} was triggered.`);
 
     void this.propstackWebhookService.handlePropertyCreated(
       integrationUser,
@@ -70,18 +70,16 @@ export class PropstackWebhookIntController {
       integrationUser.integrationUserId
     })-${propstackPropertyDto.id}-${nowDate.getTime()}`;
 
-    this.logger.log(`Event ${eventId} was triggered.`);
+    this.logger.verbose(`Event ${eventId} was triggered.`);
 
-    void this.propstackWebhookService.handlePropertyUpdated(
-      integrationUser,
-      propstackPropertyDto,
-    );
-    // .then(() => {
-    //   this.logger.log(
-    //     `Event ${eventId} processing is complete and took ${dayjs
-    //       .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-    //       .humanize()}.`,
-    //   );
-    // });
+    void this.propstackWebhookService
+      .handlePropertyUpdated(integrationUser, propstackPropertyDto)
+      .then(() => {
+        this.logger.verbose(
+          `Event ${eventId} processing is complete and took ${dayjs
+            .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+            .humanize()}.`,
+        );
+      });
   }
 }

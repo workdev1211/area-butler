@@ -7,12 +7,18 @@ import { resolve } from 'path';
 import * as Sentry from '@sentry/node';
 
 import { AppModule } from './app.module';
+import { configService } from './config/config.service';
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const cloneBuffer = require('clone-buffer');
 
 async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, {
+    logger:
+      configService.getSystemEnv() !== 'prod'
+        ? ['log', 'error', 'warn', 'debug', 'verbose']
+        : ['error', 'warn'],
+  });
 
   Sentry.init({
     dsn: process.env.SENTRY_DSN,

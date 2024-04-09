@@ -96,11 +96,11 @@ export class PropstackWebhookService {
         user,
       });
 
-    // this.logger.log(
-    //   `Event ${eventId} continues to be processed for ${dayjs
-    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-    //     .humanize()}. Snapshot creation is complete.`,
-    // );
+    this.logger.verbose(
+      `Event ${eventId} continues to be processed for ${dayjs
+        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+        .humanize()}. Snapshot creation is complete.`,
+    );
 
     const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
       {
@@ -140,11 +140,11 @@ export class PropstackWebhookService {
       }
     });
 
-    // this.logger.log(
-    //   `Event ${eventId} processing is complete and took ${dayjs
-    //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-    //     .humanize()}.`,
-    // );
+    this.logger.verbose(
+      `Event ${eventId} processing is complete and took ${dayjs
+        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
+        .humanize()}.`,
+    );
   }
 
   async handlePropertyUpdated(

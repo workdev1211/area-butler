@@ -77,7 +77,10 @@ export class OnOfficeController {
   login(
     @Body() loginData: ApiOnOfficeLoginReqDto,
   ): Promise<IApiIntUserLoginRes> {
-    this.logger.debug(this.login.name, loginData);
+    this.logger.verbose(`'${this.login.name}' method was triggered.`, {
+      ...loginData,
+    });
+
     return this.onOfficeService.login(loginData);
   }
 
