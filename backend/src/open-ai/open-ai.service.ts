@@ -72,7 +72,6 @@ export class OpenAiService {
     apiKey: this.openAiApiKey,
   });
   private readonly openAiApi = new OpenAIApi(this.openAiConfig);
-  private readonly openAiMaxTokens = configService.getOpenAiMaxTokens();
   private readonly systemEnv = configService.getSystemEnv();
 
   constructor(
@@ -319,8 +318,6 @@ export class OpenAiService {
           { role: 'user', content: queryText },
         ],
         temperature: 1,
-        // the maximum number of tokens will be used
-        max_tokens: this.openAiMaxTokens,
         top_p: 1,
         n: 1,
         frequency_penalty: 0,
@@ -338,7 +335,7 @@ export class OpenAiService {
         '\n====== RESPONSE LENGTH ======\n' +
           `CHARACTERS: ${response.length} / TOKENS: ${
             encoding.encode(response).length
-          } / MAX TOKENS: ${this.openAiMaxTokens}` +
+          }` +
           '\n====== RESPONSE START ======\n' +
           response +
           '\n====== RESPONSE END ======',

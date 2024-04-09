@@ -46,6 +46,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
     const {
       queryType,
       tonality,
+      maxTextLength,
       lat,
       lng,
       address,
@@ -143,9 +144,19 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
       Object.assign(requestStatus, { coordinates });
 
+      let response = await this.openAiService.fetchResponse(query);
+
+      if (response.length > maxTextLength) {
+        query =
+          `Fasse den folgenden Text so zusammen, dass er nicht länger als ${maxTextLength} Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
+          response;
+
+        response = await this.openAiService.fetchResponse(query);
+      }
+
       return {
         input: { coordinates },
-        result: await this.openAiService.fetchResponse(query),
+        result: response,
       };
     } catch (e) {
       requestStatus.status = ApiRequestStatusesEnum.ERROR;

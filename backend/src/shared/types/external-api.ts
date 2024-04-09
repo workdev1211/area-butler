@@ -162,6 +162,7 @@ export interface IApiFetchPoiDataRes
 export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
   queryType?: ApiOpenAiQueryTypesEnum;
   tonality?: OpenAiTonalityEnum;
+  maxTextLength?: number;
 
   price?: number;
   priceType?: ApiRealEstateCostType;

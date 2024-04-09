@@ -74,10 +74,6 @@ class ConfigService {
     return this.getValue('OPENAI_API_KEY');
   }
 
-  getOpenAiMaxTokens(): number {
-    return +this.getValue('OPENAI_MAX_TOKENS');
-  }
-
   getPropstackConnectApiKey(): string {
     return this.getValue('PROPSTACK_CONNECT_API_KEY');
   }

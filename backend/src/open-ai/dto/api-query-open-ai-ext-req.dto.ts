@@ -1,6 +1,7 @@
 import {
   IsArray,
   IsEnum,
+  IsInt,
   IsNotEmpty,
   IsNumber,
   IsOptional,
@@ -25,67 +26,74 @@ class ApiQueryOpenAiExtReqDto
   extends ApiFetchPoiDataReqDto
   implements IApiQueryOpenAiExtReq
 {
-  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsEnum(ApiOpenAiQueryTypesEnum, {
     message: getEnumValidMessage,
   })
   queryType?: ApiOpenAiQueryTypesEnum = ApiOpenAiQueryTypesEnum.LOC_DESC;
 
-  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsEnum(OpenAiTonalityEnum, {
     message: getEnumValidMessage,
   })
   tonality?: OpenAiTonalityEnum = OpenAiTonalityEnum.FORMAL_SERIOUS;
 
+  @Transform(({ value }: { value: string }): number => parseInt(value, 10), {
+    toClassOnly: true,
+  })
   @IsOptional()
+  @IsInt()
+  @IsPositive()
+  maxTextLength?: number;
+
   @Transform(({ value }: { value: string }): number => +value, {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   price?: number;
 
-  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsEnum(ApiRealEstateCostType, {
     message: getEnumValidMessage,
   })
   priceType?: ApiRealEstateCostType;
 
-  @IsOptional()
   @Transform(({ value }: { value: string }): number => +value, {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   housingArea?: number;
 
-  @IsOptional()
   @Transform(({ value }: { value: string }): number => +value, {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsNumber()
   @IsPositive()
   totalArea?: number;
 
-  @IsOptional()
   @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
     toClassOnly: true,
   })
+  @IsOptional()
   @IsEnum(ApiEnergyEfficiency, {
     message: getEnumValidMessage,
   })
   energyEfficiency?: ApiEnergyEfficiency;
 
-  @IsNotEmpty()
   @Transform(
     ({ value }: { value: string }): string[] =>
       value?.split(',').map((furnishItem) => furnishItem.toUpperCase()),
@@ -93,6 +101,7 @@ class ApiQueryOpenAiExtReqDto
       toClassOnly: true,
     },
   )
+  @IsNotEmpty()
   @IsArray()
   @IsEnum(ApiFurnishing, { each: true, message: getEnumValidMessage })
   furnishing?: ApiFurnishing[];
