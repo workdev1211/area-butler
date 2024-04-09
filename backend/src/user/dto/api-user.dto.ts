@@ -45,13 +45,14 @@ class ApiUserDto implements ApiUser {
   @Type(() => ApiMapboxStyleDto)
   @Transform(
     ({
-      value,
-      obj: { parentUser },
+      obj: { additionalMapBoxStyles, parentUser },
     }: {
       obj: UserDocument;
-      value: IApiMapboxStyle[];
     }): IApiMapboxStyle[] =>
-      getUnitedMapboxStyles(parentUser?.additionalMapBoxStyles, value),
+      getUnitedMapboxStyles(
+        parentUser?.additionalMapBoxStyles,
+        additionalMapBoxStyles,
+      ),
     { toClassOnly: true },
   )
   @IsNotEmpty()
