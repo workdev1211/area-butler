@@ -81,15 +81,13 @@ export class PlaceService {
     )?.short_name;
 
     if (!allowedCountries.includes(country)) {
-      const errorMessage = `Country ${country} is not allowed!`;
-
-      this.logger.debug(
+      this.logger.error(
         `\nMethod: ${this.fetchPlace.name}.` +
-          `\nMessage: ${errorMessage}` +
+          `\nMessage: ${`Country ${country} is not allowed!`}` +
           `\nAllowed countries: [${allowedCountries.join(', ')}].`,
       );
 
-      throw new HttpException(errorMessage, 402);
+      return;
     }
 
     return place;
