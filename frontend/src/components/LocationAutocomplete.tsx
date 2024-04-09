@@ -1,10 +1,9 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
 
 import "./LocationAutocomplete.scss";
 
-import { ConfigContext } from "../context/ConfigContext";
 import {
   deriveGeocodeByAddress,
   deriveGeocodeByPlaceId,
@@ -12,6 +11,8 @@ import {
 import poweredByGoogleIcon from "../assets/img/powered_by_google_on_white_hdpi.png";
 import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
+import { useGoogleMapsApi } from "../hooks/google";
+import { LoadingMessage } from "./Loading";
 
 interface ILocationAutocompleteProps {
   afterChange?: ({
@@ -26,35 +27,35 @@ interface ILocationAutocompleteProps {
   menuZIndex?: number;
 }
 
-const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
+const Menu = (props: any) => {
+  return (
+    <components.Menu {...props}>
+      {props.children}
+      <div className="powered-container">
+        <img src={poweredByGoogleIcon} alt="google-icon" />
+      </div>
+    </components.Menu>
+  );
+};
+
+const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
   afterChange = () => {},
   value = null,
   setValue = () => {},
   menuZIndex = 99,
 }) => {
-  const { googleApiKey } = useContext(ConfigContext);
+  const isLoadedGoogleMapsApi = useGoogleMapsApi();
   const { getActualUser } = useTools();
-
   const user = getActualUser();
 
-  const Menu = (props: any) => {
-    return (
-      <>
-        <components.Menu {...props}>
-          {props.children}
-          <div className="powered-container">
-            <img src={poweredByGoogleIcon} alt="google-icon" />
-          </div>
-        </components.Menu>
-      </>
-    );
-  };
-
   const [inputValue, setInputValue] = useState(value?.label || "");
-
   const [focus, setFocus] = useState(false);
 
-  const deriveLangLat = async (value: any) => {
+  if (!isLoadedGoogleMapsApi) {
+    return <LoadingMessage />;
+  }
+
+  const deriveLangLat = async (value: any): Promise<void> => {
     if (value) {
       const coordinates = value?.value?.place_id
         ? await deriveGeocodeByPlaceId(user, value.value.place_id)
@@ -67,11 +68,7 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
     setInputValue("");
   };
 
-  if (!googleApiKey) {
-    return <div>Missing google api key</div>;
-  }
-
-  const onInputChange = (v: string, action: string) => {
+  const onInputChange = (v: string, action: string): void => {
     if (action === "input-change") {
       setInputValue(v);
     }
@@ -81,7 +78,7 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
     }
   };
 
-  const deriveValue = (value?: any) => {
+  const deriveValue = (value?: any): any => {
     if (!value) {
       return null;
     }
@@ -130,7 +127,6 @@ const LocationAutocomplete: FunctionComponent<ILocationAutocompleteProps> = ({
               menuPortal: (base: any) => ({ ...base, zIndex: menuZIndex }),
             },
           }}
-          apiKey={googleApiKey}
         />
       </div>
     </div>

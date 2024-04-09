@@ -1,6 +1,5 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
-import { Loader } from "@googlemaps/js-api-loader";
 
 import DefaultLayout from "../layout/defaultLayout";
 import plusIcon from "../assets/icons/icons-16-x-16-outline-ic-plus.svg";
@@ -16,23 +15,25 @@ import {
 import EmbeddableMapsModal from "components/EmbeddableMapsModal";
 import CsvImportModal from "../real-estates/CsvImportModal";
 import { ConfigContext } from "../context/ConfigContext";
-import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useRealEstateData } from "../hooks/realestatedata";
 import CrmImportModal from "../real-estates/CrmImportModal";
 import { useLocationData } from "../hooks/locationdata";
 import RealEstatesTableV2 from "../real-estates/table/RealEstatesTableV2";
 import { RealEstateContext } from "../context/RealEstateContext";
 import IntegrationSyncModal from "../real-estates/IntegrationSyncModal";
+import { useGoogleMapsApi } from "../hooks/google";
+import { LoadingMessage } from "../components/Loading";
 
 const RealEstatesPage: FunctionComponent = () => {
   const { userState, userDispatch } = useContext(UserContext);
-  const { integrationType, googleApiKey } = useContext(ConfigContext);
+  const { integrationType } = useContext(ConfigContext);
   const {
     realEstateState: { listings },
   } = useContext(RealEstateContext);
 
   const { fetchSnapshots } = useLocationData();
   const { fetchRealEstates } = useRealEstateData();
+  const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
   const [realEstateSnapshots, setRealEstateSnapshots] = useState<
     ApiSearchResultSnapshotResponse[]
@@ -49,16 +50,6 @@ const RealEstatesPage: FunctionComponent = () => {
     isIntegration ||
     (hasSubscription && user?.subscription!.config.appFeatures.htmlSnippet);
   const hasApiConnections = !!user?.apiConnections;
-
-  useEffect(() => {
-    const googleMapsApiLoader = new Loader({
-      apiKey: googleApiKey,
-      id: googleMapsApiOptions.id,
-      libraries: ["places"],
-    });
-
-    void googleMapsApiLoader.load();
-  }, [googleApiKey]);
 
   useEffect(() => {
     if (!hasHtmlSnippet) {
@@ -82,6 +73,10 @@ const RealEstatesPage: FunctionComponent = () => {
     void fetchRealEstates();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  if (!isLoadedGoogleMapsApi) {
+    return <LoadingMessage />;
+  }
 
   const openSnapshotsModal = (realEstate: ApiRealEstateListing): void => {
     const { lat, lng } = realEstate.coordinates!;

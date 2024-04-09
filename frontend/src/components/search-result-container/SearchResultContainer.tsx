@@ -55,8 +55,9 @@ import {
 import MapMenuButton from "./components/MapMenuButton";
 import { realEstateListingsTitle } from "../../../../shared/constants/real-estate";
 import MapClipCropModal from "./components/map-clip-crop-modal/MapClipCropModal";
-import { LoadingMessage } from "../Loading";
+import { Loading } from "../Loading";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../../shared/types/location";
+import { useGoogleMapsApi } from "../../hooks/google";
 
 interface ISearchResultContainerProps {
   mapboxAccessToken: string;
@@ -125,6 +126,7 @@ const SearchResultContainer = forwardRef<
 
     const { fetchRoutes, fetchTransitRoutes } = useRouting();
     const { createDirectLink, createCodeSnippet, getActualUser } = useTools();
+    const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
     const isEmbeddedMode = [
       MapDisplayModesEnum.EMBED,
@@ -339,8 +341,13 @@ const SearchResultContainer = forwardRef<
       searchContextState.snapshotId,
     ]);
 
-    if (!searchResponse || !mapboxAccessToken) {
-      return <LoadingMessage />;
+    const isMapDataNotLoaded =
+      !searchResponse ||
+      !mapboxAccessToken ||
+      (!isEmbeddedMode && !isLoadedGoogleMapsApi);
+
+    if (isMapDataNotLoaded) {
+      return <Loading />;
     }
 
     const toggleRoutesToEntity = async (
@@ -572,6 +579,9 @@ const SearchResultContainer = forwardRef<
       <div
         id={searchResContainId}
         className={containerClasses}
+        onContextMenu={(e) => {
+          e.preventDefault();
+        }}
         ref={containerRef}
       >
         {/* NOT SURE ABOUT ITS USAGE - HAS BEEN MOVED HERE FROM SNAPSHOT_EDITOR_PAGE AND MAP_PAGE COMPONENTS */}

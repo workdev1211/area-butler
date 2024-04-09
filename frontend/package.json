@@ -33,7 +33,7 @@
   },
   "dependencies": {
     "@auth0/auth0-react": "^1.6.0",
-    "@googlemaps/js-api-loader": "^1.14.3",
+    "@googlemaps/js-api-loader": "^1.16.6",
     "@laststance/use-app-state": "^1.2.14",
     "@paypal/react-paypal-js": "^7.8.1",
     "@rollbar/react": "^0.8.0",
@@ -100,6 +100,7 @@
     "@craco/craco": "^6.2.0",
     "@sentry/webpack-plugin": "^1.20.0",
     "@types/axios": "^0.14.0",
+    "@types/google.maps": "^3.55.7",
     "@types/leaflet": "^1.7.5",
     "@types/leaflet.markercluster": "^1.4.5",
     "@types/offscreencanvas": "^2019.7.3",
