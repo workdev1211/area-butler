@@ -24,67 +24,71 @@ import EntityRouteDto from '../../../dto/entity-route.dto';
 import ApiTransportationParamDto from '../../../dto/api-transportation-param.dto';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { EntityTransitRoute } from '@area-butler-types/routing';
+import EntityTransitRouteDto from '../../../dto/entity-transit-route.dto';
 
 class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
+  @Type(() => ApiOsmEntityDto)
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiOsmEntityDto)
   localityParams: ApiOsmEntity[];
 
+  @Type(() => ApiCoordinatesDto)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiCoordinatesDto)
   location: ApiCoordinates;
 
   @IsNotEmpty()
   @IsObject()
   placesLocation: any;
 
-  @IsNotEmpty()
-  @ValidateNested({ each: true })
-  @IsArray()
-  @Type(() => ApiPreferredLocationDto)
-  preferredLocations: ApiPreferredLocation[];
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
   @Type(() => ApiRealEstateListingDto)
-  realEstateListing?: ApiRealEstateListing;
-
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiRealEstateListingDto)
   realEstateListings: ApiRealEstateListing[];
 
-  @IsNotEmpty()
-  @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => EntityRouteDto)
-  routes: EntityRouteDto[];
-
+  @Type(() => ApiSearchResponseDto)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiSearchResponseDto)
   searchResponse: ApiSearchResponse;
 
-  @IsNotEmpty()
-  @IsArray()
-  transitRoutes: any[];
-
+  @Type(() => ApiTransportationParamDto)
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiTransportationParamDto)
   transportationParams: TransportationParam[];
 
   @IsOptional()
   @IsString()
   integrationId?: string;
+
+  @Type(() => ApiPreferredLocationDto)
+  @IsOptional()
+  @ValidateNested({ each: true })
+  @IsArray()
+  preferredLocations?: ApiPreferredLocation[];
+
+  @Type(() => ApiRealEstateListingDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  realEstateListing?: ApiRealEstateListing;
+
+  @Type(() => EntityRouteDto)
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  routes?: EntityRouteDto[];
+
+  @Type(() => EntityTransitRouteDto)
+  @IsOptional()
+  @IsArray()
+  @ValidateNested({ each: true })
+  transitRoutes?: EntityTransitRoute[];
 }
 
 export default ApiSearchResultSnapshotDto;

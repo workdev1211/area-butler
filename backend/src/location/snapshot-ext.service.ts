@@ -84,13 +84,10 @@ export class SnapshotExtService {
       placesLocation,
       realEstateListing,
       searchResponse,
-      location: searchData.coordinates,
-      preferredLocations: [],
-      realEstateListings: [],
-      routes: [],
-      transitRoutes: [],
-      transportationParams: searchData.meansOfTransportation,
       integrationId: realEstateListing?.integrationId,
+      location: searchData.coordinates,
+      realEstateListings: [],
+      transportationParams: searchData.meansOfTransportation,
     };
 
     let snapshotConfig;
@@ -150,11 +147,11 @@ export class SnapshotExtService {
     const preferredAmenities = localityParams.map(({ name }) => name);
 
     const searchData: ApiSearch = {
-      searchTitle: placesLocation.label,
-      coordinates: place?.geometry?.location,
-      meansOfTransportation: transportationParams,
       preferredAmenities,
       preferredLocations,
+      coordinates: place?.geometry?.location,
+      meansOfTransportation: transportationParams,
+      searchTitle: placesLocation.label,
     };
 
     const searchResponse = await this.locationService.searchLocation(
@@ -196,16 +193,13 @@ export class SnapshotExtService {
     );
 
     const snapshot: ApiSearchResultSnapshot = {
+      localityParams,
       placesLocation,
+      realEstateListing,
+      realEstateListings,
+      searchResponse,
       location: searchData.coordinates,
       transportationParams: searchData.meansOfTransportation,
-      localityParams,
-      searchResponse,
-      realEstateListings,
-      realEstateListing,
-      preferredLocations: [],
-      routes: [],
-      transitRoutes: [],
     };
 
     if (searchData.preferredLocations) {

@@ -14,6 +14,7 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
@@ -29,18 +30,21 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { TApiMongoSortQuery } from '../shared/types/shared';
+import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
+import { RoutingService } from '../routing/routing.service';
 
 @Injectable()
 export class SnapshotService {
   private readonly logger = new Logger(SnapshotService.name);
 
   constructor(
-    private readonly userService: UserService,
-    private readonly subscriptionService: SubscriptionService,
-    private readonly integrationUserService: IntegrationUserService,
-    private readonly realEstateListingService: RealEstateListingService,
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
+    private readonly integrationUserService: IntegrationUserService,
+    private readonly realEstateListingService: RealEstateListingService,
+    private readonly routingService: RoutingService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly userService: UserService,
   ) {}
 
   async createSnapshot(
@@ -63,65 +67,9 @@ export class SnapshotService {
         .mapboxAccessToken;
     }
 
-    let snapshotConfig = config ? { ...config } : undefined;
-
-    if (!snapshotConfig) {
-      const userTemplateId = isIntegrationUser
-        ? user.config.templateSnapshotId
-        : user.templateSnapshotId;
-
-      const parentUserId = user.parentId;
-      let parentUser;
-      let parentTemplateId;
-      let templateSnapshot: SearchResultSnapshotDocument;
-
-      if (!userTemplateId && parentUserId) {
-        parentUser = isIntegrationUser
-          ? await this.integrationUserService.findByDbId(parentUserId, {
-              integrationUserId: 1,
-              integrationType: 1,
-              'config.templateSnapshotId': 1,
-            })
-          : await this.userService.findById({
-              userId: parentUserId,
-              projectQuery: {
-                templateSnapshotId: 1,
-              },
-            });
-
-        if (parentUser) {
-          if (!isIntegrationUser) {
-            parentUser.subscription = user.subscription;
-          }
-
-          parentTemplateId = isIntegrationUser
-            ? parentUser.config.templateSnapshotId
-            : parentUser.templateSnapshotId;
-        }
-      }
-
-      const templateSnapshotId = userTemplateId || parentTemplateId;
-
-      if (templateSnapshotId) {
-        templateSnapshot = await this.fetchSnapshot({
-          user: userTemplateId ? user : parentUser,
-          filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
-          projectQuery: { config: 1 },
-        });
-      }
-
-      if (!templateSnapshot) {
-        templateSnapshot = await this.fetchSnapshot({
-          user,
-          projectQuery: { config: 1 },
-          sortQuery: { updatedAt: -1 },
-        });
-      }
-
-      snapshotConfig = templateSnapshot?.config
-        ? { ...templateSnapshot.config }
-        : { ...defaultSnapshotConfig };
-    }
+    const snapshotConfig = config
+      ? { ...config }
+      : await this.getSnapshotConfig(user);
 
     // because of the different transportation params in the new snapshot and the template one
     snapshotConfig.defaultActiveMeans = snapshot.transportationParams.map(
@@ -164,6 +112,7 @@ export class SnapshotService {
       ];
     }
 
+    await this.assignRoutes(snapshot);
     const createdAt = dayjs();
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
@@ -262,5 +211,119 @@ export class SnapshotService {
     return this.searchResultSnapshotModel
       .findOne(resFilterQuery, projectQuery)
       .sort(sortQuery);
+  }
+
+  private async getSnapshotConfig(
+    user: UserDocument | TIntegrationUserDocument,
+  ): Promise<ApiSearchResultSnapshotConfig> {
+    const isIntegrationUser = 'integrationUserId' in user;
+
+    const userTemplateId = isIntegrationUser
+      ? user.config.templateSnapshotId
+      : user.templateSnapshotId;
+
+    const parentUserId = user.parentId;
+    let parentUser;
+    let parentTemplateId;
+    let templateSnapshot: SearchResultSnapshotDocument;
+
+    if (!userTemplateId && parentUserId) {
+      parentUser = isIntegrationUser
+        ? await this.integrationUserService.findByDbId(parentUserId, {
+            integrationUserId: 1,
+            integrationType: 1,
+            'config.templateSnapshotId': 1,
+          })
+        : await this.userService.findById({
+            userId: parentUserId,
+            projectQuery: {
+              templateSnapshotId: 1,
+            },
+          });
+
+      if (parentUser) {
+        if (!isIntegrationUser) {
+          parentUser.subscription = user.subscription;
+        }
+
+        parentTemplateId = isIntegrationUser
+          ? parentUser.config.templateSnapshotId
+          : parentUser.templateSnapshotId;
+      }
+    }
+
+    const templateSnapshotId = userTemplateId || parentTemplateId;
+
+    if (templateSnapshotId) {
+      templateSnapshot = await this.fetchSnapshot({
+        user: userTemplateId ? user : parentUser,
+        filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
+        projectQuery: { config: 1 },
+      });
+    }
+
+    if (!templateSnapshot) {
+      templateSnapshot = await this.fetchSnapshot({
+        user,
+        projectQuery: { config: 1 },
+        sortQuery: { updatedAt: -1 },
+      });
+    }
+
+    return templateSnapshot?.config
+      ? { ...templateSnapshot.config }
+      : { ...defaultSnapshotConfig };
+  }
+
+  private async assignRoutes(snapshot: ApiSearchResultSnapshot): Promise<void> {
+    if (!snapshot.preferredLocations?.length) {
+      return;
+    }
+
+    const routes: EntityRoute[] = [];
+    const transitRoutes: EntityTransitRoute[] = [];
+
+    for (const preferredLocation of snapshot.preferredLocations) {
+      const routesResult = await this.routingService.fetchRoutes({
+        meansOfTransportation: Object.keys(
+          snapshot.searchResponse.routingProfiles,
+        ) as MeansOfTransportation[],
+        origin: snapshot.location,
+        destinations: [
+          {
+            title: preferredLocation.title,
+            coordinates: preferredLocation.coordinates,
+          },
+        ],
+      });
+
+      routes.push({
+        routes: routesResult[0].routes,
+        title: routesResult[0].title,
+        show: [],
+        coordinates: preferredLocation.coordinates,
+      });
+
+      const transitRoutesResult = await this.routingService.fetchTransitRoutes({
+        origin: snapshot.location,
+        destinations: [
+          {
+            title: preferredLocation.title,
+            coordinates: preferredLocation.coordinates,
+          },
+        ],
+      });
+
+      if (transitRoutesResult.length && transitRoutesResult[0].route) {
+        transitRoutes.push({
+          route: transitRoutesResult[0].route,
+          title: transitRoutesResult[0].title,
+          show: false,
+          coordinates: preferredLocation.coordinates,
+        });
+      }
+    }
+
+    Object.assign(snapshot, { routes: routes, transitRoutes: transitRoutes }); // TODO 1
   }
 }

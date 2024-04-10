@@ -459,7 +459,6 @@ const SearchParamsPage: FunctionComponent = () => {
         setBusyModalItems,
         searchResponse,
         busyModalItems: items,
-        userEmail: !isIntegrationUser ? user?.email : undefined,
       });
 
       items.push({

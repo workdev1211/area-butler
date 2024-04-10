@@ -1,18 +1,27 @@
+import {
+  IsNotEmpty,
+  ValidateNested,
+  IsBoolean,
+  IsObject,
+  IsString,
+} from 'class-validator';
+import { Type } from 'class-transformer';
+
 import { EntityTransitRoute } from '@area-butler-types/routing';
 import ApiCoordinatesDto from './api-coordinates.dto';
 import ApiTransitRouteDto from './api-transit-route.dto';
-import { Type } from 'class-transformer';
-import { IsNotEmpty, ValidateNested, IsBoolean } from 'class-validator';
 
 class EntityTransitRouteDto implements EntityTransitRoute {
-  @IsNotEmpty()
-  @ValidateNested()
   @Type(() => ApiCoordinatesDto)
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
   coordinates: ApiCoordinatesDto;
 
-  @IsNotEmpty()
-  @ValidateNested()
   @Type(() => ApiTransitRouteDto)
+  @IsNotEmpty()
+  @IsObject()
+  @ValidateNested()
   route: ApiTransitRouteDto;
 
   @IsNotEmpty()
@@ -20,6 +29,7 @@ class EntityTransitRouteDto implements EntityTransitRoute {
   show: boolean;
 
   @IsNotEmpty()
+  @IsString()
   title: string;
 }
 

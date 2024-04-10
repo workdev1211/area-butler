@@ -301,18 +301,19 @@ export interface ApiUpdateSearchResultSnapshot {
 }
 
 export interface ApiSearchResultSnapshot {
-  placesLocation: any | IApiPlacesLocation; // Google Places id or an address
-  location: ApiCoordinates; // coordinates
-  transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
   localityParams: ApiOsmEntity[]; // selected POI types
-  preferredLocations: ApiPreferredLocation[]; // important places
-  searchResponse: ApiSearchResponse; // POIs
-  routes: EntityRoute[]; // routes to important places by foot, bicycle or car
-  transitRoutes: EntityTransitRoute[]; // routes to important places by city transport
-  realEstateListing?: ApiRealEstateListing; // if an address is a certain real estate
+  location: ApiCoordinates; // coordinates
+  placesLocation: any | IApiPlacesLocation; // Google Places id or an address
   realEstateListings: ApiRealEstateListing[]; // existing real estates at the time of snapshot creation
+  searchResponse: ApiSearchResponse; // POIs
+  transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
+
   integrationId?: string; // probably a hack
+  preferredLocations?: ApiPreferredLocation[]; // important places
+  realEstateListing?: ApiRealEstateListing; // if an address is a certain real estate
+  routes?: EntityRoute[]; // routes to important places by foot, bicycle or car
   token?: string; // embedded token - probably a hack
+  transitRoutes?: EntityTransitRoute[]; // routes to important places by city transport
 }
 
 export interface IApiCreateRouteSnapshot {

@@ -5,10 +5,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
-import { useRouting } from "./routing";
 import { useHttp } from "./http";
-import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
 import {
   ApiSearch,
   ApiSearchResponse,
@@ -16,7 +13,6 @@ import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
-  MeansOfTransportation,
 } from "../../../shared/types/types";
 import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
@@ -31,7 +27,6 @@ export const useLocationData = () => {
     useContext(SearchContext);
 
   const { get, post, put, deleteRequest } = useHttp();
-  const { fetchRoutes, fetchTransitRoutes } = useRouting();
 
   const isIntegration = !!integrationType;
 
@@ -104,77 +99,11 @@ export const useLocationData = () => {
     busyModalItems,
     setBusyModalItems,
     searchResponse,
-    userEmail,
   }: {
     busyModalItems: IBusyModalItem[];
     setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>;
     searchResponse: ApiSearchResponse;
-    userEmail?: string;
   }): Promise<ApiSearchResultSnapshotResponse> => {
-    const routes: EntityRoute[] = [];
-    const transitRoutes: EntityTransitRoute[] = [];
-    const location = searchContextState.location!;
-    const preferredLocations: ApiPreferredLocation[] =
-      searchContextState.preferredLocations || [];
-
-    let index = 0;
-
-    // TODO think about moving this logic to the backend
-    for (const preferredLocation of preferredLocations) {
-      busyModalItems.push({
-        key: `fetch-routes-${preferredLocation.title}-${index}`,
-      });
-      setBusyModalItems([...busyModalItems]);
-
-      const routesResult = await fetchRoutes({
-        userEmail,
-        meansOfTransportation: Object.keys(
-          searchResponse.routingProfiles
-        ) as MeansOfTransportation[],
-        origin: location,
-        destinations: [
-          {
-            title: preferredLocation.title,
-            coordinates: preferredLocation.coordinates!,
-          },
-        ],
-      });
-
-      routes.push({
-        routes: routesResult[0].routes,
-        title: routesResult[0].title,
-        show: [],
-        coordinates: preferredLocation.coordinates!,
-      });
-
-      busyModalItems.push({
-        key: `fetch-transit-routes-${preferredLocation.title}-${index}`,
-      });
-      setBusyModalItems([...busyModalItems]);
-
-      const transitRoutesResult = await fetchTransitRoutes({
-        userEmail,
-        origin: location,
-        destinations: [
-          {
-            title: preferredLocation.title,
-            coordinates: preferredLocation.coordinates!,
-          },
-        ],
-      });
-
-      if (transitRoutesResult.length && transitRoutesResult[0].route) {
-        transitRoutes.push({
-          route: transitRoutesResult[0].route,
-          title: transitRoutesResult[0].title,
-          show: false,
-          coordinates: preferredLocation.coordinates!,
-        });
-      }
-
-      index += 1;
-    }
-
     busyModalItems.push({
       key: "save-map-snapshot",
     });
@@ -184,18 +113,15 @@ export const useLocationData = () => {
       await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
         isIntegration ? "/api/location-int/snapshot" : "/api/location/snapshot",
         {
-          location,
-          preferredLocations,
-          routes,
-          transitRoutes,
-          placesLocation: searchContextState.placesLocation,
-          transportationParams: searchContextState.transportationParams,
+          searchResponse,
+          integrationId: searchContextState.realEstateListing?.integrationId,
+          location: searchContextState.location!,
           localityParams: getUncombinedOsmEntityTypes(
             searchContextState.localityParams
           ),
-          searchResponse: searchResponse,
+          placesLocation: searchContextState.placesLocation,
           realEstateListings: [],
-          integrationId: searchContextState.realEstateListing?.integrationId,
+          transportationParams: searchContextState.transportationParams,
         }
       )
     ).data;
