@@ -26,9 +26,9 @@ import ApiOpenAiLocDescQueryDto from './dto/api-open-ai-loc-desc-query.dto';
 import ApiOpenAiLocRealEstDescQueryDto from './dto/api-open-ai-loc-real-est-desc-query.dto';
 import ApiFetchSnapshotsReqDto from './dto/api-fetch-snapshots-req.dto';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
-import ApiSearchResultSnapshotDto from './dto/snapshot/api-search-result-snapshot.dto';
 import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
 import { SnapshotService } from './snapshot.service';
+import ApiCreateSnapshotReqDto from './dto/snapshot/api-create-snapshot-req.dto';
 
 @ApiTags('location')
 @Controller('api/location')
@@ -69,9 +69,9 @@ export class LocationController extends AuthenticatedController {
   @Post('snapshot')
   async createSnapshot(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() snapshot: ApiSearchResultSnapshotDto,
+    @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.createSnapshot(user, snapshot);
+    return this.snapshotService.createSnapshot(user, createSnapshotReqDto);
   }
 
   // TODO think about using class-transformer instead of a mapper

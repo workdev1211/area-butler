@@ -156,7 +156,6 @@ const EmbedContainer: FunctionComponent = () => {
       routes = [],
       transitRoutes = [],
       realEstateListings = [],
-      integrationId,
     } = result.snapshot;
 
     const filteredRealEstateListings = searchConfig.realEstateStatus
@@ -238,7 +237,7 @@ const EmbedContainer: FunctionComponent = () => {
     });
 
     setMapDisplayMode(
-      integrationId
+      result.integrationId
         ? MapDisplayModesEnum.EMBED_INTEGRATION
         : MapDisplayModesEnum.EMBED
     );

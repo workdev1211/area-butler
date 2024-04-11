@@ -15,7 +15,6 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { LocationService } from './location.service';
 import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
 import ApiSearchDto from '../dto/api-search.dto';
-import ApiSearchResultSnapshotDto from './dto/snapshot/api-search-result-snapshot.dto';
 import ApiUpdateSearchResultSnapshotDto from './dto/snapshot/api-update-search-result-snapshot.dto';
 import { InjectUser } from '../user/inject-user.decorator';
 import { InjectIntegrationUserInterceptor } from '../user/interceptor/inject-integration-user.interceptor';
@@ -34,6 +33,7 @@ import {
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { SnapshotService } from './snapshot.service';
+import ApiCreateSnapshotReqDto from './dto/snapshot/api-create-snapshot-req.dto';
 
 // TODO sometimes too much data is sent back to the frontend
 @ApiTags('location', 'integration')
@@ -77,9 +77,12 @@ export class LocationIntController {
   @Post('snapshot')
   createSnapshot(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() snapshot: ApiSearchResultSnapshotDto,
+    @Body() createSnapshotReqDto: ApiCreateSnapshotReqDto,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotService.createSnapshot(integrationUser, snapshot);
+    return this.snapshotService.createSnapshot(
+      integrationUser,
+      createSnapshotReqDto,
+    );
   }
 
   @ApiOperation({

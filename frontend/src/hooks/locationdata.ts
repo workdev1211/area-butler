@@ -7,9 +7,9 @@ import {
 } from "../context/SearchContext";
 import { useHttp } from "./http";
 import {
+  ApiCreateSnapshotReq,
   ApiSearch,
   ApiSearchResponse,
-  ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
@@ -110,18 +110,20 @@ export const useLocationData = () => {
     setBusyModalItems([...busyModalItems]);
 
     return (
-      await post<ApiSearchResultSnapshotResponse, ApiSearchResultSnapshot>(
+      await post<ApiSearchResultSnapshotResponse, ApiCreateSnapshotReq>(
         isIntegration ? "/api/location-int/snapshot" : "/api/location/snapshot",
         {
-          searchResponse,
           integrationId: searchContextState.realEstateListing?.integrationId,
-          location: searchContextState.location!,
-          localityParams: getUncombinedOsmEntityTypes(
-            searchContextState.localityParams
-          ),
-          placesLocation: searchContextState.placesLocation,
-          realEstateListings: [],
-          transportationParams: searchContextState.transportationParams,
+          snapshot: {
+            searchResponse,
+            location: searchContextState.location!,
+            localityParams: getUncombinedOsmEntityTypes(
+              searchContextState.localityParams
+            ),
+            placesLocation: searchContextState.placesLocation,
+            realEstateListings: [],
+            transportationParams: searchContextState.transportationParams,
+          },
         }
       )
     ).data;

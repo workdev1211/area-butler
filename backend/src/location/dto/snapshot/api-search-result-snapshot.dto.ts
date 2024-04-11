@@ -3,7 +3,6 @@ import {
   IsNotEmpty,
   IsObject,
   IsOptional,
-  IsString,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -61,10 +60,6 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @IsArray()
   @ValidateNested({ each: true })
   transportationParams: TransportationParam[];
-
-  @IsOptional()
-  @IsString()
-  integrationId?: string;
 
   @Type(() => ApiPreferredLocationDto)
   @IsOptional()

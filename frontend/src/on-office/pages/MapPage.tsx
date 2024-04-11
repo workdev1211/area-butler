@@ -106,21 +106,21 @@ const MapPage: FunctionComponent = () => {
 
   useEffect(() => {
     if (
-      !snapshotResponse?.snapshot.integrationId ||
-      snapshotResponse?.snapshot.integrationId ===
+      !snapshotResponse?.integrationId ||
+      snapshotResponse?.integrationId ===
         searchContextState.realEstateListing?.integrationId
     ) {
       return;
     }
 
     const getRealEstate = (): Promise<void> =>
-      fetchRealEstateByIntId(snapshotResponse?.snapshot.integrationId!);
+      fetchRealEstateByIntId(snapshotResponse?.integrationId!);
 
     void getRealEstate();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     searchContextState.realEstateListing?.integrationId,
-    snapshotResponse?.snapshot.integrationId,
+    snapshotResponse?.integrationId,
   ]);
 
   useEffect(() => {

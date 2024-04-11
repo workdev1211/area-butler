@@ -1,13 +1,20 @@
-import { IsNotEmpty, IsString, IsEnum } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsString,
+  IsOptional,
+  IsInt,
+  IsPositive,
+  IsISO8601,
+  IsBoolean,
+} from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import {
-  IApiRealEstateIntegrationParams,
-  IntegrationTypesEnum,
-} from '@area-butler-types/integration';
+import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
+import ApiIntegrationParamsDto from './api-integration-params.dto';
 
 @Exclude()
 class ApiRealEstateIntegrationParamsDto
+  extends ApiIntegrationParamsDto
   implements IApiRealEstateIntegrationParams
 {
   @Expose()
@@ -16,14 +23,25 @@ class ApiRealEstateIntegrationParamsDto
   integrationId: string;
 
   @Expose()
-  @IsNotEmpty()
-  @IsString()
-  integrationUserId: string;
+  @IsOptional()
+  @IsInt()
+  @IsPositive()
+  openAiRequestQuantity?: number;
 
   @Expose()
-  @IsNotEmpty()
-  @IsEnum(IntegrationTypesEnum)
-  integrationType: IntegrationTypesEnum;
+  @IsOptional()
+  @IsISO8601()
+  iframeEndsAt?: Date;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isOnePageExportActive?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isStatsFullExportActive?: boolean;
 }
 
 export default ApiRealEstateIntegrationParamsDto;

@@ -85,9 +85,6 @@ export const mapSnapshotToEmbeddableMap = (
     isEmbedded,
   );
 
-  processedSnapshot.integrationId =
-    searchResultSnapshot.integrationParams?.integrationId;
-
   return {
     isTrial,
     userPoiIcons,
@@ -103,6 +100,7 @@ export const mapSnapshotToEmbeddableMap = (
     endsAt: searchResultSnapshot.endsAt,
     iframeEndsAt: searchResultSnapshot.iframeEndsAt,
     updatedAt: searchResultSnapshot.updatedAt,
+    integrationId: searchResultSnapshot.integrationParams?.integrationId,
   };
 };
 

@@ -71,6 +71,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const { fetchLocationIndexData } = useLocationIndexData();
 
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
+  const [integrationId, setIntegrationId] = useState<string>();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -222,6 +223,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
       });
 
       setSnapshot(snapshotResponse.snapshot);
+      setIntegrationId(snapshotResponse.integrationId);
     };
 
     void fetchSnapshotData();
@@ -244,15 +246,14 @@ const SnapshotEditorPage: FunctionComponent = () => {
     }
 
     if (
-      !snapshot.integrationId ||
-      snapshot.integrationId ===
-        searchContextState.realEstateListing?.integrationId
+      !integrationId ||
+      integrationId === searchContextState.realEstateListing?.integrationId
     ) {
       return;
     }
 
     const getRealEstate = (): Promise<void> =>
-      fetchRealEstateByIntId(snapshot.integrationId!);
+      fetchRealEstateByIntId(integrationId!);
 
     void getRealEstate();
     // eslint-disable-next-line react-hooks/exhaustive-deps

@@ -11,6 +11,7 @@ import {
   SearchResultSnapshotDocument,
 } from './schema/search-result-snapshot.schema';
 import {
+  ApiCreateSnapshotReq,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
@@ -49,7 +50,7 @@ export class SnapshotService {
 
   async createSnapshot(
     user: UserDocument | TIntegrationUserDocument,
-    snapshot: ApiSearchResultSnapshot,
+    { integrationId, snapshot }: ApiCreateSnapshotReq,
     config?: ApiSearchResultSnapshotConfig,
   ): Promise<ApiSearchResultSnapshotResponse> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -128,9 +129,9 @@ export class SnapshotService {
 
     if (isIntegrationUser) {
       snapshotDoc.integrationParams = {
+        integrationId,
         integrationUserId: user.integrationUserId,
         integrationType: user.integrationType,
-        integrationId: snapshot.integrationId,
       };
     }
 

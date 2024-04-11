@@ -43,13 +43,11 @@ const EmbeddableMapsTable: FunctionComponent<IEmbeddableMapsTableProps> = ({
   let otherSnapshots: ApiSearchResultSnapshotResponse[] = [];
 
   if (isIntegrationUser) {
-    embeddableMaps.forEach((snapshot) => {
-      if (
-        snapshot.snapshot.integrationId === realEstateListing?.integrationId
-      ) {
-        curEstSnapshots.push(snapshot);
+    embeddableMaps.forEach((snapshotRes) => {
+      if (snapshotRes.integrationId === realEstateListing?.integrationId) {
+        curEstSnapshots.push(snapshotRes);
       } else {
-        otherSnapshots.push(snapshot);
+        otherSnapshots.push(snapshotRes);
       }
     });
   } else {

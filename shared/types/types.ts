@@ -308,12 +308,15 @@ export interface ApiSearchResultSnapshot {
   searchResponse: ApiSearchResponse; // POIs
   transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
 
-  integrationId?: string; // probably a hack
   preferredLocations?: ApiPreferredLocation[]; // important places
   realEstateListing?: ApiRealEstateListing; // if an address is a certain real estate
   routes?: EntityRoute[]; // routes to important places by foot, bicycle or car
-  token?: string; // embedded token - probably a hack
   transitRoutes?: EntityTransitRoute[]; // routes to important places by city transport
+}
+
+export interface ApiCreateSnapshotReq {
+  snapshot: ApiSearchResultSnapshot;
+  integrationId?: string;
 }
 
 export interface IApiCreateRouteSnapshot {
@@ -402,6 +405,7 @@ export interface ApiSearchResultSnapshotResponse {
   updatedAt?: Date;
   isTrial?: boolean;
   userPoiIcons?: IApiUserPoiIcons;
+  integrationId?: string;
 }
 
 export interface IApiPlacesLocation {

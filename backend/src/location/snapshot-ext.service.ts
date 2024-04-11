@@ -84,7 +84,6 @@ export class SnapshotExtService {
       placesLocation,
       realEstateListing,
       searchResponse,
-      integrationId: realEstateListing?.integrationId,
       location: searchData.coordinates,
       realEstateListings: [],
       transportationParams: searchData.meansOfTransportation,
@@ -101,7 +100,11 @@ export class SnapshotExtService {
       snapshotConfig = config;
     }
 
-    return this.snapshotService.createSnapshot(user, snapshot, snapshotConfig);
+    return this.snapshotService.createSnapshot(
+      user,
+      { integrationId: realEstateListing?.integrationId, snapshot },
+      snapshotConfig,
+    );
   }
 
   async createSnapshot({
@@ -217,6 +220,10 @@ export class SnapshotExtService {
       });
     }
 
-    return this.snapshotService.createSnapshot(user, snapshot, config);
+    return this.snapshotService.createSnapshot(
+      user,
+      { integrationId: realEstateListing?.integrationId, snapshot },
+      config,
+    );
   }
 }
