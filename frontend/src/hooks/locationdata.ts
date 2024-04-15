@@ -121,7 +121,6 @@ export const useLocationData = () => {
               searchContextState.localityParams
             ),
             placesLocation: searchContextState.placesLocation,
-            realEstateListings: [],
             transportationParams: searchContextState.transportationParams,
           },
         }

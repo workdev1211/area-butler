@@ -34,7 +34,7 @@ const OpenAiRealEstDescFormListener: FunctionComponent<
   useEffect(() => {
     onValuesChange(values);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [values.realEstateListingId, values.realEstateType]);
+  }, [values.realEstateId, values.realEstateType]);
 
   return null;
 };
@@ -50,7 +50,7 @@ interface IOpenAiRealEstDescFormProps {
 const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   formId,
   initialValues = {
-    realEstateListingId: "",
+    realEstateId: "",
     realEstateType: defaultRealEstType,
   },
   onValuesChange,
@@ -82,12 +82,12 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationType]);
 
-  const getInitRealEstListId = (): string => {
+  const getInitRealEstateId = (): string => {
     if (
       initialValues &&
-      listings.some(({ id }) => id === initialValues.realEstateListingId)
+      listings.some(({ id }) => id === initialValues.realEstateId)
     ) {
-      return initialValues.realEstateListingId;
+      return initialValues.realEstateId;
     }
 
     if (listings.length === 1) {
@@ -99,7 +99,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
   const resultingInitialValues: IApiOpenAiRealEstDescQuery = {
     ...initialValues,
-    realEstateListingId: getInitRealEstListId(),
+    realEstateId: getInitRealEstateId(),
   };
 
   const validationSchema = Yup.object({
@@ -128,7 +128,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
               name="realEstateListingId"
               disabled={listings.length < 2}
               defaultValue={
-                resultingInitialValues.realEstateListingId ||
+                resultingInitialValues.realEstateId ||
                 placeholderSelectOptionKey
               }
             >

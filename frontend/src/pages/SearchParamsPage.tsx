@@ -417,7 +417,7 @@ const SearchParamsPage: FunctionComponent = () => {
     onFinish: (snapshotResponse: ApiSearchResultSnapshotResponse) => void,
     onFinally?: () => void
   ): Promise<void> => {
-    let createdSnapshotResponse;
+    let snapshotRes;
     let isFinishedAnalysis = false;
 
     try {
@@ -455,7 +455,7 @@ const SearchParamsPage: FunctionComponent = () => {
         payload: [...activeMeans],
       });
 
-      createdSnapshotResponse = await createSnapshot({
+      snapshotRes = await createSnapshot({
         setBusyModalItems,
         searchResponse,
         busyModalItems: items,
@@ -468,18 +468,18 @@ const SearchParamsPage: FunctionComponent = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: createdSnapshotResponse.config,
+        payload: snapshotRes.config,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-        payload: createdSnapshotResponse.snapshot.transportationParams,
+        payload: snapshotRes.snapshot.transportationParams,
       });
 
-      if (createdSnapshotResponse.snapshot.realEstateListing) {
+      if (snapshotRes.realEstateListing) {
         searchContextDispatch({
           type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-          payload: createdSnapshotResponse.snapshot.realEstateListing,
+          payload: snapshotRes.realEstateListing,
         });
       }
 
@@ -504,8 +504,8 @@ const SearchParamsPage: FunctionComponent = () => {
       setBusyModalItems([]);
     }
 
-    if (isFinishedAnalysis && createdSnapshotResponse) {
-      onFinish(createdSnapshotResponse);
+    if (isFinishedAnalysis && snapshotRes) {
+      onFinish(snapshotRes);
     }
   };
 

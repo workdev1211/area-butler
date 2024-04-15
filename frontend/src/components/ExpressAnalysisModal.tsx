@@ -108,7 +108,7 @@ const ExpressAnalysisModal: FunctionComponent<ExpressAnalysisModalProps> = ({
           closeModal={() => {
             setIsShownAiDescriptionModal(false);
           }}
-          searchResultSnapshotId={snapshotResponse.id}
+          snapshotId={snapshotResponse.id}
         />
       )}
 

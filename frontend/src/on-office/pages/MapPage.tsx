@@ -39,15 +39,19 @@ import { useCensusData } from "../../hooks/censusdata";
 import { useFederalElectionData } from "../../hooks/federalelectiondata";
 import { useParticlePollutionData } from "../../hooks/particlepollutiondata";
 import { useLocationIndexData } from "../../hooks/locationindexdata";
-import { useRealEstateData } from "../../hooks/realestatedata";
-import { realEstAllTextStatus } from "../../../../shared/constants/real-estate";
 import { LoadingMessage } from "../../components/Loading";
+import { RealEstateContext } from "../../context/RealEstateContext";
+import { filterRealEstates } from "../../shared/real-estate.functions";
+import { useRealEstateData } from "../../hooks/realestatedata";
 
 const MapPage: FunctionComponent = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
+  const {
+    realEstateState: { listings },
+  } = useContext(RealEstateContext);
 
   const { state } = useLocation<IMapPageHistoryState>();
   const { snapshotId } = useParams<SnapshotEditorRouterProps>();
@@ -58,9 +62,9 @@ const MapPage: FunctionComponent = () => {
   const { fetchParticlePollutionData } = useParticlePollutionData();
 
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
-  const { fetchRealEstateByIntId } = useRealEstateData();
+  const { fetchRealEstates } = useRealEstateData();
 
-  const [snapshotResponse, setSnapshotResponse] =
+  const [snapshotRes, setSnapshotRes] =
     useState<ApiSearchResultSnapshotResponse>();
   const [mapboxAccessToken, setMapboxAccessToken] = useState("");
   const [processedRealEstates, setProcessedRealEstates] = useState<
@@ -83,9 +87,13 @@ const MapPage: FunctionComponent = () => {
       return;
     }
 
-    const getSnapshot = async () => {
-      const snapshotRespData = await fetchSnapshot(snapshotId);
-      const config = snapshotRespData.config;
+    const fetchSnapshotData = async () => {
+      const snapshotRes = await fetchSnapshot(snapshotId);
+      const config = snapshotRes.config;
+
+      if (!listings) {
+        await fetchRealEstates();
+      }
 
       if (config && !("showAddress" in config)) {
         config["showAddress"] = true;
@@ -95,36 +103,17 @@ const MapPage: FunctionComponent = () => {
         config["showStreetViewLink"] = true;
       }
 
-      setSnapshotResponse(snapshotRespData);
-      setMapboxAccessToken(snapshotRespData.mapboxAccessToken);
+      setSnapshotRes(snapshotRes);
+      setMapboxAccessToken(snapshotRes.mapboxAccessToken);
     };
 
-    void getSnapshot();
+    void fetchSnapshotData();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
 
   useEffect(() => {
-    if (
-      !snapshotResponse?.integrationId ||
-      snapshotResponse?.integrationId ===
-        searchContextState.realEstateListing?.integrationId
-    ) {
-      return;
-    }
-
-    const getRealEstate = (): Promise<void> =>
-      fetchRealEstateByIntId(snapshotResponse?.integrationId!);
-
-    void getRealEstate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [
-    searchContextState.realEstateListing?.integrationId,
-    snapshotResponse?.integrationId,
-  ]);
-
-  useEffect(() => {
-    if (!snapshotResponse || !snapshotResponse.config) {
+    if (!snapshotRes || !snapshotRes.config) {
       return;
     }
 
@@ -138,28 +127,11 @@ const MapPage: FunctionComponent = () => {
         preferredLocations = [],
         routes = [],
         transitRoutes = [],
-        realEstateListings = [],
       },
       config,
-    } = snapshotResponse;
+    } = snapshotRes;
 
-    const filteredRealEstates =
-      config.realEstateStatus || config.realEstateStatus2
-        ? realEstateListings.filter(({ name, status, status2 }) => {
-            const filter1 = config.realEstateStatus
-              ? config.realEstateStatus === realEstAllTextStatus ||
-                status === config.realEstateStatus
-              : true;
-
-            const filter2 = config.realEstateStatus2
-              ? config.realEstateStatus2 === realEstAllTextStatus ||
-                status2 === config.realEstateStatus2
-              : true;
-
-            return filter1 && filter2;
-          })
-        : realEstateListings;
-
+    const filteredRealEstates = filterRealEstates(config, listings);
     setProcessedRealEstates(filteredRealEstates);
 
     const enhancedConfig = {
@@ -222,12 +194,17 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: snapshotResponse.token,
+      payload: snapshotRes.token,
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SNAPSHOT_ID,
       payload: snapshotId,
+    });
+
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+      payload: snapshotRes.realEstateListing,
     });
 
     searchContextDispatch({
@@ -253,45 +230,26 @@ const MapPage: FunctionComponent = () => {
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshotId, snapshotResponse]);
+  }, [snapshotId, snapshotRes, listings]);
 
   // react to changes
   useEffect(() => {
-    if (!snapshotResponse) {
+    if (!snapshotRes) {
       return;
     }
 
-    const confRealEstStatus =
-      searchContextState.responseConfig?.realEstateStatus;
-    const confRealEstStatus2 =
-      searchContextState.responseConfig?.realEstateStatus2;
-
-    const filteredRealEstates =
-      confRealEstStatus || confRealEstStatus2
-        ? snapshotResponse.snapshot.realEstateListings.filter(
-            ({ name, status, status2 }) => {
-              const filter1 = confRealEstStatus
-                ? confRealEstStatus === realEstAllTextStatus ||
-                  status === confRealEstStatus
-                : true;
-
-              const filter2 = confRealEstStatus2
-                ? confRealEstStatus2 === realEstAllTextStatus ||
-                  status2 === confRealEstStatus2
-                : true;
-
-              return filter1 && filter2;
-            }
-          )
-        : snapshotResponse.snapshot.realEstateListings;
+    const filteredRealEstates = filterRealEstates(
+      searchContextState.responseConfig,
+      listings
+    );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
-        searchResponse: snapshotResponse.snapshot.searchResponse,
+        searchResponse: snapshotRes.snapshot.searchResponse,
         config: searchContextState.responseConfig,
         listings: filteredRealEstates,
-        locations: snapshotResponse?.snapshot.preferredLocations,
+        locations: snapshotRes.snapshot.preferredLocations,
       }),
     });
 
@@ -301,47 +259,43 @@ const MapPage: FunctionComponent = () => {
     searchContextState.responseConfig?.realEstateStatus,
     searchContextState.responseConfig?.realEstateStatus2,
     searchContextState.responseConfig?.poiFilter,
-    snapshotResponse,
+    snapshotRes,
     processedRealEstates,
   ]);
 
   useEffect(() => {
-    if (!snapshotResponse) {
+    if (!snapshotRes) {
       return;
     }
 
     const fetchAreaStats = async () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_CENSUS_DATA,
-        payload: await fetchCensusData(snapshotResponse.snapshot.location),
+        payload: await fetchCensusData(snapshotRes.snapshot.location),
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
-        payload: await fetchFederalElectionData(
-          snapshotResponse.snapshot.location
-        ),
+        payload: await fetchFederalElectionData(snapshotRes.snapshot.location),
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
         payload: await fetchParticlePollutionData(
-          snapshotResponse.snapshot.location
+          snapshotRes.snapshot.location
         ),
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCATION_INDEX_DATA,
-        payload: await fetchLocationIndexData(
-          snapshotResponse.snapshot.location
-        ),
+        payload: await fetchLocationIndexData(snapshotRes.snapshot.location),
       });
     };
 
     void fetchAreaStats();
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshotResponse]);
+  }, [snapshotRes]);
 
   useEffect(() => {
     if (
@@ -355,12 +309,12 @@ const MapPage: FunctionComponent = () => {
   }, [mapRef.current]);
 
   const onPoiAdd = (poi: ApiOsmLocation): void => {
-    if (!snapshotResponse) {
+    if (!snapshotRes) {
       return;
     }
 
     const copiedSearchResponse: ApiSearchResponse = JSON.parse(
-      JSON.stringify(snapshotResponse.snapshot.searchResponse)
+      JSON.stringify(snapshotRes.snapshot.searchResponse)
     );
 
     Object.values(MeansOfTransportation).forEach((transportParam) => {

@@ -8,12 +8,12 @@ import OpenAiLocationFormHandler from "../map-snapshots/OpenAiLocationFormHandle
 interface IOpenAiLocationDescriptionModalProps {
   isShownModal: boolean;
   closeModal: () => void;
-  searchResultSnapshotId: string;
+  snapshotId: string;
 }
 
 const OpenAiLocationDescriptionModal: FunctionComponent<
   IOpenAiLocationDescriptionModalProps
-> = ({ isShownModal, closeModal, searchResultSnapshotId }) => {
+> = ({ isShownModal, closeModal, snapshotId }) => {
   const openAiLocationModalConfig: ModalConfig = {
     modalTitle: (
       <>
@@ -34,7 +34,7 @@ const OpenAiLocationDescriptionModal: FunctionComponent<
   return (
     <FormModal modalConfig={openAiLocationModalConfig}>
       <OpenAiLocationFormHandler
-        searchResultSnapshotId={searchResultSnapshotId}
+        snapshotId={snapshotId}
         closeModal={() => {
           // if an error is thrown on the submit step
           closeModal();

@@ -2,6 +2,8 @@ import { FunctionComponent, useReducer, Dispatch, createContext } from "react";
 
 import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 
+// TODO ADD A FLAG WHETHER OR NOT REAL ESTATES HAVE BEEN RETRIEVED
+
 export interface RealEstateState {
   listings: ApiRealEstateListing[];
 }

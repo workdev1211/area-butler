@@ -89,7 +89,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           formRef.current?.handleSubmit();
 
           query = {
-            searchResultSnapshotId: searchResultSnapshotId!,
+            snapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
           };
@@ -113,7 +113,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           realEstDescFormRef.current?.handleSubmit();
 
           query = {
-            searchResultSnapshotId: searchResultSnapshotId!,
+            snapshotId: searchResultSnapshotId!,
             ...generalFormRef.current!.values,
             ...locDescFormRef.current!.values,
             ...realEstDescFormRef.current!.values,
@@ -238,8 +238,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           onValuesChange={(values) => {
             onModuleStatusChange(
               !!queryType &&
-                !!values.realEstateListingId &&
-                values.realEstateListingId !== placeholderSelectOptionKey
+                !!values.realEstateId &&
+                values.realEstateId !== placeholderSelectOptionKey
             );
 
             cachingDispatch({
@@ -271,8 +271,8 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             onValuesChange={(values) => {
               onModuleStatusChange(
                 !!queryType &&
-                  !!values.realEstateListingId &&
-                  values.realEstateListingId !== placeholderSelectOptionKey
+                  !!values.realEstateId &&
+                  values.realEstateId !== placeholderSelectOptionKey
               );
 
               cachingDispatch({

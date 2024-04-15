@@ -41,9 +41,10 @@ import { defaultMapZoom } from "../shared/shared.constants";
 import { useLocationIndexData } from "../hooks/locationindexdata";
 import { IMapPageHistoryState } from "../shared/shared.types";
 import { useLocationData } from "../hooks/locationdata";
-import { realEstAllTextStatus } from "../../../shared/constants/real-estate";
 import { useTools } from "../hooks/tools";
 import { LoadingMessage } from "../components/Loading";
+import { RealEstateContext } from "../context/RealEstateContext";
+import { filterRealEstates } from "../shared/real-estate.functions";
 import { useRealEstateData } from "../hooks/realestatedata";
 
 export interface SnapshotEditorRouterProps {
@@ -56,6 +57,9 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const { mapBoxAccessToken: mapboxAccessToken } = useContext(ConfigContext);
   const { searchContextDispatch, searchContextState } =
     useContext(SearchContext);
+  const {
+    realEstateState: { listings },
+  } = useContext(RealEstateContext);
 
   const history = useHistory<IMapPageHistoryState>();
   const { state } = useLocation<IMapPageHistoryState>();
@@ -63,7 +67,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
   const { getActualUser } = useTools();
   const { fetchSnapshot, saveSnapshotConfig } = useLocationData();
-  const { fetchRealEstateByIntId } = useRealEstateData();
+  const { fetchRealEstates } = useRealEstateData();
 
   const { fetchCensusData } = useCensusData();
   const { fetchFederalElectionData } = useFederalElectionData();
@@ -71,7 +75,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
   const { fetchLocationIndexData } = useLocationIndexData();
 
   const [snapshot, setSnapshot] = useState<ApiSearchResultSnapshot>();
-  const [integrationId, setIntegrationId] = useState<string>();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -109,10 +112,13 @@ const SnapshotEditorPage: FunctionComponent = () => {
         payload: undefined,
       });
 
-      const snapshotResponse = await fetchSnapshot(snapshotId);
-
-      const snapshotConfig = (snapshotResponse.config ||
+      const snapshotRes = await fetchSnapshot(snapshotId);
+      const snapshotConfig = (snapshotRes.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
+
+      if (!listings) {
+        await fetchRealEstates();
+      }
 
       snapshotConfig.primaryColor =
         snapshotConfig.primaryColor ??
@@ -130,7 +136,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
         defaultActiveMeans: snapshotConfig.defaultActiveMeans?.length
           ? snapshotConfig.defaultActiveMeans
           : deriveAvailableMeansFromResponse(
-              snapshotResponse.snapshot?.searchResponse
+              snapshotRes.snapshot?.searchResponse
             ),
       };
 
@@ -146,29 +152,12 @@ const SnapshotEditorPage: FunctionComponent = () => {
         });
       }
 
-      if (!snapshotResponse.snapshot || !snapshotConfig) {
+      if (!snapshotRes.snapshot || !snapshotConfig) {
         return;
       }
 
-      const { searchResponse, realEstateListings, preferredLocations } =
-        snapshotResponse.snapshot;
-
-      const filteredRealEstates =
-        snapshotConfig.realEstateStatus || snapshotConfig.realEstateStatus2
-          ? realEstateListings.filter(({ name, status, status2 }) => {
-              const filter1 = snapshotConfig.realEstateStatus
-                ? snapshotConfig.realEstateStatus === realEstAllTextStatus ||
-                  status === snapshotConfig.realEstateStatus
-                : true;
-
-              const filter2 = snapshotConfig.realEstateStatus2
-                ? snapshotConfig.realEstateStatus2 === realEstAllTextStatus ||
-                  status2 === snapshotConfig.realEstateStatus2
-                : true;
-
-              return filter1 && filter2;
-            })
-          : realEstateListings;
+      const { searchResponse, preferredLocations } = snapshotRes.snapshot;
+      const filteredRealEstates = filterRealEstates(snapshotConfig, listings);
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
@@ -182,22 +171,22 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-        payload: snapshotResponse.token,
+        payload: snapshotRes.token,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCATION,
-        payload: snapshotResponse.snapshot.location,
+        payload: snapshotRes.snapshot.location,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_PLACES_LOCATION,
-        payload: snapshotResponse.snapshot.placesLocation,
+        payload: snapshotRes.snapshot.placesLocation,
       });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_TRANSPORTATION_PARAMS,
-        payload: snapshotResponse.snapshot.transportationParams,
+        payload: snapshotRes.snapshot.transportationParams,
       });
 
       searchContextDispatch({
@@ -207,7 +196,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
-        payload: snapshotResponse.snapshot.localityParams,
+        payload: snapshotRes.snapshot.localityParams,
       });
 
       searchContextDispatch({
@@ -222,42 +211,17 @@ const SnapshotEditorPage: FunctionComponent = () => {
         }),
       });
 
-      setSnapshot(snapshotResponse.snapshot);
-      setIntegrationId(snapshotResponse.integrationId);
+      searchContextDispatch({
+        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
+        payload: snapshotRes.realEstateListing,
+      });
+
+      setSnapshot(snapshotRes.snapshot);
     };
 
     void fetchSnapshotData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [snapshotId]);
-
-  // setting a real estate listing
-  useEffect(() => {
-    if (!snapshot) {
-      return;
-    }
-
-    if (!isIntegrationUser) {
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-        payload: snapshot.realEstateListing || undefined,
-      });
-
-      return;
-    }
-
-    if (
-      !integrationId ||
-      integrationId === searchContextState.realEstateListing?.integrationId
-    ) {
-      return;
-    }
-
-    const getRealEstate = (): Promise<void> =>
-      fetchRealEstateByIntId(integrationId!);
-
-    void getRealEstate();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snapshot]);
 
   // fetching location statistics
   useEffect(() => {
@@ -341,27 +305,10 @@ const SnapshotEditorPage: FunctionComponent = () => {
       return;
     }
 
-    const confRealEstStatus =
-      searchContextState.responseConfig?.realEstateStatus;
-    const confRealEstStatus2 =
-      searchContextState.responseConfig?.realEstateStatus2;
-
-    const filteredRealEstates =
-      confRealEstStatus || confRealEstStatus2
-        ? snapshot.realEstateListings.filter(({ name, status, status2 }) => {
-            const filter1 = confRealEstStatus
-              ? confRealEstStatus === realEstAllTextStatus ||
-                status === confRealEstStatus
-              : true;
-
-            const filter2 = confRealEstStatus2
-              ? confRealEstStatus2 === realEstAllTextStatus ||
-                status2 === confRealEstStatus2
-              : true;
-
-            return filter1 && filter2;
-          })
-        : snapshot.realEstateListings;
+    const filteredRealEstates = filterRealEstates(
+      searchContextState.responseConfig,
+      listings
+    );
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
@@ -379,6 +326,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
     searchContextState.responseConfig?.realEstateStatus,
     searchContextState.responseConfig?.realEstateStatus2,
     searchContextState.responseConfig?.poiFilter,
+    listings,
   ]);
 
   const onPoiAdd = (poi: ApiOsmLocation): void => {

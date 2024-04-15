@@ -232,7 +232,7 @@ const OnePageExportModal: FunctionComponent<IOnePageExportModalProps> = ({
     const openAiLocDesc = await fetchOpenAiResponse(
       OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
       {
-        searchResultSnapshotId: snapshotId,
+        snapshotId,
         ...generalFormRef.current!.values,
         ...locDescFormRef.current!.values,
         isForOnePage: true,

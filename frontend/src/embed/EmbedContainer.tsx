@@ -1,19 +1,10 @@
-import {
-  FunctionComponent,
-  MouseEvent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, MouseEvent, useContext, useEffect, useRef, useState } from "react";
 import axios from "axios";
 
 import "./EmbedContainer.scss";
 
 import {
-  ApiSearchResultSnapshotConfig,
-  ApiSearchResultSnapshotResponse,
-  IApiUserPoiIcons,
+  IApiFetchedEmbeddedData,
   MapDisplayModesEnum,
 } from "../../../shared/types/types";
 import {
@@ -33,7 +24,6 @@ import {
 } from "../../../shared/messages/error.message";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../shared/shared.constants";
-import { realEstateAllStatus } from "../../../shared/constants/real-estate";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -46,19 +36,15 @@ const calculateViewHeight = () => {
 
 calculateViewHeight();
 
-const EmbedContainer: FunctionComponent = () => {
+const EmbedContainer: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
 
-  const [result, setResult] = useState<ApiSearchResultSnapshotResponse>();
+  const [embeddedData, setEmbeddedData] = useState<IApiFetchedEmbeddedData>();
   const [isAddressExpired, setIsAddressExpired] = useState(false);
-  const [mapboxAccessToken, setMapboxAccessToken] = useState("");
-  const [searchConfig, setSearchConfig] =
-    useState<ApiSearchResultSnapshotConfig>();
-  const [userPoiIcons, setUserPoiIcons] = useState<IApiUserPoiIcons>();
   const [mapDisplayMode, setMapDisplayMode] = useState<MapDisplayModesEnum>();
 
   const getQueryVariable = (variable: string): string | undefined => {
@@ -77,7 +63,7 @@ const EmbedContainer: FunctionComponent = () => {
   };
 
   useEffect(() => {
-    const handleEscape = (e: KeyboardEvent) => {
+    const handleEscape = (e: KeyboardEvent): void => {
       if (e.key !== "Escape") {
         return;
       }
@@ -99,19 +85,19 @@ const EmbedContainer: FunctionComponent = () => {
 
   // fetch saved response
   useEffect(() => {
-    const fetchData = async () => {
+    const fetchData = async (): Promise<void> => {
       const baseUrl = process.env.REACT_APP_BASE_URL || "";
 
       try {
-        const response = (
-          await axios.get<ApiSearchResultSnapshotResponse>(
+        const fetchedEmbeddedData = (
+          await axios.get<IApiFetchedEmbeddedData>(
             `${baseUrl}/api/location/embedded/iframe/${getQueryVariable(
               "token"
             )}`
           )
         ).data;
 
-        const config = response.config;
+        const config = fetchedEmbeddedData.snapshotRes.config;
 
         if (config && !("showAddress" in config)) {
           config["showAddress"] = true;
@@ -121,10 +107,7 @@ const EmbedContainer: FunctionComponent = () => {
           config["showStreetViewLink"] = true;
         }
 
-        setMapboxAccessToken(response.mapboxAccessToken);
-        setResult(response);
-        setSearchConfig(config);
-        setUserPoiIcons(response.userPoiIcons);
+        setEmbeddedData(fetchedEmbeddedData);
       } catch (e: any) {
         const { statusCode, message } = e.response.data;
 
@@ -142,7 +125,16 @@ const EmbedContainer: FunctionComponent = () => {
   }, []);
 
   useEffect(() => {
-    if (!result || !searchConfig) {
+    if (!embeddedData) {
+      return;
+    }
+
+    const {
+      realEstates,
+      snapshotRes: { config, snapshot },
+    } = embeddedData;
+
+    if (!config) {
       return;
     }
 
@@ -155,16 +147,7 @@ const EmbedContainer: FunctionComponent = () => {
       preferredLocations = [],
       routes = [],
       transitRoutes = [],
-      realEstateListings = [],
-    } = result.snapshot;
-
-    const filteredRealEstateListings = searchConfig.realEstateStatus
-      ? realEstateListings.filter(
-          ({ status }) =>
-            searchConfig.realEstateStatus === realEstateAllStatus ||
-            status === searchConfig.realEstateStatus
-        )
-      : realEstateListings;
+    } = snapshot;
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
@@ -193,7 +176,7 @@ const EmbedContainer: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_MAP_ZOOM_LEVEL,
-      payload: searchConfig.zoomLevel || defaultMapZoom,
+      payload: config.zoomLevel || defaultMapZoom,
     });
 
     searchContextDispatch({
@@ -201,10 +184,12 @@ const EmbedContainer: FunctionComponent = () => {
       payload: preferredLocations,
     });
 
-    realEstateDispatch({
-      type: RealEstateActionTypes.SET_REAL_ESTATES,
-      payload: realEstateListings,
-    });
+    if (realEstates?.length) {
+      realEstateDispatch({
+        type: RealEstateActionTypes.SET_REAL_ESTATES,
+        payload: realEstates,
+      });
+    }
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_ROUTES,
@@ -218,34 +203,34 @@ const EmbedContainer: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-      payload: { ...searchConfig },
+      payload: { ...config },
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_TOKEN,
-      payload: result.token,
+      payload: embeddedData.snapshotRes.token,
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
+        config,
         searchResponse,
-        config: searchConfig,
-        listings: filteredRealEstateListings,
+        listings: realEstates,
         locations: preferredLocations,
       }),
     });
 
     setMapDisplayMode(
-      result.integrationId
+      embeddedData.snapshotRes.integrationId
         ? MapDisplayModesEnum.EMBED_INTEGRATION
         : MapDisplayModesEnum.EMBED
     );
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [result, searchConfig]);
+  }, [embeddedData]);
 
-  const handleClick = () => {
+  const handleClick = (): void => {
     if (
       mapRef.current &&
       !mapRef.current?.handleScrollWheelZoom.isScrollWheelZoomEnabled()
@@ -258,7 +243,7 @@ const EmbedContainer: FunctionComponent = () => {
     }
   };
 
-  const handleContextMenu = (e: MouseEvent<HTMLDivElement>) => {
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>): void => {
     e.preventDefault();
 
     if (
@@ -273,7 +258,7 @@ const EmbedContainer: FunctionComponent = () => {
     }
   };
 
-  if (!searchContextState.searchResponse || !mapDisplayMode) {
+  if (!searchContextState.searchResponse || !mapDisplayMode || !embeddedData) {
     return isAddressExpired ? (
       <div>{`Ihre Adresse ist abgelaufen. Bitte besuchen Sie die ${process.env.REACT_APP_BASE_URL} und verlängern Sie sie.`}</div>
     ) : (
@@ -284,12 +269,12 @@ const EmbedContainer: FunctionComponent = () => {
   return (
     <div onClick={handleClick} onContextMenu={handleContextMenu}>
       <SearchResultContainer
-        mapboxAccessToken={mapboxAccessToken}
+        mapboxAccessToken={embeddedData.snapshotRes.mapboxAccessToken}
         searchResponse={searchContextState.searchResponse}
         searchAddress={searchContextState.placesLocation?.label}
         location={searchContextState.mapCenter ?? searchContextState.location!}
-        isTrial={!!result?.isTrial}
-        userPoiIcons={userPoiIcons}
+        isTrial={!!embeddedData.snapshotRes.isTrial}
+        userPoiIcons={embeddedData.userPoiIcons}
         mapDisplayMode={mapDisplayMode}
         ref={mapRef}
       />

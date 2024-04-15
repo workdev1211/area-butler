@@ -90,8 +90,15 @@ export const useOpenAi = () => {
       }
     }
 
-    if (isIntegration && !openAiQuery.realEstateListingId) {
-      openAiQuery.realEstateListingId = realEstateListing.id;
+    if (
+      isIntegration &&
+      [
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+      ].includes(openAiQueryType) &&
+      !(openAiQuery as IApiOpenAiRealEstDescQuery).realEstateId
+    ) {
+      Object.assign(openAiQuery, { realEstateId: realEstateListing.id });
     }
 
     try {

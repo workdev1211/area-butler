@@ -4,6 +4,7 @@ import { useHttp } from "./http";
 import {
   ApiRealEstateListing,
   IApiRealEstateListingSchema,
+  IApiRealEstateStatuses,
   IApiRealEstStatusByUser,
 } from "../../../shared/types/real-estate";
 import {
@@ -12,17 +13,12 @@ import {
 } from "../context/RealEstateContext";
 import { ConfigContext } from "../context/ConfigContext";
 import {
-  SearchContext,
-  SearchContextActionTypes,
-} from "../context/SearchContext";
-import {
   realEstAllTextStatus,
   realEstateAllStatus,
 } from "../../../shared/constants/real-estate";
 
 export const useRealEstateData = () => {
   const { integrationType } = useContext(ConfigContext);
-  const { searchContextDispatch } = useContext(SearchContext);
   const { realEstateDispatch } = useContext(RealEstateContext);
   const { post, get, put } = useHttp();
 
@@ -40,33 +36,23 @@ export const useRealEstateData = () => {
   };
 
   const fetchRealEstates = async (
-    realEstateStatus: string = realEstateAllStatus
+    statuses?: IApiRealEstateStatuses
   ): Promise<void> => {
     let url = isIntegration
       ? "/api/real-estate-listing-int/listings"
       : "/api/real-estate-listing/listings";
 
-    url += `?status=${realEstateStatus}`;
+    if (statuses) {
+      url += `?status=${statuses.status || realEstateAllStatus}&status2=${
+        statuses.status2 || realEstateAllStatus
+      }`;
+    }
+
     const realEstates = (await get<ApiRealEstateListing[]>(url)).data;
 
     realEstateDispatch({
       type: RealEstateActionTypes.SET_REAL_ESTATES,
       payload: realEstates,
-    });
-  };
-
-  const fetchRealEstateByIntId = async (
-    integrationId: string
-  ): Promise<void> => {
-    const realEstate = (
-      await get<ApiRealEstateListing>(
-        `/api/real-estate-listing-int/listing/${integrationId}`
-      )
-    ).data;
-
-    searchContextDispatch({
-      type: SearchContextActionTypes.SET_REAL_ESTATE_LISTING,
-      payload: realEstate,
     });
   };
 
@@ -99,7 +85,6 @@ export const useRealEstateData = () => {
   return {
     createRealEstate,
     fetchRealEstates,
-    fetchRealEstateByIntId,
     fetchRealEstStatuses,
     updateRealEstate,
   };

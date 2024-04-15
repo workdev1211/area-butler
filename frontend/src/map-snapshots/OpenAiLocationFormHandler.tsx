@@ -10,7 +10,7 @@ import { IApiOpenAiLocDescQuery } from "../../../shared/types/open-ai";
 import copyIcon from "../assets/icons/copy.svg";
 
 export interface IOpenAiLocationFormHandlerProps {
-  searchResultSnapshotId: string;
+  snapshotId: string;
   closeModal: () => void;
   formId?: string;
   beforeSubmit?: () => void;
@@ -20,7 +20,7 @@ export interface IOpenAiLocationFormHandlerProps {
 const OpenAiLocationFormHandler: FunctionComponent<
   IOpenAiLocationFormHandlerProps
 > = ({
-  searchResultSnapshotId,
+  snapshotId,
   closeModal,
   formId,
   beforeSubmit = () => {},
@@ -33,16 +33,16 @@ const OpenAiLocationFormHandler: FunctionComponent<
     meanOfTransportation,
     tonality,
     customText,
-  }: Omit<IApiOpenAiLocDescQuery, "searchResultSnapshotId">): Promise<void> => {
+  }: Omit<IApiOpenAiLocDescQuery, "snapshotId">): Promise<void> => {
     setLocationDescription(
       (
         await post<string, IApiOpenAiLocDescQuery>(
           "/api/location/open-ai-loc-desc",
           {
-            searchResultSnapshotId: searchResultSnapshotId,
-            meanOfTransportation,
-            tonality,
             customText,
+            meanOfTransportation,
+            snapshotId,
+            tonality,
           }
         )
       ).data
@@ -50,8 +50,8 @@ const OpenAiLocationFormHandler: FunctionComponent<
   };
 
   const onSubmit = async (
-    aiDescriptionQuery: Omit<IApiOpenAiLocDescQuery, "searchResultSnapshotId">
-  ) => {
+    aiDescriptionQuery: Omit<IApiOpenAiLocDescQuery, "snapshotId">
+  ): Promise<void> => {
     try {
       beforeSubmit();
       await generateLocationText(aiDescriptionQuery);
