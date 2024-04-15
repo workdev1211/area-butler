@@ -33,6 +33,7 @@ import { DataProvisionModule } from '../data-provision/data-provision.module';
 import { SnapshotService } from '../location/snapshot.service';
 import { PlaceModule } from '../place/place.module';
 import { ClientModule } from '../client/client.module';
+import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 
 @Module({
   imports: [
@@ -49,17 +50,18 @@ import { ClientModule } from '../client/client.module';
   ],
   controllers: [OpenAiController, OpenAiIntController, OpenAiExtController],
   providers: [
-    OpenAiService,
-    RealEstateListingService,
-    RealEstateListingIntService,
-    LocationService,
+    FetchSnapshotService,
     LocationExtService,
-    SnapshotService,
-    OverpassService,
-    OverpassDataService,
-    SnapshotExtService,
-    RoutingService,
     LocationIndexService,
+    LocationService,
+    OpenAiService,
+    OverpassDataService,
+    OverpassService,
+    RealEstateListingIntService,
+    RealEstateListingService,
+    RoutingService,
+    SnapshotExtService,
+    SnapshotService,
     ZensusAtlasService,
   ],
   exports: [OpenAiService],

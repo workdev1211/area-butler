@@ -93,6 +93,10 @@ const RealEstatesTableV2: FunctionComponent<IRealEstatesTableV2Props> = ({
   const startSearchFromRealEstate = async (
     realEstate: ApiRealEstateListing
   ): Promise<void> => {
+    if (!realEstate.address) {
+      return;
+    }
+
     const result = await deriveGeocodeByAddress(user, realEstate.address);
     const { lat, lng } = result;
 

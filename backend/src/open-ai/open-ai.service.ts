@@ -7,6 +7,7 @@ import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios
 import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
+  ApiSearchResultSnapshotResponse,
   MeansOfTransportation,
   OsmName,
 } from '@area-butler-types/types';
@@ -19,10 +20,9 @@ import {
   ApiRealEstateCharacteristics,
   ApiRealEstateCost,
   ApiRealEstateCostType,
-  IApiRealEstateListingSchema,
+  ApiRealEstateListing,
 } from '@area-butler-types/real-estate';
 import { OpenAiTextLengthEnum } from '@area-butler-types/open-ai';
-import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { UserDocument } from '../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -46,19 +46,19 @@ interface IGeneralQueryData {
 }
 
 interface ILocDescQueryData extends IGeneralQueryData {
-  searchResultSnapshot: SearchResultSnapshotDocument;
+  snapshotRes: ApiSearchResultSnapshotResponse;
   meanOfTransportation: MeansOfTransportation;
   isForOnePage?: boolean;
 }
 
 interface IRealEstDescQueryData extends IGeneralQueryData {
-  realEstateListing: Partial<IApiRealEstateListingSchema>;
+  realEstate: Partial<ApiRealEstateListing>;
   realEstateType: string;
 }
 
 interface ILocRealEstDescQueryData
   extends ILocDescQueryData,
-    IRealEstDescQueryData {}
+    Omit<IRealEstDescQueryData, 'realEstate'> {}
 
 const POI_LIMIT_BY_CATEGORY = 3;
 const MODEL_NAME = 'gpt-4';
@@ -82,7 +82,7 @@ export class OpenAiService {
   async getLocDescQuery(
     user: UserDocument | TIntegrationUserDocument,
     {
-      searchResultSnapshot: {
+      snapshotRes: {
         snapshot,
         config: snapshotConfig = { ...defaultSnapshotConfig },
       },
@@ -216,12 +216,12 @@ export class OpenAiService {
   }
 
   getRealEstDescQuery({
-    realEstateListing: { address, costStructure, characteristics },
+    customText,
     realEstateType,
     tonality,
-    customText,
     targetGroupName = defaultTargetGroupName,
     textLength = OpenAiTextLengthEnum.MEDIUM,
+    realEstate: { address, costStructure, characteristics },
   }: IRealEstDescQueryData): string {
     let queryText = 'Sei mein Experte für die Immobilienbeschreibungen.';
 
@@ -258,27 +258,25 @@ export class OpenAiService {
 
   async getLocRealEstDescQuery(
     user: UserDocument | TIntegrationUserDocument,
-    {
-      realEstateListing: { costStructure, characteristics },
-      realEstateType,
-      ...locRealEstDescQueryData
-    }: ILocRealEstDescQueryData,
+    { realEstateType, ...locDescQueryData }: ILocRealEstDescQueryData,
   ): Promise<string> {
+    const {
+      snapshotRes: { realEstateListing },
+    } = locDescQueryData;
+
     let queryText =
       'Sei mein Experte für Immobilien-Exposé-Texte und schreibe einen werblichen Text über die Immobilie und gehe darin auf Fakten des Objekts sowie über die Lage ein.';
 
-    queryText = await this.getLocDescQuery(
-      user,
-      locRealEstDescQueryData,
-      queryText,
-    );
+    queryText = await this.getLocDescQuery(user, locDescQueryData, queryText);
 
-    queryText = this.getRealEstateDescription(
-      queryText,
-      realEstateType,
-      costStructure,
-      characteristics,
-    );
+    if (realEstateListing) {
+      queryText = this.getRealEstateDescription(
+        queryText,
+        realEstateType,
+        realEstateListing.costStructure,
+        realEstateListing.characteristics,
+      );
+    }
 
     return queryText;
   }

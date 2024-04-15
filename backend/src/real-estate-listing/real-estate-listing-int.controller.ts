@@ -42,34 +42,16 @@ export class RealEstateListingIntController {
   @Get('listings')
   async fetchRealEstateListings(
     @Query('status') status: string,
+    @Query('status2') status2: string,
     @InjectUser() integrationUser: TIntegrationUserDocument,
   ): Promise<ApiRealEstateListing[]> {
     return (
       await this.realEstateListingService.fetchRealEstateListings(
         integrationUser,
-        status,
+        { status, status2 },
       )
     ).map((realEstate) =>
       mapRealEstateListingToApiRealEstateListing(integrationUser, realEstate),
-    );
-  }
-
-  @ApiOperation({
-    description: 'Get real estate listing by integration id for current user',
-  })
-  @UseInterceptors(InjectIntegrationUserInterceptor)
-  @Get('listing/:id')
-  async fetchRealEstateListing(
-    @Param('id') integrationId: string,
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-  ): Promise<ApiRealEstateListing> {
-    return mapRealEstateListingToApiRealEstateListing(
-      integrationUser,
-      await this.realEstateListingIntService.findOneOrFailByIntParams({
-        integrationId,
-        integrationUserId: integrationUser.integrationUserId,
-        integrationType: integrationUser.integrationType,
-      }),
     );
   }
 

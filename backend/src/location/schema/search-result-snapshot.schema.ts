@@ -22,7 +22,7 @@ export class SearchResultSnapshot {
   description: string;
 
   @Prop({ type: String })
-  mapboxAccessToken: string;
+  mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
 
   @Prop({ type: Object })
   config: ApiSearchResultSnapshotConfig;

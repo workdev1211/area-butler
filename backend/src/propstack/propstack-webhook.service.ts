@@ -89,7 +89,7 @@ export class PropstackWebhookService {
           ),
     );
 
-    const { id: searchResultSnapshotId, token } =
+    const { id: snapshotId, token } =
       await this.snapshotExtService.createSnapshotByPlace({
         place,
         realEstateListing,
@@ -104,10 +104,10 @@ export class PropstackWebhookService {
 
     const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
       {
-        searchResultSnapshotId,
-        user,
         eventId,
-        realEstateListingId: realEstateListing.id,
+        snapshotId,
+        user,
+        realEstateId: realEstateListing.id,
       },
     );
 

@@ -41,8 +41,6 @@ import {
   IApiPropstackTargetGroupChangedReq,
   PropstackTextFieldTypeEnum,
 } from '@area-butler-types/propstack';
-import { LocationIntService } from '../location/location-int.service';
-import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import {
   propstackExportTypeMapper,
   propstackOpenAiFieldMapper,
@@ -60,10 +58,11 @@ import { defaultTargetGroupName } from '../../../shared/constants/potential-cust
 import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { UserDocument } from '../user/schema/user.schema';
+import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 
 interface IPropstackFetchTextFieldValues {
-  realEstateListingId: string;
-  searchResultSnapshotId: string;
+  realEstateId: string;
+  snapshotId: string;
   user: UserDocument | TIntegrationUserDocument;
   eventId?: string; // only for the webhook events
   targetGroupName?: string;
@@ -75,12 +74,12 @@ export class PropstackService {
   private static readonly logger = new Logger(PropstackService.name);
 
   constructor(
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly propstackApiService: PropstackApiService,
-    private readonly placeService: PlaceService,
-    private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly locationIntService: LocationIntService,
     private readonly locationService: LocationService,
+    private readonly placeService: PlaceService,
+    private readonly propstackApiService: PropstackApiService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly realEstateListingService: RealEstateListingService,
   ) {}
 
@@ -169,16 +168,12 @@ export class PropstackService {
       ),
     );
 
-    const snapshotDoc = await this.locationIntService.fetchLatestSnapByIntId(
-      integrationUser,
-      realEstate.integrationId,
-    );
-
     return {
       realEstate,
-      latestSnapshot: snapshotDoc
-        ? mapSnapshotToEmbeddableMap(integrationUser, snapshotDoc)
-        : undefined,
+      latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
+        integrationUser,
+        realEstate.integrationId,
+      ),
     };
   }
 
@@ -215,8 +210,8 @@ export class PropstackService {
 
     const openAiDescriptions = await this.fetchTextFieldValues({
       targetGroupName,
-      realEstateListingId: realEstate.id,
-      searchResultSnapshotId: latestSnapshot.id,
+      realEstateId: realEstate.id,
+      snapshotId: latestSnapshot.id,
       user: integrationUser,
     });
 
@@ -478,10 +473,10 @@ export class PropstackService {
   }
 
   async fetchTextFieldValues({
-    realEstateListingId,
-    searchResultSnapshotId,
-    user,
     eventId,
+    realEstateId,
+    snapshotId,
+    user,
     targetGroupName = defaultTargetGroupName,
   }: IPropstackFetchTextFieldValues): Promise<
     Partial<Record<PropstackTextFieldTypeEnum, string>>
@@ -496,7 +491,7 @@ export class PropstackService {
     const openAiQueryResults = await Promise.allSettled([
       fetchOpenAiDescription(
         this.locationService.fetchOpenAiLocationDescription(user, {
-          searchResultSnapshotId,
+          snapshotId,
           targetGroupName,
           meanOfTransportation: MeansOfTransportation.WALK,
           tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
@@ -505,7 +500,7 @@ export class PropstackService {
       ),
       fetchOpenAiDescription(
         this.realEstateListingService.fetchOpenAiRealEstateDesc(user, {
-          realEstateListingId,
+          realEstateId,
           targetGroupName,
           realEstateType: defaultRealEstType,
           tonality: OpenAiTonalityEnum.FORMAL_SERIOUS,
@@ -514,8 +509,8 @@ export class PropstackService {
       ),
       fetchOpenAiDescription(
         this.locationService.fetchOpenAiLocRealEstDesc(user, {
-          realEstateListingId,
-          searchResultSnapshotId,
+          realEstateId,
+          snapshotId,
           targetGroupName,
           meanOfTransportation: MeansOfTransportation.WALK,
           realEstateType: defaultRealEstType,

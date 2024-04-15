@@ -1,7 +1,6 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
-import { randomBytes } from 'crypto';
+import { Model, Types } from 'mongoose';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
 
@@ -26,7 +25,6 @@ import {
   ApiOsmLocation,
   ApiSearch,
   ApiSearchResponse,
-  ApiUpdateSearchResultSnapshot,
   ApiUserRequests,
   MeansOfTransportation,
   OsmName,
@@ -46,7 +44,6 @@ import {
   ApiSubscriptionPlanType,
   IApiSubscriptionLimitAmount,
 } from '@area-butler-types/subscription-plan';
-import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LimitIncreaseModelNameEnum } from '@area-butler-types/billing';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import {
@@ -57,35 +54,30 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
-import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
-import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import { TApiUsageStatsReqStatus } from '../shared/types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
-import { TApiMongoSortQuery } from '../shared/types/shared';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 
 @Injectable()
 export class LocationService {
-  private readonly logger = new Logger(LocationService.name);
-
   constructor(
-    private readonly overpassService: OverpassService,
-    private readonly isochroneService: IsochroneService,
     @InjectModel(LocationSearch.name)
     private readonly locationSearchModel: Model<LocationSearchDocument>,
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
-    private readonly userService: UserService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
-    private readonly subscriptionService: SubscriptionService,
-    private readonly overpassDataService: OverpassDataService,
+    private readonly isochroneService: IsochroneService,
     private readonly openAiService: OpenAiService,
+    private readonly overpassDataService: OverpassDataService,
+    private readonly overpassService: OverpassService,
     private readonly realEstateListingService: RealEstateListingService,
-    private readonly realEstateListingIntService: RealEstateListingIntService,
+    private readonly subscriptionService: SubscriptionService,
     private readonly usageStatisticsService: UsageStatisticsService,
+    private readonly userService: UserService,
   ) {}
 
   async searchLocation(
@@ -121,7 +113,7 @@ export class LocationService {
     );
 
     if (!isIntegrationUser) {
-      this.checkLocationExpiration(existingLocation);
+      this.fetchSnapshotService.checkLocationExpiration(existingLocation);
     }
 
     if (!existingLocation && !isIntegrationUser) {
@@ -293,111 +285,6 @@ export class LocationService {
     };
   }
 
-  // TODO refactor snapshot methods
-
-  async duplicateSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
-    snapshotId: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    const snapshot = await this.fetchSnapshotByIdOrFail(user, snapshotId);
-    const snapshotObject = snapshot.toObject();
-    delete snapshotObject._id;
-    snapshotObject.token = randomBytes(60).toString('hex');
-
-    return new this.searchResultSnapshotModel(snapshotObject).save();
-  }
-
-  async fetchEmbeddedMap(token: string): Promise<SearchResultSnapshotDocument> {
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
-      token,
-    });
-
-    if (!snapshotDoc) {
-      // 404 code is used because it's not processed by the custom exception handler
-      // throw new HttpException('Unknown token', 404);
-      return;
-    }
-
-    // to keep in consistency with 'isIntegrationUser' property
-    const isIntegrationSnapshot = !snapshotDoc.userId;
-
-    if (isIntegrationSnapshot) {
-      await this.checkIntSnapshotIframeExp(snapshotDoc);
-    } else {
-      this.checkLocationExpiration(snapshotDoc);
-    }
-
-    snapshotDoc.lastAccess = new Date();
-    snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
-
-    return snapshotDoc.save();
-  }
-
-  async updateSnapshot(
-    user: UserDocument | TIntegrationUserDocument,
-    snapshotId: string,
-    {
-      config,
-      customPois,
-      description,
-      snapshot,
-    }: ApiUpdateSearchResultSnapshot,
-  ): Promise<SearchResultSnapshotDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const snapshotDoc = await this.fetchSnapshotByIdOrFail(user, snapshotId);
-
-    if (!config && !customPois && !description && !snapshot) {
-      return snapshotDoc;
-    }
-
-    if (snapshot) {
-      snapshotDoc.set('snapshot', snapshot);
-    }
-
-    if (config) {
-      snapshotDoc.set('config', config);
-    }
-
-    if (description) {
-      snapshotDoc.description = description;
-    }
-
-    if (customPois) {
-      Object.values(MeansOfTransportation).forEach((transportParam) => {
-        snapshotDoc.snapshot.searchResponse.routingProfiles[
-          transportParam
-        ]?.locationsOfInterest.push(...customPois);
-      });
-
-      snapshotDoc.markModified('snapshot.searchResponse.routingProfiles');
-    }
-
-    return snapshotDoc.save();
-  }
-
-  async deleteSnapshot(user: UserDocument, snapshotId: string): Promise<void> {
-    if (user.templateSnapshotId === snapshotId) {
-      user.templateSnapshotId = undefined;
-      await user.save();
-    }
-
-    await this.searchResultSnapshotModel.deleteOne({
-      _id: snapshotId,
-      userId: user.id,
-    });
-  }
-
   async deleteTrialDataByUserId(userId: string): Promise<void> {
     await this.locationSearchModel.deleteMany({
       userId,
@@ -410,53 +297,7 @@ export class LocationService {
     });
   }
 
-  async fetchSnapshots({
-    user,
-    skipNumber = 0,
-    limitNumber = 0,
-    filterQuery,
-    projectQuery,
-    sortQuery,
-  }: {
-    user: UserDocument | TIntegrationUserDocument;
-    skipNumber: number;
-    limitNumber: number;
-    filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
-    projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
-    sortQuery?: TApiMongoSortQuery;
-  }): Promise<SearchResultSnapshotDocument[]> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const resFilterQuery = filterQuery ? { ...filterQuery } : {};
-
-    if (isIntegrationUser) {
-      resFilterQuery['integrationParams.integrationUserId'] =
-        user.integrationUserId;
-
-      resFilterQuery['integrationParams.integrationType'] =
-        user.integrationType;
-    } else {
-      resFilterQuery.userId = user.id;
-    }
-
-    return this.searchResultSnapshotModel
-      .find(resFilterQuery, projectQuery)
-      .sort(sortQuery)
-      .skip(skipNumber)
-      .limit(limitNumber);
-  }
-
-  async fetchLateSnapConfigs(
+  async fetchLastSnapConfigs(
     user: UserDocument | TIntegrationUserDocument,
     limitNumber: number,
   ): Promise<IApiLateSnapConfigOption[]> {
@@ -581,112 +422,6 @@ export class LocationService {
     );
   }
 
-  async fetchSnapshotByIdOrFail(
-    user: UserDocument | TIntegrationUserDocument,
-    snapshotId: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    const isIntegrationUser = 'integrationUserId' in user;
-
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
-      );
-    }
-
-    const filterQuery: FilterQuery<SearchResultSnapshotDocument> = {
-      _id: new Types.ObjectId(snapshotId),
-    };
-
-    Object.assign(
-      filterQuery,
-      isIntegrationUser
-        ? { 'integrationParams.integrationUserId': user.integrationUserId }
-        : { userId: user.id },
-    );
-
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne(
-      filterQuery,
-    );
-
-    if (!snapshotDoc) {
-      throw new HttpException('Unknown snapshot id', 400);
-    }
-
-    if (!isIntegrationUser) {
-      this.checkLocationExpiration(snapshotDoc);
-    }
-
-    return snapshotDoc;
-  }
-
-  // only used in the InjectUserEmailRoutingInterceptor
-  async fetchSnapshotByToken(
-    token: string,
-  ): Promise<SearchResultSnapshotDocument> {
-    const snapshotDoc = await this.searchResultSnapshotModel.findOne({
-      token,
-    });
-
-    if (!snapshotDoc) {
-      throw new HttpException('Unknown token', 400);
-    }
-
-    // to keep in consistency with 'isIntegrationUser' property
-    const isIntegrationSnapshot = !snapshotDoc.userId;
-
-    if (!isIntegrationSnapshot) {
-      this.checkLocationExpiration(snapshotDoc);
-    }
-
-    return snapshotDoc;
-  }
-
-  private checkLocationExpiration(
-    location: LocationSearchDocument | SearchResultSnapshotDocument,
-  ): void {
-    const isLocationExpired = location?.endsAt
-      ? dayjs().isAfter(location.endsAt)
-      : false;
-
-    if (isLocationExpired) {
-      throw new HttpException(addressExpiredMessage, 402);
-    }
-  }
-
-  private async checkIntSnapshotIframeExp(
-    snapshotDoc: SearchResultSnapshotDocument,
-  ): Promise<void> {
-    let iframeEndsAt = snapshotDoc?.iframeEndsAt;
-
-    if (!iframeEndsAt) {
-      iframeEndsAt = (
-        await this.realEstateListingIntService.findOneOrFailByIntParams(
-          snapshotDoc.integrationParams,
-        )
-      ).integrationParams.iframeEndsAt;
-    }
-
-    const isSnapshotIframeExpired = iframeEndsAt
-      ? dayjs().isAfter(iframeEndsAt)
-      : true;
-
-    // TODO PROPSTACK CONTINGENT
-    if (
-      snapshotDoc.integrationParams.integrationType ===
-      IntegrationTypesEnum.PROPSTACK
-    ) {
-      return;
-    }
-
-    if (isSnapshotIframeExpired) {
-      throw new HttpException(addressExpiredMessage, 402);
-    }
-  }
-
   async prolongAddressDuration(
     modelName: LimitIncreaseModelNameEnum,
     modelId: string,
@@ -722,13 +457,13 @@ export class LocationService {
   async fetchOpenAiLocationDescription(
     user: UserDocument | TIntegrationUserDocument,
     {
-      searchResultSnapshotId,
-      meanOfTransportation,
-      tonality,
-      targetGroupName,
       customText,
-      textLength,
       isForOnePage,
+      meanOfTransportation,
+      snapshotId,
+      targetGroupName,
+      textLength,
+      tonality,
     }: IApiOpenAiLocDescQuery,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
@@ -744,19 +479,20 @@ export class LocationService {
       );
     }
 
-    const searchResultSnapshot = await this.fetchSnapshotByIdOrFail(
+    const snapshotRes = await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
       user,
-      searchResultSnapshotId,
+      snapshotId,
+      false,
     );
 
     const queryText = await this.openAiService.getLocDescQuery(user, {
-      searchResultSnapshot,
-      meanOfTransportation,
-      textLength,
-      targetGroupName,
       customText,
-      tonality: openAiTonalities[tonality],
       isForOnePage,
+      meanOfTransportation,
+      snapshotRes,
+      targetGroupName,
+      textLength,
+      tonality: openAiTonalities[tonality],
     });
 
     return this.openAiService.fetchResponse(queryText);
@@ -765,16 +501,14 @@ export class LocationService {
   async fetchOpenAiLocRealEstDesc(
     user: UserDocument | TIntegrationUserDocument,
     {
-      searchResultSnapshotId,
-      meanOfTransportation,
-      targetGroupName,
-      tonality,
       customText,
-      realEstateListingId,
+      meanOfTransportation,
       realEstateType,
+      snapshotId,
+      targetGroupName,
       textLength,
+      tonality,
     }: IApiOpenAiLocRealEstDescQuery,
-    realEstateListing?: RealEstateListingDocument,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -789,26 +523,18 @@ export class LocationService {
       );
     }
 
-    const searchResultSnapshot = await this.fetchSnapshotByIdOrFail(
+    const snapshotRes = await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
       user,
-      searchResultSnapshotId,
+      snapshotId,
     );
 
-    const resultingRealEstateListing =
-      realEstateListing ||
-      (await this.realEstateListingService.fetchRealEstateListingById(
-        user,
-        realEstateListingId,
-      ));
-
     const queryText = await this.openAiService.getLocRealEstDescQuery(user, {
-      meanOfTransportation,
-      searchResultSnapshot,
-      targetGroupName,
       customText,
+      meanOfTransportation,
       realEstateType,
+      snapshotRes,
+      targetGroupName,
       textLength,
-      realEstateListing: resultingRealEstateListing,
       tonality: openAiTonalities[tonality],
     });
 

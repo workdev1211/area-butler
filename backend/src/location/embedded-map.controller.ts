@@ -10,50 +10,59 @@ import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Readable } from 'stream';
 import { toBuffer } from 'qrcode';
 
-import { LocationService } from './location.service';
-import { mapSnapshotToEmbeddableMap } from './mapper/embeddable-maps.mapper';
-import { UserService } from '../user/user.service';
+import { IApiFetchedEmbeddedData } from '@area-butler-types/types';
+import { createDirectLink } from '../shared/functions/shared';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
-import { SubscriptionService } from '../user/subscription.service';
 import { subscriptionExpiredMessage } from '../../../shared/messages/error.message';
 import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { ApiSearchResultSnapshotResponse } from '@area-butler-types/types';
-import { createDirectLink } from '../shared/functions/shared';
+import { UserService } from '../user/user.service';
+import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
 export class EmbeddedMapController {
-  private readonly logger: Logger = new Logger(EmbeddedMapController.name);
+  private readonly logger = new Logger(EmbeddedMapController.name);
 
   constructor(
-    private readonly locationService: LocationService,
-    private readonly userService: UserService,
-    private readonly subscriptionService: SubscriptionService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly realEstateListingService: RealEstateListingService,
+    private readonly userService: UserService,
   ) {}
 
   @ApiOperation({ description: 'Fetch an embedded map' })
   @Get('iframe/:token')
   async fetchEmbeddedMap(
     @Param('token') token: string,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    // TODO think about moving to the location service
-    const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
+  ): Promise<IApiFetchedEmbeddedData> {
+    const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDocByToken(
+      token,
+    );
 
     if (!snapshotDoc) {
       return;
     }
 
-    const { userId, integrationParams } = snapshotDoc;
+    const isIntSnapshot = !!snapshotDoc.integrationParams;
+
+    if (isIntSnapshot) {
+      await this.fetchSnapshotService.checkIntSnapshotIframeExp(snapshotDoc);
+    } else {
+      this.fetchSnapshotService.checkLocationExpiration(snapshotDoc);
+    }
+
+    snapshotDoc.lastAccess = new Date();
+    snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
+    await snapshotDoc.save();
+
     let isTrial = false;
-    const isIntegrationSnapshot = !userId;
     let user;
 
-    if (!isIntegrationSnapshot) {
+    if (!isIntSnapshot) {
       user = await this.userService.findById({
-        userId,
+        userId: snapshotDoc.userId,
         withAssets: true,
         withSubscription: true,
       });
@@ -66,11 +75,11 @@ export class EmbeddedMapController {
       isTrial = user.subscription.type === ApiSubscriptionPlanType.TRIAL;
     }
 
-    if (isIntegrationSnapshot) {
+    if (isIntSnapshot) {
       user = await this.integrationUserService.findOne(
-        integrationParams.integrationType,
+        snapshotDoc.integrationParams.integrationType,
         {
-          integrationUserId: integrationParams.integrationUserId,
+          integrationUserId: snapshotDoc.integrationParams.integrationUserId,
         },
       );
     }
@@ -79,23 +88,36 @@ export class EmbeddedMapController {
       throw new HttpException('Unknown user!', 400);
     }
 
-    const realEstateListings =
-      await this.realEstateListingService.fetchRealEstateListings(user);
+    const isIntegrationUser = 'integrationUserId' in user;
 
-    return mapSnapshotToEmbeddableMap(
-      user,
-      snapshotDoc,
-      true,
-      realEstateListings,
-      isTrial,
-      !isIntegrationSnapshot ? user.poiIcons : undefined,
+    const realEstates = (
+      await this.realEstateListingService.fetchRealEstateListings(user, {
+        status: snapshotDoc.config.realEstateStatus,
+        status2: snapshotDoc.config.realEstateStatus2,
+      })
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(user, realEstate),
     );
+
+    const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(user, {
+      isTrial,
+      snapshotDoc,
+      isEmbedded: true,
+    });
+
+    return {
+      realEstates,
+      snapshotRes,
+      userPoiIcons: !isIntegrationUser ? user.poiIcons : undefined,
+    };
   }
 
   @ApiOperation({ description: 'Fetch a QrCode for an embedded map' })
   @Get('qr-code/:token')
   async fetchQrCode(@Param('token') token: string): Promise<StreamableFile> {
-    const snapshotDoc = await this.locationService.fetchEmbeddedMap(token);
+    const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDocByToken(
+      token,
+    );
     const directLink = createDirectLink(token);
 
     const qrCode = await toBuffer(directLink, {

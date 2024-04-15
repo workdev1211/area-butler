@@ -42,9 +42,9 @@ import ApiUserApiConnectSettingsReqDto from '../dto/api-user-api-connect-setting
 @Controller('api/real-estate-listing')
 export class RealEstateListingController extends AuthenticatedController {
   constructor(
-    private readonly realEstateListingService: RealEstateListingService,
-    private readonly realEstateListingImportService: RealEstateListingImportService,
     private readonly realEstateCrmImportService: RealEstateCrmImportService,
+    private readonly realEstateListingImportService: RealEstateListingImportService,
+    private readonly realEstateListingService: RealEstateListingService,
   ) {
     super();
   }
@@ -68,10 +68,14 @@ export class RealEstateListingController extends AuthenticatedController {
   @Get('listings')
   async fetchRealEstateListings(
     @Query('status') status: string,
+    @Query('status2') status2: string,
     @InjectUser() user: UserDocument,
   ): Promise<ApiRealEstateListing[]> {
     return (
-      await this.realEstateListingService.fetchRealEstateListings(user, status)
+      await this.realEstateListingService.fetchRealEstateListings(user, {
+        status,
+        status2,
+      })
     ).map((realEstate) =>
       mapRealEstateListingToApiRealEstateListing(user, realEstate),
     );
@@ -173,13 +177,13 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Fetch Open AI real estate description' })
   @Post('open-ai-real-estate-desc')
-  async fetchOpenAiRealEstDesc(
+  fetchOpenAiRealEstDesc(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() realEstateDescriptionQuery: ApiOpenAiRealEstDescQueryDto,
+    @Body() realEstDescQueryDto: ApiOpenAiRealEstDescQueryDto,
   ): Promise<string> {
     return this.realEstateListingService.fetchOpenAiRealEstateDesc(
       user,
-      realEstateDescriptionQuery,
+      realEstDescQueryDto,
     );
   }
 
@@ -194,12 +198,12 @@ export class RealEstateListingController extends AuthenticatedController {
 
   @ApiOperation({ description: 'Test a specified CRM connection' })
   @Post('crm-test')
-  async testApiConnection(
+  testApiConnection(
     @InjectUser(UserSubscriptionPipe) user: UserDocument,
     @Body()
     connectSettings: ApiUserApiConnectSettingsReqDto,
   ): Promise<void> {
-    await this.realEstateCrmImportService.testApiConnection(
+    return this.realEstateCrmImportService.testApiConnection(
       user,
       connectSettings,
     );

@@ -22,12 +22,12 @@ import {
   SnapshotDataTypesEnum,
 } from '../shared/types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
-import { LocationService } from './location.service';
 import { UserDocument } from '../user/schema/user.schema';
 import { SnapshotExtService } from './snapshot-ext.service';
 import { defaultPoiTypes } from '../../../shared/constants/location';
 import { SearchResultSnapshotDocument } from './schema/search-result-snapshot.schema';
 import { createDirectLink } from '../shared/functions/shared';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 
 interface IFetchPoiDataArgs {
   coordinates: ApiCoordinates;
@@ -43,9 +43,9 @@ const MAX_DISTANCE_IN_METERS = 2000;
 @Injectable()
 export class LocationExtService {
   constructor(
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly overpassService: OverpassService,
     private readonly overpassDataService: OverpassDataService,
-    private readonly locationService: LocationService,
     private readonly snapshotExtService: SnapshotExtService,
   ) {}
 
@@ -130,10 +130,11 @@ export class LocationExtService {
       | ApiSearchResultSnapshotResponse;
 
     if (snapshotId) {
-      snapshotResponse = await this.locationService.fetchSnapshotByIdOrFail(
-        user,
-        snapshotId,
-      );
+      snapshotResponse =
+        await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
+          user,
+          snapshotId,
+        );
     }
 
     if (!snapshotId) {

@@ -24,13 +24,13 @@ import { SnapshotExtService } from './snapshot-ext.service';
 import { LocationExtController } from './location-ext.controller';
 import { OpenAiModule } from '../open-ai/open-ai.module';
 import { LocationIntController } from './location-int.controller';
-import { LocationIntService } from './location-int.service';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
 import { LocationExtService } from './location-ext.service';
 import { ApiAddressesInRangeController } from './api-addresses-in-range.controller';
 import { RealEstateListingModule } from '../real-estate-listing/real-estate-listing.module';
 import { SnapshotService } from './snapshot.service';
 import { PlaceModule } from '../place/place.module';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 
 @Module({
   imports: [
@@ -48,29 +48,29 @@ import { PlaceModule } from '../place/place.module';
     ]),
   ],
   controllers: [
-    LocationController,
-    LocationIntController,
-    EmbeddedMapController,
-    TilesController,
-    LocationExtController,
     ApiAddressesInRangeController,
+    EmbeddedMapController,
+    LocationExtController,
+    LocationIntController,
+    LocationController,
+    TilesController,
   ],
   providers: [
-    LocationService,
-    LocationListener,
-    RoutingService,
-    SnapshotService,
-    SnapshotExtService,
     AddressesInRangeExtService,
-    LocationIntService,
+    FetchSnapshotService,
     LocationExtService,
+    LocationListener,
+    LocationService,
+    RoutingService,
+    SnapshotExtService,
+    SnapshotService,
   ],
   exports: [
-    LocationService,
-    LocationIntService,
+    FetchSnapshotService,
     LocationExtService,
-    SnapshotService,
+    LocationService,
     SnapshotExtService,
+    SnapshotService,
   ],
 })
 export class LocationModule {}

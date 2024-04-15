@@ -15,9 +15,7 @@ import {
 } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
 import { LocationService } from './location.service';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RoutingService } from '../routing/routing.service';
-import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import {
   defaultPoiTypes,
   defaultTransportParams,
@@ -26,6 +24,7 @@ import { SnapshotService } from './snapshot.service';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { PlaceService } from '../place/place.service';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 
 interface ICreateSnapshot {
   user: UserDocument | TIntegrationUserDocument;
@@ -46,8 +45,8 @@ export class SnapshotExtService {
     private readonly locationService: LocationService,
     private readonly snapshotService: SnapshotService,
     private readonly routingService: RoutingService,
-    private readonly realEstateListingService: RealEstateListingService,
     private readonly placeService: PlaceService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
   ) {}
 
   async createSnapshotByPlace({
@@ -82,20 +81,19 @@ export class SnapshotExtService {
     const snapshot: ApiSearchResultSnapshot = {
       localityParams,
       placesLocation,
-      realEstateListing,
       searchResponse,
       location: searchData.coordinates,
-      realEstateListings: [],
       transportationParams: searchData.meansOfTransportation,
     };
 
     let snapshotConfig;
 
     if (templateSnapshotId) {
-      const { config } = await this.locationService.fetchSnapshotByIdOrFail(
-        user,
-        templateSnapshotId,
-      );
+      const { config } =
+        await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
+          user,
+          templateSnapshotId,
+        );
 
       snapshotConfig = config;
     }
@@ -135,7 +133,7 @@ export class SnapshotExtService {
     const {
       config,
       snapshot: { transportationParams, localityParams, preferredLocations },
-    } = await this.locationService.fetchSnapshotByIdOrFail(
+    } = await this.fetchSnapshotService.fetchSnapshotByIdOrFail(
       user,
       templateSnapshotId,
     );
@@ -179,27 +177,13 @@ export class SnapshotExtService {
       config,
     }: IApiCreateRouteSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
-    const realEstateListings = (
-      await this.realEstateListingService.fetchRealEstateListings(user)
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(user, realEstate),
-    );
-
     const localityParams = searchData.preferredAmenities
       .map((name) => osmEntityTypes.find((entity) => entity.name === name))
       .filter(Boolean) as ApiOsmEntity[];
 
-    const realEstateListing = realEstateListings.find(
-      (l) =>
-        JSON.stringify(l.coordinates) ===
-        JSON.stringify(searchData.coordinates),
-    );
-
     const snapshot: ApiSearchResultSnapshot = {
       localityParams,
       placesLocation,
-      realEstateListing,
-      realEstateListings,
       searchResponse,
       location: searchData.coordinates,
       transportationParams: searchData.meansOfTransportation,
@@ -220,10 +204,6 @@ export class SnapshotExtService {
       });
     }
 
-    return this.snapshotService.createSnapshot(
-      user,
-      { integrationId: realEstateListing?.integrationId, snapshot },
-      config,
-    );
+    return this.snapshotService.createSnapshot(user, { snapshot }, config);
   }
 }

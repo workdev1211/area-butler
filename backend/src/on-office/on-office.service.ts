@@ -45,8 +45,6 @@ import {
 } from '@area-butler-types/integration';
 import { GeoJsonPoint } from '../shared/types/geo-json';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
-import { LocationIntService } from '../location/location-int.service';
-import { mapSnapshotToEmbeddableMap } from '../location/mapper/embeddable-maps.mapper';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import {
@@ -65,6 +63,7 @@ import {
   parseOnOfficeFloat,
 } from '../shared/functions/on-office';
 import { PlaceService } from '../place/place.service';
+import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 
 @Injectable()
 export class OnOfficeService {
@@ -76,11 +75,11 @@ export class OnOfficeService {
   constructor(
     @InjectModel(OnOfficeTransaction.name)
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
-    private readonly onOfficeApiService: OnOfficeApiService,
+    private readonly fetchSnapshotService: FetchSnapshotService, // private readonly locationIntService: LocationIntService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly onOfficeApiService: OnOfficeApiService,
     private readonly placeService: PlaceService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly locationIntService: LocationIntService,
   ) {}
 
   async getRenderData({
@@ -377,11 +376,6 @@ export class OnOfficeService {
       ),
     );
 
-    const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
-      integrationUser,
-      estateId,
-    );
-
     return {
       availProdContingents,
       integrationUserId,
@@ -390,9 +384,10 @@ export class OnOfficeService {
       accessToken: extendedClaim,
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
-      latestSnapshot: snapshot
-        ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
-        : undefined,
+      latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
+        integrationUser,
+        estateId,
+      ),
     };
   }
 
@@ -518,11 +513,6 @@ export class OnOfficeService {
       integrationUser.parentUser = parentUser;
     }
 
-    const snapshot = await this.locationIntService.fetchLatestSnapByIntId(
-      integrationUser,
-      integrationId,
-    );
-
     return {
       accessToken,
       integrationUserId: integrationUser.integrationUserId,
@@ -541,9 +531,10 @@ export class OnOfficeService {
         await this.integrationUserService.getAvailProdContingents(
           integrationUser,
         ),
-      latestSnapshot: snapshot
-        ? mapSnapshotToEmbeddableMap(integrationUser, snapshot)
-        : undefined,
+      latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
+        integrationUser,
+        integrationId,
+      ),
     };
   }
 

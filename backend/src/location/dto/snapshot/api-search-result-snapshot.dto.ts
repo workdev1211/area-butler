@@ -17,12 +17,10 @@ import {
 import ApiCoordinatesDto from '../../../dto/api-coordinates.dto';
 import ApiOsmEntityDto from '../../../dto/api-osm-entity.dto';
 import ApiPreferredLocationDto from '../../../dto/api-preferred-location.dto';
-import ApiRealEstateListingDto from '../../../dto/api-real-estate-listing.dto';
 import ApiSearchResponseDto from '../../../dto/api-search-response.dto';
 import EntityRouteDto from '../../../dto/entity-route.dto';
 import ApiTransportationParamDto from '../../../dto/api-transportation-param.dto';
 import { ApiPreferredLocation } from '@area-butler-types/potential-customer';
-import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { EntityTransitRoute } from '@area-butler-types/routing';
 import EntityTransitRouteDto from '../../../dto/entity-transit-route.dto';
 
@@ -43,12 +41,6 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @IsObject()
   placesLocation: any;
 
-  @Type(() => ApiRealEstateListingDto)
-  @IsNotEmpty()
-  @IsArray()
-  @ValidateNested({ each: true })
-  realEstateListings: ApiRealEstateListing[];
-
   @Type(() => ApiSearchResponseDto)
   @IsNotEmpty()
   @IsObject()
@@ -66,12 +58,6 @@ class ApiSearchResultSnapshotDto implements ApiSearchResultSnapshot {
   @ValidateNested({ each: true })
   @IsArray()
   preferredLocations?: ApiPreferredLocation[];
-
-  @Type(() => ApiRealEstateListingDto)
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  realEstateListing?: ApiRealEstateListing;
 
   @Type(() => EntityRouteDto)
   @IsOptional()

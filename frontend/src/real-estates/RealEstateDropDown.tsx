@@ -20,7 +20,13 @@ const RealEstateDropDown: FunctionComponent<IRealEstateDropDownProps> = ({
   const { realEstateState } = useContext(RealEstateContext);
   const { searchContextDispatch } = useContext(SearchContext);
 
-  const fillAddressFromListing = async (listing: ApiRealEstateListing) => {
+  const fillAddressFromListing = async (
+    listing: ApiRealEstateListing
+  ): Promise<void> => {
+    if (!listing.address) {
+      return;
+    }
+
     const result = await deriveGeocodeByAddress(user, listing.address);
     const { lat, lng } = result;
     searchContextDispatch({

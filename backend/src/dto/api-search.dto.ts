@@ -27,16 +27,16 @@ class ApiSearchDto implements ApiSearch {
   @IsString()
   id?: string;
 
+  @Type(() => ApiCoordinatesDto)
   @IsNotEmpty()
   @IsObject()
   @ValidateNested()
-  @Type(() => ApiCoordinatesDto)
   coordinates: ApiCoordinates;
 
+  @Type(() => ApiTransportationParamDto)
   @IsNotEmpty()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiTransportationParamDto)
   meansOfTransportation: TransportationParam[];
 
   @IsNotEmpty()
@@ -44,10 +44,10 @@ class ApiSearchDto implements ApiSearch {
   @IsEnum(OsmName, { each: true })
   preferredAmenities: OsmName[];
 
+  @Type(() => ApiPreferredLocationDto)
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiPreferredLocationDto)
   preferredLocations?: ApiPreferredLocation[];
 
   @IsOptional()

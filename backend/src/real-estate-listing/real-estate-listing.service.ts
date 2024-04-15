@@ -10,6 +10,7 @@ import { SubscriptionService } from '../user/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   IApiRealEstateListingSchema,
+  IApiRealEstateStatuses,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
@@ -17,8 +18,9 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
-import { ApiGeometry } from '@area-butler-types/types';
+import { ApiCoordinates, ApiGeometry } from '@area-butler-types/types';
 import { realEstateAllStatus } from '../../../shared/constants/real-estate';
+import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 
 @Injectable()
 export class RealEstateListingService {
@@ -85,10 +87,10 @@ export class RealEstateListingService {
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    status: string = realEstateAllStatus,
+    statuses?: IApiRealEstateStatuses,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
-    let filter;
+    let filter: FilterQuery<RealEstateListingDocument>;
 
     if (isIntegrationUser) {
       filter = {
@@ -109,8 +111,14 @@ export class RealEstateListingService {
       };
     }
 
-    if (status !== realEstateAllStatus) {
-      filter.status = status;
+    const resultStatus = statuses?.status || realEstateAllStatus;
+    const resultStatus2 = statuses?.status2 || realEstateAllStatus;
+
+    if (resultStatus !== realEstateAllStatus) {
+      filter.status = resultStatus;
+    }
+    if (resultStatus2 !== realEstateAllStatus) {
+      filter.status2 = resultStatus2;
     }
 
     return this.realEstateListingModel.find(filter);
@@ -213,18 +221,6 @@ export class RealEstateListingService {
     );
   }
 
-  async upsertEstateByExtParams(
-    upsertData: IApiRealEstateListingSchema,
-  ): Promise<RealEstateListingDocument> {
-    const realEstate = await this.updateEstateByExtParams(upsertData);
-
-    if (!realEstate) {
-      throw new HttpException('Real estate not found!', 400);
-    }
-
-    return realEstate;
-  }
-
   async updateLocationIndices(): Promise<void> {
     const total = await this.realEstateListingModel.find().count();
     const limit = 100;
@@ -270,13 +266,13 @@ export class RealEstateListingService {
   async fetchOpenAiRealEstateDesc(
     user: UserDocument | TIntegrationUserDocument,
     {
-      realEstateListingId,
+      realEstateId,
       realEstateType,
-      textLength,
       targetGroupName,
+      textLength,
       tonality,
     }: IApiOpenAiRealEstDescQuery,
-    realEstateListing?: RealEstateListingDocument,
+    realEstate?: RealEstateListingDocument,
   ): Promise<string> {
     const isIntegrationUser = 'integrationUserId' in user;
 
@@ -291,15 +287,16 @@ export class RealEstateListingService {
       );
     }
 
-    const resultingRealEstateListing =
-      realEstateListing ||
-      (await this.fetchRealEstateListingById(user, realEstateListingId));
+    const resultRealEstate = mapRealEstateListingToApiRealEstateListing(
+      user,
+      realEstate || (await this.fetchRealEstateListingById(user, realEstateId)),
+    );
 
     const queryText = this.openAiService.getRealEstDescQuery({
       targetGroupName,
       realEstateType,
       textLength,
-      realEstateListing: resultingRealEstateListing,
+      realEstate: resultRealEstate,
       tonality: openAiTonalities[tonality],
     });
 
@@ -331,5 +328,27 @@ export class RealEstateListingService {
     }
 
     return false;
+  }
+
+  async fetchRealEstateByCoords(
+    user: UserDocument | TIntegrationUserDocument,
+    coordinates: ApiCoordinates,
+  ): Promise<RealEstateListingDocument> {
+    const isIntegrationUser = 'integrationUserId' in user;
+    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
+      'snapshot.location': coordinates,
+    };
+
+    Object.assign(
+      filterQuery,
+      isIntegrationUser
+        ? {
+            'integrationParams.integrationType': user.integrationType,
+            'integrationParams.integrationUserId': user.integrationUserId,
+          }
+        : { userId: user.id },
+    );
+
+    return this.realEstateListingModel.findOne(filterQuery);
   }
 }

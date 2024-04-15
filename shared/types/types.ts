@@ -304,12 +304,10 @@ export interface ApiSearchResultSnapshot {
   localityParams: ApiOsmEntity[]; // selected POI types
   location: ApiCoordinates; // coordinates
   placesLocation: any | IApiPlacesLocation; // Google Places id or an address
-  realEstateListings: ApiRealEstateListing[]; // existing real estates at the time of snapshot creation
   searchResponse: ApiSearchResponse; // POIs
   transportationParams: TransportationParam[]; // selected transportation params ('WALK', 'BICYCLE', 'CAR')
 
   preferredLocations?: ApiPreferredLocation[]; // important places
-  realEstateListing?: ApiRealEstateListing; // if an address is a certain real estate
   routes?: EntityRoute[]; // routes to important places by foot, bicycle or car
   transitRoutes?: EntityTransitRoute[]; // routes to important places by city transport
 }
@@ -392,20 +390,21 @@ export interface ApiSearchResultSnapshotConfig {
 
 export interface ApiSearchResultSnapshotResponse {
   id: string;
-  mapboxAccessToken: string;
-  token: string;
-  config?: ApiSearchResultSnapshotConfig;
-  snapshot: ApiSearchResultSnapshot;
-  description?: string;
   createdAt: Date;
-  lastAccess?: Date;
-  visitAmount?: number;
+  mapboxAccessToken: string; // seems to exist only for the iFrames, could be removed in the future
+  token: string;
+  snapshot: ApiSearchResultSnapshot;
+
+  config?: ApiSearchResultSnapshotConfig;
+  description?: string;
   endsAt?: Date;
   iframeEndsAt?: Date;
-  updatedAt?: Date;
-  isTrial?: boolean;
-  userPoiIcons?: IApiUserPoiIcons;
   integrationId?: string;
+  isTrial?: boolean;
+  lastAccess?: Date;
+  realEstateListing?: ApiRealEstateListing;
+  updatedAt?: Date;
+  visitAmount?: number;
 }
 
 export interface IApiPlacesLocation {
@@ -485,4 +484,10 @@ export enum MapDisplayModesEnum {
   EMBED_INTEGRATION = "EMBED_INTEGRATION", // left only because of the default map icon
   EMBED = "EMBED",
   EDITOR = "EDITOR",
+}
+
+export interface IApiFetchedEmbeddedData {
+  snapshotRes: ApiSearchResultSnapshotResponse;
+  realEstates?: ApiRealEstateListing[];
+  userPoiIcons?: IApiUserPoiIcons;
 }

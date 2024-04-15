@@ -28,11 +28,12 @@ export interface IApiRealEstateListingSchema {
 
 export interface ApiRealEstateListing {
   id: string;
-  address: string;
   coordinates: ApiCoordinates;
   isFromParent: boolean;
   name: string;
   showInSnippet: boolean;
+
+  address?: string;
   characteristics?: ApiRealEstateCharacteristics;
   costStructure?: ApiRealEstateCost;
   externalId?: string; // if it was exported from a CRM
@@ -42,7 +43,7 @@ export interface ApiRealEstateListing {
   integrationId?: string; // only for integration users
   isOnePageExportActive?: boolean;
   isStatsFullExportActive?: boolean;
-  locationIndices?: TLocationIndexData;
+  locationIndices?: TLocationIndexData; // frontend only?
   openAiRequestQuantity?: number;
   status?: string;
   status2?: string;
@@ -132,4 +133,9 @@ export interface IApiOnOfficeConSettings {
 export interface IApiRealEstStatusByUser {
   status: string[];
   status2: string[];
+}
+
+export interface IApiRealEstateStatuses {
+  status?: string;
+  status2?: string;
 }

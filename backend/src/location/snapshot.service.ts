@@ -1,6 +1,6 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model, ProjectionFields, Types } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ManipulateType } from 'dayjs';
@@ -15,8 +15,8 @@ import {
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotResponse,
+  ApiUpdateSearchResultSnapshot,
   MeansOfTransportation,
-  OsmName,
 } from '@area-butler-types/types';
 import { UserDocument } from '../user/schema/user.schema';
 import { UserService } from '../user/user.service';
@@ -27,17 +27,13 @@ import {
 import { defaultSnapshotConfig } from '../../../shared/constants/location';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
-import { realEstateListingsTitle } from '../../../shared/constants/real-estate';
 import { IntegrationUserService } from '../user/integration-user.service';
-import { TApiMongoSortQuery } from '../shared/types/shared';
 import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
 import { RoutingService } from '../routing/routing.service';
+import { FetchSnapshotService } from './fetch-snapshot.service';
 
 @Injectable()
 export class SnapshotService {
-  private readonly logger = new Logger(SnapshotService.name);
-
   constructor(
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
@@ -46,6 +42,7 @@ export class SnapshotService {
     private readonly routingService: RoutingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
   ) {}
 
   async createSnapshot(
@@ -88,42 +85,14 @@ export class SnapshotService {
       snapshotConfig.mapIcon = userMapIcon;
     }
 
-    const realEstateListings = (
-      await this.realEstateListingService.fetchRealEstateListings(user)
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(user, realEstate),
-    );
-
-    const isRealEstatesHidden =
-      realEstateListings.length &&
-      (!snapshotConfig.defaultActiveGroups ||
-        (snapshotConfig.defaultActiveGroups &&
-          !snapshotConfig.defaultActiveGroups.includes(
-            realEstateListingsTitle,
-          )));
-
-    if (isRealEstatesHidden) {
-      snapshotConfig.entityVisibility = [
-        ...(snapshotConfig.entityVisibility || []),
-        ...realEstateListings.map(({ id }) => ({
-          id,
-          osmName: OsmName.property,
-          excluded: true,
-        })),
-      ];
-    }
-
     await this.assignRoutes(snapshot);
     const createdAt = dayjs();
 
     const snapshotDoc: Partial<SearchResultSnapshotDocument> = {
       mapboxAccessToken,
+      snapshot,
       token,
       config: snapshotConfig,
-      snapshot: {
-        ...snapshot,
-        realEstateListings,
-      },
       createdAt: createdAt.toDate(),
     };
 
@@ -174,44 +143,109 @@ export class SnapshotService {
     };
   }
 
-  async fetchSnapshot({
-    user,
-    filterQuery,
-    projectQuery,
-    sortQuery,
-  }: {
-    user: UserDocument | TIntegrationUserDocument;
-    filterQuery?: FilterQuery<SearchResultSnapshotDocument>;
-    projectQuery?: ProjectionFields<SearchResultSnapshotDocument>;
-    sortQuery?: TApiMongoSortQuery;
-  }): Promise<SearchResultSnapshotDocument> {
+  async duplicateSnapshot(
+    user: UserDocument | TIntegrationUserDocument,
+    snapshotId: string,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDoc(user, {
+      filterQuery: { _id: new Types.ObjectId(snapshotId) },
+    });
+
+    if (!snapshotDoc) {
+      throw new HttpException('Snapshot not found!', 400);
+    }
+
+    const snapshotDocObj = snapshotDoc.toObject();
+    delete snapshotDocObj._id;
+    delete snapshotDocObj.lastAccess;
+    delete snapshotDocObj.updatedAt;
+    snapshotDocObj.createdAt = new Date();
+    snapshotDocObj.token = randomBytes(60).toString('hex');
+    snapshotDocObj.visitAmount = 0;
+
+    return this.fetchSnapshotService.getSnapshotRes(user, {
+      snapshotDoc: await new this.searchResultSnapshotModel(
+        snapshotDocObj,
+      ).save(),
+    });
+  }
+
+  async updateSnapshot(
+    user: UserDocument | TIntegrationUserDocument,
+    snapshotId: string,
+    {
+      config,
+      customPois,
+      description,
+      snapshot,
+    }: ApiUpdateSearchResultSnapshot,
+  ): Promise<ApiSearchResultSnapshotResponse> {
+    const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDoc(user, {
+      filterQuery: { _id: new Types.ObjectId(snapshotId) },
+    });
+
+    if (!snapshotDoc) {
+      throw new HttpException('Snapshot not found!', 400);
+    }
+
+    if (!config && !customPois && !description && !snapshot) {
+      return this.fetchSnapshotService.getSnapshotRes(user, { snapshotDoc });
+    }
+
+    if (snapshot) {
+      snapshotDoc.set('snapshot', snapshot);
+    }
+
+    if (config) {
+      snapshotDoc.set('config', config);
+    }
+
+    if (description) {
+      snapshotDoc.description = description;
+    }
+
+    if (customPois) {
+      Object.values(MeansOfTransportation).forEach((transportParam) => {
+        snapshotDoc.snapshot.searchResponse.routingProfiles[
+          transportParam
+        ]?.locationsOfInterest.push(...customPois);
+      });
+
+      snapshotDoc.markModified('snapshot.searchResponse.routingProfiles');
+    }
+
+    return this.fetchSnapshotService.getSnapshotRes(user, {
+      snapshotDoc: await snapshotDoc.save(),
+    });
+  }
+
+  async deleteSnapshot(
+    user: UserDocument | TIntegrationUserDocument,
+    snapshotId: string,
+  ): Promise<void> {
+    const filterQuery = await this.fetchSnapshotService.getFilterQueryWithUser(
+      user,
+      {
+        _id: new Types.ObjectId(snapshotId),
+      },
+      false,
+    );
+
     const isIntegrationUser = 'integrationUserId' in user;
+    const templateSnapshotId = isIntegrationUser
+      ? user.config.templateSnapshotId
+      : user.templateSnapshotId;
 
-    if (!isIntegrationUser) {
-      await this.subscriptionService.checkSubscriptionViolation(
-        user.subscription.type,
-        (subscriptionPlan) =>
-          !user.subscription?.appFeatures?.htmlSnippet &&
-          !subscriptionPlan.appFeatures.htmlSnippet,
-        'Das HTML Snippet Feature ist im aktuellen Plan nicht verfügbar',
+    if (templateSnapshotId === snapshotId) {
+      user.set(
+        isIntegrationUser ? 'config.templateSnapshotId' : 'templateSnapshotId',
+        undefined,
       );
+
+      await user.save();
     }
 
-    const resFilterQuery = filterQuery ? { ...filterQuery } : {};
-
-    if (isIntegrationUser) {
-      resFilterQuery['integrationParams.integrationUserId'] =
-        user.integrationUserId;
-
-      resFilterQuery['integrationParams.integrationType'] =
-        user.integrationType;
-    } else {
-      resFilterQuery.userId = user.id;
-    }
-
-    return this.searchResultSnapshotModel
-      .findOne(resFilterQuery, projectQuery)
-      .sort(sortQuery);
+    await this.searchResultSnapshotModel.deleteOne(filterQuery);
   }
 
   private async getSnapshotConfig(
@@ -226,7 +260,7 @@ export class SnapshotService {
     const parentUserId = user.parentId;
     let parentUser;
     let parentTemplateId;
-    let templateSnapshot: SearchResultSnapshotDocument;
+    let templateSnapshot: ApiSearchResultSnapshotResponse;
 
     if (!userTemplateId && parentUserId) {
       parentUser = isIntegrationUser
@@ -256,18 +290,21 @@ export class SnapshotService {
     const templateSnapshotId = userTemplateId || parentTemplateId;
 
     if (templateSnapshotId) {
-      templateSnapshot = await this.fetchSnapshot({
-        user: userTemplateId ? user : parentUser,
-        filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
-        projectQuery: { config: 1 },
-      });
+      templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(
+        userTemplateId ? user : parentUser,
+        {
+          filterQuery: { _id: new Types.ObjectId(templateSnapshotId) },
+          projectQuery: { config: 1 },
+          isRealEstateFetched: false,
+        },
+      );
     }
 
     if (!templateSnapshot) {
-      templateSnapshot = await this.fetchSnapshot({
-        user,
+      templateSnapshot = await this.fetchSnapshotService.fetchSnapshot(user, {
         projectQuery: { config: 1 },
         sortQuery: { updatedAt: -1 },
+        isRealEstateFetched: false,
       });
     }
 

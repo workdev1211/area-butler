@@ -30,20 +30,19 @@ export interface IOpenAiLocDescFormValues extends IOpenAiGeneralFormValues {
 }
 
 export interface IApiOpenAiLocDescQuery extends IOpenAiLocDescFormValues {
-  searchResultSnapshotId: string;
-  realEstateListingId?: string;
+  snapshotId: string;
   isForOnePage?: boolean;
 }
 
 export interface IApiOpenAiRealEstDescQuery extends IOpenAiGeneralFormValues {
-  realEstateListingId: string;
+  realEstateId: string;
   realEstateType: string;
 }
 
 export interface IApiOpenAiLocRealEstDescQuery
   extends IOpenAiLocDescFormValues,
     IApiOpenAiRealEstDescQuery {
-  searchResultSnapshotId: string;
+  snapshotId: string;
 }
 
 export interface IApiOpenAiResponseLimit {
@@ -81,7 +80,6 @@ export enum OpenAiOsmQueryNameEnum {
 export interface IApiOpenAiQuery {
   text: string;
   isFormalToInformal?: boolean;
-  realEstateListingId?: string;
   integrationId?: string;
 }
 

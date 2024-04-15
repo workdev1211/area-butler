@@ -45,6 +45,10 @@ const RealEstatesTable: FunctionComponent<IRealEstatesTableProps> = ({
   const startSearchFromRealEstate = async (
     realEstate: ApiRealEstateListing
   ): Promise<void> => {
+    if (!realEstate.address) {
+      return;
+    }
+
     const result = await deriveGeocodeByAddress(user, realEstate.address);
 
     const { lat, lng } = result;

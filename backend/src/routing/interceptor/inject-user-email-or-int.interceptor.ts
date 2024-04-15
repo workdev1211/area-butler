@@ -7,21 +7,21 @@ import {
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 
-import { LocationService } from '../../location/location.service';
 import { UserService } from '../../user/user.service';
 import { subscriptionExpiredMessage } from '../../../../shared/messages/error.message';
 import { SubscriptionService } from '../../user/subscription.service';
 import { IntegrationUserService } from '../../user/integration-user.service';
 import { UserDocument } from '../../user/schema/user.schema';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
+import { FetchSnapshotService } from '../../location/fetch-snapshot.service';
 
 @Injectable()
 export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
   constructor(
-    private readonly locationService: LocationService,
-    private readonly userService: UserService,
-    private readonly subscriptionService: SubscriptionService,
+    private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly subscriptionService: SubscriptionService,
+    private readonly userService: UserService,
   ) {}
 
   async intercept(
@@ -38,11 +38,24 @@ export class InjectUserEmailOrIntInterceptor implements NestInterceptor {
     }
 
     if (!req.body.userEmail && req.body.snapshotToken) {
-      const { userId } = await this.locationService.fetchSnapshotByToken(
-        req.body.snapshotToken,
-      );
+      const snapshotDoc =
+        await this.fetchSnapshotService.fetchSnapshotDocByToken(
+          req.body.snapshotToken,
+          { projectQuery: { userId: 1 } },
+        );
 
-      user = await this.userService.findById({ userId });
+      if (!snapshotDoc) {
+        throw new HttpException('Unknown token', 400);
+      }
+
+      // to keep in consistency with 'isIntegrationUser' property
+      const isIntegrationSnapshot = !snapshotDoc.userId;
+
+      if (!isIntegrationSnapshot) {
+        this.fetchSnapshotService.checkLocationExpiration(snapshotDoc);
+      }
+
+      user = await this.userService.findById({ userId: snapshotDoc.userId });
     }
 
     if (accessToken?.length === 2) {

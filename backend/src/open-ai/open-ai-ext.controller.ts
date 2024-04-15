@@ -8,7 +8,10 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
-import { ApiRequestStatusesEnum } from '@area-butler-types/types';
+import {
+  ApiRequestStatusesEnum,
+  ApiSearchResultSnapshotResponse,
+} from '@area-butler-types/types';
 import {
   ApiOpenAiQueryTypesEnum,
   ApiUsageStatsTypesEnum,
@@ -19,17 +22,16 @@ import {
   defaultRealEstType,
   openAiTonalities,
 } from '../../../shared/constants/open-ai';
-import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
-import { SearchResultSnapshotDocument } from '../location/schema/search-result-snapshot.schema';
 import { PlaceService } from '../place/place.service';
 
 @ApiTags('open-ai', 'api')
 @Controller('api/open-ai-ext')
 export class OpenAiExtController extends ApiKeyAuthController {
   constructor(
-    private readonly openAiService: OpenAiService,
     private readonly locationExtService: LocationExtService,
+    private readonly openAiService: OpenAiService,
     private readonly placeService: PlaceService,
     private readonly usageStatisticsService: UsageStatisticsService,
   ) {
@@ -77,7 +79,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
       const resultingAddress = address || place.formatted_address;
       const resultingTonality = openAiTonalities[tonality];
 
-      const realEstateListing: Partial<IApiRealEstateListingSchema> = {
+      const realEstate: Partial<ApiRealEstateListing> = {
         address: resultingAddress,
         characteristics: {
           realEstateSizeInSquareMeters,
@@ -103,7 +105,8 @@ export class OpenAiExtController extends ApiKeyAuthController {
             coordinates,
           });
 
-          const searchResultSnapshot = {
+          const snapshotRes = {
+            realEstateListing: realEstate,
             snapshot: {
               location: coordinates,
               placesLocation: { label: resultingAddress },
@@ -113,20 +116,19 @@ export class OpenAiExtController extends ApiKeyAuthController {
                 },
               },
             },
-          } as SearchResultSnapshotDocument;
+          } as ApiSearchResultSnapshotResponse;
 
           query =
             queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
               ? await this.openAiService.getLocDescQuery(user, {
-                  searchResultSnapshot,
+                  snapshotRes,
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
                 })
               : await this.openAiService.getLocRealEstDescQuery(user, {
-                  realEstateListing,
-                  realEstateType: defaultRealEstType,
-                  searchResultSnapshot,
+                  snapshotRes,
                   meanOfTransportation: transportMode,
+                  realEstateType: defaultRealEstType,
                   tonality: resultingTonality,
                 });
 
@@ -135,7 +137,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
 
         case ApiOpenAiQueryTypesEnum.EST_DESC: {
           query = this.openAiService.getRealEstDescQuery({
-            realEstateListing,
+            realEstate,
             realEstateType: defaultRealEstType,
             tonality: resultingTonality,
           });
