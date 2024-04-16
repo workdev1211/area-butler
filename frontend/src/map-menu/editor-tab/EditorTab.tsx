@@ -669,27 +669,6 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                 <label className="cursor-pointer label">
                   <input
                     type="checkbox"
-                    name="fixedRealEstates"
-                    checked={!!config?.fixedRealEstates}
-                    onChange={() => {
-                      changeConfigParam(
-                        "fixedRealEstates",
-                        !config?.fixedRealEstates
-                      );
-                    }}
-                    className="checkbox checkbox-xs checkbox-primary mr-2"
-                  />
-                  <span className="label-text">
-                    Neue "Meine Immobilien" in Zukunft anzeigen
-                  </span>
-                </label>
-              </div>
-            </li>
-            <li>
-              <div className="flex items-center gap-6 py-1">
-                <label className="cursor-pointer label">
-                  <input
-                    type="checkbox"
                     name="hideIsochrones"
                     checked={!!config?.hideIsochrones}
                     onChange={() => {

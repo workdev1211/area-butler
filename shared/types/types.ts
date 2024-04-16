@@ -378,7 +378,6 @@ export interface ApiSearchResultSnapshotConfig {
   defaultActiveGroups?: string[];
   defaultActiveMeans?: MeansOfTransportation[];
   entityVisibility?: ApiSnippetEntityVisibility[];
-  fixedRealEstates?: boolean;
   realEstateStatus?: string;
   realEstateStatus2?: string;
   poiFilter?: IApiSnapshotPoiFilter;

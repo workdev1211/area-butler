@@ -136,7 +136,6 @@ const MapPage: FunctionComponent = () => {
 
     const enhancedConfig = {
       ...config,
-      fixedRealEstates: config.fixedRealEstates ?? true,
       defaultActiveMeans: config.defaultActiveMeans?.length
         ? config.defaultActiveMeans
         : deriveAvailableMeansFromResponse(searchResponse),

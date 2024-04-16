@@ -132,7 +132,6 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
       const enhancedConfig = {
         ...snapshotConfig,
-        fixedRealEstates: snapshotConfig.fixedRealEstates ?? true,
         defaultActiveMeans: snapshotConfig.defaultActiveMeans?.length
           ? snapshotConfig.defaultActiveMeans
           : deriveAvailableMeansFromResponse(

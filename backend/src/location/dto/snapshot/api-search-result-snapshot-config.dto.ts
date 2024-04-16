@@ -99,10 +99,6 @@ class ApiSearchResultSnapshotConfigDto
   entityVisibility?: ApiSnippetEntityVisibilityDto[];
 
   @IsOptional()
-  @IsBoolean()
-  fixedRealEstates?: boolean;
-
-  @IsOptional()
   @IsString()
   @NotEquals(realEstateAllStatus)
   realEstateStatus?: string;
