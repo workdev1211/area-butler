@@ -317,13 +317,6 @@ export interface ApiCreateSnapshotReq {
   integrationId?: string;
 }
 
-export interface IApiCreateRouteSnapshot {
-  searchData: ApiSearch;
-  searchResponse: ApiSearchResponse;
-  placesLocation: IApiPlacesLocation;
-  config?: ApiSearchResultSnapshotConfig;
-}
-
 export interface IApiCreateSnapshotFromTemplate {
   coordinates?: ApiCoordinates;
   address?: string;

@@ -16,7 +16,6 @@ import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiCoordinates,
   ApiRequestStatusesEnum,
-  ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
@@ -37,7 +36,6 @@ import {
 } from '../shared/types/external-api';
 import ApiFetchSnapshotDataReqDto from './dto/api-fetch-snapshot-data-req.dto';
 import { createDirectLink } from '../shared/functions/shared';
-import ApiCreateRouteSnapshotDto from '../dto/api-create-route-snapshot.dto';
 import { PlaceService } from '../place/place.service';
 
 @ApiTags('location', 'api')
@@ -115,17 +113,6 @@ export class LocationExtController extends ApiKeyAuthController {
         requestStatus,
       );
     }
-  }
-
-  @ApiOperation({
-    description: 'Create a new embeddable map with route fetching',
-  })
-  @Post('route-snapshot')
-  async createRouteSnapshot(
-    @InjectUser(UserSubscriptionPipe) user: UserDocument,
-    @Body() snapshot: ApiCreateRouteSnapshotDto,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    return this.snapshotExtService.createRouteSnapshot(user, snapshot);
   }
 
   @ApiOperation({

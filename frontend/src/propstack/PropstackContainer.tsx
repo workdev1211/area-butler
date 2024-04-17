@@ -57,7 +57,7 @@ const PropstackContainer: FunctionComponent = () => {
 
   const history = useHistory();
   const { pathname } = useLocation();
-  const { handleLogin } = usePropstackLogin();
+  const { handlePropstackLogin } = usePropstackLogin();
 
   const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
 
@@ -66,7 +66,16 @@ const PropstackContainer: FunctionComponent = () => {
   // performs a login
   useEffect(() => {
     const login = async (): Promise<void> => {
-      setLoginStatus(await handleLogin());
+      setLoginStatus(
+        await handlePropstackLogin().catch((e) => {
+          console.error(e);
+
+          return {
+            requestStatus: RequestStatusTypesEnum.FAILURE,
+            message: e.response?.data?.message,
+          };
+        })
+      );
     };
 
     void login();

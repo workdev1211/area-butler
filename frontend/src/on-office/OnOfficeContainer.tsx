@@ -70,8 +70,17 @@ const OnOfficeContainer: FunctionComponent = () => {
 
   // performs a login
   useEffect(() => {
-    const login = async () => {
-      setLoginStatus(await handleOnOfficeLogin());
+    const login = async (): Promise<void> => {
+      setLoginStatus(
+        await handleOnOfficeLogin().catch((e) => {
+          console.error(e);
+
+          return {
+            requestStatus: RequestStatusTypesEnum.FAILURE,
+            message: e.response?.data?.message,
+          };
+        })
+      );
     };
 
     void login();

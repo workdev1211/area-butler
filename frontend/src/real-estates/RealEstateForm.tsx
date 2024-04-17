@@ -176,7 +176,6 @@ export const RealEstateForm: FunctionComponent<RealEstateFormProps> = ({
             </div>
             <LocationAutocomplete
               value={localRealEstate.address}
-              setValue={() => {}}
               afterChange={onLocationAutocompleteChange}
             />
             <div className="flex flex-wrap items-end justify-start gap-6">

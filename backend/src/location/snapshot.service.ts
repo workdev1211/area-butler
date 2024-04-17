@@ -31,6 +31,7 @@ import { IntegrationUserService } from '../user/integration-user.service';
 import { EntityRoute, EntityTransitRoute } from '@area-butler-types/routing';
 import { RoutingService } from '../routing/routing.service';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { PlaceService } from '../place/place.service';
 
 @Injectable()
 export class SnapshotService {
@@ -38,6 +39,7 @@ export class SnapshotService {
     @InjectModel(SearchResultSnapshot.name)
     private readonly searchResultSnapshotModel: Model<SearchResultSnapshotDocument>,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly placeService: PlaceService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly routingService: RoutingService,
     private readonly subscriptionService: SubscriptionService,
@@ -45,11 +47,21 @@ export class SnapshotService {
     private readonly fetchSnapshotService: FetchSnapshotService,
   ) {}
 
+  // TODO decrease the number of arguments to 2
   async createSnapshot(
     user: UserDocument | TIntegrationUserDocument,
     { integrationId, snapshot }: ApiCreateSnapshotReq,
     config?: ApiSearchResultSnapshotConfig,
+    isCheckAllowedCountries = true,
   ): Promise<ApiSearchResultSnapshotResponse> {
+    // allowedCountries
+    if (isCheckAllowedCountries) {
+      await this.placeService.fetchPlaceOrFail({
+        user,
+        location: snapshot.location,
+      });
+    }
+
     const isIntegrationUser = 'integrationUserId' in user;
     const token = randomBytes(60).toString('hex');
     let mapboxAccessToken;
@@ -180,6 +192,12 @@ export class SnapshotService {
       snapshot,
     }: ApiUpdateSearchResultSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
+    // allowedCountries
+    await this.placeService.fetchPlaceOrFail({
+      user,
+      location: snapshot.location,
+    });
+
     const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDoc(user, {
       filterQuery: { _id: new Types.ObjectId(snapshotId) },
     });

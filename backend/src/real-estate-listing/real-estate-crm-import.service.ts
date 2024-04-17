@@ -283,7 +283,7 @@ export class RealEstateCrmImportService {
         }
 
         const place = await this.placeService.fetchPlace({
-          user,
+          isNotLimitCountries: true,
           location: property.address,
         });
 
@@ -552,7 +552,7 @@ export class RealEstateCrmImportService {
           : `${street}, ${zipCode} ${city}, ${country}`;
 
         const place = await this.placeService.fetchPlace({
-          user,
+          isNotLimitCountries: true,
           location: locationAddress,
         });
 

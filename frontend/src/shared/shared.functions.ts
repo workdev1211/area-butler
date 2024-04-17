@@ -63,6 +63,8 @@ import {
 import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
+import { notAllowedCountryMsg } from "../../../shared/constants/error";
+import { defaultAllowedCountries } from "../../../shared/constants/location";
 
 const tinyColor = require("tinycolor2");
 
@@ -92,29 +94,41 @@ export const dateDiffInDays = (d1: Date, d2: Date = new Date()): number => {
 
 export const deriveGeocodeByAddress = async (
   user: ApiUser | IApiIntegrationUser,
-  address: string
+  address: string,
+  isCheckCountry = true
 ): Promise<LatLng> => {
   const [place] = await geocodeByAddress(address);
-  checkPlaceCountry({ place, user });
+
+  if (isCheckCountry) {
+    checkIsCountryAllowed({ place, user });
+  }
+
   return getLatLng(place);
 };
 
 export const deriveGeocodeByPlaceId = async (
   user: ApiUser | IApiIntegrationUser,
-  placeId: string
+  placeId: string,
+  isCheckCountry = true
 ): Promise<LatLng> => {
   const [place] = await geocodeByPlaceId(placeId);
-  checkPlaceCountry({ place, user });
+
+  if (isCheckCountry) {
+    checkIsCountryAllowed({ place, user });
+  }
+
   return getLatLng(place);
 };
 
 export const deriveAddressFromCoordinates = async ({
-  coordinates,
   allowedCountries,
+  coordinates,
   user,
+  isCheckCountry = true,
 }: {
   coordinates: ApiCoordinates;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[];
+  isCheckCountry?: boolean;
   user?: ApiUser | IApiIntegrationUser;
 }): Promise<{ label: string; value: { place_id: string } } | null> => {
   const places = await geocodeByLatLng(coordinates);
@@ -124,7 +138,11 @@ export const deriveAddressFromCoordinates = async ({
   }
 
   const place = places[0];
-  checkPlaceCountry({ place, allowedCountries, user });
+
+  if (isCheckCountry) {
+    checkIsCountryAllowed({ place, allowedCountries, user });
+  }
+
   const { formatted_address, place_id } = place;
 
   return {
@@ -135,7 +153,7 @@ export const deriveAddressFromCoordinates = async ({
   };
 };
 
-const checkPlaceCountry = ({
+const checkIsCountryAllowed = ({
   place,
   allowedCountries,
   user,
@@ -165,16 +183,13 @@ const checkPlaceCountry = ({
   }
 
   if (!resAllowedCountries) {
-    resAllowedCountries = [Iso3166_1Alpha2CountriesEnum.DE];
+    resAllowedCountries = defaultAllowedCountries;
   }
 
   if (!resAllowedCountries.includes(country)) {
-    const errorMessage =
-      "Bitte kontaktieren Sie unser Team, um ein Land freizuschalten.";
-
-    toastError(errorMessage);
-    console.error(errorMessage);
-    throw new Error(errorMessage);
+    toastError(notAllowedCountryMsg);
+    console.error(notAllowedCountryMsg);
+    throw new Error(notAllowedCountryMsg);
   }
 };
 

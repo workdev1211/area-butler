@@ -8,7 +8,6 @@ import {
   ApiSearch,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotResponse,
-  IApiCreateRouteSnapshot,
   IApiPlacesLocation,
   OsmName,
   TransportationParam,
@@ -160,32 +159,23 @@ export class SnapshotExtService {
       searchData,
     );
 
-    return this.createRouteSnapshot(user, {
-      searchData,
-      searchResponse,
-      placesLocation,
-      config,
-    });
-  }
+    const resultLocParams = searchData.preferredAmenities.reduce<
+      ApiOsmEntity[]
+    >((result, name) => {
+      const foundEntity = osmEntityTypes.find((entity) => entity.name === name);
 
-  async createRouteSnapshot(
-    user: UserDocument,
-    {
-      searchData,
-      searchResponse,
-      placesLocation,
-      config,
-    }: IApiCreateRouteSnapshot,
-  ): Promise<ApiSearchResultSnapshotResponse> {
-    const localityParams = searchData.preferredAmenities
-      .map((name) => osmEntityTypes.find((entity) => entity.name === name))
-      .filter(Boolean) as ApiOsmEntity[];
+      if (foundEntity) {
+        result.push(foundEntity);
+      }
+
+      return result;
+    }, []);
 
     const snapshot: ApiSearchResultSnapshot = {
-      localityParams,
       placesLocation,
       searchResponse,
       location: searchData.coordinates,
+      localityParams: resultLocParams,
       transportationParams: searchData.meansOfTransportation,
     };
 
@@ -204,6 +194,11 @@ export class SnapshotExtService {
       });
     }
 
-    return this.snapshotService.createSnapshot(user, { snapshot }, config);
+    return this.snapshotService.createSnapshot(
+      user,
+      { snapshot },
+      config,
+      false,
+    );
   }
 }

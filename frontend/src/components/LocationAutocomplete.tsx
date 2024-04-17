@@ -1,4 +1,4 @@
-import { FC, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import GooglePlacesAutocomplete from "react-google-places-autocomplete";
 import { components } from "react-select";
 
@@ -13,17 +13,17 @@ import { googleMapsApiOptions } from "../shared/shared.constants";
 import { useTools } from "../hooks/tools";
 import { useGoogleMapsApi } from "../hooks/google";
 import { LoadingMessage } from "./Loading";
+import { ApiCoordinates } from "../../../shared/types/types";
+
+export interface IOnLocAutoChangeProps {
+  value: any;
+  coordinates?: ApiCoordinates;
+  isError?: boolean;
+}
 
 interface ILocationAutocompleteProps {
-  afterChange?: ({
-    value,
-    coordinates,
-  }: {
-    value: any;
-    coordinates?: any;
-  }) => void;
+  afterChange: (locAutoChangeProps: IOnLocAutoChangeProps) => void;
   value: any;
-  setValue: any;
   menuZIndex?: number;
 }
 
@@ -41,30 +41,39 @@ const Menu = (props: any) => {
 const LocationAutocomplete: FC<ILocationAutocompleteProps> = ({
   afterChange = () => {},
   value = null,
-  setValue = () => {},
   menuZIndex = 99,
 }) => {
   const isLoadedGoogleMapsApi = useGoogleMapsApi();
   const { getActualUser } = useTools();
   const user = getActualUser();
 
-  const [inputValue, setInputValue] = useState(value?.label || "");
+  const [inputValue, setInputValue] = useState<string>();
   const [focus, setFocus] = useState(false);
+
+  useEffect(() => {
+    setInputValue(value?.label || "");
+  }, [value]);
 
   if (!isLoadedGoogleMapsApi) {
     return <LoadingMessage />;
   }
 
   const deriveLangLat = async (value: any): Promise<void> => {
-    if (value) {
+    if (!value) {
+      setInputValue("");
+      return;
+    }
+
+    try {
       const coordinates = value?.value?.place_id
         ? await deriveGeocodeByPlaceId(user, value.value.place_id)
         : await deriveGeocodeByAddress(user, value.label);
 
       afterChange({ value, coordinates });
+    } catch {
+      afterChange({ value, isError: true });
     }
 
-    setValue(value);
     setInputValue("");
   };
 

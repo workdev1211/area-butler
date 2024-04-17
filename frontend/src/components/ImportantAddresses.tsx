@@ -76,7 +76,6 @@ const ImportantAddresses: FunctionComponent<IImportantAddressesProps> = ({
           <div className="flex col-span-1 md:col-span-2 2xl:col-span-1">
             <LocationAutocomplete
               value={location.address}
-              setValue={() => {}}
               afterChange={(payload) => {
                 onLocationAutocompleteChange(payload, index);
               }}

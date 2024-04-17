@@ -57,7 +57,6 @@ const AddPoiForm: FunctionComponent<AddPoiFormProps> = ({
         </div>
         <LocationAutocomplete
           value={localAddress}
-          setValue={() => {}}
           afterChange={onLocationAutocompleteChange}
           menuZIndex={2000}
         />

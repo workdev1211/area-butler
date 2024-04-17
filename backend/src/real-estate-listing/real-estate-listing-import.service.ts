@@ -291,7 +291,7 @@ export class RealEstateListingImportService {
       parsedData.openimmo.anbieter,
     );
 
-    await this.setAddressAndCoordinates(user, realEstate);
+    await this.setAddressAndCoordinates(realEstate);
 
     await this.realEstateListingService.createRealEstateListing(
       user,
@@ -386,7 +386,7 @@ export class RealEstateListingImportService {
         const address = `${street} ${processedHouseNumber[0]}, ${zipCode} ${locality}, ${country}`;
 
         const place = await this.placeService.fetchPlace({
-          user,
+          isNotLimitCountries: true,
           location: address,
         });
 
@@ -433,7 +433,7 @@ export class RealEstateListingImportService {
         }
 
         const place = await this.placeService.fetchPlace({
-          user,
+          isNotLimitCountries: true,
           location: address,
         });
 
@@ -513,7 +513,7 @@ export class RealEstateListingImportService {
     }
 
     const place = await this.placeService.fetchPlace({
-      user,
+      isNotLimitCountries: true,
       location: locationAddress,
     });
 
@@ -565,7 +565,6 @@ export class RealEstateListingImportService {
   }
 
   private async setAddressAndCoordinates(
-    user: UserDocument,
     realEstate: IApiRealEstateListingSchema,
   ): Promise<void> {
     if (realEstate.address) {
@@ -574,7 +573,7 @@ export class RealEstateListingImportService {
           location: { lat, lng },
         },
       } = await this.placeService.fetchPlaceOrFail({
-        user,
+        isNotLimitCountries: true,
         location: realEstate.address,
       });
 
@@ -585,7 +584,7 @@ export class RealEstateListingImportService {
     if (realEstate.location) {
       const { formatted_address: resultingAddress } =
         await this.placeService.fetchPlaceOrFail({
-          user,
+          isNotLimitCountries: true,
           location: {
             lat: realEstate.location.coordinates[0],
             lng: realEstate.location.coordinates[1],

@@ -14,6 +14,7 @@ import { SubscriptionDocument } from './subscription.schema';
 import { ApiKeyParamsSchema } from './api-key-params.schema';
 import { IApiKeyParams } from '../../shared/types/external-api';
 import { Iso3166_1Alpha2CountriesEnum } from '@area-butler-types/location';
+import { availableCountries } from '../../../../shared/constants/location';
 
 export type UserDocument = User &
   Document & {
@@ -77,20 +78,7 @@ export class User {
 
   @Prop({
     type: Array,
-    enum: [
-      Iso3166_1Alpha2CountriesEnum.DE,
-      Iso3166_1Alpha2CountriesEnum.ES,
-      Iso3166_1Alpha2CountriesEnum.CY,
-      Iso3166_1Alpha2CountriesEnum.BH,
-      Iso3166_1Alpha2CountriesEnum.KW,
-      Iso3166_1Alpha2CountriesEnum.OM,
-      Iso3166_1Alpha2CountriesEnum.QA,
-      Iso3166_1Alpha2CountriesEnum.SA,
-      Iso3166_1Alpha2CountriesEnum.AE,
-      Iso3166_1Alpha2CountriesEnum.HR,
-      Iso3166_1Alpha2CountriesEnum.AT,
-      Iso3166_1Alpha2CountriesEnum.CH,
-    ],
+    enum: availableCountries,
   })
   allowedCountries: Iso3166_1Alpha2CountriesEnum[];
 

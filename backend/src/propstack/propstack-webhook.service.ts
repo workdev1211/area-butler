@@ -51,7 +51,7 @@ export class PropstackWebhookService {
       : user.apiConnections?.PROPSTACK.apiKey;
 
     const place = await this.placeService.fetchPlaceOrFail({
-      user,
+      isNotLimitCountries: true,
       location: property.address,
     });
 
@@ -88,6 +88,16 @@ export class PropstackWebhookService {
             realEstate,
           ),
     );
+
+    if (
+      !PlaceService.checkIsCountryAllowed(
+        user,
+        place,
+        this.handlePropertyCreated.name,
+      )
+    ) {
+      return;
+    }
 
     const { id: snapshotId, token } =
       await this.snapshotExtService.createSnapshotByPlace({
@@ -139,12 +149,6 @@ export class PropstackWebhookService {
         );
       }
     });
-
-    this.logger.verbose(
-      `Event ${eventId} processing is complete and took ${dayjs
-        .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
-        .humanize()}.`,
-    );
   }
 
   async handlePropertyUpdated(
@@ -198,7 +202,7 @@ export class PropstackWebhookService {
           location: { lat, lng },
         },
       } = await this.placeService.fetchPlaceOrFail({
-        user,
+        isNotLimitCountries: true,
         location: resultProperty.address,
       });
 

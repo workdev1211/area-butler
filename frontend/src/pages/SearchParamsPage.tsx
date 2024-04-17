@@ -1,5 +1,5 @@
 import {
-  FunctionComponent,
+  FC,
   ReactNode,
   useContext,
   useEffect,
@@ -50,7 +50,9 @@ import {
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import ImportantAddresses from "../components/ImportantAddresses";
 import LocalityParams from "../components/LocalityParams";
-import LocationAutocomplete from "../components/LocationAutocomplete";
+import LocationAutocomplete, {
+  IOnLocAutoChangeProps,
+} from "../components/LocationAutocomplete";
 import MyLocationButton from "../components/MyLocationButton";
 import TransportationParams from "../components/TransportationParams";
 import {
@@ -75,7 +77,7 @@ import { useTools } from "../hooks/tools";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
-const SearchParamsPage: FunctionComponent = () => {
+const SearchParamsPage: FC = () => {
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -104,9 +106,8 @@ const SearchParamsPage: FunctionComponent = () => {
     name: LimitIncreaseModelNameEnum;
     id: string | undefined;
   }>();
-  const [placesLocation, setPlacesLocation] = useState<any>(null);
 
-  const clearRealEstateParams = () => {
+  const clearRealEstateParams = (): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
       payload: undefined,
@@ -123,7 +124,7 @@ const SearchParamsPage: FunctionComponent = () => {
     });
   };
 
-  const clearPotentialCustomerParams = () => {
+  const clearPotentialCustomerParams = (): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_LOCALITY_PARAMS,
       payload: getCombinedOsmEntityTypes(),
@@ -161,10 +162,6 @@ const SearchParamsPage: FunctionComponent = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  useEffect(() => {
-    setPlacesLocation(searchContextState.placesLocation);
-  }, [searchContextState.placesLocation]);
 
   useEffect(() => {
     const coordinates = searchContextState.location;
@@ -233,18 +230,20 @@ const SearchParamsPage: FunctionComponent = () => {
     void fetchRealEstates();
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onLocationAutocompleteChange = (payload: any): void => {
+  const onLocAutoChange = ({
+    value,
+    coordinates,
+    isError,
+  }: IOnLocAutoChangeProps): void => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_PLACES_LOCATION,
-      payload: payload.value,
+      payload: value,
     });
 
-    if (payload.coordinates) {
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_LOCATION,
-        payload: payload.coordinates,
-      });
-    }
+    searchContextDispatch({
+      type: SearchContextActionTypes.SET_LOCATION,
+      payload: isError || !coordinates ? undefined : coordinates,
+    });
   };
 
   const onMyLocationChange = async (
@@ -539,7 +538,7 @@ const SearchParamsPage: FunctionComponent = () => {
     await handleAnalysis(onFinish, onFinally);
   };
 
-  const IncreaseLimitModal: FunctionComponent<{
+  const IncreaseLimitModal: FC<{
     modalConfig: ModalConfig;
   }> = ({ modalConfig }) => (
     <FormModal modalConfig={modalConfig}>
@@ -649,11 +648,9 @@ const SearchParamsPage: FunctionComponent = () => {
                 Adresse der Immobilie
               </h2>
               <div className="sub-content grid grid-cols-1 lg:grid-cols-2 gap-4">
-                {/* TODO there could be an error because of this component - useEffect subscription or something like that */}
                 <LocationAutocomplete
-                  value={placesLocation}
-                  setValue={() => {}}
-                  afterChange={onLocationAutocompleteChange}
+                  value={searchContextState.placesLocation}
+                  afterChange={onLocAutoChange}
                 />
                 <div className="flex flex-wrap items-end gap-4">
                   <MyLocationButton

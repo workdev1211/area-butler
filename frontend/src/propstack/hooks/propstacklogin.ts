@@ -35,7 +35,7 @@ export const usePropstackLogin = () => {
 
   const { post } = useHttp();
 
-  const handleLogin = async (): Promise<IIntegrationHandleLogin> => {
+  const handlePropstackLogin = async (): Promise<IIntegrationHandleLogin> => {
     const queryParamsAndUrl =
       getQueryParamsAndUrl<IApiPropstackLoginQueryParams>();
 
@@ -139,5 +139,5 @@ export const usePropstackLogin = () => {
     });
   };
 
-  return { handleLogin };
+  return { handlePropstackLogin };
 };
