@@ -268,7 +268,7 @@ const MapClipCropModal: FunctionComponent<IMapClipCropModalProps> = ({
   }, [cropParams]);
 
   return (
-    <div className="modal modal-open z-9999">
+    <div className="map-clip-crop-modal modal modal-open z-9999">
       <div className="modal-box">
         <ReactCrop
           className="react-image-crop"

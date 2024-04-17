@@ -115,9 +115,10 @@ const SnapshotEditorPage: FunctionComponent = () => {
       const snapshotRes = await fetchSnapshot(snapshotId);
       const snapshotConfig = (snapshotRes.config ||
         {}) as any as ApiSearchResultSnapshotConfig;
+      let realEstates = listings;
 
-      if (!listings) {
-        await fetchRealEstates();
+      if (!realEstates.length) {
+        realEstates = await fetchRealEstates();
       }
 
       snapshotConfig.primaryColor =
@@ -155,8 +156,14 @@ const SnapshotEditorPage: FunctionComponent = () => {
         return;
       }
 
-      const { searchResponse, preferredLocations } = snapshotRes.snapshot;
-      const filteredRealEstates = filterRealEstates(snapshotConfig, listings);
+      const { location, preferredLocations, searchResponse } =
+        snapshotRes.snapshot;
+
+      const filteredRealEstates = filterRealEstates({
+        location,
+        realEstates,
+        config: snapshotConfig,
+      });
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
@@ -304,10 +311,11 @@ const SnapshotEditorPage: FunctionComponent = () => {
       return;
     }
 
-    const filteredRealEstates = filterRealEstates(
-      searchContextState.responseConfig,
-      listings
-    );
+    const filteredRealEstates = filterRealEstates({
+      config: searchContextState.responseConfig,
+      location: searchContextState.location,
+      realEstates: listings,
+    });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,

@@ -3,7 +3,7 @@ import {
   ApiRealEstateListing,
 } from "../../../shared/types/real-estate";
 import { realEstAllTextStatus } from "../../../shared/constants/real-estate";
-import { ApiSearchResultSnapshotConfig } from "../../../shared/types/types";
+import { IFilterRealEstProps } from "./real-estate.types";
 
 export const getRealEstateCost = ({
   minPrice,
@@ -22,10 +22,11 @@ export const getRealEstateCost = ({
   return cost;
 };
 
-export const filterRealEstates = (
-  config?: ApiSearchResultSnapshotConfig,
-  realEstates?: ApiRealEstateListing[]
-): ApiRealEstateListing[] => {
+export const filterRealEstates = ({
+  config,
+  location,
+  realEstates,
+}: IFilterRealEstProps): ApiRealEstateListing[] => {
   if (!config) {
     return realEstates || [];
   }
@@ -36,19 +37,25 @@ export const filterRealEstates = (
 
   const { realEstateStatus, realEstateStatus2 } = config;
 
-  return realEstateStatus || realEstateStatus2
-    ? realEstates.filter(({ name, status, status2 }) => {
-        const filter1 = realEstateStatus
-          ? realEstateStatus === realEstAllTextStatus ||
-            status === realEstateStatus
-          : true;
+  return location || realEstateStatus || realEstateStatus2
+    ? realEstates.filter(
+        ({ coordinates: { lat, lng }, name, status, status2 }) => {
+          const locationFilter = location
+            ? location.lat !== lat || location.lng !== lng
+            : true;
 
-        const filter2 = realEstateStatus2
-          ? realEstateStatus2 === realEstAllTextStatus ||
-            status2 === realEstateStatus2
-          : true;
+          const statusFilter = realEstateStatus
+            ? realEstateStatus === realEstAllTextStatus ||
+              status === realEstateStatus
+            : true;
 
-        return filter1 && filter2;
-      })
+          const status2Filter = realEstateStatus2
+            ? realEstateStatus2 === realEstAllTextStatus ||
+              status2 === realEstateStatus2
+            : true;
+
+          return locationFilter && statusFilter && status2Filter;
+        }
+      )
     : realEstates;
 };

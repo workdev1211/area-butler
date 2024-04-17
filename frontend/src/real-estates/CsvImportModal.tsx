@@ -94,8 +94,6 @@ const CsvImportModal: FunctionComponent<ICsvImportModalProps> = ({
       {isShownBusyModal && (
         <BusyModal
           items={[{ key: "csv-import", text: "CSV-Datei wird importiert" }]}
-          isDisabledLoadingBar={true}
-          isAnimated={true}
         />
       )}
       <div

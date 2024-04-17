@@ -332,11 +332,11 @@ export class RealEstateListingService {
 
   async fetchRealEstateByCoords(
     user: UserDocument | TIntegrationUserDocument,
-    coordinates: ApiCoordinates,
+    { lat, lng }: ApiCoordinates,
   ): Promise<RealEstateListingDocument> {
     const isIntegrationUser = 'integrationUserId' in user;
     const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
-      'snapshot.location': coordinates,
+      'location.coordinates': [lat, lng],
     };
 
     Object.assign(

@@ -121,7 +121,7 @@ export class FetchSnapshotService {
     return plainToInstance(
       ApiSearchResultSnapshotResponseDto,
       snapshotResDtoData,
-      { exposeUnsetFields: false },
+      { exposeUnsetFields: false, excludeExtraneousValues: false },
     );
   }
 

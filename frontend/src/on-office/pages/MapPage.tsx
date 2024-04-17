@@ -91,7 +91,7 @@ const MapPage: FunctionComponent = () => {
       const snapshotRes = await fetchSnapshot(snapshotId);
       const config = snapshotRes.config;
 
-      if (!listings) {
+      if (!listings.length) {
         await fetchRealEstates();
       }
 
@@ -118,20 +118,25 @@ const MapPage: FunctionComponent = () => {
     }
 
     const {
+      config,
       snapshot: {
-        searchResponse,
-        transportationParams,
         localityParams,
         location,
         placesLocation,
         preferredLocations = [],
         routes = [],
+        searchResponse,
         transitRoutes = [],
+        transportationParams,
       },
-      config,
     } = snapshotRes;
 
-    const filteredRealEstates = filterRealEstates(config, listings);
+    const filteredRealEstates = filterRealEstates({
+      config,
+      location,
+      realEstates: listings,
+    });
+
     setProcessedRealEstates(filteredRealEstates);
 
     const enhancedConfig = {
@@ -237,10 +242,11 @@ const MapPage: FunctionComponent = () => {
       return;
     }
 
-    const filteredRealEstates = filterRealEstates(
-      searchContextState.responseConfig,
-      listings
-    );
+    const filteredRealEstates = filterRealEstates({
+      config: searchContextState.responseConfig,
+      location: searchContextState.location,
+      realEstates: listings,
+    });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,

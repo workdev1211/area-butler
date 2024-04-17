@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
-import { RealEstateListingService } from '../real-estate-listing.service';
 import { IntegrationUserService } from '../../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { RealEstateListingIntService } from '../real-estate-listing-int.service';
@@ -20,9 +19,8 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
   private readonly logger = new Logger(ProcessOpenAiIntUsageInterceptor.name);
 
   constructor(
-    private readonly realEstateListingService: RealEstateListingService,
-    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly integrationUserService: IntegrationUserService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
   async intercept(
@@ -31,7 +29,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
   ): Promise<Observable<unknown>> {
     const req = context.switchToHttp().getRequest();
     const path = req.route.path;
-    const { realEstateListingId, isFormalToInformal } = req.body;
+    const { integrationId, isFormalToInformal } = req.body;
     const integrationUser: TIntegrationUserDocument = req.principal;
     let actionType;
 
@@ -70,13 +68,14 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
       }
     }
 
-    const realEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        realEstateListingId,
-      );
+    const realEstate =
+      await this.realEstateListingIntService.findOneOrFailByIntParams({
+        integrationId,
+        integrationType: integrationUser.integrationType,
+        integrationUserId: integrationUser.integrationUserId,
+      });
 
-    const { openAiRequestQuantity } = realEstateListing.integrationParams;
+    const { openAiRequestQuantity } = realEstate.integrationParams;
 
     if (!openAiRequestQuantity) {
       const availProdContType =
@@ -88,7 +87,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
       await this.realEstateListingIntService.unlockProduct(
         integrationUser,
         availProdContType,
-        realEstateListingId,
+        integrationId,
       );
 
       await this.integrationUserService.incrementProductUsage(
@@ -97,18 +96,19 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
       );
     }
 
-    const updatedRealEstateListing =
-      await this.realEstateListingService.fetchRealEstateListingById(
-        integrationUser,
-        realEstateListingId,
-      );
+    const updatedRealEstate =
+      await this.realEstateListingIntService.findOneOrFailByIntParams({
+        integrationId,
+        integrationType: integrationUser.integrationType,
+        integrationUserId: integrationUser.integrationUserId,
+      });
 
-    req.realEstateListing = updatedRealEstateListing;
+    req.realEstate = updatedRealEstate;
 
     return next.handle().pipe(
-      tap(async () => {
-        updatedRealEstateListing.integrationParams.openAiRequestQuantity -= 1;
-        await updatedRealEstateListing.save();
+      tap(async (): Promise<void> => {
+        updatedRealEstate.integrationParams.openAiRequestQuantity -= 1;
+        await updatedRealEstate.save();
       }),
     );
   }

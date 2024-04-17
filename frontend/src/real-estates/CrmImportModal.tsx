@@ -41,8 +41,6 @@ const CrmImportModal: FunctionComponent<ICrmImportModalProps> = ({
       {isShownBusyModal && (
         <BusyModal
           items={[{ key: "crm-import", text: "CRM-Datei wird importiert" }]}
-          isDisabledLoadingBar={true}
-          isAnimated={true}
         />
       )}
       <div

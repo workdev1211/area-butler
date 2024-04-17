@@ -15,12 +15,7 @@ const OpenAiLocationDescriptionModal: FunctionComponent<
   IOpenAiLocationDescriptionModalProps
 > = ({ isShownModal, closeModal, snapshotId }) => {
   const openAiLocationModalConfig: ModalConfig = {
-    modalTitle: (
-      <>
-        <span>Standortbeschreibung generieren</span>
-        <span className="badge badge-primary">BETA</span>
-      </>
-    ),
+    modalTitle: "Standortbeschreibung generieren",
     submitButtonTitle: "Generieren",
     modalOpen: isShownModal,
     postSubmit: (success) => {

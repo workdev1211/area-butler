@@ -71,9 +71,7 @@ const OpenAiLocationFormHandler: FunctionComponent<
           Es kann mühselig sein, einen Text zu konstruieren, auch wenn man schon
           einen groben Plan bezüglich der Lage hat. Die richtige Struktur und
           die gut klingende Formulierungen zu finden, ist nicht leicht. Hierfür
-          möchten wir Ihnen Inspiration geben. Da das Feature in der Beta-Phase
-          ist, empfehlen wir, die harten Fakten vor der Weiterverwendung kurz zu
-          prüfen.
+          möchten wir Ihnen Inspiration geben.
         </p>
         <p>Viel Spaß mit unserem KI-Textgenerator.</p>
       </div>

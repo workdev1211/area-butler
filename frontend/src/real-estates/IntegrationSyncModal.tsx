@@ -97,8 +97,6 @@ const IntegrationSyncModal: FunctionComponent<IIntegrationSyncModalProps> = ({
           items={[
             { key: "sync-estates", text: "Immobilien werden synchronisiert" },
           ]}
-          isDisabledLoadingBar={true}
-          isAnimated={true}
         />
       )}
 

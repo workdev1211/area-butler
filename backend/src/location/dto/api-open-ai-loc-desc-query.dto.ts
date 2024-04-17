@@ -26,12 +26,6 @@ class ApiOpenAiLocDescQueryDto
   @IsEnum(MeansOfTransportation)
   meanOfTransportation: MeansOfTransportation;
 
-  // in case of the integration
-  @Expose()
-  @IsOptional()
-  @IsString()
-  realEstateId?: string;
-
   @Expose()
   @IsOptional()
   @IsBoolean()

@@ -354,30 +354,35 @@ export interface IApiSnapshotConfigRealEstSettings {
 }
 
 export interface ApiSearchResultSnapshotConfig {
-  showLocation?: boolean;
+  defaultActiveGroups?: string[];
+  defaultActiveMeans?: MeansOfTransportation[];
+  entityVisibility?: ApiSnippetEntityVisibility[];
   groupItems?: boolean;
-  showAddress?: boolean;
-  showStreetViewLink?: boolean;
-  isDetailsShown?: boolean; // extended to other types of export
+
   hideIsochrones?: boolean;
   hideMeanToggles?: boolean; // for reference map // 'MeansToggle' component used to turn on and off the isochrones
   hideMapMenu?: boolean; // for reference map
   hidePoiIcons?: boolean; // for reference map
-  mapBoxMapId?: string;
-  theme?: ApiSearchResultSnapshotConfigTheme;
-  mapIcon?: string;
-  primaryColor?: string;
-  zoomLevel?: number;
-  defaultActiveGroups?: string[];
-  defaultActiveMeans?: MeansOfTransportation[];
-  entityVisibility?: ApiSnippetEntityVisibility[];
-  realEstateStatus?: string;
-  realEstateStatus2?: string;
-  poiFilter?: IApiSnapshotPoiFilter;
-  iconSizes?: IApiSnapshotIconSizes;
+
+  isDetailsShown?: boolean; // extended to other types of export
+  isFilterMenuAvail?: boolean; // move to 'realEstateSettings'
   isMapMenuCollapsed?: boolean;
-  isFilterMenuAvail?: boolean;
+  iconSizes?: IApiSnapshotIconSizes;
+
+  mapBoxMapId?: string;
+  mapIcon?: string;
+  poiFilter?: IApiSnapshotPoiFilter;
+  primaryColor?: string;
+
   realEstateSettings?: IApiSnapshotConfigRealEstSettings;
+  realEstateStatus?: string; // move to 'realEstateSettings'
+  realEstateStatus2?: string; // move to 'realEstateSettings'
+
+  showAddress?: boolean;
+  showLocation?: boolean;
+  showStreetViewLink?: boolean;
+  theme?: ApiSearchResultSnapshotConfigTheme;
+  zoomLevel?: number;
 }
 
 export interface ApiSearchResultSnapshotResponse {

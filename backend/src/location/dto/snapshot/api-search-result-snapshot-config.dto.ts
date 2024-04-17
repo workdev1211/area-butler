@@ -10,11 +10,12 @@ import {
   IsObject,
   IsString,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 
 import {
   ApiSearchResultSnapshotConfig,
   ApiSearchResultSnapshotConfigTheme,
+  IApiSnapshotConfigRealEstSettings,
   IApiSnapshotIconSizes,
   IApiSnapshotPoiFilter,
   MeansOfTransportation,
@@ -23,105 +24,142 @@ import ApiSnippetEntityVisibilityDto from '../../../dto/api-snippet-entity-visib
 import ApiSnapshotIconSizesDto from '../../../dto/api-snapshot-icon-sizes.dto';
 import ApiSnapshotPoiFilterDto from '../../../dto/api-snapshot-poi-filter.dto';
 import { realEstateAllStatus } from '../../../../../shared/constants/real-estate';
+import ApiSnapshotConfigRealEstSettingsDto from './api-snapshot-poi-filter.dto';
 
+@Exclude()
 class ApiSearchResultSnapshotConfigDto
   implements ApiSearchResultSnapshotConfig
 {
-  @IsOptional()
-  @IsBoolean()
-  showLocation?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  groupItems?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  showAddress?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  showStreetViewLink?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  isDetailsShown?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  hideIsochrones?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  hideMeanToggles?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  hideMapMenu?: boolean;
-
-  @IsOptional()
-  @IsBoolean()
-  hidePoiIcons?: boolean;
-
-  @IsOptional()
-  @IsString()
-  mapBoxMapId?: string;
-
-  @IsOptional()
-  @IsIn(['DEFAULT', 'KF'])
-  theme?: ApiSearchResultSnapshotConfigTheme;
-
-  @IsOptional()
-  @IsString()
-  mapIcon?: string;
-
-  @IsOptional()
-  @IsString()
-  primaryColor?: string;
-
-  @IsOptional()
-  @IsNumber()
-  zoomLevel?: number;
-
+  @Expose()
   @IsOptional()
   @IsArray()
   defaultActiveGroups?: string[];
 
+  @Expose()
   @IsOptional()
   @IsArray()
   @IsEnum(MeansOfTransportation, { each: true })
   defaultActiveMeans?: MeansOfTransportation[];
 
+  @Expose()
+  @Type(() => ApiSnippetEntityVisibilityDto)
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => ApiSnippetEntityVisibilityDto)
   entityVisibility?: ApiSnippetEntityVisibilityDto[];
 
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  groupItems?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  hideIsochrones?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  hideMeanToggles?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  hideMapMenu?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  hidePoiIcons?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isDetailsShown?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isFilterMenuAvail?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  isMapMenuCollapsed?: boolean;
+
+  @Expose()
+  @Type(() => ApiSnapshotIconSizesDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  iconSizes?: IApiSnapshotIconSizes;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  mapBoxMapId?: string;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  mapIcon?: string;
+
+  @Expose()
+  @Type(() => ApiSnapshotPoiFilterDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  poiFilter?: IApiSnapshotPoiFilter;
+
+  @Expose()
+  @IsOptional()
+  @IsString()
+  primaryColor?: string;
+
+  @Expose()
+  @Type(() => ApiSnapshotConfigRealEstSettingsDto)
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  realEstateSettings?: IApiSnapshotConfigRealEstSettings;
+
+  @Expose()
   @IsOptional()
   @IsString()
   @NotEquals(realEstateAllStatus)
   realEstateStatus?: string;
 
+  @Expose()
   @IsOptional()
   @IsString()
+  @NotEquals(realEstateAllStatus)
   realEstateStatus2?: string;
 
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiSnapshotPoiFilterDto)
-  poiFilter?: IApiSnapshotPoiFilter;
-
-  @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => ApiSnapshotIconSizesDto)
-  iconSizes?: IApiSnapshotIconSizes;
-
+  @Expose()
   @IsOptional()
   @IsBoolean()
-  isMapMenuCollapsed?: boolean;
+  showAddress?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  showLocation?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsBoolean()
+  showStreetViewLink?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsIn(['DEFAULT', 'KF'])
+  theme?: ApiSearchResultSnapshotConfigTheme;
+
+  @Expose()
+  @IsOptional()
+  @IsNumber()
+  zoomLevel?: number;
 }
 
 export default ApiSearchResultSnapshotConfigDto;

@@ -58,7 +58,9 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
   formRef,
 }) => {
   const { integrationType } = useContext(ConfigContext);
-  const { searchContextState } = useContext(SearchContext);
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
   const {
     realEstateState: { listings },
     realEstateDispatch,
@@ -72,7 +74,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
     if (isIntegration) {
       realEstateDispatch({
         type: RealEstateActionTypes.SET_REAL_ESTATES,
-        payload: [searchContextState.realEstateListing!],
+        payload: [realEstateListing!],
       });
 
       return;
@@ -90,6 +92,10 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
       return initialValues.realEstateId;
     }
 
+    if (realEstateListing) {
+      return realEstateListing.id;
+    }
+
     if (listings.length === 1) {
       return listings[0].id;
     }
@@ -97,19 +103,19 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
     return "";
   };
 
-  const resultingInitialValues: IApiOpenAiRealEstDescQuery = {
+  const resultInitValues: IApiOpenAiRealEstDescQuery = {
     ...initialValues,
     realEstateId: getInitRealEstateId(),
   };
 
   const validationSchema = Yup.object({
-    realEstateListingId: Yup.string(),
+    realEstateId: Yup.string(),
     realEstateType: Yup.string(),
   });
 
   return (
     <Formik
-      initialValues={resultingInitialValues}
+      initialValues={resultInitValues}
       validationSchema={validationSchema}
       onSubmit={(values) => {
         if (typeof onSubmit === "function") {
@@ -125,11 +131,10 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
               className="select select-bordered w-full max-w-full"
               label="Immobilienbeschreibung"
               placeholder="Immobilienbeschreibung"
-              name="realEstateListingId"
+              name="realEstateId"
               disabled={listings.length < 2}
               defaultValue={
-                resultingInitialValues.realEstateId ||
-                placeholderSelectOptionKey
+                resultInitValues.realEstateId || placeholderSelectOptionKey
               }
             >
               {listings.length > 1 && (
@@ -156,7 +161,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
               customTextValue={OpenAiRealEstTypesEnum.CUSTOM}
-              initialText={resultingInitialValues?.realEstateType}
+              initialText={resultInitValues?.realEstateType}
             />
           </div>
 

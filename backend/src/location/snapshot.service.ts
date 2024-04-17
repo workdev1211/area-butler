@@ -193,10 +193,12 @@ export class SnapshotService {
     }: ApiUpdateSearchResultSnapshot,
   ): Promise<ApiSearchResultSnapshotResponse> {
     // allowedCountries
-    await this.placeService.fetchPlaceOrFail({
-      user,
-      location: snapshot.location,
-    });
+    if (snapshot?.location) {
+      await this.placeService.fetchPlaceOrFail({
+        user,
+        location: snapshot.location,
+      });
+    }
 
     const snapshotDoc = await this.fetchSnapshotService.fetchSnapshotDoc(user, {
       filterQuery: { _id: new Types.ObjectId(snapshotId) },

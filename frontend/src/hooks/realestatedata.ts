@@ -37,7 +37,7 @@ export const useRealEstateData = () => {
 
   const fetchRealEstates = async (
     statuses?: IApiRealEstateStatuses
-  ): Promise<void> => {
+  ): Promise<ApiRealEstateListing[]> => {
     let url = isIntegration
       ? "/api/real-estate-listing-int/listings"
       : "/api/real-estate-listing/listings";
@@ -54,6 +54,8 @@ export const useRealEstateData = () => {
       type: RealEstateActionTypes.SET_REAL_ESTATES,
       payload: realEstates,
     });
+
+    return realEstates;
   };
 
   const fetchRealEstStatuses = async (): Promise<IApiRealEstStatusByUser> => {

@@ -66,15 +66,13 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     <div className="modal modal-open z-2000">
       <div className="modal-box max-h-screen overflow-y-auto min-w-[75%]">
         <h1 className="text-xl mb-5 flex items-center gap-2">
-          <span>KI Texte aus der magischen Feder</span>
-          <span className="badge badge-primary">BETA</span>
+          KI Texte aus der magischen Feder
         </h1>
         <div className="text-justify text-base">
           Unser KI-Textgenerator bietet Inspiration für die Konstruktion von
           Texten, insbesondere bei Schwierigkeiten bei der Struktur und
           Formulierung. Er bezieht Umgebungsdaten und Informationen zur
-          Immobilie mit ein. Das Feature befindet sich derzeit in der Beta-Phase
-          und es wird empfohlen, die Fakten vor Verwendung zu überprüfen.
+          Immobilie mit ein.
         </div>
         <OpenAiModule
           initialQueryType={queryType}

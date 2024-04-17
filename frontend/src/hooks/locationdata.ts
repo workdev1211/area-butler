@@ -1,4 +1,4 @@
-import { Dispatch, RefObject, SetStateAction, useContext } from "react";
+import { RefObject, useContext } from "react";
 import { AxiosResponse } from "axios";
 
 import {
@@ -14,7 +14,6 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiUpdateSearchResultSnapshot,
 } from "../../../shared/types/types";
-import { IBusyModalItem } from "../components/BusyModal";
 import { getUncombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { ICurrentMapRef } from "../shared/search-result.types";
 import { toastError, toastSuccess } from "../shared/shared.functions";
@@ -95,20 +94,9 @@ export const useLocationData = () => {
     return duplicatedSnapshot;
   };
 
-  const createSnapshot = async ({
-    busyModalItems,
-    setBusyModalItems,
-    searchResponse,
-  }: {
-    busyModalItems: IBusyModalItem[];
-    setBusyModalItems: Dispatch<SetStateAction<IBusyModalItem[]>>;
-    searchResponse: ApiSearchResponse;
-  }): Promise<ApiSearchResultSnapshotResponse> => {
-    busyModalItems.push({
-      key: "save-map-snapshot",
-    });
-    setBusyModalItems([...busyModalItems]);
-
+  const createSnapshot = async (
+    searchResponse: ApiSearchResponse
+  ): Promise<ApiSearchResultSnapshotResponse> => {
     return (
       await post<ApiSearchResultSnapshotResponse, ApiCreateSnapshotReq>(
         isIntegration ? "/api/location-int/snapshot" : "/api/location/snapshot",

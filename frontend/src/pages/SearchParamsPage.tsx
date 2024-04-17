@@ -19,8 +19,6 @@ import {
 } from "context/PotentialCustomerContext";
 import { RealEstateContext } from "context/RealEstateContext";
 import { UserContext } from "context/UserContext";
-import { useFederalElectionData } from "hooks/federalelectiondata";
-import { useParticlePollutionData } from "hooks/particlepollutiondata";
 import PotentialCustomerDropDown from "potential-customer/PotentialCustomerDropDown";
 import { useHistory, useLocation } from "react-router-dom";
 import RealEstateDropDown from "real-estates/RealEstateDropDown";
@@ -34,7 +32,6 @@ import {
 import TourStarter from "tour/TourStarter";
 import IncreaseLimitFormHandler from "user/IncreaseLimitFormHandler";
 import {
-  ApiDataSource,
   ApiSubscriptionLimitsEnum,
   ApiSubscriptionPlanType,
 } from "../../../shared/types/subscription-plan";
@@ -59,7 +56,6 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../context/SearchContext";
-import { useCensusData } from "../hooks/censusdata";
 import DefaultLayout from "../layout/defaultLayout";
 import BusyModal, { IBusyModalItem } from "../components/BusyModal";
 import { LimitIncreaseModelNameEnum } from "../../../shared/types/billing";
@@ -86,9 +82,6 @@ const SearchParamsPage: FC = () => {
 
   const { fetchPotentialCustomers } = usePotentialCustomerData();
   const { fetchRealEstates } = useRealEstateData();
-  const { fetchCensusData } = useCensusData();
-  const { fetchFederalElectionData } = useFederalElectionData();
-  const { fetchParticlePollutionData } = useParticlePollutionData();
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
@@ -100,7 +93,6 @@ const SearchParamsPage: FC = () => {
   const [isNewRequest, setIsNewRequest] = useState(true);
   const [isShownBusyModal, setIsShownBusyModal] = useState(false);
   const [busyModalItems, setBusyModalItems] = useState<IBusyModalItem[]>([]);
-  const [busyModalItemCount, setBusyModalItemCount] = useState(0);
   const [limitType, setLimitType] = useState<ApiSubscriptionLimitsEnum>();
   const [modelData, setModelData] = useState<{
     name: LimitIncreaseModelNameEnum;
@@ -281,32 +273,9 @@ const SearchParamsPage: FC = () => {
       ({ coordinates }) => !coordinates
     );
 
-  const hasCensusData = !isIntegrationUser
-    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
-        ApiDataSource.CENSUS
-      )
-    : false;
-
-  const hasElectionData = !isIntegrationUser
-    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
-        ApiDataSource.FEDERAL_ELECTION
-      )
-    : false;
-
-  const hasPollutionData = !isIntegrationUser
-    ? !!user?.subscription?.config.appFeatures.dataSources.includes(
-        ApiDataSource.PARTICLE_POLLUTION
-      )
-    : false;
-
   const fetchLocationSearchData = async (
     items: IBusyModalItem[]
   ): Promise<ApiSearchResponse> => {
-    items.push({
-      key: "location-search",
-    });
-    setBusyModalItems([...items]);
-
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
       payload: undefined,
@@ -333,58 +302,22 @@ const SearchParamsPage: FC = () => {
       integrationId: searchContextState.realEstateListing?.integrationId,
     };
 
+    items.push({
+      key: "location-search-started",
+    });
+    setBusyModalItems([...items]);
+
     const searchResponse = await createLocation(search);
+
+    items.push({
+      key: "location-search-completed",
+    });
+    setBusyModalItems([...items]);
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_SEARCH_RESPONSE,
       payload: searchResponse,
     });
-
-    if (hasElectionData) {
-      items.push({
-        key: "fetch-election-data",
-      });
-      setBusyModalItems([...items]);
-
-      const federalElectionData = await fetchFederalElectionData(
-        searchContextState.location!
-      );
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_FEDERAL_ELECTION_DATA,
-        payload: federalElectionData!,
-      });
-    }
-
-    if (hasPollutionData) {
-      items.push({
-        key: "fetch-particle-pollution-data",
-      });
-      setBusyModalItems([...items]);
-
-      const particlePollutionData = await fetchParticlePollutionData(
-        searchContextState.location!
-      );
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_PARTICLE_POLLUTION_DATA,
-        payload: particlePollutionData,
-      });
-    }
-
-    if (hasCensusData) {
-      items.push({
-        key: "fetch-census-data",
-      });
-      setBusyModalItems([...items]);
-
-      const censusData = await fetchCensusData(searchContextState.location!);
-
-      searchContextDispatch({
-        type: SearchContextActionTypes.SET_CENSUS_DATA,
-        payload: censusData,
-      });
-    }
 
     searchContextDispatch({
       type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
@@ -427,16 +360,6 @@ const SearchParamsPage: FC = () => {
         payload: true,
       });
 
-      setBusyModalItemCount(
-        +(hasElectionData || 0) +
-          +(hasPollutionData || 0) +
-          +(hasCensusData || 0) +
-          1 +
-          (searchContextState.preferredLocations?.length!
-            ? searchContextState.preferredLocations!.length * 2 + 1
-            : 1)
-      );
-
       const items: IBusyModalItem[] = [];
       const searchResponse = await fetchLocationSearchData(items);
 
@@ -454,14 +377,10 @@ const SearchParamsPage: FC = () => {
         payload: [...activeMeans],
       });
 
-      snapshotRes = await createSnapshot({
-        setBusyModalItems,
-        searchResponse,
-        busyModalItems: items,
-      });
+      snapshotRes = await createSnapshot(searchResponse);
 
       items.push({
-        key: "create-snapshot",
+        key: "snapshot-created",
       });
       setBusyModalItems([...items]);
 
@@ -635,9 +554,9 @@ const SearchParamsPage: FC = () => {
       {isShownBusyModal && (
         <BusyModal
           items={busyModalItems}
-          itemCount={busyModalItemCount}
-          isAnimated={true}
+          isDisabledLoadingBar={false}
           isRandomMessages={true}
+          itemCount={3}
         />
       )}
       <Formik initialValues={{ lat: "", lng: "" }} onSubmit={() => {}}>

@@ -14,6 +14,7 @@ import { randomizeCoordinates } from '../../../../shared/functions/shared.functi
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import ApiSearchResultSnapshotDto from './snapshot/api-search-result-snapshot.dto';
 import ApiRealEstateListingDto from '../../dto/api-real-estate-listing.dto';
+import ApiSearchResultSnapshotConfigDto from './snapshot/api-search-result-snapshot-config.dto';
 
 export type TSnapshotResDtoData = LeanDocument<SearchResultSnapshotDocument> & {
   isEmbedded?: boolean;
@@ -67,12 +68,10 @@ class ApiSearchResultSnapshotResponseDto
   snapshot: ApiSearchResultSnapshot;
 
   @Expose()
+  @Type(() => ApiSearchResultSnapshotConfigDto)
   config?: ApiSearchResultSnapshotConfig;
 
   @Expose()
-  @Transform(({ value }: { value: string }): string => value, {
-    toClassOnly: true,
-  })
   description?: string;
 
   @Expose()
@@ -122,6 +121,10 @@ class ApiSearchResultSnapshotResponseDto
 
   @Expose()
   visitAmount?: number;
+
+  constructor() {
+    randomCoordinates = undefined;
+  }
 }
 
 export default ApiSearchResultSnapshotResponseDto;
@@ -146,7 +149,7 @@ const processAddressVisibility = <
   if (!isSnapshot) {
     return {
       ...entity,
-      address: '',
+      address: undefined,
       coordinates: randomCoordinates,
     };
   }
@@ -155,16 +158,16 @@ const processAddressVisibility = <
     ...entity.searchResponse,
     centerOfInterest: {
       coordinates: randomCoordinates,
-      address: null,
+      address: undefined,
       distanceInMeters: 0,
-      entity: null,
+      entity: undefined,
     },
   };
 
   return {
     ...entity,
     location: randomCoordinates,
-    placesLocation: null,
+    placesLocation: undefined,
     searchResponse: processSearchRes,
   };
 };
