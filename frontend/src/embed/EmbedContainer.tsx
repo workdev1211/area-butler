@@ -221,11 +221,7 @@ const EmbedContainer: FC = () => {
       }),
     });
 
-    setMapDisplayMode(
-      embeddedData.snapshotRes.integrationId
-        ? MapDisplayModesEnum.EMBED_INTEGRATION
-        : MapDisplayModesEnum.EMBED
-    );
+    setMapDisplayMode(MapDisplayModesEnum.EMBED);
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [embeddedData]);

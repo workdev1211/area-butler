@@ -10,10 +10,12 @@ import { PropstackService } from './propstack.service';
 import { PropstackWebhookService } from './propstack-webhook.service';
 import { PlaceModule } from '../place/place.module';
 import { ClientModule } from '../client/client.module';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   imports: [
     ClientModule,
+    HttpModule,
     LocationModule,
     PlaceModule,
     RealEstateListingModule,

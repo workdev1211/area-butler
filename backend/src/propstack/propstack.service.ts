@@ -3,8 +3,10 @@ import {
   UnprocessableEntityException,
   Logger,
 } from '@nestjs/common';
+import { HttpService } from '@nestjs/axios';
 import { plainToInstance } from 'class-transformer';
 import { createCipheriv, createDecipheriv } from 'crypto';
+import { firstValueFrom } from 'rxjs';
 import { Types } from 'mongoose';
 
 import { IntegrationUserService } from '../user/integration-user.service';
@@ -38,7 +40,7 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import {
   IApiPropstackLoginQueryParams,
   IApiPropstackLoginReq,
-  IApiPropstackTargetGroupChangedReq,
+  // IApiPropstackTargetGroupChangedReq,
   PropstackTextFieldTypeEnum,
 } from '@area-butler-types/propstack';
 import {
@@ -59,6 +61,7 @@ import { OpenAiTonalityEnum } from '@area-butler-types/open-ai';
 import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { UserDocument } from '../user/schema/user.schema';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
+import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
 
 interface IPropstackFetchTextFieldValues {
   realEstateId: string;
@@ -75,6 +78,7 @@ export class PropstackService {
 
   constructor(
     private readonly fetchSnapshotService: FetchSnapshotService,
+    private readonly httpService: HttpService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly locationService: LocationService,
     private readonly placeService: PlaceService,
@@ -199,30 +203,31 @@ export class PropstackService {
     };
   }
 
-  async handleTargetGroupChanged(
-    integrationUser: TIntegrationUserDocument,
-    { propertyId, targetGroupName }: IApiPropstackTargetGroupChangedReq,
-  ): Promise<void> {
-    const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
-      integrationUser,
-      propertyId,
-    );
-
-    const openAiDescriptions = await this.fetchTextFieldValues({
-      targetGroupName,
-      realEstateId: realEstate.id,
-      snapshotId: latestSnapshot.id,
-      user: integrationUser,
-    });
-
-    await this.propstackApiService.updatePropertyById(
-      (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
-      propertyId,
-      {
-        ...openAiDescriptions,
-      },
-    );
-  }
+  // Left just in case of possible future usage
+  // async handleTargetGroupChanged(
+  //   integrationUser: TIntegrationUserDocument,
+  //   { propertyId, targetGroupName }: IApiPropstackTargetGroupChangedReq,
+  // ): Promise<void> {
+  //   const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
+  //     integrationUser,
+  //     propertyId,
+  //   );
+  //
+  //   const openAiDescriptions = await this.fetchTextFieldValues({
+  //     targetGroupName,
+  //     realEstateId: realEstate.id,
+  //     snapshotId: latestSnapshot.id,
+  //     user: integrationUser,
+  //   });
+  //
+  //   await this.propstackApiService.updatePropertyById(
+  //     (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
+  //     propertyId,
+  //     {
+  //       ...openAiDescriptions,
+  //     },
+  //   );
+  // }
 
   async updatePropertyTextField(
     { parameters }: TIntegrationUserDocument,
@@ -401,7 +406,12 @@ export class PropstackService {
     intUserParams.brokerId = parsedBrokerId;
     integrationUser.markModified('parameters.brokerId');
 
-    const { email, public_email, name } = await this.propstackApiService
+    const {
+      email,
+      name,
+      public_email: publicEmail,
+      shop: { color, logo_url: logoUrl },
+    } = await this.propstackApiService
       .fetchBrokerById(
         (integrationUser.parameters as IApiIntUserPropstackParams).apiKey,
         parsedBrokerId,
@@ -411,10 +421,33 @@ export class PropstackService {
         return {} as Partial<IPropstackBroker>;
       });
 
+    if (logoUrl) {
+      const { data: logoData } = await firstValueFrom<{
+        data: ArrayBuffer;
+      }>(
+        this.httpService.get<ArrayBuffer>(logoUrl, {
+          responseType: 'arraybuffer',
+        }),
+      );
+
+      if (logoData) {
+        integrationUser.config.logo = convertBase64ContentToUri(
+          Buffer.from(logoData).toString('base64'),
+        );
+
+        integrationUser.markModified('config.logo');
+      }
+    }
+
+    if (color) {
+      integrationUser.config.color = color;
+      integrationUser.markModified('config.color');
+    }
+
     const broker: IApiPropstackStoredBroker = {
       name,
       brokerId: parsedBrokerId,
-      email: public_email || email,
+      email: publicEmail || email,
     };
 
     if (!intUserParams.brokers) {

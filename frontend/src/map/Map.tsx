@@ -50,7 +50,7 @@ import {
 } from "../../../shared/types/types";
 import googleIcon from "../assets/icons/google.svg";
 import myLocationIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
-import integrationMyLocationIcon from "../assets/icons/kudiba.svg";
+import intMyLocationIcon from "../assets/icons/kudiba.svg";
 import busStopIcon from "../assets/icons/pois/bus_stop.svg";
 import stationIcon from "../assets/icons/pois/station.svg";
 import bikeIcon from "../assets/icons/means/icons-32-x-32-illustrated-ic-bike.svg";
@@ -496,15 +496,8 @@ const Map = forwardRef<ICurrentMapRef, IMapProps>(
     };
 
     const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
-    const isEmbedMode = [
-      MapDisplayModesEnum.EMBED,
-      MapDisplayModesEnum.EMBED_INTEGRATION,
-    ].includes(mapDisplayMode!);
-
-    const resultMapIcon =
-      mapDisplayMode === MapDisplayModesEnum.EMBED_INTEGRATION
-        ? integrationMyLocationIcon
-        : myLocationIcon;
+    const isEmbedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
+    const resultMapIcon = isIntegration ? intMyLocationIcon : myLocationIcon;
 
     const escFunction = useCallback(
       (e) => {

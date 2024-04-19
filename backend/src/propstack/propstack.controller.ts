@@ -29,7 +29,6 @@ import ApiIntUploadEstateFileReqDto from '../dto/integration/api-int-upload-esta
 import ApiIntCreateEstateLinkReqDto from '../dto/integration/api-int-create-estate-link-req.dto';
 import { IPropstackLink } from '../shared/types/propstack';
 import ApiPropstackUpdEstTextFieldReqDto from './dto/api-propstack-upd-est-text-field-req.dto';
-import ApiPropstackTargetGroupChangedReqDto from './dto/api-propstack-target-group-changed-req.dto';
 
 @ApiTags('propstack')
 @Controller('api/propstack')
@@ -70,27 +69,28 @@ export class PropstackController {
     return this.propstackService.login(integrationUser, loginData);
   }
 
-  @ApiOperation({ description: 'Handle a target group change' })
-  @UseInterceptors(InjectPropstackLoginUserInterceptor)
-  @Patch('target-group')
-  @HttpCode(HttpStatus.OK)
-  handleTargetGroupChanged(
-    @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() targetGroupData: ApiPropstackTargetGroupChangedReqDto,
-  ): Promise<void> {
-    this.logger.verbose(
-      `'${this.handleTargetGroupChanged.name}' method was triggered.`,
-      {
-        integrationUserId: integrationUser.integrationUserId,
-        ...targetGroupData,
-      },
-    );
-
-    return this.propstackService.handleTargetGroupChanged(
-      integrationUser,
-      targetGroupData,
-    );
-  }
+  // Left just in case of possible future usage
+  // @ApiOperation({ description: 'Handle a target group change' })
+  // @UseInterceptors(InjectPropstackLoginUserInterceptor)
+  // @Patch('target-group')
+  // @HttpCode(HttpStatus.OK)
+  // handleTargetGroupChanged(
+  //   @InjectUser() integrationUser: TIntegrationUserDocument,
+  //   @Body() targetGroupData: ApiPropstackTargetGroupChangedReqDto,
+  // ): Promise<void> {
+  //   this.logger.verbose(
+  //     `'${this.handleTargetGroupChanged.name}' method was triggered.`,
+  //     {
+  //       integrationUserId: integrationUser.integrationUserId,
+  //       ...targetGroupData,
+  //     },
+  //   );
+  //
+  //   return this.propstackService.handleTargetGroupChanged(
+  //     integrationUser,
+  //     targetGroupData,
+  //   );
+  // }
 
   @ApiOperation({ description: 'Create property link' })
   @UseInterceptors(InjectIntegrationUserInterceptor)

@@ -128,11 +128,7 @@ const SearchResultContainer = forwardRef<
     const { createDirectLink, createCodeSnippet, getActualUser } = useTools();
     const isLoadedGoogleMapsApi = useGoogleMapsApi();
 
-    const isEmbeddedMode = [
-      MapDisplayModesEnum.EMBED,
-      MapDisplayModesEnum.EMBED_INTEGRATION,
-    ].includes(mapDisplayMode);
-
+    const isEmbeddedMode = mapDisplayMode === MapDisplayModesEnum.EMBED;
     const isThemeKf = searchContextState.responseConfig?.theme === "KF";
 
     const isMapMenuPresent =
