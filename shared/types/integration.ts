@@ -2,6 +2,7 @@ import { TOnOfficeIntActTypes } from "./on-office";
 import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
 import { AreaButlerExportTypesEnum } from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
+import { TPropstackIntActTypes } from "./propstack";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -22,11 +23,13 @@ export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   isStatsFullExportActive?: boolean;
 }
 
-export type TIntegrationActionTypes = TOnOfficeIntActTypes;
+export type TIntegrationActionTypes =
+  | TOnOfficeIntActTypes
+  | TPropstackIntActTypes;
 
 export interface IApiUnlockIntProductReq {
   integrationId: string;
-  actionType: TOnOfficeIntActTypes;
+  actionType: TIntegrationActionTypes;
 }
 
 export type TUnlockIntProduct = (

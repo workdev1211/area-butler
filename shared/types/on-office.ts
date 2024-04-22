@@ -319,14 +319,14 @@ export interface IOnOfficeHandleLogin extends IIntegrationHandleLogin {
 }
 
 export enum OnOfficeIntActTypesEnum {
-  "UNLOCK_IFRAME" = "UNLOCK_IFRAME",
-  "UNLOCK_ONE_PAGE" = "UNLOCK_ONE_PAGE",
-  "UNLOCK_STATS_EXPORT" = "UNLOCK_STATS_EXPORT",
+  UNLOCK_IFRAME = "UNLOCK_IFRAME",
+  UNLOCK_ONE_PAGE = "UNLOCK_ONE_PAGE",
+  UNLOCK_STATS_EXPORT = "UNLOCK_STATS_EXPORT",
 }
 
 export type TOnOfficeIntActTypes =
-  | OpenAiQueryTypeEnum
-  | OnOfficeIntActTypesEnum;
+  | keyof typeof OpenAiQueryTypeEnum
+  | keyof typeof OnOfficeIntActTypesEnum;
 
 export interface IApiOnOfficeSyncEstatesFilterParams {
   status2?: string;

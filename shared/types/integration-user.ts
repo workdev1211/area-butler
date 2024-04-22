@@ -72,6 +72,11 @@ export enum ApiIntUserOnOfficeProdContTypesEnum {
   SUBSCRIPTION = "SUBSCRIPTION",
 }
 
+export enum ApiIntUserPropstackProdContTypesEnum {
+  COMPLETE = "COMPLETE",
+  SUBSCRIPTION = "SUBSCRIPTION",
+}
+
 export type TApiIntUserOnOfficeUsageStatsTypes =
   ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT;
 
@@ -86,7 +91,9 @@ export interface IApiIntUserOnOfficeProduct {
   quantity: number;
 }
 
-export type TApiIntUserProdContTypes = ApiIntUserOnOfficeProdContTypesEnum;
+export type TApiIntUserProdContTypes =
+  keyof typeof ApiIntUserOnOfficeProdContTypesEnum |
+  keyof typeof ApiIntUserPropstackProdContTypesEnum;
 
 export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 

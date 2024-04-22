@@ -4,6 +4,7 @@ import {
 } from "../types/integration";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
+  ApiIntUserPropstackProdContTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
@@ -11,12 +12,13 @@ import {
   TApiIntUserProdContTypes,
 } from "../types/integration-user";
 import {
-  ApiOpenAiRespLimitTypesEnum,
-  IApiOpenAiResponseLimit,
+  // ApiOpenAiRespLimitTypesEnum,
+  // IApiOpenAiResponseLimit,
   OpenAiQueryTypeEnum,
 } from "../types/open-ai";
 import { OnOfficeIntActTypesEnum } from "../types/on-office";
-import { onOfficeOpenAiCharacterLimit } from "../constants/on-office/constants";
+import { PropstackIntActTypesEnum } from "../types/propstack";
+// import { onOfficeOpenAiCharacterLimit } from "../constants/on-office/constants";
 
 export const getProdContTypeByActType = (
   integrationType: IntegrationTypesEnum,
@@ -51,6 +53,23 @@ export const getProdContTypeByActType = (
       }
     }
 
+    case IntegrationTypesEnum.PROPSTACK: {
+      switch (actionType) {
+        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
+        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+        case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
+        case OpenAiQueryTypeEnum.GENERAL_QUESTION:
+        case PropstackIntActTypesEnum.UNLOCK_ALL: {
+          return ApiIntUserPropstackProdContTypesEnum.COMPLETE;
+        }
+
+        default: {
+          return;
+        }
+      }
+    }
+
     default: {
       return;
     }
@@ -61,7 +80,7 @@ export const getAvailProdContType = (
   integrationType: IntegrationTypesEnum,
   actionType: TIntegrationActionTypes,
   availProdContingents?: TApiIntUserAvailProdContingents
-): ApiIntUserOnOfficeProdContTypesEnum | undefined => {
+): TApiIntUserProdContTypes | undefined => {
   const prodContType = getProdContTypeByActType(integrationType, actionType);
 
   if (
@@ -76,33 +95,48 @@ export const getAvailProdContType = (
     return prodContType;
   }
 
-  const onOfficeProdContTypes = Object.values(
-    ApiIntUserOnOfficeProdContTypesEnum
-  );
+  let prodContTypes: TApiIntUserProdContTypes[];
 
-  const requiredProductPosition = onOfficeProdContTypes.indexOf(prodContType);
+  switch (integrationType) {
+    case IntegrationTypesEnum.ON_OFFICE: {
+      prodContTypes = Object.values(ApiIntUserOnOfficeProdContTypesEnum);
+      break;
+    }
+
+    case IntegrationTypesEnum.PROPSTACK: {
+      prodContTypes = Object.values(ApiIntUserPropstackProdContTypesEnum);
+      break;
+    }
+
+    default: {
+      return;
+    }
+  }
+
+  // TODO refactor to an array of objects with the tier param instead of the relying to an array position
+  const requiredProdPosition = prodContTypes.indexOf(prodContType);
 
   return Object.keys(availProdContingents).find(
     (key) =>
-      onOfficeProdContTypes.indexOf(
-        key as ApiIntUserOnOfficeProdContTypesEnum
-      ) > requiredProductPosition
-  ) as ApiIntUserOnOfficeProdContTypesEnum;
+      prodContTypes.indexOf(key as ApiIntUserOnOfficeProdContTypesEnum) >
+      requiredProdPosition
+  ) as TApiIntUserProdContTypes;
 };
 
-export const getOpenAiRespLimitByInt = (
-  integrationType: IntegrationTypesEnum
-): IApiOpenAiResponseLimit => {
-  switch (integrationType) {
-    case IntegrationTypesEnum.ON_OFFICE:
-    default: {
-      return {
-        quantity: onOfficeOpenAiCharacterLimit,
-        type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
-      };
-    }
-  }
-};
+// left just in case
+// export const getOpenAiRespLimitByInt = (
+//   integrationType: IntegrationTypesEnum
+// ): IApiOpenAiResponseLimit => {
+//   switch (integrationType) {
+//     case IntegrationTypesEnum.ON_OFFICE:
+//     default: {
+//       return {
+//         quantity: onOfficeOpenAiCharacterLimit,
+//         type: ApiOpenAiRespLimitTypesEnum.CHARACTER,
+//       };
+//     }
+//   }
+// };
 
 export const checkIsParent = (
   integrationUser: IApiIntegrationUserSchema,

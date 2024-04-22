@@ -49,3 +49,11 @@ export enum PropstackTextFieldTypeEnum {
   DESCRIPTION_NOTE = "description_note",
   OTHER_NOTE = "other_note",
 }
+
+export enum PropstackIntActTypesEnum {
+  UNLOCK_ALL = "UNLOCK_ALL",
+}
+
+export type TPropstackIntActTypes =
+  | keyof typeof OpenAiQueryTypeEnum
+  | keyof typeof PropstackIntActTypesEnum;

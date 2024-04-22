@@ -11,7 +11,6 @@ import {
   TIntegrationActionTypes,
   TSendToIntegrationData,
 } from "../../../../shared/types/integration";
-import { TOnOfficeIntActTypes } from "../../../../shared/types/on-office";
 import { useHttp } from "../http";
 import {
   SearchContext,
@@ -20,7 +19,11 @@ import {
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import { getAvailProdContType } from "../../../../shared/functions/integration.functions";
 import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/products";
-import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
+import {
+  ApiIntUserOnOfficeProdContTypesEnum,
+  ApiIntUserPropstackProdContTypesEnum,
+  TApiIntUserProdContTypes,
+} from "../../../../shared/types/integration-user";
 import { useOnOfficeSync } from "../../on-office/hooks/onofficesync";
 import { wrongIntegrationErrorMsg } from "../../../../shared/constants/integration";
 import { usePropstackSync } from "../../propstack/hooks/propstacksync";
@@ -43,7 +46,7 @@ export const useIntegrationTools = () => {
 
   const getAvailProdContTypeOrFail = (
     actionType: TIntegrationActionTypes
-  ): ApiIntUserOnOfficeProdContTypesEnum | undefined => {
+  ): TApiIntUserProdContTypes | undefined => {
     const availProdContType = getAvailProdContType(
       integrationType!,
       actionType,
@@ -54,6 +57,7 @@ export const useIntegrationTools = () => {
       return availProdContType;
     }
 
+    // TODO change redirect for propstack
     toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
       history.push("/products");
     });
@@ -98,7 +102,7 @@ export const useIntegrationTools = () => {
   };
 
   const unlockProduct = async (
-    actionType: TOnOfficeIntActTypes
+    actionType: TIntegrationActionTypes
   ): Promise<void> => {
     if (!realEstateListing?.integrationId) {
       return;
@@ -150,7 +154,8 @@ export const useIntegrationTools = () => {
           break;
         }
 
-        case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
+        case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT:
+        case ApiIntUserPropstackProdContTypesEnum.COMPLETE: {
           updatedRealEstateListing = {
             ...realEstateListing,
             iframeEndsAt,

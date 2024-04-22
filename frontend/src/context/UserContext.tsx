@@ -7,8 +7,8 @@ import {
   IApiUserApiConnectSettingsReq,
 } from "../../../shared/types/types";
 import {
-  ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUser,
+  TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
 
 export interface UserState {
@@ -55,7 +55,7 @@ export enum UserActionTypes {
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
   [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser;
-  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: ApiIntUserOnOfficeProdContTypesEnum;
+  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: TApiIntUserProdContTypes;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {
@@ -126,11 +126,14 @@ export const userReducer = (
 
       const integrationUser = { ...state.integrationUser };
 
-      if (!integrationUser.availProdContingents![action.payload]) {
+      if (
+        !integrationUser.availProdContingents ||
+        !integrationUser.availProdContingents[action.payload]
+      ) {
         return state;
       }
 
-      integrationUser.availProdContingents![action.payload]! -= 1;
+      integrationUser.availProdContingents[action.payload]! -= 1;
 
       return { ...state, integrationUser };
     }

@@ -10,7 +10,10 @@ import {
 import { IApiIntegrationParams } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
-import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
+import {
+  ApiIntUserOnOfficeProdContTypesEnum,
+  TApiIntUserProdContTypes,
+} from '@area-butler-types/integration-user';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { getProcUpdateQuery } from '../shared/functions/shared';
@@ -96,7 +99,7 @@ export class RealEstateListingIntService {
 
   async unlockProduct(
     integrationUser: TIntegrationUserDocument,
-    availProdContType: ApiIntUserOnOfficeProdContTypesEnum,
+    availProdContType: TApiIntUserProdContTypes,
     integrationId: string,
   ): Promise<void> {
     const realEstate = await this.findOneOrFailByIntParams({
