@@ -17,11 +17,13 @@ import { IApiIntegrationUser } from '@area-butler-types/integration-user';
 import ApiIntegrationUserDto from './dto/api-integration-user.dto';
 import ApiIntegrationUserConfigDto from './dto/api-integration-user-config.dto';
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
+import { ContingentIntService } from './contingent-int.service';
 
 @ApiTags('users', 'integration')
 @Controller('api/integration-users')
 export class IntegrationUserController {
   constructor(
+    private readonly contingentIntService: ContingentIntService,
     private readonly integrationUserService: IntegrationUserService,
   ) {}
 
@@ -65,7 +67,7 @@ export class IntegrationUserController {
   ): Promise<IApiIntegrationUser> {
     Object.assign(integrationUser, {
       availProdContingents:
-        await this.integrationUserService.getAvailProdContingents(
+        await this.contingentIntService.getAvailProdContingents(
           integrationUser,
         ),
     });

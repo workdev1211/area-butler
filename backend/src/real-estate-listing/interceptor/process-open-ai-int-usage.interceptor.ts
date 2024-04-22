@@ -8,18 +8,18 @@ import {
 } from '@nestjs/common';
 import { Observable, tap } from 'rxjs';
 
-import { IntegrationUserService } from '../../user/integration-user.service';
 import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
 import { RealEstateListingIntService } from '../real-estate-listing-int.service';
 import { TIntegrationUserDocument } from '../../user/schema/integration-user.schema';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { ContingentIntService } from '../../user/contingent-int.service';
 
 @Injectable()
 export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
   private readonly logger = new Logger(ProcessOpenAiIntUsageInterceptor.name);
 
   constructor(
-    private readonly integrationUserService: IntegrationUserService,
+    private readonly contingentIntService: ContingentIntService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
 
@@ -79,7 +79,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
 
     if (!openAiRequestQuantity) {
       const availProdContType =
-        await this.integrationUserService.getAvailProdContTypeOrFail(
+        await this.contingentIntService.getAvailProdContTypeOrFail(
           integrationUser,
           actionType,
         );
@@ -90,7 +90,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
         integrationId,
       );
 
-      await this.integrationUserService.incrementProductUsage(
+      await this.contingentIntService.incrementProductUsage(
         integrationUser,
         availProdContType,
       );

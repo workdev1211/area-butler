@@ -2,31 +2,19 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery, FilterQuery, ProjectionFields } from 'mongoose';
 import { BulkWriteResult } from 'mongodb';
-import * as dayjs from 'dayjs';
 import { EventEmitter2 } from 'eventemitter2';
 
 import {
   IntegrationUser,
   TIntegrationUserDocument,
 } from './schema/integration-user.schema';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
-  IntegrationTypesEnum,
-  TIntegrationActionTypes,
-} from '@area-butler-types/integration';
-import {
-  ApiIntUserOnOfficeProdContTypesEnum,
-  IApiIntegrationUserProductContingent,
   IApiIntegrationUserSchema,
   IApiIntUserCreate,
   TApiIntegrationUserConfig,
-  TApiIntegrationUserProduct,
-  TApiIntUserAvailProdContingents,
 } from '@area-butler-types/integration-user';
 import { MapboxService } from '../client/mapbox/mapbox.service';
-import {
-  checkIsParent,
-  getAvailProdContType,
-} from '../../../shared/functions/integration.functions';
 import { ApiTourNamesEnum } from '@area-butler-types/types';
 import { intUserInitShowTour } from '../../../shared/constants/integration';
 import { EventType } from '../event/event.types';
@@ -39,8 +27,8 @@ export class IntegrationUserService {
   constructor(
     @InjectModel(IntegrationUser.name)
     private readonly integrationUserModel: Model<TIntegrationUserDocument>,
-    private readonly mapboxService: MapboxService,
     private readonly eventEmitter: EventEmitter2,
+    private readonly mapboxService: MapboxService,
   ) {}
 
   async create({
@@ -172,145 +160,6 @@ export class IntegrationUserService {
 
   async bulkWrite(writes: any[]): Promise<BulkWriteResult> {
     return this.integrationUserModel.bulkWrite(writes);
-  }
-
-  async addProductContingents(
-    integrationUserDbId: string,
-    productContingents: TApiIntegrationUserProduct[],
-  ): Promise<TIntegrationUserDocument> {
-    if (
-      !productContingents.length ||
-      productContingents.some(({ type, quantity }) => !type || !quantity)
-    ) {
-      this.logger.error(productContingents);
-      throw new HttpException('Incorrect product has been provided!', 400);
-    }
-
-    const updatePushQuery = productContingents.reduce(
-      (result, { type, quantity }) => {
-        if (!result[`productContingents.${type}`]) {
-          result[`productContingents.${type}`] = { $each: [] };
-        }
-
-        result[`productContingents.${type}`].$each.push({
-          quantity,
-          expiresAt: dayjs().add(1, 'year').toDate(),
-        });
-
-        return result;
-      },
-      {},
-    );
-
-    return this.findByDbIdAndUpdate(integrationUserDbId, {
-      $push: updatePushQuery,
-    });
-  }
-
-  // The main method to get the available product contingents
-  async getAvailProdContingents(
-    integrationUser: TIntegrationUserDocument,
-  ): Promise<TApiIntUserAvailProdContingents> {
-    // TODO PROPSTACK CONTINGENT
-    if (integrationUser.integrationType === IntegrationTypesEnum.PROPSTACK) {
-      return;
-    }
-
-    let { productContingents, productsUsed } = integrationUser;
-
-    if (integrationUser.parentId) {
-      const parentUser =
-        integrationUser.parentUser ||
-        (await this.integrationUserModel.findById(integrationUser.parentId));
-
-      if (!checkIsParent(integrationUser, parentUser)) {
-        const errorMessage = 'The user info is incorrect!';
-        let logMessage = `${errorMessage}\nIntegration user id: ${integrationUser.integrationUserId}\n`;
-        logMessage += `Parent user id: ${parentUser.integrationUserId}.`;
-        this.logger.error(logMessage);
-        throw new HttpException(errorMessage, 400);
-      }
-
-      ({ productContingents, productsUsed } = parentUser);
-    }
-
-    const availProdContingents =
-      productContingents &&
-      Object.keys(productContingents).reduce(
-        (result, productContingentType) => {
-          const remainingQuantity = this.getAvailProdContQuantity(
-            productContingents[productContingentType],
-            productsUsed ? productsUsed[productContingentType] : 0,
-          );
-
-          if (remainingQuantity > 0) {
-            result[productContingentType] = remainingQuantity;
-          }
-
-          return result;
-        },
-        {} as TApiIntUserAvailProdContingents,
-      );
-
-    return availProdContingents && Object.keys(availProdContingents).length
-      ? availProdContingents
-      : undefined;
-  }
-
-  async getAvailProdContTypeOrFail(
-    integrationUser: TIntegrationUserDocument,
-    actionType: TIntegrationActionTypes,
-  ): Promise<ApiIntUserOnOfficeProdContTypesEnum> {
-    const availProdContingents = await this.getAvailProdContingents(
-      integrationUser,
-    );
-
-    const availProdContType = getAvailProdContType(
-      integrationUser.integrationType,
-      actionType,
-      availProdContingents,
-    );
-
-    if (!availProdContType) {
-      throw new HttpException('Please, buy a corresponding product!', 402);
-    }
-
-    return availProdContType;
-  }
-
-  private getAvailProdContQuantity(
-    productContingent: IApiIntegrationUserProductContingent[],
-    productUsed: number,
-  ): number {
-    const currentDate = dayjs();
-
-    const availableQuantity = productContingent.reduce(
-      (result, { quantity, expiresAt }) => {
-        if (currentDate < dayjs(expiresAt)) {
-          result += quantity;
-        }
-
-        return result;
-      },
-      0,
-    );
-
-    const usedQuantity = productUsed || 0;
-    const remainingQuantity = availableQuantity - usedQuantity;
-
-    return remainingQuantity > 0 ? remainingQuantity : 0;
-  }
-
-  // The main method which increases the amount of a used contingent
-  async incrementProductUsage(
-    { id, parentId }: TIntegrationUserDocument,
-    prodContType: ApiIntUserOnOfficeProdContTypesEnum,
-  ): Promise<TIntegrationUserDocument> {
-    return this.findByDbIdAndUpdate(parentId || id, {
-      $inc: {
-        [`productsUsed.${prodContType}`]: 1,
-      },
-    });
   }
 
   async createMapboxAccessToken(

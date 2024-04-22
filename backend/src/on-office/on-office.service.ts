@@ -64,6 +64,7 @@ import {
 } from '../shared/functions/on-office';
 import { PlaceService } from '../place/place.service';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
+import { ContingentIntService } from '../user/contingent-int.service';
 
 @Injectable()
 export class OnOfficeService {
@@ -75,6 +76,7 @@ export class OnOfficeService {
   constructor(
     @InjectModel(OnOfficeTransaction.name)
     private readonly onOfficeTransactionModel: Model<TOnOfficeTransactionDocument>,
+    private readonly contingentIntService: ContingentIntService,
     private readonly fetchSnapshotService: FetchSnapshotService, // private readonly locationIntService: LocationIntService,
     private readonly integrationUserService: IntegrationUserService,
     private readonly onOfficeApiService: OnOfficeApiService,
@@ -360,9 +362,7 @@ export class OnOfficeService {
     integrationUser.parentUser = parentUser;
 
     const availProdContingents =
-      await this.integrationUserService.getAvailProdContingents(
-        integrationUser,
-      );
+      await this.contingentIntService.getAvailProdContingents(integrationUser);
 
     const areaButlerEstate = await this.fetchAndProcessEstateData(
       estateId,
@@ -500,7 +500,7 @@ export class OnOfficeService {
       { transactionId, referenceId, status },
     );
 
-    integrationUser = await this.integrationUserService.addProductContingents(
+    integrationUser = await this.contingentIntService.addProductContingents(
       integrationUser.id,
       convertOnOfficeProdToIntUserProd(product),
     );
@@ -528,7 +528,7 @@ export class OnOfficeService {
         }),
       ),
       availProdContingents:
-        await this.integrationUserService.getAvailProdContingents(
+        await this.contingentIntService.getAvailProdContingents(
           integrationUser,
         ),
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(

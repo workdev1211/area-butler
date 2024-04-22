@@ -18,7 +18,6 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { ProcessOpenAiIntUsageInterceptor } from './interceptor/process-open-ai-int-usage.interceptor';
 import { InjectRealEstateListing } from './inject-real-estate-listing.decorator';
 import { RealEstateListingDocument } from './schema/real-estate-listing.schema';
-import { IntegrationUserService } from '../user/integration-user.service';
 import { RealEstateListingIntService } from './real-estate-listing-int.service';
 import ApiUnlockIntProductReqDto from './dto/api-unlock-int-product-req.dto';
 import {
@@ -27,14 +26,15 @@ import {
 } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
+import { ContingentIntService } from '../user/contingent-int.service';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
 export class RealEstateListingIntController {
   constructor(
+    private readonly contingentIntService: ContingentIntService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
-    private readonly integrationUserService: IntegrationUserService,
   ) {}
 
   @ApiOperation({ description: 'Get real estate listings for current user' })
@@ -110,7 +110,7 @@ export class RealEstateListingIntController {
     @Body() { integrationId, actionType }: ApiUnlockIntProductReqDto,
   ): Promise<void> {
     const availProdContType =
-      await this.integrationUserService.getAvailProdContTypeOrFail(
+      await this.contingentIntService.getAvailProdContTypeOrFail(
         integrationUser,
         actionType,
       );
@@ -121,7 +121,7 @@ export class RealEstateListingIntController {
       integrationId,
     );
 
-    await this.integrationUserService.incrementProductUsage(
+    await this.contingentIntService.incrementProductUsage(
       integrationUser,
       availProdContType,
     );

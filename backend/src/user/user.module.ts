@@ -20,6 +20,7 @@ import {
   UsageStatistics,
   UsageStatisticsSchema,
 } from './schema/usage-statistics.schema';
+import { ContingentIntService } from './contingent-int.service';
 
 @Module({
   imports: [
@@ -38,18 +39,20 @@ import {
     ClientModule,
   ],
   providers: [
-    UserService,
+    ContingentIntService,
+    IntegrationUserService,
     SubscriptionService,
     SubscriptionListener,
-    UserSubscriptionPipe,
-    IntegrationUserService,
     UsageStatisticsService,
+    UserService,
+    UserSubscriptionPipe,
   ],
   exports: [
-    UserService,
-    SubscriptionService,
+    ContingentIntService,
     IntegrationUserService,
+    SubscriptionService,
     UsageStatisticsService,
+    UserService,
   ],
   controllers: [UserController, IntegrationUserController],
 })
