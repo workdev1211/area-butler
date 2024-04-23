@@ -13,7 +13,10 @@ import {
   notAllowedCountryMsg,
   placeNotFoundMsg,
 } from '../../../shared/constants/error';
-import { defaultAllowedCountries } from '../../../shared/constants/location';
+import {
+  availableCountries,
+  defaultAllowedCountries,
+} from '../../../shared/constants/location';
 
 interface IApiFetchPlaceByUser {
   user: UserDocument | TIntegrationUserDocument;
@@ -122,7 +125,8 @@ export class PlaceService {
         : user.allowedCountries;
     }
 
-    const resAllowedCountries = allowedCountries || defaultAllowedCountries;
+    const resAllowedCountries =
+      availableCountries || allowedCountries || defaultAllowedCountries;
 
     const country = place.address_components.find(({ types }) =>
       types.includes(PlaceType2.country),

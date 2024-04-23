@@ -64,7 +64,10 @@ import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { notAllowedCountryMsg } from "../../../shared/constants/error";
-import { defaultAllowedCountries } from "../../../shared/constants/location";
+import {
+  availableCountries,
+  defaultAllowedCountries,
+} from "../../../shared/constants/location";
 
 const tinyColor = require("tinycolor2");
 
@@ -173,7 +176,8 @@ const checkIsCountryAllowed = ({
     types.includes("country")
   )?.short_name as Iso3166_1Alpha2CountriesEnum;
 
-  let resAllowedCountries = allowedCountries;
+  let resAllowedCountries: Iso3166_1Alpha2CountriesEnum[] | undefined =
+    availableCountries || allowedCountries;
 
   if (!resAllowedCountries && user) {
     resAllowedCountries =
