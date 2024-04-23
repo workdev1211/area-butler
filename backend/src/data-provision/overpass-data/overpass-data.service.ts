@@ -28,9 +28,7 @@ export class OverpassDataService {
 
   // 'name' is required in order to prevent the cron job duplication
   @Cron(
-    ['local', 'dev'].includes(configService.getSystemEnv())
-      ? '0 0 2 * * 6'
-      : '0 0 2 * * 0-5',
+    configService.getSystemEnv() === 'prod' ? '0 0 23 * * 0-5' : '0 0 23 * * 6',
     { name: 'LoadOverpassData' },
   )
   async loadOverpassData(): Promise<void> {

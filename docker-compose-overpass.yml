@@ -281,6 +281,270 @@ services:
       - "traefik.port=8107"
     logging: *default-logging
 
+  overpass-nl:
+    image: wiktorn/overpass-api
+    container_name: overpass-nl
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8108:80
+    volumes:
+      - overpass-nl-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/netherlands-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/netherlands/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-nl-prefix.stripprefix.prefixes=/nl"
+      - "traefik.http.routers.overpass-nl-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/nl`)"
+      - "traefik.http.routers.overpass-nl-http.entrypoints=web"
+      - "traefik.http.routers.overpass-nl-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-nl.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/nl`)"
+      - "traefik.http.routers.overpass-nl.entrypoints=websecure"
+      - "traefik.http.routers.overpass-nl.tls=true"
+      - "traefik.http.routers.overpass-nl.tls.certresolver=le"
+      - "traefik.http.routers.overpass-nl.middlewares=remove-nl-prefix"
+      - "traefik.port=8108"
+    logging: *default-logging
+
+  overpass-fr:
+    image: wiktorn/overpass-api
+    container_name: overpass-fr
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8109:80
+    volumes:
+      - overpass-fr-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/france-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/france/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-fr-prefix.stripprefix.prefixes=/fr"
+      - "traefik.http.routers.overpass-fr-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/fr`)"
+      - "traefik.http.routers.overpass-fr-http.entrypoints=web"
+      - "traefik.http.routers.overpass-fr-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-fr.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/fr`)"
+      - "traefik.http.routers.overpass-fr.entrypoints=websecure"
+      - "traefik.http.routers.overpass-fr.tls=true"
+      - "traefik.http.routers.overpass-fr.tls.certresolver=le"
+      - "traefik.http.routers.overpass-fr.middlewares=remove-fr-prefix"
+      - "traefik.port=8109"
+    logging: *default-logging
+
+  overpass-it:
+    image: wiktorn/overpass-api
+    container_name: overpass-it
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8110:80
+    volumes:
+      - overpass-it-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/italy-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/italy/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-it-prefix.stripprefix.prefixes=/it"
+      - "traefik.http.routers.overpass-it-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/it`)"
+      - "traefik.http.routers.overpass-it-http.entrypoints=web"
+      - "traefik.http.routers.overpass-it-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-it.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/it`)"
+      - "traefik.http.routers.overpass-it.entrypoints=websecure"
+      - "traefik.http.routers.overpass-it.tls=true"
+      - "traefik.http.routers.overpass-it.tls.certresolver=le"
+      - "traefik.http.routers.overpass-it.middlewares=remove-it-prefix"
+      - "traefik.port=8110"
+    logging: *default-logging
+
+  overpass-be:
+    image: wiktorn/overpass-api
+    container_name: overpass-be
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8111:80
+    volumes:
+      - overpass-be-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/belgium-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/belgium/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-be-prefix.stripprefix.prefixes=/be"
+      - "traefik.http.routers.overpass-be-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/be`)"
+      - "traefik.http.routers.overpass-be-http.entrypoints=web"
+      - "traefik.http.routers.overpass-be-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-be.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/be`)"
+      - "traefik.http.routers.overpass-be.entrypoints=websecure"
+      - "traefik.http.routers.overpass-be.tls=true"
+      - "traefik.http.routers.overpass-be.tls.certresolver=le"
+      - "traefik.http.routers.overpass-be.middlewares=remove-be-prefix"
+      - "traefik.port=8111"
+    logging: *default-logging
+
+  overpass-lu:
+    image: wiktorn/overpass-api
+    container_name: overpass-lu
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8112:80
+    volumes:
+      - overpass-lu-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/luxembourg-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/luxembourg/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-lu-prefix.stripprefix.prefixes=/lu"
+      - "traefik.http.routers.overpass-lu-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/lu`)"
+      - "traefik.http.routers.overpass-lu-http.entrypoints=web"
+      - "traefik.http.routers.overpass-lu-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-lu.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/lu`)"
+      - "traefik.http.routers.overpass-lu.entrypoints=websecure"
+      - "traefik.http.routers.overpass-lu.tls=true"
+      - "traefik.http.routers.overpass-lu.tls.certresolver=le"
+      - "traefik.http.routers.overpass-lu.middlewares=remove-lu-prefix"
+      - "traefik.port=8112"
+    logging: *default-logging
+
+  overpass-si:
+    image: wiktorn/overpass-api
+    container_name: overpass-si
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8113:80
+    volumes:
+      - overpass-si-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/slovenia-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.geofabrik.de/europe/slovenia-updates/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-si-prefix.stripprefix.prefixes=/si"
+      - "traefik.http.routers.overpass-si-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/si`)"
+      - "traefik.http.routers.overpass-si-http.entrypoints=web"
+      - "traefik.http.routers.overpass-si-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-si.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/si`)"
+      - "traefik.http.routers.overpass-si.entrypoints=websecure"
+      - "traefik.http.routers.overpass-si.tls=true"
+      - "traefik.http.routers.overpass-si.tls.certresolver=le"
+      - "traefik.http.routers.overpass-si.middlewares=remove-si-prefix"
+      - "traefik.port=8113"
+    logging: *default-logging
+
+  overpass-sk:
+    image: wiktorn/overpass-api
+    container_name: overpass-sk
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8114:80
+    volumes:
+      - overpass-sk-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/slovakia-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/slovakia/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-sk-prefix.stripprefix.prefixes=/sk"
+      - "traefik.http.routers.overpass-sk-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/sk`)"
+      - "traefik.http.routers.overpass-sk-http.entrypoints=web"
+      - "traefik.http.routers.overpass-sk-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-sk.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/sk`)"
+      - "traefik.http.routers.overpass-sk.entrypoints=websecure"
+      - "traefik.http.routers.overpass-sk.tls=true"
+      - "traefik.http.routers.overpass-sk.tls.certresolver=le"
+      - "traefik.http.routers.overpass-sk.middlewares=remove-sk-prefix"
+      - "traefik.port=8114"
+    logging: *default-logging
+
+  overpass-pt:
+    image: wiktorn/overpass-api
+    container_name: overpass-pt
+    deploy:
+      resources:
+        limits:
+          cpus: "0.2"
+    restart: always
+    networks:
+      - web
+    ports:
+      - 8115:80
+    volumes:
+      - overpass-pt-db:/db
+    environment:
+      <<: *common-env
+      OVERPASS_PLANET_URL: http://download.geofabrik.de/europe/portugal-latest.osm.bz2
+      OVERPASS_DIFF_URL: http://download.openstreetmap.fr/replication/europe/portugal/minute/
+    labels:
+      - "traefik.docker.network=web"
+      - "traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.remove-pt-prefix.stripprefix.prefixes=/pt"
+      - "traefik.http.routers.overpass-pt-http.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/pt`)"
+      - "traefik.http.routers.overpass-pt-http.entrypoints=web"
+      - "traefik.http.routers.overpass-pt-http.middlewares=redirect-to-https"
+      - "traefik.http.routers.overpass-pt.rule=Host(`overpass.areabutler.de`) && Pathprefix(`/pt`)"
+      - "traefik.http.routers.overpass-pt.entrypoints=websecure"
+      - "traefik.http.routers.overpass-pt.tls=true"
+      - "traefik.http.routers.overpass-pt.tls.certresolver=le"
+      - "traefik.http.routers.overpass-pt.middlewares=remove-pt-prefix"
+      - "traefik.port=8115"
+    logging: *default-logging
+
 volumes:
   overpass-de-db:
     external: true
@@ -297,6 +561,22 @@ volumes:
   overpass-at-db:
     external: true
   overpass-ch-db:
+    external: true
+  overpass-nl-db:
+    external: true
+  overpass-fr-db:
+    external: true
+  overpass-it-db:
+    external: true
+  overpass-be-db:
+    external: true
+  overpass-lu-db:
+    external: true
+  overpass-si-db:
+    external: true
+  overpass-sk-db:
+    external: true
+  overpass-pt-db:
     external: true
 
 networks:
