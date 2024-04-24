@@ -487,7 +487,7 @@ export class PropstackService {
   }
 
   static decryptAccessToken(accessToken: string): string {
-    this.logger.debug(
+    this.logger.verbose(
       `\nMethod: ${this.decryptAccessToken.name}` +
         `\nAccess token: ${accessToken}` +
         `\nSecret: ${configService.getPropstackLoginSecret()}`,
@@ -553,7 +553,7 @@ export class PropstackService {
       ),
     ]);
 
-    // this.logger.log(
+    // this.logger.verbose(
     //   `Event ${eventId} continues to be processed for ${dayjs
     //     .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
     //     .humanize()}. Fetching of OpenAi descriptions is complete.`,

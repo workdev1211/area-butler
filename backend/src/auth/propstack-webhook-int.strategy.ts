@@ -39,7 +39,7 @@ export class PropstackWebhookIntStrategy extends PassportStrategy(
           !propstackWebhookIntRoutePaths.includes(routePath);
 
         if (isWrongReqData) {
-          this.logger.debug(
+          this.logger.verbose(
             `\nRoute path: ${routePath}` +
               `\nAPI key: ${apiKey}` +
               '\nReq body:',

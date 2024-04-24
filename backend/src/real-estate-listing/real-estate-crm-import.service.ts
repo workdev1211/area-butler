@@ -651,7 +651,7 @@ export class RealEstateCrmImportService {
 
     // LEFT FOR DEBUGGING PURPOSES
     // testData.push('');
-    // this.logger.log(testData.join('\n'));
+    // this.logger.verbose(testData.join('\n'));
 
     return errorIds;
   }

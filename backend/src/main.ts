@@ -17,7 +17,7 @@ async function bootstrap() {
     logger:
       configService.getSystemEnv() !== 'prod'
         ? ['log', 'error', 'warn', 'debug', 'verbose']
-        : ['error', 'warn'],
+        : ['log', 'error', 'warn', 'debug'],
   });
 
   Sentry.init({

@@ -291,7 +291,7 @@ export class OpenAiService {
     if (this.systemEnv !== 'prod') {
       encoding = encoding_for_model(MODEL_NAME);
 
-      this.logger.log(
+      this.logger.verbose(
         '\n====== QUERY LENGTH ======\n' +
           `CHARACTERS: ${queryText.length} / TOKENS: ${
             encoding.encode(queryText).length
@@ -329,7 +329,7 @@ export class OpenAiService {
     );
 
     if (this.systemEnv !== 'prod') {
-      this.logger.log(
+      this.logger.verbose(
         '\n====== RESPONSE LENGTH ======\n' +
           `CHARACTERS: ${response.length} / TOKENS: ${
             encoding.encode(response).length
