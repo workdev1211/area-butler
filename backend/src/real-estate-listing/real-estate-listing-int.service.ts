@@ -168,6 +168,19 @@ export class RealEstateListingIntService {
     }: RealEstateListingDocument,
   ): void {
     switch (actionType) {
+      case OnOfficeIntActTypesEnum.UNLOCK_SEARCH: {
+        const isSearchNeeded =
+          (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
+          !isOnePageExportActive &&
+          !isStatsFullExportActive &&
+          !openAiRequestQuantity;
+
+        if (isSearchNeeded) {
+          return;
+        }
+        break;
+      }
+
       case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
       case OpenAiQueryTypeEnum.GENERAL_QUESTION:
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:

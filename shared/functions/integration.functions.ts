@@ -27,6 +27,7 @@ export const getProdContTypeByActType = (
   switch (integrationType) {
     case IntegrationTypesEnum.ON_OFFICE: {
       switch (actionType) {
+        case OnOfficeIntActTypesEnum.UNLOCK_SEARCH:
         case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
         case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
         case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:

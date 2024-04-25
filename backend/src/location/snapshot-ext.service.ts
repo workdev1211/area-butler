@@ -58,6 +58,10 @@ export class SnapshotExtService {
   }: ICreateSnapshotByPlace): Promise<ApiSearchResultSnapshotResponse> {
     const searchData: ApiSearch = {
       coordinates: { ...place.geometry.location },
+      integrationId:
+        'integrationUserId' in user
+          ? realEstateListing.integrationId
+          : undefined,
       meansOfTransportation: transportParams,
       preferredAmenities: poiTypes,
       searchTitle: place.formatted_address,
@@ -66,8 +70,10 @@ export class SnapshotExtService {
     const searchResponse = await this.locationService.searchLocation(
       user,
       searchData,
+      realEstateListing,
     );
 
+    // TODO refactor to reduce only
     const localityParams = searchData.preferredAmenities
       .map((name) => osmEntityTypes.find((entity) => entity.name === name))
       .filter(Boolean) as ApiOsmEntity[];

@@ -1,10 +1,10 @@
 import {
   FC,
+  Fragment,
   ReactNode,
   useContext,
   useEffect,
   useState,
-  Fragment,
 } from "react";
 import { Form, Formik } from "formik";
 import dayjs from "dayjs";
@@ -70,10 +70,20 @@ import { useRealEstateData } from "../hooks/realestatedata";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { useTools } from "../hooks/tools";
+import ConfirmationModal from "../components/ConfirmationModal";
+import {
+  OnOfficeIntActTypesEnum,
+  TOnOfficeIntActTypes,
+} from "../../../shared/types/on-office";
+import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import { searchUnlockText } from "../../../shared/constants/on-office/products";
+import { ConfigContext } from "../context/ConfigContext";
+import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FC = () => {
+  const { integrationType } = useContext(ConfigContext);
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -86,6 +96,7 @@ const SearchParamsPage: FC = () => {
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
   const { getActualUser } = useTools();
+  const { unlockProduct } = useIntegrationTools();
 
   const user = getActualUser();
   const isIntegrationUser = "integrationUserId" in user;
@@ -98,6 +109,11 @@ const SearchParamsPage: FC = () => {
     name: LimitIncreaseModelNameEnum;
     id: string | undefined;
   }>();
+  const [unlockParams, setUnlockParams] = useState<{
+    isShownModal: boolean;
+    modalMessage?: string;
+    actionType?: TOnOfficeIntActTypes;
+  }>({ isShownModal: false });
 
   const clearRealEstateParams = (): void => {
     searchContextDispatch({
@@ -480,6 +496,69 @@ const SearchParamsPage: FC = () => {
       ? "Analyse & Karte erstellen "
       : "Analyse & Karte aktualisieren ";
 
+    if (!limitType) {
+      return (
+        <Fragment key="search-button">
+          <button
+            data-tour="start-search"
+            type="button"
+            disabled={isSearchButtonDisabled}
+            onClick={async () => {
+              let isIntAndNotAllowed = false;
+
+              // TODO PROPSTACK CONTINGENT
+              if (
+                isIntegrationUser &&
+                integrationType !== IntegrationTypesEnum.PROPSTACK &&
+                searchContextState.realEstateListing
+              ) {
+                const {
+                  iframeEndsAt,
+                  isOnePageExportActive,
+                  isStatsFullExportActive,
+                  openAiRequestQuantity,
+                } = searchContextState.realEstateListing;
+
+                isIntAndNotAllowed =
+                  (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
+                  !isOnePageExportActive &&
+                  !isStatsFullExportActive &&
+                  !openAiRequestQuantity;
+              }
+
+              if (isIntAndNotAllowed) {
+                setUnlockParams({
+                  actionType: OnOfficeIntActTypesEnum.UNLOCK_SEARCH,
+                  isShownModal: true,
+                  modalMessage: searchUnlockText,
+                });
+
+                return;
+              }
+
+              await performAnalysis();
+            }}
+            className={
+              searchContextState.searchBusy
+                ? `${resultingClasses} loading`
+                : resultingClasses
+            }
+          >
+            <span className="-mt-1">{searchButtonTitle}</span>
+            <img
+              className="ml-1 -mt-1"
+              style={{
+                filter:
+                  "invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg) brightness(95%) contrast(92%)",
+              }}
+              src={nextIcon}
+              alt="icon-next"
+            />
+          </button>
+        </Fragment>
+      );
+    }
+
     const increaseLimitSearchButton: ReactNode = (
       <button
         type="button"
@@ -500,34 +579,9 @@ const SearchParamsPage: FC = () => {
 
     return (
       <Fragment key="search-button">
-        {limitType ? (
-          <IncreaseLimitModal
-            modalConfig={increaseRequestLimitSearchModalConfig}
-          />
-        ) : (
-          <button
-            data-tour="start-search"
-            type="button"
-            disabled={isSearchButtonDisabled}
-            onClick={performAnalysis}
-            className={
-              searchContextState.searchBusy
-                ? `${resultingClasses} loading`
-                : resultingClasses
-            }
-          >
-            <span className="-mt-1">{searchButtonTitle}</span>
-            <img
-              className="ml-1 -mt-1"
-              style={{
-                filter:
-                  "invert(62%) sepia(87%) saturate(446%) hue-rotate(354deg) brightness(95%) contrast(92%)",
-              }}
-              src={nextIcon}
-              alt="icon-next"
-            />
-          </button>
-        )}
+        <IncreaseLimitModal
+          modalConfig={increaseRequestLimitSearchModalConfig}
+        />
       </Fragment>
     );
   };
@@ -544,6 +598,18 @@ const SearchParamsPage: FC = () => {
       actionsTop={getSearchButton("btn bg-white-primary w-full sm:w-auto")}
       actionsBottom={[<div key="dummy" />, getSearchButton()]}
     >
+      {unlockParams.isShownModal && (
+        <ConfirmationModal
+          closeModal={() => {
+            setUnlockParams({ isShownModal: false });
+          }}
+          onConfirm={async () => {
+            await unlockProduct(unlockParams.actionType!);
+          }}
+          text={unlockParams.modalMessage!}
+        />
+      )}
+
       <TourStarter
         tour={
           isIntegrationUser

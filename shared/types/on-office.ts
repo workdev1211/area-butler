@@ -313,6 +313,7 @@ export interface IOnOfficeHandleLogin extends IIntegrationHandleLogin {
 }
 
 export enum OnOfficeIntActTypesEnum {
+  UNLOCK_SEARCH = "UNLOCK_SEARCH",
   UNLOCK_IFRAME = "UNLOCK_IFRAME",
   UNLOCK_ONE_PAGE = "UNLOCK_ONE_PAGE",
   UNLOCK_STATS_EXPORT = "UNLOCK_STATS_EXPORT",

@@ -56,5 +56,6 @@ export const legacyOnOfficeProdNames: Record<
 };
 
 export const statsExportUnlockText = "Alle Funktionen freischalten?";
+export const searchUnlockText = "Schnappschusserstellung freischalten?";
 
 export const initOpenAiReqQuantity = 100;

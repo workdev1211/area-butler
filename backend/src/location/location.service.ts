@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import * as dayjs from 'dayjs';
@@ -57,6 +57,9 @@ import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { FetchSnapshotService } from './fetch-snapshot.service';
+import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
+import { IntegrationTypesEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class LocationService {
@@ -71,6 +74,7 @@ export class LocationService {
     private readonly openAiService: OpenAiService,
     private readonly overpassDataService: OverpassDataService,
     private readonly overpassService: OverpassService,
+    private readonly realEstateListingIntService: RealEstateListingIntService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
     private readonly userService: UserService,
@@ -79,6 +83,7 @@ export class LocationService {
   async searchLocation(
     user: UserDocument | TIntegrationUserDocument,
     search: ApiSearch,
+    realEstate?: ApiRealEstateListing,
   ): Promise<ApiSearchResponse> {
     // 'in' checks a schema but not a specific document
     const isIntegrationUser = 'integrationUserId' in user;
@@ -219,6 +224,48 @@ export class LocationService {
 
     if (existingLocation) {
       Object.assign(location, { endsAt: existingLocation.endsAt });
+    }
+
+    // TODO PROPSTACK CONTINGENT
+    if (
+      isIntegrationUser &&
+      user.integrationType !== IntegrationTypesEnum.PROPSTACK
+    ) {
+      let iframeEndsAt;
+      let isOnePageExportActive;
+      let isStatsFullExportActive;
+      let openAiRequestQuantity;
+
+      if (realEstate) {
+        ({
+          iframeEndsAt,
+          isOnePageExportActive,
+          isStatsFullExportActive,
+          openAiRequestQuantity,
+        } = realEstate);
+      } else {
+        ({
+          integrationParams: {
+            iframeEndsAt,
+            isOnePageExportActive,
+            isStatsFullExportActive,
+            openAiRequestQuantity,
+          },
+        } = await this.realEstateListingIntService.findOneOrFailByIntParams({
+          integrationId: search.integrationId,
+          integrationType: user.integrationType,
+          integrationUserId: user.integrationUserId,
+        }));
+      }
+
+      if (
+        (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
+        !isOnePageExportActive &&
+        !isStatsFullExportActive &&
+        !openAiRequestQuantity
+      ) {
+        throw new HttpException('Product is not unlocked!', 402);
+      }
     }
 
     // TODO ask Kai what is the purpose of saving a new locationSearch record after each search request
