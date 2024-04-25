@@ -33,7 +33,7 @@ import OpenAiGeneralForm from "./OpenAiGeneralForm";
 interface IOpenAiModuleProps {
   onModuleStatusChange: (isReady: boolean) => void;
   isFetchResponse: boolean;
-  onResponseFetched: (responseText: string) => void;
+  onResponseFetched: (responseText: string, query?: TOpenAiQuery) => void;
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
@@ -143,7 +143,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
 
       const response = await fetchOpenAiResponse(queryType, query);
 
-      onResponseFetched(response);
+      onResponseFetched(response, query);
       setFetchedResponse(response);
     };
 
@@ -161,98 +161,42 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   }, [queryType]);
 
   return (
-    <div>
-      <div className="form-control">
-        <label htmlFor="queryType" className="label">
-          <span className="label-text">Option wählen</span>
-        </label>
+    <div className="grid grid-cols-2 gap-2">
+      <div>
+        <div className="section-title mb-2">Inhaltliche Angaben</div>
 
-        <select
-          className="select select-bordered w-full max-w-xs"
-          name="queryType"
-          value={queryType || placeholderSelectOptionKey}
-          onChange={({ target: { value } }) => {
-            setQueryType(value as OpenAiQueryTypeEnum);
+        <div className="form-control">
+          <label htmlFor="queryType" className="label">
+            <span className="label-text">Zielformat</span>
+          </label>
 
-            if (onQueryTypeChange) {
-              onQueryTypeChange(value as OpenAiQueryTypeEnum);
-            }
-          }}
-        >
-          <option
-            value={placeholderSelectOptionKey}
-            key={placeholderSelectOptionKey}
-            disabled={true}
-          >
-            Was möchten Sie generieren?
-          </option>
-          {resultQueryTypes.map(({ type, label }) => (
-            <option value={type} key={type} className="flex flex-col">
-              {label}
-            </option>
-          ))}
-        </select>
-      </div>
+          <select
+            className="select select-bordered w-full max-w-xs"
+            name="queryType"
+            value={queryType || placeholderSelectOptionKey}
+            onChange={({ target: { value } }) => {
+              setQueryType(value as OpenAiQueryTypeEnum);
 
-      {![
-        OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
-        OpenAiQueryTypeEnum.GENERAL_QUESTION,
-      ].includes(queryType as OpenAiQueryTypeEnum) && (
-        <>
-          <div className="divider mb-2" />
-
-          <OpenAiGeneralForm
-            formId="open-ai-general-form"
-            initialValues={cachedOpenAi.general}
-            onValuesChange={(values) => {
-              cachingDispatch({
-                type: CachingActionTypesEnum.SET_OPEN_AI,
-                payload: { general: { ...values } },
-              });
+              if (onQueryTypeChange) {
+                onQueryTypeChange(value as OpenAiQueryTypeEnum);
+              }
             }}
-            formRef={generalFormRef}
-          />
-        </>
-      )}
-
-      <div className="divider mb-2" />
-
-      {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
-        <OpenAiLocDescForm
-          formId="open-ai-loc-desc-form"
-          initialValues={cachedOpenAi.locationDescription}
-          onValuesChange={(values) => {
-            cachingDispatch({
-              type: CachingActionTypesEnum.SET_OPEN_AI,
-              payload: { locationDescription: { ...values } },
-            });
-          }}
-          formRef={locDescFormRef}
-        />
-      )}
-
-      {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
-        <OpenAiRealEstDescForm
-          formId="open-ai-real-est-desc-form"
-          initialValues={cachedOpenAi.realEstateDescription}
-          onValuesChange={(values) => {
-            onModuleStatusChange(
-              !!queryType &&
-                !!values.realEstateId &&
-                values.realEstateId !== placeholderSelectOptionKey
-            );
-
-            cachingDispatch({
-              type: CachingActionTypesEnum.SET_OPEN_AI,
-              payload: { realEstateDescription: { ...values } },
-            });
-          }}
-          formRef={realEstDescFormRef}
-        />
-      )}
-
-      {queryType === OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION && (
-        <>
+          >
+            <option
+              value={placeholderSelectOptionKey}
+              key={placeholderSelectOptionKey}
+              disabled={true}
+            >
+              Was möchten Sie generieren?
+            </option>
+            {resultQueryTypes.map(({ type, label }) => (
+              <option value={type} key={type} className="flex flex-col">
+                {label}
+              </option>
+            ))}
+          </select>
+        </div>
+        {queryType === OpenAiQueryTypeEnum.LOCATION_DESCRIPTION && (
           <OpenAiLocDescForm
             formId="open-ai-loc-desc-form"
             initialValues={cachedOpenAi.locationDescription}
@@ -264,7 +208,9 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             }}
             formRef={locDescFormRef}
           />
+        )}
 
+        {queryType === OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION && (
           <OpenAiRealEstDescForm
             formId="open-ai-real-est-desc-form"
             initialValues={cachedOpenAi.realEstateDescription}
@@ -282,88 +228,145 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
             }}
             formRef={realEstDescFormRef}
           />
-        </>
-      )}
+        )}
 
-      {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
-        <OpenAiQueryForm
-          formId="open-ai-formal-to-informal-form"
-          initialValues={cachedOpenAi.query}
-          onValuesChange={(values) => {
-            onModuleStatusChange(!!queryType && !!values.text);
-
-            cachingDispatch({
-              type: CachingActionTypesEnum.SET_OPEN_AI,
-              payload: { query: { ...values } },
-            });
-          }}
-          formRef={formRef}
-        />
-      )}
-
-      {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
-        <OpenAiQueryForm
-          formId="open-ai-general-question-form"
-          initialValues={cachedOpenAi.query}
-          onValuesChange={(values) => {
-            onModuleStatusChange(!!queryType && !!values.text);
-
-            cachingDispatch({
-              type: CachingActionTypesEnum.SET_OPEN_AI,
-              payload: { query: { ...values } },
-            });
-          }}
-          formRef={formRef}
-        />
-      )}
-
-      {fetchedResponse && (
-        <>
-          <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
-          <div className="flex flex-col gap-2">
-            <textarea
-              className="textarea textarea-bordered w-full"
-              rows={7}
-              value={fetchedResponse}
-              onChange={({ target: { value } }) => {
-                onResponseFetched(value);
-                setFetchedResponse(value);
+        {queryType === OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION && (
+          <>
+            <OpenAiLocDescForm
+              formId="open-ai-loc-desc-form"
+              initialValues={cachedOpenAi.locationDescription}
+              onValuesChange={(values) => {
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_OPEN_AI,
+                  payload: { locationDescription: { ...values } },
+                });
               }}
+              formRef={locDescFormRef}
             />
-            <div
-              className="flex gap-2 cursor-pointer items-center"
-              onClick={(): void => {
-                const success = copy(fetchedResponse);
 
-                if (success) {
-                  toastSuccess("Erfolgreich in Zwischenablage kopiert!");
-                }
+            <OpenAiRealEstDescForm
+              formId="open-ai-real-est-desc-form"
+              initialValues={cachedOpenAi.realEstateDescription}
+              onValuesChange={(values) => {
+                onModuleStatusChange(
+                  !!queryType &&
+                    !!values.realEstateId &&
+                    values.realEstateId !== placeholderSelectOptionKey
+                );
+
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_OPEN_AI,
+                  payload: { realEstateDescription: { ...values } },
+                });
               }}
-            >
-              <img
-                src={copyIcon}
-                alt="copy-icon"
-                style={{
-                  width: "16px",
-                  height: "16px",
-                  filter:
-                    "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
+              formRef={realEstDescFormRef}
+            />
+          </>
+        )}
+
+        {queryType === OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL && (
+          <OpenAiQueryForm
+            formId="open-ai-formal-to-informal-form"
+            initialValues={cachedOpenAi.query}
+            onValuesChange={(values) => {
+              onModuleStatusChange(!!queryType && !!values.text);
+
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { query: { ...values } },
+              });
+            }}
+            formRef={formRef}
+          />
+        )}
+
+        {queryType === OpenAiQueryTypeEnum.GENERAL_QUESTION && (
+          <OpenAiQueryForm
+            formId="open-ai-general-question-form"
+            initialValues={cachedOpenAi.query}
+            onValuesChange={(values) => {
+              onModuleStatusChange(!!queryType && !!values.text);
+
+              cachingDispatch({
+                type: CachingActionTypesEnum.SET_OPEN_AI,
+                payload: { query: { ...values } },
+              });
+            }}
+            formRef={formRef}
+          />
+        )}
+
+        {fetchedResponse && (
+          <>
+            <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
+            <div className="flex flex-col gap-2">
+              <textarea
+                className="textarea textarea-bordered w-full"
+                rows={7}
+                value={fetchedResponse}
+                onChange={({ target: { value } }) => {
+                  onResponseFetched(value);
+                  setFetchedResponse(value);
                 }}
               />
-              <span className="text-sm font-bold">
-                In Zwischenablage kopieren
-              </span>
+              <div
+                className="flex gap-2 cursor-pointer items-center"
+                onClick={(): void => {
+                  const success = copy(fetchedResponse);
+
+                  if (success) {
+                    toastSuccess("Erfolgreich in Zwischenablage kopiert!");
+                  }
+                }}
+              >
+                <img
+                  src={copyIcon}
+                  alt="copy-icon"
+                  style={{
+                    width: "16px",
+                    height: "16px",
+                    filter:
+                      "invert(14%) sepia(66%) saturate(4788%) hue-rotate(333deg) brightness(98%) contrast(96%)",
+                  }}
+                />
+                <span className="text-sm font-bold">
+                  In Zwischenablage kopieren
+                </span>
+              </div>
+              <div
+                className="text-sm font-bold pt-2"
+                style={{ border: 0, borderTop: "1px solid black" }}
+              >
+                Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text
+                für Sie erstellt!
+              </div>
             </div>
-            <div
-              className="text-sm font-bold pt-2"
-              style={{ border: 0, borderTop: "1px solid black" }}
-            >
-              Nicht zufrieden? Mit Klick auf "Generieren" wird ein neuer Text
-              für Sie erstellt!
-            </div>
-          </div>
-        </>
-      )}
+          </>
+        )}
+      </div>
+      <div>
+
+        {![
+          OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
+          OpenAiQueryTypeEnum.GENERAL_QUESTION,
+        ].includes(queryType as OpenAiQueryTypeEnum) && (
+          <>
+            <div className="section-title mb-2">Textuelle Angaben</div>
+
+            <OpenAiGeneralForm
+              formId="open-ai-general-form"
+              initialValues={cachedOpenAi.general}
+              onValuesChange={(values) => {
+                cachingDispatch({
+                  type: CachingActionTypesEnum.SET_OPEN_AI,
+                  payload: { general: { ...values } },
+                });
+              }}
+              formRef={generalFormRef}
+            />
+          </>
+        )}
+      </div>
     </div>
   );
 };

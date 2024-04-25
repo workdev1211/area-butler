@@ -123,6 +123,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
           <Form id={formId}>
             <div className="form-control max-w-xs">
               <CustomTextSelect
+                mainLabel="Zielgruppe"
                 label="Zielgruppe Name"
                 placeholder="Zielgruppe Name"
                 name="targetGroupName"
@@ -197,6 +198,7 @@ const OpenAiGeneralForm: FunctionComponent<IOpenAiGeneralFormProps> = ({
 
               <div className="grid w-full">
                 <CustomTextSelect
+                  mainLabel="Weitere KI-Anweisungen"
                   label={`Ergebnisse und Arbeitsfeld, ${values.customText?.length} Zeichen`}
                   placeholder="Benutzerdefinierter Text"
                   name="customText"

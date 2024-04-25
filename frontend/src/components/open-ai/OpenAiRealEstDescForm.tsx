@@ -129,7 +129,7 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
           <div className="form-control">
             <Select
               className="select select-bordered w-full max-w-full"
-              label="Immobilienbeschreibung"
+              label="Immobilie"
               placeholder="Immobilienbeschreibung"
               name="realEstateId"
               disabled={listings.length < 2}
@@ -156,7 +156,8 @@ const OpenAiRealEstDescForm: FunctionComponent<IOpenAiRealEstDescFormProps> = ({
 
           <div className="form-control">
             <CustomTextSelect
-              label="Objektart"
+              mainLabel="Objektart"
+              label="Beschreibung"
               placeholder="Objektart"
               name="realEstateType"
               selectOptions={openAiRealEstTypeOptions}
