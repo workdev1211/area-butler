@@ -88,6 +88,7 @@ export class ProcessOpenAiIntUsageInterceptor implements NestInterceptor {
         integrationUser,
         availProdContType,
         integrationId,
+        actionType,
       );
 
       await this.contingentIntService.incrementProductUsage(

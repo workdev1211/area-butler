@@ -33,119 +33,25 @@ export const convertOnOfficeProdToIntUserProd = ({
       break;
     }
 
-    case OnOfficeProductTypesEnum.MAP_IFRAME: {
-      integrationUserProducts.push(
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-      );
-
-      break;
-    }
-
-    case OnOfficeProductTypesEnum.MAP_IFRAME_10: {
-      const resultingQuantity = quantity * 10;
-
-      integrationUserProducts.push(
-        {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
-        },
-        {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-      );
-
-      break;
-    }
-
-    case OnOfficeProductTypesEnum.ONE_PAGE: {
-      integrationUserProducts.push(
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-        },
-      );
-
-      break;
-    }
-
-    case OnOfficeProductTypesEnum.ONE_PAGE_10: {
-      const resultingQuantity = quantity * 10;
-
-      integrationUserProducts.push(
-        {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
-        },
-        {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-        {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-        },
-      );
-
-      break;
-    }
-
     case OnOfficeProductTypesEnum.STATS_EXPORT: {
-      integrationUserProducts.push(
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
-        },
-      );
+      integrationUserProducts.push({
+        quantity,
+        type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
+      });
 
       break;
     }
 
     case OnOfficeProductTypesEnum.STATS_EXPORT_10: {
-      const resultingQuantity = quantity * 15;
+      const resultQuantity = quantity * 10;
 
       integrationUserProducts.push(
         {
-          quantity: resultingQuantity,
+          quantity: resultQuantity,
           type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
         },
         {
-          quantity: resultingQuantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
-        },
-        {
-          quantity,
-          type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
-        },
-        {
-          quantity,
+          quantity: resultQuantity,
           type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
         },
       );

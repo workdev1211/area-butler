@@ -1,4 +1,8 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import {
+  HttpException,
+  Injectable,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import * as dayjs from 'dayjs';
@@ -7,7 +11,10 @@ import {
   RealEstateListing,
   RealEstateListingDocument,
 } from './schema/real-estate-listing.schema';
-import { IApiIntegrationParams } from '@area-butler-types/integration';
+import {
+  IApiIntegrationParams,
+  TIntegrationActionTypes,
+} from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
 import {
@@ -17,6 +24,8 @@ import {
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { getProcUpdateQuery } from '../shared/functions/shared';
+import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -101,6 +110,7 @@ export class RealEstateListingIntService {
     integrationUser: TIntegrationUserDocument,
     availProdContType: TApiIntUserProdContTypes,
     integrationId: string,
+    actionType: TIntegrationActionTypes,
   ): Promise<void> {
     const realEstate = await this.findOneOrFailByIntParams({
       integrationId,
@@ -108,6 +118,7 @@ export class RealEstateListingIntService {
       integrationType: integrationUser.integrationType,
     });
 
+    this.checkUnlockAction(actionType, realEstate);
     const iframeEndsAt = dayjs().add(6, 'months').toDate();
 
     switch (availProdContType) {
@@ -143,5 +154,53 @@ export class RealEstateListingIntService {
     }
 
     await realEstate.save();
+  }
+
+  private checkUnlockAction(
+    actionType: TIntegrationActionTypes,
+    {
+      integrationParams: {
+        iframeEndsAt,
+        isStatsFullExportActive,
+        isOnePageExportActive,
+        openAiRequestQuantity,
+      },
+    }: RealEstateListingDocument,
+  ): void {
+    switch (actionType) {
+      case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
+      case OpenAiQueryTypeEnum.GENERAL_QUESTION:
+      case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+        if (!openAiRequestQuantity) {
+          return;
+        }
+        break;
+      }
+
+      case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+        if (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) {
+          return;
+        }
+        break;
+      }
+
+      case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+        if (!isOnePageExportActive) {
+          return;
+        }
+        break;
+      }
+
+      case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+        if (!isStatsFullExportActive) {
+          return;
+        }
+        break;
+      }
+    }
+
+    throw new UnprocessableEntityException();
   }
 }

@@ -2,7 +2,10 @@ import {
   ApiIntUserOnOfficeProdContTypesEnum,
   TApiIntUserProdContTypes,
 } from "../../../shared/types/integration-user";
-import { allOnOfficeProducts } from "../../../shared/constants/on-office/products";
+import {
+  allOnOfficeProducts,
+  legacyOnOfficeProdNames,
+} from "../../../shared/constants/on-office/products";
 
 // TODO think about moving to the product description component
 export const getProductNameByType = (
@@ -15,13 +18,15 @@ export const getProductNameByType = (
     }
 
     case ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME: {
-      return allOnOfficeProducts[ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME]
-        .name;
+      return legacyOnOfficeProdNames[
+        ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME
+      ];
     }
 
     case ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE: {
-      return allOnOfficeProducts[ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE]
-        .name;
+      return legacyOnOfficeProdNames[
+        ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE
+      ];
     }
 
     case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
@@ -30,11 +35,10 @@ export const getProductNameByType = (
       ].name;
     }
 
-    case ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT:
     default: {
-      return allOnOfficeProducts[
-        ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT
-      ].name;
+      const msg = `Product with type ${productType} not found!`;
+      console.error(msg);
+      throw new Error(msg);
     }
   }
 };

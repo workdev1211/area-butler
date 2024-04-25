@@ -119,6 +119,7 @@ export class RealEstateListingIntController {
       integrationUser,
       availProdContType,
       integrationId,
+      actionType
     );
 
     await this.contingentIntService.incrementProductUsage(

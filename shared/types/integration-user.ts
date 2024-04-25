@@ -64,11 +64,11 @@ export interface IApiIntUserPropstackParams {
 // The products are arranged in a certain order representing their hierarchy.
 // Please, check the 'getProdContTypeByActType' method for better understanding.
 export enum ApiIntUserOnOfficeProdContTypesEnum {
-  MAP_SNAPSHOT = "MAP_SNAPSHOT", // P1 - free package
-  OPEN_AI = "OPEN_AI", // P2
-  MAP_IFRAME = "MAP_IFRAME", // P3
-  ONE_PAGE = "ONE_PAGE", // P4
-  STATS_EXPORT = "STATS_EXPORT", // P5
+  MAP_SNAPSHOT = "MAP_SNAPSHOT", // P1 - free package - LEGACY
+  OPEN_AI = "OPEN_AI", // P2 - NEW P1
+  MAP_IFRAME = "MAP_IFRAME", // P3 - LEGACY
+  ONE_PAGE = "ONE_PAGE", // P4 - LEGACY
+  STATS_EXPORT = "STATS_EXPORT", // P5 - NEW P2
   SUBSCRIPTION = "SUBSCRIPTION",
 }
 
@@ -92,8 +92,8 @@ export interface IApiIntUserOnOfficeProduct {
 }
 
 export type TApiIntUserProdContTypes =
-  keyof typeof ApiIntUserOnOfficeProdContTypesEnum |
-  keyof typeof ApiIntUserPropstackProdContTypesEnum;
+  | keyof typeof ApiIntUserOnOfficeProdContTypesEnum
+  | keyof typeof ApiIntUserPropstackProdContTypesEnum;
 
 export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 

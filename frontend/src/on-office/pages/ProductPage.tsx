@@ -20,14 +20,13 @@ export const ProductPage: FunctionComponent = () => {
 
   const onOfficeProducts = Object.values(allOnOfficeProducts).reduce<
     Array<IOnOfficeProduct[]>
-  >((result, product, i, products) => {
-    if (i === 0) {
-      result.push([products[0]]);
-      return result;
-    }
+  >((result, product, i) => {
+    const isEven = i % 2 === 1;
 
-    if (i % 2 === 1) {
-      result.push(products.slice(i, i + 2));
+    if (!isEven) {
+      result.push([product]);
+    } else {
+      result[result.length - 1].push(product);
     }
 
     return result;

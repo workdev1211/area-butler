@@ -1,4 +1,3 @@
-import youtubeIcon from "../../assets/icons/youtube.svg";
 import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
 
 export const getProductDescription = (
@@ -10,14 +9,6 @@ export const getProductDescription = (
       return OpenAiDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.MAP_IFRAME: {
-      return MapIframeDescription(name);
-    }
-
-    case OnOfficeProductTypesEnum.ONE_PAGE: {
-      return OnePageDescription(name);
-    }
-
     case OnOfficeProductTypesEnum.STATS_EXPORT: {
       return StatsExportDescription(name);
     }
@@ -26,174 +17,49 @@ export const getProductDescription = (
       return SubscriptionDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.MAP_SNAPSHOT:
     default: {
-      return MapSnapshotDescription(name);
+      const msg = `Product with type ${type} not found!`;
+      console.error(msg);
+      throw new Error(msg);
     }
   }
-};
-
-const MapSnapshotDescription = (name: string) => {
-  return (
-    <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
-
-      <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://youtu.be/HkLPsfmJdk4"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
-
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/page/lageplan"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
-
-        <div className="text-justify">
-          Erstellen Sie hochauflösende Kartenaufnahmen, in Ihrem Design, mit
-          allen Mobilitätsarten, POIs und Distanzen.
-        </div>
-      </div>
-    </>
-  );
 };
 
 const OpenAiDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
+      <div className="card-title w-full text-center">{name}</div>
 
       <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://youtu.be/SF-h7-Z-JVs"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
+        {/*<div className="flex justify-center items-center gap-5 w-full">*/}
+        {/*  <a*/}
+        {/*    className="link link-hover"*/}
+        {/*    target="_blank"*/}
+        {/*    rel="noreferrer"*/}
+        {/*    href="https://areabutler.de/page/der-turbo-fuer-ihre-immobilienbeschreibungen"*/}
+        {/*  >*/}
+        {/*    Mehr Informationen...*/}
+        {/*  </a>*/}
+        {/*</div>*/}
 
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/page/der-turbo-fuer-ihre-immobilienbeschreibungen"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
-
-        <div className="flex flex-col text-justify">
-          <div>Alles aus P1, plus:</div>
-          <div>
-            Inspiration aus der magischen Feder. Mit Standortanalyse-Infos, den
-            Fakten Ihren Immobilien.
+        <div className="flex flex-col gap-5">
+          <div className="flex flex-col gap-2">
+            <div className="text-xl font-bold">Lagepläne</div>
+            <ul className="list-disc pl-5 text-left">
+              <li>eigene Farben und Logos</li>
+              <li>Mobilität, POIs, Distanzen</li>
+              <li>Karte oder Luftbild</li>
+            </ul>
           </div>
-        </div>
 
-        <ul className="list-disc pl-5 text-left ">
-          <li>Lagepläne und Distanzen</li>
-          <li>Lagetexte</li>
-          <li>Immobilienbeschreibungen</li>
-          <li>Exposé Texte</li>
-          <li>Generelle Anfragen an KI</li>
-        </ul>
-      </div>
-    </>
-  );
-};
-
-const MapIframeDescription = (name: string) => {
-  return (
-    <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
-
-      <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://youtu.be/CEU2Yp4YMSw"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
-
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/page/interaktive-karten"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
-
-        <div className="flex flex-col text-justify">
-          <div>Alles aus P2, plus:</div>
-          <div>
-            Interaktive Karten, im eigenen Design, für alle Medien. Passen Sie
-            Inhalte und Aussehen auf Ihre Zielgruppe an:
+          <div className="flex flex-col gap-2">
+            <div className="text-xl font-bold">KI-Texte mit Qualität</div>
+            <ul className="list-disc pl-5 text-left">
+              <li>Lagetexte & Objektbeschreibung</li>
+              <li>Exposétexte & Social Media</li>
+              <li>Inkl. aller Standortdaten</li>
+            </ul>
           </div>
-        </div>
-
-        <ul className="list-disc pl-5 text-left ">
-          <li>iFrame für Ihre Website</li>
-          <li>QR-Code</li>
-          <li>Hyperlink</li>
-        </ul>
-      </div>
-    </>
-  );
-};
-
-const OnePageDescription = (name: string) => {
-  return (
-    <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
-
-      <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://youtu.be/7CwLQvT_KAg"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
-
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/page/ki-lage-expose"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
-
-        <div className="flex flex-col text-justify">
-          <div>Alles aus P3, plus:</div>
-          <div>Alle Infos auf einer DinA4 Seite.</div>
-        </div>
-
-        <ul className="list-disc pl-5 text-left ">
-          <li>KI-Lagetext</li>
-          <li>POI Tabelle mit 8 POIs und Designten Icons</li>
-          <li>Bild der Mikro-, Makro-Lage und QR-Code</li>
-        </ul>
-
-        <div className="text-justify">
-          Perfekte Vorbereitung für die Akquise. Perfekte Vermarktung der Lage
-          im Vertrieb.
         </div>
       </div>
     </>
@@ -203,41 +69,49 @@ const OnePageDescription = (name: string) => {
 const StatsExportDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
+      <div className="card-title w-full text-center">{name}</div>
 
       <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://youtu.be/ISHmBL0rbbA"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
+        {/*<div className="flex justify-center items-center gap-5 w-full">*/}
+        {/*  <a*/}
+        {/*    className="link link-hover"*/}
+        {/*    target="_blank"*/}
+        {/*    rel="noreferrer"*/}
+        {/*    href="https://areabutler.de/page/alle-features"*/}
+        {/*  >*/}
+        {/*    Mehr Informationen...*/}
+        {/*  </a>*/}
+        {/*</div>*/}
 
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/page/alle-features"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
+        <div className="flex flex-col gap-5">
+          <div>Alles aus P1 plus:</div>
 
-        <div className="flex flex-col text-justify">
-          <div>Alles aus P4, plus:</div>
-          <div>
-            Lage-Indizes, Nachbarschaftsdaten, sozio-demografische Daten,
-            Umfeldanalyse pdf und Überblick.
+          <div className="flex flex-col gap-2">
+            <div className="text-xl font-bold">Interaktive Karte</div>
+            <ul className="list-disc pl-5 text-left">
+              <li>Für Web-Exposé & Homepage</li>
+              <li>Als Link, QR-Code oder iFrame</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-xl font-bold">Lage-Exposé</div>
+            <ul className="list-disc pl-5 text-left">
+              <li>Alle Lage Infos auf einer Seite</li>
+              <li>Als pdf oder png</li>
+            </ul>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <div className="text-xl font-bold">
+              Akquise & Vertriebsdokumente
+            </div>
+            <ul className="list-disc pl-5 text-left">
+              <li>Alle Nachbarschaftsdaten</li>
+              <li>Perfekt Vorbereitet für alles rund um Lage</li>
+            </ul>
           </div>
         </div>
-
-        <ul className="list-disc pl-5 text-left ">
-          <li>Alle Daten und Einblicke in die Nachbarschaft</li>
-          <li>Lage Indizes</li>
-          <li>Schnelldokumente für Einkaufstermine und Vertrieb</li>
-        </ul>
       </div>
     </>
   );
@@ -246,33 +120,32 @@ const StatsExportDescription = (name: string) => {
 const SubscriptionDescription = (name: string) => {
   return (
     <>
-      <div className="card-title w-full mb-7 text-center">{name}</div>
+      <div className="card-title w-full text-center">{name}</div>
 
       <div className="flex flex-col items-start gap-5 h-full">
-        <div className="flex justify-center items-center gap-5 w-full">
-          <a
-            target="_blank"
-            rel="noreferrer"
-            href="https://areabutler.de/#pricing"
-          >
-            <img className="h-8" src={youtubeIcon} alt="youtube-icon" />
-          </a>
+        {/*<div className="flex justify-center items-center gap-5 w-full">*/}
+        {/*  <a*/}
+        {/*    className="link link-hover"*/}
+        {/*    target="_blank"*/}
+        {/*    rel="noreferrer"*/}
+        {/*    href="https://calendly.com/areabutler/30-minuten-area-butler"*/}
+        {/*  >*/}
+        {/*    Mehr Informationen...*/}
+        {/*  </a>*/}
+        {/*</div>*/}
 
-          <a
-            className="link link-hover"
-            target="_blank"
-            rel="noreferrer"
-            href="https://calendly.com/areabutler/30-minuten-area-butler"
-          >
-            Mehr Informationen...
-          </a>
-        </div>
+        <div className="flex flex-col gap-5">
+          <div>Mit monatlicher oder jährlicher Zahlung.</div>
+          <div>Alles aus P5 mit vielen Vorteilen:</div>
 
-        <div className="text-justify">
-          In naher Zukunft werden wir auch in onOffice ein flexibles Abo-Modell
-          ermöglichen. So werden wir in der Lage sein, einen noch niedrigeren
-          Stückpreis anzubieten. Sie haben generelle Fragen oder bereits jetzt
-          Interesse an einem Abo? Sprechen Sie uns gerne an:
+          <ul className="list-disc pl-5 text-left text-xl font-bold">
+            <li>Karten sind immer Online</li>
+            <li>Kontingent verfällt nicht</li>
+            <li>Schulung & Onboarding</li>
+            <li>Automatisierung mit Webhooks</li>
+            <li>Mengen-, IVD- und bvfi- Rabatt</li>
+            <li>An Ihren Bedarf anpassbar</li>
+          </ul>
         </div>
       </div>
     </>

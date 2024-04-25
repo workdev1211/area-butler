@@ -79,15 +79,10 @@ export const getProdContTypeByActType = (
 export const getAvailProdContType = (
   integrationType: IntegrationTypesEnum,
   actionType: TIntegrationActionTypes,
-  availProdContingents?: TApiIntUserAvailProdContingents
+  availProdContingents: TApiIntUserAvailProdContingents | undefined
 ): TApiIntUserProdContTypes | undefined => {
   const prodContType = getProdContTypeByActType(integrationType, actionType);
-
-  if (
-    !availProdContingents ||
-    !prodContType ||
-    prodContType === ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT
-  ) {
+  if (!availProdContingents || !prodContType) {
     return;
   }
 

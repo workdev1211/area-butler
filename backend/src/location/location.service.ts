@@ -53,9 +53,6 @@ import {
 import { OpenAiService } from '../open-ai/open-ai.service';
 import { RealEstateListingService } from '../real-estate-listing/real-estate-listing.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { ApiIntUserOnOfficeProdContTypesEnum } from '@area-butler-types/integration-user';
-import { UsageStatisticsService } from '../user/usage-statistics.service';
-import { TApiUsageStatsReqStatus } from '../shared/types/external-api';
 import { IApiOverpassFetchNodes } from '@area-butler-types/overpass';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { IApiLateSnapConfigOption } from '@area-butler-types/location';
@@ -76,7 +73,6 @@ export class LocationService {
     private readonly overpassService: OverpassService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly subscriptionService: SubscriptionService,
-    private readonly usageStatisticsService: UsageStatisticsService,
     private readonly userService: UserService,
   ) {}
 
@@ -230,14 +226,6 @@ export class LocationService {
 
     if (!existingLocation && !isIntegrationUser) {
       await this.userService.incrementExecutedRequestCount(user);
-    }
-
-    if (!existingLocation && isIntegrationUser) {
-      await this.usageStatisticsService.logUsageStatistics(
-        user,
-        ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT,
-        {} as TApiUsageStatsReqStatus,
-      );
     }
 
     return {
