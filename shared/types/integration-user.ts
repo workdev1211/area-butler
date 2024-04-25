@@ -109,10 +109,11 @@ export interface IApiIntUserUpdateParamsAndConfig {
 }
 
 export interface IApiIntUserCreate extends IApiIntUserUpdateParamsAndConfig {
-  integrationUserId: string;
   integrationType: IntegrationTypesEnum;
-  parentId?: string;
+  integrationUserId: string;
   isParent?: boolean;
+  isContingentProvided?: boolean;
+  parentId?: string;
 }
 
 export type TApiIntegrationUserParameters =

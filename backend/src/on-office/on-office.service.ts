@@ -132,6 +132,7 @@ export class OnOfficeService {
           mapIcon: parentUser?.config.mapIcon,
         },
         integrationType: this.integrationType,
+        isContingentProvided: true,
         parentId: parentUser?.id,
       });
     }

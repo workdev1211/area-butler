@@ -3,6 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, UpdateQuery, FilterQuery, ProjectionFields } from 'mongoose';
 import { BulkWriteResult } from 'mongodb';
 import { EventEmitter2 } from 'eventemitter2';
+import * as dayjs from 'dayjs';
 
 import {
   IntegrationUser,
@@ -10,6 +11,7 @@ import {
 } from './schema/integration-user.schema';
 import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import {
+  ApiIntUserOnOfficeProdContTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserCreate,
   TApiIntegrationUserConfig,
@@ -36,6 +38,7 @@ export class IntegrationUserService {
     config,
     integrationType,
     integrationUserId,
+    isContingentProvided,
     isParent,
     parameters,
     parentId,
@@ -56,6 +59,13 @@ export class IntegrationUserService {
       parameters,
       parentId,
       config: processedConfig,
+      productContingents: isContingentProvided
+        ? {
+            [ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT]: [
+              { quantity: 1, expiresAt: dayjs().add(1, 'year').toDate() },
+            ],
+          }
+        : undefined,
     });
 
     void this.eventEmitter.emitAsync(EventType.INTEGRATION_USER_CREATED_EVENT, {
