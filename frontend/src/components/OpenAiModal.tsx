@@ -99,6 +99,9 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     }
     var queryType = OpenAiQueryTypeEnum.GENERAL_QUESTION;
     var response = await fetchOpenAiResponse(queryType, query);
+    if (response !== "") {
+      addQueryResponse({queryResponse: response, queryType: queryType, query: {...query, customText:queryText}});
+    }
     addQueryResponse({queryResponse: response, queryType: queryType, query: {...query, customText:queryText}});
     promptInputRef.current!.value = "";
   }
@@ -150,13 +153,15 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                   isFetchResponse={isFetchResponse}
                   onResponseFetched={(responseText, query): void => {
                     setIsCopyTextButtonDisabled(false);
-                    addQueryResponse({
-                      query: query!,
-                      queryType: queryType,
-                      queryResponse: responseText
-                    });
+                    if (responseText !== "") {
+                      addQueryResponse({
+                        query: query!,
+                        queryType: queryType,
+                        queryResponse: responseText
+                      });
+                    }
                     setIsEditMode(-1)
-                    addQueryResponse({
+                    /**addQueryResponse({
                       queryType: queryType,
                       query: query!,
                       queryResponse: `Willkommen in Ihrem neuen Stadtviertel, ein pulsierender Knotenpunkt der lokalen Kultur und Einrichtungen, der aktiven Bewegung und erholsamen Ruhezeiten. Hier haben Sie alles, was das Leben bereichert, buchstäblich nur einen Steinwurf entfernt. Ob feine Küche oder schnelle Bissen, die umliegenden gastronomischen Einrichtungen wie das gemütliche "Alexandros" (14m) und "Die Pizzeria" (42m) bieten eine Vielzahl an kulinarischen Genüssen. 
@@ -174,7 +179,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   Für Reisende und globale Abenteurer ist auch der Zugang zu weit fortgeschrittenen Transportnetzen ein Plus. In verkehrsgünstiger Lage zu mehreren Autobahnen und zum internationalen Flughafen, ist diese Adresse ein perfekter Ausgangspunkt für alle Ihre Abenteuer.
 
   Insbesondere für Immobilieninteressenten, die eine ausgewogene Mischung aus urbanem Leben und ruhigem Rückzugsort suchen, bietet diese Lage alles. Mit der perfekten Balance aus Gesundheitseinrichtungen, Bildungseinrichtungen, kulturellen Hotspots, Natur und Aktivsport - kurz: Sie ist das optimale Zuhause und der ideale Lebensraum für Bewohner jeden Alters!`
-  })
+  })**/
                     setIsFetchResponse(false);
                   }}
                 />

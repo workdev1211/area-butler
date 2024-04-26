@@ -37,6 +37,7 @@ interface IOpenAiModuleProps {
   initialQueryType?: OpenAiQueryTypeEnum;
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
+  showResult?: boolean;
 }
 
 const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
@@ -46,6 +47,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   initialQueryType,
   onQueryTypeChange,
   searchResultSnapshotId,
+  showResult,
 }) => {
   const {
     cachingState: { openAi: cachedOpenAi },
@@ -296,7 +298,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
           />
         )}
 
-        {fetchedResponse && (
+        {fetchedResponse && showResult && (
           <>
             <h3 className="text-black">Ihr KI-generierter Textvorschlag</h3>
             <div className="flex flex-col gap-2">
