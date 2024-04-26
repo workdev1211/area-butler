@@ -1,8 +1,8 @@
-import { FunctionComponent, useContext, useState, useEffect, useRef } from "react";
+import {FunctionComponent, useContext, useEffect, useRef, useState} from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
-import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import {OpenAiQueryTypeEnum} from "../../../shared/types/open-ai";
+import {useIntegrationTools} from "../hooks/integration/integrationtools";
 import copy from "copy-to-clipboard";
 import crossIcon from "../assets/icons/cross.svg";
 import personIcon from "../assets/icons/person.svg";
@@ -12,17 +12,14 @@ import editIcon from "../assets/icons/edit.svg";
 import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import saveIcon from "../assets/icons/check.svg";
 import cancelIcon from "../assets/icons/cancel.svg";
-import {
-  IntegrationTypesEnum,
-  TUnlockIntProduct,
-} from "../../../shared/types/integration";
-import { SearchContext } from "../context/SearchContext";
-import { ConfigContext } from "../context/ConfigContext";
-import { integrationNames } from "../../../shared/constants/integration";
+import shareIcon from "../assets/icons/share.svg";
+import {IntegrationTypesEnum, TUnlockIntProduct,} from "../../../shared/types/integration";
+import {SearchContext} from "../context/SearchContext";
+import {ConfigContext} from "../context/ConfigContext";
+import {integrationNames} from "../../../shared/constants/integration";
 
 import "./OpenAiModal.scss";
-import { TOpenAiQuery } from "hooks/openai";
-import { MeansOfTransportation } from "../../../shared/types/types";
+import {TOpenAiQuery, useOpenAi} from "../hooks/openai";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -32,7 +29,7 @@ interface IOpenAiModalProps {
 }
 
 interface IGeneratedTexts {
-  query?: TOpenAiQuery;
+  query: TOpenAiQuery;
   queryType: OpenAiQueryTypeEnum;
   queryResponse: string;
 }
@@ -60,6 +57,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
 
   const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
+  const { fetchOpenAiResponse } = useOpenAi();
   const isIntegration = !!integrationType;
   const isSendToIntAllowed =
     isIntegration &&
@@ -94,10 +92,29 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     setQueryResponse([...queryResponses, queryResponse]);
   }
 
-  const renderQuery = (query: TOpenAiQuery) => {
-    return <></>
+  const refineOpenAiResponse = async () => {
+    const queryText = promptInputRef.current?.value!;
+    const query = {
+      text: "Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden: ============" + queryResponses[queryResponses.length-1].queryResponse + "============ Der Kunde hat hierzu folgende Änderungswünsche: " + queryText
+    }
+    var queryType = OpenAiQueryTypeEnum.GENERAL_QUESTION;
+    var response = await fetchOpenAiResponse(queryType, query);
+    addQueryResponse({queryResponse: response, queryType: queryType, query: {...query, customText:queryText}});
+    promptInputRef.current!.value = "";
   }
 
+  const renderQueryResponse = (genText: IGeneratedTexts) => {
+    switch (genText.queryType) {
+      case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
+        return "Lagebeschreibung";
+      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
+        return "Immobilienbeschreibung";
+      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
+        return "Lage- und Immobilienbeschreibung";
+      case OpenAiQueryTypeEnum.GENERAL_QUESTION:
+        return "customText" in genText.query && genText.query.customText;
+    }
+  }
   useEffect(() => {
     scrollToBottom()
   }, [queryResponses, isFetchResponse]);
@@ -134,13 +151,14 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                   onResponseFetched={(responseText, query): void => {
                     setIsCopyTextButtonDisabled(false);
                     addQueryResponse({
+                      query: query!,
                       queryType: queryType,
                       queryResponse: responseText
                     });
                     setIsEditMode(-1)
                     addQueryResponse({
                       queryType: queryType,
-                      query: query,
+                      query: query!,
                       queryResponse: `Willkommen in Ihrem neuen Stadtviertel, ein pulsierender Knotenpunkt der lokalen Kultur und Einrichtungen, der aktiven Bewegung und erholsamen Ruhezeiten. Hier haben Sie alles, was das Leben bereichert, buchstäblich nur einen Steinwurf entfernt. Ob feine Küche oder schnelle Bissen, die umliegenden gastronomischen Einrichtungen wie das gemütliche "Alexandros" (14m) und "Die Pizzeria" (42m) bieten eine Vielzahl an kulinarischen Genüssen. 
 
   Oder wie wäre es mit einem energiegeladenen Start in den Tag im nahen "Sporteve" Fitnessstudio, gerade mal 140 Meter von Ihrer Haustür entfernt? Und nachdem Training können Sie sich direkt in der "Erika Apotheke Bartz" (148m) um Ihre Gesundheitsbedürfnisse kümmern. Die medizinische Versorgung vor Ort stellt sicher, dass Sie sich nie weit um Hilfe umsehen müssen. Die nahegelegenen Ärzte, Apotheken und anderen medizinischen Einrichtungen bieten Ihnen eine hervorragende Gesundheitsversorgung.
@@ -189,7 +207,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                   <div className="chat-wrapper justify-right">
                     <div className="chat-messages">
                       <div className="msg msg-secondary msg-right">
-                        {genText.query?.snapshotId}
+                        {renderQueryResponse(genText)}
                       </div>
                     </div>
                     <div className="chat-author"><img src={personIcon} alt="person"/></div>
@@ -216,6 +234,15 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                                   queryResponses.splice(i, 1);
                                   setQueryResponse([...queryResponses]);
                                 }} />
+                              {<img src={shareIcon} alt="An onOffice senden" onClick={() => {
+                                  sendToIntegration({
+                                    exportType: queryType as
+                                      | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                                      | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                                      | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                                    text: genText.queryResponse,
+                                  });
+                                }} />}
                             </> : <>
                               <img src={saveIcon} alt="Speichern" onClick={() => {
                                 if (editInputRef.current) {
@@ -240,62 +267,50 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
               </div>
             </div>
           </>)})}
-          <div
-            className={`modal-action ${isIntegration ? "justify-between" : ""}`}
-          >
-            {isSendToIntAllowed && (
-              <button
-                className="btn bg-primary-gradient max-w-fit self-end"
-                onClick={(): void => {
-                  setIsCopyTextButtonDisabled(true);
+          {isSendToIntAllowed && (
+            <button
+              className="btn bg-primary-gradient max-w-fit self-end"
+              onClick={(): void => {
+                setIsCopyTextButtonDisabled(true);
 
-                  void sendToIntegration({
-                    exportType: queryType as
-                      | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-                      | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-                      | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-                    text: queryResponses[0].queryResponse,
-                  });
-                }}
-                disabled={isCopyTextButtonDisabled}
-              >
-                An {integrationNames[integrationType]} senden
-              </button>
-            )}
-            {queryResponses && queryResponses.length > 0 && (
-              <div className="chat-wrapper justify-right">
-                <div className="chat-messages">
-                  <div className="msg msg-secondary msg-right flex">
-                    <textarea ref={promptInputRef} disabled={isFetchResponse} className="full-width" placeholder="Ihre Verbesserung oder Ergänzung des Textes..." />
-                    <button
-                      className={`btn bg-primary-gradient max-w-fit self-end ${
-                        isFetchResponse ? "loading" : ""
-                      }`}
-                      onClick={() => {
-                        if (promptInputRef.current?.value === "") 
-                          return;
-                        queryResponses[queryResponses.length-1] = {...queryResponses[queryResponses.length-1], query: {
-                          customText : promptInputRef.current?.value,
-                          meanOfTransportation: MeansOfTransportation.WALK,
-                          realEstateId: realEstateListing?.id!!,
-                          realEstateType: realEstateListing?.type!!,
-                          snapshotId: searchResultSnapshotId,
-                          text: promptInputRef.current?.value
-                        }}
-                        setQueryResponse(queryResponses);
-                        setIsFetchResponse(true);
-                      }}
-                      disabled={isGenerateButtonDisabled || isFetchResponse}
-                    >
-                      {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
-                    </button>
-                  </div>
+                void sendToIntegration({
+                  exportType: queryType as
+                    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                  text: queryResponses[0].queryResponse,
+                });
+              }}
+              disabled={isCopyTextButtonDisabled}
+            >
+              An {integrationNames[integrationType]} senden
+            </button>
+          )}
+          {queryResponses && queryResponses.length > 0 && (
+            <div className="chat-wrapper justify-right">
+              <div className="chat-messages">
+                <div className="msg msg-secondary msg-right flex">
+                  <textarea ref={promptInputRef} disabled={isFetchResponse} className="full-width" placeholder="Ihre Verbesserung oder Ergänzung des Textes..." />
+                  <button
+                    className={`btn bg-primary-gradient max-w-fit self-end ${
+                      isFetchResponse ? "loading" : ""
+                    }`}
+                    onClick={() => {
+                      if (promptInputRef.current?.value === "")
+                        return;
+
+                      refineOpenAiResponse()
+                    }}
+                    disabled={isGenerateButtonDisabled || isFetchResponse}
+                  >
+                    {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
+                  </button>
                 </div>
-                <div className="chat-author"><img src={personIcon} alt="person"/></div>
               </div>
-            )}
-            <div ref={messagesEndRef} />
-          </div>
+              <div className="chat-author"><img src={personIcon} alt="person"/></div>
+            </div>
+          )}
+          <div ref={messagesEndRef} />
         </div>
       </div>
     </div>
