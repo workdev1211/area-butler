@@ -26,10 +26,10 @@ class ApiPropstackWebhookToAreaButlerDto extends ApiPropstackToAreaButlerDto<IPr
   @Expose()
   @Transform(
     ({
-      obj: { name, title },
+      obj: { address, name, title },
     }: {
       obj: TPropstackProcProperty<IPropstackWebhookProperty>;
-    }): string => name || title?.value,
+    }): string => name || title?.value || address,
     { toClassOnly: true },
   )
   @IsNotEmpty()

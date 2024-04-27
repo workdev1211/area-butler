@@ -33,34 +33,34 @@ class ApiPropstackWebhookPropertyDto implements IPropstackWebhookProperty {
   @Expose()
   @IsNotEmpty()
   @IsString()
-  name: string;
-
-  @Expose()
-  @IsNotEmpty()
-  @IsString()
   address: string;
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  short_address: string;
+  name?: string;
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
+  @IsString()
+  short_address?: string;
+
+  @Expose()
+  @IsOptional()
   @IsNumber()
   @IsPositive()
-  lat: number;
+  lat?: number;
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   @IsPositive()
-  lng: number;
+  lng?: number;
 
   @Expose()
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(PropstackPropMarketTypesEnum)
-  marketing_type: PropstackPropMarketTypesEnum;
+  marketing_type?: PropstackPropMarketTypesEnum;
 
   @Expose()
   @Type(() => ApiPropstackPropertyStatusDto)
@@ -83,6 +83,11 @@ class ApiPropstackWebhookPropertyDto implements IPropstackWebhookProperty {
   broker?: IPropstackBroker;
 
   @Expose()
+  @Transform(
+    ({ value }: { value: string | object }): string =>
+      typeof value === 'string' ? value : undefined,
+    { toClassOnly: true },
+  )
   @IsOptional()
   @IsString()
   changed_attributes?: string;

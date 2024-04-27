@@ -200,12 +200,12 @@ interface IPropstackFurnishing {
 // obtained by fetching a property from Propstack
 export interface IPropstackProperty {
   id: number;
-  name: string;
   address: string;
-  short_address: string;
-  lat: number;
-  lng: number;
-  marketing_type: PropstackPropMarketTypesEnum;
+  name?: string;
+  short_address?: string;
+  lat?: number;
+  lng?: number;
+  marketing_type?: PropstackPropMarketTypesEnum;
   status?: IPropstackPropertyStatus;
   broker?: IPropstackBroker;
   title?: string;
@@ -255,12 +255,12 @@ export interface IPropstackProperty {
 // obtained from a webhook triggered by a Propstack event
 export interface IPropstackWebhookProperty {
   id: number;
-  name: string;
   address: string;
-  short_address: string;
-  lat: number;
-  lng: number;
-  marketing_type: PropstackPropMarketTypesEnum;
+  name?: string;
+  short_address?: string;
+  lat?: number;
+  lng?: number;
+  marketing_type?: PropstackPropMarketTypesEnum;
   property_status?: IPropstackPropertyStatus;
   broker_id?: number; // user id
   broker?: IPropstackBroker;

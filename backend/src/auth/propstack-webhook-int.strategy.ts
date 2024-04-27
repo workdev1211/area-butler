@@ -1,6 +1,7 @@
 import {
   Injectable,
   Logger,
+  UnauthorizedException,
   UnprocessableEntityException,
 } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
@@ -140,6 +141,10 @@ export class PropstackWebhookIntStrategy extends PassportStrategy(
               'parameters.apiKey': apiKey,
             },
           );
+        }
+
+        if (!integrationUser) {
+          return verified(new UnauthorizedException());
         }
 
         req.principal = integrationUser;

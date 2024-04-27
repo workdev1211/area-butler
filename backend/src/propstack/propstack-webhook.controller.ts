@@ -47,12 +47,12 @@ export class PropstackWebhookController extends ApiKeyAuthController {
       propstackPropertyDto.id
     }-${nowDate.getTime()}`;
 
-    this.logger.verbose(`Event ${eventId} was triggered.`);
+    this.logger.log(`Event ${eventId} was triggered.`);
 
     void this.propstackWebhookService
       .handlePropertyCreated(user, propstackPropertyDto, eventId)
       .then(() => {
-        this.logger.verbose(
+        this.logger.log(
           `Event ${eventId} processing is complete and took ${dayjs
             .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
             .humanize()}.`,
@@ -75,12 +75,12 @@ export class PropstackWebhookController extends ApiKeyAuthController {
       propstackPropertyDto.id
     }-${nowDate.getTime()}`;
 
-    this.logger.verbose(`Event ${eventId} was triggered.`);
+    this.logger.log(`Event ${eventId} was triggered.`);
 
     void this.propstackWebhookService
       .handlePropertyUpdated(user, propstackPropertyDto)
       .then(() => {
-        this.logger.verbose(
+        this.logger.log(
           `Event ${eventId} processing is complete and took ${dayjs
             .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
             .humanize()}.`,

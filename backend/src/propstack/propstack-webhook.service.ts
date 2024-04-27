@@ -106,7 +106,7 @@ export class PropstackWebhookService {
         user,
       });
 
-    this.logger.verbose(
+    this.logger.log(
       `Event ${eventId} continues to be processed for ${dayjs
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}. Snapshot creation is complete.`,
@@ -147,6 +147,7 @@ export class PropstackWebhookService {
         this.logger.error(
           `Event ${eventId}. The following error has occurred on Propstack property update: ${response.reason}.`,
         );
+        this.logger.debug(response.reason);
       }
     });
   }

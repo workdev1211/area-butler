@@ -26,10 +26,10 @@ class ApiPropstackFetchToAreaButlerDto extends ApiPropstackToAreaButlerDto<IProp
   @Expose()
   @Transform(
     ({
-      obj: { name, title },
+      obj: { address, name, title },
     }: {
       obj: TPropstackProcProperty<IPropstackProperty>;
-    }): string => name || title,
+    }): string => name || title || address,
     { toClassOnly: true },
   )
   @IsNotEmpty()
