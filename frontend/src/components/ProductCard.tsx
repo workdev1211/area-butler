@@ -1,28 +1,29 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 
 import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
-  OnOfficeProductTypesEnum,
-} from "../../../../shared/types/on-office";
-import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
+} from "../../../shared/types/on-office";
+import { convertPriceToHuman } from "../../../shared/functions/shared.functions";
 import { getProductDescription } from "./ProductDescription";
-import { toastError } from "../../shared/shared.functions";
-import { useHttp } from "../../hooks/http";
-import { getOnOfficeProductImage } from "../../shared/on-office.functions";
-import { SearchContext } from "../../context/SearchContext";
-import { IIntegrationProduct } from "../../../../shared/types/integration";
+import { toastError } from "../shared/shared.functions";
+import { useHttp } from "../hooks/http";
+import { SearchContext } from "../context/SearchContext";
+import {
+  IIntegrationProduct,
+  IntegrationTypesEnum,
+} from "../../../shared/types/integration";
+import { getProductImage } from "../shared/integration.functions";
+import { ConfigContext } from "../context/ConfigContext";
 
 interface IProductCardProps {
   products: IIntegrationProduct[];
   isDisabled: boolean;
 }
 
-const ProductCard: FunctionComponent<IProductCardProps> = ({
-  products,
-  isDisabled,
-}) => {
+const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
+  const { integrationType } = useContext(ConfigContext);
   const {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
@@ -34,6 +35,8 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
     tenfold: 0,
   });
 
+  // TODO PROPSTACK CONTINGENT
+  const isPropstack = integrationType === IntegrationTypesEnum.PROPSTACK;
   const [mainProduct, tenfoldProduct] = products;
   const { name, type, price } = mainProduct;
 
@@ -46,7 +49,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
         {/* TODO move the images to the "getProductDescription" method with its ("getOnOfficeProductImage") function */}
         <img
           className="rounded-3xl"
-          src={getOnOfficeProductImage(type)}
+          src={getProductImage(type)}
           alt={type}
           style={{ filter: "drop-shadow(0 0 0.5rem var(--primary))" }}
         />
@@ -65,7 +68,8 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                   placeholder="XX"
                   size={4}
                   maxLength={4}
-                  disabled={isCardDisabled}
+                  // TODO PROPSTACK CONTINGENT
+                  disabled={isCardDisabled || isPropstack}
                   value={productQuantity.ordinary}
                   onChange={({ target: { value } }) => {
                     if (!+value && value !== "") {
@@ -90,7 +94,8 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                   placeholder="XX"
                   size={4}
                   maxLength={4}
-                  disabled={isCardDisabled}
+                  // TODO PROPSTACK CONTINGENT
+                  disabled={isCardDisabled || isPropstack}
                   value={productQuantity.tenfold}
                   onChange={({ target: { value } }) => {
                     if (!+value && value !== "") {
@@ -110,16 +115,15 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                 </div>
               </div>
             )}
-            {type === OnOfficeProductTypesEnum.FLAT_RATE ? (
+            {/* TODO PROPSTACK CONTINGENT */}
+            {type === "FLAT_RATE" || isPropstack ? (
               <a
-                className="btn btn-primary w-48"
+                className={`btn w-48 ${
+                  isCardDisabled ? "btn-disabled" : "btn-primary"
+                }`}
                 target="_blank"
                 rel="noreferrer"
-                href={
-                  !isCardDisabled
-                    ? `https://calendly.com/areabutler/30-minuten-area-butler`
-                    : "#0"
-                }
+                href={!isCardDisabled ? "mailto:info@areabutler.de" : undefined}
                 style={{
                   padding: "0 var(--btn-padding) 0 var(--btn-padding)",
                 }}

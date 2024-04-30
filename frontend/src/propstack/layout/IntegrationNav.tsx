@@ -1,4 +1,4 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./IntegrationNav.scss";
@@ -7,7 +7,7 @@ import AreaButlerLogo from "assets/img/logo.svg";
 import { propstackRootEntries } from "../PropstackContainer";
 import { SearchContext } from "../../context/SearchContext";
 
-const IntegrationNav: FunctionComponent = () => {
+const IntegrationNav: FC = () => {
   const {
     searchContextState: { openAiQueryType },
   } = useContext(SearchContext);
@@ -129,10 +129,9 @@ const IntegrationNav: FunctionComponent = () => {
               >
                 Meine Karten
               </NavLink>
-              {/* TODO PROPSTACK CONTINGENT */}
-              {/*<NavLink to="/products" className="nav-link" aria-current="page">*/}
-              {/*  Meine Produkte*/}
-              {/*</NavLink>*/}
+              <NavLink to="/products" className="nav-link" aria-current="page">
+                Meine Produkte
+              </NavLink>
             </div>
           </div>
         </div>
@@ -179,14 +178,13 @@ const IntegrationNav: FunctionComponent = () => {
           >
             Meine Karten
           </NavLink>
-          {/* TODO PROPSTACK CONTINGENT */}
-          {/*<NavLink*/}
-          {/*  to="/products"*/}
-          {/*  className="nav-mobile-menu-link"*/}
-          {/*  aria-current="page"*/}
-          {/*>*/}
-          {/*  Meine Produkte*/}
-          {/*</NavLink>*/}
+          <NavLink
+            to="/products"
+            className="nav-mobile-menu-link"
+            aria-current="page"
+          >
+            Meine Produkte
+          </NavLink>
         </div>
       </div>
     </nav>

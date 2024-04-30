@@ -1,20 +1,24 @@
-import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
-import { TIntegrationProductType } from "../../../../shared/types/integration";
+import { OnOfficeProductTypesEnum } from "../../../shared/types/on-office";
+import { TIntegrationProductType } from "../../../shared/types/integration";
+import { PropstackProductTypeEnum } from "../../../shared/types/propstack";
 
 export const getProductDescription = (
   name: string,
   type: TIntegrationProductType
 ) => {
   switch (type) {
-    case OnOfficeProductTypesEnum.OPEN_AI: {
+    case OnOfficeProductTypesEnum.OPEN_AI:
+    case PropstackProductTypeEnum.OPEN_AI: {
       return OpenAiDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.STATS_EXPORT: {
+    case OnOfficeProductTypesEnum.STATS_EXPORT:
+    case PropstackProductTypeEnum.STATS_EXPORT: {
       return StatsExportDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.FLAT_RATE: {
+    case OnOfficeProductTypesEnum.FLAT_RATE:
+    case PropstackProductTypeEnum.FLAT_RATE: {
       return SubscriptionDescription(name);
     }
 

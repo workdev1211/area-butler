@@ -1,24 +1,45 @@
-import { FunctionComponent, useContext } from "react";
+import { FC, useContext } from "react";
 
-import DefaultLayout from "../../layout/defaultLayout";
-import { allOnOfficeProducts } from "../../../../shared/constants/on-office/on-office-products";
+import DefaultLayout from "../layout/defaultLayout";
+import { allOnOfficeProducts } from "../../../shared/constants/on-office/on-office-products";
 import ProductCard from "../components/ProductCard";
-import { UserContext } from "../../context/UserContext";
-import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
-import { getProductNameByType } from "../../shared/integration.functions";
-import { copyTextToClipboard } from "../../shared/shared.functions";
-import copyIcon from "../../assets/icons/copy.svg";
-import { IIntegrationProduct } from "../../../../shared/types/integration";
+import { UserContext } from "../context/UserContext";
+import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../shared/types/integration-user";
+import { getProductNameByType } from "../shared/integration.functions";
+import { copyTextToClipboard } from "../shared/shared.functions";
+import copyIcon from "../assets/icons/copy.svg";
+import {
+  IIntegrationProduct,
+  IntegrationTypesEnum,
+  TIntegrationProductType,
+} from "../../../shared/types/integration";
+import { ConfigContext } from "../context/ConfigContext";
+import { allPropstackProducts } from "../../../shared/constants/propstack/propstack-products";
 // import fireIcon from "../../assets/icons/fire.svg";
 
-export const ProductPage: FunctionComponent = () => {
+export const ProductPage: FC = () => {
+  const { integrationType } = useContext(ConfigContext);
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
 
   const { availProdContingents } = integrationUser!;
 
-  const onOfficeProducts = Object.values(allOnOfficeProducts).reduce<
+  let integrationProducts: Record<TIntegrationProductType, IIntegrationProduct>;
+
+  switch (integrationType) {
+    case IntegrationTypesEnum.ON_OFFICE: {
+      integrationProducts = allOnOfficeProducts;
+      break;
+    }
+
+    case IntegrationTypesEnum.PROPSTACK: {
+      integrationProducts = allPropstackProducts;
+      break;
+    }
+  }
+
+  const resultingProducts = Object.values(integrationProducts!).reduce<
     Array<IIntegrationProduct[]>
   >((result, product, i) => {
     const isEven = i % 2 === 1;
@@ -76,9 +97,7 @@ export const ProductPage: FunctionComponent = () => {
           )}
 
           <h1 className="flex font-bold text-xl text-justify gap-2 items-center">
-            <div>
-              onOffice-Benutzer-ID: {integrationUser?.integrationUserId}
-            </div>
+            <div>Benutzer-ID: {integrationUser?.integrationUserId}</div>
             <img
               className="w-6 h-6 cursor-pointer"
               src={copyIcon}
@@ -128,11 +147,15 @@ export const ProductPage: FunctionComponent = () => {
         {/* Product list */}
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-20">
-          {onOfficeProducts.map((groupedProducts) => (
+          {resultingProducts.map((groupedProducts) => (
             <ProductCard
               key={groupedProducts[0].type}
               products={groupedProducts}
-              isDisabled={!!integrationUser?.isChild}
+              // TODO PROPSTACK CONTINGENT
+              isDisabled={
+                integrationType !== IntegrationTypesEnum.PROPSTACK &&
+                !!integrationUser?.isChild
+              }
             />
           ))}
         </div>
@@ -140,16 +163,21 @@ export const ProductPage: FunctionComponent = () => {
         {/* A description */}
 
         <div className="flex flex-col gap-5 mx-10">
-          <div className="my-0 border-t-2 border-b-0" />
-          <div className="font-bold text-xl text-justify">
-            In unserem onOffice Marketplace Shop können Sie weitere Produkte
-            bestellen. Die Anzahl der Produkte bezieht sich immer auf eine
-            Adresse in Deutschland. Beispiel: bei Anzahl 1 können Sie das
-            jeweilige Produkt für eine Immobilie nutzen. Bei Anzahl 10 können
-            Sie es für 10 beliebige Objekte nutzen usw. Viel Spaß mit dem
-            AreaButler und viel Erfolg in der Vermarktung.
-          </div>
-          <div className="my-0 border-t-2 border-b-0" />
+          {/* TODO PROPSTACK CONTINGENT */}
+          {integrationType === IntegrationTypesEnum.ON_OFFICE && (
+            <>
+              <div className="my-0 border-t-2 border-b-0" />
+              <div className="font-bold text-xl text-justify">
+                In unserem onOffice Marketplace Shop können Sie weitere Produkte
+                bestellen. Die Anzahl der Produkte bezieht sich immer auf eine
+                Adresse in Deutschland. Beispiel: bei Anzahl 1 können Sie das
+                jeweilige Produkt für eine Immobilie nutzen. Bei Anzahl 10
+                können Sie es für 10 beliebige Objekte nutzen usw. Viel Spaß mit
+                dem AreaButler und viel Erfolg in der Vermarktung.
+              </div>
+              <div className="my-0 border-t-2 border-b-0" />
+            </>
+          )}
         </div>
       </div>
     </DefaultLayout>

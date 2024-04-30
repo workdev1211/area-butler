@@ -57,12 +57,7 @@ export const useIntegrationTools = () => {
       return availProdContType;
     }
 
-    // TODO PROPSTACK CONTINGENT
     toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
-      if (integrationType === IntegrationTypesEnum.PROPSTACK) {
-        return;
-      }
-
       history.push("/products");
     });
   };

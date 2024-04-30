@@ -1,11 +1,4 @@
-import {
-  FunctionComponent,
-  lazy,
-  Suspense,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { FC, lazy, Suspense, useContext, useEffect, useState } from "react";
 import { Route, Switch, useHistory, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 
@@ -45,12 +38,11 @@ const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
 const SnapshotEditorPage = lazy(() => import("../pages/SnapshotEditorPage"));
 const OpenAiPopup = lazy(() => import("../pages/OpenAiPageContent"));
-// TODO PROPSTACK CONTINGENT
-// const ProductPage = lazy(() => import("./pages/ProductPage"));
+const ProductPage = lazy(() => import("../pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
 
-const PropstackContainer: FunctionComponent = () => {
+const PropstackContainer: FC = () => {
   const {
     userState: { integrationUser },
   } = useContext(UserContext);
@@ -107,8 +99,7 @@ const PropstackContainer: FunctionComponent = () => {
       return;
     }
 
-    // TODO PROPSTACK CONTINGENT
-    // history.push("/products");
+    history.push("/products");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [integrationUser?.accessToken, loginStatus]);
@@ -168,10 +159,9 @@ const PropstackContainer: FunctionComponent = () => {
           <Route path="/open-ai-popup">
             <OpenAiPopup />
           </Route>
-          {/* TODO PROPSTACK CONTINGENT */}
-          {/*<Route path="/products">*/}
-          {/*  <ProductPage />*/}
-          {/*</Route>*/}
+          <Route path="/products">
+            <ProductPage />
+          </Route>
           <Route path={propstackRootEntries}>
             <SearchParamsPage />
           </Route>
