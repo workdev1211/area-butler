@@ -62,6 +62,7 @@ import { defaultRealEstType } from '../../../shared/constants/open-ai';
 import { UserDocument } from '../user/schema/user.schema';
 import { FetchSnapshotService } from '../location/fetch-snapshot.service';
 import { convertBase64ContentToUri } from '../../../shared/functions/image.functions';
+import { ContingentIntService } from '../user/contingent-int.service';
 
 interface IPropstackFetchTextFieldValues {
   realEstateId: string;
@@ -77,6 +78,7 @@ export class PropstackService {
   private static readonly logger = new Logger(PropstackService.name);
 
   constructor(
+    private readonly contingentIntService: ContingentIntService,
     private readonly fetchSnapshotService: FetchSnapshotService,
     private readonly httpService: HttpService,
     private readonly integrationUserService: IntegrationUserService,
@@ -196,6 +198,10 @@ export class PropstackService {
       integrationUserId,
       latestSnapshot,
       realEstate,
+      availProdContingents:
+        await this.contingentIntService.getAvailProdContingents(
+          integrationUser,
+        ),
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!parentId,

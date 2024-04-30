@@ -18,8 +18,6 @@ export interface IApiIntegrationUserSchema {
   productContingents?: TApiIntegrationUserProductContingents;
   parentId?: string;
   isParent?: boolean;
-  // obsolete, moved to a separate collection
-  usageStatistics?: TApiIntegrationUserUsageStatistics;
 }
 
 export interface IApiIntegrationUser {
@@ -31,7 +29,7 @@ export interface IApiIntegrationUser {
 }
 
 export type TApiIntUserAvailProdContingents = Partial<
-  Record<TApiIntUserProdContTypes, number>
+  Record<TApiIntUserProdContType, number>
 >;
 
 export interface IApiIntUserOnOfficeParams {
@@ -64,36 +62,27 @@ export interface IApiIntUserPropstackParams {
 // The products are arranged in a certain order representing their hierarchy.
 // Please, check the 'getProdContTypeByActType' method for better understanding.
 export enum ApiIntUserOnOfficeProdContTypesEnum {
-  MAP_SNAPSHOT = "MAP_SNAPSHOT", // P1 - free package - LEGACY
   OPEN_AI = "OPEN_AI", // P2 - NEW P1
   MAP_IFRAME = "MAP_IFRAME", // P3 - LEGACY
   ONE_PAGE = "ONE_PAGE", // P4 - LEGACY
   STATS_EXPORT = "STATS_EXPORT", // P5 - NEW P2
-  SUBSCRIPTION = "SUBSCRIPTION",
+  FLAT_RATE = "FLAT_RATE",
 }
 
 export enum ApiIntUserPropstackProdContTypesEnum {
-  COMPLETE = "COMPLETE",
-  SUBSCRIPTION = "SUBSCRIPTION",
+  OPEN_AI = "OPEN_AI",
+  STATS_EXPORT = "STATS_EXPORT",
+  FLAT_RATE = "FLAT_RATE",
 }
 
-export type TApiIntUserOnOfficeUsageStatsTypes =
-  ApiIntUserOnOfficeProdContTypesEnum.MAP_SNAPSHOT;
-
-export type TApiIntUserUsageStatsTypes = TApiIntUserOnOfficeUsageStatsTypes;
-
-export type TApiIntUserUsageStatisticsMetrics = {
-  [year: number]: { [month: number]: { [date: number]: number } };
-};
+export type TApiIntUserProdContType =
+  | keyof typeof ApiIntUserOnOfficeProdContTypesEnum
+  | keyof typeof ApiIntUserPropstackProdContTypesEnum;
 
 export interface IApiIntUserOnOfficeProduct {
   type: ApiIntUserOnOfficeProdContTypesEnum;
   quantity: number;
 }
-
-export type TApiIntUserProdContTypes =
-  | keyof typeof ApiIntUserOnOfficeProdContTypesEnum
-  | keyof typeof ApiIntUserPropstackProdContTypesEnum;
 
 export type TApiIntegrationUserProduct = IApiIntUserOnOfficeProduct;
 
@@ -120,10 +109,10 @@ export type TApiIntegrationUserParameters =
   | IApiIntUserOnOfficeParams
   | IApiIntUserPropstackParams;
 export type TApiIntegrationUserProductContingents = Partial<
-  Record<TApiIntUserProdContTypes, IApiIntegrationUserProductContingent[]>
+  Record<TApiIntUserProdContType, IApiIntegrationUserProductContingent[]>
 >;
 export type TApiIntegrationUserProductsUsed = Partial<
-  Record<TApiIntUserProdContTypes, number>
+  Record<TApiIntUserProdContType, number>
 >;
 export type TApiIntegrationUserConfig = {
   mapboxAccessToken?: string;
@@ -138,9 +127,6 @@ export type TApiIntegrationUserConfig = {
   isSpecialLink?: boolean;
   allowedCountries?: Iso3166_1Alpha2CountriesEnum[]; // ["DE","ES","CY","KW","OM","QA","SA","AE","IC","HR","AT","CH"]
 };
-export type TApiIntegrationUserUsageStatistics = Partial<
-  Record<TApiIntUserUsageStatsTypes, TApiIntUserUsageStatisticsMetrics>
->;
 
 export type TAreaButlerExportTypes =
   | OpenAiQueryTypeEnum

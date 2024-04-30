@@ -81,14 +81,13 @@ export const usePropstackLogin = () => {
     return response;
   };
 
-  // TODO PROPSTACK CONTINGENT
   const dispatchContextData = ({
     integrationUserId,
     accessToken,
     config,
     isChild,
     realEstate,
-    // availProdContingents,
+    availProdContingents,
     latestSnapshot,
     openAiQueryType,
   }: IApiIntUserLoginRes): void => {
@@ -99,7 +98,7 @@ export const usePropstackLogin = () => {
         accessToken,
         config,
         isChild,
-        // availProdContingents,
+        availProdContingents,
       },
     });
 

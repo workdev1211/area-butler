@@ -9,7 +9,6 @@ import {
   UsageStatisticsDocument,
 } from './schema/usage-statistics.schema';
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
-import { TApiIntUserUsageStatsTypes } from '@area-butler-types/integration-user';
 import {
   ApiUsageStatsTypesEnum,
   TApiUsageStatsReqStatus,
@@ -24,7 +23,7 @@ export class UsageStatisticsService {
 
   async logUsageStatistics(
     user: UserDocument | TIntegrationUserDocument,
-    statsType: ApiUsageStatsTypesEnum | TApiIntUserUsageStatsTypes,
+    statsType: ApiUsageStatsTypesEnum,
     requestStatus: TApiUsageStatsReqStatus,
   ): Promise<void> {
     const currentDate = dayjs();

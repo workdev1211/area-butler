@@ -19,10 +19,7 @@ import EnvironmentalInfo from "./components/EnvironmentalInfo";
 import EconomicMetrics from "./components/EconomicMetrics";
 import { SearchContext } from "../../context/SearchContext";
 import { ConfigContext } from "../../context/ConfigContext";
-import {
-  IntegrationTypesEnum,
-  TUnlockIntProduct,
-} from "../../../../shared/types/integration";
+import { TUnlockIntProduct } from "../../../../shared/types/integration";
 import { TCensusData } from "../../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../../shared/types/location-index";
 
@@ -66,9 +63,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
     searchContextState: { realEstateListing, responseConfig },
   } = useContext(SearchContext);
 
-  // TODO PROPSTACK CONTINGENT
-  const isStatsExportActive = !!(integrationType &&
-  integrationType !== IntegrationTypesEnum.PROPSTACK
+  const isStatsExportActive = !!(integrationType
     ? realEstateListing?.isStatsFullExportActive
     : true);
 

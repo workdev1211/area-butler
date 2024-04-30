@@ -1,12 +1,10 @@
 import { IsIn, IsNotEmpty, IsString } from 'class-validator';
 import { Exclude, Expose } from 'class-transformer';
 
-import { IApiUnlockIntProductReq } from '@area-butler-types/integration';
 import {
-  OnOfficeIntActTypesEnum,
-  TOnOfficeIntActTypes,
-} from '@area-butler-types/on-office';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
+  IApiUnlockIntProductReq,
+  IntegrationActionTypeEnum,
+} from '@area-butler-types/integration';
 
 @Exclude()
 class ApiUnlockIntProductReqDto implements IApiUnlockIntProductReq {
@@ -17,11 +15,8 @@ class ApiUnlockIntProductReqDto implements IApiUnlockIntProductReq {
 
   @Expose()
   @IsNotEmpty()
-  @IsIn([
-    ...Object.values(OpenAiQueryTypeEnum),
-    ...Object.values(OnOfficeIntActTypesEnum),
-  ])
-  actionType: TOnOfficeIntActTypes;
+  @IsIn(Object.values(IntegrationActionTypeEnum))
+  actionType: IntegrationActionTypeEnum;
 }
 
 export default ApiUnlockIntProductReqDto;

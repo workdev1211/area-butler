@@ -17,10 +17,7 @@ import {
   MeansOfTransportation,
 } from "../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
-import {
-  EntityRoute,
-  EntityTransitRoute,
-} from "../../../shared/types/routing";
+import { EntityRoute, EntityTransitRoute } from "../../../shared/types/routing";
 import editorIcon from "../assets/icons/editor.svg";
 import mapIcon from "../assets/icons/map.svg";
 import downloadIcon from "../assets/icons/download.svg";
@@ -32,10 +29,9 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { statsExportUnlockText } from "../../../shared/constants/on-office/on-office-products";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import {
-  OnOfficeIntActTypesEnum,
-  TOnOfficeIntActTypes,
-} from "../../../shared/types/on-office";
-import { TUnlockIntProduct } from "../../../shared/types/integration";
+  IntegrationActionTypeEnum,
+  TUnlockIntProduct,
+} from "../../../shared/types/integration";
 import { TCensusData } from "../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../shared/types/location-index";
 
@@ -98,7 +94,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
   const [unlockParams, setUnlockParams] = useState<{
     isShownModal: boolean;
     modalMessage?: string;
-    actionType?: TOnOfficeIntActTypes;
+    actionType?: IntegrationActionTypeEnum;
   }>({ isShownModal: false });
 
   const isMapTab = activeTab === TabsEnum.Map;
@@ -124,7 +120,7 @@ const MapMenu: FunctionComponent<IMapMenuProps> = ({
 
   const performUnlock: TUnlockIntProduct = (
     modalMessage = statsExportUnlockText,
-    actionType = OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT
+    actionType = IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT
   ): void => {
     setUnlockParams({
       modalMessage,

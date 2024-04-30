@@ -1,8 +1,14 @@
-import {FunctionComponent, useContext, useEffect, useRef, useState,} from "react";
+import {
+  FunctionComponent,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
-import {OpenAiQueryTypeEnum} from "../../../shared/types/open-ai";
-import {useIntegrationTools} from "../hooks/integration/integrationtools";
+import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
+import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import copy from "copy-to-clipboard";
 import crossIcon from "../assets/icons/cross.svg";
 import personIcon from "../assets/icons/person.svg";
@@ -13,13 +19,16 @@ import deleteIcon from "../assets/icons/icons-16-x-16-outline-ic-delete.svg";
 import saveIcon from "../assets/icons/check.svg";
 import cancelIcon from "../assets/icons/cancel.svg";
 import shareIcon from "../assets/icons/share.svg";
-import {IntegrationTypesEnum, TUnlockIntProduct,} from "../../../shared/types/integration";
-import {SearchContext} from "../context/SearchContext";
-import {ConfigContext} from "../context/ConfigContext";
-import {integrationNames} from "../../../shared/constants/integration";
+import {
+  IntegrationActionTypeEnum,
+  TUnlockIntProduct,
+} from "../../../shared/types/integration";
+import { SearchContext } from "../context/SearchContext";
+import { ConfigContext } from "../context/ConfigContext";
+import { integrationNames } from "../../../shared/constants/integration";
 
 import "./OpenAiModal.scss";
-import {TOpenAiQuery, useOpenAi} from "../hooks/openai";
+import { TOpenAiQuery, useOpenAi } from "../hooks/openai";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -56,8 +65,6 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
 
   const [queryResponses, setQueryResponse] = useState<IGeneratedTexts[]>([]);
 
-  const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
-
   const { fetchOpenAiResponse } = useOpenAi();
   const isIntegration = !!integrationType;
   const isSendToIntAllowed = (queryType: OpenAiQueryTypeEnum) => {
@@ -71,17 +78,18 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     );
   };
 
-  // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
-    !isIntegration ||
-    !!realEstateListing?.openAiRequestQuantity ||
-    isPropstackInt;
+    !isIntegration || !!realEstateListing?.openAiRequestQuantity;
 
   const handleUnlock = (): void => {
     if (performUnlock) {
-      performUnlock("KI-Texte freischalten?", queryType);
+      performUnlock(
+        "KI-Texte freischalten?",
+        IntegrationActionTypeEnum.UNLOCK_OPEN_AI
+      );
     }
   };
+
   const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
@@ -171,235 +179,242 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
             className="btn btn-sm absolute right-3 top-3"
             onClick={closeModal}
           >
-            <img src={crossIcon} alt="modal-close" title="KI Assistenten schließen"/>
+            <img
+              src={crossIcon}
+              alt="modal-close"
+              title="KI Assistenten schließen"
+            />
           </button>
         </h1>
         <div className="scrollable-content pt-4 overflow-y-scroll">
           <div className="grid grid-cols-12 gap-2 pb-3">
             <div className="place-self-end">
-              <img className="w-8" src={areaButlerLogo} alt="AreaButler"/>
+              <img className="w-8" src={areaButlerLogo} alt="AreaButler" />
             </div>
             <div className="col-span-9">
               <div className="border border-primary bg-primary bg-opacity-5 w-fit rounded p-3">
                 Unser KI-Textgenerator bietet Inspiration für die Konstruktion
                 von Texten, insbesondere bei Schwierigkeiten bei der Struktur
                 und Formulierung. Er bezieht Umgebungsdaten und Informationen
-                zur Immobilie mit ein. <br/>
+                zur Immobilie mit ein. <br />
                 Bitte geben Sie Ihre Wünsche für den zu generierenden Text ein.
               </div>
             </div>
           </div>
-          {queryResponses && queryResponses.length > 0 &&
-              queryResponses.map((genText, i, {length}) => {
-                return (
-                    <>
-                      {genText.query && (
-                          <div className="grid grid-cols-12 gap-2 pb-3">
-                            <div className="col-start-3 col-span-9 grid">
-                              <div className="border border-gray-600 bg-gray-100 rounded p-3 w-fit justify-self-end">
-                                {renderQueryResponse(genText)}
-                              </div>
-                            </div>
-                            <div className="self-end">
-                              <img className="w-8" src={personIcon} alt="person"/>
-                            </div>
-                          </div>
-                      )}
-                      <div className="grid grid-cols-12 gap-3 pb-3">
-                        <div className="place-self-end">
-                          <img
-                              className="w-8"
-                              src={areaButlerLogo}
-                              alt="AreaButler"
-                          />
+          {queryResponses &&
+            queryResponses.length > 0 &&
+            queryResponses.map((genText, i) => {
+              return (
+                <>
+                  {genText.query && (
+                    <div className="grid grid-cols-12 gap-2 pb-3">
+                      <div className="col-start-3 col-span-9 grid">
+                        <div className="border border-gray-600 bg-gray-100 rounded p-3 w-fit justify-self-end">
+                          {renderQueryResponse(genText)}
                         </div>
-                        <div className="col-span-9">
-                          <div
-                              className="border border-primary bg-primary bg-opacity-5 rounded p-3 pb-7 whitespace-pre-wrap relative">
-                            {isEditMode === i ? (
-                                <textarea
-                                    className="w-full bg-transparent h-60 p-2 pb-0"
-                                    ref={editInputRef}
-                                    defaultValue={genText.queryResponse}
+                      </div>
+                      <div className="self-end">
+                        <img className="w-8" src={personIcon} alt="person" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-12 gap-3 pb-3">
+                    <div className="place-self-end">
+                      <img
+                        className="w-8"
+                        src={areaButlerLogo}
+                        alt="AreaButler"
+                      />
+                    </div>
+                    <div className="col-span-9">
+                      <div className="border border-primary bg-primary bg-opacity-5 rounded p-3 pb-7 whitespace-pre-wrap relative">
+                        {isEditMode === i ? (
+                          <textarea
+                            className="w-full bg-transparent h-60 p-2 pb-0"
+                            ref={editInputRef}
+                            defaultValue={genText.queryResponse}
+                          />
+                        ) : (
+                          <>{genText.queryResponse}</>
+                        )}
+                        <div className="absolute z-1000 right-0 -bottom-2 -mr-10 flex w-fit">
+                          {isEditMode !== i ? (
+                            <>
+                              <div className="border border-primary rounded flex gap-3 w-fit px-2 p-1 bg-white">
+                                <img
+                                  src={editIcon}
+                                  className="w-5 h-5 cursor-pointer"
+                                  alt="Text bearbeiten"
+                                  title="Text bearbeiten"
+                                  onClick={() => {
+                                    setIsEditMode(i);
+                                  }}
                                 />
-                            ) : (
-                                <>{genText.queryResponse}</>
-                            )}
-                            <div className="absolute z-1000 right-0 -bottom-2 -mr-10 flex w-fit">
-                              {isEditMode !== i ? (
-                                  <>
-                                    <div className="border border-primary rounded flex gap-3 w-fit px-2 p-1 bg-white">
-                                      <img
-                                          src={editIcon}
-                                          className="w-5 h-5 cursor-pointer"
-                                          alt="Text bearbeiten"
-                                          title="Text bearbeiten"
-                                          onClick={() => {
-                                            setIsEditMode(i);
-                                          }}
-                                      />
-                                      <img
-                                          src={copyIcon}
-                                          className="w-5 h-5 cursor-pointer"
-                                          alt="Text kopieren"
-                                          title="Text kopieren"
-                                          onClick={() => {
-                                            copy(genText.queryResponse);
-                                          }}
-                                      />
-                                      <img
-                                          src={deleteIcon}
-                                          className="w-5 h-5 cursor-pointer"
-                                          alt="Text verwerfen"
-                                          title="Text verwerfen"
-                                          onClick={() => {
-                                            queryResponses.splice(i, 1);
-                                            setQueryResponse([...queryResponses]);
-                                            if (queryResponses.length === 0) {
-                                              setIsImproveDialogEnabled(false);
-                                            }
-                                          }}
-                                      />
-                                    </div>
-                                    {isSendToIntAllowed(genText.initialQueryType) && (
-                                        <div
-                                            className="bg-primary-gradient border border-primary rounded flex gap-1 text-accent-content leading-5 px-2 p-1 ml-1 hover:cursor-pointer text-sm"
-                                            title={
-                                                "An " + integrationNames[integrationType!] + " senden"
-                                            }
-                                            onClick={() => {
-                                              sendToIntegration({
-                                                exportType: genText.initialQueryType as
-                                                    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-                                                    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-                                                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-                                                text: genText.queryResponse,
-                                              });
-                                            }}>
-                                          <img
-                                              className="w-5 cursor-pointer stroke-slate-50"
-                                              src={shareIcon}
-                                              alt="An Partner senden"
-                                          />
-                                          An {integrationNames[integrationType!]} senden
-                                        </div>
-                                    )}
-                                  </>
-                              ) : (
-                                  <div className="border border-primary rounded flex gap-4 w-fit p-1 bg-white">
-                                    <img
-                                        src={saveIcon}
-                                        className="w-5 cursor-pointer"
-                                        alt="Änderung übernehmen"
-                                        title="Änderung übernehmen"
-                                        onClick={() => {
-                                          if (editInputRef.current) {
-                                            queryResponses[i] = {
-                                              ...queryResponses[i],
-                                              queryResponse:
-                                              editInputRef.current?.value,
-                                            };
-                                            setIsEditMode(-1);
-                                          }
-                                        }}
-                                    />
-                                    <img
-                                        src={cancelIcon}
-                                        className="w-5 cursor-pointer"
-                                        alt="Änderung verwerfen"
-                                        title="Änderung verwerfen"
-                                        onClick={() => {
-                                          setIsEditMode(-1);
-                                        }}
-                                    />
-                                  </div>
-                              )}
-                            </div>
-                          </div>
-                          {i === 0 && (
-                              <div className="border border-primary bg-primary bg-opacity-5 rounded p-3 mt-2">
-                                Wünschen Sie eine Verbesserung oder Ergänzung des
-                                Textes? Hierzu können Sie den Text selber editieren
-                                oder uns in dem Eingabefeld unterhalb mitteilen,
-                                welche Information wir bei der Generierung eines neuen
-                                Textes berücksichtigen sollen.
+                                <img
+                                  src={copyIcon}
+                                  className="w-5 h-5 cursor-pointer"
+                                  alt="Text kopieren"
+                                  title="Text kopieren"
+                                  onClick={() => {
+                                    copy(genText.queryResponse);
+                                  }}
+                                />
+                                <img
+                                  src={deleteIcon}
+                                  className="w-5 h-5 cursor-pointer"
+                                  alt="Text verwerfen"
+                                  title="Text verwerfen"
+                                  onClick={() => {
+                                    queryResponses.splice(i, 1);
+                                    setQueryResponse([...queryResponses]);
+                                    if (queryResponses.length === 0) {
+                                      setIsImproveDialogEnabled(false);
+                                    }
+                                  }}
+                                />
                               </div>
+                              {isSendToIntAllowed(genText.initialQueryType) && (
+                                <div
+                                  className="bg-primary-gradient border border-primary rounded flex gap-1 text-accent-content leading-5 px-2 p-1 ml-1 hover:cursor-pointer text-sm"
+                                  title={
+                                    "An " +
+                                    integrationNames[integrationType!] +
+                                    " senden"
+                                  }
+                                  onClick={() => {
+                                    sendToIntegration({
+                                      exportType: genText.initialQueryType as
+                                        | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                                        | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                                        | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                                      text: genText.queryResponse,
+                                    });
+                                  }}
+                                >
+                                  <img
+                                    className="w-5 cursor-pointer stroke-slate-50"
+                                    src={shareIcon}
+                                    alt="An Partner senden"
+                                  />
+                                  An {integrationNames[integrationType!]} senden
+                                </div>
+                              )}
+                            </>
+                          ) : (
+                            <div className="border border-primary rounded flex gap-4 w-fit p-1 bg-white">
+                              <img
+                                src={saveIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Änderung übernehmen"
+                                title="Änderung übernehmen"
+                                onClick={() => {
+                                  if (editInputRef.current) {
+                                    queryResponses[i] = {
+                                      ...queryResponses[i],
+                                      queryResponse:
+                                        editInputRef.current?.value,
+                                    };
+                                    setIsEditMode(-1);
+                                  }
+                                }}
+                              />
+                              <img
+                                src={cancelIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Änderung verwerfen"
+                                title="Änderung verwerfen"
+                                onClick={() => {
+                                  setIsEditMode(-1);
+                                }}
+                              />
+                            </div>
                           )}
                         </div>
                       </div>
-                    </>
-                );
-              })}
+                      {i === 0 && (
+                        <div className="border border-primary bg-primary bg-opacity-5 rounded p-3 mt-2">
+                          Wünschen Sie eine Verbesserung oder Ergänzung des
+                          Textes? Hierzu können Sie den Text selber editieren
+                          oder uns in dem Eingabefeld unterhalb mitteilen,
+                          welche Information wir bei der Generierung eines neuen
+                          Textes berücksichtigen sollen.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              );
+            })}
           <div className="grid grid-cols-12 gap-2 pb-3">
             <div className="col-start-3 col-span-9">
               <div className="border border-gray-600 rounded p-3">
                 {queryResponses &&
                 queryResponses.length > 0 &&
                 isImproveDialogEnabled ? (
-                    <textarea
-                        ref={promptInputRef}
-                        disabled={isFetchResponse}
-                        className="w-full p-2"
-                        placeholder="Ihre Verbesserung oder Ergänzung zum generierten Text..."
-                    />
+                  <textarea
+                    ref={promptInputRef}
+                    disabled={isFetchResponse}
+                    className="w-full p-2"
+                    placeholder="Ihre Verbesserung oder Ergänzung zum generierten Text..."
+                  />
                 ) : (
-                    <OpenAiModule
-                        initialQueryType={queryType}
-                        searchResultSnapshotId={searchResultSnapshotId}
-                        onModuleStatusChange={(isReady): void => {
-                          setIsGenerateButtonDisabled(!isReady);
-                        }}
-                        isFetchResponse={isFetchResponse && !isImproveDialogEnabled}
-                        onResponseFetched={(responseText, query): void => {
-                          if (responseText !== "") {
-                            addQueryResponse({
-                              query: query!,
-                              queryType: queryType,
-                              initialQueryType: queryType,
-                              queryResponse: responseText,
-                            });
-                          }
-                          setIsEditMode(-1);
-                          setIsImproveDialogEnabled(true);
-                          setIsFetchResponse(false);
-                        }}
-                    />
+                  <OpenAiModule
+                    initialQueryType={queryType}
+                    searchResultSnapshotId={searchResultSnapshotId}
+                    onModuleStatusChange={(isReady): void => {
+                      setIsGenerateButtonDisabled(!isReady);
+                    }}
+                    isFetchResponse={isFetchResponse && !isImproveDialogEnabled}
+                    onResponseFetched={(responseText, query): void => {
+                      if (responseText !== "") {
+                        addQueryResponse({
+                          query: query!,
+                          queryType: queryType,
+                          initialQueryType: queryType,
+                          queryResponse: responseText,
+                        });
+                      }
+                      setIsEditMode(-1);
+                      setIsImproveDialogEnabled(true);
+                      setIsFetchResponse(false);
+                    }}
+                  />
                 )}
                 <div className="flex justify justify-between mt-2">
                   {queryResponses && queryResponses.length > 0 && (
-                      <button
-                          className="btn btn-base-silver"
-                          onClick={() =>
-                              setIsImproveDialogEnabled(!isImproveDialogEnabled)
-                          }
-                          disabled={isGenerateButtonDisabled || isFetchResponse}
-                      >
-                        {isImproveDialogEnabled ? (
-                            <>Neue Wünsche eingeben</>
-                        ) : (
-                            <>Letzten Text verbessern</>
-                        )}
-                      </button>
+                    <button
+                      className="btn btn-base-silver"
+                      onClick={() =>
+                        setIsImproveDialogEnabled(!isImproveDialogEnabled)
+                      }
+                      disabled={isGenerateButtonDisabled || isFetchResponse}
+                    >
+                      {isImproveDialogEnabled ? (
+                        <>Neue Wünsche eingeben</>
+                      ) : (
+                        <>Letzten Text verbessern</>
+                      )}
+                    </button>
                   )}
                   &nbsp;
                   <button
-                      className={`btn bg-primary-gradient max-w-fit self-end ${
-                          isFetchResponse ? "loading" : ""
-                      }`}
-                      form="open-ai-location-description-form"
-                      onClick={() => {
-                        if (isNotIntOrAvailForIntUser) {
-                          setIsFetchResponse(true);
-                          if (isImproveDialogEnabled) {
-                            if (promptInputRef.current?.value === "") return;
-                            refineOpenAiResponse();
-                          }
-                          return;
+                    className={`btn bg-primary-gradient max-w-fit self-end ${
+                      isFetchResponse ? "loading" : ""
+                    }`}
+                    form="open-ai-location-description-form"
+                    onClick={() => {
+                      if (isNotIntOrAvailForIntUser) {
+                        setIsFetchResponse(true);
+                        if (isImproveDialogEnabled) {
+                          if (promptInputRef.current?.value === "") return;
+                          refineOpenAiResponse();
                         }
+                        return;
+                      }
 
-                        handleUnlock();
-                      }}
-                      disabled={isGenerateButtonDisabled || isFetchResponse}
+                      handleUnlock();
+                    }}
+                    disabled={isGenerateButtonDisabled || isFetchResponse}
                   >
                     {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
                   </button>
@@ -407,7 +422,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
               </div>
             </div>
             <div className="self-end">
-              <img className="w-8" src={personIcon} alt="person"/>
+              <img className="w-8" src={personIcon} alt="person" />
             </div>
           </div>
           <div ref={messagesEndRef}></div>

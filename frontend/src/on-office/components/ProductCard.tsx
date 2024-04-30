@@ -4,7 +4,6 @@ import {
   IApiOnOfficeCreateOrderProduct,
   IApiOnOfficeCreateOrderReq,
   IApiOnOfficeCreateOrderRes,
-  IOnOfficeProduct,
   OnOfficeProductTypesEnum,
 } from "../../../../shared/types/on-office";
 import { convertPriceToHuman } from "../../../../shared/functions/shared.functions";
@@ -13,9 +12,10 @@ import { toastError } from "../../shared/shared.functions";
 import { useHttp } from "../../hooks/http";
 import { getOnOfficeProductImage } from "../../shared/on-office.functions";
 import { SearchContext } from "../../context/SearchContext";
+import { IIntegrationProduct } from "../../../../shared/types/integration";
 
 interface IProductCardProps {
-  products: IOnOfficeProduct[];
+  products: IIntegrationProduct[];
   isDisabled: boolean;
 }
 
@@ -110,7 +110,7 @@ const ProductCard: FunctionComponent<IProductCardProps> = ({
                 </div>
               </div>
             )}
-            {type === OnOfficeProductTypesEnum.SUBSCRIPTION ? (
+            {type === OnOfficeProductTypesEnum.FLAT_RATE ? (
               <a
                 className="btn btn-primary w-48"
                 target="_blank"

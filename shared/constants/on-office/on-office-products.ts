@@ -1,48 +1,49 @@
-import {
-  IOnOfficeProduct,
-  OnOfficeProductTypesEnum,
-} from "../../types/on-office";
+import { OnOfficeProductTypesEnum } from "../../types/on-office";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../types/integration-user";
+import {
+  IIntegrationProduct,
+  TIntegrationProductType,
+} from "../../types/integration";
 
-export const openAiOnOfficeProduct: IOnOfficeProduct = {
+export const openAiOnOfficeProduct: IIntegrationProduct = {
   name: "P1: Lagepläne & KI-Texte",
   type: OnOfficeProductTypesEnum.OPEN_AI,
   price: 9,
 };
 
-export const openAi10OnOfficeProduct: IOnOfficeProduct = {
+export const openAi10OnOfficeProduct: IIntegrationProduct = {
   name: "P1: Lagepläne & KI-Texte x10",
   type: OnOfficeProductTypesEnum.OPEN_AI_10,
   price: 69,
 };
 
-export const statsExportOnOfficeProduct: IOnOfficeProduct = {
+export const statsExportOnOfficeProduct: IIntegrationProduct = {
   name: "P2: Alle Funktionen",
   type: OnOfficeProductTypesEnum.STATS_EXPORT,
   price: 39,
 };
 
-export const statsExport10OnOfficeProduct: IOnOfficeProduct = {
+export const statsExport10OnOfficeProduct: IIntegrationProduct = {
   name: "P2: Alle Funktionen x10",
   type: OnOfficeProductTypesEnum.STATS_EXPORT_10,
   price: 290,
 };
 
-export const subscriptionOnOfficeProduct: IOnOfficeProduct = {
+export const flatRateOnOfficeProduct: IIntegrationProduct = {
   name: "Jahrespaket",
-  type: OnOfficeProductTypesEnum.SUBSCRIPTION,
+  type: OnOfficeProductTypesEnum.FLAT_RATE,
   price: 0,
 };
 
 export const allOnOfficeProducts: Record<
-  OnOfficeProductTypesEnum,
-  IOnOfficeProduct
+  TIntegrationProductType,
+  IIntegrationProduct
 > = {
   [OnOfficeProductTypesEnum.OPEN_AI]: openAiOnOfficeProduct,
   [OnOfficeProductTypesEnum.OPEN_AI_10]: openAi10OnOfficeProduct,
   [OnOfficeProductTypesEnum.STATS_EXPORT]: statsExportOnOfficeProduct,
   [OnOfficeProductTypesEnum.STATS_EXPORT_10]: statsExport10OnOfficeProduct,
-  [OnOfficeProductTypesEnum.SUBSCRIPTION]: subscriptionOnOfficeProduct,
+  [OnOfficeProductTypesEnum.FLAT_RATE]: flatRateOnOfficeProduct,
 };
 
 export const legacyOnOfficeProdNames: Record<

@@ -1,106 +1,42 @@
 import {
+  IIntUserProdContWithAct,
+  IntegrationActionTypeEnum,
   IntegrationTypesEnum,
-  TIntegrationActionTypes,
+  onOfficeProdContWithAct,
+  propstackProdContWithAct,
 } from "../types/integration";
 import {
-  ApiIntUserOnOfficeProdContTypesEnum,
-  ApiIntUserPropstackProdContTypesEnum,
   IApiIntegrationUserSchema,
   IApiIntUserOnOfficeParams,
   IApiIntUserPropstackParams,
   TApiIntUserAvailProdContingents,
-  TApiIntUserProdContTypes,
+  TApiIntUserProdContType,
 } from "../types/integration-user";
-import {
-  // ApiOpenAiRespLimitTypesEnum,
-  // IApiOpenAiResponseLimit,
-  OpenAiQueryTypeEnum,
-} from "../types/open-ai";
-import { OnOfficeIntActTypesEnum } from "../types/on-office";
-import { PropstackIntActTypesEnum } from "../types/propstack";
 // import { onOfficeOpenAiCharacterLimit } from "../constants/on-office/constants";
-
-export const getProdContTypeByActType = (
-  integrationType: IntegrationTypesEnum,
-  actionType: TIntegrationActionTypes
-): TApiIntUserProdContTypes | undefined => {
-  switch (integrationType) {
-    case IntegrationTypesEnum.ON_OFFICE: {
-      switch (actionType) {
-        case OnOfficeIntActTypesEnum.UNLOCK_SEARCH:
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
-        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
-        case OpenAiQueryTypeEnum.GENERAL_QUESTION: {
-          return ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI;
-        }
-
-        case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
-          return ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME;
-        }
-
-        case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
-          return ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE;
-        }
-
-        case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
-          return ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT;
-        }
-
-        default: {
-          return;
-        }
-      }
-    }
-
-    case IntegrationTypesEnum.PROPSTACK: {
-      switch (actionType) {
-        case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
-        case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-        case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
-        case OpenAiQueryTypeEnum.GENERAL_QUESTION:
-        case PropstackIntActTypesEnum.UNLOCK_ALL: {
-          return ApiIntUserPropstackProdContTypesEnum.COMPLETE;
-        }
-
-        default: {
-          return;
-        }
-      }
-    }
-
-    default: {
-      return;
-    }
-  }
-};
+// import {
+//   ApiOpenAiRespLimitTypesEnum,
+//   IApiOpenAiResponseLimit,
+// } from "../types/open-ai";
 
 export const getAvailProdContType = (
   integrationType: IntegrationTypesEnum,
-  actionType: TIntegrationActionTypes,
+  actionType: IntegrationActionTypeEnum,
   availProdContingents: TApiIntUserAvailProdContingents | undefined
-): TApiIntUserProdContTypes | undefined => {
-  const prodContType = getProdContTypeByActType(integrationType, actionType);
-  if (!availProdContingents || !prodContType) {
+): TApiIntUserProdContType | undefined => {
+  if (!availProdContingents) {
     return;
   }
 
-  if (availProdContingents[prodContType]) {
-    return prodContType;
-  }
-
-  let prodContTypes: TApiIntUserProdContTypes[];
+  let prodContWithAct: IIntUserProdContWithAct[];
 
   switch (integrationType) {
     case IntegrationTypesEnum.ON_OFFICE: {
-      prodContTypes = Object.values(ApiIntUserOnOfficeProdContTypesEnum);
+      prodContWithAct = onOfficeProdContWithAct;
       break;
     }
 
     case IntegrationTypesEnum.PROPSTACK: {
-      prodContTypes = Object.values(ApiIntUserPropstackProdContTypesEnum);
+      prodContWithAct = propstackProdContWithAct;
       break;
     }
 
@@ -109,14 +45,20 @@ export const getAvailProdContType = (
     }
   }
 
-  // TODO refactor to an array of objects with the tier param instead of the relying to an array position
-  const requiredProdPosition = prodContTypes.indexOf(prodContType);
+  return prodContWithAct.reduce<IIntUserProdContWithAct | undefined>(
+    (result, prodContWithAct) => {
+      if (
+        prodContWithAct.actionTypes.includes(actionType) &&
+        availProdContingents[prodContWithAct.type] &&
+        (!result || result.tier > prodContWithAct.tier)
+      ) {
+        return prodContWithAct;
+      }
 
-  return Object.keys(availProdContingents).find(
-    (key) =>
-      prodContTypes.indexOf(key as ApiIntUserOnOfficeProdContTypesEnum) >
-      requiredProdPosition
-  ) as TApiIntUserProdContTypes;
+      return result;
+    },
+    undefined
+  )?.type;
 };
 
 // left just in case
@@ -161,3 +103,23 @@ export const checkIsParent = (
 
   return false;
 };
+
+export const checkIsSearchNotUnlocked = ({
+  iframeEndsAt,
+  isOnePageExportActive,
+  isStatsFullExportActive,
+  openAiRequestQuantity,
+}: {
+  iframeEndsAt?: Date | string;
+  isOnePageExportActive?: boolean;
+  isStatsFullExportActive?: boolean;
+  openAiRequestQuantity?: number;
+}): boolean =>
+  (!iframeEndsAt ||
+    Date.now() >
+      +(typeof iframeEndsAt === "string"
+        ? new Date(iframeEndsAt)
+        : iframeEndsAt)) &&
+  !isOnePageExportActive &&
+  !isStatsFullExportActive &&
+  typeof openAiRequestQuantity !== "number";

@@ -1,8 +1,15 @@
-import { TOnOfficeIntActTypes } from "./on-office";
 import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
-import { AreaButlerExportTypesEnum } from "./integration-user";
+import {
+  AreaButlerExportTypesEnum,
+  TApiIntUserProdContType,
+} from "./integration-user";
 import { OpenAiQueryTypeEnum } from "./open-ai";
-import { TPropstackIntActTypes } from "./propstack";
+import {
+  ApiIntUserOnOfficeProdContTypesEnum,
+  ApiIntUserPropstackProdContTypesEnum,
+} from "./integration-user";
+import { OnOfficeProductTypesEnum } from "./on-office";
+import { PropstackProductTypeEnum } from "./propstack";
 
 export enum IntegrationTypesEnum {
   ON_OFFICE = "ON_OFFICE",
@@ -23,18 +30,94 @@ export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   isStatsFullExportActive?: boolean;
 }
 
-export type TIntegrationActionTypes =
-  | TOnOfficeIntActTypes
-  | TPropstackIntActTypes;
+// IMPORTANT
+// The actions are arranged in a certain order representing their hierarchy.
+// Please, check the 'getProdContTypeByActType' method for better understanding.
+export enum IntegrationActionTypeEnum {
+  UNLOCK_SEARCH = "UNLOCK_SEARCH",
+  UNLOCK_OPEN_AI = "UNLOCK_OPEN_AI",
+  UNLOCK_IFRAME = "UNLOCK_IFRAME",
+  UNLOCK_ONE_PAGE = "UNLOCK_ONE_PAGE",
+  UNLOCK_STATS_EXPORT = "UNLOCK_STATS_EXPORT",
+}
+
+export interface IIntUserProdContWithAct {
+  actionTypes: IntegrationActionTypeEnum[];
+  tier: number;
+  type: TApiIntUserProdContType;
+}
+
+export const onOfficeProdContWithAct: IIntUserProdContWithAct[] = [
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+    ],
+    tier: 2,
+    type: ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI,
+  },
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+      IntegrationActionTypeEnum.UNLOCK_IFRAME,
+    ],
+    tier: 3,
+    type: ApiIntUserOnOfficeProdContTypesEnum.MAP_IFRAME,
+  },
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+      IntegrationActionTypeEnum.UNLOCK_IFRAME,
+      IntegrationActionTypeEnum.UNLOCK_ONE_PAGE,
+    ],
+    tier: 4,
+    type: ApiIntUserOnOfficeProdContTypesEnum.ONE_PAGE,
+  },
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+      IntegrationActionTypeEnum.UNLOCK_IFRAME,
+      IntegrationActionTypeEnum.UNLOCK_ONE_PAGE,
+      IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT,
+    ],
+    tier: 5,
+    type: ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT,
+  },
+];
+
+export const propstackProdContWithAct: IIntUserProdContWithAct[] = [
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+    ],
+    tier: 2,
+    type: ApiIntUserPropstackProdContTypesEnum.OPEN_AI,
+  },
+  {
+    actionTypes: [
+      IntegrationActionTypeEnum.UNLOCK_SEARCH,
+      IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
+      IntegrationActionTypeEnum.UNLOCK_IFRAME,
+      IntegrationActionTypeEnum.UNLOCK_ONE_PAGE,
+      IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT,
+    ],
+    tier: 5,
+    type: ApiIntUserPropstackProdContTypesEnum.STATS_EXPORT,
+  },
+];
 
 export interface IApiUnlockIntProductReq {
   integrationId: string;
-  actionType: TIntegrationActionTypes;
+  actionType: IntegrationActionTypeEnum;
 }
 
 export type TUnlockIntProduct = (
   modalMessage?: string,
-  actionType?: TOnOfficeIntActTypes
+  actionType?: IntegrationActionTypeEnum
 ) => void;
 
 export interface IIntegrationHandleLogin {
@@ -92,3 +175,15 @@ export type TSendToIntegrationData = {
   | Omit<IApiIntUploadEstateFileReq, "integrationId">
   | Omit<IApiIntCreateEstateLinkReq, "integrationId">
 );
+
+export type TIntegrationProductType =
+  | keyof typeof OnOfficeProductTypesEnum
+  | keyof typeof PropstackProductTypeEnum;
+
+export interface IIntegrationProduct {
+  name: string;
+  type: TIntegrationProductType;
+  price: number;
+  image?: string;
+  isDisabled?: boolean;
+}

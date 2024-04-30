@@ -129,6 +129,7 @@ const IntegrationNav: FunctionComponent = () => {
               >
                 Meine Karten
               </NavLink>
+              {/* TODO PROPSTACK CONTINGENT */}
               {/*<NavLink to="/products" className="nav-link" aria-current="page">*/}
               {/*  Meine Produkte*/}
               {/*</NavLink>*/}
@@ -178,6 +179,7 @@ const IntegrationNav: FunctionComponent = () => {
           >
             Meine Karten
           </NavLink>
+          {/* TODO PROPSTACK CONTINGENT */}
           {/*<NavLink*/}
           {/*  to="/products"*/}
           {/*  className="nav-mobile-menu-link"*/}

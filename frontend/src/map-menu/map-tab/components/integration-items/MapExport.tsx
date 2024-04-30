@@ -15,12 +15,8 @@ import reportsIcon from "../../../../assets/icons/map-menu/09-reporte.svg";
 import pdfIcon from "../../../../assets/icons/icons-16-x-16-outline-ic-pdf.svg";
 import { EntityGroup } from "../../../../shared/search-result.types";
 import OnePageExportModal from "../../../../export/one-page/OnePageExportModal";
-import { OnOfficeIntActTypesEnum } from "../../../../../../shared/types/on-office";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
-import {
-  UserActionTypes,
-  UserContext,
-} from "../../../../context/UserContext";
+import { UserContext } from "../../../../context/UserContext";
 // import { useIntegrationTools } from "../../../../../hooks/integrationtools";
 import { useHttp } from "../../../../hooks/http";
 import { ConfigContext } from "../../../../context/ConfigContext";
@@ -32,10 +28,8 @@ interface IMapExportProps {
 const invertFilter: CSSProperties = { filter: "invert(100%)" };
 
 const MapExport: FunctionComponent<IMapExportProps> = ({ groupedEntries }) => {
-  const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const { userDispatch } = useContext(UserContext);
 
   const { post } = useHttp();
   // const { checkProdContAvailByAction } = useIntegrationTools();

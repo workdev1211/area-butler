@@ -17,16 +17,10 @@ import {
   SearchContextActionTypes,
 } from "../../../../context/SearchContext";
 import ConfirmationModal from "../../../../components/ConfirmationModal";
-import {
-  UserActionTypes,
-  UserContext,
-} from "../../../../context/UserContext";
+import { UserActionTypes, UserContext } from "../../../../context/UserContext";
 import { ConfigContext } from "../../../../context/ConfigContext";
 import { useHttp } from "../../../../hooks/http";
-import {
-  ApiOnOfficeArtTypesEnum,
-  OnOfficeIntActTypesEnum,
-} from "../../../../../../shared/types/on-office";
+import { ApiOnOfficeArtTypesEnum } from "../../../../../../shared/types/on-office";
 import { useIntegrationTools } from "../../../../hooks/integration/integrationtools";
 import { useTools } from "../../../../hooks/tools";
 import copyIcon from "../../../../assets/icons/copy.svg";

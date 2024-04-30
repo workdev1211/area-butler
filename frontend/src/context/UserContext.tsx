@@ -8,7 +8,7 @@ import {
 } from "../../../shared/types/types";
 import {
   IApiIntegrationUser,
-  TApiIntUserProdContTypes,
+  TApiIntUserProdContType,
 } from "../../../shared/types/integration-user";
 
 export interface UserState {
@@ -55,7 +55,7 @@ export enum UserActionTypes {
 type UserActionsPayload = {
   [UserActionTypes.SET_USER]: ApiUser;
   [UserActionTypes.SET_INTEGRATION_USER]: IApiIntegrationUser;
-  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: TApiIntUserProdContTypes;
+  [UserActionTypes.INT_USER_DECR_AVAIL_PROD_CONT]: TApiIntUserProdContType;
   [UserActionTypes.SET_LATEST_USER_REQUESTS]: ApiUserRequests;
   [UserActionTypes.SET_EMBEDDABLE_MAPS]: ApiSearchResultSnapshotResponse[];
   [UserActionTypes.SET_EMBEDDABLE_MAP_DESCRIPTION]: {

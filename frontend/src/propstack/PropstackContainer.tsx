@@ -45,6 +45,7 @@ const RealEstatePage = lazy(() => import("../pages/RealEstatePage"));
 const RealEstatesPage = lazy(() => import("../pages/RealEstatesPage"));
 const SnapshotEditorPage = lazy(() => import("../pages/SnapshotEditorPage"));
 const OpenAiPopup = lazy(() => import("../pages/OpenAiPageContent"));
+// TODO PROPSTACK CONTINGENT
 // const ProductPage = lazy(() => import("./pages/ProductPage"));
 const SearchParamsPage = lazy(() => import("../pages/SearchParamsPage"));
 const MapSnapshotsPage = lazy(() => import("../pages/MapSnapshotsPage"));
@@ -97,22 +98,16 @@ const PropstackContainer: FunctionComponent = () => {
       return;
     }
 
-    history.push(
-      searchContextState.snapshotId
-        ? `/${snapshotEditorPath}/${searchContextState.snapshotId}`
-        : "/search"
-    );
+    if (integrationUser?.availProdContingents) {
+      history.push(
+        searchContextState.snapshotId
+          ? `/${snapshotEditorPath}/${searchContextState.snapshotId}`
+          : "/search"
+      );
+      return;
+    }
 
-    // TODO PROPSTACK CONTINGENT - is used only in onOffice for the moment
-    // if (integrationUser?.availProdContingents) {
-    //   history.push(
-    //     searchContextState.snapshotId
-    //       ? `/${snapshotEditorPath}/${searchContextState.snapshotId}`
-    //       : "/search"
-    //   );
-    //   return;
-    // }
-    //
+    // TODO PROPSTACK CONTINGENT
     // history.push("/products");
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -173,6 +168,7 @@ const PropstackContainer: FunctionComponent = () => {
           <Route path="/open-ai-popup">
             <OpenAiPopup />
           </Route>
+          {/* TODO PROPSTACK CONTINGENT */}
           {/*<Route path="/products">*/}
           {/*  <ProductPage />*/}
           {/*</Route>*/}

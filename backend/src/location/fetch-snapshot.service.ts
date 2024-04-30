@@ -21,7 +21,6 @@ import ApiSearchResultSnapshotResponseDto, {
 } from './dto/api-search-result-snapshot-response.dto';
 import { addressExpiredMessage } from '../../../shared/messages/error.message';
 import { LocationSearchDocument } from './schema/location-search.schema';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 
 interface IFetchSnapshotMainParams {
@@ -242,14 +241,6 @@ export class FetchSnapshotService {
     const isSnapshotIframeExpired = iframeEndsAt
       ? dayjs().isAfter(iframeEndsAt)
       : true;
-
-    // TODO PROPSTACK CONTINGENT
-    if (
-      snapshotDoc.integrationParams.integrationType ===
-      IntegrationTypesEnum.PROPSTACK
-    ) {
-      return;
-    }
 
     if (isSnapshotIframeExpired) {
       throw new HttpException(addressExpiredMessage, 402);

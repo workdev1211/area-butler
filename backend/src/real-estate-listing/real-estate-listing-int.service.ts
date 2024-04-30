@@ -13,19 +13,25 @@ import {
 } from './schema/real-estate-listing.schema';
 import {
   IApiIntegrationParams,
-  TIntegrationActionTypes,
+  IntegrationActionTypeEnum,
 } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/on-office-products';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
-  TApiIntUserProdContTypes,
+  ApiIntUserPropstackProdContTypesEnum,
+  TApiIntUserProdContType,
 } from '@area-butler-types/integration-user';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { getProcUpdateQuery } from '../shared/functions/shared';
-import { OpenAiQueryTypeEnum } from '@area-butler-types/open-ai';
-import { OnOfficeIntActTypesEnum } from '@area-butler-types/on-office';
+import { checkIsSearchNotUnlocked } from '../../../shared/functions/integration.functions';
+
+interface IUnlockProductParams {
+  availProdContType: TApiIntUserProdContType;
+  integrationId: string;
+  actionType: IntegrationActionTypeEnum;
+}
 
 @Injectable()
 export class RealEstateListingIntService {
@@ -109,9 +115,7 @@ export class RealEstateListingIntService {
 
   async unlockProduct(
     integrationUser: TIntegrationUserDocument,
-    availProdContType: TApiIntUserProdContTypes,
-    integrationId: string,
-    actionType: TIntegrationActionTypes,
+    { actionType, availProdContType, integrationId }: IUnlockProductParams,
   ): Promise<void> {
     const realEstate = await this.findOneOrFailByIntParams({
       integrationId,
@@ -123,7 +127,8 @@ export class RealEstateListingIntService {
     const iframeEndsAt = dayjs().add(6, 'months').toDate();
 
     switch (availProdContType) {
-      case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {
+      case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI:
+      case ApiIntUserPropstackProdContTypesEnum.OPEN_AI: {
         realEstate.integrationParams.openAiRequestQuantity =
           initOpenAiReqQuantity;
         break;
@@ -144,7 +149,8 @@ export class RealEstateListingIntService {
         break;
       }
 
-      case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT: {
+      case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT:
+      case ApiIntUserPropstackProdContTypesEnum.STATS_EXPORT: {
         realEstate.integrationParams.openAiRequestQuantity =
           initOpenAiReqQuantity;
         realEstate.integrationParams.iframeEndsAt = iframeEndsAt;
@@ -158,7 +164,7 @@ export class RealEstateListingIntService {
   }
 
   private checkUnlockAction(
-    actionType: TIntegrationActionTypes,
+    actionType: IntegrationActionTypeEnum,
     {
       integrationParams: {
         iframeEndsAt,
@@ -169,45 +175,42 @@ export class RealEstateListingIntService {
     }: RealEstateListingDocument,
   ): void {
     switch (actionType) {
-      case OnOfficeIntActTypesEnum.UNLOCK_SEARCH: {
-        const isSearchNeeded =
-          (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
-          !isOnePageExportActive &&
-          !isStatsFullExportActive &&
-          !openAiRequestQuantity;
-
-        if (isSearchNeeded) {
+      case IntegrationActionTypeEnum.UNLOCK_SEARCH: {
+        if (
+          checkIsSearchNotUnlocked({
+            iframeEndsAt,
+            isOnePageExportActive,
+            isStatsFullExportActive,
+            openAiRequestQuantity,
+          })
+        ) {
           return;
         }
         break;
       }
 
-      case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
-      case OpenAiQueryTypeEnum.GENERAL_QUESTION:
-      case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
-      case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
-      case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION: {
+      case IntegrationActionTypeEnum.UNLOCK_OPEN_AI: {
         if (!openAiRequestQuantity) {
           return;
         }
         break;
       }
 
-      case OnOfficeIntActTypesEnum.UNLOCK_IFRAME: {
+      case IntegrationActionTypeEnum.UNLOCK_IFRAME: {
         if (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) {
           return;
         }
         break;
       }
 
-      case OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE: {
+      case IntegrationActionTypeEnum.UNLOCK_ONE_PAGE: {
         if (!isOnePageExportActive) {
           return;
         }
         break;
       }
 
-      case OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT: {
+      case IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT: {
         if (!isStatsFullExportActive) {
           return;
         }

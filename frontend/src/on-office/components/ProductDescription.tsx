@@ -1,8 +1,9 @@
 import { OnOfficeProductTypesEnum } from "../../../../shared/types/on-office";
+import { TIntegrationProductType } from "../../../../shared/types/integration";
 
 export const getProductDescription = (
   name: string,
-  type: OnOfficeProductTypesEnum
+  type: TIntegrationProductType
 ) => {
   switch (type) {
     case OnOfficeProductTypesEnum.OPEN_AI: {
@@ -13,7 +14,7 @@ export const getProductDescription = (
       return StatsExportDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.SUBSCRIPTION: {
+    case OnOfficeProductTypesEnum.FLAT_RATE: {
       return SubscriptionDescription(name);
     }
 

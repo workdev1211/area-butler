@@ -71,19 +71,14 @@ import { snapshotEditorPath } from "../shared/shared.constants";
 import { defaultTransportParams } from "../../../shared/constants/location";
 import { useTools } from "../hooks/tools";
 import ConfirmationModal from "../components/ConfirmationModal";
-import {
-  OnOfficeIntActTypesEnum,
-  TOnOfficeIntActTypes,
-} from "../../../shared/types/on-office";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
+import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.functions";
 import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
-import { ConfigContext } from "../context/ConfigContext";
-import { IntegrationTypesEnum } from "../../../shared/types/integration";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
 const SearchParamsPage: FC = () => {
-  const { integrationType } = useContext(ConfigContext);
   const { userState } = useContext(UserContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
@@ -112,7 +107,7 @@ const SearchParamsPage: FC = () => {
   const [unlockParams, setUnlockParams] = useState<{
     isShownModal: boolean;
     modalMessage?: string;
-    actionType?: TOnOfficeIntActTypes;
+    actionType?: IntegrationActionTypeEnum;
   }>({ isShownModal: false });
 
   const clearRealEstateParams = (): void => {
@@ -504,31 +499,33 @@ const SearchParamsPage: FC = () => {
             type="button"
             disabled={isSearchButtonDisabled}
             onClick={async () => {
-              let isIntAndNotAllowed = false;
+              if (!isIntegrationUser) {
+                await performAnalysis();
+                return;
+              }
 
-              // TODO PROPSTACK CONTINGENT
+              if (!searchContextState.realEstateListing) {
+                toastError("Der Fehler ist aufgetreten!");
+                return;
+              }
+
+              const {
+                iframeEndsAt,
+                isOnePageExportActive,
+                isStatsFullExportActive,
+                openAiRequestQuantity,
+              } = searchContextState.realEstateListing;
+
               if (
-                isIntegrationUser &&
-                integrationType !== IntegrationTypesEnum.PROPSTACK &&
-                searchContextState.realEstateListing
-              ) {
-                const {
+                checkIsSearchNotUnlocked({
                   iframeEndsAt,
                   isOnePageExportActive,
                   isStatsFullExportActive,
                   openAiRequestQuantity,
-                } = searchContextState.realEstateListing;
-
-                isIntAndNotAllowed =
-                  (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
-                  !isOnePageExportActive &&
-                  !isStatsFullExportActive &&
-                  !openAiRequestQuantity;
-              }
-
-              if (isIntAndNotAllowed) {
+                })
+              ) {
                 setUnlockParams({
-                  actionType: OnOfficeIntActTypesEnum.UNLOCK_SEARCH,
+                  actionType: IntegrationActionTypeEnum.UNLOCK_SEARCH,
                   isShownModal: true,
                   modalMessage: searchUnlockText,
                 });

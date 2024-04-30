@@ -115,12 +115,11 @@ export class RealEstateListingIntController {
         actionType,
       );
 
-    await this.realEstateListingIntService.unlockProduct(
-      integrationUser,
+    await this.realEstateListingIntService.unlockProduct(integrationUser, {
+      actionType,
       availProdContType,
       integrationId,
-      actionType
-    );
+    });
 
     await this.contingentIntService.incrementProductUsage(
       integrationUser,

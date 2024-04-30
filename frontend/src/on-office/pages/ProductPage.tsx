@@ -2,13 +2,13 @@ import { FunctionComponent, useContext } from "react";
 
 import DefaultLayout from "../../layout/defaultLayout";
 import { allOnOfficeProducts } from "../../../../shared/constants/on-office/on-office-products";
-import { IOnOfficeProduct } from "../../../../shared/types/on-office";
 import ProductCard from "../components/ProductCard";
 import { UserContext } from "../../context/UserContext";
 import { ApiIntUserOnOfficeProdContTypesEnum } from "../../../../shared/types/integration-user";
 import { getProductNameByType } from "../../shared/integration.functions";
 import { copyTextToClipboard } from "../../shared/shared.functions";
 import copyIcon from "../../assets/icons/copy.svg";
+import { IIntegrationProduct } from "../../../../shared/types/integration";
 // import fireIcon from "../../assets/icons/fire.svg";
 
 export const ProductPage: FunctionComponent = () => {
@@ -19,7 +19,7 @@ export const ProductPage: FunctionComponent = () => {
   const { availProdContingents } = integrationUser!;
 
   const onOfficeProducts = Object.values(allOnOfficeProducts).reduce<
-    Array<IOnOfficeProduct[]>
+    Array<IIntegrationProduct[]>
   >((result, product, i) => {
     const isEven = i % 2 === 1;
 

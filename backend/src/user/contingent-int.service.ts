@@ -2,18 +2,18 @@ import { HttpException, Injectable, Logger } from '@nestjs/common';
 import * as dayjs from 'dayjs';
 
 import { TIntegrationUserDocument } from './schema/integration-user.schema';
-import { TIntegrationActionTypes } from '@area-butler-types/integration';
 import {
   IApiIntegrationUserProductContingent,
   TApiIntegrationUserProduct,
   TApiIntUserAvailProdContingents,
-  TApiIntUserProdContTypes,
+  TApiIntUserProdContType,
 } from '@area-butler-types/integration-user';
 import {
   checkIsParent,
   getAvailProdContType,
 } from '../../../shared/functions/integration.functions';
 import { IntegrationUserService } from './integration-user.service';
+import { IntegrationActionTypeEnum } from '@area-butler-types/integration';
 
 @Injectable()
 export class ContingentIntService {
@@ -108,8 +108,8 @@ export class ContingentIntService {
 
   async getAvailProdContTypeOrFail(
     integrationUser: TIntegrationUserDocument,
-    actionType: TIntegrationActionTypes,
-  ): Promise<TApiIntUserProdContTypes> {
+    actionType: IntegrationActionTypeEnum,
+  ): Promise<TApiIntUserProdContType> {
     const availProdContingents = await this.getAvailProdContingents(
       integrationUser,
     );
@@ -153,7 +153,7 @@ export class ContingentIntService {
   // The main method which increases the amount of a used contingent
   async incrementProductUsage(
     { id, parentId }: TIntegrationUserDocument,
-    prodContType: TApiIntUserProdContTypes,
+    prodContType: TApiIntUserProdContType,
   ): Promise<TIntegrationUserDocument> {
     return this.integrationUserService.findByDbIdAndUpdate(parentId || id, {
       $inc: {

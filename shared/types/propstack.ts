@@ -50,10 +50,10 @@ export enum PropstackTextFieldTypeEnum {
   OTHER_NOTE = "other_note",
 }
 
-export enum PropstackIntActTypesEnum {
-  UNLOCK_ALL = "UNLOCK_ALL",
+export enum PropstackProductTypeEnum {
+  OPEN_AI = "OPEN_AI",
+  OPEN_AI_10 = "OPEN_AI_10",
+  STATS_EXPORT = "STATS_EXPORT",
+  STATS_EXPORT_10 = "STATS_EXPORT_10",
+  FLAT_RATE = "FLAT_RATE",
 }
-
-export type TPropstackIntActTypes =
-  | keyof typeof OpenAiQueryTypeEnum
-  | keyof typeof PropstackIntActTypesEnum;

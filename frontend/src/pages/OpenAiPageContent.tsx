@@ -5,10 +5,9 @@ import {SearchContext} from "../context/SearchContext";
 import {OpenAiQueryTypeEnum} from "../../../shared/types/open-ai";
 import {useIntegrationTools} from "../hooks/integration/integrationtools";
 import ConfirmationModal from "../components/ConfirmationModal";
-import {TOnOfficeIntActTypes} from "../../../shared/types/on-office";
 import {ConfigContext} from "../context/ConfigContext";
-import {IntegrationTypesEnum} from "../../../shared/types/integration";
 import {integrationNames} from "../../../shared/constants/integration";
+import {IntegrationActionTypeEnum} from "../../../shared/types/integration";
 
 // TODO could be the same content with a 'OpenAiModal' component
 const OpenAiPageContent: FunctionComponent = () => {
@@ -29,7 +28,7 @@ const OpenAiPageContent: FunctionComponent = () => {
   const [unlockParams, setUnlockParams] = useState<{
     isShownModal: boolean;
     modalMessage?: string;
-    actionType?: TOnOfficeIntActTypes;
+    actionType?: IntegrationActionTypeEnum;
   }>({ isShownModal: false });
 
   const isShownOnOfficeButton =
@@ -41,9 +40,7 @@ const OpenAiPageContent: FunctionComponent = () => {
     ].includes(queryType) &&
     queryResponse;
 
-  // TODO PROPSTACK CONTINGENT
   const isQueryAvailable =
-    integrationType === IntegrationTypesEnum.PROPSTACK ||
     !!searchContextState.realEstateListing?.openAiRequestQuantity;
 
   const handleResponseFetched = (responseText?: string): void => {
@@ -135,7 +132,7 @@ const OpenAiPageContent: FunctionComponent = () => {
 
             setUnlockParams({
               modalMessage: "KI-Texte freischalten?",
-              actionType: queryType,
+              actionType: IntegrationActionTypeEnum.UNLOCK_OPEN_AI,
               isShownModal: true,
             });
           }}

@@ -3,9 +3,10 @@ import statsExportImage from "../assets/icons/onoffice-products/full-package.png
 import openAiImage from "../assets/icons/onoffice-products/open-ai.png";
 
 import { OnOfficeProductTypesEnum } from "../../../shared/types/on-office";
+import { TIntegrationProductType } from "../../../shared/types/integration";
 
 export const getOnOfficeProductImage = (
-  productType: OnOfficeProductTypesEnum
+  productType: TIntegrationProductType
 ): string => {
   switch (productType) {
     case OnOfficeProductTypesEnum.OPEN_AI: {
@@ -14,7 +15,7 @@ export const getOnOfficeProductImage = (
     case OnOfficeProductTypesEnum.STATS_EXPORT: {
       return statsExportImage;
     }
-    case OnOfficeProductTypesEnum.SUBSCRIPTION: {
+    case OnOfficeProductTypesEnum.FLAT_RATE: {
       return subscriptionImage;
     }
     default: {

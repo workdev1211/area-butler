@@ -59,7 +59,7 @@ import { IApiLateSnapConfigOption } from '@area-butler-types/location';
 import { FetchSnapshotService } from './fetch-snapshot.service';
 import { RealEstateListingIntService } from '../real-estate-listing/real-estate-listing-int.service';
 import { ApiRealEstateListing } from '@area-butler-types/real-estate';
-import { IntegrationTypesEnum } from '@area-butler-types/integration';
+import { checkIsSearchNotUnlocked } from '../../../shared/functions/integration.functions';
 
 @Injectable()
 export class LocationService {
@@ -226,11 +226,7 @@ export class LocationService {
       Object.assign(location, { endsAt: existingLocation.endsAt });
     }
 
-    // TODO PROPSTACK CONTINGENT
-    if (
-      isIntegrationUser &&
-      user.integrationType !== IntegrationTypesEnum.PROPSTACK
-    ) {
+    if (isIntegrationUser) {
       let iframeEndsAt;
       let isOnePageExportActive;
       let isStatsFullExportActive;
@@ -259,10 +255,12 @@ export class LocationService {
       }
 
       if (
-        (!iframeEndsAt || dayjs().isAfter(iframeEndsAt)) &&
-        !isOnePageExportActive &&
-        !isStatsFullExportActive &&
-        !openAiRequestQuantity
+        checkIsSearchNotUnlocked({
+          iframeEndsAt,
+          isOnePageExportActive,
+          isStatsFullExportActive,
+          openAiRequestQuantity,
+        })
       ) {
         throw new HttpException('Product is not unlocked!', 402);
       }

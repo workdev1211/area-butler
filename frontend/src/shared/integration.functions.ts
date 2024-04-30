@@ -1,6 +1,6 @@
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
-  TApiIntUserProdContTypes,
+  TApiIntUserProdContType,
 } from "../../../shared/types/integration-user";
 import {
   allOnOfficeProducts,
@@ -9,7 +9,7 @@ import {
 
 // TODO think about moving to the product description component
 export const getProductNameByType = (
-  productType: TApiIntUserProdContTypes
+  productType: TApiIntUserProdContType
 ): string => {
   switch (productType) {
     case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {

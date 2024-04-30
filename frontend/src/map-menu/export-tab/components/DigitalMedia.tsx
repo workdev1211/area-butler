@@ -9,7 +9,6 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../../context/SearchContext";
-import { OnOfficeIntActTypesEnum } from "../../../../../shared/types/on-office";
 import sendToOnOfficeIcon from "../../../assets/icons/entrance-alt1.svg";
 import { getQrCodeBase64 } from "../../../export/QrCode";
 import copyIcon from "../../../assets/icons/copy.svg";
@@ -27,7 +26,7 @@ import {
 import { useIntegrationTools } from "../../../hooks/integration/integrationtools";
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import {
-  IntegrationTypesEnum,
+  IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
@@ -72,7 +71,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
 
   const { sendToIntegration } = useIntegrationTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
-  const isPropstackInt = integrationType === IntegrationTypesEnum.PROPSTACK;
 
   useEffect(() => {
     if (!printingZipActive) {
@@ -114,7 +112,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
     if (performUnlock) {
       performUnlock(
         "Interaktive Karte freischalten?",
-        OnOfficeIntActTypesEnum.UNLOCK_IFRAME
+        IntegrationActionTypeEnum.UNLOCK_IFRAME
       );
     }
   };
@@ -153,21 +151,17 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
   };
 
-  // TODO PROPSTACK CONTINGENT
   const isNotIntOrNotExpForIntUser =
     !integrationUser ||
     (!!realEstateListing?.iframeEndsAt &&
-      !dayjs().isAfter(realEstateListing?.iframeEndsAt)) ||
-    isPropstackInt;
+      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
 
-  const isIntUserIframeExportAvail =
-    !isPropstackInt &&
-    !!(
-      integrationUser?.config.exportMatching &&
-      integrationUser?.config.exportMatching[
-        AreaButlerExportTypesEnum.INLINE_FRAME
-      ]
-    );
+  const isIntUserIframeExportAvail = !!(
+    integrationUser?.config.exportMatching &&
+    integrationUser?.config.exportMatching[
+      AreaButlerExportTypesEnum.INLINE_FRAME
+    ]
+  );
 
   const intUserLinkExpType = integrationType && getIntUserLinkExpType();
 
@@ -222,10 +216,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
                       return;
                     }
 
-                    if (
-                      !isPropstackInt &&
-                      !integrationUser?.config.isSpecialLink
-                    ) {
+                    if (!integrationUser?.config.isSpecialLink) {
                       void sendToIntegration({
                         exportType: intUserLinkExpType,
                         text: directLink,

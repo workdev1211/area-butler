@@ -7,15 +7,7 @@ export enum OnOfficeProductTypesEnum {
   OPEN_AI_10 = "OPEN_AI_10",
   STATS_EXPORT = "STATS_EXPORT",
   STATS_EXPORT_10 = "STATS_EXPORT_10",
-  SUBSCRIPTION = "SUBSCRIPTION",
-}
-
-export interface IOnOfficeProduct {
-  name: string;
-  type: OnOfficeProductTypesEnum;
-  price: number;
-  image?: string;
-  isDisabled?: boolean;
+  FLAT_RATE = "FLAT_RATE",
 }
 
 export interface IApiOnOfficeUnlockProviderReq {
@@ -269,7 +261,7 @@ export type TApiOnOfficeConfirmOrderRes =
 
 export interface IApiOnOfficeCreateOrderProduct {
   transactionDbId?: string;
-  type: OnOfficeProductTypesEnum;
+  type: keyof typeof OnOfficeProductTypesEnum;
   quantity: number;
 }
 
@@ -298,30 +290,19 @@ export interface IApiOnOfficeCreateOrderRes {
 }
 
 export enum ApiOnOfficeTransactionStatusesEnum {
-  "SUCCESS" = "success",
-  "INPROCESS" = "inprocess", // inprocess is SEPA specific status
-  "ERROR" = "error",
+  SUCCESS = "success",
+  INPROCESS = "inprocess", // inprocess is SEPA specific status
+  ERROR = "error",
 }
 
 export enum OnOfficeLoginActionTypesEnum {
-  "PERFORM_LOGIN" = "PERFORM_LOGIN",
-  "CONFIRM_ORDER" = "CONFIRM_ORDER",
+  PERFORM_LOGIN = "PERFORM_LOGIN",
+  CONFIRM_ORDER = "CONFIRM_ORDER",
 }
 
 export interface IOnOfficeHandleLogin extends IIntegrationHandleLogin {
   actionType?: OnOfficeLoginActionTypesEnum;
 }
-
-export enum OnOfficeIntActTypesEnum {
-  UNLOCK_SEARCH = "UNLOCK_SEARCH",
-  UNLOCK_IFRAME = "UNLOCK_IFRAME",
-  UNLOCK_ONE_PAGE = "UNLOCK_ONE_PAGE",
-  UNLOCK_STATS_EXPORT = "UNLOCK_STATS_EXPORT",
-}
-
-export type TOnOfficeIntActTypes =
-  | keyof typeof OpenAiQueryTypeEnum
-  | keyof typeof OnOfficeIntActTypesEnum;
 
 export interface IApiOnOfficeSyncEstatesFilterParams {
   status2?: string;

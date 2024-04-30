@@ -14,12 +14,11 @@ import {
   deriveEntityGroupsByActiveMeans,
   setBackgroundColor,
 } from "../../../shared/shared.functions";
-import { OnOfficeIntActTypesEnum } from "../../../../../shared/types/on-office";
 import { ExportTypeEnum } from "../../../../../shared/types/export";
 import { statsExportUnlockText } from "../../../../../shared/constants/on-office/on-office-products";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
 import {
-  IntegrationTypesEnum,
+  IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
 
@@ -103,13 +102,11 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
 
     const isOnePageExport = exportType === ExportTypeEnum.ONE_PAGE;
 
-    // TODO PROPSTACK CONTINGENT
     const isExportAvailForIntUser =
       isIntegration &&
-      ((isOnePageExport
+      (isOnePageExport
         ? realEstateListing?.isOnePageExportActive
-        : realEstateListing?.isStatsFullExportActive) ||
-        integrationType === IntegrationTypesEnum.PROPSTACK);
+        : realEstateListing?.isStatsFullExportActive);
 
     if (
       isExportAvailForIntUser ||
@@ -121,8 +118,8 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
 
     if (isIntegration && performUnlock) {
       const actionType = isOnePageExport
-        ? OnOfficeIntActTypesEnum.UNLOCK_ONE_PAGE
-        : OnOfficeIntActTypesEnum.UNLOCK_STATS_EXPORT;
+        ? IntegrationActionTypeEnum.UNLOCK_ONE_PAGE
+        : IntegrationActionTypeEnum.UNLOCK_STATS_EXPORT;
 
       performUnlock(
         isOnePageExport ? "Lage-Exposé freischalten?" : statsExportUnlockText,

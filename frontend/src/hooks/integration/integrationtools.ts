@@ -7,8 +7,8 @@ import { UserActionTypes, UserContext } from "../../context/UserContext";
 import { toastError, toastSuccess } from "../../shared/shared.functions";
 import {
   IApiUnlockIntProductReq,
+  IntegrationActionTypeEnum,
   IntegrationTypesEnum,
-  TIntegrationActionTypes,
   TSendToIntegrationData,
 } from "../../../../shared/types/integration";
 import { useHttp } from "../http";
@@ -22,7 +22,7 @@ import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/on
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   ApiIntUserPropstackProdContTypesEnum,
-  TApiIntUserProdContTypes,
+  TApiIntUserProdContType,
 } from "../../../../shared/types/integration-user";
 import { useOnOfficeSync } from "../../on-office/hooks/onofficesync";
 import { wrongIntegrationErrorMsg } from "../../../../shared/constants/integration";
@@ -45,8 +45,8 @@ export const useIntegrationTools = () => {
   const { sendToPropstack } = usePropstackSync();
 
   const getAvailProdContTypeOrFail = (
-    actionType: TIntegrationActionTypes
-  ): TApiIntUserProdContTypes | undefined => {
+    actionType: IntegrationActionTypeEnum
+  ): TApiIntUserProdContType | undefined => {
     const availProdContType = getAvailProdContType(
       integrationType!,
       actionType,
@@ -57,8 +57,12 @@ export const useIntegrationTools = () => {
       return availProdContType;
     }
 
-    // TODO change redirect for propstack
+    // TODO PROPSTACK CONTINGENT
     toastError("Bitte kaufen Sie ein entsprechendes Produkt!", () => {
+      if (integrationType === IntegrationTypesEnum.PROPSTACK) {
+        return;
+      }
+
       history.push("/products");
     });
   };
@@ -102,7 +106,7 @@ export const useIntegrationTools = () => {
   };
 
   const unlockProduct = async (
-    actionType: TIntegrationActionTypes
+    actionType: IntegrationActionTypeEnum
   ): Promise<void> => {
     if (!realEstateListing?.integrationId) {
       return;
@@ -127,6 +131,7 @@ export const useIntegrationTools = () => {
       let updatedRealEstateListing: ApiRealEstateListing;
 
       switch (availProdContType) {
+        case ApiIntUserPropstackProdContTypesEnum.OPEN_AI:
         case ApiIntUserOnOfficeProdContTypesEnum.OPEN_AI: {
           updatedRealEstateListing = {
             ...realEstateListing,
@@ -155,7 +160,7 @@ export const useIntegrationTools = () => {
         }
 
         case ApiIntUserOnOfficeProdContTypesEnum.STATS_EXPORT:
-        case ApiIntUserPropstackProdContTypesEnum.COMPLETE: {
+        case ApiIntUserPropstackProdContTypesEnum.STATS_EXPORT: {
           updatedRealEstateListing = {
             ...realEstateListing,
             iframeEndsAt,
