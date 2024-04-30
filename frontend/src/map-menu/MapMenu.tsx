@@ -29,7 +29,7 @@ import EditorTab from "./editor-tab/EditorTab";
 import ExportTab from "./export-tab/ExportTab";
 import MapMenuFooter from "./components/footer/MapMenuFooter";
 import ConfirmationModal from "../components/ConfirmationModal";
-import { statsExportUnlockText } from "../../../shared/constants/on-office/products";
+import { statsExportUnlockText } from "../../../shared/constants/on-office/on-office-products";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import {
   OnOfficeIntActTypesEnum,

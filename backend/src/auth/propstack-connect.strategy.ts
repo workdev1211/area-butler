@@ -2,7 +2,7 @@ import { Injectable, Logger, UnauthorizedException } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
-import { propstackConnectRoutePath } from '../../../shared/constants/propstack';
+import { propstackConnectRoutePath } from '../../../shared/constants/propstack/propstack-constants';
 import { configService } from '../config/config.service';
 
 @Injectable()

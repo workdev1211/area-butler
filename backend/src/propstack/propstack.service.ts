@@ -47,7 +47,7 @@ import {
   propstackExportTypeMapper,
   propstackOpenAiFieldMapper,
   propstackPropertyMarketTypeNames,
-} from '../../../shared/constants/propstack';
+} from '../../../shared/constants/propstack/propstack-constants';
 import { configService } from '../config/config.service';
 import { PlaceService } from '../place/place.service';
 import {

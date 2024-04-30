@@ -16,7 +16,7 @@ import {
   TIntegrationActionTypes,
 } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/products';
+import { initOpenAiReqQuantity } from '../../../shared/constants/on-office/on-office-products';
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   TApiIntUserProdContTypes,

@@ -29,7 +29,7 @@ import {
   IApiOnOfficeUnlockProviderReq,
   TApiOnOfficeConfirmOrderRes,
 } from '@area-butler-types/on-office';
-import { allOnOfficeProducts } from '../../../shared/constants/on-office/products';
+import { allOnOfficeProducts } from '../../../shared/constants/on-office/on-office-products';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import {
   OnOfficeTransaction,
@@ -53,7 +53,7 @@ import {
   IApiIntUserLoginRes,
   IApiIntUserOnOfficeParams,
 } from '@area-butler-types/integration-user';
-import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/constants';
+import { openAiQueryTypeToOnOfficeEstateFieldMapping } from '../../../shared/constants/on-office/on-office-constants';
 import ApiOnOfficeToAreaButlerDto from '../real-estate-listing/dto/api-on-office-to-area-butler.dto';
 import { checkIsParent } from '../../../shared/functions/integration.functions';
 import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';

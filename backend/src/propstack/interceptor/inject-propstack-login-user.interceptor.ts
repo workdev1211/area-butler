@@ -11,7 +11,7 @@ import { Observable } from 'rxjs';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 
-import { propstackLoginRoutePath } from '../../../../shared/constants/propstack';
+import { propstackLoginRoutePath } from '../../../../shared/constants/propstack/propstack-constants';
 import { PropstackService } from '../propstack.service';
 import ApiPropstackLoginReqDto from '../dto/api-propstack-login-req.dto';
 

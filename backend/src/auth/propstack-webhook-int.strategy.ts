@@ -7,7 +7,7 @@ import {
 import { PassportStrategy } from '@nestjs/passport';
 import { HeaderAPIKeyStrategy } from 'passport-headerapikey';
 
-import { propstackWebhookIntRoutePaths } from '../../../shared/constants/propstack';
+import { propstackWebhookIntRoutePaths } from '../../../shared/constants/propstack/propstack-constants';
 import { PropstackService } from '../propstack/propstack.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { Types } from 'mongoose';

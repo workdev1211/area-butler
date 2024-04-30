@@ -16,7 +16,7 @@ import {
 } from "../../../shared/shared.functions";
 import { OnOfficeIntActTypesEnum } from "../../../../../shared/types/on-office";
 import { ExportTypeEnum } from "../../../../../shared/types/export";
-import { statsExportUnlockText } from "../../../../../shared/constants/on-office/products";
+import { statsExportUnlockText } from "../../../../../shared/constants/on-office/on-office-products";
 import reportsIcon from "../../../assets/icons/map-menu/09-reporte.svg";
 import {
   IntegrationTypesEnum,

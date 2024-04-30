@@ -76,7 +76,7 @@ import {
   TOnOfficeIntActTypes,
 } from "../../../shared/types/on-office";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
-import { searchUnlockText } from "../../../shared/constants/on-office/products";
+import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
 import { ConfigContext } from "../context/ConfigContext";
 import { IntegrationTypesEnum } from "../../../shared/types/integration";
 

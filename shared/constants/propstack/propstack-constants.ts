@@ -1,8 +1,8 @@
-import { OpenAiQueryTypeEnum } from "../types/open-ai";
+import { OpenAiQueryTypeEnum } from "../../types/open-ai";
 import {
   PropstackPropMarketTypesEnum,
   PropstackTextFieldTypeEnum,
-} from "../types/propstack";
+} from "../../types/propstack";
 
 export const propstackConnectRoutePath: string = "/api/propstack/connect";
 export const propstackWebhookIntRoutePaths: string[] = [

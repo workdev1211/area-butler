@@ -18,7 +18,7 @@ import {
 } from "../../context/SearchContext";
 import { ApiRealEstateListing } from "../../../../shared/types/real-estate";
 import { getAvailProdContType } from "../../../../shared/functions/integration.functions";
-import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/products";
+import { initOpenAiReqQuantity } from "../../../../shared/constants/on-office/on-office-products";
 import {
   ApiIntUserOnOfficeProdContTypesEnum,
   ApiIntUserPropstackProdContTypesEnum,

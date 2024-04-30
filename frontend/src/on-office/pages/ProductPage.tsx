@@ -1,7 +1,7 @@
 import { FunctionComponent, useContext } from "react";
 
 import DefaultLayout from "../../layout/defaultLayout";
-import { allOnOfficeProducts } from "../../../../shared/constants/on-office/products";
+import { allOnOfficeProducts } from "../../../../shared/constants/on-office/on-office-products";
 import { IOnOfficeProduct } from "../../../../shared/types/on-office";
 import ProductCard from "../components/ProductCard";
 import { UserContext } from "../../context/UserContext";

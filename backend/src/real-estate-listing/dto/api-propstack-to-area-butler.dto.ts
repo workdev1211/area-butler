@@ -17,7 +17,7 @@ import {
 import { GeoJsonPoint } from '../../shared/types/geo-json';
 import ApiIntegrationParamsDto from '../../dto/api-real-estate-integration-params.dto';
 import { IApiRealEstateIntegrationParams } from '@area-butler-types/integration';
-import { propstackPropertyMarketTypeNames } from '../../../../shared/constants/propstack';
+import { propstackPropertyMarketTypeNames } from '../../../../shared/constants/propstack/propstack-constants';
 import ApiGeoJsonPointDto from '../../dto/api-geo-json-point.dto';
 import ApiRealEstateCostDto from '../../dto/api-real-estate-cost.dto';
 import ApiRealEstateCharacteristicsDto from '../../dto/api-real-estate-characteristics.dto';

@@ -5,7 +5,7 @@ import {
 import {
   allOnOfficeProducts,
   legacyOnOfficeProdNames,
-} from "../../../shared/constants/on-office/products";
+} from "../../../shared/constants/on-office/on-office-products";
 
 // TODO think about moving to the product description component
 export const getProductNameByType = (
