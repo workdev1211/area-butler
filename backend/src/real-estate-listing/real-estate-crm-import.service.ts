@@ -297,7 +297,7 @@ export class RealEstateCrmImportService {
         //   processCustomPropstackStatus(processedUserEmail, realEstate);
         // }
 
-        const estateData: Partial<IApiRealEstateListingSchema> = {
+        const locationData: Partial<IApiRealEstateListingSchema> = {
           location: {
             type: 'Point',
             coordinates: [
@@ -307,21 +307,7 @@ export class RealEstateCrmImportService {
           },
         };
 
-        if (isIntegrationUser) {
-          estateData.integrationParams = {
-            integrationUserId: user.integrationUserId,
-            integrationId: `${property.id}`,
-            integrationType: user.integrationType,
-          };
-        }
-
-        if (!isIntegrationUser) {
-          estateData.userId = user.id;
-          estateData.externalId = `${property.id}`;
-          estateData.externalSource = ApiRealEstateExtSourcesEnum.PROPSTACK;
-        }
-
-        Object.assign(property, estateData);
+        Object.assign(property, locationData);
 
         const areaButlerRealEstate = plainToInstance(
           ApiPropstackFetchToAreaButlerDto,
@@ -332,26 +318,27 @@ export class RealEstateCrmImportService {
           areaButlerRealEstate,
         );
 
+        // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
           isIntegrationUser
             ? {
-                'integrationParams.integrationUserId':
-                  areaButlerRealEstate.integrationParams.integrationUserId,
-                'integrationParams.integrationId':
-                  areaButlerRealEstate.integrationParams.integrationId,
-                'integrationParams.integrationType':
-                  areaButlerRealEstate.integrationParams.integrationType,
+                'integrationParams.integrationId': `${property.id}`,
+                'integrationParams.integrationType': user.integrationType,
+                'integrationParams.integrationUserId': user.integrationUserId,
               }
             : {
-                userId: areaButlerRealEstate.userId,
-                externalSource: areaButlerRealEstate.externalSource,
-                externalId: areaButlerRealEstate.externalId,
+                externalId: `${property.id}`,
+                externalSource: ApiRealEstateExtSourcesEnum.PROPSTACK,
+                userId: user.id,
               };
 
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: getProcUpdateQuery(areaButlerRealEstate),
+            update: {
+              ...getProcUpdateQuery(areaButlerRealEstate),
+              ...filterQuery,
+            },
             upsert: true,
           },
         });
@@ -584,7 +571,7 @@ export class RealEstateCrmImportService {
         //   }`,
         // );
 
-        const estateData: Partial<IApiRealEstateListingSchema> = {
+        const locationData: Partial<IApiRealEstateListingSchema> = {
           address: locationAddress,
           location: {
             type: 'Point',
@@ -595,21 +582,7 @@ export class RealEstateCrmImportService {
           } as GeoJsonPoint,
         };
 
-        if (isIntegrationUser) {
-          estateData.integrationParams = {
-            integrationUserId: user.integrationUserId,
-            integrationId: realEstate.Id,
-            integrationType: user.integrationType,
-          };
-        }
-
-        if (!isIntegrationUser) {
-          estateData.userId = user.id;
-          estateData.externalId = realEstate.Id;
-          estateData.externalSource = ApiRealEstateExtSourcesEnum.ON_OFFICE;
-        }
-
-        Object.assign(realEstate, estateData);
+        Object.assign(realEstate, locationData);
 
         const areaButlerRealEstate = plainToInstance(
           ApiOnOfficeToAreaButlerDto,
@@ -621,26 +594,24 @@ export class RealEstateCrmImportService {
           areaButlerRealEstate,
         );
 
+        // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
         const filterQuery: FilterQuery<IApiRealEstateListingSchema> =
           isIntegrationUser
             ? {
-                'integrationParams.integrationUserId':
-                  areaButlerRealEstate.integrationParams.integrationUserId,
-                'integrationParams.integrationId':
-                  areaButlerRealEstate.integrationParams.integrationId,
-                'integrationParams.integrationType':
-                  areaButlerRealEstate.integrationParams.integrationType,
+                'integrationParams.integrationId': realEstate.Id,
+                'integrationParams.integrationType': user.integrationType,
+                'integrationParams.integrationUserId': user.integrationUserId,
               }
             : {
-                userId: areaButlerRealEstate.userId,
-                externalSource: areaButlerRealEstate.externalSource,
-                externalId: areaButlerRealEstate.externalId,
+                externalId: realEstate.Id,
+                externalSource: ApiRealEstateExtSourcesEnum.ON_OFFICE,
+                userId: user.id,
               };
 
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: areaButlerRealEstate,
+            update: { ...areaButlerRealEstate, ...filterQuery },
             upsert: true,
           },
         });

@@ -59,6 +59,7 @@ export class RealEstateListingIntService {
     realEstateListing: Partial<IApiRealEstateListingSchema> &
       Pick<IApiRealEstateListingSchema, 'integrationParams'>,
   ): Promise<RealEstateListingDocument> {
+    // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
     const {
       integrationParams: { integrationId, integrationUserId, integrationType },
       ...realEstateData
