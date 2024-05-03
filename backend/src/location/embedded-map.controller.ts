@@ -9,6 +9,7 @@ import {
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Readable } from 'stream';
 import { toBuffer } from 'qrcode';
+import { FilterQuery, Types } from 'mongoose';
 
 import { IApiFetchedEmbeddedData } from '@area-butler-types/types';
 import { createDirectLink } from '../shared/functions/shared';
@@ -19,6 +20,7 @@ import { ApiSubscriptionPlanType } from '@area-butler-types/subscription-plan';
 import { IntegrationUserService } from '../user/integration-user.service';
 import { UserService } from '../user/user.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
+import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
@@ -90,20 +92,35 @@ export class EmbeddedMapController {
 
     const isIntegrationUser = 'integrationUserId' in user;
 
-    const realEstates = (
-      await this.realEstateListingService.fetchRealEstateListings(user, {
-        status: snapshotDoc.config.realEstateStatus,
-        status2: snapshotDoc.config.realEstateStatus2,
-      })
-    ).map((realEstate) =>
-      mapRealEstateListingToApiRealEstateListing(user, realEstate),
-    );
-
     const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(user, {
       isTrial,
       snapshotDoc,
       isEmbedded: true,
     });
+
+    const filterQuery: FilterQuery<RealEstateListingDocument> = {
+      status: snapshotDoc.config.realEstateStatus,
+      status2: snapshotDoc.config.realEstateStatus2,
+    };
+
+    if (snapshotRes.realEstateListing) {
+      filterQuery._id = {
+        $ne: new Types.ObjectId(snapshotRes.realEstateListing.id),
+      };
+    }
+
+    const realEstates = (
+      await this.realEstateListingService.fetchRealEstateListings(
+        user,
+        filterQuery,
+      )
+    ).map((realEstate) =>
+      mapRealEstateListingToApiRealEstateListing(
+        user,
+        realEstate,
+        snapshotRes.config.showAddress,
+      ),
+    );
 
     return {
       realEstates,

@@ -49,7 +49,9 @@ import { PropstackModule } from './propstack/propstack.module';
       },
     ),
     ScheduleModule.forRoot(),
-    MongooseModule.forRoot(configService.getMongoConnectionUri()),
+    MongooseModule.forRoot(configService.getMongoConnectionUri(), {
+      ignoreUndefined: true,
+    }),
     HttpModule,
     LocationModule,
     AuthModule,

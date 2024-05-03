@@ -10,7 +10,6 @@ import { SubscriptionService } from '../user/subscription.service';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   IApiRealEstateListingSchema,
-  IApiRealEstateStatuses,
   IApiRealEstStatusByUser,
 } from '@area-butler-types/real-estate';
 import { IApiOpenAiRealEstDescQuery } from '@area-butler-types/open-ai';
@@ -19,7 +18,6 @@ import { TIntegrationUserDocument } from '../user/schema/integration-user.schema
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { ApiCoordinates, ApiGeometry } from '@area-butler-types/types';
-import { realEstateAllStatus } from '../../../shared/constants/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 
 @Injectable()
@@ -87,16 +85,18 @@ export class RealEstateListingService {
 
   async fetchRealEstateListings(
     user: UserDocument | TIntegrationUserDocument,
-    statuses?: IApiRealEstateStatuses,
+    filterQuery?: FilterQuery<RealEstateListingDocument>,
   ): Promise<RealEstateListingDocument[]> {
     const isIntegrationUser = 'integrationUserId' in user;
-    let filter: FilterQuery<RealEstateListingDocument>;
+    const resFilterQuery: FilterQuery<RealEstateListingDocument> = filterQuery
+      ? { ...filterQuery }
+      : {};
 
     if (isIntegrationUser) {
-      filter = {
+      Object.assign(resFilterQuery, {
         'integrationParams.integrationUserId': user.integrationUserId,
         'integrationParams.integrationType': user.integrationType,
-      };
+      });
     }
 
     if (!isIntegrationUser) {
@@ -106,22 +106,12 @@ export class RealEstateListingService {
         userIds.push(user.parentId);
       }
 
-      filter = {
+      Object.assign(resFilterQuery, {
         userId: { $in: userIds },
-      };
+      });
     }
 
-    const resultStatus = statuses?.status || realEstateAllStatus;
-    const resultStatus2 = statuses?.status2 || realEstateAllStatus;
-
-    if (resultStatus !== realEstateAllStatus) {
-      filter.status = resultStatus;
-    }
-    if (resultStatus2 !== realEstateAllStatus) {
-      filter.status2 = resultStatus2;
-    }
-
-    return this.realEstateListingModel.find(filter);
+    return this.realEstateListingModel.find(resFilterQuery);
   }
 
   async fetchStatusesByUser(
