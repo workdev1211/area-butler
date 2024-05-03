@@ -109,6 +109,7 @@ export const useLocationData = () => {
               searchContextState.localityParams
             ),
             placesLocation: searchContextState.placesLocation,
+            preferredLocations: searchContextState.preferredLocations,
             transportationParams: searchContextState.transportationParams,
           },
         }
