@@ -1,4 +1,4 @@
-import {FunctionComponent, useContext, useEffect, useRef, useState} from "react";
+import {FunctionComponent, useContext, useEffect, useRef, useState,} from "react";
 
 import OpenAiModule from "./open-ai/OpenAiModule";
 import {OpenAiQueryTypeEnum} from "../../../shared/types/open-ai";
@@ -51,6 +51,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     useState(true);
   const [isFetchResponse, setIsFetchResponse] = useState(false);
   const [isEditMode, setIsEditMode] = useState(-1);
+  const [isImproveDialogEnabled, setIsImproveDialogEnabled] = useState(false);
   const [isCopyTextButtonDisabled, setIsCopyTextButtonDisabled] =
     useState(true);
   const [queryResponses, setQueryResponse] = useState<IGeneratedTexts[]>([]);
@@ -59,14 +60,16 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
 
   const { fetchOpenAiResponse } = useOpenAi();
   const isIntegration = !!integrationType;
-  const isSendToIntAllowed =
-    isIntegration &&
-    [
-      OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
-      OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
-      OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-    ].includes(queryType) &&
-    queryResponses;
+  const isSendToIntAllowed = (queryType: OpenAiQueryTypeEnum) => {
+    return (
+      isIntegration &&
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+      ].includes(queryType)
+    );
+  };
 
   // TODO PROPSTACK CONTINGENT
   const isNotIntOrAvailForIntUser =
@@ -79,35 +82,44 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
       performUnlock("KI-Texte freischalten?", queryType);
     }
   };
-  const messagesEndRef = useRef<null | HTMLDivElement>(null)
+  const messagesEndRef = useRef<null | HTMLDivElement>(null);
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  };
 
-  const editInputRef = useRef<null | HTMLTextAreaElement>(null)
-  const promptInputRef = useRef<null | HTMLTextAreaElement>(null)
+  const editInputRef = useRef<null | HTMLTextAreaElement>(null);
+  const promptInputRef = useRef<null | HTMLTextAreaElement>(null);
 
   const addQueryResponse = (queryResponse: IGeneratedTexts) => {
     setQueryResponse([...queryResponses, queryResponse]);
-  }
+  };
 
   const refineOpenAiResponse = async () => {
     const queryText = promptInputRef.current?.value!;
     const query = {
-      text: "Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden: ============" + queryResponses[queryResponses.length-1].queryResponse + "============ Der Kunde hat hierzu folgende Änderungswünsche: " + queryText
-    }
-    var queryType = OpenAiQueryTypeEnum.GENERAL_QUESTION;
-    var response = await fetchOpenAiResponse(queryType, query);
+      text:
+        "Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden ============" +
+        queryResponses[queryResponses.length - 1].queryResponse +
+        "============ Der Kunde hat hierzu folgende Änderungswünsche: " +
+        queryText,
+    };
+    const queryType = OpenAiQueryTypeEnum.GENERAL_QUESTION;
+    const response = await fetchOpenAiResponse(queryType, query);
     if (response !== "") {
-      addQueryResponse({queryResponse: response, queryType: queryType, query: {...query, customText:queryText}});
+      addQueryResponse({
+        queryResponse: response,
+        queryType: queryType,
+        query: { ...query, customText: queryText },
+      });
     }
-    addQueryResponse({queryResponse: response, queryType: queryType, query: {...query, customText:queryText}});
+    setIsImproveDialogEnabled(true);
+    setIsFetchResponse(false);
     promptInputRef.current!.value = "";
-  }
+  };
 
-  const renderQueryResponse = (genText: IGeneratedTexts) => {
-    switch (genText.queryType) {
+  const getQueryTitle = (queryType: OpenAiQueryTypeEnum) => {
+    switch (queryType) {
       case OpenAiQueryTypeEnum.LOCATION_DESCRIPTION:
         return "Lagebeschreibung";
       case OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION:
@@ -115,11 +127,37 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
       case OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION:
         return "Lage- und Immobilienbeschreibung";
       case OpenAiQueryTypeEnum.GENERAL_QUESTION:
-        return "customText" in genText.query && genText.query.customText;
+        return "Generelle Anfrage";
+      case OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL:
+        return "Formal zu informell";
     }
-  }
+  };
+
+  const renderQueryResponse = (genText: IGeneratedTexts) => {
+    if (
+      [
+        OpenAiQueryTypeEnum.LOCATION_DESCRIPTION,
+        OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION,
+        OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+      ].includes(genText.queryType)
+    ) {
+      const queryTitle = getQueryTitle(genText.queryType);
+      return (
+        <>
+          Generiere eine <strong>{queryTitle}</strong> für die Zielgruppe{" "}
+          <em>
+            {"targetGroupName" in genText.query &&
+              genText.query.targetGroupName}
+          </em>
+          .
+        </>
+      );
+    }
+    return "customText" in genText.query && genText.query.customText;
+  };
+
   useEffect(() => {
-    scrollToBottom()
+    scrollToBottom();
   }, [queryResponses, isFetchResponse]);
 
   return (
@@ -127,63 +165,214 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
       <div className="modal-box max-h-screen min-w-[75%]">
         <h1 className="text-xl flex items-center gap-2 modal-header">
           KI Texte aus der magischen Feder
-          <button className="btn btn-sm absolute right-15 top-15" onClick={closeModal}><img src={crossIcon} alt="modal-close"/></button>
+          <button
+            className="btn btn-sm absolute right-3 top-3"
+            onClick={closeModal}
+          >
+            <img src={crossIcon} alt="modal-close" />
+          </button>
         </h1>
-        <div className="scrollable-content">
-          <div className="chat-wrapper justify-left">
-            <div className="chat-author">
-              <img src={areaButlerLogo} alt="AreaButler"/>
+        <div className="scrollable-content pt-4">
+          <div className="grid grid-cols-12 gap-2 pb-3">
+            <div className="place-self-end">
+              <img className="w-8" src={areaButlerLogo} alt="AreaButler" />
             </div>
-            <div className="chat-messages">
-              <div className="msg msg-primary msg-left">
-                Unser KI-Textgenerator bietet Inspiration für die Konstruktion von Texten, insbesondere bei Schwierigkeiten bei der Struktur und Formulierung. Er bezieht Umgebungsdaten und Informationen zur Immobilie mit ein. <br/>
+            <div className="col-span-9">
+              <div className="border border-primary w-fit rounded p-3">
+                Unser KI-Textgenerator bietet Inspiration für die Konstruktion
+                von Texten, insbesondere bei Schwierigkeiten bei der Struktur
+                und Formulierung. Er bezieht Umgebungsdaten und Informationen
+                zur Immobilie mit ein. <br />
                 Bitte geben Sie Ihre Wünsche für den zu generierenden Text ein.
               </div>
             </div>
           </div>
-          <div className="chat-wrapper justify-right">
-            <div className="chat-messages">
-              <div className="msg msg-secondary msg-right">
-                <OpenAiModule
-                  initialQueryType={queryType}
-                  searchResultSnapshotId={searchResultSnapshotId}
-                  onModuleStatusChange={(isReady): void => {
-                    setIsGenerateButtonDisabled(!isReady);
-                  }}
-                  isFetchResponse={isFetchResponse}
-                  onResponseFetched={(responseText, query): void => {
-                    setIsCopyTextButtonDisabled(false);
-                    if (responseText !== "") {
-                      addQueryResponse({
-                        query: query!,
-                        queryType: queryType,
-                        queryResponse: responseText
-                      });
-                    }
-                    setIsEditMode(-1)
-                    /**addQueryResponse({
-                      queryType: queryType,
-                      query: query!,
-                      queryResponse: `Willkommen in Ihrem neuen Stadtviertel, ein pulsierender Knotenpunkt der lokalen Kultur und Einrichtungen, der aktiven Bewegung und erholsamen Ruhezeiten. Hier haben Sie alles, was das Leben bereichert, buchstäblich nur einen Steinwurf entfernt. Ob feine Küche oder schnelle Bissen, die umliegenden gastronomischen Einrichtungen wie das gemütliche "Alexandros" (14m) und "Die Pizzeria" (42m) bieten eine Vielzahl an kulinarischen Genüssen. 
-
-  Oder wie wäre es mit einem energiegeladenen Start in den Tag im nahen "Sporteve" Fitnessstudio, gerade mal 140 Meter von Ihrer Haustür entfernt? Und nachdem Training können Sie sich direkt in der "Erika Apotheke Bartz" (148m) um Ihre Gesundheitsbedürfnisse kümmern. Die medizinische Versorgung vor Ort stellt sicher, dass Sie sich nie weit um Hilfe umsehen müssen. Die nahegelegenen Ärzte, Apotheken und anderen medizinischen Einrichtungen bieten Ihnen eine hervorragende Gesundheitsversorgung.
-
-  Mit 3 umliegenden Haltestellen, wie der Schubackstraße nur 109 Meter entfernt, ist größer Mobilität garantiert. Hier, in diesem perfekt angeschlossenen Stadtviertel, sind Sie immer nur wenige Minuten von Ihrem Ziel entfernt.
-
-  Ein Highlight dieser Lage ist der "Literarische Garten", der grüne Anziehungspunkt für Frischluft- und Naturliebhaber, nur einen kurzen Spaziergang (153m) entfernt. Hier können Sie Ihre Gedanken schweifen lassen und sich nach einem aktiven Tag regenerieren. Und für Ihre Kleinen stehen diverse Spielplätzen, wie der nur 162 Meter entfernte Spielplatz, für Spaß und Frühförderung bereit. 
-
-  Egal ob Sie spontan ein paar Zutaten für das Abendessen oder die Wocheneinkäufe besorgen müssen, die umliegenden Supermärkte – unter anderem der nur 240 Meter entfernte "PENNY" – haben alles, was Sie brauchen. Von frischen Nahrungsmitteln bis hin zu Alltagshelfern – alles ist nur wenige Schritte entfernt.
-
-  Darüber hinaus bietet die Nähe zur "Gedenkstätte Ernst Thälmann" (206m) aufschlussreiche Einblicke in die lokale Geschichte und Kultur, und das "Alma Hoppes Lustspielhaus" (478m) sorgt für ein reichhaltiges Angebot an Theater- und Kulturveranstaltungen.
-
-  Für Reisende und globale Abenteurer ist auch der Zugang zu weit fortgeschrittenen Transportnetzen ein Plus. In verkehrsgünstiger Lage zu mehreren Autobahnen und zum internationalen Flughafen, ist diese Adresse ein perfekter Ausgangspunkt für alle Ihre Abenteuer.
-
-  Insbesondere für Immobilieninteressenten, die eine ausgewogene Mischung aus urbanem Leben und ruhigem Rückzugsort suchen, bietet diese Lage alles. Mit der perfekten Balance aus Gesundheitseinrichtungen, Bildungseinrichtungen, kulturellen Hotspots, Natur und Aktivsport - kurz: Sie ist das optimale Zuhause und der ideale Lebensraum für Bewohner jeden Alters!`
-  })**/
-                    setIsFetchResponse(false);
-                  }}
-                />
-                <div className="flex justify justify-end mt-2">
+          {(isFetchResponse || (queryResponses && queryResponses.length > 0)) &&
+            queryResponses.map((genText, i, { length }) => {
+              return (
+                <>
+                  {genText.query && (
+                    <div className="grid grid-cols-12 gap-2 pb-3">
+                      <div className="col-start-3 col-span-9 grid">
+                        <div className="border border-gray-400 bg-gray-200 rounded p-3 w-fit justify-self-end">
+                          {renderQueryResponse(genText)}
+                        </div>
+                      </div>
+                      <div className="self-end">
+                        <img className="w-8" src={personIcon} alt="person" />
+                      </div>
+                    </div>
+                  )}
+                  <div className="grid grid-cols-12 gap-3 pb-3">
+                    <div className="place-self-end">
+                      <img
+                        className="w-8"
+                        src={areaButlerLogo}
+                        alt="AreaButler"
+                      />
+                    </div>
+                    <div className="col-span-9">
+                      <div className="border border-primary rounded p-3 whitespace-pre-wrap relative">
+                        {isEditMode === i ? (
+                          <textarea
+                            className="w-full p-2 text-black h-60"
+                            ref={editInputRef}
+                            defaultValue={genText.queryResponse}
+                          />
+                        ) : (
+                          <>{genText.queryResponse}</>
+                        )}
+                        <div className="absolute flex gap-4 z-1000 -right-8 -bottom-2 w-fit border border-base-silver rounded p-2 bg-white">
+                          {isEditMode !== i ? (
+                            <>
+                              <img
+                                src={editIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Bearbeiten"
+                                title="Bearbeiten"
+                                onClick={() => {
+                                  setIsEditMode(i);
+                                }}
+                              />
+                              <img
+                                src={copyIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Kopieren"
+                                title="Kopieren"
+                                onClick={() => {
+                                  copy(genText.queryResponse);
+                                }}
+                              />
+                              <img
+                                src={deleteIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Löschen"
+                                title="Löschen"
+                                onClick={() => {
+                                  queryResponses.splice(i, 1);
+                                  setQueryResponse([...queryResponses]);
+                                  if (queryResponses.length === 0) {
+                                    setIsImproveDialogEnabled(false);
+                                  }
+                                }}
+                              />
+                              {!isSendToIntAllowed(genText.queryType) && (
+                                <img
+                                  className="w-5 cursor-pointer"
+                                  src={shareIcon}
+                                  alt="An Partner senden"
+                                  title={
+                                    "an " +
+                                    integrationNames[integrationType!] +
+                                    " senden"
+                                  }
+                                  onClick={() => {
+                                    sendToIntegration({
+                                      exportType: queryType as
+                                        | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
+                                        | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
+                                        | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
+                                      text: genText.queryResponse,
+                                    });
+                                  }}
+                                />
+                              )}
+                            </>
+                          ) : (
+                            <>
+                              <img
+                                src={saveIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Speichern"
+                                onClick={() => {
+                                  if (editInputRef.current) {
+                                    queryResponses[i] = {
+                                      ...queryResponses[i],
+                                      queryResponse:
+                                        editInputRef.current?.value,
+                                    };
+                                    setIsEditMode(-1);
+                                  }
+                                }}
+                              />
+                              <img
+                                src={cancelIcon}
+                                className="w-5 cursor-pointer"
+                                alt="Abbrechen"
+                                onClick={() => {
+                                  setIsEditMode(-1);
+                                }}
+                              />
+                            </>
+                          )}
+                        </div>
+                      </div>
+                      {i === 0 && (
+                        <div className="border border-primary rounded p-3 mt-2">
+                          Wünschen Sie eine Verbesserung oder Ergänzung des
+                          Textes? Hierzu können Sie den Text selber editieren
+                          oder uns in dem Eingabefeld unterhalb mitteilen,
+                          welche Information wir bei der Generierung eines neuen
+                          Textes berücksichtigen sollen.
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              );
+            })}
+          <div className="grid grid-cols-12 gap-2 pb-3">
+            <div className="col-start-3 col-span-9">
+              <div className="border border-gray-400 rounded p-3">
+                {queryResponses &&
+                queryResponses.length > 0 &&
+                isImproveDialogEnabled ? (
+                  <textarea
+                    ref={promptInputRef}
+                    disabled={isFetchResponse}
+                    className="w-full p-2"
+                    placeholder="Ihre Verbesserung oder Ergänzung zum generierten Text..."
+                  />
+                ) : (
+                  <OpenAiModule
+                    initialQueryType={queryType}
+                    searchResultSnapshotId={searchResultSnapshotId}
+                    onModuleStatusChange={(isReady): void => {
+                      setIsGenerateButtonDisabled(!isReady);
+                    }}
+                    isFetchResponse={isFetchResponse && !isImproveDialogEnabled}
+                    onResponseFetched={(responseText, query): void => {
+                      setIsCopyTextButtonDisabled(false);
+                      if (responseText !== "") {
+                        addQueryResponse({
+                          query: query!,
+                          queryType: queryType,
+                          queryResponse: responseText,
+                        });
+                      }
+                      setIsEditMode(-1);
+                      setIsImproveDialogEnabled(true);
+                      setIsFetchResponse(false);
+                    }}
+                  />
+                )}
+                <div className="flex justify justify-between mt-2">
+                  {queryResponses && queryResponses.length > 0 && (
+                    <button
+                      className="btn btn-base-silver"
+                      onClick={() =>
+                        setIsImproveDialogEnabled(!isImproveDialogEnabled)
+                      }
+                      disabled={isGenerateButtonDisabled || isFetchResponse}
+                    >
+                      {isImproveDialogEnabled ? (
+                        <>Neuen Text generieren</>
+                      ) : (
+                        <>Letzten Text verbessern</>
+                      )}
+                    </button>
+                  )}
+                  &nbsp;
                   <button
                     className={`btn bg-primary-gradient max-w-fit self-end ${
                       isFetchResponse ? "loading" : ""
@@ -192,6 +381,12 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                     onClick={() => {
                       if (isNotIntOrAvailForIntUser) {
                         setIsFetchResponse(true);
+                        if (isImproveDialogEnabled) {
+                          if (promptInputRef.current?.value === "") return;
+
+                          refineOpenAiResponse();
+                          return;
+                        }
                         return;
                       }
 
@@ -204,118 +399,10 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
                 </div>
               </div>
             </div>
-            <div className="chat-author"><img src={personIcon} alt="person"/></div>
+            <div className="self-end">
+              <img className="w-8" src={personIcon} alt="person" />
+            </div>
           </div>
-          {(isFetchResponse || (queryResponses && queryResponses.length > 0)) && queryResponses.map((genText, i, {length}) => {
-              return (<>
-                {i !== 0 && genText.query && (
-                  <div className="chat-wrapper justify-right">
-                    <div className="chat-messages">
-                      <div className="msg msg-secondary msg-right">
-                        {renderQueryResponse(genText)}
-                      </div>
-                    </div>
-                    <div className="chat-author"><img src={personIcon} alt="person"/></div>
-                  </div>
-                )}
-                  <div className="chat-wrapper justify-left">
-                    <div className="chat-author">
-                      <img src={areaButlerLogo} alt="AreaButler"/>
-                    </div>
-                    <div className="chat-messages">
-                      <div className="msg msg-primary msg-left generated-text">
-                        {isEditMode === i ? 
-                          (<textarea className="full-width" ref={editInputRef} defaultValue={genText.queryResponse}/>) 
-                          : <>{genText.queryResponse}</>}
-                          <div className="msg-tools z-1000">
-                            {(isEditMode !== i) ? <>
-                              <img src={editIcon} alt="Bearbeiten" onClick={() => {
-                                  setIsEditMode(i);
-                              }}/>
-                              <img src={copyIcon} alt="Kopieren" onClick={() => {
-                                  copy(genText.queryResponse);
-                                }} />
-                              <img src={deleteIcon} alt="Löschen" onClick={() => {
-                                  queryResponses.splice(i, 1);
-                                  setQueryResponse([...queryResponses]);
-                                }} />
-                              {<img src={shareIcon} alt="An onOffice senden" onClick={() => {
-                                  sendToIntegration({
-                                    exportType: queryType as
-                                      | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-                                      | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-                                      | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-                                    text: genText.queryResponse,
-                                  });
-                                }} />}
-                            </> : <>
-                              <img src={saveIcon} alt="Speichern" onClick={() => {
-                                if (editInputRef.current) {
-                                  queryResponses[i] = {...queryResponses[i], queryResponse : editInputRef.current?.value}
-                                  setIsEditMode(-1);
-                                }
-                              }}/>
-                              <img src={cancelIcon} alt="Abbrechen" onClick={() => {setIsEditMode(-1)}}/>
-                            </>}
-                          </div>
-                      </div>
-                      {i === 0 && (
-                        <div className="msg msg-primary msg-left">
-                          Wünschen Sie eine Verbesserung oder Ergänzung des Textes? Hierzu können Sie den Text selber editieren oder uns in dem Eingabefeld unterhalb mitteilen, welche Information wir bei der Generierung eines neuen Textes berücksichtigen sollen.
-                        </div>
-                      )}
-                {isFetchResponse && (
-                  <div className="msg msg-primary msg-left">
-                    Bitte warten, der Text wird generiert...
-                  </div>
-                )}
-              </div>
-            </div>
-          </>)})}
-          {isSendToIntAllowed && (
-            <button
-              className="btn bg-primary-gradient max-w-fit self-end"
-              onClick={(): void => {
-                setIsCopyTextButtonDisabled(true);
-
-                void sendToIntegration({
-                  exportType: queryType as
-                    | OpenAiQueryTypeEnum.LOCATION_DESCRIPTION
-                    | OpenAiQueryTypeEnum.REAL_ESTATE_DESCRIPTION
-                    | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
-                  text: queryResponses[0].queryResponse,
-                });
-              }}
-              disabled={isCopyTextButtonDisabled}
-            >
-              An {integrationNames[integrationType]} senden
-            </button>
-          )}
-          {queryResponses && queryResponses.length > 0 && (
-            <div className="chat-wrapper justify-right">
-              <div className="chat-messages">
-                <div className="msg msg-secondary msg-right flex">
-                  <textarea ref={promptInputRef} disabled={isFetchResponse} className="full-width" placeholder="Ihre Verbesserung oder Ergänzung des Textes..." />
-                  <button
-                    className={`btn bg-primary-gradient max-w-fit self-end ${
-                      isFetchResponse ? "loading" : ""
-                    }`}
-                    onClick={() => {
-                      if (promptInputRef.current?.value === "")
-                        return;
-
-                      refineOpenAiResponse()
-                    }}
-                    disabled={isGenerateButtonDisabled || isFetchResponse}
-                  >
-                    {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
-                  </button>
-                </div>
-              </div>
-              <div className="chat-author"><img src={personIcon} alt="person"/></div>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
         </div>
       </div>
     </div>

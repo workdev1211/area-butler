@@ -163,7 +163,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   }, [queryType]);
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-2 sm:grid-cols-0">
       <div>
         <div className="section-title mb-2">Inhaltliche Angaben</div>
 
