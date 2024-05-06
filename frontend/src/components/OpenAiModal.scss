@@ -1,18 +1,5 @@
 .modal {
-
-    --logo-size: 30px;
-    --secondary-text: #777777;
-
-    .modal-header {
-        -webkit-box-shadow: 0 6px 3px -4px rgba(221, 221, 221, 1);
-        -moz-box-shadow: 0 6px 3px -4px rgba(221, 221, 221, 1);
-        box-shadow: 0 6px 3px -4px rgba(221, 221, 221, 1);
-        padding: 10px;
-    }
-
     .scrollable-content {
-        overflow-y: auto;
         max-height: calc(100vh - 90px);
-        margin: 0;
     }
 }
