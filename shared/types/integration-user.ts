@@ -66,13 +66,11 @@ export enum ApiIntUserOnOfficeProdContTypesEnum {
   MAP_IFRAME = "MAP_IFRAME", // P3 - LEGACY
   ONE_PAGE = "ONE_PAGE", // P4 - LEGACY
   STATS_EXPORT = "STATS_EXPORT", // P5 - NEW P2
-  FLAT_RATE = "FLAT_RATE",
 }
 
 export enum ApiIntUserPropstackProdContTypesEnum {
   OPEN_AI = "OPEN_AI",
   STATS_EXPORT = "STATS_EXPORT",
-  FLAT_RATE = "FLAT_RATE",
 }
 
 export type TApiIntUserProdContType =

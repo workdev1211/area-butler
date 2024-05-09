@@ -28,9 +28,9 @@ export const statsExport10Propstackroduct: IIntegrationProduct = {
   price: 290,
 };
 
-export const flatRatePropstackProduct: IIntegrationProduct = {
+export const subscriptionPropstackProduct: IIntegrationProduct = {
   name: "Jahrespaket",
-  type: PropstackProductTypeEnum.FLAT_RATE,
+  type: PropstackProductTypeEnum.SUBSCRIPTION,
   price: 0,
 };
 
@@ -42,5 +42,5 @@ export const allPropstackProducts: Record<
   [PropstackProductTypeEnum.OPEN_AI_10]: openAi10PropstackProduct,
   [PropstackProductTypeEnum.STATS_EXPORT]: statsExportPropstackProduct,
   [PropstackProductTypeEnum.STATS_EXPORT_10]: statsExport10Propstackroduct,
-  [PropstackProductTypeEnum.FLAT_RATE]: flatRatePropstackProduct,
+  [PropstackProductTypeEnum.SUBSCRIPTION]: subscriptionPropstackProduct,
 };

@@ -43,6 +43,81 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
   const isCardDisabled =
     isDisabled || products.some(({ isDisabled }) => isDisabled);
 
+  const ProductCardButton: FC = () => {
+    if (type === "SUBSCRIPTION" || isPropstack) {
+      return isCardDisabled ? (
+        <button className="btn btn-primary w-48" disabled={true}>
+          Anfragen
+        </button>
+      ) : (
+        <a
+          className="btn btn-primary w-48"
+          target="_blank"
+          rel="noreferrer"
+          href="mailto:info@areabutler.de"
+          style={{
+            padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+          }}
+        >
+          Anfragen
+        </a>
+      );
+    }
+
+    return (
+      <button
+        className="btn btn-primary w-48"
+        disabled={isCardDisabled}
+        onClick={async () => {
+          if (isCardDisabled) {
+            return;
+          }
+
+          const { ordinary: ordinaryQuantity, tenfold: tenfoldQuantity } =
+            productQuantity;
+
+          if (!ordinaryQuantity && !tenfoldQuantity) {
+            toastError("Bitte geben Sie die Menge eines der Produkte an.");
+            return;
+          }
+
+          const resultingProducts: IApiOnOfficeCreateOrderProduct[] = [];
+
+          // #1 An important note - onOffice ONLY excepts a SINGLE product stored in an array
+          // #2 else if is used here just in case
+          if (ordinaryQuantity) {
+            resultingProducts.push({
+              type,
+              quantity: ordinaryQuantity,
+            });
+          } else if (tenfoldQuantity) {
+            resultingProducts.push({
+              type: tenfoldProduct.type,
+              quantity: tenfoldQuantity,
+            });
+          }
+
+          const { onOfficeOrderData } = (
+            await post<IApiOnOfficeCreateOrderRes, IApiOnOfficeCreateOrderReq>(
+              "/api/on-office/create-order",
+              {
+                integrationId: realEstateListing!.integrationId!,
+                products: resultingProducts,
+              }
+            )
+          ).data;
+
+          window.parent.postMessage(JSON.stringify(onOfficeOrderData), "*");
+        }}
+        style={{
+          padding: "0 var(--btn-padding) 0 var(--btn-padding)",
+        }}
+      >
+        Bestellen
+      </button>
+    );
+  };
+
   return (
     <div className="card shadow-lg bg-gray-50">
       <div className="card-body p-5 gap-5 items-center justify-between">
@@ -115,81 +190,7 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
                 </div>
               </div>
             )}
-            {/* TODO PROPSTACK CONTINGENT */}
-            {type === "FLAT_RATE" || isPropstack ? (
-              <a
-                className={`btn w-48 ${
-                  isCardDisabled ? "btn-disabled" : "btn-primary"
-                }`}
-                target="_blank"
-                rel="noreferrer"
-                href={!isCardDisabled ? "mailto:info@areabutler.de" : undefined}
-                style={{
-                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
-                }}
-              >
-                Anfragen
-              </a>
-            ) : (
-              <button
-                className="btn btn-primary w-48"
-                disabled={isCardDisabled}
-                onClick={async () => {
-                  if (isCardDisabled) {
-                    return;
-                  }
-
-                  const {
-                    ordinary: ordinaryQuantity,
-                    tenfold: tenfoldQuantity,
-                  } = productQuantity;
-
-                  if (!ordinaryQuantity && !tenfoldQuantity) {
-                    toastError(
-                      "Bitte geben Sie die Menge eines der Produkte an."
-                    );
-                    return;
-                  }
-
-                  const resultingProducts: IApiOnOfficeCreateOrderProduct[] =
-                    [];
-
-                  // #1 An important note - onOffice ONLY excepts a SINGLE product stored in an array
-                  // #2 else if is used here just in case
-                  if (ordinaryQuantity) {
-                    resultingProducts.push({
-                      type,
-                      quantity: ordinaryQuantity,
-                    });
-                  } else if (tenfoldQuantity) {
-                    resultingProducts.push({
-                      type: tenfoldProduct.type,
-                      quantity: tenfoldQuantity,
-                    });
-                  }
-
-                  const { onOfficeOrderData } = (
-                    await post<
-                      IApiOnOfficeCreateOrderRes,
-                      IApiOnOfficeCreateOrderReq
-                    >("/api/on-office/create-order", {
-                      integrationId: realEstateListing!.integrationId!,
-                      products: resultingProducts,
-                    })
-                  ).data;
-
-                  window.parent.postMessage(
-                    JSON.stringify(onOfficeOrderData),
-                    "*"
-                  );
-                }}
-                style={{
-                  padding: "0 var(--btn-padding) 0 var(--btn-padding)",
-                }}
-              >
-                Bestellen
-              </button>
-            )}
+            <ProductCardButton />
           </div>
         </div>
       </div>

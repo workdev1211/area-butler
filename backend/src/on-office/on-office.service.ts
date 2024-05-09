@@ -365,16 +365,14 @@ export class OnOfficeService {
     const availProdContingents =
       await this.contingentIntService.getAvailProdContingents(integrationUser);
 
-    const areaButlerEstate = await this.fetchAndProcessEstateData(
+    const realEstateDto = await this.fetchAndProcessEstateData(
       estateId,
       integrationUser,
     );
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
-      await this.realEstateListingIntService.upsertByIntParams(
-        areaButlerEstate,
-      ),
+      await this.realEstateListingIntService.upsertByIntParams(realEstateDto),
     );
 
     return {

@@ -25,10 +25,7 @@ import {
 } from '../shared/types/propstack';
 import { PropstackApiService } from '../client/propstack/propstack-api.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import {
-  ApiRealEstateListing,
-  IApiRealEstateListingSchema,
-} from '@area-butler-types/real-estate';
+import { ApiRealEstateListing } from '@area-butler-types/real-estate';
 import ApiPropstackFetchToAreaButlerDto from '../real-estate-listing/dto/api-propstack-fetch-to-area-butler.dto';
 import {
   IApiIntUserLoginRes,
@@ -162,16 +159,14 @@ export class PropstackService {
       },
     });
 
-    const areaButlerRealEstate = plainToInstance(
+    const realEstateDto = plainToInstance(
       ApiPropstackFetchToAreaButlerDto,
       resultProperty,
-    ) as IApiRealEstateListingSchema;
+    );
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
-      await this.realEstateListingIntService.upsertByIntParams(
-        areaButlerRealEstate,
-      ),
+      await this.realEstateListingIntService.upsertByIntParams(realEstateDto),
     );
 
     return {

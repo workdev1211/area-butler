@@ -74,7 +74,7 @@ export class PropstackWebhookService {
       });
     }
 
-    const realEstate = plainToInstance<
+    const realEstateDto = plainToInstance<
       IApiRealEstateListingSchema,
       IPropstackWebhookProperty
     >(ApiPropstackWebhookToAreaButlerDto, resultProperty);
@@ -82,10 +82,12 @@ export class PropstackWebhookService {
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
       user,
       isIntegrationUser
-        ? await this.realEstateListingIntService.upsertByIntParams(realEstate)
+        ? await this.realEstateListingIntService.upsertByIntParams(
+            realEstateDto,
+          )
         : await this.realEstateListingService.createRealEstateListing(
             user,
-            realEstate,
+            realEstateDto,
           ),
     );
 

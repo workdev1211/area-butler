@@ -7,7 +7,7 @@ import {
   allOnOfficeProducts,
   legacyOnOfficeProdNames,
 } from "../../../shared/constants/on-office/on-office-products";
-import flatRateImage from "../assets/icons/onoffice-products/subscription.png";
+import subscriptionImage from "../assets/icons/onoffice-products/subscription.png";
 import statsExportImage from "../assets/icons/onoffice-products/full-package.png";
 import openAiImage from "../assets/icons/onoffice-products/open-ai.png";
 import { OnOfficeProductTypesEnum } from "../../../shared/types/on-office";
@@ -63,9 +63,9 @@ export const getProductImage = (
     case PropstackProductTypeEnum.STATS_EXPORT: {
       return statsExportImage;
     }
-    case OnOfficeProductTypesEnum.FLAT_RATE:
-    case PropstackProductTypeEnum.FLAT_RATE: {
-      return flatRateImage;
+    case OnOfficeProductTypesEnum.SUBSCRIPTION:
+    case PropstackProductTypeEnum.SUBSCRIPTION: {
+      return subscriptionImage;
     }
     default: {
       const msg = `Product with type ${productType} not found!`;

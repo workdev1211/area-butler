@@ -17,8 +17,8 @@ export const getProductDescription = (
       return StatsExportDescription(name);
     }
 
-    case OnOfficeProductTypesEnum.FLAT_RATE:
-    case PropstackProductTypeEnum.FLAT_RATE: {
+    case OnOfficeProductTypesEnum.SUBSCRIPTION:
+    case PropstackProductTypeEnum.SUBSCRIPTION: {
       return SubscriptionDescription(name);
     }
 

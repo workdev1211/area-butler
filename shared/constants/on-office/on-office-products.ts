@@ -29,9 +29,9 @@ export const statsExport10OnOfficeProduct: IIntegrationProduct = {
   price: 290,
 };
 
-export const flatRateOnOfficeProduct: IIntegrationProduct = {
+export const subscriptionOnOfficeProduct: IIntegrationProduct = {
   name: "Jahrespaket",
-  type: OnOfficeProductTypesEnum.FLAT_RATE,
+  type: OnOfficeProductTypesEnum.SUBSCRIPTION,
   price: 0,
 };
 
@@ -43,7 +43,7 @@ export const allOnOfficeProducts: Record<
   [OnOfficeProductTypesEnum.OPEN_AI_10]: openAi10OnOfficeProduct,
   [OnOfficeProductTypesEnum.STATS_EXPORT]: statsExportOnOfficeProduct,
   [OnOfficeProductTypesEnum.STATS_EXPORT_10]: statsExport10OnOfficeProduct,
-  [OnOfficeProductTypesEnum.FLAT_RATE]: flatRateOnOfficeProduct,
+  [OnOfficeProductTypesEnum.SUBSCRIPTION]: subscriptionOnOfficeProduct,
 };
 
 export const legacyOnOfficeProdNames: Record<

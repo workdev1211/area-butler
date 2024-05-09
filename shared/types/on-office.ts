@@ -1,5 +1,4 @@
 import { IApiIntUserLoginRes } from "./integration-user";
-import { OpenAiQueryTypeEnum } from "./open-ai";
 import { IIntegrationHandleLogin } from "./integration";
 
 export enum OnOfficeProductTypesEnum {
@@ -7,7 +6,7 @@ export enum OnOfficeProductTypesEnum {
   OPEN_AI_10 = "OPEN_AI_10",
   STATS_EXPORT = "STATS_EXPORT",
   STATS_EXPORT_10 = "STATS_EXPORT_10",
-  FLAT_RATE = "FLAT_RATE",
+  SUBSCRIPTION = "SUBSCRIPTION",
 }
 
 export interface IApiOnOfficeUnlockProviderReq {
