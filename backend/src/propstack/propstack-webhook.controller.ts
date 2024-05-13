@@ -48,6 +48,7 @@ export class PropstackWebhookController extends ApiKeyAuthController {
     }-${nowDate.getTime()}`;
 
     this.logger.log(`Event ${eventId} was triggered.`);
+    this.logger.verbose(propstackPropertyDto);
 
     void this.propstackWebhookService
       .handlePropertyCreated(user, propstackPropertyDto, eventId)
@@ -76,6 +77,7 @@ export class PropstackWebhookController extends ApiKeyAuthController {
     }-${nowDate.getTime()}`;
 
     this.logger.log(`Event ${eventId} was triggered.`);
+    this.logger.verbose(propstackPropertyDto);
 
     void this.propstackWebhookService
       .handlePropertyUpdated(user, propstackPropertyDto)

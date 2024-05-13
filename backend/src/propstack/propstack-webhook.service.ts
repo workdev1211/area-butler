@@ -101,6 +101,11 @@ export class PropstackWebhookService {
       return;
     }
 
+    // TODO add a subscription handling
+    if (isIntegrationUser) {
+      return;
+    }
+
     const { id: snapshotId, token } =
       await this.snapshotExtService.createSnapshotByPlace({
         place,
@@ -113,6 +118,14 @@ export class PropstackWebhookService {
         .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))
         .humanize()}. Snapshot creation is complete.`,
     );
+
+    if (
+      property.description_note ||
+      property.location_note ||
+      property.other_note
+    ) {
+      return;
+    }
 
     const openAiDescriptions = await this.propstackService.fetchTextFieldValues(
       {
