@@ -1,31 +1,22 @@
-import { HttpException, Injectable, Logger } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { FilterQuery, Model } from 'mongoose';
-import { plainToInstance } from 'class-transformer';
+import {HttpException, Injectable, Logger} from '@nestjs/common';
+import {InjectModel} from '@nestjs/mongoose';
+import {FilterQuery, Model} from 'mongoose';
+import {plainToInstance} from 'class-transformer';
 import * as dayjs from 'dayjs';
 
-import {
-  RealEstateListing,
-  RealEstateListingDocument,
-} from './schema/real-estate-listing.schema';
-import { SubscriptionService } from '../user/subscription.service';
-import { UserDocument } from '../user/schema/user.schema';
-import {
-  ApiRealEstateExtSourcesEnum,
-  IApiRealEstateListingSchema,
-} from '@area-butler-types/real-estate';
-import { IApiUserApiConnectSettingsReq } from '@area-butler-types/types';
-import { createChunks } from '../../../shared/functions/shared.functions';
-import { GeoJsonPoint } from '../shared/types/geo-json';
+import {RealEstateListing, RealEstateListingDocument,} from './schema/real-estate-listing.schema';
+import {SubscriptionService} from '../user/subscription.service';
+import {UserDocument} from '../user/schema/user.schema';
+import {ApiRealEstateExtSourcesEnum, IApiRealEstateListingSchema,} from '@area-butler-types/real-estate';
+import {IApiUserApiConnectSettingsReq} from '@area-butler-types/types';
+import {createChunks} from '../../../shared/functions/shared.functions';
+import {GeoJsonPoint} from '../shared/types/geo-json';
 import ApiOnOfficeToAreaButlerDto from './dto/api-on-office-to-area-butler.dto';
-import { umlautMap } from '../../../shared/constants/constants';
-import {
-  PROPSTACK_PROPERTIES_PER_PAGE,
-  PropstackApiService,
-} from '../client/propstack/propstack-api.service';
+import {umlautMap} from '../../../shared/constants/constants';
+import {PROPSTACK_PROPERTIES_PER_PAGE, PropstackApiService,} from '../client/propstack/propstack-api.service';
 import ApiPropstackFetchToAreaButlerDto from './dto/api-propstack-fetch-to-area-butler.dto';
-import { apiConnectTypeNames } from '../../../shared/constants/real-estate';
-import { UserService } from '../user/user.service';
+import {apiConnectTypeNames} from '../../../shared/constants/real-estate';
+import {UserService} from '../user/user.service';
 import {
   ApiOnOfficeActionIdsEnum,
   ApiOnOfficeResourceTypesEnum,
@@ -34,25 +25,19 @@ import {
   IApiOnOfficeRequest,
   IApiOnOfficeSyncEstatesFilterParams,
 } from '@area-butler-types/on-office';
-import {
-  ON_OFFICE_ESTATES_PER_PAGE,
-  OnOfficeApiService,
-} from '../client/on-office/on-office-api.service';
+import {ON_OFFICE_ESTATES_PER_PAGE, OnOfficeApiService,} from '../client/on-office/on-office-api.service';
 // TODO should be removed in the future after some testing
 // import {
 //   ApiOnOfficeRealEstStatusByUserEmailsEnum,
 //   setRealEstateStatusByUserEmail,
 // } from './mapper/real-estate-on-office-import.mapper';
-import { IApiPropstackFetchPropQueryParams } from '../shared/types/propstack';
-import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
-import {
-  IApiIntUserOnOfficeParams,
-  IApiIntUserPropstackParams,
-} from '@area-butler-types/integration-user';
-import { RealEstateListingService } from './real-estate-listing.service';
-import { IApiSyncEstatesIntFilterParams } from '@area-butler-types/integration';
-import { getProcUpdateQuery } from '../shared/functions/shared';
-import { PlaceService } from '../place/place.service';
+import {IApiPropstackFetchPropQueryParams} from '../shared/types/propstack';
+import {TIntegrationUserDocument} from '../user/schema/integration-user.schema';
+import {IApiIntUserOnOfficeParams, IApiIntUserPropstackParams,} from '@area-butler-types/integration-user';
+import {RealEstateListingService} from './real-estate-listing.service';
+import {IApiSyncEstatesIntFilterParams} from '@area-butler-types/integration';
+import {getProcUpdateQuery} from '../shared/functions/shared';
+import {PlaceService} from '../place/place.service';
 
 @Injectable()
 export class RealEstateCrmImportService {
@@ -332,13 +317,11 @@ export class RealEstateCrmImportService {
                 userId: user.id,
               };
 
+        // https://github.com/Automattic/mongoose/issues/9180#issuecomment-650270743
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: {
-              ...getProcUpdateQuery(areaButlerRealEstate),
-              ...filterQuery,
-            },
+            update: getProcUpdateQuery(areaButlerRealEstate),
             upsert: true,
           },
         });
@@ -608,10 +591,11 @@ export class RealEstateCrmImportService {
                 userId: user.id,
               };
 
+        // https://github.com/Automattic/mongoose/issues/9180#issuecomment-650270743
         bulkOperations.push({
           updateOne: {
             filter: filterQuery,
-            update: { ...areaButlerRealEstate, ...filterQuery },
+            update: areaButlerRealEstate,
             upsert: true,
           },
         });
