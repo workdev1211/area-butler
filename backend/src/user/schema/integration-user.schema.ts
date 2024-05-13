@@ -16,31 +16,31 @@ export type TIntegrationUserDocument = IntegrationUser &
 @Schema({ timestamps: true })
 export class IntegrationUser implements IApiIntegrationUserSchema {
   @Prop({ required: true, type: String })
-  integrationUserId: string;
+  accessToken: string; // for AreaButler internal identification purposes
 
   @Prop({ required: true, type: String, enum: IntegrationTypesEnum })
   integrationType: IntegrationTypesEnum;
 
-  @Prop({ type: String })
-  accessToken: string; // for AreaButler internal identification purposes
+  @Prop({ required: true, type: String })
+  integrationUserId: string;
 
   @Prop({ type: Object })
-  parameters: TApiIntegrationUserParameters;
-
-  @Prop({ type: Object })
-  config: TApiIntegrationUserConfig;
-
-  @Prop({ type: Object })
-  productsUsed: TApiIntegrationUserProductsUsed;
-
-  @Prop({ type: Object })
-  productContingents: TApiIntegrationUserProductContingents;
-
-  @Prop({ type: String })
-  parentId: string;
+  config?: TApiIntegrationUserConfig;
 
   @Prop({ type: Boolean })
-  isParent: boolean;
+  isParent?: boolean;
+
+  @Prop({ type: Object })
+  parameters?: TApiIntegrationUserParameters;
+
+  @Prop({ type: String })
+  parentId?: string;
+
+  @Prop({ type: Object })
+  productContingents?: TApiIntegrationUserProductContingents;
+
+  @Prop({ type: Object })
+  productsUsed?: TApiIntegrationUserProductsUsed;
 }
 
 export const IntegrationUserSchema =

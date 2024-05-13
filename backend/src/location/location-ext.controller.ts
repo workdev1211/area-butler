@@ -15,7 +15,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import {
   ApiCoordinates,
-  ApiRequestStatusesEnum,
+  ResultStatusEnum,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
@@ -85,7 +85,7 @@ export class LocationExtController extends ApiKeyAuthController {
     fetchSnapshotDataReq: ApiFetchSnapshotDataReqDto,
   ): Promise<IApiFetchSnapshotDataRes> {
     const requestStatus: IApiFetchSnapshotDataReqStatus = {
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: fetchSnapshotDataReq,
     };
 
@@ -95,7 +95,7 @@ export class LocationExtController extends ApiKeyAuthController {
         fetchSnapshotDataReq,
       );
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {
@@ -129,7 +129,7 @@ export class LocationExtController extends ApiKeyAuthController {
       fetchAddrInRangeReq;
 
     const requestStatus: IApiFetchAddrInRangeReqStatus = {
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: fetchAddrInRangeReq,
     };
 
@@ -163,7 +163,7 @@ export class LocationExtController extends ApiKeyAuthController {
         },
       };
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {
@@ -197,7 +197,7 @@ export class LocationExtController extends ApiKeyAuthController {
       fetchPoiDataReq;
 
     const requestStatus: IApiFetchPoiDataReqStatus = {
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: fetchPoiDataReq,
     };
 
@@ -229,7 +229,7 @@ export class LocationExtController extends ApiKeyAuthController {
 
       return { input: { coordinates }, result: poiData };
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {

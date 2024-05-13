@@ -6,10 +6,7 @@ import { InjectUser } from '../../user/inject-user.decorator';
 import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
-import {
-  ApiCoordinates,
-  ApiRequestStatusesEnum,
-} from '@area-butler-types/types';
+import { ApiCoordinates, ResultStatusEnum } from '@area-butler-types/types';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
 import ApiQueryLocIndicesReqDto from '../dto/api-query-loc-indices-req.dto';
 import {
@@ -63,7 +60,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
 
     const requestStatus: IApiQueryLocIndicesReqStatus = {
       coordinates,
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: queryLocIndicesReq,
     };
 
@@ -85,7 +82,7 @@ export class LocationIndexExtController extends ApiKeyAuthController {
 
       throw new HttpException('Location indices not found!', 400);
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       throw e;

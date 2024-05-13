@@ -1,4 +1,4 @@
-import { ISelectTextValue, RequestStatusTypesEnum } from "./types";
+import { ISelectTextValue, ResultStatusEnum } from "./types";
 import {
   AreaButlerExportTypesEnum,
   TApiIntUserProdContType,
@@ -24,10 +24,10 @@ export interface IApiIntegrationParams {
 
 export interface IApiRealEstateIntegrationParams extends IApiIntegrationParams {
   integrationId: string;
-  openAiRequestQuantity?: number;
   iframeEndsAt?: Date;
   isOnePageExportActive?: boolean;
   isStatsFullExportActive?: boolean;
+  openAiRequestQuantity?: number;
 }
 
 // IMPORTANT
@@ -121,7 +121,7 @@ export type TUnlockIntProduct = (
 ) => void;
 
 export interface IIntegrationHandleLogin {
-  requestStatus: RequestStatusTypesEnum;
+  requestStatus: ResultStatusEnum;
   message?: string;
 }
 

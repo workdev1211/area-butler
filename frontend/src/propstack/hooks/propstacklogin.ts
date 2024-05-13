@@ -9,7 +9,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../context/SearchContext";
-import { RequestStatusTypesEnum } from "../../../../shared/types/types";
+import { ResultStatusEnum } from "../../../../shared/types/types";
 import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
 import {
   IApiPropstackLoginQueryParams,
@@ -40,14 +40,14 @@ export const usePropstackLogin = () => {
       getQueryParamsAndUrl<IApiPropstackLoginQueryParams>();
 
     if (!queryParamsAndUrl) {
-      return { requestStatus: RequestStatusTypesEnum.FAILURE };
+      return { requestStatus: ResultStatusEnum.FAILURE };
     }
 
     try {
       await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
     } catch (e) {
       console.error(e);
-      return { requestStatus: RequestStatusTypesEnum.FAILURE };
+      return { requestStatus: ResultStatusEnum.FAILURE };
     }
 
     return performLogin(queryParamsAndUrl.queryParams);
@@ -58,7 +58,7 @@ export const usePropstackLogin = () => {
     ...loginData
   }: IApiPropstackLoginQueryParams): Promise<IIntegrationHandleLogin> => {
     const response: IIntegrationHandleLogin = {
-      requestStatus: RequestStatusTypesEnum.SUCCESS,
+      requestStatus: ResultStatusEnum.SUCCESS,
     };
 
     try {
@@ -74,7 +74,7 @@ export const usePropstackLogin = () => {
       dispatchContextData(loginRes);
     } catch (e: any) {
       console.error("Verification error: ", e);
-      response.requestStatus = RequestStatusTypesEnum.FAILURE;
+      response.requestStatus = ResultStatusEnum.FAILURE;
       response.message = e.response?.data?.message;
     }
 

@@ -15,7 +15,7 @@ import { InjectUser } from '../user/inject-user.decorator';
 import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { UserDocument } from '../user/schema/user.schema';
 import { AddressesInRangeExtService } from './addresses-in-range-ext.service';
-import { ApiRequestStatusesEnum } from '@area-butler-types/types';
+import { ResultStatusEnum } from '@area-butler-types/types';
 import ApiFetchAddrInRangeReqDto from './dto/api-fetch-addr-in-range-req.dto';
 import { UsageStatisticsService } from '../user/usage-statistics.service';
 import {
@@ -51,7 +51,7 @@ export class ApiAddressesInRangeController {
       fetchAddrInRangeReq;
 
     const requestStatus: IApiFetchAddrInRangeReqStatus = {
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: fetchAddrInRangeReq,
     };
 
@@ -83,7 +83,7 @@ export class ApiAddressesInRangeController {
         addresses: returnedAddresses,
       };
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {

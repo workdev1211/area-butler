@@ -9,21 +9,21 @@ import { ApiRealEstateListing } from "./real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "./location";
 
 export interface IApiIntegrationUserSchema {
-  integrationUserId: string;
-  integrationType: IntegrationTypesEnum;
   accessToken: string; // for AreaButler internal identification purposes
-  parameters?: TApiIntegrationUserParameters;
+  integrationType: IntegrationTypesEnum;
+  integrationUserId: string;
   config?: TApiIntegrationUserConfig;
-  productsUsed?: TApiIntegrationUserProductsUsed;
-  productContingents?: TApiIntegrationUserProductContingents;
-  parentId?: string;
   isParent?: boolean;
+  parameters?: TApiIntegrationUserParameters;
+  parentId?: string;
+  productContingents?: TApiIntegrationUserProductContingents;
+  productsUsed?: TApiIntegrationUserProductsUsed;
 }
 
 export interface IApiIntegrationUser {
-  integrationUserId: string;
   accessToken: string;
   config: TApiIntegrationUserConfig;
+  integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
 }
@@ -145,12 +145,12 @@ export interface IIntUserExpMatchParams {
 }
 
 export interface IApiIntUserLoginRes {
-  integrationUserId: string;
   accessToken: string;
   config: TApiIntegrationUserConfig;
+  integrationUserId: string;
   isChild: boolean;
   realEstate: ApiRealEstateListing;
-  latestSnapshot?: ApiSearchResultSnapshotResponse;
   availProdContingents?: TApiIntUserAvailProdContingents;
+  latestSnapshot?: ApiSearchResultSnapshotResponse;
   openAiQueryType?: OpenAiQueryTypeEnum;
 }

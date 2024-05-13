@@ -456,11 +456,6 @@ export type TApiDataProvision = Partial<
   Record<ApiDataProvisionEnum, ApiGeojsonFeature[]>
 >;
 
-export enum ApiRequestStatusesEnum {
-  SUCCESS = "success",
-  ERROR = "error",
-}
-
 export type TPlaceholderSelectOptionKey = "placeholder";
 
 export interface ISelectTextValue {
@@ -471,7 +466,7 @@ export interface ISelectTextValue {
 export type TPaymentEnvironment = typeof paymentEnvironments[number];
 export type TSystemEnvironment = typeof systemEnvironments[number];
 
-export enum RequestStatusTypesEnum {
+export enum ResultStatusEnum {
   SUCCESS = "SUCCESS",
   FAILURE = "FAILURE",
 }

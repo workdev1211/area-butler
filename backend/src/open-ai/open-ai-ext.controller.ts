@@ -9,7 +9,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
 import {
-  ApiRequestStatusesEnum,
+  ResultStatusEnum,
   ApiSearchResultSnapshotResponse,
 } from '@area-butler-types/types';
 import {
@@ -64,7 +64,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
     } = queryOpenAiRes;
 
     const requestStatus: IApiQueryOpenAiExtReqStatus = {
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: queryOpenAiRes,
     };
 
@@ -161,7 +161,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
         result: response,
       };
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       if (e.response?.status === 429 && !(e instanceof HttpException)) {

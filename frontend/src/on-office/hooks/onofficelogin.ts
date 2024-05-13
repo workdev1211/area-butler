@@ -18,7 +18,7 @@ import {
   SearchContext,
   SearchContextActionTypes,
 } from "../../context/SearchContext";
-import { RequestStatusTypesEnum } from "../../../../shared/types/types";
+import { ResultStatusEnum } from "../../../../shared/types/types";
 import { IQueryParamsAndUrl } from "../../shared/shared.types";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
@@ -60,7 +60,7 @@ export const useOnOfficeLogin = () => {
     const queryParamsAndUrl = getQueryParamsAndUrl();
 
     if (!queryParamsAndUrl) {
-      return { requestStatus: RequestStatusTypesEnum.FAILURE };
+      return { requestStatus: ResultStatusEnum.FAILURE };
     }
 
     try {
@@ -90,7 +90,7 @@ export const useOnOfficeLogin = () => {
       }
     } catch {}
 
-    return { requestStatus: RequestStatusTypesEnum.FAILURE };
+    return { requestStatus: ResultStatusEnum.FAILURE };
   };
 
   const performLogin = async ({
@@ -103,7 +103,7 @@ export const useOnOfficeLogin = () => {
     };
 
     const response: IOnOfficeHandleLogin = {
-      requestStatus: RequestStatusTypesEnum.SUCCESS,
+      requestStatus: ResultStatusEnum.SUCCESS,
       actionType: OnOfficeLoginActionTypesEnum.PERFORM_LOGIN,
     };
 
@@ -115,7 +115,7 @@ export const useOnOfficeLogin = () => {
       dispatchContextData(loginRes);
     } catch (e: any) {
       console.error("Verification error: ", e);
-      response.requestStatus = RequestStatusTypesEnum.FAILURE;
+      response.requestStatus = ResultStatusEnum.FAILURE;
       response.message = e.response?.data?.message;
     }
 
@@ -132,7 +132,7 @@ export const useOnOfficeLogin = () => {
     };
 
     const response: IOnOfficeHandleLogin = {
-      requestStatus: RequestStatusTypesEnum.SUCCESS,
+      requestStatus: ResultStatusEnum.SUCCESS,
       actionType: OnOfficeLoginActionTypesEnum.CONFIRM_ORDER,
     };
 
@@ -146,7 +146,7 @@ export const useOnOfficeLogin = () => {
 
       if ("message" in confirmOrderRes) {
         console.error("Order confirmation error: ", confirmOrderRes.message);
-        response.requestStatus = RequestStatusTypesEnum.FAILURE;
+        response.requestStatus = ResultStatusEnum.FAILURE;
         response.message = confirmOrderRes.message;
 
         return response;
@@ -155,7 +155,7 @@ export const useOnOfficeLogin = () => {
       dispatchContextData(confirmOrderRes);
     } catch (e) {
       console.error("Order confirmation error: ", e);
-      response.requestStatus = RequestStatusTypesEnum.FAILURE;
+      response.requestStatus = ResultStatusEnum.FAILURE;
     }
 
     return response;

@@ -5,9 +5,9 @@ import {
   ApiCoordinates,
   ApiGeojsonType,
   ApiOsmLocation,
-  ApiRequestStatusesEnum,
   MeansOfTransportation,
   OsmName,
+  ResultStatusEnum,
 } from '@area-butler-types/types';
 import { TProcessedCensusData } from '@area-butler-types/data-provision';
 import {
@@ -85,7 +85,7 @@ export type TApiUsageStatsReqStatus =
   | IApiFetchPoiDataReqStatus;
 
 export interface IExternalApiReqStatus<T> {
-  status: ApiRequestStatusesEnum;
+  status: ResultStatusEnum;
   queryParams: T;
   coordinates?: ApiCoordinates;
   message?: string;

@@ -6,7 +6,7 @@ import "react-toastify/dist/ReactToastify.css";
 import "./PropstackContainer.scss";
 
 import IntegrationNav from "./layout/IntegrationNav";
-import { RequestStatusTypesEnum } from "../../../shared/types/types";
+import { ResultStatusEnum } from "../../../shared/types/types";
 import { UserContext } from "../context/UserContext";
 import { usePropstackLogin } from "./hooks/propstacklogin";
 import ScrollToTop from "../components/ScrollToTop";
@@ -64,7 +64,7 @@ const PropstackContainer: FC = () => {
           console.error(e);
 
           return {
-            requestStatus: RequestStatusTypesEnum.FAILURE,
+            requestStatus: ResultStatusEnum.FAILURE,
             message: e.response?.data?.message,
           };
         })
@@ -80,7 +80,7 @@ const PropstackContainer: FC = () => {
     if (
       !integrationUser ||
       !loginStatus ||
-      loginStatus.requestStatus === RequestStatusTypesEnum.FAILURE
+      loginStatus.requestStatus === ResultStatusEnum.FAILURE
     ) {
       return;
     }
@@ -106,11 +106,11 @@ const PropstackContainer: FC = () => {
 
   if (
     !integrationUser ||
-    loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE
+    loginStatus?.requestStatus === ResultStatusEnum.FAILURE
   ) {
     return (
       <div className="flex items-center justify-center h-[100vh] text-lg">
-        {loginStatus?.requestStatus === RequestStatusTypesEnum.FAILURE ? (
+        {loginStatus?.requestStatus === ResultStatusEnum.FAILURE ? (
           loginStatus.message || "Ein Fehler ist aufgetreten!"
         ) : (
           <LoadingMessage />

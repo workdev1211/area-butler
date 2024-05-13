@@ -7,7 +7,7 @@ import { UserDocument } from '../../user/schema/user.schema';
 import { UserSubscriptionPipe } from '../../pipe/user-subscription.pipe';
 import {
   ApiCoordinates,
-  ApiRequestStatusesEnum,
+  ResultStatusEnum,
 } from '@area-butler-types/types';
 import { ApiKeyAuthController } from '../../shared/api-key-auth.controller';
 import { UsageStatisticsService } from '../../user/usage-statistics.service';
@@ -59,7 +59,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
 
     const requestStatus: IApiQueryLocIndicesReqStatus = {
       coordinates,
-      status: ApiRequestStatusesEnum.SUCCESS,
+      status: ResultStatusEnum.SUCCESS,
       queryParams: queryZensusAtlasReq,
     };
 
@@ -74,7 +74,7 @@ export class ZensusAtlasExtController extends ApiKeyAuthController {
         result: processCensusData(cleanCensusProperties(zensusAtlasData)),
       };
     } catch (e) {
-      requestStatus.status = ApiRequestStatusesEnum.ERROR;
+      requestStatus.status = ResultStatusEnum.FAILURE;
       requestStatus.message = e.message;
 
       throw e;
