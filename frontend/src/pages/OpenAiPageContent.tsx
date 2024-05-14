@@ -1,14 +1,14 @@
-import { FunctionComponent, useContext, useState } from "react";
+import {FunctionComponent, useContext, useState} from "react";
 
 import OpenAiModule from "../components/open-ai/OpenAiModule";
-import { SearchContext } from "../context/SearchContext";
-import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
-import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import {SearchContext} from "../context/SearchContext";
+import {OpenAiQueryTypeEnum} from "../../../shared/types/open-ai";
+import {useIntegrationTools} from "../hooks/integration/integrationtools";
 import ConfirmationModal from "../components/ConfirmationModal";
-import { TOnOfficeIntActTypes } from "../../../shared/types/on-office";
-import { ConfigContext } from "../context/ConfigContext";
-import { IntegrationTypesEnum } from "../../../shared/types/integration";
-import { integrationNames } from "../../../shared/constants/integration";
+import {TOnOfficeIntActTypes} from "../../../shared/types/on-office";
+import {ConfigContext} from "../context/ConfigContext";
+import {IntegrationTypesEnum} from "../../../shared/types/integration";
+import {integrationNames} from "../../../shared/constants/integration";
 
 // TODO could be the same content with a 'OpenAiModal' component
 const OpenAiPageContent: FunctionComponent = () => {
@@ -83,6 +83,7 @@ const OpenAiPageContent: FunctionComponent = () => {
         onModuleStatusChange={(isReady) => {
           setIsGenerateButtonDisabled(!isReady);
         }}
+        showResult={true}
         isFetchResponse={isFetchResponse}
         onResponseFetched={handleResponseFetched}
         onQueryTypeChange={(changedQueryType) => {
