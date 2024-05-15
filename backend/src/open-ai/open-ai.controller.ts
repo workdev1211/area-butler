@@ -8,6 +8,7 @@ import { UserSubscriptionPipe } from '../pipe/user-subscription.pipe';
 import { OpenAiService } from './open-ai.service';
 import ApiOpenAiQueryDto from './dto/api-open-ai-query.dto';
 import { SubscriptionService } from '../user/subscription.service';
+import ApiOpenAiImproveTextQueryDto from '../location/dto/api-open-ai-improve-text-query.dto';
 
 // TODO think about moving all external OpenAI methods to the OpenAI controller
 
@@ -19,6 +20,30 @@ export class OpenAiController extends AuthenticatedController {
     private readonly openAiService: OpenAiService,
   ) {
     super();
+  }
+
+  @ApiOperation({
+    description: 'Fetch Open AI text improvement',
+  })
+  @Post('open-ai-improve-text')
+  async fetchOpenAiImproveText(
+    @InjectUser(UserSubscriptionPipe) user: UserDocument,
+    @Body() { originalText, customText }: ApiOpenAiImproveTextQueryDto,
+  ): Promise<string> {
+    // TODO think about moving everything to the UserSubscriptionPipe
+    await this.subscriptionService.checkSubscriptionViolation(
+      user.subscription.type,
+      (subscriptionPlan) =>
+        !user.subscription?.appFeatures?.openAi &&
+        !subscriptionPlan.appFeatures.openAi,
+      'Das Open AI Feature ist im aktuellen Plan nicht verfügbar',
+    );
+
+    const queryText = this.openAiService.getImproveText(
+      originalText,
+      customText,
+    );
+    return this.openAiService.fetchResponse(queryText);
   }
 
   @ApiOperation({ description: 'Fetch Open AI response' })

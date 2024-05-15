@@ -45,6 +45,11 @@ export interface IApiOpenAiLocRealEstDescQuery
   snapshotId: string;
 }
 
+export interface IApiOpenAiImproveTextQuery {
+  originalText: string;
+  customText: string;
+}
+
 export interface IApiOpenAiResponseLimit {
   quantity: number;
   type: ApiOpenAiRespLimitTypesEnum;
@@ -56,6 +61,7 @@ export enum OpenAiQueryTypeEnum {
   LOCATION_DESCRIPTION = "LOCATION_DESCRIPTION",
   LOCATION_REAL_ESTATE_DESCRIPTION = "LOCATION_REAL_ESTATE_DESCRIPTION",
   REAL_ESTATE_DESCRIPTION = "REAL_ESTATE_DESCRIPTION",
+  IMPROVE_TEXT = "IMPROVE_TEXT",
 }
 
 export enum OpenAiOsmQueryNameEnum {

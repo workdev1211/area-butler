@@ -38,6 +38,7 @@ interface IOpenAiModuleProps {
   onQueryTypeChange?: (queryType: OpenAiQueryTypeEnum) => void;
   searchResultSnapshotId?: string;
   showResult?: boolean;
+  fixedQueryType?: undefined | boolean;
 }
 
 const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
@@ -48,6 +49,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
   onQueryTypeChange,
   searchResultSnapshotId,
   showResult,
+  fixedQueryType,
 }) => {
   const {
     cachingState: { openAi: cachedOpenAi },
@@ -138,7 +140,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         }
 
         default: {
-          toastError("Der Fehler ist aufgetreten!");
+          toastError("Ein Fehler ist aufgetreten!");
           return;
         }
       }
@@ -183,6 +185,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
                 onQueryTypeChange(value as OpenAiQueryTypeEnum);
               }
             }}
+            disabled={fixedQueryType}
           >
             <option
               value={placeholderSelectOptionKey}
@@ -347,7 +350,6 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
         )}
       </div>
       <div>
-
         {![
           OpenAiQueryTypeEnum.FORMAL_TO_INFORMAL,
           OpenAiQueryTypeEnum.GENERAL_QUESTION,
@@ -359,6 +361,7 @@ const OpenAiModule: FunctionComponent<IOpenAiModuleProps> = ({
               formId="open-ai-general-form"
               initialValues={cachedOpenAi.general}
               onValuesChange={(values) => {
+                console.log(values);
                 cachingDispatch({
                   type: CachingActionTypesEnum.SET_OPEN_AI,
                   payload: { general: { ...values } },

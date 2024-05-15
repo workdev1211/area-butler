@@ -1,5 +1,5 @@
-import { FunctionComponent, useEffect, useState } from "react";
-import { Form, Formik, useFormikContext } from "formik";
+import {FunctionComponent, useEffect, useState} from "react";
+import {Form, Formik, useFormikContext} from "formik";
 import * as Yup from "yup";
 
 import Select from "../inputs/formik/Select";
@@ -14,13 +14,13 @@ import {
   OpenAiTextLengthEnum,
   OpenAiTonalityEnum,
 } from "../../../../shared/types/open-ai";
-import { TFormikInnerRef } from "../../shared/shared.types";
-import { defaultTargetGroupName } from "../../../../shared/constants/potential-customer";
-import { usePotentialCustomerData } from "../../hooks/potentialcustomerdata";
+import {TFormikInnerRef} from "../../shared/shared.types";
+import {defaultTargetGroupName} from "../../../../shared/constants/potential-customer";
+import {usePotentialCustomerData} from "../../hooks/potentialcustomerdata";
 // import RangeInput from "../inputs/formik/RangeInput";
 import CustomTextSelect from "../inputs/formik/CustomTextSelect";
-import { ISelectTextValue } from "../../../../shared/types/types";
-import { camelize } from "../../../../shared/functions/shared.functions";
+import {ISelectTextValue} from "../../../../shared/types/types";
+import {camelize} from "../../../../shared/functions/shared.functions";
 
 interface IOpenAiGeneralFormListenerProps {
   onValuesChange: (values: IOpenAiGeneralFormValues) => void;

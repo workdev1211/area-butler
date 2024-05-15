@@ -281,6 +281,15 @@ export class OpenAiService {
     return queryText;
   }
 
+  getImproveText(originalText: string, customText: string) {
+    return (
+      'Sei mein Experte für Immobilien. In einer vorherigen Iteration ist folgender Text entstanden ============' +
+      originalText +
+      '============ Der Kunde hat hierzu folgende Änderungswünsche: ' +
+      customText
+    );
+  }
+
   getFormToInformQuery(formalText: string): string {
     return `Ersetze im folgenden text die formale Sie-Form durch die informale Du-Form: \n\n ${formalText}`;
   }

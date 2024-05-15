@@ -2,6 +2,7 @@ import { useContext } from "react";
 
 import { useHttp } from "./http";
 import {
+  IApiOpenAiImproveTextQuery,
   IApiOpenAiLocDescQuery,
   IApiOpenAiLocRealEstDescQuery,
   IApiOpenAiQuery,
@@ -24,6 +25,7 @@ export type TOpenAiQuery =
   | IApiOpenAiLocDescQuery
   | IApiOpenAiRealEstDescQuery
   | IApiOpenAiLocRealEstDescQuery
+  | IApiOpenAiImproveTextQuery
   | IApiOpenAiQuery;
 
 export const useOpenAi = () => {
@@ -64,6 +66,13 @@ export const useOpenAi = () => {
         url = isIntegration
           ? "/api/location-int/open-ai-loc-real-est-desc"
           : "/api/location/open-ai-loc-real-est-desc";
+        break;
+      }
+
+      case OpenAiQueryTypeEnum.IMPROVE_TEXT: {
+        url = isIntegration
+          ? "/api/open-ai-int/open-ai-improve-text"
+          : "/api/open-ai/open-ai-improve-text";
         break;
       }
 
