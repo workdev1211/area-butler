@@ -61,7 +61,7 @@ interface ILocRealEstDescQueryData
     Omit<IRealEstDescQueryData, 'realEstate'> {}
 
 const POI_LIMIT_BY_CATEGORY = 3;
-const MODEL_NAME = 'gpt-4';
+const MODEL_NAME = 'gpt-4o';
 
 @Injectable()
 export class OpenAiService {
@@ -110,7 +110,7 @@ export class OpenAiService {
         : openAiTextLengthOptions.find(({ value }) => value === textLength).text
     }`;
 
-    queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
+    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verwende keine Sonderzeichen und Emoticons.`;
 
     if (customText) {
       queryText +=
@@ -241,7 +241,7 @@ export class OpenAiService {
       characteristics,
     );
 
-    queryText += ` Nutze eine ${tonality} Art der Formulierung.`;
+    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verwende keine Sonderzeichen und Emoticons.`;
 
     if (customText) {
       queryText +=
