@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
-import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
+// import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
 
 import { configService } from '../config/config.service';
 import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
@@ -295,20 +295,28 @@ export class OpenAiService {
   }
 
   async fetchResponse(queryText: string): Promise<string> {
-    let encoding: Tiktoken;
+    // let encoding: Tiktoken;
 
     if (this.systemEnv !== 'prod') {
-      encoding = encoding_for_model(MODEL_NAME);
-
       this.logger.verbose(
         '\n====== QUERY LENGTH ======\n' +
-          `CHARACTERS: ${queryText.length} / TOKENS: ${
-            encoding.encode(queryText).length
-          }` +
+          `CHARACTERS: ${queryText.length}` +
           '\n====== QUERY START ======\n' +
           queryText +
           '\n====== QUERY END ======',
       );
+
+      // encoding = encoding_for_model(MODEL_NAME);
+      //
+      // this.logger.verbose(
+      //   '\n====== QUERY LENGTH ======\n' +
+      //     `CHARACTERS: ${queryText.length} / TOKENS: ${
+      //       encoding.encode(queryText).length
+      //     }` +
+      //     '\n====== QUERY START ======\n' +
+      //     queryText +
+      //     '\n====== QUERY END ======',
+      // );
     }
 
     const {
@@ -340,15 +348,23 @@ export class OpenAiService {
     if (this.systemEnv !== 'prod') {
       this.logger.verbose(
         '\n====== RESPONSE LENGTH ======\n' +
-          `CHARACTERS: ${response.length} / TOKENS: ${
-            encoding.encode(response).length
-          }` +
+          `CHARACTERS: ${response.length}` +
           '\n====== RESPONSE START ======\n' +
           response +
           '\n====== RESPONSE END ======',
       );
 
-      encoding.free();
+      // this.logger.verbose(
+      //   '\n====== RESPONSE LENGTH ======\n' +
+      //     `CHARACTERS: ${response.length} / TOKENS: ${
+      //       encoding.encode(response).length
+      //     }` +
+      //     '\n====== RESPONSE START ======\n' +
+      //     response +
+      //     '\n====== RESPONSE END ======',
+      // );
+      //
+      // encoding.free();
     }
 
     return response;
