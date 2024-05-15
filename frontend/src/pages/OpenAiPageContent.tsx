@@ -1,4 +1,5 @@
-import { FunctionComponent, useContext, useState } from "react";
+import { FC, useContext, useState } from "react";
+
 import { SearchContext } from "../context/SearchContext";
 import { OpenAiQueryTypeEnum } from "../../../shared/types/open-ai";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
@@ -6,13 +7,16 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { ConfigContext } from "../context/ConfigContext";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 import OpenAiChat from "../components/open-ai/OpenAiChat";
+import { useTools } from "../hooks/tools";
+import { FeatureTypeEnum } from "../../../shared/types/types";
 
 // TODO could be the same content with a 'OpenAiModal' component
-const OpenAiPageContent: FunctionComponent = () => {
+const OpenAiPageContent: FC = () => {
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState } = useContext(SearchContext);
 
   const { sendToIntegration, unlockProduct } = useIntegrationTools();
+  const { checkIsFeatAvailable } = useTools();
 
   const [queryType] = useState(searchContextState.openAiQueryType);
   const [unlockParams, setUnlockParams] = useState<{
@@ -29,8 +33,7 @@ const OpenAiPageContent: FunctionComponent = () => {
       OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION,
     ].includes(queryType);
 
-  const isQueryAvailable =
-    !!searchContextState.realEstateListing?.openAiRequestQuantity;
+  const isOpenAiAvailable = checkIsFeatAvailable(FeatureTypeEnum.OPEN_AI);
 
   const handleUnlock = (): void => {
     setUnlockParams({
@@ -39,8 +42,6 @@ const OpenAiPageContent: FunctionComponent = () => {
       isShownModal: true,
     });
   };
-
-  console.log(searchContextState);
 
   return (
     <div className="flex flex-col gap-5 m-5">
@@ -64,7 +65,7 @@ const OpenAiPageContent: FunctionComponent = () => {
         fixedQueryType={false}
         handleUnlock={handleUnlock}
         sendToIntegration={sendToIntegration}
-        isNotIntOrAvailForIntUser={isQueryAvailable}
+        isOpenAiAvailable={isOpenAiAvailable}
         isSendToIntAllowed={isShownOnOfficeButton}
         integrationType={integrationType}
       />

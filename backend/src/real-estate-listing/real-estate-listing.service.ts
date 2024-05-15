@@ -17,8 +17,16 @@ import { OpenAiService } from '../open-ai/open-ai.service';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
 import { openAiTonalities } from '../../../shared/constants/open-ai';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
-import { ApiCoordinates, ApiGeometry } from '@area-butler-types/types';
+import {
+  ApiCoordinates,
+  ApiGeometry,
+  ResultStatusEnum,
+} from '@area-butler-types/types';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
+import { getProcUpdateQuery } from '../shared/functions/shared';
+
+type TUpdateByExtParams = Partial<IApiRealEstateListingSchema> &
+  Pick<IApiRealEstateListingSchema, 'externalId' | 'externalSource'>;
 
 @Injectable()
 export class RealEstateListingService {
@@ -192,23 +200,25 @@ export class RealEstateListingService {
     return realEstate;
   }
 
-  async updateEstateByExtParams(
-    updateData: Partial<IApiRealEstateListingSchema> &
-      Pick<IApiRealEstateListingSchema, 'externalSource' | 'externalId'>,
-  ): Promise<RealEstateListingDocument> {
-    const { userId, externalSource, externalId } = updateData;
+  async bulkUpdateOneByExtParams(
+    realEstateData: TUpdateByExtParams,
+  ): Promise<ResultStatusEnum> {
+    const { externalId, externalSource, userId, ...updateData } =
+      realEstateData;
 
-    const filterQuery: FilterQuery<IApiRealEstateListingSchema> = {
-      externalSource,
-      externalId,
-      userId,
-    };
+    const { matchedCount, modifiedCount } =
+      await this.realEstateListingModel.updateOne(
+        {
+          externalId,
+          externalSource,
+          userId,
+        },
+        getProcUpdateQuery(updateData),
+      );
 
-    return this.realEstateListingModel.findOneAndUpdate(
-      filterQuery,
-      updateData,
-      { new: true },
-    );
+    return matchedCount === 1 || modifiedCount === 1
+      ? ResultStatusEnum.SUCCESS
+      : ResultStatusEnum.FAILURE;
   }
 
   async updateLocationIndices(): Promise<void> {

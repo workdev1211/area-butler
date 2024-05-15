@@ -26,13 +26,11 @@ import {
 } from '@area-butler-types/real-estate';
 import { mapRealEstateListingToApiRealEstateListing } from './mapper/real-estate-listing.mapper';
 import ApiUpsertRealEstateListingDto from '../dto/api-upsert-real-estate-listing.dto';
-import { ContingentIntService } from '../user/contingent-int.service';
 
 @ApiTags('real-estate-listing', 'integration')
 @Controller('api/real-estate-listing-int')
 export class RealEstateListingIntController {
   constructor(
-    private readonly contingentIntService: ContingentIntService,
     private readonly realEstateListingService: RealEstateListingService,
     private readonly realEstateListingIntService: RealEstateListingIntService,
   ) {}
@@ -105,25 +103,13 @@ export class RealEstateListingIntController {
   })
   @UseInterceptors(InjectIntegrationUserInterceptor)
   @Post('unlock-product')
-  async unlockProduct(
+  unlockProduct(
     @InjectUser() integrationUser: TIntegrationUserDocument,
-    @Body() { integrationId, actionType }: ApiUnlockIntProductReqDto,
+    @Body() unlockProductDto: ApiUnlockIntProductReqDto,
   ): Promise<void> {
-    const availProdContType =
-      await this.contingentIntService.getAvailProdContTypeOrFail(
-        integrationUser,
-        actionType,
-      );
-
-    await this.realEstateListingIntService.unlockProduct(integrationUser, {
-      actionType,
-      availProdContType,
-      integrationId,
-    });
-
-    await this.contingentIntService.incrementProductUsage(
+    return this.realEstateListingIntService.handleProductUnlock(
       integrationUser,
-      availProdContType,
+      unlockProductDto,
     );
   }
 }

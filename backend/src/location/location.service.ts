@@ -226,7 +226,8 @@ export class LocationService {
       Object.assign(location, { endsAt: existingLocation.endsAt });
     }
 
-    if (isIntegrationUser) {
+    // Checks if Search (creating the snapshots) is available for the integration user
+    if (isIntegrationUser && !user.isSubscriptionActive) {
       let iframeEndsAt;
       let isOnePageExportActive;
       let isStatsFullExportActive;

@@ -6,11 +6,14 @@ import "./IntegrationNav.scss";
 import AreaButlerLogo from "assets/img/logo.svg";
 import { propstackRootEntries } from "../PropstackContainer";
 import { SearchContext } from "../../context/SearchContext";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 
 const IntegrationNav: FC = () => {
   const {
     searchContextState: { openAiQueryType },
   } = useContext(SearchContext);
+  const { checkIsSubActive } = useIntegrationTools();
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   let mobileMenuClass = "hidden";
@@ -129,9 +132,15 @@ const IntegrationNav: FC = () => {
               >
                 Meine Karten
               </NavLink>
-              <NavLink to="/products" className="nav-link" aria-current="page">
-                Meine Produkte
-              </NavLink>
+              {!checkIsSubActive() && (
+                <NavLink
+                  to="/products"
+                  className="nav-link"
+                  aria-current="page"
+                >
+                  Meine Produkte
+                </NavLink>
+              )}
             </div>
           </div>
         </div>
@@ -178,13 +187,15 @@ const IntegrationNav: FC = () => {
           >
             Meine Karten
           </NavLink>
-          <NavLink
-            to="/products"
-            className="nav-mobile-menu-link"
-            aria-current="page"
-          >
-            Meine Produkte
-          </NavLink>
+          {!checkIsSubActive() && (
+            <NavLink
+              to="/products"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              Meine Produkte
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>

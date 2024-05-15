@@ -166,7 +166,9 @@ export class PropstackService {
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
-      await this.realEstateListingIntService.upsertByIntParams(realEstateDto),
+      await this.realEstateListingIntService.upsertOneByIntParams(
+        realEstateDto,
+      ),
     );
 
     return {
@@ -182,7 +184,9 @@ export class PropstackService {
     integrationUser: TIntegrationUserDocument,
     { propertyId, textFieldType }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
-    const { accessToken, integrationUserId, parentId } = integrationUser;
+    const { accessToken, integrationUserId, parentId, subscription } =
+      integrationUser;
+
     const { latestSnapshot, realEstate } = await this.getSnapshotRealEstate(
       integrationUser,
       propertyId,
@@ -193,6 +197,7 @@ export class PropstackService {
       integrationUserId,
       latestSnapshot,
       realEstate,
+      subscription,
       availProdContingents:
         await this.contingentIntService.getAvailProdContingents(
           integrationUser,

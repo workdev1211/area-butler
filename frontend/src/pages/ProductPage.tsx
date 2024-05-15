@@ -151,7 +151,7 @@ export const ProductPage: FC = () => {
             <ProductCard
               key={groupedProducts[0].type}
               products={groupedProducts}
-              // TODO PROPSTACK CONTINGENT
+              // TODO PROPSTACK SPECIFIC
               isDisabled={
                 integrationType !== IntegrationTypesEnum.PROPSTACK &&
                 !!integrationUser?.isChild
@@ -163,7 +163,7 @@ export const ProductPage: FC = () => {
         {/* A description */}
 
         <div className="flex flex-col gap-5 mx-10">
-          {/* TODO PROPSTACK CONTINGENT */}
+          {/* TODO PROPSTACK SPECIFIC */}
           {integrationType === IntegrationTypesEnum.ON_OFFICE && (
             <>
               <div className="my-0 border-t-2 border-b-0" />

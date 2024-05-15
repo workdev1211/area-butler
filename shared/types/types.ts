@@ -100,14 +100,14 @@ export interface ApiUserRequests {
 }
 
 export enum ApiTourNamesEnum {
-  "SEARCH" = "search",
-  "RESULT" = "result", // is not used currently
-  "REAL_ESTATES" = "realEstates",
-  "CUSTOMERS" = "customers",
-  "PROFILE" = "profile",
-  "EDITOR" = "editor",
-  "INT_MAP" = "intMap",
-  "INT_SEARCH" = "intSearch",
+  SEARCH = "search",
+  RESULT = "result", // is not used currently
+  REAL_ESTATES = "realEstates",
+  CUSTOMERS = "customers",
+  PROFILE = "profile",
+  EDITOR = "editor",
+  INT_MAP = "intMap",
+  INT_SEARCH = "intSearch",
 }
 
 export type ApiShowTour = Record<ApiTourNamesEnum, boolean>;
@@ -480,4 +480,13 @@ export interface IApiFetchedEmbeddedData {
   snapshotRes: ApiSearchResultSnapshotResponse;
   realEstates?: ApiRealEstateListing[];
   userPoiIcons?: IApiUserPoiIcons;
+}
+
+export enum FeatureTypeEnum {
+  SEARCH = "SEARCH",
+  OPEN_AI = "OPEN_AI",
+  IFRAME = "IFRAME",
+  ONE_PAGE = "ONE_PAGE",
+  OTHER_EXPORT = "OTHER_EXPORT",
+  STATS_DATA = "STATS_DATA",
 }

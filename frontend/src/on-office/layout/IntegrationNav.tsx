@@ -1,12 +1,14 @@
-import { FunctionComponent, useState } from "react";
+import { FC, useState } from "react";
 import { NavLink } from "react-router-dom";
 
 import "./IntegrationNav.scss";
 
 import AreaButlerLogo from "assets/img/logo.svg";
 import { onOfficeRootEntries } from "../OnOfficeContainer";
+import { useIntegrationTools } from "../../hooks/integration/integrationtools";
 
-const IntegrationNav: FunctionComponent = () => {
+const IntegrationNav: FC = () => {
+  const { checkIsSubActive } = useIntegrationTools();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   let mobileMenuClass = "hidden";
@@ -121,9 +123,15 @@ const IntegrationNav: FunctionComponent = () => {
               >
                 Meine Karten
               </NavLink>
-              <NavLink to="/products" className="nav-link" aria-current="page">
-                Meine Produkte
-              </NavLink>
+              {!checkIsSubActive() && (
+                <NavLink
+                  to="/products"
+                  className="nav-link"
+                  aria-current="page"
+                >
+                  Meine Produkte
+                </NavLink>
+              )}
             </div>
           </div>
         </div>
@@ -170,13 +178,15 @@ const IntegrationNav: FunctionComponent = () => {
           >
             Meine Karten
           </NavLink>
-          <NavLink
-            to="/products"
-            className="nav-mobile-menu-link"
-            aria-current="page"
-          >
-            Meine Produkte
-          </NavLink>
+          {!checkIsSubActive() && (
+            <NavLink
+              to="/products"
+              className="nav-mobile-menu-link"
+              aria-current="page"
+            >
+              Meine Produkte
+            </NavLink>
+          )}
         </div>
       </div>
     </nav>

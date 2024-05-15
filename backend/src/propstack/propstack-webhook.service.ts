@@ -23,6 +23,7 @@ import { IPropstackWebhookProperty } from '../shared/types/propstack';
 import ApiPropstackWebhookToAreaButlerDto from '../real-estate-listing/dto/api-propstack-webhook-to-area-butler.dto';
 import ApiPropstackWebhookToAreaButlerUpdDto from './dto/api-propstack-webhook-to-area-butler-upd.dto';
 import { PlaceService } from '../place/place.service';
+import { ResultStatusEnum } from '@area-butler-types/types';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -82,7 +83,7 @@ export class PropstackWebhookService {
     const realEstateListing = mapRealEstateListingToApiRealEstateListing(
       user,
       isIntegrationUser
-        ? await this.realEstateListingIntService.upsertByIntParams(
+        ? await this.realEstateListingIntService.upsertOneByIntParams(
             realEstateDto,
           )
         : await this.realEstateListingService.createRealEstateListing(
@@ -101,8 +102,7 @@ export class PropstackWebhookService {
       return;
     }
 
-    // TODO add a subscription handling
-    if (isIntegrationUser) {
+    if (isIntegrationUser && !user.isSubscriptionActive) {
       return;
     }
 
@@ -170,7 +170,7 @@ export class PropstackWebhookService {
   async handlePropertyUpdated(
     user: UserDocument | TIntegrationUserDocument,
     property: ApiPropstackWebhookPropertyDto,
-  ): Promise<void> {
+  ): Promise<ResultStatusEnum> {
     const changedAttributes = property.changed_attributes?.split(',');
 
     if (!changedAttributes) {
@@ -247,11 +247,12 @@ export class PropstackWebhookService {
       delete realEstate.characteristics;
     }
 
-    if (isIntegrationUser) {
-      await this.realEstateListingIntService.updateByIntParams(realEstate);
-      return;
-    }
-
-    await this.realEstateListingService.updateEstateByExtParams(realEstate);
+    return isIntegrationUser
+      ? await this.realEstateListingIntService.bulkUpdateOneByIntParams(
+          realEstate,
+        )
+      : await this.realEstateListingService.bulkUpdateOneByExtParams(
+          realEstate,
+        );
   }
 }

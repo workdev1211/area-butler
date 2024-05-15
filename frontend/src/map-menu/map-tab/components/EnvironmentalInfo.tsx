@@ -12,7 +12,7 @@ import { useTools } from "../../../hooks/tools";
 import UnlockProductButton from "../../components/UnlockProductButton";
 
 interface IEnvironmentalInfoProps {
-  isStatsExportActive: boolean;
+  isStatsDataAvailable: boolean;
   performUnlock: TUnlockIntProduct;
   backgroundColor: string;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
@@ -20,7 +20,7 @@ interface IEnvironmentalInfoProps {
 }
 
 const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
-  isStatsExportActive,
+  isStatsDataAvailable,
   performUnlock,
   backgroundColor,
   openUpgradeSubscriptionModal,
@@ -63,7 +63,7 @@ const EnvironmentalInfo: FunctionComponent<IEnvironmentalInfoProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {isStatsExportActive ? (
+        {isStatsDataAvailable ? (
           <ul>
             <li className="locality-option-li" key="list-item-zensus-feinstaub">
               <MapMenuCollapsable

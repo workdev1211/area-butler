@@ -17,6 +17,7 @@ import { UserDocument } from '../user/schema/user.schema';
 import { ApiKeyAuthController } from '../shared/api-key-auth.controller';
 import ApiPropstackWebhookPropertyDto from './dto/api-propstack-webhook-property.dto';
 import { PropstackWebhookService } from './propstack-webhook.service';
+import { ResultStatusEnum } from '@area-butler-types/types';
 
 dayjs.extend(duration);
 dayjs.extend(relativeTime);
@@ -81,7 +82,11 @@ export class PropstackWebhookController extends ApiKeyAuthController {
 
     void this.propstackWebhookService
       .handlePropertyUpdated(user, propstackPropertyDto)
-      .then(() => {
+      .then((updateResult: ResultStatusEnum): void => {
+        if (updateResult === ResultStatusEnum.FAILURE) {
+          this.logger.error(`Event ${eventId} has failed on the DB update.`);
+        }
+
         this.logger.log(
           `Event ${eventId} processing is complete and took ${dayjs
             .duration(dayjs().diff(dayjs(+eventId.match(/^.*?-(\d*)$/)[1])))

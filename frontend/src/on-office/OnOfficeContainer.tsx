@@ -26,6 +26,7 @@ import { SearchContext } from "../context/SearchContext";
 import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import BrowserWarningModal from "../components/BrowserWarningModal";
+import { useIntegrationTools } from "../hooks/integration/integrationtools";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -63,6 +64,7 @@ const OnOfficeContainer: FunctionComponent = () => {
   const history = useHistory();
   const { pathname } = useLocation();
   const { handleOnOfficeLogin } = useOnOfficeLogin();
+  const { checkIsSubActive } = useIntegrationTools();
 
   const [loginStatus, setLoginStatus] = useState<IOnOfficeHandleLogin>();
 
@@ -99,7 +101,8 @@ const OnOfficeContainer: FunctionComponent = () => {
 
     if (
       loginStatus.actionType === OnOfficeLoginActionTypesEnum.CONFIRM_ORDER ||
-      integrationUser?.availProdContingents
+      checkIsSubActive() ||
+      integrationUser.availProdContingents
     ) {
       history.push(
         searchContextState.snapshotId
@@ -169,9 +172,11 @@ const OnOfficeContainer: FunctionComponent = () => {
           <Route path="/open-ai">
             <OpenAiPage />
           </Route>
-          <Route path="/products">
-            <ProductPage />
-          </Route>
+          {!checkIsSubActive() && (
+            <Route path="/products">
+              <ProductPage />
+            </Route>
+          )}
           <Route path={onOfficeRootEntries}>
             <SearchParamsPage />
           </Route>

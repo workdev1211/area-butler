@@ -21,12 +21,13 @@ import { initOpenAiReqQuantity } from "../../../shared/constants/on-office/on-of
 import { TApiIntUserProdContType } from "../../../shared/types/integration-user";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 
-export type TOpenAiQuery =
+export type TOpenAiQuery = { integrationId?: string } & (
   | IApiOpenAiLocDescQuery
   | IApiOpenAiRealEstDescQuery
   | IApiOpenAiLocRealEstDescQuery
   | IApiOpenAiImproveTextQuery
-  | IApiOpenAiQuery;
+  | IApiOpenAiQuery
+);
 
 export const useOpenAi = () => {
   const { integrationType } = useContext(ConfigContext);
@@ -34,7 +35,8 @@ export const useOpenAi = () => {
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
 
-  const { getAvailProdContTypeOrFail } = useIntegrationTools();
+  const { checkIsSubActive, getAvailProdContTypeOrFail } =
+    useIntegrationTools();
   const { post } = useHttp();
 
   const isIntegration = !!integrationType;
@@ -44,7 +46,27 @@ export const useOpenAi = () => {
     openAiQueryType: OpenAiQueryTypeEnum,
     openAiQuery: TOpenAiQuery
   ): Promise<string> => {
-    let queryResponse;
+    const resOpenAiQuery: TOpenAiQuery = { ...openAiQuery };
+    let availProdContType: TApiIntUserProdContType | undefined;
+
+    if (
+      isIntegration &&
+      !checkIsSubActive() &&
+      !realEstateListing.openAiRequestQuantity
+    ) {
+      availProdContType = getAvailProdContTypeOrFail(
+        IntegrationActionTypeEnum.UNLOCK_OPEN_AI
+      );
+
+      if (!availProdContType) {
+        return "";
+      }
+    }
+
+    if (isIntegration) {
+      resOpenAiQuery.integrationId = realEstateListing.integrationId;
+    }
+
     let url;
 
     switch (openAiQueryType) {
@@ -83,32 +105,16 @@ export const useOpenAi = () => {
       }
     }
 
-    let availProdContType: TApiIntUserProdContType | undefined;
-
-    if (isIntegration && !realEstateListing.openAiRequestQuantity) {
-      availProdContType = getAvailProdContTypeOrFail(
-        IntegrationActionTypeEnum.UNLOCK_OPEN_AI
-      );
-
-      if (!availProdContType) {
-        return "";
-      }
-    }
-
-    if (isIntegration) {
-      Object.assign(openAiQuery, {
-        integrationId: realEstateListing.integrationId,
-      });
-    }
+    let queryResponse;
 
     try {
-      queryResponse = (await post<string>(url, openAiQuery)).data;
+      queryResponse = (await post<string>(url, resOpenAiQuery)).data;
     } catch (e) {
       toastError("Fehler beim Senden der KI-Anfrage!");
       return "";
     }
 
-    if (!isIntegration) {
+    if (!isIntegration || checkIsSubActive()) {
       return queryResponse;
     }
 

@@ -362,9 +362,6 @@ export class OnOfficeService {
 
     integrationUser.parentUser = parentUser;
 
-    const availProdContingents =
-      await this.contingentIntService.getAvailProdContingents(integrationUser);
-
     const realEstateDto = await this.fetchAndProcessEstateData(
       estateId,
       integrationUser,
@@ -372,21 +369,27 @@ export class OnOfficeService {
 
     const realEstate = mapRealEstateListingToApiRealEstateListing(
       integrationUser,
-      await this.realEstateListingIntService.upsertByIntParams(realEstateDto),
+      await this.realEstateListingIntService.upsertOneByIntParams(
+        realEstateDto,
+      ),
     );
 
     return {
-      availProdContingents,
       integrationUserId,
       realEstate,
-      isChild: !!integrationUser.parentId,
       accessToken: extendedClaim,
+      availProdContingents:
+        await this.contingentIntService.getAvailProdContingents(
+          integrationUser,
+        ),
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
+      isChild: !!integrationUser.parentId,
       latestSnapshot: await this.fetchSnapshotService.fetchLastSnapshotByIntId(
         integrationUser,
         estateId,
       ),
+      subscription: integrationUser.subscription,
     };
   }
 
@@ -534,6 +537,7 @@ export class OnOfficeService {
         integrationUser,
         integrationId,
       ),
+      subscription: integrationUser.subscription,
     };
   }
 

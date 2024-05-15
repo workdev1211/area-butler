@@ -43,6 +43,7 @@ import {
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   ApiUserRequests,
+  FeatureTypeEnum,
 } from "../../../shared/types/types";
 import nextIcon from "../assets/icons/icons-16-x-16-outline-ic-next.svg";
 import ImportantAddresses from "../components/ImportantAddresses";
@@ -73,7 +74,6 @@ import { useTools } from "../hooks/tools";
 import ConfirmationModal from "../components/ConfirmationModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
-import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.functions";
 import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
 
 // TODO try to fix the following error
@@ -90,7 +90,7 @@ const SearchParamsPage: FC = () => {
   const history = useHistory<ISearchParamsHistoryState>();
   const { state } = useLocation<ISearchParamsHistoryState>();
   const { createLocation, createSnapshot } = useLocationData();
-  const { getActualUser } = useTools();
+  const { checkIsFeatAvailable, getActualUser } = useTools();
   const { unlockProduct } = useIntegrationTools();
 
   const user = getActualUser();
@@ -499,41 +499,18 @@ const SearchParamsPage: FC = () => {
             type="button"
             disabled={isSearchButtonDisabled}
             onClick={async () => {
-              if (!isIntegrationUser) {
+              if (checkIsFeatAvailable(FeatureTypeEnum.SEARCH)) {
                 await performAnalysis();
                 return;
               }
 
-              if (!searchContextState.realEstateListing) {
-                toastError("Der Fehler ist aufgetreten!");
-                return;
-              }
-
-              const {
-                iframeEndsAt,
-                isOnePageExportActive,
-                isStatsFullExportActive,
-                openAiRequestQuantity,
-              } = searchContextState.realEstateListing;
-
-              if (
-                checkIsSearchNotUnlocked({
-                  iframeEndsAt,
-                  isOnePageExportActive,
-                  isStatsFullExportActive,
-                  openAiRequestQuantity,
-                })
-              ) {
+              if (isIntegrationUser) {
                 setUnlockParams({
                   actionType: IntegrationActionTypeEnum.UNLOCK_SEARCH,
                   isShownModal: true,
                   modalMessage: searchUnlockText,
                 });
-
-                return;
               }
-
-              await performAnalysis();
             }}
             className={
               searchContextState.searchBusy

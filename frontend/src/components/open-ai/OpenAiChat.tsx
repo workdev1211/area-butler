@@ -33,7 +33,7 @@ interface IOpenAiChatProps {
   sendToIntegration: (
     sendToIntegrationData: TSendToIntegrationData
   ) => Promise<void>;
-  isNotIntOrAvailForIntUser: boolean;
+  isOpenAiAvailable: boolean;
   isSendToIntAllowed: (queryType: OpenAiQueryTypeEnum) => boolean;
   integrationType?: IntegrationTypesEnum;
 }
@@ -50,7 +50,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
   queryType,
   handleUnlock,
   sendToIntegration,
-  isNotIntOrAvailForIntUser,
+  isOpenAiAvailable,
   isSendToIntAllowed,
   integrationType,
   fixedQueryType,
@@ -368,7 +368,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                 }`}
                 form="open-ai-location-description-form"
                 onClick={() => {
-                  if (isNotIntOrAvailForIntUser) {
+                  if (isOpenAiAvailable) {
                     setIsFetchResponse(true);
                     if (isImproveDialogEnabled) {
                       if (promptInputRef.current?.value === "") return;
@@ -381,7 +381,7 @@ const OpenAiChat: FunctionComponent<IOpenAiChatProps> = ({
                 }}
                 disabled={isGenerateButtonDisabled || isFetchResponse}
               >
-                {isNotIntOrAvailForIntUser ? "Generieren" : "Freischalten"}
+                {isOpenAiAvailable ? "Generieren" : "Freischalten"}
               </button>
             </div>
           </div>

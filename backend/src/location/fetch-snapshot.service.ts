@@ -226,8 +226,13 @@ export class FetchSnapshotService {
   }
 
   async checkIntSnapshotIframeExp(
+    { isSubscriptionActive }: TIntegrationUserDocument,
     snapshotDoc: SearchResultSnapshotDocument,
   ): Promise<void> {
+    if (isSubscriptionActive) {
+      return;
+    }
+
     let iframeEndsAt = snapshotDoc?.iframeEndsAt;
 
     if (!iframeEndsAt) {

@@ -7,7 +7,6 @@ import {
 } from "../../../shared/types/on-office";
 import { convertPriceToHuman } from "../../../shared/functions/shared.functions";
 import { getProductDescription } from "./ProductDescription";
-import { toastError } from "../shared/shared.functions";
 import { useHttp } from "../hooks/http";
 import { SearchContext } from "../context/SearchContext";
 import {
@@ -16,6 +15,8 @@ import {
 } from "../../../shared/types/integration";
 import { getProductImage } from "../shared/integration.functions";
 import { ConfigContext } from "../context/ConfigContext";
+import { UserContext } from "../context/UserContext";
+import { propstackOrSubEmailBody } from "../../../shared/constants/email";
 
 interface IProductCardProps {
   products: IIntegrationProduct[];
@@ -27,6 +28,9 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
   const {
     searchContextState: { realEstateListing },
   } = useContext(SearchContext);
+  const {
+    userState: { integrationUser },
+  } = useContext(UserContext);
 
   const { post } = useHttp();
 
@@ -35,8 +39,6 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
     tenfold: 0,
   });
 
-  // TODO PROPSTACK CONTINGENT
-  const isPropstack = integrationType === IntegrationTypesEnum.PROPSTACK;
   const [mainProduct, tenfoldProduct] = products;
   const { name, type, price } = mainProduct;
 
@@ -44,17 +46,41 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
     isDisabled || products.some(({ isDisabled }) => isDisabled);
 
   const ProductCardButton: FC = () => {
-    if (type === "SUBSCRIPTION" || isPropstack) {
-      return isCardDisabled ? (
+    const isSubscriptionType = type === "SUBSCRIPTION";
+    // TODO PROPSTACK SPECIFIC
+    const isEmailType =
+      isSubscriptionType || integrationType === IntegrationTypesEnum.PROPSTACK;
+
+    if (isCardDisabled) {
+      return (
         <button className="btn btn-primary w-48" disabled={true}>
-          Anfragen
+          {isEmailType ? "Anfragen" : "Bestellen"}
         </button>
-      ) : (
+      );
+    }
+
+    const { ordinary: ordinaryQuantity, tenfold: tenfoldQuantity } =
+      productQuantity;
+
+    if (isEmailType) {
+      let body = propstackOrSubEmailBody
+        .replace("{PRODUCT_DESCRIPTION}", encodeURIComponent(name))
+        .replace("{INTEGRATION_USER_ID}", integrationUser!.integrationUserId);
+
+      body =
+        ordinaryQuantity || tenfoldQuantity
+          ? body.replace(
+              "{AMOUNT_OF_ADDRESSES}",
+              `${ordinaryQuantity || tenfoldQuantity * 10}`
+            )
+          : body.replace("Anzahl Adressen: {AMOUNT_OF_ADDRESSES}%0D%0A", "");
+
+      return (
         <a
           className="btn btn-primary w-48"
           target="_blank"
           rel="noreferrer"
-          href="mailto:info@areabutler.de"
+          href={`mailto:info@areabutler.de?subject=AreaButler Angebotsanfrage&body=${body}`}
           style={{
             padding: "0 var(--btn-padding) 0 var(--btn-padding)",
           }}
@@ -67,20 +93,7 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
     return (
       <button
         className="btn btn-primary w-48"
-        disabled={isCardDisabled}
         onClick={async () => {
-          if (isCardDisabled) {
-            return;
-          }
-
-          const { ordinary: ordinaryQuantity, tenfold: tenfoldQuantity } =
-            productQuantity;
-
-          if (!ordinaryQuantity && !tenfoldQuantity) {
-            toastError("Bitte geben Sie die Menge eines der Produkte an.");
-            return;
-          }
-
           const resultingProducts: IApiOnOfficeCreateOrderProduct[] = [];
 
           // #1 An important note - onOffice ONLY excepts a SINGLE product stored in an array
@@ -131,7 +144,7 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
         <div className="flex flex-col gap-2 h-full justify-between">
           {getProductDescription(name, type)}
           <div className="card-actions flex flex-col items-center gap-2">
-            {price !== 0 && (
+            {price !== 0 ? (
               <div
                 className="grid items-center gap-2"
                 style={{ gridTemplateColumns: "2fr 0.5fr 3fr" }}
@@ -143,8 +156,7 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
                   placeholder="XX"
                   size={4}
                   maxLength={4}
-                  // TODO PROPSTACK CONTINGENT
-                  disabled={isCardDisabled || isPropstack}
+                  disabled={isCardDisabled}
                   value={productQuantity.ordinary}
                   onChange={({ target: { value } }) => {
                     if (!+value && value !== "") {
@@ -169,8 +181,7 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
                   placeholder="XX"
                   size={4}
                   maxLength={4}
-                  // TODO PROPSTACK CONTINGENT
-                  disabled={isCardDisabled || isPropstack}
+                  disabled={isCardDisabled}
                   value={productQuantity.tenfold}
                   onChange={({ target: { value } }) => {
                     if (!+value && value !== "") {
@@ -188,6 +199,29 @@ const ProductCard: FC<IProductCardProps> = ({ products, isDisabled }) => {
                   {/*  <div className="badge badge-primary ml-1">-20%</div>*/}
                   {/*)}*/}
                 </div>
+              </div>
+            ) : (
+              <div
+                className="grid items-center gap-2"
+                style={{ gridTemplateColumns: "2fr 0.5fr 3fr" }}
+              >
+                <div className="pl-1 text-left">Adressen pro Jahr:</div>
+                <input
+                  className="input input-bordered h-auto pr-0"
+                  type="text"
+                  placeholder="XX"
+                  size={4}
+                  maxLength={4}
+                  disabled={isCardDisabled}
+                  value={productQuantity.ordinary}
+                  onChange={({ target: { value } }) => {
+                    if (!+value && value !== "") {
+                      return;
+                    }
+
+                    setProductQuantity({ ordinary: +value, tenfold: 0 });
+                  }}
+                />
               </div>
             )}
             <ProductCardButton />

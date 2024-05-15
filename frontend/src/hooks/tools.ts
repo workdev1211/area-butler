@@ -1,18 +1,32 @@
 import { useContext } from "react";
+import dayjs from "dayjs";
 
 import { ConfigContext } from "../context/ConfigContext";
 import { UserContext } from "../context/UserContext";
-import { ApiTourNamesEnum, ApiUser } from "../../../shared/types/types";
+import {
+  ApiTourNamesEnum,
+  ApiUser,
+  FeatureTypeEnum,
+} from "../../../shared/types/types";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import { useHttp } from "./http";
+import { toastDefaultError, toastError } from "../shared/shared.functions";
+import { checkIsSearchNotUnlocked } from "../../../shared/functions/integration.functions";
+import { SearchContext } from "../context/SearchContext";
+import { useIntegrationTools } from "./integration/integrationtools";
+import { defaultErrorMessage } from "../../../shared/constants/error";
 
 export const useTools = () => {
   const { systemEnv } = useContext(ConfigContext);
   const {
     userState: { user, integrationUser },
   } = useContext(UserContext);
+  const {
+    searchContextState: { realEstateListing },
+  } = useContext(SearchContext);
 
   const { patch, post } = useHttp();
+  const { checkIsSubActive } = useIntegrationTools();
   const isIntegrationUser = !!integrationUser;
 
   const createDirectLink = (token: string): string => {
@@ -32,6 +46,82 @@ export const useTools = () => {
   src="${createDirectLink(token)}"
   title="AreaButler Map Snippet"
 ></iframe>`;
+
+  const checkIsFeatAvailable = (featureType: FeatureTypeEnum) => {
+    if (isIntegrationUser && checkIsSubActive()) {
+      return true;
+    }
+
+    switch (featureType) {
+      case FeatureTypeEnum.SEARCH: {
+        if (!isIntegrationUser) {
+          return true;
+        }
+
+        if (!realEstateListing) {
+          const errorMessage = "Der Fehler ist aufgetreten!";
+          toastError(errorMessage);
+          throw new Error(errorMessage);
+        }
+
+        const {
+          iframeEndsAt,
+          isOnePageExportActive,
+          isStatsFullExportActive,
+          openAiRequestQuantity,
+        } = realEstateListing;
+
+        return !checkIsSearchNotUnlocked({
+          iframeEndsAt,
+          isOnePageExportActive,
+          isStatsFullExportActive,
+          openAiRequestQuantity,
+        });
+      }
+
+      case FeatureTypeEnum.OPEN_AI: {
+        return !isIntegrationUser || !!realEstateListing?.openAiRequestQuantity;
+      }
+
+      case FeatureTypeEnum.IFRAME: {
+        return (
+          !isIntegrationUser ||
+          dayjs().isBefore(realEstateListing?.iframeEndsAt)
+        );
+      }
+
+      case FeatureTypeEnum.ONE_PAGE: {
+        const isExportAvailForIntUser =
+          isIntegrationUser && !!realEstateListing?.isOnePageExportActive;
+
+        return (
+          isExportAvailForIntUser ||
+          !!user?.subscription?.config.appFeatures.fullyCustomizableExpose
+        );
+      }
+
+      case FeatureTypeEnum.OTHER_EXPORT: {
+        const isExportAvailForIntUser =
+          isIntegrationUser && !!realEstateListing?.isStatsFullExportActive;
+
+        return (
+          isExportAvailForIntUser ||
+          !!user?.subscription?.config.appFeatures.fullyCustomizableExpose
+        );
+      }
+
+      case FeatureTypeEnum.STATS_DATA: {
+        return isIntegrationUser
+          ? !!realEstateListing?.isStatsFullExportActive
+          : true;
+      }
+
+      default: {
+        toastDefaultError();
+        throw new Error(defaultErrorMessage);
+      }
+    }
+  };
 
   // TODO think about refactoring to the same frontend interface
   const getActualUser = (): ApiUser | IApiIntegrationUser => {
@@ -84,6 +174,7 @@ export const useTools = () => {
     createDirectLink,
     createCodeSnippet,
     // move all hooks below to the user data hook component
+    checkIsFeatAvailable,
     getActualUser,
     updateUserSettings,
     hideTour,

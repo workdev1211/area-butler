@@ -3,9 +3,10 @@ import { FunctionComponent, ReactNode, useContext } from "react";
 import { EntityGroup, ResultEntity } from "../../shared/search-result.types";
 import {
   ApiGeojsonFeature,
+  FeatureTypeEnum,
+  IApiUserPoiIcon,
   MapDisplayModesEnum,
   MeansOfTransportation,
-  IApiUserPoiIcon,
 } from "../../../../shared/types/types";
 import { FederalElectionDistrict } from "hooks/federalelectiondata";
 import {
@@ -18,10 +19,10 @@ import SocialDemographics from "./components/SocialDemographics";
 import EnvironmentalInfo from "./components/EnvironmentalInfo";
 import EconomicMetrics from "./components/EconomicMetrics";
 import { SearchContext } from "../../context/SearchContext";
-import { ConfigContext } from "../../context/ConfigContext";
 import { TUnlockIntProduct } from "../../../../shared/types/integration";
 import { TCensusData } from "../../../../shared/types/data-provision";
 import { TLocationIndexData } from "../../../../shared/types/location-index";
+import { useTools } from "../../hooks/tools";
 
 interface IMapTabProps {
   groupedEntries: EntityGroup[];
@@ -58,15 +59,13 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
   userMenuPoiIcons,
   performUnlock,
 }) => {
-  const { integrationType } = useContext(ConfigContext);
   const {
-    searchContextState: { realEstateListing, responseConfig },
+    searchContextState: { responseConfig },
   } = useContext(SearchContext);
 
-  const isStatsExportActive = !!(integrationType
-    ? realEstateListing?.isStatsFullExportActive
-    : true);
+  const { checkIsFeatAvailable } = useTools();
 
+  const isStatsDataAvailable = checkIsFeatAvailable(FeatureTypeEnum.STATS_DATA);
   const isEditorMode = mapDisplayMode === MapDisplayModesEnum.EDITOR;
   const backgroundColor =
     responseConfig?.primaryColor || "var(--primary-gradient)";
@@ -87,7 +86,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
 
       {isEditorMode && (
         <LocationIndices
-          isStatsExportActive={isStatsExportActive}
+          isStatsDataAvailable={isStatsDataAvailable}
           performUnlock={performUnlock}
           backgroundColor={backgroundColor}
           locationIndexData={locationIndexData}
@@ -96,7 +95,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
 
       {showInsights && isEditorMode && (
         <SocialDemographics
-          isStatsExportActive={isStatsExportActive}
+          isStatsDataAvailable={isStatsDataAvailable}
           performUnlock={performUnlock}
           backgroundColor={backgroundColor}
           openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}
@@ -108,7 +107,7 @@ const MapTab: FunctionComponent<IMapTabProps> = ({
       {isEditorMode && (
         <>
           <EnvironmentalInfo
-            isStatsExportActive={isStatsExportActive}
+            isStatsDataAvailable={isStatsDataAvailable}
             performUnlock={performUnlock}
             backgroundColor={backgroundColor}
             openUpgradeSubscriptionModal={openUpgradeSubscriptionModal}

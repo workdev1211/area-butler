@@ -8,14 +8,14 @@ import UnlockProductButton from "../../components/UnlockProductButton";
 import { TLocationIndexData } from "../../../../../shared/types/location-index";
 
 interface ILocationIndicesProps {
-  isStatsExportActive: boolean;
+  isStatsDataAvailable: boolean;
   performUnlock: TUnlockIntProduct;
   backgroundColor: string;
   locationIndexData?: TLocationIndexData;
 }
 
 const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
-  isStatsExportActive,
+  isStatsDataAvailable,
   performUnlock,
   backgroundColor,
   locationIndexData,
@@ -57,7 +57,7 @@ const LocationIndices: FunctionComponent<ILocationIndicesProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {isStatsExportActive ? (
+        {isStatsDataAvailable ? (
           locationIndexData && !Object.keys(locationIndexData).length ? (
             <div
               className="text-justify"

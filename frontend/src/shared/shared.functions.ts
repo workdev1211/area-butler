@@ -63,7 +63,10 @@ import {
 import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
-import { notAllowedCountryMsg } from "../../../shared/constants/error";
+import {
+  defaultErrorMessage,
+  notAllowedCountryMsg,
+} from "../../../shared/constants/error";
 import {
   availableCountries,
   defaultAllowedCountries,
@@ -280,7 +283,7 @@ export const toastError = (
 };
 
 export const toastDefaultError = (): void => {
-  toastError("Ein Fehler ist aufgetreten!");
+  toastError(defaultErrorMessage);
 };
 
 // TODO think about uniting "getRealEstateListingsIcon", "getPreferredLocationsIcon" and "deriveIconForOsmName" into a single method

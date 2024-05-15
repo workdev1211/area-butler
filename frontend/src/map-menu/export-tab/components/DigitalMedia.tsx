@@ -1,7 +1,6 @@
 import { FunctionComponent, useContext, useEffect, useState } from "react";
 import { saveAs } from "file-saver";
 import JsZip from "jszip";
-import dayjs from "dayjs";
 
 import "./DigitalMedia.scss";
 
@@ -27,6 +26,7 @@ import { useIntegrationTools } from "../../../hooks/integration/integrationtools
 import digitalMediaIcon from "../../../assets/icons/map-menu/08-digitale-medien.svg";
 import {
   IntegrationActionTypeEnum,
+  IntegrationTypesEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
 import { AreaButlerExportTypesEnum } from "../../../../../shared/types/integration-user";
@@ -38,6 +38,8 @@ import { getRenderedLegend } from "../../../export/RenderedLegend";
 import { realEstateListingsTitle } from "../../../../../shared/constants/real-estate";
 import { ConfigContext } from "../../../context/ConfigContext";
 import { integrationNames } from "../../../../../shared/constants/integration";
+import { useTools } from "../../../hooks/tools";
+import { FeatureTypeEnum } from "../../../../../shared/types/types";
 
 interface IDigitalMediaProps {
   codeSnippet: string;
@@ -60,7 +62,6 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   } = useContext(UserContext);
   const {
     searchContextState: {
-      realEstateListing,
       responseConfig,
       responseGroupedEntities,
       responseActiveMeans,
@@ -70,6 +71,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
   } = useContext(SearchContext);
 
   const { sendToIntegration } = useIntegrationTools();
+  const { checkIsFeatAvailable } = useTools();
   const [isDigitalMediaOpen, setIsDigitalMediaOpen] = useState(false);
 
   useEffect(() => {
@@ -151,10 +153,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
       : AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS;
   };
 
-  const isNotIntOrNotExpForIntUser =
-    !integrationUser ||
-    (!!realEstateListing?.iframeEndsAt &&
-      !dayjs().isAfter(realEstateListing?.iframeEndsAt));
+  const isIframeAvailable = checkIsFeatAvailable(FeatureTypeEnum.IFRAME);
 
   const isIntUserIframeExportAvail = !!(
     integrationUser?.config.exportMatching &&
@@ -192,7 +191,7 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {isNotIntOrNotExpForIntUser ? (
+        {isIframeAvailable ? (
           <div className="digital-media">
             {/* Embedded snapshot url */}
 
@@ -212,11 +211,11 @@ const DigitalMedia: FunctionComponent<IDigitalMediaProps> = ({
               {!!intUserLinkExpType && (
                 <div
                   onClick={() => {
-                    if (!intUserLinkExpType) {
-                      return;
-                    }
-
-                    if (!integrationUser?.config.isSpecialLink) {
+                    // TODO PROPSTACK SPECIFIC - waiting for the custom field names from Propstack
+                    if (
+                      !integrationUser?.config.isSpecialLink &&
+                      integrationType !== IntegrationTypesEnum.PROPSTACK
+                    ) {
                       void sendToIntegration({
                         exportType: intUserLinkExpType,
                         text: directLink,

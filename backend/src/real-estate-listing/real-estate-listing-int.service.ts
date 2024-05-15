@@ -13,6 +13,7 @@ import {
 } from './schema/real-estate-listing.schema';
 import {
   IApiIntegrationParams,
+  IApiUnlockIntProductReq,
   IntegrationActionTypeEnum,
 } from '@area-butler-types/integration';
 import { TIntegrationUserDocument } from '../user/schema/integration-user.schema';
@@ -26,6 +27,8 @@ import { IApiRealEstateListingSchema } from '@area-butler-types/real-estate';
 import { LocationIndexService } from '../data-provision/location-index/location-index.service';
 import { getProcUpdateQuery } from '../shared/functions/shared';
 import { checkIsSearchNotUnlocked } from '../../../shared/functions/integration.functions';
+import { ResultStatusEnum } from '@area-butler-types/types';
+import { ContingentIntService } from '../user/contingent-int.service';
 
 interface IUnlockProductParams {
   availProdContType: TApiIntUserProdContType;
@@ -33,11 +36,15 @@ interface IUnlockProductParams {
   actionType: IntegrationActionTypeEnum;
 }
 
+type TUpdateByIntParams = Partial<IApiRealEstateListingSchema> &
+  Pick<IApiRealEstateListingSchema, 'integrationParams'>;
+
 @Injectable()
 export class RealEstateListingIntService {
   constructor(
     @InjectModel(RealEstateListing.name)
     private readonly realEstateListingModel: Model<RealEstateListingDocument>,
+    private readonly contingentIntService: ContingentIntService,
     private readonly locationIndexService: LocationIndexService,
   ) {}
 
@@ -61,15 +68,39 @@ export class RealEstateListingIntService {
     return existingRealEstateListing;
   }
 
-  async updateByIntParams(
-    realEstateListing: Partial<IApiRealEstateListingSchema> &
+  async bulkUpdateOneByIntParams(
+    realEstateData: TUpdateByIntParams,
+  ): Promise<ResultStatusEnum> {
+    // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
+    const {
+      integrationParams: { integrationId, integrationUserId, integrationType },
+      ...updateData
+    } = realEstateData;
+
+    const { matchedCount, modifiedCount } =
+      await this.realEstateListingModel.updateOne(
+        {
+          'integrationParams.integrationId': integrationId,
+          'integrationParams.integrationUserId': integrationUserId,
+          'integrationParams.integrationType': integrationType,
+        },
+        getProcUpdateQuery(updateData),
+      );
+
+    return matchedCount === 1 || modifiedCount === 1
+      ? ResultStatusEnum.SUCCESS
+      : ResultStatusEnum.FAILURE;
+  }
+
+  async updateOneByIntParams(
+    realEstateData: Partial<IApiRealEstateListingSchema> &
       Pick<IApiRealEstateListingSchema, 'integrationParams'>,
   ): Promise<RealEstateListingDocument> {
     // integrationParams SHOULD NOT BE OVERWRITTEN because they keep the contingent information
     const {
       integrationParams: { integrationId, integrationUserId, integrationType },
-      ...realEstateData
-    } = realEstateListing;
+      ...updateData
+    } = realEstateData;
 
     return this.realEstateListingModel.findOneAndUpdate(
       {
@@ -77,43 +108,66 @@ export class RealEstateListingIntService {
         'integrationParams.integrationUserId': integrationUserId,
         'integrationParams.integrationType': integrationType,
       },
-      getProcUpdateQuery(realEstateData),
+      getProcUpdateQuery(updateData),
       { new: true },
     );
   }
 
-  async upsertByIntParams(
-    realEstateListing: IApiRealEstateListingSchema,
+  async upsertOneByIntParams(
+    realEstate: IApiRealEstateListingSchema,
   ): Promise<RealEstateListingDocument> {
-    const existingRealEstate = await this.updateByIntParams(realEstateListing);
+    const existingRealEstate = await this.updateOneByIntParams(realEstate);
 
     if (existingRealEstate) {
       return existingRealEstate;
     }
 
+    // TODO think about how the data should be retrieved - for a Point on in a certain radius
     // Because in real estate DB records coordinates are stored in the malformed GeoJSON format
-    const resultLocation = JSON.parse(
-      JSON.stringify(realEstateListing.location),
-    );
-    resultLocation.coordinates = [
-      resultLocation.coordinates[1],
-      resultLocation.coordinates[0],
-    ];
-
-    const locationIndexData = await this.locationIndexService.query(
-      resultLocation,
-    );
+    const locationIndexData = await this.locationIndexService.query({
+      type: 'Point',
+      coordinates: [
+        realEstate.location.coordinates[1],
+        realEstate.location.coordinates[0],
+      ],
+    });
 
     if (locationIndexData[0]) {
-      Object.assign(realEstateListing, {
+      Object.assign(realEstate, {
         locationIndices: locationIndexData[0].properties,
       });
     }
 
-    return new this.realEstateListingModel(realEstateListing).save();
+    return new this.realEstateListingModel(realEstate).save();
   }
 
-  async unlockProduct(
+  async handleProductUnlock(
+    integrationUser: TIntegrationUserDocument,
+    { actionType, integrationId }: IApiUnlockIntProductReq,
+  ): Promise<void> {
+    if (integrationUser.isSubscriptionActive) {
+      throw new UnprocessableEntityException();
+    }
+
+    const availProdContType =
+      await this.contingentIntService.getAvailProdContTypeOrFail(
+        integrationUser,
+        actionType,
+      );
+
+    await this.unlockProduct(integrationUser, {
+      actionType,
+      availProdContType,
+      integrationId,
+    });
+
+    await this.contingentIntService.incrementProductUsage(
+      integrationUser,
+      availProdContType,
+    );
+  }
+
+  private async unlockProduct(
     integrationUser: TIntegrationUserDocument,
     { actionType, availProdContType, integrationId }: IUnlockProductParams,
   ): Promise<void> {

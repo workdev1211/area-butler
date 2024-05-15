@@ -44,6 +44,9 @@ export const useIntegrationTools = () => {
   const { sendToOnOffice } = useOnOfficeSync();
   const { sendToPropstack } = usePropstackSync();
 
+  const checkIsSubActive = () =>
+    dayjs().isBefore(integrationUser?.subscription?.expiresAt);
+
   const getAvailProdContTypeOrFail = (
     actionType: IntegrationActionTypeEnum
   ): TApiIntUserProdContType | undefined => {
@@ -103,7 +106,7 @@ export const useIntegrationTools = () => {
   const unlockProduct = async (
     actionType: IntegrationActionTypeEnum
   ): Promise<void> => {
-    if (!realEstateListing?.integrationId) {
+    if (!realEstateListing?.integrationId || checkIsSubActive()) {
       return;
     }
 
@@ -190,8 +193,9 @@ export const useIntegrationTools = () => {
   };
 
   return {
-    sendToIntegration,
+    checkIsSubActive,
     getAvailProdContTypeOrFail,
+    sendToIntegration,
     unlockProduct,
   };
 };

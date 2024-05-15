@@ -82,23 +82,25 @@ export const usePropstackLogin = () => {
   };
 
   const dispatchContextData = ({
-    integrationUserId,
     accessToken,
-    config,
-    isChild,
-    realEstate,
     availProdContingents,
+    config,
+    integrationUserId,
+    isChild,
     latestSnapshot,
     openAiQueryType,
+    realEstate,
+    subscription,
   }: IApiIntUserLoginRes): void => {
     userDispatch({
       type: UserActionTypes.SET_INTEGRATION_USER,
       payload: {
-        integrationUserId,
         accessToken,
-        config,
-        isChild,
         availProdContingents,
+        config,
+        integrationUserId,
+        isChild,
+        subscription,
       },
     });
 

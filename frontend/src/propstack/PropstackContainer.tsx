@@ -16,6 +16,7 @@ import { snapshotEditorPath } from "../shared/shared.constants";
 import { LoadingMessage } from "../components/Loading";
 import { IIntegrationHandleLogin } from "../../../shared/types/integration";
 import BrowserWarningModal from "../components/BrowserWarningModal";
+import { useIntegrationTools } from "../hooks/integration/integrationtools";
 
 // MOVE TO A SEPARATE COMPONENT START
 const calculateViewHeight = (): void => {
@@ -51,6 +52,7 @@ const PropstackContainer: FC = () => {
   const history = useHistory();
   const { pathname } = useLocation();
   const { handlePropstackLogin } = usePropstackLogin();
+  const { checkIsSubActive } = useIntegrationTools();
 
   const [loginStatus, setLoginStatus] = useState<IIntegrationHandleLogin>();
 
@@ -90,7 +92,7 @@ const PropstackContainer: FC = () => {
       return;
     }
 
-    if (integrationUser?.availProdContingents) {
+    if (checkIsSubActive() || integrationUser.availProdContingents) {
       history.push(
         searchContextState.snapshotId
           ? `/${snapshotEditorPath}/${searchContextState.snapshotId}`
@@ -159,9 +161,11 @@ const PropstackContainer: FC = () => {
           <Route path="/open-ai-popup">
             <OpenAiPopup />
           </Route>
-          <Route path="/products">
-            <ProductPage />
-          </Route>
+          {!checkIsSubActive() && (
+            <Route path="/products">
+              <ProductPage />
+            </Route>
+          )}
           <Route path={propstackRootEntries}>
             <SearchParamsPage />
           </Route>

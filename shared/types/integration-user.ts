@@ -18,6 +18,7 @@ export interface IApiIntegrationUserSchema {
   parentId?: string;
   productContingents?: TApiIntegrationUserProductContingents;
   productsUsed?: TApiIntegrationUserProductsUsed;
+  subscription?: IIntUserSubscription;
 }
 
 export interface IApiIntegrationUser {
@@ -26,11 +27,16 @@ export interface IApiIntegrationUser {
   integrationUserId: string;
   isChild: boolean;
   availProdContingents?: TApiIntUserAvailProdContingents;
+  subscription?: IIntUserSubscription;
 }
 
 export type TApiIntUserAvailProdContingents = Partial<
   Record<TApiIntUserProdContType, number>
 >;
+
+export interface IIntUserSubscription {
+  expiresAt: Date;
+}
 
 export interface IApiIntUserOnOfficeParams {
   parameterCacheId?: string;
@@ -153,4 +159,5 @@ export interface IApiIntUserLoginRes {
   availProdContingents?: TApiIntUserAvailProdContingents;
   latestSnapshot?: ApiSearchResultSnapshotResponse;
   openAiQueryType?: OpenAiQueryTypeEnum;
+  subscription?: IIntUserSubscription;
 }

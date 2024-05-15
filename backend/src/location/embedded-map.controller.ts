@@ -21,6 +21,7 @@ import { IntegrationUserService } from '../user/integration-user.service';
 import { UserService } from '../user/user.service';
 import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listing/mapper/real-estate-listing.mapper';
 import { RealEstateListingDocument } from '../real-estate-listing/schema/real-estate-listing.schema';
+import { checkIsParent } from '../../../shared/functions/integration.functions';
 
 @ApiTags('embedded-map')
 @Controller('api/location/embedded')
@@ -47,50 +48,56 @@ export class EmbeddedMapController {
       return;
     }
 
-    const isIntSnapshot = !!snapshotDoc.integrationParams;
-
-    if (isIntSnapshot) {
-      await this.fetchSnapshotService.checkIntSnapshotIframeExp(snapshotDoc);
-    } else {
-      this.fetchSnapshotService.checkLocationExpiration(snapshotDoc);
-    }
-
-    snapshotDoc.lastAccess = new Date();
-    snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
-    await snapshotDoc.save();
-
-    let isTrial = false;
-    let user;
-
-    if (!isIntSnapshot) {
-      user = await this.userService.findById({
-        userId: snapshotDoc.userId,
-        withAssets: true,
-        withSubscription: true,
-      });
-
-      if (!user.subscription) {
-        this.logger.error(user.id, user.email);
-        throw new HttpException(subscriptionExpiredMessage, 402);
-      }
-
-      isTrial = user.subscription.type === ApiSubscriptionPlanType.TRIAL;
-    }
-
-    if (isIntSnapshot) {
-      user = await this.integrationUserService.findOne(
-        snapshotDoc.integrationParams.integrationType,
-        {
-          integrationUserId: snapshotDoc.integrationParams.integrationUserId,
-        },
-      );
-    }
+    const user = snapshotDoc.integrationParams
+      ? await this.integrationUserService.findOne(
+          snapshotDoc.integrationParams.integrationType,
+          {
+            integrationUserId: snapshotDoc.integrationParams.integrationUserId,
+          },
+        )
+      : await this.userService.findById({
+          userId: snapshotDoc.userId,
+          withAssets: true,
+          withSubscription: true,
+        });
 
     if (!user) {
       throw new HttpException('Unknown user!', 400);
     }
 
     const isIntegrationUser = 'integrationUserId' in user;
+    let isTrial = false;
+
+    if (!isIntegrationUser) {
+      if (!user.subscription) {
+        this.logger.error(user.id, user.email);
+        throw new HttpException(subscriptionExpiredMessage, 402);
+      }
+
+      isTrial = user.subscription.type === ApiSubscriptionPlanType.TRIAL;
+      this.fetchSnapshotService.checkLocationExpiration(snapshotDoc);
+    }
+
+    if (isIntegrationUser) {
+      if (user.parentId) {
+        const parentUser = await this.integrationUserService.findByDbId(
+          user.parentId,
+        );
+
+        if (parentUser && checkIsParent(user, parentUser)) {
+          user.parentUser = parentUser;
+        }
+      }
+
+      await this.fetchSnapshotService.checkIntSnapshotIframeExp(
+        user,
+        snapshotDoc,
+      );
+    }
+
+    snapshotDoc.lastAccess = new Date();
+    snapshotDoc.visitAmount = snapshotDoc.visitAmount + 1;
+    await snapshotDoc.save();
 
     const snapshotRes = await this.fetchSnapshotService.getSnapshotRes(user, {
       isTrial,

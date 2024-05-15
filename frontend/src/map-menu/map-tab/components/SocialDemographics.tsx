@@ -46,7 +46,7 @@ const federalElectionNotInSubscriptionPlanMessage = (
 );
 
 interface ISocialDemographicsProps {
-  isStatsExportActive: boolean;
+  isStatsDataAvailable: boolean;
   performUnlock: TUnlockIntProduct;
   backgroundColor: string;
   openUpgradeSubscriptionModal?: (message: ReactNode) => void;
@@ -55,7 +55,7 @@ interface ISocialDemographicsProps {
 }
 
 const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
-  isStatsExportActive,
+  isStatsDataAvailable,
   performUnlock,
   backgroundColor,
   openUpgradeSubscriptionModal,
@@ -108,7 +108,7 @@ const SocialDemographics: FunctionComponent<ISocialDemographicsProps> = ({
         </div>
       </div>
       <div className="collapse-content">
-        {isStatsExportActive ? (
+        {isStatsDataAvailable ? (
           <ul>
             <li className="locality-option-li" key="list-item-zensus">
               <MapMenuCollapsable

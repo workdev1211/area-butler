@@ -5,12 +5,13 @@ import {
   IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../shared/types/integration";
-import { SearchContext } from "../context/SearchContext";
 import { ConfigContext } from "../context/ConfigContext";
 
 import "./OpenAiModal.scss";
 import OpenAiChat from "./open-ai/OpenAiChat";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
+import { useTools } from "../hooks/tools";
+import { FeatureTypeEnum } from "../../../shared/types/types";
 
 interface IOpenAiModalProps {
   closeModal: () => void;
@@ -25,11 +26,10 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
   queryType,
   performUnlock,
 }) => {
-  const {
-    searchContextState: { realEstateListing },
-  } = useContext(SearchContext);
   const { integrationType } = useContext(ConfigContext);
   const { sendToIntegration } = useIntegrationTools();
+  const { checkIsFeatAvailable } = useTools();
+
   const isIntegration = !!integrationType;
   const isSendToIntAllowed = (queryType: OpenAiQueryTypeEnum) => {
     return (
@@ -42,8 +42,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
     );
   };
 
-  const isNotIntOrAvailForIntUser =
-    !isIntegration || !!realEstateListing?.openAiRequestQuantity;
+  const isOpenAiAvailable = checkIsFeatAvailable(FeatureTypeEnum.OPEN_AI);
 
   const handleUnlock = (): void => {
     if (performUnlock) {
@@ -76,7 +75,7 @@ const OpenAiModal: FunctionComponent<IOpenAiModalProps> = ({
             queryType={queryType}
             handleUnlock={handleUnlock}
             sendToIntegration={sendToIntegration}
-            isNotIntOrAvailForIntUser={isNotIntOrAvailForIntUser}
+            isOpenAiAvailable={isOpenAiAvailable}
             isSendToIntAllowed={isSendToIntAllowed}
             integrationType={integrationType}
           />

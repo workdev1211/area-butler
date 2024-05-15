@@ -21,6 +21,8 @@ import {
   IntegrationActionTypeEnum,
   TUnlockIntProduct,
 } from "../../../../../shared/types/integration";
+import { useTools } from "../../../hooks/tools";
+import { FeatureTypeEnum } from "../../../../../shared/types/types";
 
 const subscriptionUpgradeFullyCustomizableExpose =
   "Das vollständig konfigurierbare Expose als Docx ist im aktuellen Abonnement nicht enthalten.";
@@ -41,17 +43,14 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
   const { integrationType } = useContext(ConfigContext);
   const { searchContextState, searchContextDispatch } =
     useContext(SearchContext);
-  const {
-    userState: { user },
-    userDispatch,
-  } = useContext(UserContext);
+  const { userDispatch } = useContext(UserContext);
 
   const [isExportAvailable, setIsExportAvailable] = useState(false);
   const [exportType, setExportType] = useState<ExportTypeEnum>();
   const [isReportsOpen, setIsReportsOpen] = useState(false);
 
+  const { checkIsFeatAvailable } = useTools();
   const isIntegration = !!integrationType;
-  const realEstateListing = searchContextState.realEstateListing;
 
   const performExport = (): void => {
     if (!exportType) {
@@ -102,16 +101,11 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
 
     const isOnePageExport = exportType === ExportTypeEnum.ONE_PAGE;
 
-    const isExportAvailForIntUser =
-      isIntegration &&
-      (isOnePageExport
-        ? realEstateListing?.isOnePageExportActive
-        : realEstateListing?.isStatsFullExportActive);
+    const isExportAvailable = checkIsFeatAvailable(
+      isOnePageExport ? FeatureTypeEnum.ONE_PAGE : FeatureTypeEnum.OTHER_EXPORT
+    );
 
-    if (
-      isExportAvailForIntUser ||
-      !!user?.subscription?.config.appFeatures.fullyCustomizableExpose
-    ) {
+    if (isExportAvailable) {
       performExport();
       return;
     }
