@@ -7,7 +7,7 @@ import { IApiPropstackTargetGroupChangedReq } from '@area-butler-types/propstack
 
 @Exclude()
 class ApiPropstackTargetGroupChangedReqDto
-  extends OmitType(ApiPropstackLoginReqDto, ['textFieldType'])
+  extends OmitType(ApiPropstackLoginReqDto, ['target', 'fieldName'])
   implements IApiPropstackTargetGroupChangedReq
 {
   @Expose()

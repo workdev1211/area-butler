@@ -2,26 +2,28 @@ import { IApiIntUpdEstTextFieldReq } from "./integration";
 import { OpenAiQueryTypeEnum } from "./open-ai";
 import { AreaButlerExportTypesEnum } from "./integration-user";
 
-export interface IApiPropstackLoginReq {
-  propertyId: number;
-  shopId: number;
-  brokerId: number;
-  teamId?: number;
-  textFieldType?: PropstackTextFieldTypeEnum;
-}
-
-export interface IApiPropstackTargetGroupChangedReq
-  extends IApiPropstackLoginReq {
-  targetGroupName: string;
-}
-
 export interface IApiPropstackLoginQueryParams {
   apiKey: string;
   propertyId: string;
   shopId: string;
   brokerId: string;
   teamId?: string;
-  textFieldType?: PropstackTextFieldTypeEnum;
+  target?: PropstackActionTypeEnum;
+  fieldName?: PropstackFieldNameEnum;
+}
+
+export interface IApiPropstackLoginReq {
+  propertyId: number;
+  shopId: number;
+  brokerId: number;
+  teamId?: number;
+  target?: PropstackActionTypeEnum;
+  fieldName?: PropstackTextFieldTypeEnum;
+}
+
+export interface IApiPropstackTargetGroupChangedReq
+  extends IApiPropstackLoginReq {
+  targetGroupName: string;
 }
 
 export enum PropstackPropMarketTypesEnum {
@@ -42,6 +44,16 @@ export interface IApiPropstackUpdEstTextFieldReq
     | OpenAiQueryTypeEnum.LOCATION_REAL_ESTATE_DESCRIPTION
     | AreaButlerExportTypesEnum.EMBEDDED_LINK_WO_ADDRESS
     | AreaButlerExportTypesEnum.EMBEDDED_LINK_WITH_ADDRESS;
+}
+
+export enum PropstackActionTypeEnum {
+  GENERATE_TEXT = "generateText",
+}
+
+export enum PropstackFieldNameEnum {
+  LOCATION_NOTE = "location",
+  DESCRIPTION_NOTE = "description",
+  OTHER_NOTE = "other",
 }
 
 export enum PropstackTextFieldTypeEnum {

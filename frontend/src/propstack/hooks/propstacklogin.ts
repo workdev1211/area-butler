@@ -13,7 +13,8 @@ import { ResultStatusEnum } from "../../../../shared/types/types";
 import { IIntegrationHandleLogin } from "../../../../shared/types/integration";
 import {
   IApiPropstackLoginQueryParams,
-  PropstackTextFieldTypeEnum,
+  PropstackActionTypeEnum,
+  PropstackFieldNameEnum,
 } from "../../../../shared/types/propstack";
 import { IApiIntUserLoginRes } from "../../../../shared/types/integration-user";
 
@@ -24,8 +25,11 @@ const loginQueryParamsSchema: SchemaOf<IApiPropstackLoginQueryParams> =
     shopId: Yup.string().matches(/^\d+$/).required(),
     brokerId: Yup.string().matches(/^\d+$/).required(),
     teamId: Yup.string().matches(/^\d+$/).optional(),
-    textFieldType: Yup.mixed()
-      .oneOf(Object.values(PropstackTextFieldTypeEnum))
+    target: Yup.mixed()
+      .oneOf(Object.values(PropstackActionTypeEnum))
+      .optional(),
+    fieldName: Yup.mixed()
+      .oneOf(Object.values(PropstackFieldNameEnum))
       .optional(),
   });
 
@@ -46,7 +50,8 @@ export const usePropstackLogin = () => {
     try {
       await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
     } catch (e) {
-      console.error(e);
+      console.error("Validation error:", e);
+      console.debug(queryParamsAndUrl);
       return { requestStatus: ResultStatusEnum.FAILURE };
     }
 
@@ -73,7 +78,7 @@ export const usePropstackLogin = () => {
 
       dispatchContextData(loginRes);
     } catch (e: any) {
-      console.error("Verification error: ", e);
+      console.error("Login error: ", e);
       response.requestStatus = ResultStatusEnum.FAILURE;
       response.message = e.response?.data?.message;
     }

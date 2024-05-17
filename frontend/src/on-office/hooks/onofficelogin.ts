@@ -70,7 +70,12 @@ export const useOnOfficeLogin = () => {
           queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
         ).queryParams
       ) {
-        await confirmOrderSchema.validate(queryParamsAndUrl.queryParams);
+        await confirmOrderSchema
+          .validate(queryParamsAndUrl.queryParams)
+          .catch((e) => {
+            console.error("Validation error:", e);
+            console.debug(queryParamsAndUrl);
+          });
 
         return confirmOrder(
           queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeConfirmOrderQueryParams>
@@ -82,7 +87,12 @@ export const useOnOfficeLogin = () => {
         (queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>)
           .queryParams
       ) {
-        await loginQueryParamsSchema.validate(queryParamsAndUrl.queryParams);
+        await loginQueryParamsSchema
+          .validate(queryParamsAndUrl.queryParams)
+          .catch((e) => {
+            console.error("Validation error:", e);
+            console.debug(queryParamsAndUrl);
+          });
 
         return performLogin(
           queryParamsAndUrl as IQueryParamsAndUrl<IApiOnOfficeLoginQueryParams>
@@ -114,7 +124,7 @@ export const useOnOfficeLogin = () => {
 
       dispatchContextData(loginRes);
     } catch (e: any) {
-      console.error("Verification error: ", e);
+      console.error("Login error: ", e);
       response.requestStatus = ResultStatusEnum.FAILURE;
       response.message = e.response?.data?.message;
     }

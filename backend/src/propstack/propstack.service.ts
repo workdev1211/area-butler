@@ -1,7 +1,7 @@
 import {
   Injectable,
-  UnprocessableEntityException,
   Logger,
+  UnprocessableEntityException,
 } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { plainToInstance } from 'class-transformer';
@@ -37,7 +37,7 @@ import { mapRealEstateListingToApiRealEstateListing } from '../real-estate-listi
 import {
   IApiPropstackLoginQueryParams,
   IApiPropstackLoginReq,
-  // IApiPropstackTargetGroupChangedReq,
+  PropstackActionTypeEnum,
   PropstackTextFieldTypeEnum,
 } from '@area-butler-types/propstack';
 import {
@@ -182,7 +182,7 @@ export class PropstackService {
 
   async login(
     integrationUser: TIntegrationUserDocument,
-    { propertyId, textFieldType }: IApiPropstackLoginReq,
+    { propertyId, target, fieldName }: IApiPropstackLoginReq,
   ): Promise<IApiIntUserLoginRes> {
     const { accessToken, integrationUserId, parentId, subscription } =
       integrationUser;
@@ -205,7 +205,10 @@ export class PropstackService {
       config:
         this.integrationUserService.getIntUserResultConfig(integrationUser),
       isChild: !!parentId,
-      openAiQueryType: propstackOpenAiFieldMapper[textFieldType],
+      openAiQueryType:
+        target === PropstackActionTypeEnum.GENERATE_TEXT
+          ? propstackOpenAiFieldMapper[fieldName]
+          : undefined,
     };
   }
 
