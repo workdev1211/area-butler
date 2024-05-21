@@ -13,7 +13,6 @@ import {
 } from "../context/SearchContext";
 import SearchResultContainer from "../components/search-result-container/SearchResultContainer";
 import { ICurrentMapRef } from "../shared/search-result.types";
-import { deriveInitialEntityGroups } from "../shared/shared.functions";
 import {
   RealEstateActionTypes,
   RealEstateContext,
@@ -24,6 +23,7 @@ import {
 } from "../../../shared/messages/error.message";
 import { getCombinedOsmEntityTypes } from "../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../shared/shared.constants";
+import { deriveInitialEntityGroups } from "../shared/pois.functions";
 
 window.addEventListener("resize", () => {
   calculateViewHeight();
@@ -215,9 +215,9 @@ const EmbedContainer: FC = () => {
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
         config,
+        preferredLocations,
+        realEstates,
         searchResponse,
-        listings: realEstates,
-        locations: preferredLocations,
       }),
     });
 

@@ -6,7 +6,6 @@ import {
 } from "react-google-places-autocomplete";
 import harversine from "haversine";
 import { toast } from "react-toastify";
-import { v4 } from "uuid";
 import copy from "copy-to-clipboard";
 import { LatLng } from "react-google-places-autocomplete/build/GooglePlacesAutocomplete.types";
 
@@ -14,11 +13,11 @@ import {
   ApiCoordinates,
   ApiSearchResponse,
   ApiSearchResultSnapshotConfig,
+  ApiSnippetEntityVisibility,
   ApiUser,
   IApiUserPoiIcon,
   MeansOfTransportation,
   OsmName,
-  PoiFilterTypesEnum,
 } from "../../../shared/types/types";
 import parkIcon from "../assets/icons/pois/park.svg";
 import fuelIcon from "../assets/icons/pois/fuel.svg";
@@ -48,19 +47,9 @@ import pharmacyIcon from "../assets/icons/pois/pharmacy.svg";
 import windTurbineIcon from "../assets/icons/pois/wind_turbine.svg";
 import preferredLocationIcon from "../assets/icons/icons-24-x-24-illustrated-ic-starred.svg";
 import realEstateListingIcon from "../assets/icons/icons-20-x-20-outline-ic-ab.svg";
-import {
-  meansOfTransportations,
-  osmEntityTypes,
-} from "../../../shared/constants/constants";
+import { meansOfTransportations } from "../../../shared/constants/constants";
 import { EntityGroup, ResultEntity } from "./search-result.types";
-import { ApiPreferredLocation } from "../../../shared/types/potential-customer";
-import { ApiRealEstateListing } from "../../../shared/types/real-estate";
 import { IPoiIcon, IQueryParamsAndUrl } from "./shared.types";
-import {
-  LocIndexPropsEnum,
-  TApiLocIndexProps,
-} from "../../../shared/types/location-index";
-import { realEstateListingsTitle } from "../../../shared/constants/real-estate";
 import { Iso3166_1Alpha2CountriesEnum } from "../../../shared/types/location";
 import { IApiIntegrationUser } from "../../../shared/types/integration-user";
 import {
@@ -79,15 +68,6 @@ export interface IColorPalette {
   primaryColorLight: string;
   primaryColorDark: string;
   textColor: string;
-}
-
-interface IDeriveParameters {
-  searchResponse: ApiSearchResponse;
-  config?: ApiSearchResultSnapshotConfig;
-  listings?: ApiRealEstateListing[];
-  locations?: ApiPreferredLocation[];
-  ignoreVisibility?: boolean;
-  ignorePoiFilter?: boolean;
 }
 
 export const dateDiffInDays = (d1: Date, d2: Date = new Date()): number => {
@@ -482,10 +462,8 @@ export const deriveIconForOsmName = (
 };
 
 export const deriveTotalRequestContingent = (user: ApiUser) =>
-  user?.requestContingents?.length > 0
-    ? user.requestContingents
-        .map((c) => c.amount)
-        .reduce((acc, inc) => acc + inc)
+  user?.requestContingents?.length
+    ? user.requestContingents.reduce((acc, { amount }) => acc + amount, 0)
     : 0;
 
 export const deriveAvailableMeansFromResponse = (
@@ -493,209 +471,43 @@ export const deriveAvailableMeansFromResponse = (
 ): MeansOfTransportation[] => {
   const routingKeys = Object.keys(searchResponse?.routingProfiles || []);
 
-  return meansOfTransportations
-    .filter((mot) => routingKeys.includes(mot.type))
-    .map((mot) => mot.type);
-};
-
-export const buildEntityData = (
-  locationSearchResult: ApiSearchResponse,
-  config?: ApiSearchResultSnapshotConfig,
-  ignoreVisibility?: boolean,
-  ignorePoiFilter?: boolean
-): ResultEntity[] | undefined => {
-  if (!locationSearchResult) {
-    return;
-  }
-
-  const allLocations = Object.values(
-    locationSearchResult.routingProfiles
-  ).flatMap(({ locationsOfInterest }) => [...locationsOfInterest]);
-
-  let allLocationIds = Array.from(
-    new Set(allLocations.map((location) => location.entity.id))
-  );
-
-  if (config && config.entityVisibility && !ignoreVisibility) {
-    const { entityVisibility = [] } = config;
-
-    allLocationIds = allLocationIds.filter(
-      (id) => !entityVisibility.some((ev) => ev.id === id && ev.excluded)
-    );
-  }
-
-  return allLocationIds.reduce<ResultEntity[]>((result, locationId) => {
-    const location = allLocations.find((l) => l.entity.id === locationId)!;
-
-    // POI Filter by distance
-    if (
-      !ignorePoiFilter &&
-      config?.poiFilter?.type === PoiFilterTypesEnum.BY_DISTANCE &&
-      config?.poiFilter?.value! < location.distanceInMeters
-    ) {
-      return result;
-    }
-
-    result.push({
-      id: locationId!,
-      name: location.entity.title,
-      label: location.entity.label,
-      osmName: Object.values(OsmName).includes(
-        location.entity.type as unknown as OsmName
-      )
-        ? (location.entity.type as unknown as OsmName)
-        : location.entity.name,
-      distanceInMeters: location.distanceInMeters,
-      coordinates: location.coordinates,
-      address: location.address,
-      byFoot:
-        locationSearchResult!.routingProfiles.WALK?.locationsOfInterest?.some(
-          (l) => l.entity.id === locationId
-        ) ?? false,
-      byBike:
-        locationSearchResult!.routingProfiles.BICYCLE?.locationsOfInterest?.some(
-          (l) => l.entity.id === locationId
-        ) ?? false,
-      byCar:
-        locationSearchResult!.routingProfiles.CAR?.locationsOfInterest?.some(
-          (l) => l.entity.id === locationId
-        ) ?? false,
-      selected: false,
-    });
-
-    return result;
-  }, []);
-};
-
-export const buildEntityDataFromPreferredLocations = (
-  centerCoordinates: ApiCoordinates,
-  preferredLocations: ApiPreferredLocation[]
-): ResultEntity[] => {
-  return preferredLocations
-    .filter((preferredLocation) => !!preferredLocation.coordinates)
-    .map((preferredLocation) => ({
-      id: v4(),
-      name: `${preferredLocation.title} (${preferredLocation.address})`,
-      label: preferredLocationsTitle,
-      osmName: OsmName.favorite,
-      distanceInMeters: distanceInMeters(
-        centerCoordinates,
-        preferredLocation.coordinates!
-      ), // Calc distance
-      coordinates: preferredLocation.coordinates!,
-      address: { street: preferredLocation.address },
-      byFoot: true,
-      byBike: true,
-      byCar: true,
-      selected: false,
-    }));
-};
-
-export const buildEntDataFromRealEstates = ({
-  centerOfSearch,
-  realEstates,
-  config,
-  ignoreVisibility,
-}: {
-  centerOfSearch: ApiCoordinates;
-  realEstates: ApiRealEstateListing[];
-  config?: ApiSearchResultSnapshotConfig;
-  ignoreVisibility?: boolean;
-}): ResultEntity[] => {
-  const deriveName = (realEstateListing: ApiRealEstateListing) => {
-    const showLocation = config?.showLocation ?? false;
-
-    // TODO check this
-    if (!showLocation) {
-      return `${realEstateListing.name}`;
-    } else {
-      return `${realEstateListing.name}`;
-    }
-  };
-
-  const mappedRealEstates = realEstates.reduce<ResultEntity[]>(
-    (result, realEstate) => {
-      if (!realEstate.coordinates) {
-        return result;
+  return meansOfTransportations.reduce<MeansOfTransportation[]>(
+    (result, { type }) => {
+      if (routingKeys.includes(type)) {
+        result.push(type);
       }
-
-      const locationIndices = realEstate.locationIndices
-        ? Object.keys(realEstate.locationIndices).reduce<TApiLocIndexProps>(
-            (result, locationIndex) => {
-              result[locationIndex as LocIndexPropsEnum] =
-                realEstate.locationIndices![
-                  locationIndex as LocIndexPropsEnum
-                ]?.value;
-
-              return result;
-            },
-            {} as TApiLocIndexProps
-          )
-        : undefined;
-
-      result.push({
-        id: realEstate.id ?? v4(),
-        name: deriveName(realEstate),
-        label: realEstateListingsTitle,
-        osmName: OsmName.property,
-        distanceInMeters: distanceInMeters(
-          centerOfSearch,
-          realEstate.coordinates!
-        ), // Calc distance
-        realEstateData: {
-          locationIndices,
-          costStructure: realEstate.costStructure,
-          characteristics: realEstate.characteristics,
-          type: realEstate.type,
-        },
-        coordinates: realEstate.coordinates!,
-        address: config?.showLocation
-          ? { street: realEstate.address }
-          : { street: undefined },
-        byFoot: true,
-        byBike: true,
-        byCar: true,
-        selected: false,
-        externalUrl: realEstate.externalUrl,
-      });
 
       return result;
     },
     []
   );
-
-  if (config?.entityVisibility && !ignoreVisibility) {
-    const { entityVisibility = [] } = config;
-
-    return mappedRealEstates.filter(
-      (rel) => !entityVisibility.some((ev) => ev.id === rel.id && ev.excluded)
-    );
-  }
-
-  return mappedRealEstates;
 };
 
-// ### Hide / Show Entities ###
-export const isEntityHidden = (
+export const checkIsEntityHidden = (
   entity: ResultEntity,
   config: ApiSearchResultSnapshotConfig
-) => {
-  return (config.entityVisibility || []).some(
-    (ev) => ev.id === entity.id && ev.excluded
-  );
-};
+): boolean =>
+  !config.entityVisibility
+    ? false
+    : config.entityVisibility.some((ev) => ev.id === entity.id && ev.excluded);
 
 export const toggleEntityVisibility = (
   entity: ResultEntity,
   config: ApiSearchResultSnapshotConfig
-) => {
-  return [
-    ...(config.entityVisibility || []).filter((ev) => ev.id !== entity.id),
-    {
+): ApiSnippetEntityVisibility[] => {
+  const entityVisibility = [...(config.entityVisibility || [])];
+  const foundEntity = entityVisibility.find((ev) => ev.id === entity.id);
+
+  if (foundEntity) {
+    foundEntity.excluded = !foundEntity.excluded;
+  } else {
+    entityVisibility.push({
       id: entity.id,
-      excluded: !isEntityHidden(entity, config),
-    },
-  ];
+      excluded: true,
+    });
+  }
+
+  return entityVisibility;
 };
 
 // IMPORTANT - please, use the appropriate methods from the 'useTools' hook
@@ -734,105 +546,6 @@ export const deriveEntityGroupsByActiveMeans = (
   };
 
   return entityGroups.map((group) => filterByMeans(group, activeMeans));
-};
-
-export const deriveInitialEntityGroups = ({
-  searchResponse,
-  config,
-  listings,
-  locations,
-  ignoreVisibility = false,
-  ignorePoiFilter,
-}: IDeriveParameters): EntityGroup[] => {
-  const groupedEntities: EntityGroup[] = [];
-  const centerOfSearch = searchResponse?.centerOfInterest?.coordinates;
-
-  const deriveActiveState = (title: string, index?: number): boolean => {
-    if (config?.theme === "KF") {
-      const activeGroups = config?.defaultActiveGroups ?? [];
-
-      return activeGroups.length < 1
-        ? index === 0
-        : activeGroups.includes(title);
-    }
-
-    return config?.defaultActiveGroups
-      ? config.defaultActiveGroups.includes(title)
-      : true;
-  };
-
-  if (!!locations && !!centerOfSearch) {
-    groupedEntities.push({
-      title: preferredLocationsTitle,
-      active: deriveActiveState(preferredLocationsTitle),
-      items: buildEntityDataFromPreferredLocations(centerOfSearch, locations),
-    });
-  }
-
-  if (!!listings && !!centerOfSearch) {
-    groupedEntities.push({
-      title: realEstateListingsTitle,
-      active: deriveActiveState(realEstateListingsTitle),
-      items: buildEntDataFromRealEstates({
-        centerOfSearch,
-        config,
-        ignoreVisibility,
-        realEstates: listings,
-      }),
-    });
-  }
-
-  // TODO is triggered two times on map load, try to reduce to a 1 time only
-  // POI filter by distance is in the "buildEntityData" method
-  // Sorting could be excessive here
-  const allEntities = buildEntityData(
-    searchResponse,
-    config,
-    ignoreVisibility,
-    ignorePoiFilter
-  )?.sort(
-    (
-      { distanceInMeters: distanceInMeters1 },
-      { distanceInMeters: distanceInMeters2 }
-    ) => distanceInMeters1 - distanceInMeters2
-  );
-
-  const initialGroupedEntities: EntityGroup[] = osmEntityTypes.map(
-    ({ label }) => ({ title: label, active: true, items: [] })
-  );
-
-  const groupedEntitiesWithItems = (
-    Array.isArray(allEntities) ? allEntities : []
-  ).reduce((result, resultEntity) => {
-    const foundEntityGroupItems = result.find(
-      ({ title }) => title === resultEntity.label
-    )?.items;
-
-    if (
-      !foundEntityGroupItems ||
-      (!ignorePoiFilter &&
-        config?.poiFilter?.type === PoiFilterTypesEnum.BY_AMOUNT &&
-        config?.poiFilter?.value! === foundEntityGroupItems.length)
-    ) {
-      return result;
-    }
-
-    foundEntityGroupItems.push(resultEntity);
-
-    return result;
-  }, initialGroupedEntities);
-
-  return groupedEntitiesWithItems.reduce<EntityGroup[]>(
-    (result, entityGroup, i) => {
-      if (entityGroup.items.length > 0) {
-        entityGroup.active = deriveActiveState(entityGroup.title, i);
-        result.push(entityGroup);
-      }
-
-      return result;
-    },
-    groupedEntities
-  );
 };
 
 export const sanitizeFilename = (filename: string): string =>

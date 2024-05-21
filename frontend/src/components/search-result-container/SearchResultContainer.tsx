@@ -490,12 +490,12 @@ const SearchResultContainer = forwardRef<
 
       const newConfig = {
         ...searchContextState.responseConfig,
-        entityVisibility: [...newEntityVisibility],
+        entityVisibility: newEntityVisibility,
       };
 
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_CONFIG,
-        payload: { ...newConfig },
+        payload: newConfig,
       });
     };
 

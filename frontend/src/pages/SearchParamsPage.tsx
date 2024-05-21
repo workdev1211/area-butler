@@ -25,7 +25,6 @@ import RealEstateDropDown from "real-estates/RealEstateDropDown";
 import {
   deriveAddressFromCoordinates,
   deriveAvailableMeansFromResponse,
-  deriveInitialEntityGroups,
   deriveTotalRequestContingent,
   toastError,
 } from "shared/shared.functions";
@@ -75,6 +74,7 @@ import ConfirmationModal from "../components/ConfirmationModal";
 import { useIntegrationTools } from "../hooks/integration/integrationtools";
 import { IntegrationActionTypeEnum } from "../../../shared/types/integration";
 import { searchUnlockText } from "../../../shared/constants/on-office/on-office-products";
+import { deriveInitialEntityGroups } from "../shared/pois.functions";
 
 // TODO try to fix the following error
 // Can't perform a React state update on an unmounted component. This is a no-op, but it indicates a memory leak in your application. To fix, cancel all subscriptions and asynchronous tasks in a useEffect cleanup function.
@@ -334,10 +334,10 @@ const SearchParamsPage: FC = () => {
       type: SearchContextActionTypes.CLEAR_MAP_CLIPPINGS,
     });
 
-    let filteredRealEstateListings;
+    let filteredRealEstates;
 
     if (realEstateState?.listings?.length) {
-      filteredRealEstateListings = realEstateState.listings.filter(
+      filteredRealEstates = realEstateState.listings.filter(
         (listing) =>
           listing.coordinates!.lat !== searchContextState.location!.lat ||
           listing.coordinates!.lng !== searchContextState.location!.lng
@@ -348,8 +348,8 @@ const SearchParamsPage: FC = () => {
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
         searchResponse,
-        listings: filteredRealEstateListings,
-        locations: searchContextState.preferredLocations,
+        preferredLocations: searchContextState.preferredLocations,
+        realEstates: filteredRealEstates,
       }),
     });
 

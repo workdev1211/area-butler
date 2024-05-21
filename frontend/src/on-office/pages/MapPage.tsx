@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 
 import "./MapPage.scss";
@@ -16,14 +10,9 @@ import {
 } from "../../context/SearchContext";
 import { getCombinedOsmEntityTypes } from "../../../../shared/functions/shared.functions";
 import { defaultMapZoom } from "../../shared/shared.constants";
-import {
-  buildEntityData,
-  deriveAvailableMeansFromResponse,
-  deriveInitialEntityGroups,
-} from "../../shared/shared.functions";
+import { deriveAvailableMeansFromResponse } from "../../shared/shared.functions";
 import {
   ApiOsmLocation,
-  ApiSearchResponse,
   ApiSearchResultSnapshotResponse,
   ApiTourNamesEnum,
   MapDisplayModesEnum,
@@ -43,8 +32,13 @@ import { LoadingMessage } from "../../components/Loading";
 import { RealEstateContext } from "../../context/RealEstateContext";
 import { filterRealEstates } from "../../shared/real-estate.functions";
 import { useRealEstateData } from "../../hooks/realestatedata";
+import {
+  convertLocationToResEntity,
+  deriveInitialEntityGroups,
+  setTransportParamForResEntity,
+} from "../../shared/pois.functions";
 
-const MapPage: FunctionComponent = () => {
+const MapPage: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { searchContextState, searchContextDispatch } =
@@ -214,22 +208,22 @@ const MapPage: FunctionComponent = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
+        preferredLocations,
         searchResponse,
         config: enhancedConfig,
-        listings: filteredRealEstates,
-        locations: preferredLocations,
+        realEstates: filteredRealEstates,
       }),
     });
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
+        preferredLocations,
         searchResponse,
         config: enhancedConfig,
-        listings: filteredRealEstates,
-        locations: preferredLocations,
-        ignoreVisibility: true,
         ignorePoiFilter: true,
+        ignoreVisibility: true,
+        realEstates: filteredRealEstates,
       }),
     });
 
@@ -251,10 +245,10 @@ const MapPage: FunctionComponent = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
-        searchResponse: snapshotRes.snapshot.searchResponse,
         config: searchContextState.responseConfig,
-        listings: filteredRealEstates,
-        locations: snapshotRes.snapshot.preferredLocations,
+        preferredLocations: snapshotRes.snapshot.preferredLocations,
+        realEstates: filteredRealEstates,
+        searchResponse: snapshotRes.snapshot.searchResponse,
       }),
     });
 
@@ -313,30 +307,26 @@ const MapPage: FunctionComponent = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [mapRef.current]);
 
-  const onPoiAdd = (poi: ApiOsmLocation): void => {
+  const onPoiAdd = (poiLocation: ApiOsmLocation): void => {
     if (!snapshotRes) {
       return;
     }
 
-    const copiedSearchResponse: ApiSearchResponse = JSON.parse(
-      JSON.stringify(snapshotRes.snapshot.searchResponse)
-    );
+    const newEntity = convertLocationToResEntity(poiLocation);
 
-    Object.values(MeansOfTransportation).forEach((transportParam) => {
-      if (
-        copiedSearchResponse?.routingProfiles &&
-        copiedSearchResponse.routingProfiles[transportParam]
-      ) {
-        copiedSearchResponse.routingProfiles[
-          transportParam
-        ].locationsOfInterest?.push(poi);
+    if (!newEntity) {
+      return;
+    }
+
+    // TODO should be based on isochrones and distances
+    Object.keys(snapshotRes.snapshot.searchResponse.routingProfiles).forEach(
+      (transportParam) => {
+        setTransportParamForResEntity(
+          newEntity,
+          transportParam as MeansOfTransportation
+        );
       }
-    });
-
-    const newEntity = buildEntityData(
-      copiedSearchResponse,
-      searchContextState.responseConfig
-    )?.find((e) => e.id === poi.entity.id);
+    );
 
     if (!newEntity) {
       return;
@@ -347,7 +337,7 @@ const MapPage: FunctionComponent = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        ge.title !== poi.entity.label
+        ge.title !== poiLocation.entity.label
           ? ge
           : {
               ...ge,
@@ -358,13 +348,13 @@ const MapPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.ADD_CUSTOM_POI,
-      payload: poi,
+      payload: poiLocation,
     });
 
     // update dedicated entity groups for editor
     setEditorGroups(
       editorGroups.map((ge) =>
-        ge.title !== poi.entity.label
+        ge.title !== poiLocation.entity.label
           ? ge
           : { ...ge, items: [...ge.items, newEntity] }
       )

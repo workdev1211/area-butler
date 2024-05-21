@@ -161,9 +161,7 @@ const LocationExport: FunctionComponent<ILocationExportProps> = ({
   const resultingGroups = deriveEntityGroupsByActiveMeans(
     searchContextState.availGroupedEntities,
     searchContextState.responseActiveMeans
-  )
-    .map((g) => g.items)
-    .flat();
+  ).flatMap((g) => g.items);
 
   return (
     <div

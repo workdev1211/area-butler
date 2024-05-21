@@ -1,10 +1,4 @@
-import {
-  FunctionComponent,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
+import { FC, useContext, useEffect, useRef, useState } from "react";
 import { useHistory, useLocation, useParams } from "react-router-dom";
 
 import "./SnapshotEditorPage.scss";
@@ -15,15 +9,12 @@ import { ConfigContext } from "context/ConfigContext";
 import { SearchContext, SearchContextActionTypes } from "context/SearchContext";
 import DefaultLayout from "layout/defaultLayout";
 import {
-  buildEntityData,
   deriveAvailableMeansFromResponse,
-  deriveInitialEntityGroups,
   toastError,
 } from "shared/shared.functions";
 import TourStarter from "tour/TourStarter";
 import {
   ApiOsmLocation,
-  ApiSearchResponse,
   ApiSearchResultSnapshot,
   ApiSearchResultSnapshotConfig,
   ApiTourNamesEnum,
@@ -46,12 +37,17 @@ import { LoadingMessage } from "../components/Loading";
 import { RealEstateContext } from "../context/RealEstateContext";
 import { filterRealEstates } from "../shared/real-estate.functions";
 import { useRealEstateData } from "../hooks/realestatedata";
+import {
+  convertLocationToResEntity,
+  deriveInitialEntityGroups,
+  setTransportParamForResEntity,
+} from "../shared/pois.functions";
 
 export interface SnapshotEditorRouterProps {
   snapshotId: string;
 }
 
-const SnapshotEditorPage: FunctionComponent = () => {
+const SnapshotEditorPage: FC = () => {
   const mapRef = useRef<ICurrentMapRef | null>(null);
 
   const { mapBoxAccessToken: mapboxAccessToken } = useContext(ConfigContext);
@@ -168,10 +164,10 @@ const SnapshotEditorPage: FunctionComponent = () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups({
+          preferredLocations,
           searchResponse,
           config: enhancedConfig,
-          listings: filteredRealEstates,
-          locations: preferredLocations,
+          realEstates: filteredRealEstates,
         }),
       });
 
@@ -208,12 +204,12 @@ const SnapshotEditorPage: FunctionComponent = () => {
       searchContextDispatch({
         type: SearchContextActionTypes.SET_AVAIL_GROUPED_ENTITIES,
         payload: deriveInitialEntityGroups({
+          preferredLocations,
           searchResponse,
           config: enhancedConfig,
-          listings: filteredRealEstates,
-          locations: preferredLocations,
-          ignoreVisibility: true,
           ignorePoiFilter: true,
+          ignoreVisibility: true,
+          realEstates: filteredRealEstates,
         }),
       });
 
@@ -320,56 +316,50 @@ const SnapshotEditorPage: FunctionComponent = () => {
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: deriveInitialEntityGroups({
-        searchResponse: snapshot?.searchResponse!,
         config: searchContextState.responseConfig,
-        listings: filteredRealEstates,
-        locations: snapshot.preferredLocations,
+        preferredLocations: snapshot.preferredLocations,
+        realEstates: filteredRealEstates,
+        searchResponse: snapshot?.searchResponse!,
       }),
     });
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
+    listings,
     searchContextState.responseConfig?.entityVisibility,
+    searchContextState.responseConfig?.hiddenGroups,
+    searchContextState.responseConfig?.poiFilter,
     searchContextState.responseConfig?.realEstateStatus,
     searchContextState.responseConfig?.realEstateStatus2,
-    searchContextState.responseConfig?.poiFilter,
-    listings,
   ]);
 
-  const onPoiAdd = (poi: ApiOsmLocation): void => {
+  const onPoiAdd = (poiLocation: ApiOsmLocation): void => {
     if (!snapshot) {
       return;
     }
 
-    const copiedSearchResponse: ApiSearchResponse = JSON.parse(
-      JSON.stringify(snapshot.searchResponse)
-    );
-
-    if (!copiedSearchResponse) {
-      return;
-    }
-
-    Object.values(MeansOfTransportation).forEach((transportParam) => {
-      copiedSearchResponse.routingProfiles[
-        transportParam
-      ]?.locationsOfInterest?.push(poi);
-    });
-
-    const newEntity = buildEntityData(
-      copiedSearchResponse,
-      searchContextState.responseConfig
-    )?.find((e) => e.id === poi.entity.id);
+    const newEntity = convertLocationToResEntity(poiLocation);
 
     if (!newEntity) {
       return;
     }
+
+    // TODO should be based on isochrones and distances
+    Object.keys(snapshot.searchResponse.routingProfiles).forEach(
+      (transportParam) => {
+        setTransportParamForResEntity(
+          newEntity,
+          transportParam as MeansOfTransportation
+        );
+      }
+    );
 
     newEntity.isCustom = true;
 
     searchContextDispatch({
       type: SearchContextActionTypes.SET_RESPONSE_GROUPED_ENTITIES,
       payload: (searchContextState.responseGroupedEntities ?? []).map((ge) =>
-        ge.title !== poi.entity.label
+        ge.title !== poiLocation.entity.label
           ? ge
           : {
               ...ge,
@@ -380,7 +370,7 @@ const SnapshotEditorPage: FunctionComponent = () => {
 
     searchContextDispatch({
       type: SearchContextActionTypes.ADD_CUSTOM_POI,
-      payload: poi,
+      payload: poiLocation,
     });
   };
 

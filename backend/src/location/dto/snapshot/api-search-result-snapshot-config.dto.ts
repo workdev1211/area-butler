@@ -33,6 +33,7 @@ class ApiSearchResultSnapshotConfigDto
   @Expose()
   @IsOptional()
   @IsArray()
+  @IsString({ each: true })
   defaultActiveGroups?: string[];
 
   @Expose()
@@ -52,6 +53,12 @@ class ApiSearchResultSnapshotConfigDto
   @IsOptional()
   @IsBoolean()
   groupItems?: boolean;
+
+  @Expose()
+  @IsOptional()
+  @IsArray()
+  @IsString({ each: true })
+  hiddenGroups?: string[];
 
   @Expose()
   @IsOptional()

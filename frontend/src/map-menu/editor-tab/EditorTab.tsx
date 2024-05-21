@@ -1,4 +1,4 @@
-import { FunctionComponent, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 
 import "./EditorTab.scss";
 
@@ -17,7 +17,7 @@ import { LocalityItemContent } from "../components/menu-item/locality-item/Local
 import ColorPicker from "components/ColorPicker";
 import ImageUpload from "components/ImageUpload";
 import {
-  isEntityHidden,
+  checkIsEntityHidden,
   setBackgroundColor,
   toggleEntityVisibility,
 } from "../../shared/shared.functions";
@@ -44,7 +44,7 @@ import { useTools } from "../../hooks/tools";
 
 const currentSnippetConfigLabel = "Aktuell";
 
-const EditorTab: FunctionComponent<IEditorTabProps> = ({
+const EditorTab: FC<IEditorTabProps> = ({
   availableMeans = [],
   groupedEntries = [],
   config,
@@ -70,6 +70,7 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
   const [selectedSnippetConfigId, setSelectedSnippetConfigId] = useState(
     currentSnippetConfigLabel.toLowerCase()
   );
+  // Should not be simplified
   const [isReferenceMap, setIsReferenceMap] = useState<boolean>(
     !!(config.hideMeanToggles && config.hideMapMenu && config.hidePoiIcons)
   );
@@ -210,48 +211,39 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
     onConfigChange({ ...config, defaultActiveMeans: [...defaultActiveMeans] });
   };
 
-  const isGroupOpen = (group: EntityGroup): boolean =>
+  const checkIsGroupOpen = (group: EntityGroup): boolean =>
     poiGroupsOpen.includes(group.title);
 
   const toggleGroupOpen = (group: EntityGroup): void => {
-    if (isGroupOpen(group)) {
+    if (checkIsGroupOpen(group)) {
       setPoiGroupsOpen(poiGroupsOpen.filter((g) => g !== group.title));
     } else {
       setPoiGroupsOpen([...poiGroupsOpen, group.title]);
     }
   };
 
-  const checkIsGroupHidden = (group: EntityGroup): boolean => {
-    const groupEntityIds = group.items.map((i) => i.id);
-
-    return groupEntityIds.every((id) =>
-      (config.entityVisibility || []).some((ev) => ev.id === id && ev.excluded)
-    );
-  };
+  const checkIsGroupHidden = (group: EntityGroup): boolean =>
+    !!config.hiddenGroups?.some((groupName) => groupName === group.title);
 
   const toggleGroupVisibility = (group: EntityGroup): void => {
-    const visibilityWithoutGroup = (config.entityVisibility || []).filter(
-      (ev) => !group.items.some((i) => i.id === ev.id)
-    );
+    let hiddenGroups = config.hiddenGroups ? [...config.hiddenGroups] : [];
 
-    const isGroupHidden = checkIsGroupHidden(group);
+    if (checkIsGroupHidden(group)) {
+      hiddenGroups = hiddenGroups.filter(
+        (groupName) => groupName !== group.title
+      );
+    } else {
+      hiddenGroups.push(group.title);
+    }
 
-    const newGroup = [
-      ...visibilityWithoutGroup,
-      ...group.items.map((i) => ({
-        id: i.id,
-        osmName: i.osmName,
-        excluded: !isGroupHidden,
-      })),
-    ];
-
-    changeConfigParam("entityVisibility", [...newGroup]);
+    changeConfigParam("hiddenGroups", hiddenGroups);
   };
 
-  const toggleSingleEntityVisibility = (entity: ResultEntity): void => {
-    changeConfigParam("entityVisibility", [
-      ...toggleEntityVisibility(entity, config),
-    ]);
+  const handleEntityVisibility = (entity: ResultEntity): void => {
+    changeConfigParam(
+      "entityVisibility",
+      toggleEntityVisibility(entity, config)
+    );
   };
 
   const handleSetIsRefMap = (): void => {
@@ -332,10 +324,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                           toggleGroupOpen(group);
                         }}
                       >
-                        {isGroupOpen(group) ? "Schließen" : "Öffnen"}
+                        {checkIsGroupOpen(group) ? "Schließen" : "Öffnen"}
                       </button>
                     </div>
-                    {isGroupOpen(group) && (
+                    {checkIsGroupOpen(group) && (
                       <div className="group-items flex flex-col pl-2">
                         <ul>
                           {group.items.map((item) => (
@@ -343,10 +335,10 @@ const EditorTab: FunctionComponent<IEditorTabProps> = ({
                               <div className="item-title">
                                 <input
                                   type="checkbox"
-                                  checked={!isEntityHidden(item, config)}
+                                  checked={!checkIsEntityHidden(item, config)}
                                   className="checkbox checkbox-xs"
                                   onChange={() => {
-                                    toggleSingleEntityVisibility(item);
+                                    handleEntityVisibility(item);
                                   }}
                                 />{" "}
                                 <span>{item.name ?? item.label}</span>
