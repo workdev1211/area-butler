@@ -11,6 +11,7 @@ import {
 } from '@area-butler-types/types';
 import { TProcessedCensusData } from '@area-butler-types/data-provision';
 import {
+  ApiBcp47LanguageEnum,
   ApiEnergyEfficiency,
   ApiFurnishing,
   ApiRealEstateCostType,
@@ -163,6 +164,7 @@ export interface IApiQueryOpenAiExtReq extends IApiFetchPoiDataReq {
   queryType?: ApiOpenAiQueryTypesEnum;
   tonality?: OpenAiTonalityEnum;
   maxTextLength?: number;
+  language?: ApiBcp47LanguageEnum;
 
   price?: number;
   priceType?: ApiRealEstateCostType;

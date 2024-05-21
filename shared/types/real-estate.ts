@@ -63,7 +63,6 @@ export enum ApiRealEstateCostType {
   SELL = "SELL",
 }
 
-// TODO make "furnishing" completely optional
 export interface ApiRealEstateCharacteristics {
   startingAt?: boolean;
   numberOfRooms?: number;
@@ -109,6 +108,15 @@ export enum ApiRealEstateStatusEnum {
 export enum ApiRealEstateStatus2Enum {
   ACTIVE = "Aktiv",
   INACTIVE = "Inaktiv",
+}
+
+export enum ApiBcp47LanguageEnum {
+  DE = "DE",
+  EN = "EN",
+  NL = "NL",
+  FR = "FR",
+  ES = "ES",
+  IT = "IT",
 }
 
 export enum ApiExampleFileTypeEnum {

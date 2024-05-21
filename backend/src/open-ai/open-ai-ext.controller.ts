@@ -9,8 +9,8 @@ import { UserDocument } from '../user/schema/user.schema';
 import ApiQueryOpenAiExtReqDto from './dto/api-query-open-ai-ext-req.dto';
 import { LocationExtService } from '../location/location-ext.service';
 import {
-  ResultStatusEnum,
   ApiSearchResultSnapshotResponse,
+  ResultStatusEnum,
 } from '@area-butler-types/types';
 import {
   ApiOpenAiQueryTypesEnum,
@@ -49,6 +49,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
       queryType,
       tonality,
       maxTextLength,
+      language,
       lat,
       lng,
       address,
@@ -122,11 +123,13 @@ export class OpenAiExtController extends ApiKeyAuthController {
             queryType === ApiOpenAiQueryTypesEnum.LOC_DESC
               ? await this.openAiService.getLocDescQuery(user, {
                   snapshotRes,
+                  language,
                   meanOfTransportation: transportMode,
                   tonality: resultingTonality,
                 })
               : await this.openAiService.getLocRealEstDescQuery(user, {
                   snapshotRes,
+                  language,
                   meanOfTransportation: transportMode,
                   realEstateType: defaultRealEstType,
                   tonality: resultingTonality,
@@ -138,6 +141,7 @@ export class OpenAiExtController extends ApiKeyAuthController {
         case ApiOpenAiQueryTypesEnum.EST_DESC: {
           query = this.openAiService.getRealEstDescQuery({
             realEstate,
+            language,
             realEstateType: defaultRealEstType,
             tonality: resultingTonality,
           });
@@ -151,6 +155,9 @@ export class OpenAiExtController extends ApiKeyAuthController {
       if (response.length > maxTextLength) {
         query =
           `Fasse den folgenden Text so zusammen, dass er nicht länger als ${maxTextLength} Zeichen lang ist! Lasse die Tonalität hierbei unverändert.\n` +
+          (language
+            ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
+            : '') +
           response;
 
         response = await this.openAiService.fetchResponse(query);

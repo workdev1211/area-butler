@@ -1,7 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { Configuration, CreateCompletionResponse, OpenAIApi } from 'openai';
 // import { encoding_for_model, Tiktoken } from '@dqbd/tiktoken';
-
 import { configService } from '../config/config.service';
 import { AxiosResponse } from '@nestjs/terminus/dist/health-indicator/http/axios.interfaces';
 import {
@@ -43,6 +42,7 @@ interface IGeneralQueryData {
   customText?: string;
   textLength?: OpenAiTextLengthEnum;
   targetGroupName?: string;
+  language?: string;
 }
 
 interface ILocDescQueryData extends IGeneralQueryData {
@@ -87,6 +87,7 @@ export class OpenAiService {
         config: snapshotConfig = { ...defaultSnapshotConfig },
       },
       tonality,
+      language,
       customText,
       meanOfTransportation,
       targetGroupName = defaultTargetGroupName,
@@ -103,6 +104,10 @@ export class OpenAiService {
       ? ` Es geht um eine Immobilien mit der Adresse: ${snapshot.placesLocation.label}.`
       : '';
 
+    queryText += language
+      ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
+      : '';
+
     // text length with the OnePage case
     queryText += ` ${
       isForOnePage
@@ -110,7 +115,7 @@ export class OpenAiService {
         : openAiTextLengthOptions.find(({ value }) => value === textLength).text
     }`;
 
-    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verwende keine Sonderzeichen und Emoticons.`;
+    queryText += ` Nutze eine ${tonality} Art der Formulierung. Verzichte in jeder Situation auf Sonderzeichen und Emoticons. Vermeide Überschriften für den Text.`;
 
     if (customText) {
       queryText +=
@@ -219,6 +224,7 @@ export class OpenAiService {
     customText,
     realEstateType,
     tonality,
+    language,
     targetGroupName = defaultTargetGroupName,
     textLength = OpenAiTextLengthEnum.MEDIUM,
     realEstate: { address, costStructure, characteristics },
@@ -233,6 +239,10 @@ export class OpenAiService {
     // if (address) {
     queryText += ` Die Adresse lautet ${address}.`;
     // }
+
+    queryText += language
+      ? ` Verwende als Ausgabesprache ${language} (BCP 47).`
+      : '';
 
     queryText = this.getRealEstateDescription(
       queryText,

@@ -2,7 +2,6 @@ import {
   IsArray,
   IsEnum,
   IsInt,
-  IsNotEmpty,
   IsNumber,
   IsOptional,
   IsPositive,
@@ -15,6 +14,7 @@ import {
 } from '../../shared/types/external-api';
 import ApiFetchPoiDataReqDto from '../../location/dto/api-fetch-poi-data-req.dto';
 import {
+  ApiBcp47LanguageEnum,
   ApiEnergyEfficiency,
   ApiFurnishing,
   ApiRealEstateCostType,
@@ -51,6 +51,15 @@ class ApiQueryOpenAiExtReqDto
   @IsInt()
   @IsPositive()
   maxTextLength?: number;
+
+  @Transform(({ value }: { value: string }): string => value.toUpperCase(), {
+    toClassOnly: true,
+  })
+  @IsOptional()
+  @IsEnum(ApiBcp47LanguageEnum, {
+    message: getEnumValidMessage,
+  })
+  language?: ApiBcp47LanguageEnum;
 
   @Transform(({ value }: { value: string }): number => +value, {
     toClassOnly: true,
@@ -101,7 +110,7 @@ class ApiQueryOpenAiExtReqDto
       toClassOnly: true,
     },
   )
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   @IsEnum(ApiFurnishing, { each: true, message: getEnumValidMessage })
   furnishing?: ApiFurnishing[];
